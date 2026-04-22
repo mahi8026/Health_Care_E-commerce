@@ -1,0 +1,57 @@
+services:
+  # Backend API Service
+  - type: web
+    name: medcorebd-api
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+
+  # Frontend Web Service
+  - type: web
+    name: medcorebd-frontend
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_GA4_MEASUREMENT_ID
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SITE_NAME
+        value: MedCore BD
+      - key: NEXT_PUBLIC_ENABLE_ANALYTICS
+        value: true
+      - key: NODE_ENV
+        value: production

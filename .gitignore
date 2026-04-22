@@ -1,0 +1,86 @@
+# ============================================================================
+# MedCore BD - Root Git Ignore Configuration
+# ============================================================================
+# This is the root .gitignore for the entire project
+# Individual folders (health-care/, health-care/backend/) have their own
+# ============================================================================
+
+# ── Environment Variables (CRITICAL - NEVER COMMIT) ─────────────────────────
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+**/.env.*.local
+
+# Keep template files
+!**/.env.example
+!**/.env.production
+
+# ── Dependencies ─────────────────────────────────────────────────────────────
+**/node_modules/
+**/.pnp
+**/.pnp.*
+
+# ── Build Outputs ────────────────────────────────────────────────────────────
+**/.next/
+**/out/
+**/build/
+**/dist/
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+**/*.log
+**/logs/
+**/.pm2/
+
+# ── OS Files ─────────────────────────────────────────────────────────────────
+**/.DS_Store
+**/Thumbs.db
+**/*.swp
+
+# ── IDE Files ────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+**/*.iml
+
+# ── Certificates & Keys (CRITICAL) ───────────────────────────────────────────
+**/*.pem
+**/*.key
+**/*.cert
+**/*.crt
+
+# ── Testing ──────────────────────────────────────────────────────────────────
+**/coverage/
+**/.nyc_output/
+
+# ── Temporary Files ──────────────────────────────────────────────────────────
+**/tmp/
+**/temp/
+**/*.tmp
+**/*.bak
+
+# ── Deployment ───────────────────────────────────────────────────────────────
+.vercel
+.netlify
+.railway/
+
+# ── Database ─────────────────────────────────────────────────────────────────
+**/*.sqlite
+**/*.db
+**/data/
+**/dump/
+
+# ── Uploads & Generated Files ────────────────────────────────────────────────
+**/uploads/
+**/invoices/*.pdf
+
+# ── Lighthouse Reports ──────────────────────────────────────────────────────
+**/.lighthouseci/
+
+# ── Keep Important Files ─────────────────────────────────────────────────────
+!README.md
+!LICENSE
+!.gitignore
+!package.json
+
+# ============================================================================

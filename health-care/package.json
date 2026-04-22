@@ -1,0 +1,40 @@
+{
+  "name": "health-care",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lighthouse": "lhci autorun",
+    "analyze": "ANALYZE=true npm run build"
+  },
+  "dependencies": {
+    "@stripe/react-stripe-js": "^6.1.0",
+    "@stripe/stripe-js": "^9.1.0",
+    "date-fns": "^4.1.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "next": "16.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-ga4": "^3.0.1",
+    "recharts": "^3.8.1",
+    "stripe": "^22.0.1"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@next/bundle-analyzer": "^16.2.3",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.3",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "tailwindcss": "^4"
+  }
+}

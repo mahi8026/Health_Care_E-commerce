@@ -1,0 +1,75 @@
+# ============================================================================
+# MedCore BD - Git Attributes Configuration
+# ============================================================================
+# This file ensures consistent line endings and proper file handling
+# ============================================================================
+
+# Auto detect text files and normalize line endings to LF
+* text=auto eol=lf
+
+# ── Source Code ──────────────────────────────────────────────────────────────
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.xml text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# ── Configuration Files ──────────────────────────────────────────────────────
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+.eslintrc* text eol=lf
+.prettierrc* text eol=lf
+*.config.js text eol=lf
+*.config.mjs text eol=lf
+
+# ── Shell Scripts ────────────────────────────────────────────────────────────
+*.sh text eol=lf
+*.bash text eol=lf
+
+# ── Environment Files ────────────────────────────────────────────────────────
+.env* text eol=lf
+
+# ── Documentation ────────────────────────────────────────────────────────────
+*.md text eol=lf
+*.txt text eol=lf
+LICENSE text eol=lf
+README text eol=lf
+
+# ── Binary Files ─────────────────────────────────────────────────────────────
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+
+# ── Exclude from exports ─────────────────────────────────────────────────────
+.gitattributes export-ignore
+.gitignore export-ignore
+.github export-ignore
+.vscode export-ignore
+.idea export-ignore
+*.test.js export-ignore
+*.spec.js export-ignore
+__tests__ export-ignore
+coverage export-ignore
+
+# ============================================================================

@@ -1,0 +1,61 @@
+'use client'
+
+import { useReportWebVitals } from 'next/web-vitals'
+
+/**
+ * WebVitalsReporter - Reports Core Web Vitals metrics to analytics services.
+ *
+ * - Logs metrics to console in development
+ * - Sends all metrics to Google Analytics 4 as custom events
+ * - POSTs metrics that exceed defined thresholds to /api/analytics/web-vitals
+ *
+ * Requirements: 10.1, 10.2, 10.3
+ */
+
+const THRESHOLDS = {
+  LCP: 2500,
+  INP: 200,
+  CLS: 0.1,
+  FCP: 1800,
+  TTFB: 800,
+}
+
+export function WebVitalsReporter() {
+  useReportWebVitals((metric) => {
+    // Log to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(metric)
+    }
+
+    // Send to Google Analytics 4 — lazy-load react-ga4 to keep initial bundle small
+    import('react-ga4').then(({ default: ReactGA }) => {
+      ReactGA.event({
+        category: 'Web Vitals',
+        action: metric.name,
+        value: Math.round(metric.value),
+        label: metric.id,
+        nonInteraction: true,
+      })
+    }).catch(() => {})
+
+    // Send to custom analytics endpoint when metric exceeds threshold
+    const threshold = THRESHOLDS[metric.name]
+    if (threshold !== undefined && metric.value > threshold) {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      fetch(`${apiUrl}/analytics/web-vitals`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          metric: metric.name,
+          value: metric.value,
+          path: window.location.pathname,
+          timestamp: Date.now(),
+        }),
+      }).catch(console.error)
+    }
+  })
+
+  return null
+}
+
+export default WebVitalsReporter

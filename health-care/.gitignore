@@ -1,0 +1,279 @@
+# ============================================================================
+# MedCore BD - Git Ignore Configuration
+# ============================================================================
+# This file specifies intentionally untracked files that Git should ignore
+# See: https://git-scm.com/docs/gitignore
+# ============================================================================
+
+# ── Environment Variables (CRITICAL - NEVER COMMIT) ─────────────────────────
+# These files contain sensitive credentials and API keys
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Keep template files for reference (no sensitive data)
+!.env.example
+!.env.production
+
+# ── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+/.pnp
+.pnp.*
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+bower_components/
+jspm_packages/
+
+# ── Next.js ──────────────────────────────────────────────────────────────────
+.next/
+out/
+build/
+dist/
+.turbo/
+
+# Next.js cache
+.next/cache/
+.next/static/chunks/
+.next/server/
+
+# ── Testing ──────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+.jest-cache/
+__snapshots__/
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# PM2 logs
+pm2-logs/
+.pm2/
+
+# ── Operating System Files ───────────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ── IDE & Editor Files ───────────────────────────────────────────────────────
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains IDEs (WebStorm, IntelliJ, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+tags
+[._]*.un~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ── TypeScript ───────────────────────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+*.d.ts.map
+
+# ── Build Artifacts ──────────────────────────────────────────────────────────
+dist/
+build/
+*.tgz
+*.zip
+*.tar.gz
+
+# ── Certificates & Keys (CRITICAL - NEVER COMMIT) ────────────────────────────
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_rsa.pub
+*.ppk
+
+# ── Database Files ───────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# MongoDB local
+data/
+dump/
+
+# ── Temporary Files ──────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.cache
+
+# ── Deployment ───────────────────────────────────────────────────────────────
+.vercel
+.netlify
+.firebase/
+.serverless/
+.fusebox/
+
+# Railway
+.railway/
+
+# Heroku
+.heroku/
+
+# ── AWS ──────────────────────────────────────────────────────────────────────
+.aws/
+.elasticbeanstalk/
+
+# ── Docker ───────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+.dockerignore
+
+# ── Package Manager Lock Files (Optional - Choose One) ───────────────────────
+# Uncomment the ones you DON'T want to commit
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ── Lighthouse Reports ──────────────────────────────────────────────────────
+.lighthouseci/
+lighthouse-report.html
+lighthouse-report.json
+
+# ── Misc ─────────────────────────────────────────────────────────────────────
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.npm/
+.yarn-integrity
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional REPL history
+.node_repl_history
+
+# ── Project Specific ─────────────────────────────────────────────────────────
+# Backup files
+*.backup
+*.old
+
+# Generated documentation
+docs/api/
+
+# User uploads (if stored locally - should use S3 in production)
+uploads/
+public/uploads/
+
+# Generated invoices (if stored locally)
+invoices/
+*.pdf
+
+# Test data
+test-data/
+seed-data/
+
+# ── Keep These Files ─────────────────────────────────────────────────────────
+# These are important and should be committed
+!.gitignore
+!.gitattributes
+!.editorconfig
+!.prettierrc
+!.eslintrc.json
+!README.md
+!LICENSE
+!CHANGELOG.md
+!package.json
+!tsconfig.json
+!next.config.mjs
+!jest.config.js
+!.env.example
+!.env.production
+
+# ============================================================================
+# End of .gitignore
+# ============================================================================

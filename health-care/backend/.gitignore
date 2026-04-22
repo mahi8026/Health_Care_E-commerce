@@ -1,0 +1,92 @@
+# ============================================================================
+# MedCore BD Backend - Git Ignore Configuration
+# ============================================================================
+
+# ── Environment Variables (CRITICAL - NEVER COMMIT) ─────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Keep template files
+!.env.example
+!.env.production
+
+# ── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+combined.log
+error.log
+access.log
+
+# PM2 logs
+pm2-logs/
+.pm2/
+
+# ── Database ─────────────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+data/
+dump/
+backups/
+
+# ── Uploads & Generated Files ────────────────────────────────────────────────
+uploads/
+temp/
+tmp/
+invoices/*.pdf
+public/uploads/
+
+# Keep directory structure
+!uploads/.gitkeep
+!temp/.gitkeep
+!invoices/.gitkeep
+
+# ── Testing ──────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+
+# ── Build ────────────────────────────────────────────────────────────────────
+dist/
+build/
+
+# ── Certificates & Keys (CRITICAL) ───────────────────────────────────────────
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# ── Temporary Files ──────────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+
+# ── OS Files ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.iml
+
+# ── Misc ─────────────────────────────────────────────────────────────────────
+.cache/
+.eslintcache
+
+# ============================================================================
