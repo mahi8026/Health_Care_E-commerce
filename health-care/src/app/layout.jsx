@@ -21,6 +21,7 @@ const lora = Lora({
 export const metadata = {
   title: "MedCore BD - Medical Equipment & Supplies",
   description: "Your complete source for medical excellence. Surgical instruments, diagnostic machines, reagents, and lab equipment.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce.vercel.app'),
 };
 
 export default function RootLayout({ children }) {

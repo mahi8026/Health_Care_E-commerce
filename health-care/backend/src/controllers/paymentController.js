@@ -1,7 +1,19 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 const User = require('../models/User');
 const logger = require('../utils/logger');
+
+// Lazy Stripe initialization — prevents crash on startup if key is missing
+let _stripe = null;
+function getStripe() {
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+    }
+    _stripe = require('stripe')(key);
+  }
+  return _stripe;
+}
 
 // Create Stripe Payment Intent
 exports.createPaymentIntent = async (req, res) => {
@@ -12,7 +24,7 @@ exports.createPaymentIntent = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Amount and orderId are required' });
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
       metadata: { orderId, userId: req.user.id }
@@ -38,7 +50,7 @@ exports.confirmPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Payment intent ID and order ID are required' });
     }
 
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
 
     if (paymentIntent.status === 'succeeded') {
       const order = await Order.findById(orderId);
@@ -251,7 +263,7 @@ exports.stripeWebhook = async (req, res) => {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    event = getStripe().webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (error) {
     logger.error(`[stripeWebhook] Signature verification failed: ${error.message}`);
     return res.status(400).send(`Webhook Error: ${error.message}`);
