@@ -3,11 +3,6 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["sin1"],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@api_url",
-    "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "@ga4_id",
-    "NEXT_PUBLIC_SITE_URL": "@site_url"
-  },
   "headers": [
     {
       "source": "/(.*)",
