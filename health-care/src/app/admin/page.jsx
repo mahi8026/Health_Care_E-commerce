@@ -2,6 +2,8 @@ import { generatePageMetadata } from '@/utils/metadata';
 import { pageMetadata } from '@/config/seo';
 import AdminDashboardPage from '@/views/AdminDashboardPage';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = generatePageMetadata(pageMetadata.admin);
 
 export default function Admin() {
