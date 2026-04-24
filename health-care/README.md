@@ -2,6 +2,13 @@
 
 A full-stack medical equipment and supplies e-commerce platform built for the Bangladesh market. Serves hospitals, diagnostic centres, clinics, and individual healthcare professionals.
 
+## 🚀 Live Demo
+
+| Service | URL |
+|---|---|
+| **Frontend** | [https://health-care-e-commerce-murex.vercel.app](https://health-care-e-commerce-murex.vercel.app) |
+| **Backend API** | [https://health-care-e-commerce.onrender.com/api/health](https://health-care-e-commerce.onrender.com/api/health) |
+
 ---
 
 ## Tech Stack
