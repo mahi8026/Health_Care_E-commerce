@@ -12,7 +12,6 @@
 
 # Keep template files
 !.env.example
-!.env.production
 
 # ── Dependencies ─────────────────────────────────────────────────────────────
 node_modules/
