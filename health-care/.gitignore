@@ -9,6 +9,8 @@
 # These files contain sensitive credentials and API keys
 .env
 .env.local
+.env.production
+.env.development
 .env.development.local
 .env.test.local
 .env.production.local
