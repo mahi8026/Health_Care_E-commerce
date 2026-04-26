@@ -35,6 +35,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.medcorebd.com',
       },
+      // Cloudinary — product images uploaded via CldUploadWidget
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
     ],
   },
   

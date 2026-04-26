@@ -23,7 +23,6 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   orderNumber: {
     type: String,
-    unique: true
   },
   // legacy alias
   orderId: { type: String },

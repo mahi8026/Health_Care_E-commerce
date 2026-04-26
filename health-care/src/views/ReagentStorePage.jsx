@@ -8,9 +8,9 @@ import LotSearch from '@/components/reagent/LotSearch';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-export default function ReagentStorePage() {
+export default function ReagentStorePage({ onNavigateToProduct }) {
   const [reagents, setReagents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -34,7 +34,7 @@ export default function ReagentStorePage() {
         if (sortBy === 'price-low') params.set('sortBy', 'price-low');
         else if (sortBy === 'price-high') params.set('sortBy', 'price-high');
 
-        const res = await fetch(`${API}/api/products?${params}`);
+        const res = await fetch(`${API_BASE}/products?${params}`);
         const data = await res.json();
         setReagents(data.products || data.data?.products || []);
         setTotal(data.total || data.data?.total || 0);
@@ -111,7 +111,7 @@ export default function ReagentStorePage() {
               No reagents found matching your filters.
             </div>
           ) : (
-            <ReagentGrid reagents={reagents} />
+            <ReagentGrid reagents={reagents} onProductClick={onNavigateToProduct} />
           )}
         </div>
       </div>

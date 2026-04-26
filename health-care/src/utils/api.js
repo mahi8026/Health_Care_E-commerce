@@ -591,6 +591,10 @@ export const api = {
     return this.post('/payments/bkash/initiate', { amount, orderId });
   },
 
+  async executeBkashPayment(paymentID) {
+    return this.post('/payments/bkash/execute', { paymentID });
+  },
+
   async verifyBkashPayment(paymentId, orderId) {
     return this.post('/payments/bkash/verify', { paymentId, orderId });
   },

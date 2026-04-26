@@ -1,21 +1,64 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { CldUploadWidget } from 'next-cloudinary';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const CATEGORIES = ['', 'Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines', 'Lab Equipment', 'Dental Equipment', 'PPE', 'Implants'];
+const CATEGORIES = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines', 'Lab Equipment', 'Dental Equipment', 'PPE', 'Implants'];
+const UNITS = ['piece', 'box', 'kit', 'pack'];
+const CERTIFICATIONS = ['CE', 'FDA', 'ISO', 'DGDA'];
 
-export default function ProductsManagement() {
+const EMPTY_CREATE_FORM = {
+  sku: '',
+  name: '',
+  description: '',
+  brand: '',
+  category: 'Diagnostic Equipment',
+  subcategory: '',
+  price: '',
+  b2bPrice: '',
+  oldPrice: '',
+  discountPct: '',
+  stock: '',
+  lowStockThreshold: '10',
+  unit: 'piece',
+  minOrderQty: '1',
+  certifications: [],
+  specifications: [],     // array of {key, value}
+  storageTemp: 'room',
+  hazardClass: 'safe',
+  compatibleWith: [],
+  tags: [],
+  lotNumber: '',
+  expiryDate: '',
+  hasAMC: false,
+  isFeatured: false,
+  isActive: true,
+  images: [],          // array of uploaded URLs
+};
+
+export default function ProductsManagement({ openCreateRef }) {
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ text: '', type: '' });
-  const [editProduct, setEditProduct] = useState(null);
-  const [editForm, setEditForm] = useState({});
-  const [saving, setSaving] = useState(false);
+
+  // Edit modal state
+  const [modalMode, setModalMode] = useState('create'); // 'create' | 'edit'
+  const [modalProduct, setModalProduct] = useState(null); // product being edited
+
+  // Create modal state
+  const [showCreate, setShowCreate] = useState(false);
+  const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
+  const [creating, setCreating] = useState(false);
+
+  // Expose open function to parent via ref
+  useEffect(() => {
+    if (openCreateRef) openCreateRef.current = () => setShowCreate(true);
+  }, [openCreateRef]);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -23,7 +66,7 @@ export default function ProductsManagement() {
       const token = localStorage.getItem('medcore_token');
       const params = new URLSearchParams({ page, limit: 20 });
       if (categoryFilter) params.set('category', categoryFilter);
-      const res = await fetch(`${API}/api/products?${params}`, {
+      const res = await fetch(`${API}/products?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -42,7 +85,7 @@ export default function ProductsManagement() {
     if (!confirm('Delete this product? This cannot be undone.')) return;
     try {
       const token = localStorage.getItem('medcore_token');
-      const res = await fetch(`${API}/api/products/${productId}`, {
+      const res = await fetch(`${API}/products/${productId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -55,40 +98,176 @@ export default function ProductsManagement() {
   };
 
   const handleEditOpen = (product) => {
-    setEditProduct(product);
-    setEditForm({
-      name: product.name,
-      price: product.price,
-      stock: product.stock,
-      category: product.category,
-      brand: product.brand,
+    setModalMode('edit');
+    setModalProduct(product);
+    // Pre-fill createForm with all product fields
+    setCreateForm({
+      name:              product.name || '',
+      sku:               product.sku || '',
+      brand:             product.brand || '',
+      category:          product.category || '',
+      subcategory:       product.subcategory || '',
+      description:       product.description || '',
+      price:             product.price?.toString() || '',
+      b2bPrice:          product.b2bPrice?.toString() || '',
+      oldPrice:          product.oldPrice?.toString() || '',
+      discountPct:       product.discountPct?.toString() || '0',
+      stock:             product.stock?.toString() || '',
+      lowStockThreshold: product.lowStockThreshold?.toString() || '10',
+      unit:              product.unit || 'piece',
+      minOrderQty:       product.minOrderQty?.toString() || '1',
+      certifications:    product.certifications || [],
+      specifications:    product.specifications ? Object.entries(product.specifications).map(([key, value]) => ({ key, value })) : [],
+      storageTemp:       product.storageTemp || 'room',
+      hazardClass:       product.hazardClass || 'safe',
+      compatibleWith:    product.compatibleWith || [],
+      tags:              product.tags || [],
+      lotNumber:         product.lotNumber || '',
+      expiryDate:        product.expiryDate ? product.expiryDate.split('T')[0] : '',
+      hasAMC:            product.hasAMC || false,
+      isFeatured:        product.isFeatured || false,
+      isActive:          product.isActive !== false,
+      images:            product.images || [],
     });
+    setShowCreate(true); // reuse the same modal
   };
 
   const handleEditSave = async () => {
-    if (!editProduct) return;
-    setSaving(true);
+    if (!modalProduct) return;
+    setCreating(true);
     try {
       const token = localStorage.getItem('medcore_token');
-      const res = await fetch(`${API}/api/products/${editProduct._id}`, {
+      const payload = {
+        ...createForm,
+        price: Number(createForm.price),
+        stock: Number(createForm.stock),
+        lowStockThreshold: Number(createForm.lowStockThreshold) || 10,
+        minOrderQty: Number(createForm.minOrderQty) || 1,
+        ...(createForm.b2bPrice ? { b2bPrice: Number(createForm.b2bPrice) } : {}),
+        ...(createForm.oldPrice ? { oldPrice: Number(createForm.oldPrice) } : {}),
+        ...(createForm.discountPct ? { discountPct: Number(createForm.discountPct) } : {}),
+      };
+      const res = await fetch(`${API}/products/${modalProduct._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Update failed');
       showMessage('Product updated', 'success');
-      setEditProduct(null);
+      setShowCreate(false);
+      setModalProduct(null);
+      setModalMode('create');
       fetchProducts();
     } catch {
       showMessage('Failed to update product', 'error');
     } finally {
-      setSaving(false);
+      setCreating(false);
     }
   };
 
   const showMessage = (text, type) => {
     setMessage({ text, type });
     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
+  // ── Image upload (via CldUploadWidget) ─────────────────────────────────────
+  const handleUploadSuccess = (result) => {
+    // CldUploadWidget returns result.info with the upload data
+    if (!result?.info || typeof result.info === 'string') return;
+    
+    const info = result.info;
+    const newImage = {
+      url:       info.secure_url,
+      publicId:  info.public_id,
+      isPrimary: createForm.images.length === 0, // first uploaded = primary
+      alt:       createForm.name || 'Product image',
+    };
+    
+    setCreateForm(f => {
+      if (f.images.length >= 5) {
+        showMessage('Maximum 5 images per product', 'error');
+        return f;
+      }
+      return { ...f, images: [...f.images, newImage] };
+    });
+  };
+
+  const handleRemoveImage = (idx) => {
+    setCreateForm(f => {
+      const updated = f.images.filter((_, i) => i !== idx);
+      // If deleted was primary, make first remaining primary
+      if (f.images[idx]?.isPrimary && updated.length > 0) {
+        updated[0].isPrimary = true;
+      }
+      return { ...f, images: updated };
+    });
+  };
+
+  // ── Create/Edit product ──────────────────────────────────────────────────────
+  const handleCreateProduct = async () => {
+    // Basic validation
+    if (!createForm.sku.trim()) return showMessage('SKU is required', 'error');
+    if (!createForm.name.trim()) return showMessage('Product name is required', 'error');
+    if (!createForm.description.trim()) return showMessage('Description is required', 'error');
+    if (!createForm.brand.trim()) return showMessage('Brand is required', 'error');
+    if (!createForm.price || isNaN(Number(createForm.price))) return showMessage('Valid price is required', 'error');
+    if (createForm.stock === '' || isNaN(Number(createForm.stock))) return showMessage('Valid stock quantity is required', 'error');
+    
+    // Reagent validation
+    if (createForm.category === 'Laboratory Reagents' && !createForm.lotNumber.trim()) {
+      return showMessage('Lot number is required for reagents', 'error');
+    }
+
+    setCreating(true);
+    try {
+      const token = localStorage.getItem('medcore_token');
+      const url = modalMode === 'edit' ? `${API}/products/${modalProduct._id}` : `${API}/products`;
+      const method = modalMode === 'edit' ? 'PUT' : 'POST';
+      
+      // Auto-calculate B2B price if not provided
+      const retailPrice = Number(createForm.price);
+      const calculatedB2bPrice = createForm.b2bPrice 
+        ? Number(createForm.b2bPrice) 
+        : Math.round(retailPrice * 0.78);
+      
+      // Convert specifications array to object
+      const specificationsObj = {};
+      (createForm.specifications || []).forEach(({ key, value }) => {
+        if (key.trim() && value.trim()) {
+          specificationsObj[key.trim()] = value.trim();
+        }
+      });
+      
+      const payload = {
+        ...createForm,
+        price: retailPrice,
+        b2bPrice: calculatedB2bPrice,
+        stock: Number(createForm.stock),
+        lowStockThreshold: Number(createForm.lowStockThreshold) || 10,
+        minOrderQty: Number(createForm.minOrderQty) || 1,
+        specifications: specificationsObj,
+        ...(createForm.oldPrice ? { oldPrice: Number(createForm.oldPrice) } : {}),
+        ...(createForm.discountPct ? { discountPct: Number(createForm.discountPct) } : {}),
+        ...(createForm.expiryDate ? { expiryDate: createForm.expiryDate } : {}),
+      };
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || `${modalMode === 'edit' ? 'Update' : 'Create'} failed`);
+      showMessage(modalMode === 'edit' ? 'Product updated successfully' : 'Product created successfully', 'success');
+      setShowCreate(false);
+      setCreateForm(EMPTY_CREATE_FORM);
+      setModalMode('create');
+      setModalProduct(null);
+      fetchProducts();
+    } catch (err) {
+      showMessage(err.message || `Failed to ${modalMode === 'edit' ? 'update' : 'create'} product`, 'error');
+    } finally {
+      setCreating(false);
+    }
   };
 
   const getStockStatus = (product) => {
@@ -110,52 +289,561 @@ export default function ProductsManagement() {
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editProduct && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
-              Edit Product
-            </h3>
-            <div className="space-y-3">
-              {[
-                { label: 'Name', key: 'name', type: 'text' },
-                { label: 'Brand', key: 'brand', type: 'text' },
-                { label: 'Price (৳)', key: 'price', type: 'number' },
-                { label: 'Stock', key: 'stock', type: 'number' },
-              ].map(({ label, key, type }) => (
-                <div key={key}>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">{label}</label>
+      {/* ── Create Product Modal ─────────────────────────────────────────── */}
+      {showCreate && (
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto py-8 px-4">
+          <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b-[0.5px] border-[var(--color-border-tertiary)]">
+              <h3 className="text-[15px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                {modalMode === 'edit' ? `Edit — ${modalProduct?.name}` : 'Add New Product'}
+              </h3>
+              <button
+                onClick={() => { setShowCreate(false); setCreateForm(EMPTY_CREATE_FORM); setModalMode('create'); setModalProduct(null); }}
+                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-xl leading-none"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="px-6 py-5 space-y-5">
+              {/* Image Upload */}
+              <div>
+                <label className="block text-[12px] font-semibold text-[var(--color-text-primary)] mb-2">
+                  Product Images <span className="font-normal text-[var(--color-text-secondary)]">(up to 5 — JPEG, PNG, WebP)</span>
+                </label>
+
+                <CldUploadWidget
+                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'medcorebd_products'}
+                  options={{
+                    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+                    maxFiles: 5 - createForm.images.length,
+                    multiple: true,
+                    resourceType: 'image',
+                    clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+                    maxFileSize: 5242880, // 5 MB
+                    folder: 'medcorebd/products',
+                    transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
+                    styles: {
+                      palette: {
+                        window: '#FFFFFF',
+                        windowBorder: '#E5E7EB',
+                        tabIcon: '#0E8A6E',
+                        menuIcons: '#0E8A6E',
+                        textDark: '#0B2545',
+                        textLight: '#FFFFFF',
+                        link: '#0E8A6E',
+                        action: '#0E8A6E',
+                        inactiveTabIcon: '#6B7280',
+                        error: '#E24B4A',
+                        inProgress: '#0E8A6E',
+                        complete: '#065F46',
+                        sourceBg: '#F9FAFB',
+                      },
+                    },
+                  }}
+                  onSuccess={handleUploadSuccess}
+                >
+                  {({ open }) => (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (createForm.images.length >= 5) {
+                          showMessage('Maximum 5 images per product', 'error');
+                          return;
+                        }
+                        open();
+                      }}
+                      className="w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-[#0E8A6E] hover:bg-[#F0FDF9] rounded-lg p-5 text-center transition-colors cursor-pointer"
+                    >
+                      <svg className="mx-auto mb-2 w-8 h-8 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-[12px] text-[var(--color-text-secondary)]">
+                        Click to upload images
+                        {createForm.images.length > 0 && (
+                          <span className="ml-1 text-[#0E8A6E] font-medium">({createForm.images.length}/5 added)</span>
+                        )}
+                      </p>
+                      <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">JPEG, PNG, WebP — max 5 MB each</p>
+                    </button>
+                  )}
+                </CldUploadWidget>
+
+                {/* Image previews */}
+                {createForm.images.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {createForm.images.map((img, idx) => (
+                      <div 
+                        key={img.publicId || img.url || idx} 
+                        className="relative group w-20 h-20 rounded-lg overflow-hidden cursor-pointer"
+                        style={{
+                          border: img.isPrimary ? '2px solid #0E8A6E' : '0.5px solid #E5E7EB'
+                        }}
+                        onClick={() => {
+                          // Set clicked image as primary
+                          const updated = createForm.images.map((image, i) => ({
+                            ...image,
+                            isPrimary: i === idx,
+                          }));
+                          setCreateForm(f => ({ ...f, images: updated }));
+                        }}
+                        title="Click to set as primary image"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={img.url} alt={`Product image ${idx + 1}`} className="w-full h-full object-cover" />
+                        
+                        {/* Primary badge */}
+                        {img.isPrimary && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#0E8A6E] text-white text-[9px] text-center py-[2px] font-semibold" style={{ background: 'rgba(14,138,110,0.9)' }}>
+                            PRIMARY
+                          </div>
+                        )}
+                        
+                        {/* Delete button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation(); // don't trigger primary selection
+                            handleRemoveImage(idx);
+                          }}
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ background: 'rgba(226,75,74,0.9)' }}
+                          aria-label="Remove image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {createForm.images.length > 0 && (
+                  <div className="text-[10px] text-[#9CA3AF] mt-2">
+                    Click any image to set as primary · Hover and click × to remove
+                  </div>
+                )}
+              </div>
+
+              {/* Required fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">SKU <span className="text-red-500">*</span></label>
                   <input
-                    type={type}
-                    value={editForm[key] ?? ''}
-                    onChange={e => setEditForm(f => ({ ...f, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))}
+                    type="text"
+                    placeholder="e.g. MC-DX-001"
+                    value={createForm.sku}
+                    onChange={e => setCreateForm(f => ({ ...f, sku: e.target.value.toUpperCase() }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Brand <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Siemens"
+                    value={createForm.brand}
+                    onChange={e => setCreateForm(f => ({ ...f, brand: e.target.value }))}
                     className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
                   />
                 </div>
-              ))}
+              </div>
+
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Category</label>
-                <select
-                  value={editForm.category || ''}
-                  onChange={e => setEditForm(f => ({ ...f, category: e.target.value }))}
-                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
+                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Product Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="e.g. Siemens ADVIA 2120i Hematology Analyzer"
+                  value={createForm.name}
+                  onChange={e => setCreateForm(f => ({ ...f, name: e.target.value }))}
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Description <span className="text-red-500">*</span></label>
+                <textarea
+                  rows={3}
+                  placeholder="Detailed product description…"
+                  value={createForm.description}
+                  onChange={e => setCreateForm(f => ({ ...f, description: e.target.value }))}
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Category <span className="text-red-500">*</span></label>
+                  <select
+                    value={createForm.category}
+                    onChange={e => setCreateForm(f => ({ ...f, category: e.target.value, subcategory: '' }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
+                  >
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Subcategory</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Hematology"
+                    value={createForm.subcategory}
+                    onChange={e => setCreateForm(f => ({ ...f, subcategory: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  />
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Price (৳) <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={createForm.price}
+                    onChange={e => setCreateForm(f => ({ ...f, price: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">B2B Price (৳)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={createForm.b2bPrice}
+                    onChange={e => setCreateForm(f => ({ ...f, b2bPrice: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  />
+                  {!createForm.b2bPrice && createForm.price && (
+                    <div className="text-[10px] text-[#9CA3AF] mt-1">
+                      Auto: ৳{Math.round(Number(createForm.price) * 0.78).toLocaleString()} (78% of retail)
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Old Price (৳)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={createForm.oldPrice}
+                    onChange={e => setCreateForm(f => ({ ...f, oldPrice: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  />
+                </div>
+              </div>
+
+              {/* Stock & Unit */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Stock <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={createForm.stock}
+                    onChange={e => setCreateForm(f => ({ ...f, stock: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Low Stock Alert</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="10"
+                    value={createForm.lowStockThreshold}
+                    onChange={e => setCreateForm(f => ({ ...f, lowStockThreshold: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Unit</label>
+                  <select
+                    value={createForm.unit}
+                    onChange={e => setCreateForm(f => ({ ...f, unit: e.target.value }))}
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
+                  >
+                    {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Certifications */}
+              <div>
+                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Certifications</label>
+                <div className="flex gap-3 flex-wrap">
+                  {CERTIFICATIONS.map(cert => (
+                    <label key={cert} className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={createForm.certifications.includes(cert)}
+                        onChange={e => {
+                          setCreateForm(f => ({
+                            ...f,
+                            certifications: e.target.checked
+                              ? [...f.certifications, cert]
+                              : f.certifications.filter(c => c !== cert)
+                          }));
+                        }}
+                        className="accent-[#0E8A6E]"
+                      />
+                      <span className="text-[12px]">{cert}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Storage Temperature + Hazard Class */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Storage Temperature</label>
+                  <div className="space-y-2">
+                    {[
+                      { val: 'room', label: '🌡️ Room temp (15–25°C)' },
+                      { val: 'cold', label: '❄️ Cold (2–8°C)' },
+                      { val: 'frozen', label: '🧊 Frozen (−20°C)' },
+                    ].map(opt => (
+                      <label key={opt.val} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="storageTemp"
+                          value={opt.val}
+                          checked={createForm.storageTemp === opt.val}
+                          onChange={() => setCreateForm(f => ({ ...f, storageTemp: opt.val }))}
+                          className="accent-[#0E8A6E]"
+                        />
+                        <span className="text-[12px]">{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Hazard Class</label>
+                  <div className="space-y-2">
+                    {[
+                      { val: 'safe', label: '✅ Safe' },
+                      { val: 'biohazard', label: '⚠️ Biohazard' },
+                      { val: 'chemical', label: '⚠️ Chemical' },
+                    ].map(opt => (
+                      <label key={opt.val} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="hazardClass"
+                          value={opt.val}
+                          checked={createForm.hazardClass === opt.val}
+                          onChange={() => setCreateForm(f => ({ ...f, hazardClass: opt.val }))}
+                          className="accent-[#0E8A6E]"
+                        />
+                        <span className="text-[12px]">{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Specifications */}
+              <div>
+                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
+                  Specifications <span className="text-[10px] font-normal">(technical details)</span>
+                </label>
+                {createForm.specifications.map((spec, idx) => (
+                  <div key={idx} className="grid grid-cols-[1fr_1fr_32px] gap-2 mb-2">
+                    <input
+                      placeholder="Key (e.g. Leads)"
+                      value={spec.key}
+                      onChange={e => {
+                        const updated = [...createForm.specifications];
+                        updated[idx].key = e.target.value;
+                        setCreateForm(f => ({ ...f, specifications: updated }));
+                      }}
+                      className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                    />
+                    <input
+                      placeholder="Value (e.g. 12)"
+                      value={spec.value}
+                      onChange={e => {
+                        const updated = [...createForm.specifications];
+                        updated[idx].value = e.target.value;
+                        setCreateForm(f => ({ ...f, specifications: updated }));
+                      }}
+                      className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setCreateForm(f => ({
+                        ...f,
+                        specifications: f.specifications.filter((_, i) => i !== idx)
+                      }))}
+                      className="bg-[#FEE2E2] border-[0.5px] border-[#F87171] rounded-lg text-[#991B1B] text-lg hover:bg-[#FEF2F2] transition-colors"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setCreateForm(f => ({
+                    ...f,
+                    specifications: [...f.specifications, { key: '', value: '' }]
+                  }))}
+                  className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
                 >
-                  {CATEGORIES.filter(Boolean).map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  + Add specification
+                </button>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
+                  Tags <span className="text-[10px] font-normal">(for search)</span>
+                </label>
+                <div className="border-[0.5px] border-[var(--color-border-secondary)] rounded-lg p-2 min-h-[44px] flex flex-wrap gap-2 items-center">
+                  {createForm.tags.map((tag, i) => (
+                    <span key={i} className="bg-[#FAEEDA] text-[#633806] rounded px-2 py-1 text-[11px] flex items-center gap-1">
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => setCreateForm(f => ({
+                          ...f,
+                          tags: f.tags.filter((_, idx) => idx !== i)
+                        }))}
+                        className="text-[14px] hover:text-[#991B1B]"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    value={createForm.tagInput || ''}
+                    onChange={e => setCreateForm(f => ({ ...f, tagInput: e.target.value }))}
+                    onKeyDown={e => {
+                      if ((e.key === 'Enter' || e.key === ',') && createForm.tagInput?.trim()) {
+                        e.preventDefault();
+                        const val = createForm.tagInput.trim();
+                        if (!createForm.tags.includes(val)) {
+                          setCreateForm(f => ({ ...f, tags: [...f.tags, val], tagInput: '' }));
+                        }
+                      }
+                    }}
+                    placeholder={createForm.tags.length ? '' : 'Type and press Enter...'}
+                    className="border-none outline-none text-[12px] flex-1 min-w-[120px] bg-transparent"
+                  />
+                </div>
+                <div className="text-[10px] text-[#9CA3AF] mt-1">
+                  e.g. ecg, cardiac, diagnostic — press Enter after each
+                </div>
+              </div>
+
+              {/* Compatible With */}
+              <div>
+                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
+                  Compatible With <span className="text-[10px] font-normal">(related products)</span>
+                </label>
+                <div className="border-[0.5px] border-[var(--color-border-secondary)] rounded-lg p-2 min-h-[44px] flex flex-wrap gap-2 items-center">
+                  {createForm.compatibleWith.map((item, i) => (
+                    <span key={i} className="bg-[#E6F1FB] text-[#0C447C] rounded px-2 py-1 text-[11px] flex items-center gap-1">
+                      {item}
+                      <button
+                        type="button"
+                        onClick={() => setCreateForm(f => ({
+                          ...f,
+                          compatibleWith: f.compatibleWith.filter((_, idx) => idx !== i)
+                        }))}
+                        className="text-[14px] hover:text-[#991B1B]"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    value={createForm.compatibleInput || ''}
+                    onChange={e => setCreateForm(f => ({ ...f, compatibleInput: e.target.value }))}
+                    onKeyDown={e => {
+                      if ((e.key === 'Enter' || e.key === ',') && createForm.compatibleInput?.trim()) {
+                        e.preventDefault();
+                        const val = createForm.compatibleInput.trim();
+                        if (!createForm.compatibleWith.includes(val)) {
+                          setCreateForm(f => ({ ...f, compatibleWith: [...f.compatibleWith, val], compatibleInput: '' }));
+                        }
+                      }
+                    }}
+                    placeholder={createForm.compatibleWith.length ? '' : 'Type product names...'}
+                    className="border-none outline-none text-[12px] flex-1 min-w-[120px] bg-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Reagent-specific fields */}
+              {createForm.category === 'Laboratory Reagents' && (
+                <div className="bg-[#E6F1FB] rounded-lg p-4">
+                  <div className="text-[12px] font-semibold text-[#0C447C] mb-3 flex items-center gap-2">
+                    🧪 Reagent Details
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] text-[#6B7280] mb-1">
+                        Lot Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        value={createForm.lotNumber}
+                        onChange={e => setCreateForm(f => ({ ...f, lotNumber: e.target.value }))}
+                        placeholder="e.g. LOT-2025-08841"
+                        className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] text-[#6B7280] mb-1">Expiry Date</label>
+                      <input
+                        type="date"
+                        value={createForm.expiryDate}
+                        onChange={e => setCreateForm(f => ({ ...f, expiryDate: e.target.value }))}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Toggles */}
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={createForm.isFeatured}
+                    onChange={e => setCreateForm(f => ({ ...f, isFeatured: e.target.checked }))}
+                    className="accent-[#0E8A6E]"
+                  />
+                  <span className="text-[12px]">Featured product</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={createForm.isActive}
+                    onChange={e => setCreateForm(f => ({ ...f, isActive: e.target.checked }))}
+                    className="accent-[#0E8A6E]"
+                  />
+                  <span className="text-[12px]">Active (visible on site)</span>
+                </label>
               </div>
             </div>
-            <div className="flex gap-3 mt-5">
+
+            {/* Footer */}
+            <div className="flex gap-3 px-6 py-4 border-t-[0.5px] border-[var(--color-border-tertiary)]">
               <button
-                onClick={handleEditSave}
-                disabled={saving}
-                className="flex-1 py-2 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50"
+                onClick={handleCreateProduct}
+                disabled={creating}
+                className="flex-1 py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2e56] transition-colors"
               >
-                {saving ? 'Saving…' : 'Save changes'}
+                {creating ? 'Saving…' : modalMode === 'edit' ? 'Save Changes' : 'Create Product'}
               </button>
               <button
-                onClick={() => setEditProduct(null)}
-                className="flex-1 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px]"
+                onClick={() => { setShowCreate(false); setCreateForm(EMPTY_CREATE_FORM); setModalMode('create'); setModalProduct(null); }}
+                className="flex-1 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 Cancel
               </button>
@@ -172,10 +860,16 @@ export default function ProductsManagement() {
           className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
         >
           <option value="">All categories</option>
-          {CATEGORIES.filter(Boolean).map(c => <option key={c} value={c}>{c}</option>)}
+          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <div className="ml-auto text-[12px] text-[var(--color-text-secondary)] self-center">
-          {total} products total
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-[12px] text-[var(--color-text-secondary)]">{total} products total</span>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="px-4 py-[8px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors"
+          >
+            + Add product
+          </button>
         </div>
       </div>
 

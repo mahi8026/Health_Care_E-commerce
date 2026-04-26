@@ -25,6 +25,16 @@ export default function CheckoutPage({ onBackToCart }) {
   const [error, setError] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
+  // FIX 1: hold the delivery address form data from the controlled DeliveryAddress component
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    fullName: '',
+    phone: '',
+    street: '',
+    district: 'Dhaka',
+    thana: '',
+    postcode: '',
+    instructions: '',
+  });
 
   const { cart, clearCart, getCartTotal } = useCart();
   const { user, isAuthenticated } = useAuth();
@@ -63,12 +73,15 @@ export default function CheckoutPage({ onBackToCart }) {
         deliveryType: selectedDelivery,
         deliveryMethod: selectedDelivery,
         paymentMethod: selectedPayment,
-        deliveryAddress: user?.addresses?.[0] || {
-          name: user?.name,
-          phone: user?.phone,
-          street: user?.address?.street || '',
-          district: user?.address?.city || 'Dhaka',
-          postcode: user?.address?.postalCode || ''
+        // FIX 1: use the form data the user actually filled in
+        deliveryAddress: {
+          name: deliveryAddress.fullName,
+          phone: deliveryAddress.phone,
+          street: deliveryAddress.street,
+          thana: deliveryAddress.thana,
+          district: deliveryAddress.district,
+          postcode: deliveryAddress.postcode,
+          instructions: deliveryAddress.instructions,
         }
       };
 
@@ -159,7 +172,11 @@ export default function CheckoutPage({ onBackToCart }) {
                 </div>
               )}
 
-              <DeliveryAddress />
+              <DeliveryAddress
+                value={deliveryAddress}
+                onChange={setDeliveryAddress}
+                savedAddress={user?.addresses?.[0]}
+              />
 
               <DeliveryOptions
                 selected={selectedDelivery}

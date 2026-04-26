@@ -20,9 +20,9 @@ export function AuthProvider({ children }) {
       
       setLoading(true);
       try {
-        // Add timeout to prevent hanging
+        // Increase timeout to 8s to handle slow networks (FIX 11)
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         
         const response = await api.getMe();
         clearTimeout(timeoutId);

@@ -1,4 +1,35 @@
-export default function ReagentCard({ reagent }) {
+'use client';
+
+import { useState } from 'react';
+import { useCart } from '@/context/CartContext';
+import Toast from '@/components/ui/Toast';
+
+export default function ReagentCard({ reagent, onProductClick }) {
+  const { addToCart } = useCart();
+  const [showToast, setShowToast] = useState(false);
+
+  const handleAddToCart = () => {
+    // Transform MongoDB _id to id for cart compatibility
+    const cartProduct = {
+      ...reagent,
+      id: reagent._id || reagent.id,
+      name: reagent.name,
+      price: reagent.price,
+      brand: reagent.brand,
+      category: reagent.category
+    };
+    addToCart(cartProduct, 1);
+    setShowToast(true);
+  };
+
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking on buttons or interactive elements
+    if (e.target.closest('button')) return;
+    if (onProductClick) {
+      onProductClick(reagent._id || reagent.id);
+    }
+  };
+
   const getTempBadge = (temp) => {
     const badges = {
       cold: { bg: '#E6F1FB', text: '#0C447C', icon: '❄', label: 'Cold' },
@@ -21,7 +52,10 @@ export default function ReagentCard({ reagent }) {
   const hazardBadge = getHazardBadge(reagent.hazard);
 
   return (
-    <div className="bg-white border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div 
+      onClick={handleCardClick}
+      className="bg-white border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
@@ -116,7 +150,10 @@ export default function ReagentCard({ reagent }) {
             </div>
           )}
         </div>
-        <button className="px-4 py-[7px] bg-[#0B2545] text-white rounded-lg text-[11px] font-semibold hover:bg-[#0d2d52] font-[family-name:var(--font-plus-jakarta)]">
+        <button 
+          onClick={handleAddToCart}
+          className="px-4 py-[7px] bg-[#0B2545] text-white rounded-lg text-[11px] font-semibold hover:bg-[#0d2d52] font-[family-name:var(--font-plus-jakarta)]"
+        >
           Add to cart
         </button>
       </div>
@@ -134,6 +171,16 @@ export default function ReagentCard({ reagent }) {
         <div className="mt-2 text-[10px] text-[var(--color-text-tertiary)] flex items-center gap-1">
           Out of stock
         </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message={`${reagent.name} added to cart!`}
+          type="success"
+          duration={2000}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );

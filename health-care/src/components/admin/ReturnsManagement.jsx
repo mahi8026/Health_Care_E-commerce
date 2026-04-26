@@ -1,0 +1,529 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+const STATUS_OPTIONS = ['pending', 'approved', 'rejected', 'refunded'];
+const REFUND_METHODS = [
+  { value: 'original_payment', label: 'Original Payment Method' },
+  { value: 'bank_transfer', label: 'Bank Transfer' },
+  { value: 'store_credit', label: 'Store Credit' }
+];
+
+const STATUS_COLORS = {
+  pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  approved: 'bg-green-100 text-green-800 border-green-200',
+  rejected: 'bg-red-100 text-red-800 border-red-200',
+  refunded: 'bg-blue-100 text-blue-800 border-blue-200',
+  cancelled: 'bg-gray-100 text-gray-800 border-gray-200',
+};
+
+export default function ReturnsManagement() {
+  const [returns, setReturns] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [selectedReturn, setSelectedReturn] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [newStatus, setNewStatus] = useState('');
+  const [adminNotes, setAdminNotes] = useState('');
+  const [refundMethod, setRefundMethod] = useState('original_payment');
+  const [refundTransactionId, setRefundTransactionId] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
+
+  useEffect(() => {
+    fetchReturns();
+    fetchStats();
+  }, [filter, page]);
+
+  const fetchReturns = async () => {
+    try {
+      const token = localStorage.getItem('medcore_token');
+      const statusParam = filter === 'all' ? '' : `status=${filter}&`;
+      const url = `${API}/returns?${statusParam}page=${page}&limit=20`;
+      
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReturns(data.data);
+        setPagination(data.pagination);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem('medcore_token');
+      const res = await fetch(`${API}/returns/stats/summary`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStats(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpdateStatus = async () => {
+    if (!newStatus) {
+      alert('Please select a status');
+      return;
+    }
+
+    if (newStatus === 'rejected' && !adminNotes.trim()) {
+      alert('Please provide a reason for rejection');
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const token = localStorage.getItem('medcore_token');
+      const payload = {
+        status: newStatus,
+        adminNotes: adminNotes.trim(),
+      };
+
+      if (newStatus === 'approved' || newStatus === 'refunded') {
+        payload.refundMethod = refundMethod;
+      }
+
+      if (newStatus === 'refunded' && refundTransactionId.trim()) {
+        payload.refundTransactionId = refundTransactionId.trim();
+      }
+
+      const res = await fetch(`${API}/returns/${selectedReturn._id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`Return request ${newStatus} successfully`);
+        setShowModal(false);
+        fetchReturns();
+        fetchStats();
+        resetModal();
+      } else {
+        alert(data.message || 'Failed to update status');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating status');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const openModal = (returnRequest) => {
+    setSelectedReturn(returnRequest);
+    setNewStatus(returnRequest.status);
+    setAdminNotes(returnRequest.adminNotes || '');
+    setRefundMethod(returnRequest.refundMethod || 'original_payment');
+    setRefundTransactionId(returnRequest.refundTransactionId || '');
+    setShowModal(true);
+  };
+
+  const resetModal = () => {
+    setSelectedReturn(null);
+    setNewStatus('');
+    setAdminNotes('');
+    setRefundMethod('original_payment');
+    setRefundTransactionId('');
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0B2545] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading returns...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#0B2545] mb-2">Return Requests Management</h2>
+        <p className="text-gray-600">Review and manage customer return requests</p>
+      </div>
+
+      {/* Statistics Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+          <div className="bg-white rounded-lg border p-4">
+            <p className="text-sm text-gray-600 mb-1">Total Returns</p>
+            <p className="text-2xl font-bold text-[#0B2545]">{stats.total}</p>
+          </div>
+          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
+            <p className="text-sm text-yellow-800 mb-1">Pending</p>
+            <p className="text-2xl font-bold text-yellow-900">{stats.pending}</p>
+          </div>
+          <div className="bg-green-50 rounded-lg border border-green-200 p-4">
+            <p className="text-sm text-green-800 mb-1">Approved</p>
+            <p className="text-2xl font-bold text-green-900">{stats.approved}</p>
+          </div>
+          <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+            <p className="text-sm text-blue-800 mb-1">Refunded</p>
+            <p className="text-2xl font-bold text-blue-900">{stats.refunded}</p>
+          </div>
+          <div className="bg-red-50 rounded-lg border border-red-200 p-4">
+            <p className="text-sm text-red-800 mb-1">Rejected</p>
+            <p className="text-2xl font-bold text-red-900">{stats.rejected}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Tabs */}
+      <div className="bg-white rounded-lg border p-2 mb-6 flex gap-2 overflow-x-auto">
+        {['all', 'pending', 'approved', 'rejected', 'refunded'].map(status => (
+          <button
+            key={status}
+            onClick={() => {
+              setFilter(status);
+              setPage(1);
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              filter === status
+                ? 'bg-[#0E8A6E] text-white'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {status !== 'all' && stats && (
+              <span className="ml-2 text-xs">({stats[status] || 0})</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Returns Table */}
+      <div className="bg-white rounded-lg border overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Return ID</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Order</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Customer</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Reason</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Amount</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {returns.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="px-4 py-8 text-center text-gray-500">
+                    No return requests found
+                  </td>
+                </tr>
+              ) : (
+                returns.map(returnRequest => (
+                  <tr key={returnRequest._id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-mono">
+                      {returnRequest._id.slice(-8).toUpperCase()}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <div className="font-medium">#{returnRequest.order?.orderNumber}</div>
+                      <div className="text-xs text-gray-500">
+                        ৳{returnRequest.order?.totalAmount?.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <div className="font-medium">{returnRequest.user?.name}</div>
+                      <div className="text-xs text-gray-500">{returnRequest.user?.email}</div>
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      {returnRequest.reason.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-semibold text-[#0E8A6E]">
+                      ৳{returnRequest.refundAmount?.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[returnRequest.status]}`}>
+                        {returnRequest.status.charAt(0).toUpperCase() + returnRequest.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {new Date(returnRequest.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => openModal(returnRequest)}
+                        className="text-sm text-[#0E8A6E] font-medium hover:underline"
+                      >
+                        Review
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {pagination && pagination.pages > 1 && (
+          <div className="px-4 py-3 border-t flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Showing {((page - 1) * pagination.limit) + 1} to {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} returns
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <span className="px-3 py-1 text-sm">
+                Page {page} of {pagination.pages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
+                disabled={page === pagination.pages}
+                className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Review Modal */}
+      {showModal && selectedReturn && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-bold text-[#0B2545]">Review Return Request</h3>
+                <p className="text-sm text-gray-600">
+                  Return ID: {selectedReturn._id.slice(-8).toUpperCase()}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  resetModal();
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Customer & Order Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-1">Customer</p>
+                  <p className="text-sm">{selectedReturn.user?.name}</p>
+                  <p className="text-xs text-gray-500">{selectedReturn.user?.email}</p>
+                  {selectedReturn.user?.phone && (
+                    <p className="text-xs text-gray-500">{selectedReturn.user?.phone}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-1">Order Details</p>
+                  <p className="text-sm">Order #{selectedReturn.order?.orderNumber}</p>
+                  <p className="text-xs text-gray-500">
+                    Total: ৳{selectedReturn.order?.totalAmount?.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Requested: {new Date(selectedReturn.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Products */}
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Returned Products</p>
+                <div className="space-y-2">
+                  {selectedReturn.products?.map((item, idx) => (
+                    <div key={idx} className="flex gap-3 items-center p-3 bg-gray-50 rounded-lg">
+                      <img 
+                        src={item.product?.images?.[0]?.url || '/placeholder.png'} 
+                        alt={item.product?.name}
+                        className="w-16 h-16 object-cover rounded border"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{item.product?.name}</p>
+                        <p className="text-xs text-gray-600">SKU: {item.product?.sku}</p>
+                        <p className="text-xs text-gray-600">Quantity: {item.quantity}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">৳{(item.quantity * item.price).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 text-right">
+                  <p className="text-sm font-medium">
+                    Total Refund Amount: <span className="text-lg text-[#0E8A6E]">৳{selectedReturn.refundAmount?.toLocaleString()}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Return Details */}
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Return Reason</p>
+                <p className="text-sm bg-gray-50 p-3 rounded-lg">
+                  {selectedReturn.reason.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Description</p>
+                <p className="text-sm bg-gray-50 p-3 rounded-lg whitespace-pre-wrap">
+                  {selectedReturn.description}
+                </p>
+              </div>
+
+              {/* Images */}
+              {selectedReturn.images && selectedReturn.images.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Uploaded Images</p>
+                  <div className="grid grid-cols-4 gap-3">
+                    {selectedReturn.images.map((img, idx) => (
+                      <a
+                        key={idx}
+                        href={img.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <img
+                          src={img.url}
+                          alt={img.alt || `Return image ${idx + 1}`}
+                          className="w-full h-24 object-cover rounded-lg border hover:opacity-75 transition-opacity cursor-pointer"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Status Update Form */}
+              <div className="border-t pt-6">
+                <p className="text-sm font-medium text-gray-700 mb-4">Update Return Status</p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Status <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={newStatus}
+                      onChange={(e) => setNewStatus(e.target.value)}
+                      className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]"
+                    >
+                      <option value="">Select status</option>
+                      {STATUS_OPTIONS.map(status => (
+                        <option key={status} value={status}>
+                          {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {(newStatus === 'approved' || newStatus === 'refunded') && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Refund Method
+                      </label>
+                      <select
+                        value={refundMethod}
+                        onChange={(e) => setRefundMethod(e.target.value)}
+                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]"
+                      >
+                        {REFUND_METHODS.map(method => (
+                          <option key={method.value} value={method.value}>
+                            {method.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {newStatus === 'refunded' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Transaction ID (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={refundTransactionId}
+                        onChange={(e) => setRefundTransactionId(e.target.value)}
+                        placeholder="Enter transaction/reference ID"
+                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Admin Notes {newStatus === 'rejected' && <span className="text-red-500">*</span>}
+                    </label>
+                    <textarea
+                      value={adminNotes}
+                      onChange={(e) => setAdminNotes(e.target.value)}
+                      placeholder={newStatus === 'rejected' ? 'Please provide a reason for rejection' : 'Add notes for the customer (optional)'}
+                      className="w-full border rounded-lg px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] resize-none"
+                      maxLength={1000}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{adminNotes.length}/1000</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-gray-50 border-t px-6 py-4 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  resetModal();
+                }}
+                className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateStatus}
+                disabled={updating || !newStatus}
+                className="px-4 py-2 bg-[#0E8A6E] text-white rounded-lg hover:bg-[#0c7359] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {updating ? 'Updating...' : 'Update Status'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

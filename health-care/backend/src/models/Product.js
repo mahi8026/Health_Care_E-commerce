@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-  sku: { type: String, required: true, unique: true, uppercase: true },
+  sku: { type: String, required: true, uppercase: true },
   name: { type: String, required: [true, 'Please provide a product name'], trim: true },
-  slug: { type: String, unique: true, sparse: true },
+  slug: { type: String },
   description: { type: String, required: [true, 'Please provide a description'] },
   brand: { type: String, required: [true, 'Please provide a brand'] },
   category: {
@@ -23,7 +23,14 @@ const productSchema = new mongoose.Schema({
   unit: { type: String, enum: ['piece', 'box', 'kit', 'pack'], default: 'piece' },
   minOrderQty: { type: Number, default: 1 },
   minOrder: { type: Number, default: 1 }, // legacy alias
-  images: [{ type: String }],
+  images: [
+    {
+      url:       { type: String, required: true },
+      publicId:  { type: String, default: '' },
+      isPrimary: { type: Boolean, default: false },
+      alt:       { type: String, default: '' },
+    }
+  ],
   variants: {
     connectivity: [String],
     warranty: [String]

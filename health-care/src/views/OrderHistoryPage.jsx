@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Spinner from '@/components/ui/Spinner';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const PAGE_SIZE = 10;
 
 const STATUS_COLORS = {
@@ -63,8 +63,31 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
     if (onNavigate) onNavigate('track', { orderNumber });
   };
 
-  const handleInvoice = (orderNumber) => {
-    window.open(`${API}/api/invoices/${orderNumber}`, '_blank');
+  const handleInvoice = (order) => {
+    // FIX 8: use order._id (MongoDB ObjectId), not orderNumber
+    const invoiceId = order._id;
+    window.open(`${API}/api/invoices/${invoiceId}`, '_blank', 'noreferrer');
+  };
+
+  const handleRequestReturn = (orderId) => {
+    if (onNavigate) {
+      onNavigate('return-request', { orderId });
+    } else {
+      window.location.href = `/returns/request/${orderId}`;
+    }
+  };
+
+  const canRequestReturn = (order) => {
+    // Can request return if:
+    // 1. Order is delivered
+    // 2. Within 7 days of delivery
+    // 3. Not already refunded or cancelled
+    if (!order.deliveredAt && order.status !== 'delivered') return false;
+    if (order.status === 'refunded' || order.status === 'cancelled') return false;
+    
+    const deliveryDate = new Date(order.deliveredAt || order.createdAt);
+    const daysSince = Math.floor((Date.now() - deliveryDate) / (1000 * 60 * 60 * 24));
+    return daysSince <= 7;
   };
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -137,7 +160,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <button
                           onClick={() => handleTrack(order.orderNumber)}
                           className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
@@ -146,11 +169,22 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                         </button>
                         <span className="text-[var(--color-border-secondary)]">·</span>
                         <button
-                          onClick={() => handleInvoice(order.orderNumber)}
+                          onClick={() => handleInvoice(order)}
                           className="text-[11px] text-[#0B2545] font-medium hover:underline"
                         >
                           Invoice
                         </button>
+                        {canRequestReturn(order) && (
+                          <>
+                            <span className="text-[var(--color-border-secondary)]">·</span>
+                            <button
+                              onClick={() => handleRequestReturn(order._id)}
+                              className="text-[11px] text-[#E24B4A] font-medium hover:underline"
+                            >
+                              Return
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

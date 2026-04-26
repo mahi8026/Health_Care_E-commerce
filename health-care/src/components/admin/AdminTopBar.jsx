@@ -14,22 +14,12 @@
 const EXPORT_ACTIONS = new Set(['Export orders', 'Export report']);
 
 async function handleExportClick(action) {
-  try {
-    if (action === 'Export orders') {
-      // Lazy-load the PDF exporter only when the button is clicked.
-      const { exportOrdersToPDF } = await import('@/utils/pdfExporter');
-      // Pass an empty array as placeholder; real data would come from props/context.
-      await exportOrdersToPDF([]);
-    } else if (action === 'Export report') {
-      const { exportReportToPDF } = await import('@/utils/pdfExporter');
-      await exportReportToPDF({});
-    }
-  } catch (err) {
-    console.error('PDF export failed:', err);
-  }
+  // PDF export is not yet implemented — placeholder for future sprint
+  console.info(`[AdminTopBar] Export action triggered: ${action}`);
+  alert(`${action} — PDF export coming soon.`);
 }
 
-export default function AdminTopBar({ title, action }) {
+export default function AdminTopBar({ title, action, onAction }) {
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -92,7 +82,7 @@ export default function AdminTopBar({ title, action }) {
           {/* Action Button */}
           <button
             className="px-4 py-[8px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52]"
-            onClick={isExportAction ? () => handleExportClick(action) : undefined}
+            onClick={isExportAction ? () => handleExportClick(action) : () => onAction?.(action)}
           >
             {action}
           </button>

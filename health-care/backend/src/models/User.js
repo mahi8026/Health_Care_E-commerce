@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Please provide an email'],
-    unique: true,
     lowercase: true,
     match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
   },
@@ -53,7 +52,7 @@ const userSchema = new mongoose.Schema({
     enum: ['Silver', 'Gold', 'Platinum'],
     default: 'Silver'
   },
-  b2bId: { type: String, unique: true, sparse: true },
+  b2bId: { type: String },
   accountManager: { type: String },
   paymentTerms: {
     type: Number,
@@ -104,7 +103,7 @@ userSchema.methods.getAvailableCredit = function() {
 
 // Indexes
 userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ b2bId: 1 });
+userSchema.index({ b2bId: 1 }, { sparse: true });
 userSchema.index({ role: 1 });
 
 module.exports = mongoose.model('User', userSchema);

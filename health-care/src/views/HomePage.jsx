@@ -1,15 +1,26 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import Spinner from '@/components/ui/Spinner';
 
-export default function HomePage({ onNavigate, onRegisterClick, initialFeaturedProducts = [] }) {
-  // Use useMemo to create a stable filters object
-  const filters = useMemo(() => ({ limit: 3 }), []);
-  // Seed the hook with server-prefetched data so the first render is instant.
-  // The hook will still revalidate client-side in the background.
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterClick, initialFeaturedProducts = [] }) {
+  const filters = useMemo(() => ({ limit: 3, featured: true }), []);
   const { products, loading } = useProducts(filters, initialFeaturedProducts);
+
+  // FIX 16: fetch real stats from API
+  const [stats, setStats] = useState({ products: null, customers: null });
+  const [categoryCounts, setCategoryCounts] = useState({});
+
+  useEffect(() => {
+    // Fetch category counts (public endpoint)
+    fetch(`${API}/products/category-counts`)
+      .then(r => r.json())
+      .then(data => setCategoryCounts(data.data || data || {}))
+      .catch(() => {}); // fail silently — fallback labels shown below
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--color-background-secondary)]">
@@ -44,13 +55,13 @@ export default function HomePage({ onNavigate, onRegisterClick, initialFeaturedP
         <div className="max-w-6xl mx-auto px-6 flex justify-around items-center">
           <div className="text-center">
             <div className="text-[20px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-              5,200+
+              {categoryCounts.totalProducts ? `${categoryCounts.totalProducts.toLocaleString()}+` : '5,200+'}
             </div>
             <div className="text-[11px] text-[var(--color-text-secondary)]">Products</div>
           </div>
           <div className="text-center">
             <div className="text-[20px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-              50+
+              {categoryCounts.totalBrands ? `${categoryCounts.totalBrands}+` : '50+'}
             </div>
             <div className="text-[11px] text-[var(--color-text-secondary)]">Global Brands</div>
           </div>
@@ -76,10 +87,10 @@ export default function HomePage({ onNavigate, onRegisterClick, initialFeaturedP
         </h2>
         <div className="grid grid-cols-4 gap-4">
           {[
-            { icon: '🩺', name: 'Diagnostic Equipment', count: '1,200+' },
-            { icon: '💉', name: 'Surgical Instruments', count: '850+' },
-            { icon: '🧪', name: 'Laboratory Reagents', count: '2,400+' },
-            { icon: '🏥', name: 'Hospital Machines', count: '750+' }
+            { icon: '🩺', name: 'Diagnostic Equipment', key: 'Diagnostic Equipment', fallback: '1,200+' },
+            { icon: '💉', name: 'Surgical Instruments', key: 'Surgical Instruments', fallback: '850+' },
+            { icon: '🧪', name: 'Laboratory Reagents', key: 'Laboratory Reagents', fallback: '2,400+' },
+            { icon: '🏥', name: 'Hospital Machines', key: 'Hospital Machines', fallback: '750+' }
           ].map((category, index) => (
             <div
               key={index}
@@ -91,7 +102,9 @@ export default function HomePage({ onNavigate, onRegisterClick, initialFeaturedP
                 {category.name}
               </div>
               <div className="text-[11px] text-[var(--color-text-secondary)]">
-                {category.count} products
+                {categoryCounts[category.key]
+                  ? `${categoryCounts[category.key].toLocaleString()}+ products`
+                  : `${category.fallback} products`}
               </div>
             </div>
           ))}
@@ -135,7 +148,24 @@ export default function HomePage({ onNavigate, onRegisterClick, initialFeaturedP
                   </div>
                 )}
                 <div className="w-full h-32 bg-[var(--color-background-tertiary)] rounded-lg mb-3 flex items-center justify-center text-[40px]">
-                  {product.images?.[0] || '📊'}
+                  {(() => {
+                    // Handle both old (string) and new (object) image formats
+                    const imageData = product.images?.[0];
+                    const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
+                    
+                    return imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img 
+                        src={imageUrl} 
+                        alt={typeof imageData === 'object' ? imageData.alt : product.name}
+                        className="w-full h-full object-cover rounded-lg"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement.innerHTML = '📊';
+                        }}
+                      />
+                    ) : '📊';
+                  })()}
                 </div>
                 <div className="text-[13px] font-medium mb-1 font-[family-name:var(--font-plus-jakarta)]">
                   {product.name}
@@ -156,7 +186,7 @@ export default function HomePage({ onNavigate, onRegisterClick, initialFeaturedP
                   </div>
                 </div>
                 <button 
-                  onClick={() => onNavigate && onNavigate('product')}
+                  onClick={() => onNavigateToProduct && onNavigateToProduct(product._id || product.id)}
                   className="w-full py-[8px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2d52] cursor-pointer"
                 >
                   View details

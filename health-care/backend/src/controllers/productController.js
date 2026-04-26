@@ -215,3 +215,27 @@ exports.getFeaturedProducts = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
   }
 };
+
+// @desc    Get product counts by category
+// @route   GET /api/products/category-counts
+// @access  Public
+exports.getCategoryCounts = async (req, res) => {
+  try {
+    const counts = await Product.aggregate([
+      { $match: { isActive: true } },
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    const result = counts.reduce((acc, item) => {
+      acc[item._id] = item.count;
+      return acc;
+    }, {});
+
+    res.set('Cache-Control', 'public, max-age=600'); // Cache for 10 minutes
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    logger.error(`[getCategoryCounts] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};

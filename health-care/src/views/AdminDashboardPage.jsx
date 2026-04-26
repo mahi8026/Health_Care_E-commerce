@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminTopBar from '@/components/admin/AdminTopBar';
 import AdminTabs from '@/components/admin/AdminTabs';
@@ -9,16 +10,21 @@ import OrdersManagement from '@/components/admin/OrdersManagement';
 import ProductsManagement from '@/components/admin/ProductsManagement';
 import CustomersManagement from '@/components/admin/CustomersManagement';
 import QuotationsManagement from '@/components/admin/QuotationsManagement';
+import ReturnsManagement from '@/components/admin/ReturnsManagement';
 import AnalyticsReports from '@/components/admin/AnalyticsReports';
+import SystemMonitoring from '@/components/admin/SystemMonitoring';
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const { user } = useAuth();
+  // Ref to trigger the create modal inside ProductsManagement from the top bar
+  const openCreateProductRef = useRef(null);
 
   const adminUser = {
-    name: 'Shahid Admin',
-    role: 'Super Administrator',
-    initials: 'SA',
-    isOnline: true
+    name: user?.name || 'Admin',
+    role: user?.role === 'admin' ? 'Administrator' : (user?.role || 'Administrator'),
+    initials: (user?.name || 'A').charAt(0).toUpperCase(),
+    isOnline: true,
   };
 
   const tabConfig = {
@@ -27,7 +33,18 @@ export default function AdminDashboardPage() {
     products: { title: 'Product Catalogue', action: '+ Add product' },
     customers: { title: 'B2B Customers', action: '+ Add B2B account' },
     quotes: { title: 'Quotation Requests', action: '+ New quotation' },
-    analytics: { title: 'Analytics & Reports', action: 'Export report' }
+    returns: { title: 'Returns Management', action: 'Export returns' },
+    analytics: { title: 'Analytics & Reports', action: 'Export report' },
+    monitoring: { title: 'System Monitoring', action: 'Refresh metrics' }
+  };
+
+  const handleTopBarAction = (action) => {
+    if (action === '+ Add product') {
+      // Switch to products tab first, then open the modal
+      setActiveTab('products');
+      // Small delay to let the tab render before triggering the modal
+      setTimeout(() => openCreateProductRef.current?.(), 50);
+    }
   };
 
   return (
@@ -48,6 +65,7 @@ export default function AdminDashboardPage() {
         <AdminTopBar 
           title={tabConfig[activeTab].title}
           action={tabConfig[activeTab].action}
+          onAction={handleTopBarAction}
         />
         
         <AdminTabs 
@@ -59,10 +77,14 @@ export default function AdminDashboardPage() {
         <div className="p-5 px-6 overflow-y-auto">
           {activeTab === 'dashboard' && <DashboardOverview setActiveTab={setActiveTab} />}
           {activeTab === 'orders' && <OrdersManagement />}
-          {activeTab === 'products' && <ProductsManagement />}
+          {activeTab === 'products' && (
+            <ProductsManagement openCreateRef={openCreateProductRef} />
+          )}
           {activeTab === 'customers' && <CustomersManagement />}
           {activeTab === 'quotes' && <QuotationsManagement />}
+          {activeTab === 'returns' && <ReturnsManagement />}
           {activeTab === 'analytics' && <AnalyticsReports />}
+          {activeTab === 'monitoring' && <SystemMonitoring />}
         </div>
       </div>
     </div>

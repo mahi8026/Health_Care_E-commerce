@@ -1,5 +1,7 @@
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import AccountMenu from './AccountMenu';
+import WishlistButton from './WishlistButton';
 
 export default function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate, onSearchClick }) {
   const { getCartCount } = useCart();
@@ -64,8 +66,8 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
         <button 
           onClick={onSearchClick}
           aria-label="Search"
-          className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-secondary)]"
-          title="Search"
+          className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-secondary)] transition-colors"
+          title="Search products"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
             <circle cx="11" cy="11" r="8"/>
@@ -73,16 +75,13 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           </svg>
         </button>
         
-        <button aria-label="Wishlist" className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)]">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-          </svg>
-        </button>
+        <WishlistButton />
         
         <button
           onClick={onCartClick}
           aria-label={cartCount > 0 ? `Shopping cart, ${cartCount} items` : 'Shopping cart'}
-          className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)]"
+          className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)] transition-colors"
+          title={cartCount > 0 ? `${cartCount} items in cart` : 'Shopping cart'}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -96,12 +95,11 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           )}
         </button>
         
-        <button aria-label="Account" className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-secondary)]">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-          </svg>
-        </button>
+        <AccountMenu 
+          onNavigate={onNavigate}
+          onLoginClick={onLoginClick}
+          onLogout={onLogout}
+        />
         
         {isAuthenticated() ? (
           <div className="flex items-center gap-2">

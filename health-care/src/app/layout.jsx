@@ -2,6 +2,8 @@ import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import "./globals.css";
 import WebVitalsReporter from "@/components/WebVitalsReporter";
 import Footer from "@/components/layout/Footer";
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,9 +32,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable}`}>
       <body className="min-h-screen">
-        <WebVitalsReporter />
-        {children}
-        <Footer />
+        <AuthProvider>
+          <CartProvider>
+            <WebVitalsReporter />
+            {children}
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

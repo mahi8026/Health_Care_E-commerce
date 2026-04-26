@@ -1,71 +1,79 @@
-export default function FrequentlyBought() {
-  const items = [
-    {
-      name: 'Patient cable 10-lead',
-      price: 3200,
-      icon: 'cable',
-      bgColor: '#E1F5EE',
-      iconColor: '#0F6E56'
-    },
-    {
-      name: 'Thermal paper rolls ×10',
-      price: 1800,
-      icon: 'paper',
-      bgColor: '#FAEEDA',
-      iconColor: '#854F0B'
-    },
-    {
-      name: 'AMC service contract',
-      price: 12000,
-      suffix: '/yr',
-      icon: 'briefcase',
-      bgColor: '#EEEDFE',
-      iconColor: '#534AB7'
-    }
-  ];
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useCart } from '@/context/CartContext';
+
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+export default function FrequentlyBought({ productId, category }) {
+  const [related, setRelated] = useState([]);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (!category) return;
+    const params = new URLSearchParams({ category, limit: 3 });
+    if (productId) params.set('exclude', productId);
+    fetch(`${API}/products?${params}`)
+      .then(r => r.json())
+      .then(data => {
+        const items = data.products || data.data?.products || [];
+        setRelated(items.slice(0, 3));
+      })
+      .catch(() => setRelated([]));
+  }, [productId, category]);
+
+  if (related.length === 0) return null;
+
+  const handleAdd = (product) => {
+    addToCart({
+      ...product,
+      id: product._id || product.id,
+    }, 1);
+  };
 
   return (
-    <div>
+    <div className="mt-4">
       <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">
         Frequently bought together
       </div>
       <div className="flex gap-2 flex-wrap">
-        {items.map((item, idx) => (
+        {related.map((product) => (
           <div
-            key={idx}
-            className="border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg px-[10px] py-2 flex items-center gap-2 cursor-pointer bg-[var(--color-background-primary)] hover:border-[#0B2545]"
+            key={product._id || product.id}
+            className="border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg px-[10px] py-2 flex items-center gap-2 bg-[var(--color-background-primary)] hover:border-[#0B2545] transition-colors"
           >
-            <div
-              className="w-8 h-8 rounded-md flex items-center justify-center"
-              style={{ background: item.bgColor }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={item.iconColor} strokeWidth="1.5">
-                {item.icon === 'cable' && (
-                  <>
-                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
-                    <circle cx="12" cy="12" r="4"/>
-                  </>
-                )}
-                {item.icon === 'paper' && (
-                  <>
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                  </>
-                )}
-                {item.icon === 'briefcase' && (
-                  <>
-                    <rect x="2" y="7" width="20" height="14" rx="2"/>
-                    <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-                  </>
-                )}
-              </svg>
+            <div className="w-8 h-8 rounded-md bg-[var(--color-background-tertiary)] flex items-center justify-center text-[18px] overflow-hidden">
+              {(() => {
+                // Handle both old (string) and new (object) image formats
+                const imageData = product.images?.[0];
+                const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
+                
+                return imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src={imageUrl} 
+                    alt={typeof imageData === 'object' ? imageData.alt : product.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement.innerHTML = '📦';
+                    }}
+                  />
+                ) : '📦';
+              })()}
             </div>
-            <div>
-              <div className="text-[11px] font-medium">{item.name}</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[11px] font-medium truncate max-w-[120px]">{product.name}</div>
               <div className="text-[10px] text-[var(--color-text-secondary)]">
-                ৳ {item.price.toLocaleString()}{item.suffix || ''}
+                ৳{(product.price || 0).toLocaleString()}
               </div>
             </div>
+            <button
+              onClick={() => handleAdd(product)}
+              className="text-[10px] px-2 py-1 bg-[#0B2545] text-white rounded hover:bg-[#0d2d52] transition-colors flex-shrink-0"
+            >
+              + Add
+            </button>
           </div>
         ))}
       </div>

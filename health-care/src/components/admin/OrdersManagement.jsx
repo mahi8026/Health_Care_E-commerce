@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/utils/api';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const STATUS_OPTIONS = ['All', 'placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
 
@@ -22,7 +22,7 @@ export default function OrdersManagement() {
       const token = localStorage.getItem('medcore_token');
       const params = new URLSearchParams({ page, limit: 20 });
       if (statusFilter) params.set('status', statusFilter);
-      const res = await fetch(`${API}/api/orders?${params}`, {
+      const res = await fetch(`${API}/orders?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -41,7 +41,7 @@ export default function OrdersManagement() {
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
     try {
       const token = localStorage.getItem('medcore_token');
-      await fetch(`${API}/api/orders/${orderId}/status`, {
+      await fetch(`${API}/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus })

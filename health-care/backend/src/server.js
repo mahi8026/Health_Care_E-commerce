@@ -11,12 +11,17 @@ const errorHandler = require('./middleware/errorHandler');
 const { authLimiter, apiLimiter } = require('./middleware/rateLimiter');
 const { startCronJobs } = require('./utils/stockAlertCron');
 const logger = require('./utils/logger');
+const { performanceMonitor } = require('./middleware/performanceMonitor');
+const { monitorConnections } = require('./utils/databaseMonitor');
 
 // Initialize express app
 const app = express();
 
 // Connect to database
 connectDB();
+
+// Start database monitoring
+monitorConnections();
 
 // ── Security Middleware ──────────────────────────────────────────────────────
 app.use(helmet());
@@ -45,13 +50,24 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
+// ── Performance Monitoring ────────────────────────────────────────────────────
+app.use(performanceMonitor);
+
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 // Skip rate limiting in development
 if (process.env.NODE_ENV !== 'development') {
   app.use('/api/', apiLimiter);
 }
 
+// ── Static files (local upload fallback — dev only) ──────────────────────────
+const path = require('path');
+const fs = require('fs');
+const uploadDir = path.join(process.cwd(), 'tmp', 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+app.use('/uploads', express.static(uploadDir));
+
 // ── Routes ───────────────────────────────────────────────────────────────────
+app.use('/api/monitoring', require('./routes/monitoringRoutes'));
 app.use('/api/auth', authLimiter, require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
@@ -61,6 +77,8 @@ app.use('/api/quotes', require('./routes/quoteRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/invoices', require('./routes/invoiceRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/returns', require('./routes/returnRoutes'));
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

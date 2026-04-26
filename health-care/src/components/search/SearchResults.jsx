@@ -43,7 +43,7 @@ export default function SearchResults({ products, loading, query, onProductClick
         {products.map((product) => (
           <div
             key={product.id || product._id}
-            onClick={() => onProductClick && onProductClick(product)}
+            onClick={() => onProductClick && onProductClick(product._id || product.id)}
             className="bg-white rounded-lg p-4 border-[0.5px] border-[var(--color-border-tertiary)] hover:shadow-md transition-shadow cursor-pointer"
           >
             {product.badge && (
@@ -59,7 +59,24 @@ export default function SearchResults({ products, loading, query, onProductClick
             )}
             
             <div className="w-full h-32 bg-[var(--color-background-tertiary)] rounded-lg mb-3 flex items-center justify-center text-[40px]">
-              {product.images?.[0] || '📦'}
+              {(() => {
+                // Handle both old (string) and new (object) image formats
+                const imageData = product.images?.[0];
+                const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
+                
+                return imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src={imageUrl} 
+                    alt={typeof imageData === 'object' ? imageData.alt : product.name}
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement.innerHTML = '📦';
+                    }}
+                  />
+                ) : '📦';
+              })()}
             </div>
             
             <div className="text-[13px] font-medium mb-1 font-[family-name:var(--font-plus-jakarta)] line-clamp-2">

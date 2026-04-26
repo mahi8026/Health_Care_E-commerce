@@ -34,18 +34,27 @@ export function CartProvider({ children }) {
 
   const addToCart = useCallback((product, quantity = 1) => {
     const safeQty = Math.max(1, quantity);
+    // Ensure product has an ID (use _id as fallback)
+    const productId = product.id || product._id;
+    
+    if (!productId) {
+      console.error('Product missing ID:', product);
+      return;
+    }
+
     setCart(prevCart => {
       if (prevCart.length >= MAX_CART_ITEMS) return prevCart;
-      const existingItem = prevCart.find(item => item.id === product.id);
+      const existingItem = prevCart.find(item => (item.id || item._id) === productId);
       GA4Tracker.trackAddToCart(product, safeQty);
       if (existingItem) {
         return prevCart.map(item =>
-          item.id === product.id
+          (item.id || item._id) === productId
             ? { ...item, quantity: item.quantity + safeQty }
             : item
         );
       }
-      return [...prevCart, { ...product, quantity: safeQty }];
+      // Ensure the cart item has an id field
+      return [...prevCart, { ...product, id: productId, quantity: safeQty }];
     });
   }, []);
 

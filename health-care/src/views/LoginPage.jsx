@@ -79,8 +79,24 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              className="mb-6"
+              className="mb-2"
             />
+
+            {/* Forgot password link */}
+            <div className="text-right mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  // Navigate to reset password — works in both SPA and Next.js routing
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/reset-password';
+                  }
+                }}
+                className="text-[12px] text-[#0E8A6E] hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
 
             <Button
               type="submit"

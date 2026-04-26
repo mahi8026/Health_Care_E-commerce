@@ -2,20 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import DashboardSkeleton from './DashboardSkeleton';
+import OrderDetailModal from './OrderDetailModal';
+import KPIDetailModal from './KPIDetailModal';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function DashboardOverview({ setActiveTab }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedKPI, setSelectedKPI] = useState(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('medcore_token');
-        const res = await fetch(`${API}/api/admin/dashboard`, {
+        const res = await fetch(`${API}/admin/dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error('Failed to load dashboard');
@@ -46,28 +50,32 @@ export default function DashboardOverview({ setActiveTab }) {
       value: stats?.kpis?.totalRevenue ? `৳${(stats.kpis.totalRevenue / 1000000).toFixed(1)}M` : '৳0',
       change: stats?.kpis?.revenueGrowth != null ? `${stats.kpis.revenueGrowth > 0 ? '+' : ''}${stats.kpis.revenueGrowth}%` : 'N/A',
       trend: (stats?.kpis?.revenueGrowth || 0) >= 0 ? 'up' : 'down',
-      icon: '💰'
+      icon: '💰',
+      action: (kpi) => setSelectedKPI(kpi)
     },
     {
       label: 'Total Orders',
       value: String(stats?.kpis?.totalOrders ?? 0),
       change: stats?.kpis?.ordersGrowth != null ? `${stats.kpis.ordersGrowth > 0 ? '+' : ''}${stats.kpis.ordersGrowth}% this month` : '',
       trend: 'up',
-      icon: '📦'
+      icon: '📦',
+      action: (kpi) => setSelectedKPI(kpi)
     },
     {
       label: 'Active B2B Clients',
       value: (stats?.kpis?.activeB2B ?? 0).toLocaleString(),
       change: stats?.kpis?.pendingQuotes ? `${stats.kpis.pendingQuotes} pending quotes` : '',
       trend: 'up',
-      icon: '👥'
+      icon: '👥',
+      action: (kpi) => setSelectedKPI(kpi)
     },
     {
       label: 'Low Stock Items',
       value: String((stats?.stockAlerts?.lowStock?.length || 0) + (stats?.stockAlerts?.criticalStock?.length || 0)),
       change: 'Needs attention',
       trend: 'warning',
-      icon: '⚠️'
+      icon: '⚠️',
+      action: (kpi) => setSelectedKPI(kpi)
     }
   ];
 
@@ -95,9 +103,13 @@ export default function DashboardOverview({ setActiveTab }) {
       {/* KPI Grid */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {kpis.map((kpi, index) => (
-          <div key={index} className="bg-white rounded-lg p-4 border-[0.5px] border-[var(--color-border-tertiary)]">
+          <button
+            key={index}
+            onClick={() => kpi.action(kpi)}
+            className="bg-white rounded-lg p-4 border-[0.5px] border-[var(--color-border-tertiary)] hover:border-[#0B2545] hover:shadow-md transition-all cursor-pointer text-left group"
+          >
             <div className="flex items-start justify-between mb-3">
-              <div className="text-[24px]">{kpi.icon}</div>
+              <div className="text-[24px] group-hover:scale-110 transition-transform">{kpi.icon}</div>
               {kpi.change && (
                 <div className={`text-[10px] px-2 py-[2px] rounded font-medium ${
                   kpi.trend === 'up' ? 'bg-[#D1FAE5] text-[#065F46]' :
@@ -108,15 +120,31 @@ export default function DashboardOverview({ setActiveTab }) {
                 </div>
               )}
             </div>
-            <div className="text-[24px] font-bold mb-1 font-[family-name:var(--font-plus-jakarta)]">
+            <div className="text-[24px] font-bold mb-1 font-[family-name:var(--font-plus-jakarta)] group-hover:text-[#0B2545] transition-colors">
               {kpi.value}
             </div>
-            <div className="text-[11px] text-[var(--color-text-secondary)]">
+            <div className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
               {kpi.label}
             </div>
-          </div>
+          </button>
         ))}
       </div>
+
+      {/* Modals */}
+      {selectedOrder && (
+        <OrderDetailModal 
+          orderId={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
+
+      {selectedKPI && (
+        <KPIDetailModal
+          kpi={selectedKPI}
+          onClose={() => setSelectedKPI(null)}
+          onNavigate={setActiveTab}
+        />
+      )}
 
       <div className="grid grid-cols-[1fr_320px] gap-4">
         {/* Recent Orders */}
@@ -138,10 +166,14 @@ export default function DashboardOverview({ setActiveTab }) {
           ) : (
             <div className="space-y-3">
               {recentOrders.map(order => (
-                <div key={order._id || order.orderNumber} className="flex items-center gap-4 p-3 bg-[var(--color-background-tertiary)] rounded-lg">
+                <button
+                  key={order._id || order.orderNumber}
+                  onClick={() => setSelectedOrder(order._id || order.orderNumber)}
+                  className="w-full flex items-center gap-4 p-3 bg-[var(--color-background-tertiary)] rounded-lg hover:bg-[#E6F1FB] hover:border-[#0B2545] border-[0.5px] border-transparent transition-all cursor-pointer text-left group"
+                >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      <span className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)] group-hover:text-[#0B2545]">
                         {order.orderNumber || order.id}
                       </span>
                       <span className={`text-[9px] px-2 py-[2px] rounded font-medium ${getStatusColor(order.status)}`}>
@@ -153,14 +185,25 @@ export default function DashboardOverview({ setActiveTab }) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] group-hover:text-[#0B2545]">
                       ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </div>
                     <div className="text-[10px] text-[var(--color-text-tertiary)]">
                       {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD') : ''}
                     </div>
                   </div>
-                </div>
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                    className="text-[var(--color-text-tertiary)] group-hover:text-[#0B2545] group-hover:translate-x-1 transition-all"
+                  >
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
               ))}
             </div>
           )}
@@ -197,7 +240,10 @@ export default function DashboardOverview({ setActiveTab }) {
                       </div>
                     </div>
                   </div>
-                  <button className="w-full text-[10px] px-3 py-[6px] bg-white border-[0.5px] border-[#FDE68A] rounded text-[#92400E] font-medium hover:bg-[#FFFBEB]">
+                  <button 
+                    onClick={() => setActiveTab('products')}
+                    className="w-full text-[10px] px-3 py-[6px] bg-white border-[0.5px] border-[#FDE68A] rounded text-[#92400E] font-medium hover:bg-[#FFFBEB] hover:border-[#FCD34D] transition-all"
+                  >
                     Reorder now
                   </button>
                 </div>

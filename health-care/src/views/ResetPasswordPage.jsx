@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function ResetPasswordPage({ onNavigateToLogin }) {
   const searchParams = useSearchParams();

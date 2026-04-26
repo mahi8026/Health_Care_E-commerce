@@ -1,11 +1,9 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import ChartSkeleton from './ChartSkeleton';
 
-/**
- * Lazy-load AnalyticsCharts so the recharts bundle is only fetched when the
- * analytics tab is rendered, keeping it out of the initial page bundle.
- * Requirements: 3.3, 3.5
- */
 const AnalyticsCharts = dynamic(
   () => import('./AnalyticsCharts'),
   {
@@ -19,32 +17,178 @@ const AnalyticsCharts = dynamic(
   }
 );
 
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const PERIODS = [
+  { value: 'week', label: 'This Week' },
+  { value: 'month', label: 'This Month' },
+  { value: 'quarter', label: 'This Quarter' },
+  { value: 'year', label: 'This Year' },
+];
+
 export default function AnalyticsReports() {
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [period, setPeriod] = useState('month');
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem('medcore_token');
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // Build date range from period
+        const now = new Date();
+        const endDate = now.toISOString().split('T')[0];
+        let startDate;
+        if (period === 'week') {
+          const d = new Date(now); d.setDate(d.getDate() - 7);
+          startDate = d.toISOString().split('T')[0];
+        } else if (period === 'month') {
+          const d = new Date(now); d.setMonth(d.getMonth() - 1);
+          startDate = d.toISOString().split('T')[0];
+        } else if (period === 'quarter') {
+          const d = new Date(now); d.setMonth(d.getMonth() - 3);
+          startDate = d.toISOString().split('T')[0];
+        } else {
+          const d = new Date(now); d.setFullYear(d.getFullYear() - 1);
+          startDate = d.toISOString().split('T')[0];
+        }
+
+        const params = `startDate=${startDate}&endDate=${endDate}`;
+
+        const [salesRes, ordersRes, customersRes, productsRes, paymentsRes] = await Promise.all([
+          fetch(`${API}/analytics/sales?${params}&groupBy=day`, { headers }),
+          fetch(`${API}/analytics/orders?${params}`, { headers }),
+          fetch(`${API}/analytics/customers?${params}`, { headers }),
+          fetch(`${API}/analytics/products?${params}&limit=5`, { headers }),
+          fetch(`${API}/analytics/payments?${params}`, { headers }),
+        ]);
+
+        const [sales, orders, customers, products, payments] = await Promise.all([
+          salesRes.json(),
+          ordersRes.json(),
+          customersRes.json(),
+          productsRes.json(),
+          paymentsRes.json(),
+        ]);
+
+        setAnalytics({
+          totalRevenue: sales.data?.totalRevenue ?? 0,
+          totalOrders: orders.data?.totalOrders ?? 0,
+          avgOrderValue: sales.data?.avgOrderValue ?? 0,
+          retentionRate: customers.data?.retentionRate ?? 0,
+          revenueGrowth: sales.data?.revenueGrowth ?? null,
+          ordersGrowth: orders.data?.ordersGrowth ?? null,
+          topProducts: products.data?.topProducts || [],
+          topCustomers: customers.data?.topCustomers || [],
+          revenueByPeriod: sales.data?.data || [],
+          paymentBreakdown: payments.data?.breakdown || [],
+        });
+      } catch (err) {
+        setError('Failed to load analytics. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [period]);
+
+  const fmt = (n) => {
+    if (n >= 1_000_000) return `৳${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `৳${(n / 1_000).toFixed(0)}K`;
+    return `৳${n.toLocaleString()}`;
+  };
+
+  const fmtChange = (v) => {
+    if (v == null) return null;
+    return `${v > 0 ? '+' : ''}${v}%`;
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <div className="flex gap-2 mb-6">
+          {PERIODS.map(p => (
+            <div key={p.value} className="h-8 w-24 bg-[var(--color-background-tertiary)] rounded-lg animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="h-24 bg-[var(--color-background-tertiary)] rounded-lg animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8 text-center text-[13px] text-[#E24B4A]">
+        {error}
+        <button
+          onClick={() => setPeriod(p => p)}
+          className="block mx-auto mt-3 text-[12px] text-[#0E8A6E] hover:underline"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   const metrics = [
-    { label: 'Total Revenue', value: '৳12.5M', period: 'This month', change: '+12.5%', trend: 'up' },
-    { label: 'Total Orders', value: '1,248', period: 'This month', change: '+8.2%', trend: 'up' },
-    { label: 'Avg Order Value', value: '৳10,016', period: 'This month', change: '+4.1%', trend: 'up' },
-    { label: 'Customer Retention', value: '87%', period: 'This quarter', change: '+2.3%', trend: 'up' }
-  ];
-
-  const topProducts = [
-    { name: 'Siemens Cardiostat ECG', sales: 45, revenue: 4275000 },
-    { name: 'Roche HbA1c reagent kit', sales: 320, revenue: 2720000 },
-    { name: 'Abbott Troponin I reagent', sales: 98, revenue: 2156000 },
-    { name: 'Beckman CBC reagent pack', sales: 156, revenue: 2808000 },
-    { name: 'BD blood culture media', sales: 210, revenue: 2058000 }
-  ];
-
-  const topCustomers = [
-    { name: 'United Hospital', orders: 48, spent: 3200000 },
-    { name: 'Square Hospital', orders: 42, spent: 2450000 },
-    { name: 'Apollo Hospitals', orders: 38, spent: 1890000 },
-    { name: 'Ibn Sina Hospital', orders: 32, spent: 1560000 },
-    { name: 'Labaid Diagnostics', orders: 28, spent: 980000 }
+    {
+      label: 'Total Revenue',
+      value: fmt(analytics?.totalRevenue || 0),
+      change: fmtChange(analytics?.revenueGrowth),
+      period: PERIODS.find(p => p.value === period)?.label,
+    },
+    {
+      label: 'Total Orders',
+      value: (analytics?.totalOrders || 0).toLocaleString(),
+      change: fmtChange(analytics?.ordersGrowth),
+      period: PERIODS.find(p => p.value === period)?.label,
+    },
+    {
+      label: 'Avg Order Value',
+      value: fmt(analytics?.avgOrderValue || 0),
+      change: null,
+      period: PERIODS.find(p => p.value === period)?.label,
+    },
+    {
+      label: 'Customer Retention',
+      value: analytics?.retentionRate ? `${analytics.retentionRate}%` : '—',
+      change: null,
+      period: 'Rolling 90 days',
+    },
   ];
 
   return (
     <div>
+      {/* Period Selector */}
+      <div className="flex gap-2 mb-6">
+        {PERIODS.map(p => (
+          <button
+            key={p.value}
+            onClick={() => setPeriod(p.value)}
+            className={`px-4 py-[7px] rounded-lg text-[12px] font-medium transition-colors ${
+              period === p.value
+                ? 'bg-[#0B2545] text-white'
+                : 'bg-white border-[0.5px] border-[var(--color-border-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]'
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
       {/* Metrics Grid */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {metrics.map((metric, index) => (
@@ -56,9 +200,13 @@ export default function AnalyticsReports() {
               {metric.value}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#0E8A6E] font-medium">
-                {metric.change}
-              </span>
+              {metric.change && (
+                <span className={`text-[10px] font-medium ${
+                  metric.change.startsWith('+') ? 'text-[#0E8A6E]' : 'text-[#E24B4A]'
+                }`}>
+                  {metric.change}
+                </span>
+              )}
               <span className="text-[10px] text-[var(--color-text-tertiary)]">
                 {metric.period}
               </span>
@@ -67,7 +215,7 @@ export default function AnalyticsReports() {
         ))}
       </div>
 
-      {/* Lazy-loaded recharts visualisations */}
+      {/* Charts */}
       <AnalyticsCharts />
 
       <div className="grid grid-cols-2 gap-4">
@@ -76,26 +224,30 @@ export default function AnalyticsReports() {
           <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
             Top Products by Revenue
           </h3>
-          <div className="space-y-3">
-            {topProducts.map((product, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[11px] font-bold text-[var(--color-text-secondary)]">
-                  #{index + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="text-[12px] font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
-                    {product.name}
+          {analytics?.topProducts?.length === 0 ? (
+            <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-4">No data for this period</p>
+          ) : (
+            <div className="space-y-3">
+              {(analytics?.topProducts || []).map((product, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[11px] font-bold text-[var(--color-text-secondary)]">
+                    #{index + 1}
                   </div>
-                  <div className="text-[10px] text-[var(--color-text-secondary)]">
-                    {product.sales} units sold
+                  <div className="flex-1">
+                    <div className="text-[12px] font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
+                      {product.name || product._id}
+                    </div>
+                    <div className="text-[10px] text-[var(--color-text-secondary)]">
+                      {product.totalSold || product.sales || 0} units sold
+                    </div>
+                  </div>
+                  <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    {fmt(product.totalRevenue || product.revenue || 0)}
                   </div>
                 </div>
-                <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                  ৳{(product.revenue / 1000).toFixed(0)}K
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Top Customers */}
@@ -103,26 +255,30 @@ export default function AnalyticsReports() {
           <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
             Top Customers by Spending
           </h3>
-          <div className="space-y-3">
-            {topCustomers.map((customer, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[11px] font-bold text-[var(--color-text-secondary)]">
-                  #{index + 1}
-                </div>
-                <div className="flex-1">
-                  <div className="text-[12px] font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
-                    {customer.name}
+          {analytics?.topCustomers?.length === 0 ? (
+            <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-4">No data for this period</p>
+          ) : (
+            <div className="space-y-3">
+              {(analytics?.topCustomers || []).map((customer, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[11px] font-bold text-[var(--color-text-secondary)]">
+                    #{index + 1}
                   </div>
-                  <div className="text-[10px] text-[var(--color-text-secondary)]">
-                    {customer.orders} orders
+                  <div className="flex-1">
+                    <div className="text-[12px] font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
+                      {customer.name || customer._id}
+                    </div>
+                    <div className="text-[10px] text-[var(--color-text-secondary)]">
+                      {customer.totalOrders || customer.orders || 0} orders
+                    </div>
+                  </div>
+                  <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    {fmt(customer.totalSpent || customer.spent || 0)}
                   </div>
                 </div>
-                <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                  ৳{(customer.spent / 1000).toFixed(0)}K
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

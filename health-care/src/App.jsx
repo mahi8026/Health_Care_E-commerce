@@ -76,6 +76,7 @@ const B2BDashboardPage = dynamic(
 
 function AppContent({ initialFeaturedProducts = [] }) {
   const [activeView, setActiveView] = useState('home');
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const { isAuthenticated, logout } = useAuth();
@@ -145,6 +146,11 @@ function AppContent({ initialFeaturedProducts = [] }) {
     setActiveView('checkout');
   };
 
+  const handleNavigateToProduct = (productId) => {
+    setSelectedProductId(productId);
+    setActiveView('product');
+  };
+
   // Show auth pages
   if (showAuth && !isAuthenticated()) {
     if (authMode === 'login') {
@@ -188,16 +194,17 @@ function AppContent({ initialFeaturedProducts = [] }) {
       {activeView === 'home' && (
         <HomePage 
           onNavigate={setActiveView}
+          onNavigateToProduct={handleNavigateToProduct}
           onRegisterClick={handleRegisterClick}
           initialFeaturedProducts={initialFeaturedProducts}
         />
       )}
       {activeView === 'search' && (
         <SearchPage 
-          onProductClick={() => setActiveView('product')}
+          onProductClick={handleNavigateToProduct}
         />
       )}
-      {activeView === 'product' && <ProductDetailPage />}
+      {activeView === 'product' && <ProductDetailPage productId={selectedProductId} />}
       {activeView === 'cart' && (
         <CartPage 
           onCheckout={handleCheckout}
@@ -209,7 +216,7 @@ function AppContent({ initialFeaturedProducts = [] }) {
           onBackToCart={() => setActiveView('cart')}
         />
       )}
-      {activeView === 'reagent' && <ReagentStorePage />}
+      {activeView === 'reagent' && <ReagentStorePage onNavigateToProduct={handleNavigateToProduct} />}
       {activeView === 'b2b' && (
         <DashboardErrorBoundary onNavigateHome={() => setActiveView('home')}>
           <B2BDashboardPage />
@@ -255,3 +262,4 @@ export default function App({ initialFeaturedProducts = [] }) {
     </AuthProvider>
   );
 }
+

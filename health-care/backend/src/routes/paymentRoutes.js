@@ -5,6 +5,7 @@ const {
   createPaymentIntent,
   confirmPayment,
   initiateBkashPayment,
+  executeBkashPayment,
   verifyBkashPayment,
   initiateNagadPayment,
   submitChequePayment,
@@ -19,8 +20,9 @@ router.post('/stripe/intent', protect, createPaymentIntent); // alias used by fr
 router.post('/stripe/confirm', protect, confirmPayment);
 router.post('/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
-// bKash routes
+// bKash Tokenized Checkout routes
 router.post('/bkash/initiate', protect, initiateBkashPayment);
+router.post('/bkash/execute', protect, executeBkashPayment); // called after user completes in bKash app
 router.post('/bkash/verify', protect, verifyBkashPayment);
 
 // Nagad routes

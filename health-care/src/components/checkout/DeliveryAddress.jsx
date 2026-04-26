@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 const DISTRICTS = [
@@ -6,7 +6,7 @@ const DISTRICTS = [
   'Khulna', 'Barishal', 'Rangpur', 'Mymensingh'
 ];
 
-const PHONE_REGEX = /^01[3-9]\d{8}$/;
+const PHONE_REGEX = /^(\+880|880|0)?1[3-9]\d{8}$/;
 const POSTCODE_REGEX = /^\d{4}$/;
 
 const EMPTY_FORM = {
@@ -19,55 +19,53 @@ const EMPTY_FORM = {
   instructions: '',
 };
 
-export default function DeliveryAddress({ onChange }) {
+export default function DeliveryAddress({ value, onChange, savedAddress }) {
   const { user } = useAuth();
-  const [formData, setFormData] = useState(EMPTY_FORM);
+  // Use controlled value from parent; fall back to empty form for uncontrolled usage
+  const formData = value || EMPTY_FORM;
   const [errors, setErrors] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
-  // Notify parent whenever form data changes
-  useEffect(() => {
-    if (onChange) onChange(formData);
-  }, [formData]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const validate = (name, value) => {
+  const validate = (name, val) => {
     switch (name) {
       case 'fullName':
-        return value.trim().length < 2 ? 'Name must be at least 2 characters' : '';
+        return (val || '').trim().length < 2 ? 'Name must be at least 2 characters' : '';
       case 'phone': {
-        const digits = value.replace(/[\s\-+]/g, '');
+        const digits = (val || '').replace(/[\s\-+]/g, '');
         return !PHONE_REGEX.test(digits) ? 'Enter a valid Bangladesh number (01XXXXXXXXX)' : '';
       }
       case 'street':
-        return value.trim().length < 5 ? 'Please enter a full street address' : '';
+        return (val || '').trim().length < 5 ? 'Please enter a full street address' : '';
       case 'thana':
-        return value.trim().length < 2 ? 'Please enter thana / upazila' : '';
+        return (val || '').trim().length < 2 ? 'Please enter thana / upazila' : '';
       case 'postcode':
-        return !POSTCODE_REGEX.test(value) ? 'Postcode must be 4 digits' : '';
+        return !POSTCODE_REGEX.test(val || '') ? 'Postcode must be 4 digits' : '';
       default:
         return '';
     }
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const error = validate(name, value);
+    const { name, val: rawVal } = e.target;
+    const val = rawVal !== undefined ? rawVal : e.target.value;
+    const error = validate(name, val);
     setErrors(prev => ({ ...prev, [name]: error }));
-    setFormData(prev => ({ ...prev, [name]: value }));
+    if (onChange) onChange({ ...formData, [name]: val });
   };
 
   const handleUseSaved = () => {
-    const saved = user?.addresses?.[0];
+    const saved = savedAddress || user?.addresses?.[0];
     if (!saved) return;
     const prefilled = {
-      fullName: saved.name || user.name || '',
-      phone: saved.phone || user.phone || '',
+      fullName: saved.name || user?.name || '',
+      phone: saved.phone || user?.phone || '',
       street: saved.street || saved.address || '',
       district: saved.district || saved.city || 'Dhaka',
       thana: saved.thana || saved.area || '',
       postcode: saved.postcode || saved.postalCode || '',
       instructions: saved.instructions || '',
     };
-    setFormData(prefilled);
+    if (onChange) onChange(prefilled);
     setErrors({});
   };
 
@@ -84,7 +82,7 @@ export default function DeliveryAddress({ onChange }) {
         <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
           Delivery address
         </h3>
-        {user?.addresses?.[0] && (
+        {(savedAddress || user?.addresses?.[0]) && (
           <button
             type="button"
             onClick={handleUseSaved}

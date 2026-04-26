@@ -58,11 +58,13 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
         <div className="grid grid-cols-[1fr_380px] gap-6">
           {/* Cart Items */}
           <div className="space-y-4">
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]"
-              >
+            {cart.map((item, index) => {
+              const itemKey = item.id || item._id || `cart-item-${index}`;
+              return (
+                <div
+                  key={itemKey}
+                  className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]"
+                >
                 <div className="flex gap-4">
                   {/* Product Icon */}
                   <div className="w-20 h-20 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[32px] flex-shrink-0">
@@ -96,7 +98,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2 mb-3">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.id || item._id, item.quantity - 1)}
                         className="w-8 h-8 border-[0.5px] border-[var(--color-border-secondary)] rounded bg-white hover:bg-[var(--color-background-tertiary)] flex items-center justify-center"
                       >
                         −
@@ -105,7 +107,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.id || item._id, item.quantity + 1)}
                         className="w-8 h-8 border-[0.5px] border-[var(--color-border-secondary)] rounded bg-white hover:bg-[var(--color-background-tertiary)] flex items-center justify-center"
                       >
                         +
@@ -114,7 +116,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
                     {/* Remove Button */}
                     <button
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item.id || item._id)}
                       className="text-[11px] text-[#E24B4A] hover:underline"
                     >
                       Remove
@@ -122,7 +124,8 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           {/* Order Summary */}

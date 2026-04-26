@@ -8,6 +8,27 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || err.status || 500;
   let message = err.message || 'Internal Server Error';
 
+  // ── Multer errors (file upload) ──────────────────────────────────────────
+  if (err.name === 'MulterError') {
+    const messages = {
+      LIMIT_FILE_SIZE:  'Image too large. Maximum size is 5MB per image.',
+      LIMIT_FILE_COUNT: 'Too many images. Maximum is 5 images per product.',
+      LIMIT_UNEXPECTED_FILE: 'Unexpected field name. Use "images" as the field name.',
+    };
+    return res.status(400).json({
+      success: false,
+      message: messages[err.code] || `Upload error: ${err.message}`,
+    });
+  }
+
+  // ── Cloudinary / image format errors ──────────────────────────────────────
+  if (err.message && err.message.toLowerCase().includes('only jpg')) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid file type. Only JPG, PNG and WebP images are allowed.',
+    });
+  }
+
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
     statusCode = 400;

@@ -8,7 +8,17 @@
  */
 
 import { siteConfig } from '@/config/seo'
-import { fetchProducts } from '@/utils/serverFetch'
+
+// Inline fetch helper — replaces the deleted serverFetch utility
+async function fetchProducts() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const res = await fetch(`${apiUrl}/api/products?limit=200&page=1`, {
+    next: { revalidate: 3600 }, // revalidate every hour
+  });
+  if (!res.ok) throw new Error(`Products fetch failed: ${res.status}`);
+  const data = await res.json();
+  return data.products || data.data?.products || [];
+}
 
 /**
  * Generate sitemap entries for all public pages.

@@ -5,7 +5,9 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
     { id: 'products', icon: '🏥', label: 'Products', badge: null },
     { id: 'customers', icon: '👥', label: 'Customers', badge: null },
     { id: 'quotes', icon: '📋', label: 'Quotations', badge: '8' },
-    { id: 'analytics', icon: '📈', label: 'Analytics', badge: null }
+    { id: 'returns', icon: '↩️', label: 'Returns', badge: null },
+    { id: 'analytics', icon: '📈', label: 'Analytics', badge: null },
+    { id: 'monitoring', icon: '🔍', label: 'Monitoring', badge: null }
   ];
 
   return (

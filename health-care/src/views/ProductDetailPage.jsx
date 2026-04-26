@@ -10,7 +10,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
 import GA4Tracker from '@/services/GA4Tracker';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 /**
  * @param {Object} props
@@ -40,7 +40,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`${API_BASE}/api/products/${id}`);
+        const url = `${API_BASE}/products/${id}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
         const p = data.data || data.product || data;
@@ -98,10 +99,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           <div className="p-6 px-7">
             <ProductGallery
               images={product.images || []}
+              product={product}
               badges={product.certifications || []}
               heroPriority={heroPriority}
             />
-            <FrequentlyBought />
+            <FrequentlyBought productId={product._id || product.id} category={product.category} />
           </div>
 
           <ProductTabs product={product} />

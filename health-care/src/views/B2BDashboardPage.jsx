@@ -12,7 +12,7 @@ import CreditPanel from '@/components/b2b/CreditPanel';
 import RecentQuotations from '@/components/b2b/RecentQuotations';
 import DashboardSkeleton from '@/components/admin/DashboardSkeleton';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function B2BDashboardPage() {
   const { user } = useAuth();
