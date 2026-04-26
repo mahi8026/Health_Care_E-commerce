@@ -1,4 +1,4 @@
-import App from '../App';
+import HomeClient from './HomeClient';
 import { generatePageMetadata } from '@/utils/metadata';
 import { pageMetadata } from '@/config/seo';
 import StructuredData, {
@@ -24,7 +24,7 @@ export default function Home() {
     <>
       <StructuredData schema={generateOrganizationSchema()} />
       <StructuredData schema={generateWebSiteSchema()} />
-      <App initialFeaturedProducts={initialFeaturedProducts} />
+      <HomeClient initialFeaturedProducts={initialFeaturedProducts} />
     </>
   );
 }
