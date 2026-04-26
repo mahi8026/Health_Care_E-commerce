@@ -73,6 +73,10 @@
 **/uploads/
 **/invoices/*.pdf
 
+# ── Documentation (Don't push to GitHub) ─────────────────────────────────────
+*.md
+!README.md
+
 # ── Lighthouse Reports ──────────────────────────────────────────────────────
 **/.lighthouseci/
 

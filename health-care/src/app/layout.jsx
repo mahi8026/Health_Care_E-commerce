@@ -2,6 +2,8 @@ import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import "./globals.css";
 import WebVitalsReporter from "@/components/WebVitalsReporter";
 import Footer from "@/components/layout/Footer";
+import TopBar from "@/components/layout/TopBar";
+import HeaderWrapper from "@/components/layout/HeaderWrapper";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 
@@ -35,6 +37,8 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WebVitalsReporter />
+            <TopBar />
+            <HeaderWrapper />
             {children}
             <Footer />
           </CartProvider>
