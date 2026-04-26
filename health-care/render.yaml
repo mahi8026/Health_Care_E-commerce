@@ -5,7 +5,7 @@ services:
     env: node
     region: singapore
     plan: free
-    buildCommand: cd backend && npm install
+    buildCommand: cd backend && npm install --legacy-peer-deps
     startCommand: cd backend && npm start
     healthCheckPath: /api/health
     envVars:
@@ -40,7 +40,7 @@ services:
     env: node
     region: singapore
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: npm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
