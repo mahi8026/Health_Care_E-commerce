@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
  */
 router.get('/fix-categories', async (req, res) => {
   try {
-    const products = await Product.find({});
+    const products = await Product.find({}).lean(); // Use .lean() to get plain objects
     let fixed = 0;
     let skipped = 0;
     let errors = 0;
@@ -25,13 +25,17 @@ router.get('/fix-categories', async (req, res) => {
         });
 
         if (category) {
-          product.category = category._id;
-          await product.save();
+          await Product.updateOne(
+            { _id: product._id },
+            { $set: { category: category._id } }
+          );
           details.push(`✅ Fixed: ${product.name} -> ${category.name}`);
           fixed++;
         } else {
-          product.category = null;
-          await product.save();
+          await Product.updateOne(
+            { _id: product._id },
+            { $set: { category: null } }
+          );
           details.push(`⚠️ Not found: ${product.name} (category: ${product.category})`);
           errors++;
         }
@@ -48,7 +52,8 @@ router.get('/fix-categories', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 });
@@ -60,7 +65,7 @@ router.get('/fix-categories', async (req, res) => {
  */
 router.get('/fix-brands', async (req, res) => {
   try {
-    const products = await Product.find({});
+    const products = await Product.find({}).lean(); // Use .lean() to get plain objects
     let fixed = 0;
     let skipped = 0;
     const details = [];
@@ -72,13 +77,17 @@ router.get('/fix-brands', async (req, res) => {
         });
 
         if (manufacturer) {
-          product.brand = manufacturer._id;
-          await product.save();
+          await Product.updateOne(
+            { _id: product._id },
+            { $set: { brand: manufacturer._id } }
+          );
           details.push(`✅ Fixed: ${product.name} -> ${manufacturer.name}`);
           fixed++;
         } else {
-          product.brand = null;
-          await product.save();
+          await Product.updateOne(
+            { _id: product._id },
+            { $set: { brand: null } }
+          );
           details.push(`⚠️ Not found: ${product.name} (brand: ${product.brand})`);
         }
       } else {
@@ -94,7 +103,8 @@ router.get('/fix-brands', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 });
