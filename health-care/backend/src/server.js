@@ -67,11 +67,15 @@ app.use(cors({
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:3000',
       process.env.ADMIN_URL || 'http://localhost:3000',
-      'http://localhost:3002'
+      'http://localhost:3002',
+      'http://localhost:3000'
     ];
     
+    // Allow all Vercel preview URLs
+    const isVercelPreview = origin && origin.includes('.vercel.app');
+    
     // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || isVercelPreview) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
