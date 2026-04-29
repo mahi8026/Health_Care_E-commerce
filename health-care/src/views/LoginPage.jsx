@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -10,7 +11,20 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, loading } = useAuth();
+  const { login, loading, user } = useAuth();
+  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      // Redirect based on role
+      if (user.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,8 +34,19 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');
-    } else if (onSuccess) {
-      onSuccess();
+    } else {
+      // Call onSuccess if provided (for modal usage)
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Redirect based on user role
+        const userData = result.user || result.data?.user;
+        if (userData?.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
+      }
     }
   };
 
@@ -33,8 +58,17 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     const result = await login(testEmail, testPassword);
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');
-    } else if (onSuccess) {
-      onSuccess();
+    } else {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        const userData = result.user || result.data?.user;
+        if (userData?.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
+      }
     }
   };
 
