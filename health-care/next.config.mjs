@@ -10,12 +10,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable turbopack for production builds (use webpack)
-  // turbopack is only for dev mode
-  
-  // Output configuration for production
-  output: 'standalone',
-
   // Image optimization configuration
   images: {
     formats: ['image/avif', 'image/webp'],
