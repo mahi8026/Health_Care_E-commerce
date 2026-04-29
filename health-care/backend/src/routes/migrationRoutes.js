@@ -188,4 +188,76 @@ router.get('/test-query', async (req, res) => {
   }
 });
 
+/**
+ * @route   GET /api/migration/create-missing
+ * @desc    Create missing categories and manufacturers from product data
+ * @access  Public
+ */
+router.get('/create-missing', async (req, res) => {
+  try {
+    const products = await Product.find({}).lean();
+    
+    // Collect unique category and brand names
+    const categoryNames = new Set();
+    const brandNames = new Set();
+    
+    products.forEach(p => {
+      if (p.category && typeof p.category === 'string') {
+        categoryNames.add(p.category);
+      }
+      if (p.brand && typeof p.brand === 'string') {
+        brandNames.add(p.brand);
+      }
+    });
+
+    const results = {
+      categories: { created: [], existing: [] },
+      manufacturers: { created: [], existing: [] }
+    };
+
+    // Create categories
+    for (const name of categoryNames) {
+      const existing = await Category.findOne({ name });
+      if (!existing) {
+        const category = await Category.create({
+          name,
+          slug: name.toLowerCase().replace(/\s+/g, '-'),
+          description: `${name} products`,
+          isActive: true
+        });
+        results.categories.created.push(category.name);
+      } else {
+        results.categories.existing.push(name);
+      }
+    }
+
+    // Create manufacturers
+    for (const name of brandNames) {
+      const existing = await Manufacturer.findOne({ name });
+      if (!existing) {
+        const manufacturer = await Manufacturer.create({
+          name,
+          slug: name.toLowerCase().replace(/\s+/g, '-'),
+          description: `${name} products`,
+          isActive: true
+        });
+        results.manufacturers.created.push(manufacturer.name);
+      } else {
+        results.manufacturers.existing.push(name);
+      }
+    }
+
+    res.json({
+      success: true,
+      results
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 module.exports = router;
