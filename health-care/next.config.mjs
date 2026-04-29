@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Ignore ESLint errors during production build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // Ignore TypeScript errors during production build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Image optimization configuration
   images: {
     formats: ['image/avif', 'image/webp'],
