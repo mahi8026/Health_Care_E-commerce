@@ -106,18 +106,20 @@ router.get('/fix-brands', async (req, res) => {
  */
 router.get('/status', async (req, res) => {
   try {
-    const products = await Product.find({}).limit(10);
+    const products = await Product.find({}).limit(10).lean();
     const analysis = products.map(p => ({
       name: p.name,
       category: {
         value: p.category,
         type: typeof p.category,
-        isObjectId: mongoose.isValidObjectId(p.category)
+        isObjectId: mongoose.isValidObjectId(p.category),
+        isString: typeof p.category === 'string'
       },
       brand: {
         value: p.brand,
         type: typeof p.brand,
-        isObjectId: mongoose.isValidObjectId(p.brand)
+        isObjectId: mongoose.isValidObjectId(p.brand),
+        isString: typeof p.brand === 'string'
       }
     }));
 
@@ -129,7 +131,49 @@ router.get('/status', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
+/**
+ * @route   GET /api/migration/test-query
+ * @desc    Test product query to see exact error
+ * @access  Public
+ */
+router.get('/test-query', async (req, res) => {
+  try {
+    // Test 1: Get products without populate
+    const productsRaw = await Product.find({ isActive: true }).limit(2).lean();
+    
+    // Test 2: Try to populate
+    let productsPopulated = null;
+    let populateError = null;
+    try {
+      productsPopulated = await Product.find({ isActive: true })
+        .populate('category', 'name slug')
+        .populate('brand', 'name slug')
+        .limit(2)
+        .lean();
+    } catch (err) {
+      populateError = {
+        message: err.message,
+        stack: err.stack
+      };
+    }
+
+    res.json({
+      success: true,
+      test1_raw: productsRaw,
+      test2_populated: productsPopulated,
+      test2_error: populateError
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: error.stack
     });
   }
 });
