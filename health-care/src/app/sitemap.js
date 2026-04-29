@@ -11,8 +11,8 @@ import { siteConfig } from '@/config/seo'
 
 // Inline fetch helper — replaces the deleted serverFetch utility
 async function fetchProducts() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  const res = await fetch(`${apiUrl}/api/products?limit=200&page=1`, {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const res = await fetch(`${apiUrl}/products?limit=200&page=1`, {
     next: { revalidate: 3600 }, // revalidate every hour
   });
   if (!res.ok) throw new Error(`Products fetch failed: ${res.status}`);
