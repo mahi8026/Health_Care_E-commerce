@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminTopBar from '@/components/admin/AdminTopBar';
@@ -15,10 +16,22 @@ import AnalyticsReports from '@/components/admin/AnalyticsReports';
 import SystemMonitoring from '@/components/admin/SystemMonitoring';
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('dashboard');
   const { user } = useAuth();
   // Ref to trigger the create modal inside ProductsManagement from the top bar
   const openCreateProductRef = useRef(null);
+
+  // Handle navigation to separate pages
+  useEffect(() => {
+    if (activeTab === 'coupons') {
+      router.push('/admin/coupons');
+    } else if (activeTab === 'categories') {
+      router.push('/admin/categories');
+    } else if (activeTab === 'manufacturers') {
+      router.push('/admin/manufacturers');
+    }
+  }, [activeTab, router]);
 
   const adminUser = {
     name: user?.name || 'Admin',
@@ -32,6 +45,7 @@ export default function AdminDashboardPage() {
     orders: { title: 'Orders Management', action: 'Export orders' },
     products: { title: 'Product Catalogue', action: '+ Add product' },
     customers: { title: 'B2B Customers', action: '+ Add B2B account' },
+    coupons: { title: 'Coupons & Discounts', action: '+ Create coupon' },
     quotes: { title: 'Quotation Requests', action: '+ New quotation' },
     returns: { title: 'Returns Management', action: 'Export returns' },
     analytics: { title: 'Analytics & Reports', action: 'Export report' },

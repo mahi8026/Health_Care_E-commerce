@@ -64,13 +64,19 @@ function onTokenRefreshed(token) {
 }
 
 async function handleResponse(response) {
+  console.log('[API] handleResponse - status:', response.status);
+  console.log('[API] handleResponse - ok:', response.ok);
+  
   const contentType = response.headers.get('content-type');
+  console.log('[API] handleResponse - content-type:', contentType);
   
   // Check if response is JSON
   if (contentType && contentType.includes('application/json')) {
     const data = await response.json();
+    console.log('[API] handleResponse - JSON data:', data);
     
     if (!response.ok) {
+      console.error('[API] handleResponse - Error response:', data);
       throw new ApiError(
         data.message || 'An error occurred',
         response.status,
@@ -82,8 +88,10 @@ async function handleResponse(response) {
   } else {
     // Handle non-JSON responses (HTML error pages, plain text, etc.)
     const text = await response.text();
+    console.log('[API] handleResponse - Text response:', text.substring(0, 200));
     
     if (!response.ok) {
+      console.error('[API] handleResponse - Non-JSON error:', text.substring(0, 200));
       throw new ApiError(
         text || `HTTP Error ${response.status}`,
         response.status,
@@ -192,11 +200,30 @@ function getAuthHeaders() {
 export const api = {
   // Products
   async getProducts(filters = {}) {
-    const params = new URLSearchParams(filters);
-    const response = await fetchWithAuth(`${API_BASE_URL}/products?${params}`, {
-      credentials: 'include'
+    console.log('[API] getProducts called with filters:', filters);
+    const params = new URLSearchParams();
+    
+    // Only add non-empty filter values
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value);
+      }
     });
-    return handleResponse(response);
+    
+    const url = `${API_BASE_URL}/products?${params}`;
+    console.log('[API] Fetching from URL:', url);
+    
+    try {
+      const response = await fetchWithAuth(url, {
+        credentials: 'include'
+      });
+      const data = await handleResponse(response);
+      console.log('[API] getProducts response:', data);
+      return data;
+    } catch (error) {
+      console.error('[API] getProducts error:', error);
+      throw error;
+    }
   },
 
   async getProduct(id) {

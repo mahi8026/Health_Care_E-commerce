@@ -37,6 +37,13 @@ const orderSchema = new mongoose.Schema({
   b2bDiscountPct: { type: Number, default: 0 },
   // legacy alias
   discount: { type: Number, default: 0 },
+  promoDiscount: { type: Number, default: 0 },
+  couponDiscount: { type: Number, default: 0 },
+  appliedCoupon: {
+    code: String,
+    type: String,
+    discountAmount: Number
+  },
   deliveryFee: { type: Number, default: 0 },
   vatAmount: { type: Number, default: 0 },
   totalAmount: { type: Number },
@@ -101,6 +108,17 @@ const orderSchema = new mongoose.Schema({
   deliveredAt: { type: Date },
   receivedBy: { type: String },
   notes: { type: String },
+  notesHistory: [{
+    note: String,
+    addedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   poNumber: { type: String },
   invoiceNumber: { type: String },
   accountManager: { type: String },

@@ -1,0 +1,446 @@
+const Newsletter = require('../models/Newsletter');
+const { sendNewsletterWelcomeEmail, sendNewsletterBroadcast } = require('../utils/emailService');
+const logger = require('../utils/logger');
+
+// ─── Public: Subscribe ───────────────────────────────────────────────────────
+exports.subscribe = async (req, res) => {
+  try {
+    const { email, name, source = 'footer' } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Check if email already exists
+    let subscriber = await Newsletter.findOne({ email: email.toLowerCase() });
+
+    if (subscriber) {
+      if (subscriber.isSubscribed) {
+        return res.status(200).json({
+          success: true,
+          message: 'You are already subscribed to our newsletter',
+          alreadySubscribed: true
+        });
+      } else {
+        // Resubscribe
+        subscriber.isSubscribed = true;
+        subscriber.subscribedAt = new Date();
+        subscriber.unsubscribedAt = undefined;
+        if (name) subscriber.name = name;
+        if (source) subscriber.source = source;
+        await subscriber.save();
+
+        // Send welcome email
+        try {
+          await sendNewsletterWelcomeEmail(subscriber.email, subscriber.name, subscriber.unsubscribeToken);
+        } catch (emailErr) {
+          logger.error('Welcome email error:', emailErr);
+        }
+
+        return res.json({
+          success: true,
+          message: 'Welcome back! You have been resubscribed to our newsletter'
+        });
+      }
+    }
+
+    // Create new subscriber
+    subscriber = await Newsletter.create({
+      email: email.toLowerCase(),
+      name,
+      source,
+      isSubscribed: true
+    });
+
+    // Send welcome email
+    try {
+      await sendNewsletterWelcomeEmail(subscriber.email, subscriber.name, subscriber.unsubscribeToken);
+    } catch (emailErr) {
+      logger.error('Welcome email error:', emailErr);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Thank you for subscribing! Check your email for confirmation.'
+    });
+  } catch (error) {
+    logger.error('Subscribe error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to subscribe',
+      error: error.message
+    });
+  }
+};
+
+// ─── Public: Unsubscribe ─────────────────────────────────────────────────────
+exports.unsubscribe = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Invalid Link - MedCore BD</title>
+          <style>
+            body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
+            .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+            h1 { color:#E24B4A; font-size:24px; margin-bottom:16px; }
+            p { color:#666; font-size:14px; line-height:1.6; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>❌ Invalid Unsubscribe Link</h1>
+            <p>The unsubscribe link is invalid or expired. Please contact support if you need assistance.</p>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    const subscriber = await Newsletter.findOne({ unsubscribeToken: token });
+
+    if (!subscriber) {
+      return res.status(404).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Not Found - MedCore BD</title>
+          <style>
+            body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
+            .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+            h1 { color:#E24B4A; font-size:24px; margin-bottom:16px; }
+            p { color:#666; font-size:14px; line-height:1.6; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>❌ Subscriber Not Found</h1>
+            <p>We couldn't find your subscription. You may have already unsubscribed.</p>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    if (!subscriber.isSubscribed) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Already Unsubscribed - MedCore BD</title>
+          <style>
+            body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
+            .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+            h1 { color:#0B2545; font-size:24px; margin-bottom:16px; }
+            p { color:#666; font-size:14px; line-height:1.6; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>✓ Already Unsubscribed</h1>
+            <p>You have already unsubscribed from our newsletter.</p>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    // Unsubscribe
+    subscriber.isSubscribed = false;
+    subscriber.unsubscribedAt = new Date();
+    await subscriber.save();
+
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Unsubscribed - MedCore BD</title>
+        <style>
+          body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
+          .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+          .logo { font-size:28px; font-weight:700; color:#0B2545; margin-bottom:24px; }
+          .logo sup { font-size:14px; color:#0E8A6E; }
+          h1 { color:#0B2545; font-size:24px; margin-bottom:16px; }
+          p { color:#666; font-size:14px; line-height:1.6; margin-bottom:12px; }
+          .footer { margin-top:32px; padding-top:24px; border-top:1px solid #E5E7EB; font-size:12px; color:#999; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo">🏥 MedCore<sup>BD</sup></div>
+          <h1>✓ You have been unsubscribed successfully</h1>
+          <p>We're sorry to see you go! You will no longer receive newsletter emails from MedCore BD.</p>
+          <p>If you change your mind, you can always resubscribe from our website.</p>
+          <div class="footer">
+            <p>MedCore BD | Medical Equipment & Supplies</p>
+            <p>Dhaka, Bangladesh | support@medcorebd.com</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+  } catch (error) {
+    logger.error('Unsubscribe error:', error);
+    res.status(500).send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Error - MedCore BD</title>
+        <style>
+          body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
+          .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+          h1 { color:#E24B4A; font-size:24px; margin-bottom:16px; }
+          p { color:#666; font-size:14px; line-height:1.6; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>❌ Something went wrong</h1>
+          <p>We encountered an error while processing your request. Please try again later or contact support.</p>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+};
+
+// ─── Admin: Get Subscribers ──────────────────────────────────────────────────
+exports.getSubscribers = async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 50, 
+      search = '', 
+      isSubscribed, 
+      source, 
+      tags 
+    } = req.query;
+
+    const query = {};
+
+    // Search by email or name
+    if (search) {
+      query.$or = [
+        { email: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Filter by subscription status
+    if (isSubscribed !== undefined) {
+      query.isSubscribed = isSubscribed === 'true';
+    }
+
+    // Filter by source
+    if (source) {
+      query.source = source;
+    }
+
+    // Filter by tags
+    if (tags) {
+      query.tags = { $in: Array.isArray(tags) ? tags : [tags] };
+    }
+
+    const total = await Newsletter.countDocuments(query);
+    const subscribers = await Newsletter.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .lean();
+
+    // Get counts
+    const totalSubscribers = await Newsletter.countDocuments();
+    const activeSubscribers = await Newsletter.countDocuments({ isSubscribed: true });
+    const unsubscribedCount = await Newsletter.countDocuments({ isSubscribed: false });
+
+    res.json({
+      success: true,
+      data: {
+        subscribers,
+        pagination: {
+          total,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          pages: Math.ceil(total / parseInt(limit))
+        },
+        stats: {
+          total: totalSubscribers,
+          active: activeSubscribers,
+          unsubscribed: unsubscribedCount
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Get subscribers error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch subscribers',
+      error: error.message
+    });
+  }
+};
+
+// ─── Admin: Delete Subscriber ────────────────────────────────────────────────
+exports.deleteSubscriber = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const subscriber = await Newsletter.findByIdAndDelete(id);
+
+    if (!subscriber) {
+      return res.status(404).json({
+        success: false,
+        message: 'Subscriber not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Subscriber deleted successfully'
+    });
+  } catch (error) {
+    logger.error('Delete subscriber error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete subscriber',
+      error: error.message
+    });
+  }
+};
+
+// ─── Admin: Broadcast Email ──────────────────────────────────────────────────
+exports.broadcast = async (req, res) => {
+  try {
+    const { subject, htmlContent, targetTags = [] } = req.body;
+
+    if (!subject || !htmlContent) {
+      return res.status(400).json({
+        success: false,
+        message: 'Subject and content are required'
+      });
+    }
+
+    // Build query for target subscribers
+    const query = { isSubscribed: true };
+    if (targetTags && targetTags.length > 0) {
+      query.tags = { $in: targetTags };
+    }
+
+    const subscribers = await Newsletter.find(query).lean();
+
+    if (subscribers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No active subscribers found for the selected criteria'
+      });
+    }
+
+    // Process in batches of 50 to avoid rate limits
+    const BATCH_SIZE = 50;
+    let sent = 0;
+    let failed = 0;
+
+    for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
+      const batch = subscribers.slice(i, i + BATCH_SIZE);
+      
+      await Promise.allSettled(
+        batch.map(async (subscriber) => {
+          try {
+            await sendNewsletterBroadcast(
+              subscriber.email,
+              subscriber.name,
+              subject,
+              htmlContent,
+              subscriber.unsubscribeToken
+            );
+            sent++;
+          } catch (err) {
+            logger.error(`Failed to send to ${subscriber.email}:`, err);
+            failed++;
+          }
+        })
+      );
+
+      // Small delay between batches
+      if (i + BATCH_SIZE < subscribers.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Broadcast completed',
+      data: {
+        sent,
+        failed,
+        total: subscribers.length
+      }
+    });
+  } catch (error) {
+    logger.error('Broadcast error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send broadcast',
+      error: error.message
+    });
+  }
+};
+
+// ─── Admin: Get Stats ────────────────────────────────────────────────────────
+exports.getStats = async (req, res) => {
+  try {
+    const total = await Newsletter.countDocuments();
+    const active = await Newsletter.countDocuments({ isSubscribed: true });
+    const unsubscribed = await Newsletter.countDocuments({ isSubscribed: false });
+
+    // Subscriptions this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const thisMonth = await Newsletter.countDocuments({
+      subscribedAt: { $gte: startOfMonth }
+    });
+
+    // Top sources
+    const sourceStats = await Newsletter.aggregate([
+      { $match: { isSubscribed: true } },
+      { $group: { _id: '$source', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        total,
+        active,
+        unsubscribed,
+        thisMonth,
+        sources: sourceStats.map(s => ({ source: s._id, count: s.count }))
+      }
+    });
+  } catch (error) {
+    logger.error('Get stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch stats',
+      error: error.message
+    });
+  }
+};

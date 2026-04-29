@@ -5,7 +5,6 @@ import { CldUploadWidget } from 'next-cloudinary';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const CATEGORIES = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines', 'Lab Equipment', 'Dental Equipment', 'PPE', 'Implants'];
 const UNITS = ['piece', 'box', 'kit', 'pack'];
 const CERTIFICATIONS = ['CE', 'FDA', 'ISO', 'DGDA'];
 
@@ -13,8 +12,8 @@ const EMPTY_CREATE_FORM = {
   sku: '',
   name: '',
   description: '',
-  brand: '',
-  category: 'Diagnostic Equipment',
+  brand: '', // Will store ObjectId when selected from dropdown
+  category: '', // Will store ObjectId when selected from dropdown
   subcategory: '',
   price: '',
   b2bPrice: '',
@@ -46,6 +45,11 @@ export default function ProductsManagement({ openCreateRef }) {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ text: '', type: '' });
 
+  // Dynamic data from API
+  const [categories, setCategories] = useState([]);
+  const [manufacturers, setManufacturers] = useState([]);
+  const [loadingMeta, setLoadingMeta] = useState(true);
+
   // Edit modal state
   const [modalMode, setModalMode] = useState('create'); // 'create' | 'edit'
   const [modalProduct, setModalProduct] = useState(null); // product being edited
@@ -55,10 +59,53 @@ export default function ProductsManagement({ openCreateRef }) {
   const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
   const [creating, setCreating] = useState(false);
 
+  // Brand search state
+  const [brandSearch, setBrandSearch] = useState('');
+  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+
   // Expose open function to parent via ref
   useEffect(() => {
     if (openCreateRef) openCreateRef.current = () => setShowCreate(true);
   }, [openCreateRef]);
+
+  // Close brand dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showBrandDropdown && !e.target.closest('.brand-dropdown-container')) {
+        setShowBrandDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showBrandDropdown]);
+
+  // Fetch categories and manufacturers on mount
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        setLoadingMeta(true);
+        const token = localStorage.getItem('medcore_token');
+        const headers = { Authorization: `Bearer ${token}` };
+        
+        const [categoriesRes, manufacturersRes] = await Promise.all([
+          fetch(`${API}/categories`, { headers }),
+          fetch(`${API}/manufacturers`, { headers })
+        ]);
+        
+        const categoriesData = await categoriesRes.json();
+        const manufacturersData = await manufacturersRes.json();
+        
+        setCategories(categoriesData.success ? categoriesData.data : []);
+        setManufacturers(manufacturersData.success ? manufacturersData.data : []);
+      } catch (err) {
+        console.error('Failed to load metadata:', err);
+        showMessage('Failed to load categories/manufacturers', 'error');
+      } finally {
+        setLoadingMeta(false);
+      }
+    };
+    fetchMetadata();
+  }, []);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -100,12 +147,17 @@ export default function ProductsManagement({ openCreateRef }) {
   const handleEditOpen = (product) => {
     setModalMode('edit');
     setModalProduct(product);
+    
+    // Extract IDs from populated fields (handle both string and ObjectId formats)
+    const categoryId = typeof product.category === 'object' ? product.category._id : product.category;
+    const brandId = typeof product.brand === 'object' ? product.brand._id : product.brand;
+    
     // Pre-fill createForm with all product fields
     setCreateForm({
       name:              product.name || '',
       sku:               product.sku || '',
-      brand:             product.brand || '',
-      category:          product.category || '',
+      brand:             brandId || '',
+      category:          categoryId || '',
       subcategory:       product.subcategory || '',
       description:       product.description || '',
       price:             product.price?.toString() || '',
@@ -129,6 +181,16 @@ export default function ProductsManagement({ openCreateRef }) {
       isActive:          product.isActive !== false,
       images:            product.images || [],
     });
+    
+    // Set brand search to display name
+    if (typeof product.brand === 'object' && product.brand.name) {
+      setBrandSearch(product.brand.name);
+    } else if (typeof product.brand === 'string') {
+      // Legacy string brand - find matching manufacturer
+      const manufacturer = manufacturers.find(m => m._id === product.brand || m.name === product.brand);
+      setBrandSearch(manufacturer?.name || product.brand);
+    }
+    
     setShowCreate(true); // reuse the same modal
   };
 
@@ -154,9 +216,7 @@ export default function ProductsManagement({ openCreateRef }) {
       });
       if (!res.ok) throw new Error('Update failed');
       showMessage('Product updated', 'success');
-      setShowCreate(false);
-      setModalProduct(null);
-      setModalMode('create');
+      closeModal();
       fetchProducts();
     } catch {
       showMessage('Failed to update product', 'error');
@@ -168,6 +228,15 @@ export default function ProductsManagement({ openCreateRef }) {
   const showMessage = (text, type) => {
     setMessage({ text, type });
     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
+  const closeModal = () => {
+    setShowCreate(false);
+    setCreateForm(EMPTY_CREATE_FORM);
+    setModalMode('create');
+    setModalProduct(null);
+    setBrandSearch('');
+    setShowBrandDropdown(false);
   };
 
   // ── Image upload (via CldUploadWidget) ─────────────────────────────────────
@@ -209,12 +278,14 @@ export default function ProductsManagement({ openCreateRef }) {
     if (!createForm.sku.trim()) return showMessage('SKU is required', 'error');
     if (!createForm.name.trim()) return showMessage('Product name is required', 'error');
     if (!createForm.description.trim()) return showMessage('Description is required', 'error');
-    if (!createForm.brand.trim()) return showMessage('Brand is required', 'error');
+    if (!createForm.brand) return showMessage('Brand is required', 'error');
+    if (!createForm.category) return showMessage('Category is required', 'error');
     if (!createForm.price || isNaN(Number(createForm.price))) return showMessage('Valid price is required', 'error');
     if (createForm.stock === '' || isNaN(Number(createForm.stock))) return showMessage('Valid stock quantity is required', 'error');
     
     // Reagent validation
-    if (createForm.category === 'Laboratory Reagents' && !createForm.lotNumber.trim()) {
+    const selectedCategory = categories.find(c => c._id === createForm.category);
+    if (selectedCategory?.name === 'Laboratory Reagents' && !createForm.lotNumber.trim()) {
       return showMessage('Lot number is required for reagents', 'error');
     }
 
@@ -258,10 +329,7 @@ export default function ProductsManagement({ openCreateRef }) {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || `${modalMode === 'edit' ? 'Update' : 'Create'} failed`);
       showMessage(modalMode === 'edit' ? 'Product updated successfully' : 'Product created successfully', 'success');
-      setShowCreate(false);
-      setCreateForm(EMPTY_CREATE_FORM);
-      setModalMode('create');
-      setModalProduct(null);
+      closeModal();
       fetchProducts();
     } catch (err) {
       showMessage(err.message || `Failed to ${modalMode === 'edit' ? 'update' : 'create'} product`, 'error');
@@ -299,7 +367,7 @@ export default function ProductsManagement({ openCreateRef }) {
                 {modalMode === 'edit' ? `Edit — ${modalProduct?.name}` : 'Add New Product'}
               </h3>
               <button
-                onClick={() => { setShowCreate(false); setCreateForm(EMPTY_CREATE_FORM); setModalMode('create'); setModalProduct(null); }}
+                onClick={closeModal}
                 className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-xl leading-none"
                 aria-label="Close"
               >
@@ -425,7 +493,6 @@ export default function ProductsManagement({ openCreateRef }) {
                 )}
               </div>
 
-              {/* Required fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">SKU <span className="text-red-500">*</span></label>
@@ -439,13 +506,48 @@ export default function ProductsManagement({ openCreateRef }) {
                 </div>
                 <div>
                   <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Brand <span className="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Siemens"
-                    value={createForm.brand}
-                    onChange={e => setCreateForm(f => ({ ...f, brand: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
-                  />
+                  <div className="relative brand-dropdown-container">
+                    <input
+                      type="text"
+                      placeholder="Search manufacturer..."
+                      value={brandSearch}
+                      onChange={e => {
+                        setBrandSearch(e.target.value);
+                        setShowBrandDropdown(true);
+                      }}
+                      onFocus={() => setShowBrandDropdown(true)}
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    />
+                    {showBrandDropdown && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border-[0.5px] border-[var(--color-border-secondary)] rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {(manufacturers || [])
+                          .filter(m => m.name.toLowerCase().includes(brandSearch.toLowerCase()))
+                          .map(manufacturer => (
+                            <div
+                              key={manufacturer._id}
+                              onClick={() => {
+                                setCreateForm(f => ({ ...f, brand: manufacturer._id }));
+                                setBrandSearch(manufacturer.name);
+                                setShowBrandDropdown(false);
+                              }}
+                              className="px-3 py-2 hover:bg-[var(--color-background-tertiary)] cursor-pointer text-[13px]"
+                            >
+                              {manufacturer.name}
+                              {manufacturer.country && (
+                                <span className="text-[11px] text-[var(--color-text-secondary)] ml-2">
+                                  ({manufacturer.country})
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        {(manufacturers || []).filter(m => m.name.toLowerCase().includes(brandSearch.toLowerCase())).length === 0 && (
+                          <div className="px-3 py-2 text-[13px] text-[var(--color-text-secondary)]">
+                            No manufacturers found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -479,7 +581,12 @@ export default function ProductsManagement({ openCreateRef }) {
                     onChange={e => setCreateForm(f => ({ ...f, category: e.target.value, subcategory: '' }))}
                     className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
                   >
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    <option value="">Select category...</option>
+                    {(categories || []).map(c => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -778,36 +885,39 @@ export default function ProductsManagement({ openCreateRef }) {
               </div>
 
               {/* Reagent-specific fields */}
-              {createForm.category === 'Laboratory Reagents' && (
-                <div className="bg-[#E6F1FB] rounded-lg p-4">
-                  <div className="text-[12px] font-semibold text-[#0C447C] mb-3 flex items-center gap-2">
-                    🧪 Reagent Details
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[11px] text-[#6B7280] mb-1">
-                        Lot Number <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        value={createForm.lotNumber}
-                        onChange={e => setCreateForm(f => ({ ...f, lotNumber: e.target.value }))}
-                        placeholder="e.g. LOT-2025-08841"
-                        className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
-                      />
+              {(() => {
+                const selectedCategory = categories.find(c => c._id === createForm.category);
+                return selectedCategory?.name === 'Laboratory Reagents' && (
+                  <div className="bg-[#E6F1FB] rounded-lg p-4">
+                    <div className="text-[12px] font-semibold text-[#0C447C] mb-3 flex items-center gap-2">
+                      🧪 Reagent Details
                     </div>
-                    <div>
-                      <label className="block text-[11px] text-[#6B7280] mb-1">Expiry Date</label>
-                      <input
-                        type="date"
-                        value={createForm.expiryDate}
-                        onChange={e => setCreateForm(f => ({ ...f, expiryDate: e.target.value }))}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] text-[#6B7280] mb-1">
+                          Lot Number <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          value={createForm.lotNumber}
+                          onChange={e => setCreateForm(f => ({ ...f, lotNumber: e.target.value }))}
+                          placeholder="e.g. LOT-2025-08841"
+                          className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-[#6B7280] mb-1">Expiry Date</label>
+                        <input
+                          type="date"
+                          value={createForm.expiryDate}
+                          onChange={e => setCreateForm(f => ({ ...f, expiryDate: e.target.value }))}
+                          min={new Date().toISOString().split('T')[0]}
+                          className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Toggles */}
               <div className="flex gap-6">
@@ -842,7 +952,7 @@ export default function ProductsManagement({ openCreateRef }) {
                 {creating ? 'Saving…' : modalMode === 'edit' ? 'Save Changes' : 'Create Product'}
               </button>
               <button
-                onClick={() => { setShowCreate(false); setCreateForm(EMPTY_CREATE_FORM); setModalMode('create'); setModalProduct(null); }}
+                onClick={closeModal}
                 className="flex-1 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 Cancel
@@ -860,7 +970,11 @@ export default function ProductsManagement({ openCreateRef }) {
           className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
         >
           <option value="">All categories</option>
-          {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          {(categories || []).map(c => (
+            <option key={c._id} value={c._id}>
+              {c.name}
+            </option>
+          ))}
         </select>
         <div className="ml-auto flex items-center gap-3">
           <span className="text-[12px] text-[var(--color-text-secondary)]">{total} products total</span>
@@ -893,11 +1007,15 @@ export default function ProductsManagement({ openCreateRef }) {
             <tbody>
               {products.map(product => {
                 const stockStatus = getStockStatus(product);
+                // Handle both populated objects and string values for backward compatibility
+                const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+                const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+                
                 return (
                   <tr key={product._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
                     <td className="px-4 py-3 text-[11px] font-mono text-[var(--color-text-secondary)]">{product.sku}</td>
                     <td className="px-4 py-3 text-[12px] font-medium">{product.name}</td>
-                    <td className="px-4 py-3 text-[12px]">{product.category}</td>
+                    <td className="px-4 py-3 text-[12px]">{categoryName || '—'}</td>
                     <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">{product.stock}</td>
                     <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(product.price || 0).toLocaleString()}

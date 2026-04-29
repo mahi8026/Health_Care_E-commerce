@@ -30,4 +30,20 @@ const apiLimiter = rateLimit({
   skip: () => process.env.NODE_ENV === 'development'
 });
 
-module.exports = { authLimiter, apiLimiter };
+/**
+ * Review rate limiter — 5 reviews per day per user.
+ */
+const reviewRateLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 5,
+  message: {
+    success: false,
+    message: 'You have reached the daily review limit (5 reviews per day).'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'development',
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip
+});
+
+module.exports = { authLimiter, apiLimiter, reviewRateLimiter };

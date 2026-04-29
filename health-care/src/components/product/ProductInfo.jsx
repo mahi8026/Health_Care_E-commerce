@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ProductInfo({
   product,
@@ -10,10 +13,14 @@ export default function ProductInfo({
   selectedWarranty,
   setSelectedWarranty
 }) {
-  const { addToCart, isInWishlist, addToWishlist, removeFromWishlist } = useCart();
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { isAuthenticated } = useAuth();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
+  const [togglingWishlist, setTogglingWishlist] = useState(false);
 
   // Safe price values with fallback to 0
   const price = product.price || 0;
@@ -21,7 +28,7 @@ export default function ProductInfo({
   const rating = product.rating || 0;
   const savings = oldPrice > price ? oldPrice - price : 0;
   const discountPercent = oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0;
-  const inWishlist = isInWishlist(product.id);
+  const inWishlist = isInWishlist(product._id || product.id);
 
   const handleAddToCart = useCallback(async () => {
     setAddingToCart(true);
@@ -35,17 +42,24 @@ export default function ProductInfo({
     }
   }, [addToCart, product, quantity]);
 
-  const handleToggleWishlist = useCallback(() => {
-    if (inWishlist) {
-      removeFromWishlist(product.id);
-      setToastMessage('Removed from wishlist');
-    } else {
-      addToWishlist(product);
-      setToastMessage('Added to wishlist');
+  const handleToggleWishlist = useCallback(async () => {
+    if (!isAuthenticated()) {
+      router.push('/login');
+      return;
     }
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  }, [addToWishlist, inWishlist, product, removeFromWishlist]);
+
+    setTogglingWishlist(true);
+    const result = await toggleWishlist(product._id || product.id);
+    setTogglingWishlist(false);
+
+    if (result.success) {
+      setToastMessage(result.added ? 'Added to wishlist' : 'Removed from wishlist');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } else if (result.requiresLogin) {
+      router.push('/login');
+    }
+  }, [toggleWishlist, product, isAuthenticated, router]);
 
   return (
     <div>
@@ -61,9 +75,11 @@ export default function ProductInfo({
       {/* Meta Tags */}
       <div className="flex gap-2 items-center mb-[10px] flex-wrap">
         <span className="text-[11px] text-[#0E8A6E] font-medium bg-[#E1F5EE] px-2 py-[3px] rounded">
-          {product.brand}
+          {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </span>
-        <span className="text-[11px] text-[var(--color-text-secondary)]">{product.category}</span>
+        <span className="text-[11px] text-[var(--color-text-secondary)]">
+          {typeof product.category === 'object' ? product.category?.name : product.category}
+        </span>
         <span className="text-[11px] text-[var(--color-text-tertiary)]">SKU: {product.sku}</span>
       </div>
 
@@ -224,15 +240,24 @@ export default function ProductInfo({
         </button>
         <button 
           onClick={handleToggleWishlist}
-          className={`w-[42px] h-[42px] rounded-lg border-[0.5px] flex items-center justify-center cursor-pointer transition-colors ${
+          disabled={togglingWishlist}
+          aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          className={`w-[42px] h-[42px] rounded-lg border-[0.5px] flex items-center justify-center cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             inWishlist 
               ? 'border-[#E24B4A] bg-[#FEE2E2]' 
               : 'border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)]'
           }`}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill={inWishlist ? '#E24B4A' : 'none'} stroke={inWishlist ? '#E24B4A' : 'currentColor'} strokeWidth="1.5">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-          </svg>
+          {togglingWishlist ? (
+            <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill={inWishlist ? '#E24B4A' : 'none'} stroke={inWishlist ? '#E24B4A' : 'currentColor'} strokeWidth="1.5">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
+          )}
         </button>
       </div>
 

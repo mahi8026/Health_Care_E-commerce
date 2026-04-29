@@ -1,19 +1,111 @@
-import { useState } from 'react';
+"use client";
 
-export default function OrderSummary({ items }) {
-  const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState(null);
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const VAT_RATE = 0.05; // 5%
+
+export default function OrderSummary({ items, deliveryMethod = 'standard', appliedCoupon, onCouponApply, userId }) {
+  const { isAuthenticated } = useAuth();
+  const [couponCode, setCouponCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [showCouponInput, setShowCouponInput] = useState(false);
+
+  // Calculate subtotal
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const b2bDiscount = subtotal * 0.08;
-  const deliveryFee = 150;
-  const promoDiscount = appliedPromo ? 500 : 0;
-  const total = subtotal - b2bDiscount + deliveryFee - promoDiscount;
 
-  const handleApplyPromo = () => {
-    if (promoCode === 'FIRST500') {
-      setAppliedPromo({ code: 'FIRST500', discount: 500 });
+  // Delivery fee based on method
+  const deliveryFee = deliveryMethod === 'express' ? 300 : 
+                      deliveryMethod === 'nationwide' ? 200 :
+                      deliveryMethod === 'cold_chain' ? 500 : 150;
+
+  // Coupon discount
+  const couponDiscount = appliedCoupon?.discountAmount || 0;
+
+  // VAT calculation (after discount)
+  const taxableAmount = subtotal - couponDiscount + deliveryFee;
+  const vatAmount = Math.round(taxableAmount * VAT_RATE * 100) / 100;
+
+  // Total
+  const total = Math.round((taxableAmount + vatAmount) * 100) / 100;
+
+  // Clear error when coupon code changes
+  useEffect(() => {
+    if (couponError) {
+      setCouponError('');
     }
+  }, [couponCode]);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError('Please enter a coupon code');
+      return;
+    }
+
+    if (!isAuthenticated()) {
+      setCouponError('Please login to apply coupon');
+      return;
+    }
+
+    if (appliedCoupon) {
+      setCouponError('A coupon is already applied. Remove it first.');
+      return;
+    }
+
+    setCouponLoading(true);
+    setCouponError('');
+
+    try {
+      const token = localStorage.getItem('medcore_token');
+      
+      // Prepare cart items with category info
+      const cartItems = items.map(item => ({
+        productId: item.id,
+        categoryId: item.categoryId || null,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      const res = await fetch(`${API}/coupons/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          code: couponCode.toUpperCase(),
+          cartTotal: subtotal,
+          cartItems,
+          userId
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.valid) {
+        onCouponApply({
+          code: data.data.code,
+          type: data.data.type,
+          discountAmount: data.data.discountAmount
+        });
+        setCouponCode('');
+        setShowCouponInput(false);
+      } else {
+        setCouponError(data.message || 'Invalid coupon code');
+      }
+    } catch (error) {
+      setCouponError('Failed to validate coupon. Please try again.');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    onCouponApply(null);
+    setCouponCode('');
+    setCouponError('');
   };
 
   const getItemIcon = (icon) => {
@@ -69,29 +161,83 @@ export default function OrderSummary({ items }) {
         ))}
       </div>
 
-      {/* Promo Code */}
+      {/* Coupon Section */}
       <div className="mb-4">
-        <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2 font-[family-name:var(--font-plus-jakarta)]">
-          Promo code
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-            placeholder="Enter code"
-            className="flex-1 px-3 py-[9px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
-          />
+        {!appliedCoupon && !showCouponInput && (
           <button
-            onClick={handleApplyPromo}
-            className="px-4 py-[9px] bg-[var(--color-background-tertiary)] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-secondary)]"
+            onClick={() => setShowCouponInput(true)}
+            className="text-[12px] text-[#0E8A6E] font-medium hover:underline cursor-pointer"
           >
-            Apply
+            Have a coupon? Click here
           </button>
-        </div>
-        {appliedPromo && (
-          <div className="mt-2 text-[11px] text-[#0E8A6E] flex items-center gap-1">
-            ✓ Code "{appliedPromo.code}" applied
+        )}
+
+        {showCouponInput && !appliedCoupon && (
+          <div>
+            <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2 font-[family-name:var(--font-plus-jakarta)]">
+              Coupon code
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
+                placeholder="Enter code"
+                disabled={couponLoading}
+                className="flex-1 px-3 py-[9px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-mono uppercase font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50"
+              />
+              <button
+                onClick={handleApplyCoupon}
+                disabled={couponLoading || !couponCode.trim()}
+                className="px-4 py-[9px] bg-[#0B2545] text-white rounded-lg text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2e56] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {couponLoading ? (
+                  <>
+                    <span className="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    Applying...
+                  </>
+                ) : (
+                  'Apply'
+                )}
+              </button>
+            </div>
+            {couponError && (
+              <div className="mt-2 text-[11px] text-[#E24B4A] flex items-center gap-1">
+                ❌ {couponError}
+              </div>
+            )}
+            <button
+              onClick={() => {
+                setShowCouponInput(false);
+                setCouponCode('');
+                setCouponError('');
+              }}
+              className="mt-2 text-[11px] text-[var(--color-text-secondary)] hover:underline"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {appliedCoupon && (
+          <div className="bg-[#D1FAE5] border-[0.5px] border-[#0E8A6E] rounded-lg p-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1">
+                <div className="text-[12px] font-semibold text-[#065F46] mb-1 flex items-center gap-1">
+                  ✅ {appliedCoupon.code} applied
+                </div>
+                <div className="text-[11px] text-[#065F46]">
+                  You saved ৳{appliedCoupon.discountAmount.toLocaleString()}
+                </div>
+              </div>
+              <button
+                onClick={handleRemoveCoupon}
+                className="text-[11px] text-[#065F46] hover:text-[#064E3B] font-medium hover:underline"
+              >
+                Remove
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -104,26 +250,29 @@ export default function OrderSummary({ items }) {
             ৳{subtotal.toLocaleString()}
           </span>
         </div>
-        <div className="flex justify-between text-[12px]">
-          <span className="text-[#0E8A6E]">B2B discount (8%)</span>
-          <span className="text-[#0E8A6E] font-medium font-[family-name:var(--font-plus-jakarta)]">
-            −৳{b2bDiscount.toLocaleString()}
-          </span>
-        </div>
-        <div className="flex justify-between text-[12px]">
-          <span className="text-[var(--color-text-secondary)]">Delivery fee</span>
-          <span className="font-medium font-[family-name:var(--font-plus-jakarta)]">
-            ৳{deliveryFee}
-          </span>
-        </div>
-        {promoDiscount > 0 && (
+
+        {couponDiscount > 0 && (
           <div className="flex justify-between text-[12px]">
-            <span className="text-[#0E8A6E]">Promo discount</span>
+            <span className="text-[#0E8A6E]">Coupon discount</span>
             <span className="text-[#0E8A6E] font-medium font-[family-name:var(--font-plus-jakarta)]">
-              −৳{promoDiscount}
+              −৳{couponDiscount.toLocaleString()}
             </span>
           </div>
         )}
+
+        <div className="flex justify-between text-[12px]">
+          <span className="text-[var(--color-text-secondary)]">Delivery fee</span>
+          <span className="font-medium font-[family-name:var(--font-plus-jakarta)]">
+            ৳{deliveryFee.toLocaleString()}
+          </span>
+        </div>
+
+        <div className="flex justify-between text-[12px]">
+          <span className="text-[var(--color-text-secondary)]">VAT (5%)</span>
+          <span className="font-medium font-[family-name:var(--font-plus-jakarta)]">
+            ৳{vatAmount.toLocaleString()}
+          </span>
+        </div>
       </div>
 
       {/* Total */}

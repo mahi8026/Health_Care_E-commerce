@@ -9,18 +9,21 @@ export default function FrequentlyBought({ productId, category }) {
   const [related, setRelated] = useState([]);
   const { addToCart } = useCart();
 
+  // category can be an ObjectId string or a populated object {_id, name, slug}
+  const categoryId = category && typeof category === 'object' ? category._id : category;
+
   useEffect(() => {
-    if (!category) return;
-    const params = new URLSearchParams({ category, limit: 3 });
+    if (!categoryId) return;
+    const params = new URLSearchParams({ category: categoryId, limit: 3 });
     if (productId) params.set('exclude', productId);
     fetch(`${API}/products?${params}`)
       .then(r => r.json())
       .then(data => {
         const items = data.products || data.data?.products || [];
-        setRelated(items.slice(0, 3));
+        setRelated(items.filter(p => (p._id || p.id) !== productId).slice(0, 3));
       })
       .catch(() => setRelated([]));
-  }, [productId, category]);
+  }, [productId, categoryId]);
 
   if (related.length === 0) return null;
 

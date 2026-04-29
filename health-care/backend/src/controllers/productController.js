@@ -1,9 +1,18 @@
 const Product = require('../models/Product');
+const Category = require('../models/Category');
+const Manufacturer = require('../models/Manufacturer');
+const mongoose = require('mongoose');
 const CacheService = require('../services/cacheService');
 const { invalidateProductCache, invalidateProductListCache } = require('../services/cacheInvalidation');
 const logger = require('../utils/logger');
+const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 
 const cacheService = new CacheService();
+
+// Helper: escape special regex characters
+function escapeRegex(str) {
+  return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -16,24 +25,63 @@ exports.getProducts = async (req, res) => {
       search,
       minPrice,
       maxPrice,
+      inStock,
       sortBy,
       page = 1,
       limit = 20
     } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.min(100, parseInt(limit));
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.min(100, parseInt(limit) || 20);
 
     let query = { isActive: true };
 
-    if (category && category !== 'undefined') query.category = category;
-    if (brand && brand !== 'undefined') query.brand = brand;
-    
-    // Only add price filter if valid numbers are provided
+    // ── Category filter ──────────────────────────────────────────────────────
+    // category field on Product is an ObjectId ref — must resolve name → _id
+    if (category && category !== 'undefined' && category.trim() !== '') {
+      if (mongoose.isValidObjectId(category)) {
+        query.category = new mongoose.Types.ObjectId(category);
+      } else {
+        const categoryDoc = await Category.findOne({
+          name: { $regex: new RegExp('^' + escapeRegex(category.trim()) + '$', 'i') }
+        }).lean();
+        if (categoryDoc) {
+          query.category = categoryDoc._id;
+        } else {
+          // No matching category — return empty result gracefully
+          return res.status(200).json({
+            success: true, count: 0, total: 0,
+            page: pageNum, pages: 0, products: []
+          });
+        }
+      }
+    }
+
+    // ── Brand filter ─────────────────────────────────────────────────────────
+    // brand field on Product is an ObjectId ref — must resolve name → _id
+    if (brand && brand !== 'undefined' && brand.trim() !== '') {
+      if (mongoose.isValidObjectId(brand)) {
+        query.brand = new mongoose.Types.ObjectId(brand);
+      } else {
+        const brandDoc = await Manufacturer.findOne({
+          name: { $regex: new RegExp('^' + escapeRegex(brand.trim()) + '$', 'i') }
+        }).lean();
+        if (brandDoc) {
+          query.brand = brandDoc._id;
+        }
+        // If brand not found, just ignore the filter (don't crash)
+      }
+    }
+
+    // ── In-stock filter ──────────────────────────────────────────────────────
+    if (inStock === 'true') {
+      query.stock = { $gt: 0 };
+    }
+
+    // ── Price range filter ───────────────────────────────────────────────────
     if ((minPrice && minPrice !== 'undefined') || (maxPrice && maxPrice !== 'undefined')) {
       const min = parseFloat(minPrice);
       const max = parseFloat(maxPrice);
-      
       if (!isNaN(min) && min >= 0) {
         query.price = query.price || {};
         query.price.$gte = min;
@@ -43,25 +91,31 @@ exports.getProducts = async (req, res) => {
         query.price.$lte = max;
       }
     }
-    
+
+    // ── Search filter ────────────────────────────────────────────────────────
     if (search && search.trim() && search !== 'undefined') {
-      // Escape special regex characters for safe search
-      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const escaped = escapeRegex(search.trim());
       query.$or = [
-        { $text: { $search: search } },
         { name: { $regex: escaped, $options: 'i' } },
-        { brand: { $regex: escaped, $options: 'i' } }
+        { description: { $regex: escaped, $options: 'i' } },
+        { sku: { $regex: escaped, $options: 'i' } }
       ];
     }
 
+    // ── Sort ─────────────────────────────────────────────────────────────────
     let sort = {};
-    if (sortBy === 'price-low') sort.price = 1;
-    else if (sortBy === 'price-high') sort.price = -1;
-    else if (sortBy === 'name') sort.name = 1;
+    if (sortBy === 'price-low' || sortBy === 'price_asc') sort.price = 1;
+    else if (sortBy === 'price-high' || sortBy === 'price_desc') sort.price = -1;
+    else if (sortBy === 'name' || sortBy === 'name_asc') sort.name = 1;
+    else if (sortBy === 'name_desc') sort.name = -1;
+    else if (sortBy === 'newest') sort.createdAt = -1;
+    else if (sortBy === 'rating') sort['rating.average'] = -1;
     else sort.createdAt = -1;
 
     const [products, total] = await Promise.all([
       Product.find(query)
+        .populate('category', 'name slug')
+        .populate('brand', 'name slug logo')
         .sort(sort)
         .limit(limitNum)
         .skip((pageNum - 1) * limitNum)
@@ -69,9 +123,7 @@ exports.getProducts = async (req, res) => {
       Product.countDocuments(query)
     ]);
 
-    // HTTP cache for 5 minutes on public product list
     res.set('Cache-Control', 'public, max-age=300');
-
     res.status(200).json({
       success: true,
       count: products.length,
@@ -82,7 +134,11 @@ exports.getProducts = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getProducts] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -91,14 +147,16 @@ exports.getProducts = async (req, res) => {
 // @access  Public
 exports.getProduct = async (req, res) => {
   try {
-    const mongoose = require('mongoose');
     const idOrSlug = req.params.id;
     const product = await Product.findOne({
       $or: [
         ...(mongoose.isValidObjectId(idOrSlug) ? [{ _id: idOrSlug }] : []),
         { slug: idOrSlug }
       ]
-    }).lean();
+    })
+    .populate('category', 'name slug description')
+    .populate('brand', 'name slug logo country website')
+    .lean();
 
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
@@ -107,7 +165,11 @@ exports.getProduct = async (req, res) => {
     res.status(200).json({ success: true, data: product, product });
   } catch (error) {
     logger.error(`[getProduct] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -135,10 +197,24 @@ exports.createProduct = async (req, res) => {
     const product = await Product.create(req.body);
     invalidateProductListCache();
 
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.PRODUCT.CREATED,
+      targetModel: 'Product',
+      targetId: product._id,
+      targetName: product.name,
+      req,
+      metadata: { sku: product.sku, price: product.price, category: product.category }
+    });
+
     res.status(201).json({ success: true, message: 'Product created successfully', product });
   } catch (error) {
     logger.error(`[createProduct] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -163,18 +239,44 @@ exports.updateProduct = async (req, res) => {
       req.body.stock = stock;
     }
 
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-
-    if (!product) {
+    const oldProduct = await Product.findById(req.params.id).lean();
+    if (!oldProduct) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     invalidateProductCache(req.params.id);
+
+    const changes = {};
+    const fieldsToTrack = ['name', 'price', 'stock', 'isActive', 'category'];
+    fieldsToTrack.forEach(field => {
+      if (req.body[field] !== undefined && String(oldProduct[field]) !== String(req.body[field])) {
+        if (!changes.before) changes.before = {};
+        if (!changes.after) changes.after = {};
+        changes.before[field] = oldProduct[field];
+        changes.after[field] = req.body[field];
+      }
+    });
+
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.PRODUCT.UPDATED,
+      targetModel: 'Product',
+      targetId: product._id,
+      targetName: product.name,
+      req,
+      changes: Object.keys(changes).length > 0 ? changes : undefined,
+      metadata: { sku: product.sku }
+    });
 
     res.status(200).json({ success: true, message: 'Product updated successfully', product });
   } catch (error) {
     logger.error(`[updateProduct] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -184,17 +286,30 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
     invalidateProductCache(req.params.id);
 
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.PRODUCT.DELETED,
+      targetModel: 'Product',
+      targetId: product._id,
+      targetName: product.name,
+      req,
+      metadata: { sku: product.sku, price: product.price }
+    });
+
     res.status(200).json({ success: true, message: 'Product deleted successfully' });
   } catch (error) {
     logger.error(`[deleteProduct] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -204,6 +319,8 @@ exports.deleteProduct = async (req, res) => {
 exports.getFeaturedProducts = async (req, res) => {
   try {
     const products = await Product.find({ isFeatured: true, isActive: true })
+      .populate('category', 'name slug')
+      .populate('brand', 'name slug logo')
       .limit(6)
       .sort({ createdAt: -1 })
       .lean();
@@ -212,7 +329,11 @@ exports.getFeaturedProducts = async (req, res) => {
     res.status(200).json({ success: true, count: products.length, products });
   } catch (error) {
     logger.error(`[getFeaturedProducts] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -232,10 +353,14 @@ exports.getCategoryCounts = async (req, res) => {
       return acc;
     }, {});
 
-    res.set('Cache-Control', 'public, max-age=600'); // Cache for 10 minutes
+    res.set('Cache-Control', 'public, max-age=600');
     res.status(200).json({ success: true, data: result });
   } catch (error) {
     logger.error(`[getCategoryCounts] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };

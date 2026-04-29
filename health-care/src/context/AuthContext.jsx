@@ -8,17 +8,17 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false); // Changed from true to false - don't block initial render
+  const [loading, setLoading] = useState(true); // Start with true to properly check auth on mount
 
   // Rehydrate user from token on page refresh
   useEffect(() => {
     const loadUser = async () => {
       const token = getToken();
       if (!token) {
+        setLoading(false);
         return; // No token, no need to fetch
       }
       
-      setLoading(true);
       try {
         // Increase timeout to 8s to handle slow networks (FIX 11)
         const controller = new AbortController();
@@ -35,6 +35,7 @@ export function AuthProvider({ children }) {
         // Only clear tokens on auth errors, not network errors
         if (error.status === 401 || error.status === 403) {
           removeToken();
+          setUser(null);
         }
         console.error('[AuthContext] Failed to load user:', error.message);
       } finally {
@@ -42,7 +43,6 @@ export function AuthProvider({ children }) {
       }
     };
     
-    // Don't block render - load user in background
     loadUser();
   }, []);
 
@@ -54,6 +54,12 @@ export function AuthProvider({ children }) {
       if (response.user?._id) {
         GA4Tracker.setUserId(response.user._id);
       }
+      
+      // Trigger cart sync after successful login
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('user-logged-in'));
+      }
+      
       return { success: true, user: response.user };
     } catch (error) {
       return { success: false, error: error.message };
@@ -74,6 +80,12 @@ export function AuthProvider({ children }) {
       if (response.user?._id) {
         GA4Tracker.setUserId(response.user._id);
       }
+      
+      // Trigger cart sync after successful registration
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('user-logged-in'));
+      }
+      
       return { success: true, user: response.user };
     } catch (error) {
       return { success: false, error: error.message };

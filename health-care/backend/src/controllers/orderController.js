@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const CacheService = require('../services/cacheService');
 const logger = require('../utils/logger');
+const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 
 const VAT_RATE = 0.05; // 5%
 const cacheService = new CacheService();
@@ -56,6 +57,81 @@ exports.createOrder = async (req, res) => {
       b2bDiscount = subtotal * (b2bDiscountPct / 100);
     }
 
+    // Promo code discount (Coupon validation and application)
+    let couponDiscount = 0;
+    let appliedCoupon = null;
+    if (promoCode) {
+      const Coupon = require('../models/Coupon');
+      const coupon = await Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true });
+      
+      if (coupon) {
+        const now = new Date();
+        const isValid = now >= coupon.startDate && now <= coupon.endDate;
+        const hasUsageLeft = !coupon.usageLimit || coupon.usageCount < coupon.usageLimit;
+        const notUsedByUser = !coupon.usedBy.includes(req.user.id);
+        const meetsMinimum = subtotal >= coupon.minimumOrderAmount;
+        const roleMatches = coupon.applicableUserRoles.length === 0 || coupon.applicableUserRoles.includes(user.role);
+        
+        let isFirstOrder = true;
+        if (coupon.isFirstOrderOnly) {
+          const orderCount = await Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } });
+          isFirstOrder = orderCount === 0;
+        }
+        
+        if (isValid && hasUsageLeft && notUsedByUser && meetsMinimum && roleMatches && isFirstOrder) {
+          // Calculate discount based on coupon type
+          if (coupon.type === 'percentage') {
+            // Validate percentage value
+            if (coupon.value < 0 || coupon.value > 100) {
+              return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid coupon configuration' 
+              });
+            }
+            couponDiscount = (subtotal * coupon.value) / 100;
+            if (coupon.maximumDiscount && couponDiscount > coupon.maximumDiscount) {
+              couponDiscount = coupon.maximumDiscount;
+            }
+          } else if (coupon.type === 'fixed') {
+            couponDiscount = Math.min(coupon.value, subtotal);
+          } else if (coupon.type === 'buy_x_get_y') {
+            // Calculate buy X get Y discount
+            for (const item of orderItems) {
+              const setsQualified = Math.floor(item.qty / coupon.buyQuantity);
+              const freeItems = setsQualified * coupon.getQuantity;
+              const itemDiscount = freeItems * item.price;
+              couponDiscount += itemDiscount;
+            }
+          }
+          
+          couponDiscount = Math.round(couponDiscount * 100) / 100;
+          appliedCoupon = {
+            code: coupon.code,
+            type: coupon.type,
+            discountAmount: couponDiscount
+          };
+          
+          // Update coupon usage
+          coupon.usageCount += 1;
+          coupon.usedBy.push(req.user.id);
+          await coupon.save();
+        } else {
+          // Return specific error message
+          let errorMessage = 'Invalid or expired coupon';
+          if (!isValid) errorMessage = 'This coupon has expired or is not yet valid';
+          else if (!hasUsageLeft) errorMessage = 'This coupon has reached its usage limit';
+          else if (!notUsedByUser) errorMessage = 'You have already used this coupon';
+          else if (!meetsMinimum) errorMessage = `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`;
+          else if (!roleMatches) errorMessage = 'This coupon is not applicable to your account type';
+          else if (!isFirstOrder) errorMessage = 'This coupon is only valid for first-time orders';
+          
+          return res.status(400).json({ success: false, message: errorMessage });
+        }
+      } else {
+        return res.status(404).json({ success: false, message: 'Invalid coupon code' });
+      }
+    }
+
     // Delivery fee
     const method = deliveryType || deliveryMethod || 'standard';
     let deliveryFee = 150;
@@ -63,8 +139,8 @@ exports.createOrder = async (req, res) => {
     else if (method === 'nationwide') deliveryFee = 200;
     else if (method === 'cold_chain') deliveryFee = 500;
 
-    // VAT applies to (subtotal - discount + deliveryFee)
-    const taxableAmount = subtotal - b2bDiscount + deliveryFee;
+    // VAT applies to (subtotal - b2bDiscount - couponDiscount + deliveryFee)
+    const taxableAmount = subtotal - b2bDiscount - couponDiscount + deliveryFee;
     const vatAmount = Math.round(taxableAmount * VAT_RATE * 100) / 100;
     const totalAmount = Math.round((taxableAmount + vatAmount) * 100) / 100;
 
@@ -79,6 +155,9 @@ exports.createOrder = async (req, res) => {
       b2bDiscount,
       b2bDiscountPct,
       discount: b2bDiscount,
+      promoDiscount: couponDiscount, // Keep legacy field for backward compatibility
+      couponDiscount,
+      appliedCoupon,
       deliveryFee,
       vatAmount,
       totalAmount,
@@ -87,7 +166,7 @@ exports.createOrder = async (req, res) => {
       deliveryType: method,
       deliveryMethod: method,
       paymentMethod,
-      promoCode,
+      promoCode: appliedCoupon?.code || null,
       notes,
       poNumber,
       statusTimestamps: { placed: new Date() }
@@ -104,6 +183,29 @@ exports.createOrder = async (req, res) => {
     // Send order confirmation email asynchronously
     const { sendOrderConfirmation } = require('../utils/emailService');
     sendOrderConfirmation(order, user).catch(err => logger.error(`[createOrder] email failed: ${err.message}`));
+
+    // Send order confirmation SMS asynchronously (non-blocking)
+    if (user.phone) {
+      const { sendOrderConfirmationSMS } = require('../services/smsService');
+      sendOrderConfirmationSMS(user.phone, orderNumber, totalAmount).catch(err => 
+        logger.error(`[createOrder] SMS failed: ${err.message}`)
+      );
+    }
+
+    // Log order placement activity
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.ORDER.PLACED,
+      targetModel: 'Order',
+      targetId: order._id,
+      targetName: orderNumber,
+      req,
+      metadata: {
+        totalAmount,
+        itemCount: orderItems.length,
+        paymentMethod
+      }
+    });
 
     res.status(201).json({ success: true, message: 'Order created successfully', order });
   } catch (error) {
@@ -155,7 +257,8 @@ exports.getOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('user', 'name email phone company')
-      .populate('items.product', 'name sku brand');
+      .populate('items.product', 'name sku brand')
+      .populate('notesHistory.addedBy', 'name email');
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -184,6 +287,7 @@ exports.updateOrderStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
+    const oldStatus = order.status;
     order.status = status;
     // Update statusTimestamps using $set pattern
     if (!order.statusTimestamps) order.statusTimestamps = {};
@@ -199,6 +303,35 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     await order.save();
+
+    // Send SMS notification for important status changes (non-blocking)
+    const smsStatuses = ['confirmed', 'shipped', 'delivered', 'cancelled'];
+    if (smsStatuses.includes(status)) {
+      // Populate user to get phone number
+      await order.populate('user', 'phone');
+      
+      if (order.user && order.user.phone) {
+        const { sendOrderStatusSMS } = require('../services/smsService');
+        sendOrderStatusSMS(order.user.phone, order.orderNumber, status).catch(err =>
+          logger.error(`[updateOrderStatus] SMS failed: ${err.message}`)
+        );
+      }
+    }
+
+    // Log status change activity
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.ORDER.STATUS_CHANGED,
+      targetModel: 'Order',
+      targetId: order._id,
+      targetName: order.orderNumber,
+      req,
+      changes: {
+        before: { status: oldStatus },
+        after: { status }
+      },
+      metadata: { trackingNumber, courier }
+    });
 
     res.status(200).json({ success: true, message: 'Order status updated successfully', order });
   } catch (error) {
@@ -245,6 +378,20 @@ exports.cancelOrder = async (req, res) => {
     order.markModified('statusTimestamps');
     await order.save();
 
+    // Log order cancellation activity
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.ORDER.CANCELLED,
+      targetModel: 'Order',
+      targetId: order._id,
+      targetName: order.orderNumber,
+      req,
+      metadata: {
+        totalAmount: order.totalAmount || order.total,
+        itemCount: order.items.length
+      }
+    });
+
     res.status(200).json({ success: true, message: 'Order cancelled successfully', order });
   } catch (error) {
     logger.error(`[cancelOrder] ${error.message}`);
@@ -268,6 +415,51 @@ exports.trackOrder = async (req, res) => {
     res.status(200).json({ success: true, order });
   } catch (error) {
     logger.error(`[trackOrder] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// @desc    Add note to order
+// @route   PATCH /api/orders/:id/notes
+// @access  Private/Admin
+exports.addOrderNote = async (req, res) => {
+  try {
+    const { note } = req.body;
+
+    if (!note || !note.trim()) {
+      return res.status(400).json({ success: false, message: 'Please provide a note' });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Add to notes history
+    if (!order.notesHistory) {
+      order.notesHistory = [];
+    }
+    order.notesHistory.push({
+      note: note.trim(),
+      addedBy: req.user.id,
+      addedAt: new Date()
+    });
+
+    // Update main notes field with latest note
+    order.notes = note.trim();
+    order.markModified('notesHistory');
+    await order.save();
+
+    // Populate the addedBy field for response
+    await order.populate('notesHistory.addedBy', 'name email');
+
+    res.status(200).json({
+      success: true,
+      message: 'Note added successfully',
+      notesHistory: order.notesHistory
+    });
+  } catch (error) {
+    logger.error(`[addOrderNote] ${error.message}`);
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
   }
 };

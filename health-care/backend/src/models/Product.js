@@ -5,11 +5,15 @@ const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Please provide a product name'], trim: true },
   slug: { type: String },
   description: { type: String, required: [true, 'Please provide a description'] },
-  brand: { type: String, required: [true, 'Please provide a brand'] },
+  brand: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Manufacturer',
+    required: [true, 'Please provide a brand']
+  },
   category: {
-    type: String,
-    required: [true, 'Please provide a category'],
-    enum: ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines', 'Lab Equipment', 'Dental Equipment', 'PPE', 'Implants']
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, 'Please provide a category']
   },
   subcategory: { type: String },
   barcode: { type: String },
@@ -50,7 +54,19 @@ const productSchema = new mongoose.Schema({
   tests: String,
   hasAMC: { type: Boolean, default: false },
   badge: { type: String, enum: ['sale', 'new', 'bestseller', 'ce_certified', null] },
-  rating: { type: Number, min: 0, max: 5, default: 0 },
+  rating: {
+    average: { type: Number, min: 0, max: 5, default: 0 },
+    count: { type: Number, default: 0 },
+    distribution: {
+      5: { type: Number, default: 0 },
+      4: { type: Number, default: 0 },
+      3: { type: Number, default: 0 },
+      2: { type: Number, default: 0 },
+      1: { type: Number, default: 0 }
+    }
+  },
+  reviewsCount: { type: Number, default: 0 },
+  // Legacy fields for backward compatibility
   reviewCount: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true },
   isFeatured: { type: Boolean, default: false },

@@ -320,6 +320,132 @@ async function sendPasswordResetEmail(user, resetUrl) {
   return info;
 }
 
+// ─── 8. Abandoned Cart Recovery ──────────────────────────────────────────────
+async function sendAbandonedCartEmail(cart, user) {
+  const t = await getTransporter();
+  
+  // Build product rows
+  const itemRows = cart.items.map(item => {
+    const product = item.product;
+    const imageUrl = product.images?.[0]?.url || product.images?.[0] || '';
+    return `
+    <tr>
+      <td style="padding:12px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${imageUrl ? `<img src="${imageUrl}" alt="${product.name}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;background:#F3F4F6;" />` : '<div style="width:60px;height:60px;background:#F3F4F6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;">🏥</div>'}
+          <div>
+            <div style="font-weight:600;font-size:13px;color:#0B2545;margin-bottom:2px;">${product.name}</div>
+            <div style="font-size:11px;color:#666;">Qty: ${item.quantity}</div>
+          </div>
+        </div>
+      </td>
+      <td style="padding:12px;text-align:right;font-weight:600;color:#0B2545;">৳${(item.price * item.quantity).toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  const html = wrapHtml(`
+    <h2 style="color:#0B2545;margin-top:0;">You left something in your cart! 🛒</h2>
+    <p>Hi ${user.name}, we noticed you left ${cart.items.length} item${cart.items.length > 1 ? 's' : ''} in your cart.</p>
+    <p style="color:#666;font-size:13px;">Complete your purchase now before stock runs out!</p>
+    
+    <table style="width:100%;border-collapse:collapse;margin:20px 0;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;">
+      <tbody>${itemRows}</tbody>
+      <tfoot>
+        <tr style="background:#F9FAFB;">
+          <td style="padding:14px;font-weight:700;font-size:14px;color:#0B2545;">Subtotal</td>
+          <td style="padding:14px;text-align:right;font-weight:700;font-size:16px;color:#0B2545;">৳${cart.subtotal.toLocaleString()}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <a href="${FRONTEND_URL}/cart" class="btn">Complete Your Purchase →</a>
+    
+    <div style="margin-top:24px;padding:16px;background:#F1F3F6;border-radius:8px;font-size:12px;color:#666;">
+      <p style="margin:0 0 8px;"><strong>Why shop with us?</strong></p>
+      <p style="margin:4px 0;">✓ Free delivery in Dhaka metro area</p>
+      <p style="margin:4px 0;">✓ 30-day return & replacement policy</p>
+      <p style="margin:4px 0;">✓ Genuine products with warranty</p>
+      <p style="margin:4px 0;">✓ Same-day dispatch for orders before 12 PM</p>
+    </div>
+
+    <p style="margin-top:20px;font-size:11px;color:#999;">
+      Not interested? <a href="${FRONTEND_URL}/cart" style="color:#0E8A6E;text-decoration:none;">Clear your cart</a> or simply ignore this email.
+    </p>
+  `);
+
+  const info = await t.sendMail({
+    from: `"MedCore BD" <${FROM}>`,
+    to: user.email,
+    subject: `You left ${cart.items.length} item${cart.items.length > 1 ? 's' : ''} in your cart! 🛒`,
+    html
+  });
+  logger.info('Abandoned cart email sent:', nodemailer.getTestMessageUrl(info) || info.messageId);
+  return info;
+}
+
+// ─── 9. Newsletter Welcome Email ─────────────────────────────────────────────
+async function sendNewsletterWelcomeEmail(email, name, unsubscribeToken) {
+  const t = await getTransporter();
+  const unsubscribeUrl = `${FRONTEND_URL}/api/newsletter/unsubscribe?token=${unsubscribeToken}`;
+
+  const html = wrapHtml(`
+    <h2 style="color:#0B2545;margin-top:0;">Welcome to MedCore BD Newsletter! 🏥</h2>
+    <p>Hi ${name || 'there'}, thank you for subscribing to our newsletter!</p>
+    
+    <div style="background:#E1F5EE;border-left:4px solid #0E8A6E;padding:16px;margin:20px 0;border-radius:4px;">
+      <p style="margin:0 0 8px;font-weight:600;color:#0B2545;">What you'll receive:</p>
+      <p style="margin:4px 0;font-size:13px;color:#666;">✓ Latest medical equipment and product updates</p>
+      <p style="margin:4px 0;font-size:13px;color:#666;">✓ Exclusive offers and discounts</p>
+      <p style="margin:4px 0;font-size:13px;color:#666;">✓ Industry news and healthcare insights</p>
+      <p style="margin:4px 0;font-size:13px;color:#666;">✓ New product launches and innovations</p>
+    </div>
+
+    <p>We promise to send only valuable content and never spam your inbox.</p>
+    
+    <a href="${FRONTEND_URL}/products" class="btn">Browse Our Products →</a>
+
+    <p style="margin-top:24px;font-size:11px;color:#999;">
+      You can <a href="${unsubscribeUrl}" style="color:#0E8A6E;text-decoration:none;">unsubscribe</a> at any time.
+    </p>
+  `);
+
+  const info = await t.sendMail({
+    from: `"MedCore BD" <${FROM}>`,
+    to: email,
+    subject: 'Welcome to MedCore BD Newsletter! 🏥',
+    html
+  });
+  logger.info('Newsletter welcome email sent:', nodemailer.getTestMessageUrl(info) || info.messageId);
+  return info;
+}
+
+// ─── 10. Newsletter Broadcast ────────────────────────────────────────────────
+async function sendNewsletterBroadcast(email, name, subject, htmlContent, unsubscribeToken) {
+  const t = await getTransporter();
+  const unsubscribeUrl = `${FRONTEND_URL}/api/newsletter/unsubscribe?token=${unsubscribeToken}`;
+
+  // Wrap custom content with unsubscribe footer
+  const html = wrapHtml(`
+    ${htmlContent}
+    
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E7EB;">
+      <p style="font-size:11px;color:#999;margin:0;">
+        You're receiving this email because you subscribed to MedCore BD newsletter.
+        <a href="${unsubscribeUrl}" style="color:#0E8A6E;text-decoration:none;">Unsubscribe</a>
+      </p>
+    </div>
+  `);
+
+  const info = await t.sendMail({
+    from: `"MedCore BD Newsletter" <${FROM}>`,
+    to: email,
+    subject: subject,
+    html
+  });
+  logger.info('Newsletter broadcast sent to:', email);
+  return info;
+}
+
 module.exports = {
   sendOrderConfirmation,
   sendPaymentReceipt,
@@ -327,5 +453,8 @@ module.exports = {
   sendDeliveryConfirmation,
   sendQuotationReady,
   sendLowStockAlert,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendAbandonedCartEmail,
+  sendNewsletterWelcomeEmail,
+  sendNewsletterBroadcast
 };

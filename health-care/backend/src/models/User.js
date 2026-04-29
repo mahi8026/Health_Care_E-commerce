@@ -75,6 +75,8 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: { type: Date, select: false },
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },
+  phoneVerified: { type: Boolean, default: false },
+  phoneVerifiedAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
 }, {
   timestamps: true

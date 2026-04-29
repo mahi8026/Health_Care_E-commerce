@@ -77,6 +77,10 @@
 *.md
 !README.md
 
+# ── Deployment Guides (Contains sensitive info) ──────────────────────────────
+DEPLOYMENT_CHECKLIST.md
+ENV_VARIABLES_QUICK_COPY.txt
+
 # ── Lighthouse Reports ──────────────────────────────────────────────────────
 **/.lighthouseci/
 

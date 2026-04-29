@@ -23,13 +23,16 @@ export function useProducts(filters = {}, initialData = null) {
       setProducts(response.products || response.data?.products || response || []);
     } catch (err) {
       // FIX 9: show error state instead of silently showing fake mock data
-      setError('Failed to load products. Please check your connection and try again.');
+      const errorMessage = err.message || 'Failed to load products';
+      setError(`Failed to load products. Please check your connection and try again.`);
       setProducts([]);
-      console.error('[useProducts] fetch error:', err.message);
+      console.error('[useProducts] fetch error:', errorMessage);
+      console.error('[useProducts] error details:', err);
+      console.error('[useProducts] filters:', filters);
     } finally {
       setLoading(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters]);
 
   useEffect(() => {
     const currentFilters = JSON.stringify(filters);

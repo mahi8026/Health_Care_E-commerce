@@ -151,8 +151,8 @@ export default function CustomersManagement() {
               </tr>
             </thead>
             <tbody>
-              {customers.map(customer => (
-                <tr key={customer._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+              {customers.map((customer, index) => (
+                <tr key={customer._id || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
                   <td className="px-4 py-3">
                     <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       {customer.companyName || customer.name}

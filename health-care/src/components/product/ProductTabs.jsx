@@ -67,7 +67,7 @@ export default function ProductTabs({ product }) {
                 {product?.description || 'Professional medical equipment designed for clinical use. Certified and compliant with international standards.'}
               </p>
               <p>
-                This product is manufactured by {product?.brand || 'a leading medical equipment manufacturer'} and meets all regulatory requirements for medical devices.
+                This product is manufactured by {typeof product?.brand === 'object' ? product?.brand?.name : product?.brand || 'a leading medical equipment manufacturer'} and meets all regulatory requirements for medical devices.
               </p>
               <div className="mt-4 p-3 bg-[var(--color-background-secondary)] rounded-lg">
                 <div className="text-[11px] font-medium mb-2">Key Features:</div>

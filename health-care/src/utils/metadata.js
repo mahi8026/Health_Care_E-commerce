@@ -180,7 +180,7 @@ export function generateProductMetadata(product) {
       title,
       description,
       url: canonicalUrl,
-      type: 'product',
+      type: 'website',
       images: [
         {
           url: ogImage,

@@ -87,7 +87,7 @@ export default function LotSearch() {
                       {product.name}
                     </div>
                     <div className="text-[11px] text-[var(--color-text-secondary)]">
-                      {product.brand} · Lot: {product.lotNumber || '—'} · Expiry: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString('en-BD', { month: 'short', year: 'numeric' }) : '—'}
+                      {typeof product.brand === 'object' ? product.brand?.name : product.brand} · Lot: {product.lotNumber || '—'} · Expiry: {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString('en-BD', { month: 'short', year: 'numeric' }) : '—'}
                     </div>
                   </div>
                   <div className="text-right">

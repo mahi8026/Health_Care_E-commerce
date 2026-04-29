@@ -25,13 +25,13 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           Home
         </span>
         <span 
-          onClick={() => onNavigate && onNavigate('product')}
+          onClick={() => onNavigate && onNavigate('diagnostics')}
           className="text-[12px] text-[var(--color-text-secondary)] px-[10px] py-[6px] cursor-pointer hover:text-[var(--color-text-primary)]"
         >
           Diagnostics
         </span>
         <span 
-          onClick={() => onNavigate && onNavigate('reagent')}
+          onClick={() => onNavigate && onNavigate('surgical')}
           className="text-[12px] text-[var(--color-text-secondary)] px-[10px] py-[6px] cursor-pointer hover:text-[var(--color-text-primary)]"
         >
           Surgical
@@ -43,13 +43,13 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           Reagents
         </span>
         <span 
-          onClick={() => onNavigate && onNavigate('product')}
+          onClick={() => onNavigate && onNavigate('machines')}
           className="text-[12px] text-[var(--color-text-secondary)] px-[10px] py-[6px] cursor-pointer hover:text-[var(--color-text-primary)]"
         >
           Machines
         </span>
         <span 
-          onClick={() => onNavigate && onNavigate('reagent')}
+          onClick={() => onNavigate && onNavigate('lab-equipment')}
           className="text-[12px] text-[var(--color-text-secondary)] px-[10px] py-[6px] cursor-pointer hover:text-[var(--color-text-primary)]"
         >
           Lab Equipment

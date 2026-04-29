@@ -1,10 +1,12 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/ui/Button';
 
 export default function CartPage({ onCheckout, onContinueShopping }) {
+  const router = useRouter();
   const { cart, updateQuantity, removeFromCart, getCartTotal, getCartCount } = useCart();
   const { user, isB2BCustomer } = useAuth();
 
@@ -12,6 +14,10 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
   const discount = isB2BCustomer() ? subtotal * 0.08 : 0;
   const deliveryFee = cart.length > 0 ? 150 : 0;
   const total = subtotal - discount + deliveryFee;
+
+  // Use prop callbacks if provided (SPA mode), otherwise use router (App Router mode)
+  const handleCheckout = onCheckout || (() => router.push('/checkout'));
+  const handleContinueShopping = onContinueShopping || (() => router.push('/products'));
 
   const getItemIcon = (name) => {
     if (name.includes('ECG')) return '📊';
@@ -33,7 +39,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
           </p>
           <Button 
             variant="primary"
-            onClick={() => onContinueShopping && onContinueShopping()}
+            onClick={handleContinueShopping}
           >
             Browse Products
           </Button>
@@ -77,7 +83,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       {item.name}
                     </h3>
                     <p className="text-[11px] text-[var(--color-text-secondary)] mb-2">
-                      {item.brand}
+                      {typeof item.brand === 'object' ? item.brand?.name : item.brand}
                     </p>
                     {item.sku && (
                       <p className="text-[10px] text-[var(--color-text-tertiary)]">
@@ -166,7 +172,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               <Button
                 variant="primary"
                 fullWidth
-                onClick={onCheckout}
+                onClick={handleCheckout}
                 className="mb-3"
               >
                 Proceed to Checkout
@@ -175,7 +181,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               <Button 
                 variant="outline" 
                 fullWidth
-                onClick={() => onContinueShopping && onContinueShopping()}
+                onClick={handleContinueShopping}
               >
                 Continue Shopping
               </Button>

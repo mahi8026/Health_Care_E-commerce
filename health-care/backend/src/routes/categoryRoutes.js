@@ -1,0 +1,52 @@
+const express = require('express');
+const router = express.Router();
+const { protect, authorize } = require('../middleware/auth');
+const {
+  getCategories,
+  getCategoryTree,
+  getCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  uploadCategoryImage
+} = require('../controllers/categoryController');
+
+// Import upload middleware (reuse existing upload setup)
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure multer storage for Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'medcore/categories',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 800, height: 800, crop: 'limit' }]
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// Public routes
+router.get('/', getCategories);
+router.get('/tree', getCategoryTree);
+router.get('/:slug', getCategory);
+
+// Admin routes
+router.post('/', protect, authorize('admin'), createCategory);
+router.put('/:id', protect, authorize('admin'), updateCategory);
+router.delete('/:id', protect, authorize('admin'), deleteCategory);
+router.post('/:id/image', protect, authorize('admin'), upload.single('image'), uploadCategoryImage);
+
+module.exports = router;

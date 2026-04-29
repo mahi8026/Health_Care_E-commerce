@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 
 export default function OrderConfirmation({ orderId, estimatedDelivery }) {
+  const router = useRouter();
   const [downloading, setDownloading] = useState(false);
 
   const handleDownloadInvoice = async () => {
@@ -102,7 +104,9 @@ export default function OrderConfirmation({ orderId, estimatedDelivery }) {
         >
           {downloading ? 'Downloading...' : '📄 Download invoice'}
         </button>
-        <button className="flex-1 px-4 py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52]">
+        <button 
+          onClick={() => router.push('/products')}
+          className="flex-1 px-4 py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52]">
           Continue shopping
         </button>
       </div>

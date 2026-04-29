@@ -1,5 +1,56 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setMessage('Please enter your email');
+      setMessageType('error');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/newsletter/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, source: 'footer' })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage(data.message || 'Thank you for subscribing!');
+        setMessageType('success');
+        setEmail('');
+        setName('');
+        setShowNameInput(false);
+      } else {
+        setMessage(data.message || 'Failed to subscribe');
+        setMessageType('error');
+      }
+    } catch (error) {
+      setMessage('Failed to subscribe. Please try again.');
+      setMessageType('error');
+    } finally {
+      setLoading(false);
+      // Clear message after 5 seconds
+      setTimeout(() => setMessage(''), 5000);
+    }
+  };
 
   const links = [
     {
@@ -66,7 +117,7 @@ export default function Footer() {
             </div>
           ))}
 
-          {/* Brand column */}
+          {/* Brand column with Newsletter */}
           <div>
             <div className="font-[family-name:var(--font-lora)] text-[24px] font-semibold mb-2">
               MedCore<span className="text-[#0E8A6E]">BD</span>
@@ -74,6 +125,63 @@ export default function Footer() {
             <p className="text-[12px] text-white/70 mb-4 leading-relaxed">
               Bangladesh's trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
+
+            {/* Newsletter Subscribe */}
+            <div className="mb-4">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-2 font-[family-name:var(--font-plus-jakarta)]">
+                Newsletter
+              </h4>
+              <form onSubmit={handleSubscribe} className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Your email"
+                    disabled={loading}
+                    className="flex-1 px-3 py-2 text-[12px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 bg-[#0E8A6E] text-white text-[12px] font-medium rounded hover:bg-[#0a6b56] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? '...' : 'Subscribe'}
+                  </button>
+                </div>
+                
+                {!showNameInput && !message && (
+                  <button
+                    type="button"
+                    onClick={() => setShowNameInput(true)}
+                    className="text-[10px] text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    + Add your name (optional)
+                  </button>
+                )}
+
+                {showNameInput && (
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name (optional)"
+                    disabled={loading}
+                    className="w-full px-3 py-2 text-[12px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50"
+                  />
+                )}
+
+                {message && (
+                  <div className={`text-[11px] p-2 rounded ${
+                    messageType === 'success' 
+                      ? 'bg-[#0E8A6E]/20 text-[#4DDBB8]' 
+                      : 'bg-[#E24B4A]/20 text-[#FCA5A5]'
+                  }`}>
+                    {messageType === 'success' ? '✓' : '✗'} {message}
+                  </div>
+                )}
+              </form>
+            </div>
 
             {/* Badges */}
             <div className="flex gap-2 flex-wrap mb-4">

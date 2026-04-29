@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardSkeleton from './DashboardSkeleton';
 import OrderDetailModal from './OrderDetailModal';
 import KPIDetailModal from './KPIDetailModal';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-export default function DashboardOverview({ setActiveTab }) {
+export default function DashboardOverview() {
+  const router = useRouter();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedKPI, setSelectedKPI] = useState(null);
+  const [abandonedCartStats, setAbandonedCartStats] = useState(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -32,6 +35,24 @@ export default function DashboardOverview({ setActiveTab }) {
       }
     };
     fetchDashboard();
+  }, []);
+
+  useEffect(() => {
+    const fetchAbandonedCartStats = async () => {
+      try {
+        const token = localStorage.getItem('medcore_token');
+        const res = await fetch(`${API}/cart/admin/stats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setAbandonedCartStats(data.data);
+        }
+      } catch (err) {
+        console.error('Failed to load abandoned cart stats:', err);
+      }
+    };
+    fetchAbandonedCartStats();
   }, []);
 
   if (loading) return <DashboardSkeleton />;
@@ -70,11 +91,11 @@ export default function DashboardOverview({ setActiveTab }) {
       action: (kpi) => setSelectedKPI(kpi)
     },
     {
-      label: 'Low Stock Items',
-      value: String((stats?.stockAlerts?.lowStock?.length || 0) + (stats?.stockAlerts?.criticalStock?.length || 0)),
-      change: 'Needs attention',
+      label: 'Abandoned Carts',
+      value: String(abandonedCartStats?.totalAbandoned ?? 0),
+      change: abandonedCartStats?.totalValueAtRisk ? `৳${(abandonedCartStats.totalValueAtRisk / 1000).toFixed(0)}K at risk` : 'No data',
       trend: 'warning',
-      icon: '⚠️',
+      icon: '🛒',
       action: (kpi) => setSelectedKPI(kpi)
     }
   ];
@@ -142,7 +163,7 @@ export default function DashboardOverview({ setActiveTab }) {
         <KPIDetailModal
           kpi={selectedKPI}
           onClose={() => setSelectedKPI(null)}
-          onNavigate={setActiveTab}
+          onNavigate={(tab) => router.push(`/admin/${tab}`)}
         />
       )}
 
@@ -154,7 +175,7 @@ export default function DashboardOverview({ setActiveTab }) {
               Recent Orders
             </h3>
             <button
-              onClick={() => setActiveTab('orders')}
+              onClick={() => router.push('/admin/orders')}
               className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
             >
               View all →
@@ -209,48 +230,95 @@ export default function DashboardOverview({ setActiveTab }) {
           )}
         </div>
 
-        {/* Stock Alerts */}
+        {/* Abandoned Cart Stats */}
         <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-              Stock Alerts
+              Cart Recovery
             </h3>
-            <button
-              onClick={() => setActiveTab('products')}
-              className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
-            >
-              Manage →
-            </button>
           </div>
 
-          {stockAlerts.length === 0 ? (
-            <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-6">No stock alerts</p>
-          ) : (
-            <div className="space-y-3">
-              {stockAlerts.map((alert, index) => (
-                <div key={index} className="p-3 bg-[#FEF3C7] rounded-lg border-[0.5px] border-[#FDE68A]">
-                  <div className="flex items-start gap-2 mb-2">
-                    <span className="text-[16px]">⚠️</span>
-                    <div className="flex-1">
-                      <div className="text-[11px] font-medium mb-1 font-[family-name:var(--font-plus-jakarta)]">
-                        {alert.name || alert.product}
-                      </div>
-                      <div className="text-[10px] text-[#92400E]">
-                        Stock: {alert.stock ?? alert.currentStock} units (Min: {alert.lowStockThreshold || alert.minStock || 10})
-                      </div>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setActiveTab('products')}
-                    className="w-full text-[10px] px-3 py-[6px] bg-white border-[0.5px] border-[#FDE68A] rounded text-[#92400E] font-medium hover:bg-[#FFFBEB] hover:border-[#FCD34D] transition-all"
-                  >
-                    Reorder now
-                  </button>
+          {abandonedCartStats ? (
+            <div className="space-y-4">
+              <div className="p-3 bg-[#FEF3C7] rounded-lg">
+                <div className="text-[10px] text-[#92400E] mb-1 uppercase tracking-wide">Total Abandoned</div>
+                <div className="text-[20px] font-bold text-[#92400E] font-[family-name:var(--font-plus-jakarta)]">
+                  {abandonedCartStats.totalAbandoned}
                 </div>
-              ))}
+              </div>
+
+              <div className="p-3 bg-[#FEE2E2] rounded-lg">
+                <div className="text-[10px] text-[#991B1B] mb-1 uppercase tracking-wide">Value at Risk</div>
+                <div className="text-[20px] font-bold text-[#991B1B] font-[family-name:var(--font-plus-jakarta)]">
+                  ৳{(abandonedCartStats.totalValueAtRisk / 1000).toFixed(0)}K
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#D1FAE5] rounded-lg">
+                <div className="text-[10px] text-[#065F46] mb-1 uppercase tracking-wide">Recovery Rate</div>
+                <div className="text-[20px] font-bold text-[#065F46] font-[family-name:var(--font-plus-jakarta)]">
+                  {abandonedCartStats.recoveryRate}%
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#E0E7FF] rounded-lg">
+                <div className="text-[10px] text-[#3730A3] mb-1 uppercase tracking-wide">Emails Sent</div>
+                <div className="text-[20px] font-bold text-[#3730A3] font-[family-name:var(--font-plus-jakarta)]">
+                  {abandonedCartStats.emailsSent}
+                </div>
+              </div>
+
+              <div className="text-[10px] text-[var(--color-text-secondary)] pt-2 border-t border-[var(--color-border-tertiary)]">
+                Recovery emails sent automatically 1 hour after cart abandonment
+              </div>
             </div>
+          ) : (
+            <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-6">Loading stats...</p>
           )}
         </div>
+      </div>
+
+      {/* Stock Alerts Section */}
+      <div className="mt-4 bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+            Stock Alerts
+          </h3>
+          <button
+            onClick={() => router.push('/admin/products')}
+            className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
+          >
+            Manage →
+          </button>
+        </div>
+
+        {stockAlerts.length === 0 ? (
+          <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-6">No stock alerts</p>
+        ) : (
+          <div className="grid grid-cols-5 gap-3">
+            {stockAlerts.map((alert, index) => (
+              <div key={index} className="p-3 bg-[#FEF3C7] rounded-lg border-[0.5px] border-[#FDE68A]">
+                <div className="flex items-start gap-2 mb-2">
+                  <span className="text-[16px]">⚠️</span>
+                  <div className="flex-1">
+                    <div className="text-[11px] font-medium mb-1 font-[family-name:var(--font-plus-jakarta)]">
+                      {alert.name || alert.product}
+                    </div>
+                    <div className="text-[10px] text-[#92400E]">
+                      Stock: {alert.stock ?? alert.currentStock} units
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => router.push('/admin/products')}
+                  className="w-full text-[10px] px-3 py-[6px] bg-white border-[0.5px] border-[#FDE68A] rounded text-[#92400E] font-medium hover:bg-[#FFFBEB] hover:border-[#FCD34D] transition-all"
+                >
+                  Reorder
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -84,7 +84,7 @@ export default function SearchResults({ products, loading, query, onProductClick
             </div>
             
             <div className="text-[11px] text-[var(--color-text-secondary)] mb-3">
-              {product.brand}
+              {typeof product.brand === 'object' ? product.brand?.name : product.brand}
             </div>
             
             <div className="flex items-end justify-between mb-3">

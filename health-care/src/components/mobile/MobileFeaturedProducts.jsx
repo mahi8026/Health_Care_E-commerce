@@ -66,7 +66,7 @@ export default function MobileFeaturedProducts() {
               {product.name}
             </div>
             <div className="text-[9px] text-[var(--color-text-secondary)] mb-2 text-center">
-              {product.brand}
+              {typeof product.brand === 'object' ? product.brand?.name : product.brand}
             </div>
 
             {/* Price */}

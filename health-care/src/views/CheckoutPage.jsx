@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/utils/api';
@@ -16,6 +17,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
 
 export default function CheckoutPage({ onBackToCart }) {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedDelivery, setSelectedDelivery] = useState('standard');
   const [selectedPayment, setSelectedPayment] = useState('bank_transfer');
@@ -35,6 +37,9 @@ export default function CheckoutPage({ onBackToCart }) {
     postcode: '',
     instructions: '',
   });
+  
+  // Coupon state
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const { cart, clearCart, getCartTotal } = useCart();
   const { user, isAuthenticated } = useAuth();
@@ -82,7 +87,9 @@ export default function CheckoutPage({ onBackToCart }) {
           district: deliveryAddress.district,
           postcode: deliveryAddress.postcode,
           instructions: deliveryAddress.instructions,
-        }
+        },
+        // Include coupon code if applied
+        ...(appliedCoupon && { promoCode: appliedCoupon.code })
       };
 
       const response = await api.createOrder(orderData);
@@ -108,7 +115,7 @@ export default function CheckoutPage({ onBackToCart }) {
     } finally {
       setLoading(false);
     }
-  }, [cart, clearCart, getCartTotal, isAuthenticated, selectedDelivery, selectedPayment, user]);
+  }, [cart, clearCart, getCartTotal, isAuthenticated, selectedDelivery, selectedPayment, deliveryAddress, appliedCoupon]);
 
   const handlePaymentSuccess = useCallback(() => {
     GA4Tracker.trackPurchase({
@@ -197,7 +204,7 @@ export default function CheckoutPage({ onBackToCart }) {
 
               <div className="flex gap-[10px]">
                 <button
-                  onClick={() => onBackToCart && onBackToCart()}
+                  onClick={() => onBackToCart ? onBackToCart() : router.push('/cart')}
                   className="flex-1 px-[14px] py-3 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent text-[var(--color-text-primary)] text-[13px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)]"
                 >
                   ← Back to cart
@@ -227,7 +234,13 @@ export default function CheckoutPage({ onBackToCart }) {
         </div>
 
         <div className="p-6 bg-[var(--color-background-primary)] border-l-[0.5px] border-[var(--color-border-tertiary)]">
-          <OrderSummary items={cartItems} />
+          <OrderSummary 
+            items={cartItems} 
+            deliveryMethod={selectedDelivery}
+            appliedCoupon={appliedCoupon}
+            onCouponApply={setAppliedCoupon}
+            userId={user?.id}
+          />
         </div>
       </div>
 

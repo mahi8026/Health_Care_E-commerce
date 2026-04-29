@@ -13,9 +13,10 @@ const {
   updateQuote,
   convertQuoteToOrder
 } = require('../controllers/quoteController');
+const { adminApiLimiter } = require('../middleware/enhancedRateLimiter');
 
-// All admin routes require authentication + admin role
-router.use(protect, authorize('admin'));
+// All admin routes require authentication + admin role + rate limiting
+router.use(protect, authorize('admin'), adminApiLimiter);
 
 router.get('/dashboard', getDashboard);
 router.get('/analytics', getAnalytics);

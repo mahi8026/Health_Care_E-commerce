@@ -6,11 +6,15 @@ import HomePage from '@/views/HomePage';
 export default function HomeClient({ initialFeaturedProducts = [] }) {
   const router = useRouter();
 
-  const handleNavigate = (view) => {
+  const handleNavigate = (view, category) => {
     const routes = {
       'home': '/',
       'search': '/search',
       'product': '/products',
+      'diagnostics': '/products?category=Diagnostic Equipment',
+      'surgical': '/products?category=Surgical Instruments',
+      'machines': '/products?category=Hospital Machines',
+      'lab-equipment': '/products?category=Lab Equipment',
       'cart': '/cart',
       'checkout': '/checkout',
       'reagent': '/reagent-store',
@@ -21,7 +25,12 @@ export default function HomeClient({ initialFeaturedProducts = [] }) {
       'reset-password': '/reset-password',
     };
     
-    router.push(routes[view] || '/');
+    // If a category is provided, append it to the products route
+    if (view === 'product' && category) {
+      router.push(`/products?category=${encodeURIComponent(category)}`);
+    } else {
+      router.push(routes[view] || '/');
+    }
   };
 
   const handleNavigateToProduct = (productId) => {

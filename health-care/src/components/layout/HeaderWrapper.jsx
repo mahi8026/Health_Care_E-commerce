@@ -29,15 +29,30 @@ export default function HeaderWrapper() {
     router.push('/cart');
   };
 
-  const handleNavigate = (view) => {
+  const handleNavigate = (view, category) => {
     const routes = {
       'home': '/',
       'search': '/search',
       'cart': '/cart',
+      'product': '/products',
+      'diagnostics': '/products?category=Diagnostic Equipment',
+      'surgical': '/products?category=Surgical Instruments',
+      'machines': '/products?category=Hospital Machines',
+      'lab-equipment': '/products?category=Lab Equipment',
       'reagent': '/reagent-store',
       'orders': '/orders',
+      'admin': '/admin',
+      'b2b': '/b2b',
+      'reviews': '/account/reviews',
+      'wishlist': '/wishlist',
     };
-    router.push(routes[view] || '/');
+    
+    // If a category is provided, append it to the products route
+    if (view === 'product' && category) {
+      router.push(`/products?category=${encodeURIComponent(category)}`);
+    } else {
+      router.push(routes[view] || '/');
+    }
   };
 
   const handleSearchClick = () => {

@@ -6,6 +6,7 @@ import TopBar from "@/components/layout/TopBar";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 export const dynamic = 'force-dynamic';
 
@@ -36,11 +37,13 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen">
         <AuthProvider>
           <CartProvider>
-            <WebVitalsReporter />
-            <TopBar />
-            <HeaderWrapper />
-            {children}
-            <Footer />
+            <WishlistProvider>
+              <WebVitalsReporter />
+              <TopBar />
+              <HeaderWrapper />
+              {children}
+              <Footer />
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </body>

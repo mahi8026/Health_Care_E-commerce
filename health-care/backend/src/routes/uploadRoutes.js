@@ -8,6 +8,7 @@ const {
   deleteProductImage, 
   reorderProductImages 
 } = require('../controllers/uploadController');
+const { uploadLimiter } = require('../middleware/enhancedRateLimiter');
 
 // Multer error handler wrapper
 const handleUpload = (multerMiddleware) => (req, res, next) => {
@@ -19,11 +20,12 @@ const handleUpload = (multerMiddleware) => (req, res, next) => {
   });
 };
 
+// All upload routes require admin + rate limiting
+router.use(protect, authorize('admin'), uploadLimiter);
+
 // POST /api/upload/image  — single image
 router.post(
   '/image',
-  protect,
-  authorize('admin'),
   handleUpload(upload.single('image')),
   uploadImage
 );
@@ -31,8 +33,6 @@ router.post(
 // POST /api/upload/images — up to 5 images
 router.post(
   '/images',
-  protect,
-  authorize('admin'),
   handleUpload(upload.array('images', 5)),
   uploadImages
 );
@@ -40,16 +40,12 @@ router.post(
 // DELETE /api/upload/image/:publicId — delete image
 router.delete(
   '/image/:publicId',
-  protect,
-  authorize('admin'),
   deleteProductImage
 );
 
 // PATCH /api/upload/reorder — reorder images
 router.patch(
   '/reorder',
-  protect,
-  authorize('admin'),
   reorderProductImages
 );
 

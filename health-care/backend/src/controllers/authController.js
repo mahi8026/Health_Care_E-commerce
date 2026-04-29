@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
+const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 
 // ── Token helpers ────────────────────────────────────────────────────────────
 const generateAccessToken = (id) =>
@@ -45,6 +46,17 @@ exports.register = async (req, res) => {
     const refreshToken = generateRefreshToken(user._id);
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
+
+    // Log registration activity
+    logActivityAsync({
+      user,
+      action: ACTIONS.AUTH.REGISTER,
+      targetModel: 'User',
+      targetId: user._id,
+      targetName: user.email,
+      req,
+      metadata: { accountType: user.accountType, role: user.role }
+    });
 
     res.status(201).json({
       success: true,
@@ -92,10 +104,35 @@ exports.login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
+    // Check if 2FA is enabled
+    const { isTwoFactorEnabled } = require('../services/twoFactorService');
+    const has2FA = await isTwoFactorEnabled(user._id);
+
+    if (has2FA) {
+      // Don't generate tokens yet - require 2FA verification
+      return res.status(200).json({
+        success: true,
+        requires2FA: true,
+        userId: user._id,
+        message: 'Please enter your 2FA code'
+      });
+    }
+
     const token = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
+
+    // Log login activity
+    logActivityAsync({
+      user,
+      action: ACTIONS.AUTH.LOGIN,
+      targetModel: 'User',
+      targetId: user._id,
+      targetName: user.email,
+      req,
+      metadata: { role: user.role, accountType: user.accountType }
+    });
 
     res.status(200).json({
       success: true,
@@ -224,6 +261,17 @@ exports.updateProfile = async (req, res) => {
 exports.logout = async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user.id, { refreshToken: null }, { validateBeforeSave: false });
+    
+    // Log logout activity
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.AUTH.LOGOUT,
+      targetModel: 'User',
+      targetId: req.user.id,
+      targetName: req.user.email,
+      req
+    });
+
     res.status(200).json({ success: true, message: 'Logout successful' });
   } catch (error) {
     logger.error(`[logout] ${error.message}`);
@@ -292,9 +340,340 @@ exports.resetPassword = async (req, res) => {
     user.refreshToken = null; // Invalidate all sessions
     await user.save();
 
+    // Log password reset activity
+    logActivityAsync({
+      user,
+      action: ACTIONS.AUTH.PASSWORD_RESET,
+      targetModel: 'User',
+      targetId: user._id,
+      targetName: user.email,
+      req
+    });
+
     res.status(200).json({ success: true, message: 'Password reset successfully. Please log in.' });
   } catch (error) {
     logger.error(`[resetPassword] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── Send Phone OTP ────────────────────────────────────────────────────────────
+// POST /api/auth/send-phone-otp
+exports.sendPhoneOTP = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if user has phone number
+    if (!user.phone) {
+      return res.status(400).json({ success: false, message: 'Please add a phone number to your profile first' });
+    }
+
+    // Check if phone is already verified
+    if (user.phoneVerified) {
+      return res.status(400).json({ success: false, message: 'Phone number is already verified' });
+    }
+
+    const OTP = require('../models/OTP');
+    const { sendOTP, maskPhoneNumber } = require('../services/smsService');
+
+    // Generate OTP
+    const result = await OTP.generate(user.phone, 'phone_verify');
+    
+    if (!result.success) {
+      return res.status(429).json({ success: false, message: result.error });
+    }
+
+    // Send OTP via SMS (non-blocking)
+    sendOTP(user.phone, result.otp).catch(err => {
+      logger.error(`[sendPhoneOTP] SMS failed: ${err.message}`);
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `OTP sent to ${maskPhoneNumber(user.phone)}`,
+      phone: maskPhoneNumber(user.phone)
+    });
+  } catch (error) {
+    logger.error(`[sendPhoneOTP] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── Verify Phone OTP ──────────────────────────────────────────────────────────
+// POST /api/auth/verify-phone-otp
+exports.verifyPhoneOTP = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    if (!otp || otp.length !== 6) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid 6-digit OTP' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (!user.phone) {
+      return res.status(400).json({ success: false, message: 'No phone number found' });
+    }
+
+    if (user.phoneVerified) {
+      return res.status(400).json({ success: false, message: 'Phone number is already verified' });
+    }
+
+    const OTP = require('../models/OTP');
+
+    // Find latest valid OTP
+    const otpDoc = await OTP.findLatestValid(user.phone, 'phone_verify');
+    
+    if (!otpDoc) {
+      return res.status(400).json({ success: false, message: 'No valid OTP found. Please request a new one.' });
+    }
+
+    // Verify OTP
+    const verifyResult = await otpDoc.verify(otp);
+
+    if (!verifyResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: verifyResult.error,
+        attemptsRemaining: verifyResult.attemptsRemaining
+      });
+    }
+
+    // Mark phone as verified
+    user.phoneVerified = true;
+    user.phoneVerifiedAt = new Date();
+    await user.save({ validateBeforeSave: false });
+
+    // Log phone verification activity
+    logActivityAsync({
+      user,
+      action: ACTIONS.USER.UPDATED,
+      targetModel: 'User',
+      targetId: user._id,
+      targetName: user.email,
+      req,
+      metadata: { phoneVerified: true }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Phone number verified successfully',
+      user: {
+        id: user._id,
+        phoneVerified: user.phoneVerified,
+        phoneVerifiedAt: user.phoneVerifiedAt
+      }
+    });
+  } catch (error) {
+    logger.error(`[verifyPhoneOTP] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── 2FA Setup ─────────────────────────────────────────────────────────────────
+// POST /api/auth/2fa/setup
+exports.setup2FA = async (req, res) => {
+  try {
+    const { generateTwoFactorSecret } = require('../services/twoFactorService');
+    
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Only allow admins to set up 2FA
+    if (user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: '2FA is only available for admin accounts' });
+    }
+
+    const { secret, qrCode, backupCodes } = await generateTwoFactorSecret(user);
+
+    res.status(200).json({
+      success: true,
+      message: '2FA setup initiated. Scan QR code with your authenticator app.',
+      qrCode,
+      secret, // Show secret for manual entry
+      backupCodes,
+      note: 'Save backup codes in a secure location. You will need them if you lose access to your authenticator app.'
+    });
+  } catch (error) {
+    logger.error(`[setup2FA] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── 2FA Enable ────────────────────────────────────────────────────────────────
+// POST /api/auth/2fa/enable
+exports.enable2FA = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token || token.length !== 6) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid 6-digit token' });
+    }
+
+    const { enableTwoFactor } = require('../services/twoFactorService');
+    
+    const enabled = await enableTwoFactor(req.user.id, token);
+
+    if (!enabled) {
+      return res.status(400).json({ success: false, message: 'Invalid token. Please try again.' });
+    }
+
+    // Log 2FA enablement
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.USER.UPDATED,
+      targetModel: 'User',
+      targetId: req.user.id,
+      targetName: req.user.email,
+      req,
+      metadata: { twoFactorEnabled: true }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: '2FA enabled successfully. You will need to enter a code from your authenticator app on future logins.'
+    });
+  } catch (error) {
+    logger.error(`[enable2FA] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── 2FA Disable ───────────────────────────────────────────────────────────────
+// POST /api/auth/2fa/disable
+exports.disable2FA = async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ success: false, message: 'Please provide your password to disable 2FA' });
+    }
+
+    // Verify password
+    const user = await User.findById(req.user.id).select('+password');
+    const isPasswordMatch = await user.comparePassword(password);
+
+    if (!isPasswordMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid password' });
+    }
+
+    const { disableTwoFactor } = require('../services/twoFactorService');
+    await disableTwoFactor(req.user.id);
+
+    // Log 2FA disablement
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.USER.UPDATED,
+      targetModel: 'User',
+      targetId: req.user.id,
+      targetName: req.user.email,
+      req,
+      metadata: { twoFactorEnabled: false }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: '2FA disabled successfully'
+    });
+  } catch (error) {
+    logger.error(`[disable2FA] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── 2FA Verify ────────────────────────────────────────────────────────────────
+// POST /api/auth/2fa/verify
+exports.verify2FA = async (req, res) => {
+  try {
+    const { token, backupCode, userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID required' });
+    }
+
+    const { verifyTwoFactorToken, verifyBackupCode } = require('../services/twoFactorService');
+
+    let verified = false;
+
+    // Try token first
+    if (token) {
+      verified = await verifyTwoFactorToken(userId, token);
+    }
+    
+    // Try backup code if token failed
+    if (!verified && backupCode) {
+      verified = await verifyBackupCode(userId, backupCode);
+    }
+
+    if (!verified) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Invalid authentication code or backup code' 
+      });
+    }
+
+    // Generate tokens
+    const accessToken = generateAccessToken(userId);
+    const refreshToken = generateRefreshToken(userId);
+
+    // Update user's refresh token
+    await User.findByIdAndUpdate(userId, { refreshToken }, { validateBeforeSave: false });
+
+    // Get user data
+    const user = await User.findById(userId);
+
+    // Log 2FA verification
+    logActivityAsync({
+      user,
+      action: ACTIONS.AUTH.LOGIN,
+      targetModel: 'User',
+      targetId: userId,
+      targetName: user.email,
+      req,
+      metadata: { twoFactorUsed: true }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: '2FA verification successful',
+      token: accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accountType: user.accountType
+      }
+    });
+  } catch (error) {
+    logger.error(`[verify2FA] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
+// ── 2FA Status ────────────────────────────────────────────────────────────────
+// GET /api/auth/2fa/status
+exports.get2FAStatus = async (req, res) => {
+  try {
+    const { getTwoFactorStatus } = require('../services/twoFactorService');
+    
+    const status = await getTwoFactorStatus(req.user.id);
+
+    res.status(200).json({
+      success: true,
+      status
+    });
+  } catch (error) {
+    logger.error(`[get2FAStatus] ${error.message}`);
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
   }
 };

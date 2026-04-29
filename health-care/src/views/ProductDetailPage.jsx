@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import ProductGallery from '@/components/product/ProductGallery';
 import ProductInfo from '@/components/product/ProductInfo';
 import ProductTabs from '@/components/product/ProductTabs';
+import ProductReviews from '@/components/product/ProductReviews';
 import FrequentlyBought from '@/components/product/FrequentlyBought';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
@@ -45,6 +46,40 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
         const p = data.data || data.product || data;
+
+        // Normalize rating: API returns { average, count } but components expect a number
+        if (p.rating && typeof p.rating === 'object') {
+          p.reviewCount = p.reviewCount || p.rating.count || 0;
+          p.rating = p.rating.average || 0;
+        }
+
+        // Normalize brand: populated object → string name for components that render it directly
+        if (p.brand && typeof p.brand === 'object') {
+          p.brandId = p.brand._id;
+          p.brandName = p.brand.name;
+          p.brand = p.brand.name; // flatten to string so any component can render it safely
+        }
+
+        // Normalize category: keep full object for breadcrumb but also expose flat fields
+        if (p.category && typeof p.category === 'object') {
+          p.categoryId = p.category._id;
+          p.categoryName = p.category.name;
+          // keep p.category as object — ProductDetailPage handles it with typeof checks
+        }
+
+        // Normalize specifications: Mongoose Map → plain object
+        if (p.specifications && typeof p.specifications === 'object') {
+          // If it's a Map-like object with a 'toJSON' method or has internal Mongoose keys, flatten it
+          const rawSpecs = p.specifications;
+          const cleanSpecs = {};
+          for (const [k, v] of Object.entries(rawSpecs)) {
+            if (typeof k === 'string' && !k.startsWith('$') && typeof v !== 'object') {
+              cleanSpecs[k] = String(v);
+            }
+          }
+          p.specifications = cleanSpecs;
+        }
+
         setProduct(p);
         // Set default variant selections
         if (p.variants?.connectivity?.length) setSelectedConnectivity(p.variants.connectivity[0]);
@@ -83,9 +118,12 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
     );
   }
 
+  const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+  const categoryId = typeof product.category === 'object' ? product.category?._id : product.category;
+
   const breadcrumbs = [
     { label: 'Home', href: '/' },
-    { label: product.category || 'Products', href: `/search?category=${product.category}` },
+    { label: categoryName || 'Products', href: `/search?category=${categoryId}` },
     { label: product.name, href: '#' }
   ];
 
@@ -103,7 +141,10 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
               badges={product.certifications || []}
               heroPriority={heroPriority}
             />
-            <FrequentlyBought productId={product._id || product.id} category={product.category} />
+            <FrequentlyBought 
+              productId={product._id || product.id} 
+              category={product.categoryId || (typeof product.category === 'object' ? product.category?._id : product.category)} 
+            />
           </div>
 
           <ProductTabs product={product} />
@@ -121,6 +162,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
             setSelectedWarranty={setSelectedWarranty}
           />
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] px-7 py-8">
+        <ProductReviews productId={product._id || product.id} />
       </div>
     </div>
   );

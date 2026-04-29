@@ -5,7 +5,8 @@ const {
   getOrders,
   getOrder,
   updateOrderStatus,
-  cancelOrder
+  cancelOrder,
+  addOrderNote
 } = require('../controllers/orderController');
 const { trackOrder } = require('../controllers/trackingController');
 const { protect, authorize } = require('../middleware/auth');
@@ -22,5 +23,6 @@ router.put('/:id/cancel', protect, noStore, cancelOrder);
 // Admin only routes
 router.put('/:id/status', protect, authorize('admin'), noStore, updateOrderStatus);
 router.patch('/:id/status', protect, authorize('admin'), noStore, updateOrderStatus);
+router.patch('/:id/notes', protect, authorize('admin'), noStore, addOrderNote);
 
 module.exports = router;
