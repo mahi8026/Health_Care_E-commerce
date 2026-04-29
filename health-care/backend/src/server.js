@@ -141,6 +141,7 @@ app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/newsletter', require('./routes/newsletterRoutes'));
 app.use('/api/activity-logs', require('./routes/activityLogRoutes'));
 app.use('/api/sms', require('./routes/smsRoutes'));
+app.use('/api/migration', require('./routes/migrationRoutes')); // Database migration endpoints
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
