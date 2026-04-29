@@ -40,9 +40,11 @@ services:
     env: node
     region: singapore
     plan: free
-    buildCommand: npm install --legacy-peer-deps && npm run build
+    buildCommand: npm ci --legacy-peer-deps --prefer-offline && npm run build
     startCommand: npm start
     envVars:
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=2048
       - key: NEXT_PUBLIC_API_URL
         sync: false
       - key: NEXT_PUBLIC_GA4_MEASUREMENT_ID
@@ -53,5 +55,7 @@ services:
         value: MedCore BD
       - key: NEXT_PUBLIC_ENABLE_ANALYTICS
         value: true
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
       - key: NODE_ENV
         value: production
