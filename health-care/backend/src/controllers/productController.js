@@ -26,6 +26,7 @@ exports.getProducts = async (req, res) => {
       minPrice,
       maxPrice,
       inStock,
+      isFeatured,
       sortBy,
       page = 1,
       limit = 20
@@ -35,6 +36,11 @@ exports.getProducts = async (req, res) => {
     const limitNum = Math.min(100, parseInt(limit) || 20);
 
     let query = { isActive: true };
+
+    // ── Featured filter ──────────────────────────────────────────────────────
+    if (isFeatured === 'true') {
+      query.isFeatured = true;
+    }
 
     // ── Category filter ──────────────────────────────────────────────────────
     // category field on Product is an ObjectId ref — must resolve name → _id
