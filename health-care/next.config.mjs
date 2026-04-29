@@ -10,11 +10,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Pin Turbopack's workspace root to this project directory,
-  // preventing it from being confused by the parent folder's package.json
-  turbopack: {
-    root: __dirname,
-  },
+  // Disable turbopack for production builds (use webpack)
+  // turbopack is only for dev mode
+  
+  // Output configuration for production
+  output: 'standalone',
 
   // Image optimization configuration
   images: {
@@ -48,9 +48,9 @@ const nextConfig = {
 
   // Remove console.log in production builds, but keep console.error and console.warn
   compiler: {
-    removeConsole: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
-    },
+    } : false,
   },
 };
 

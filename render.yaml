@@ -44,7 +44,7 @@ services:
     region: singapore
     plan: free
     rootDir: health-care
-    buildCommand: npm ci --legacy-peer-deps --prefer-offline && npm run build
+    buildCommand: npm ci --legacy-peer-deps && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_OPTIONS
