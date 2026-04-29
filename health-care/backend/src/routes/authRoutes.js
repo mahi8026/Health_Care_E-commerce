@@ -30,7 +30,7 @@ const {
 
 // Public routes with CAPTCHA and rate limiting
 router.post('/register', registerLimiter, registerCaptcha, register);
-router.post('/login', loginLimiter, loginCaptcha, login);
+router.post('/login', loginLimiter, login); // CAPTCHA temporarily disabled
 router.post('/refresh', authLimiter, refreshToken);
 router.post('/forgot-password', passwordResetLimiter, passwordResetCaptcha, forgotPassword);
 router.post('/reset-password', passwordResetLimiter, resetPassword);
