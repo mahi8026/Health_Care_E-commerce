@@ -2,6 +2,12 @@
 
 A comprehensive B2B/B2C medical equipment e-commerce platform built with Next.js and Node.js.
 
+## 🌐 Live Demo
+
+**Frontend:** [https://health-care-e-commerce-murex.vercel.app/](https://health-care-e-commerce-murex.vercel.app/)
+
+> The application is deployed on Vercel (frontend) and Render (backend) with MongoDB Atlas for database.
+
 ## Features
 
 - 🛒 Product catalog with advanced search and filtering
