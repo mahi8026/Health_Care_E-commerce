@@ -7,6 +7,7 @@ const compression = require('compression');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const connectDB = require('./config/database');
+const { dbHealthCheck } = require('./middleware/dbHealthCheck');
 const errorHandler = require('./middleware/errorHandler');
 const { startCronJobs } = require('./utils/stockAlertCron');
 const logger = require('./utils/logger');
@@ -120,36 +121,65 @@ app.use('/uploads', express.static(uploadDir));
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 // Note: Rate limiting is applied per-route in individual route files
+// Health check and monitoring endpoints (no database health check middleware)
 app.use('/api/monitoring', require('./routes/monitoringRoutes'));
-app.use('/api/auth', require('./routes/authRoutes')); // Has its own rate limiters
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/orders', require('./routes/orderRoutes'));
-app.use('/api/payments', require('./routes/paymentRoutes')); // Has its own rate limiters
-app.use('/api/analytics', require('./routes/analyticsRoutes'));
-app.use('/api/quotes', require('./routes/quoteRoutes'));
-app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes')); // Has its own rate limiters
-app.use('/api/invoices', require('./routes/invoiceRoutes'));
-app.use('/api/upload', require('./routes/uploadRoutes')); // Has its own rate limiters
-app.use('/api/returns', require('./routes/returnRoutes'));
-app.use('/api/coupons', require('./routes/couponRoutes'));
-app.use('/api/categories', require('./routes/categoryRoutes'));
-app.use('/api/manufacturers', require('./routes/manufacturerRoutes'));
-app.use('/api/reviews', require('./routes/reviewRoutes'));
-app.use('/api/wishlist', require('./routes/wishlistRoutes'));
-app.use('/api/cart', require('./routes/cartRoutes'));
-app.use('/api/newsletter', require('./routes/newsletterRoutes'));
-app.use('/api/activity-logs', require('./routes/activityLogRoutes'));
-app.use('/api/sms', require('./routes/smsRoutes'));
-app.use('/api/migration', require('./routes/migrationRoutes')); // Database migration endpoints
+
+// Database-dependent routes (protected by dbHealthCheck middleware)
+app.use('/api/auth', dbHealthCheck, require('./routes/authRoutes')); // Has its own rate limiters
+app.use('/api/products', dbHealthCheck, require('./routes/productRoutes'));
+app.use('/api/orders', dbHealthCheck, require('./routes/orderRoutes'));
+app.use('/api/payments', dbHealthCheck, require('./routes/paymentRoutes')); // Has its own rate limiters
+app.use('/api/analytics', dbHealthCheck, require('./routes/analyticsRoutes'));
+app.use('/api/quotes', dbHealthCheck, require('./routes/quoteRoutes'));
+app.use('/api/notifications', dbHealthCheck, require('./routes/notificationRoutes'));
+app.use('/api/admin', dbHealthCheck, require('./routes/adminRoutes')); // Has its own rate limiters
+app.use('/api/invoices', dbHealthCheck, require('./routes/invoiceRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes')); // Has its own rate limiters (no DB check needed for uploads)
+app.use('/api/returns', dbHealthCheck, require('./routes/returnRoutes'));
+app.use('/api/coupons', dbHealthCheck, require('./routes/couponRoutes'));
+app.use('/api/categories', dbHealthCheck, require('./routes/categoryRoutes'));
+app.use('/api/manufacturers', dbHealthCheck, require('./routes/manufacturerRoutes'));
+app.use('/api/reviews', dbHealthCheck, require('./routes/reviewRoutes'));
+app.use('/api/wishlist', dbHealthCheck, require('./routes/wishlistRoutes'));
+app.use('/api/cart', dbHealthCheck, require('./routes/cartRoutes'));
+app.use('/api/newsletter', dbHealthCheck, require('./routes/newsletterRoutes'));
+app.use('/api/activity-logs', dbHealthCheck, require('./routes/activityLogRoutes'));
+app.use('/api/sms', dbHealthCheck, require('./routes/smsRoutes'));
+app.use('/api/migration', dbHealthCheck, require('./routes/migrationRoutes')); // Database migration endpoints
+app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site settings
+app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
+  const mongoose = require('mongoose');
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  }[dbState] || 'unknown';
+
+  const isHealthy = dbState === 1;
+
+  res.status(isHealthy ? 200 : 503).json({
     success: true,
+    status: isHealthy ? 'healthy' : 'degraded',
     message: 'MedCore BD API is running',
     version: '2.0.0',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    services: {
+      api: 'operational',
+      database: {
+        status: dbStatus,
+        connected: dbState === 1,
+        host: dbState === 1 ? mongoose.connection.host : null
+      },
+      redis: {
+        status: redisCache.isRedisConnected() ? 'connected' : 'disconnected',
+        fallback: !redisCache.isRedisConnected() ? 'memory-store' : null
+      }
+    }
   });
 });
 
@@ -191,26 +221,29 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // ── Start Server ──────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 3001;
-const server = app.listen(PORT, () => {
-  logger.info(`MedCore BD API v2.0 running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
-  startCronJobs();
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  logger.error(`Unhandled Rejection: ${err.message}`);
-  server.close(() => process.exit(1));
-});
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  logger.info('SIGTERM received. Shutting down gracefully...');
-  server.close(async () => {
-    await redisCache.close();
-    logger.info('Server closed. Process terminating...');
-    process.exit(0);
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 3001;
+  const server = app.listen(PORT, () => {
+    logger.info(`MedCore BD API v2.0 running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    startCronJobs();
   });
-});
+
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (err) => {
+    logger.error(`Unhandled Rejection: ${err.message}`);
+    server.close(() => process.exit(1));
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    logger.info('SIGTERM received. Shutting down gracefully...');
+    server.close(async () => {
+      await redisCache.close();
+      logger.info('Server closed. Process terminating...');
+      process.exit(0);
+    });
+  });
+}
 
 module.exports = app;
