@@ -46,9 +46,8 @@ const newsletterSchema = new mongoose.Schema({
 });
 
 // Indexes for efficient queries
-newsletterSchema.index({ email: 1 });
-newsletterSchema.index({ isSubscribed: 1 });
-newsletterSchema.index({ unsubscribeToken: 1 });
+// Note: email and unsubscribeToken already have unique: true which creates indexes
+// Note: isSubscribed already has index: true in the field definition
 newsletterSchema.index({ source: 1 });
 newsletterSchema.index({ tags: 1 });
 

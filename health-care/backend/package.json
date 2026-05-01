@@ -9,7 +9,9 @@
     "test": "jest",
     "seed": "node src/utils/seedData.js",
     "fix:categories": "node src/scripts/fixProductCategories.js",
-    "fix:brands": "node src/scripts/fixProductBrands.js"
+    "fix:brands": "node src/scripts/fixProductBrands.js",
+    "diagnose": "node diagnose-connection.js",
+    "restart": "powershell -ExecutionPolicy Bypass -File restart-server.ps1"
   },
   "keywords": [
     "medical",

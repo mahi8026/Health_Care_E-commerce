@@ -63,8 +63,8 @@ const cartSchema = new mongoose.Schema({
 });
 
 // Indexes for efficient queries
-cartSchema.index({ user: 1 });
-cartSchema.index({ sessionId: 1 });
+// Note: user and sessionId already have sparse: true which creates indexes
+// Only add compound indexes here
 cartSchema.index({ isAbandoned: 1, lastActivity: 1 });
 cartSchema.index({ isAbandoned: 1, recoveryEmailSent: 1 });
 

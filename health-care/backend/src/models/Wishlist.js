@@ -16,7 +16,7 @@ const wishlistSchema = new mongoose.Schema({
 });
 
 // Index for faster lookups
-wishlistSchema.index({ user: 1 });
+// Note: user already has unique: true which creates an index
 wishlistSchema.index({ products: 1 });
 
 // Method to add product (toggle)
