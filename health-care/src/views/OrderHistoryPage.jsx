@@ -127,7 +127,8 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
+          {/* Desktop Table */}
+          <div className="hidden md:block bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-tertiary)]">
@@ -190,6 +191,59 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card List */}
+          <div className="md:hidden space-y-3">
+            {orders.map(order => (
+              <div key={order._id} className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] mb-1">
+                      {order.orderNumber}
+                    </div>
+                    <div className="text-[11px] text-[var(--color-text-secondary)]">
+                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                    </div>
+                  </div>
+                  <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
+                    {order.status}
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between mb-3 pb-3 border-b-[0.5px] border-[var(--color-border-tertiary)]">
+                  <div className="text-[11px] text-[var(--color-text-secondary)]">
+                    {order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? 's' : ''}
+                  </div>
+                  <div className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    ৳{(order.totalAmount || order.total || 0).toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleTrack(order.orderNumber)}
+                    className="flex-1 py-2 text-[11px] text-[#0E8A6E] font-medium border-[0.5px] border-[#0E8A6E] rounded-lg hover:bg-[#E1F5EE]"
+                  >
+                    Track
+                  </button>
+                  <button
+                    onClick={() => handleInvoice(order)}
+                    className="flex-1 py-2 text-[11px] text-[#0B2545] font-medium border-[0.5px] border-[#0B2545] rounded-lg hover:bg-[#E6F1FB]"
+                  >
+                    Invoice
+                  </button>
+                  {canRequestReturn(order) && (
+                    <button
+                      onClick={() => handleRequestReturn(order._id)}
+                      className="flex-1 py-2 text-[11px] text-[#E24B4A] font-medium border-[0.5px] border-[#E24B4A] rounded-lg hover:bg-[#FEE2E2]"
+                    >
+                      Return
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Pagination */}

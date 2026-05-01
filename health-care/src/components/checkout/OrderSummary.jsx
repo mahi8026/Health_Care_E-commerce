@@ -11,6 +11,7 @@ export default function OrderSummary({ items, deliveryMethod = 'standard', appli
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
   const [showCouponInput, setShowCouponInput] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Calculate subtotal
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -118,9 +119,25 @@ export default function OrderSummary({ items, deliveryMethod = 'standard', appli
 
   return (
     <div>
-      <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+      {/* Mobile: Collapsible Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="md:hidden w-full flex items-center justify-between p-4 bg-white border-b border-gray-200 min-h-[64px]"
+      >
+        <div>
+          <div className="text-[14px] font-semibold">Your order ({items.length} items)</div>
+          <div className="text-[16px] font-bold text-[#0B2545] mt-1">৳{total.toLocaleString()}</div>
+        </div>
+        <div className="text-[20px]">{isExpanded ? '▲' : '▼'}</div>
+      </button>
+
+      {/* Desktop: Always visible title */}
+      <h3 className="hidden md:block text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
         Order summary
       </h3>
+
+      {/* Content - Collapsible on mobile */}
+      <div className={`${isExpanded ? 'block' : 'hidden'} md:block`}>
 
       {/* Cart Items */}
       <div className="space-y-3 mb-4 pb-4 border-b-[0.5px] border-[var(--color-border-tertiary)]">
@@ -288,6 +305,7 @@ export default function OrderSummary({ items, deliveryMethod = 'standard', appli
       <div className="bg-[#E6F1FB] rounded-lg p-3 text-[11px] text-[#0C447C]">
         <div className="font-medium mb-1">💳 Secure checkout</div>
         <div>Your payment information is encrypted and secure.</div>
+      </div>
       </div>
     </div>
   );

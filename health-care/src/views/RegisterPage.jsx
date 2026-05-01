@@ -61,7 +61,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6 md:p-6">
       <div className="max-w-2xl w-full">
         {/* Logo */}
         <div className="text-center mb-8">

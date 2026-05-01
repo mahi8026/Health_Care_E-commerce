@@ -131,7 +131,7 @@ export default function CustomersManagement() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
         {loading ? (
           <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading customers…</div>
         ) : customers.length === 0 ? (
@@ -139,7 +139,7 @@ export default function CustomersManagement() {
             {search ? `No customers found for "${search}"` : 'No B2B customers yet'}
           </div>
         ) : (
-          <table className="w-full">
+          <table className="w-full" style={{minWidth: '900px'}}>
             <thead>
               <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
                 {['Customer', 'Email', 'Phone', 'Tier', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (

@@ -73,20 +73,20 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-4 md:p-6">
       <div className="max-w-md w-full">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="font-[family-name:var(--font-lora)] text-[32px] font-semibold text-[#0B2545] mb-2">
+        <div className="text-center mb-6 md:mb-8">
+          <div className="font-[family-name:var(--font-lora)] text-[28px] md:text-[32px] font-semibold text-[#0B2545] mb-2">
             MedCore<span className="text-[#0E8A6E]">BD</span>
           </div>
-          <p className="text-[13px] text-[var(--color-text-secondary)]">
+          <p className="text-[12px] md:text-[13px] text-[var(--color-text-secondary)]">
             Sign in to your account
           </p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-lg p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="bg-white rounded-lg p-5 md:p-8 shadow-sm border-[0.5px] md:border border-[var(--color-border-tertiary)]">
           <form onSubmit={handleSubmit}>
             {error && (
               <div className="mb-4 p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px]">
@@ -103,6 +103,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               placeholder="your@email.com"
               required
               className="mb-4"
+              style={{ minHeight: '48px', fontSize: '16px' }}
             />
 
             <Input
@@ -114,6 +115,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               placeholder="Enter your password"
               required
               className="mb-2"
+              style={{ minHeight: '48px', fontSize: '16px' }}
             />
 
             {/* Forgot password link */}
@@ -126,7 +128,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                     window.location.href = '/reset-password';
                   }
                 }}
-                className="text-[12px] text-[#0E8A6E] hover:underline"
+                className="text-[12px] text-[#0E8A6E] hover:underline min-h-[44px] inline-flex items-center"
               >
                 Forgot password?
               </button>
@@ -137,7 +139,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               variant="primary"
               fullWidth
               loading={loading}
-              className="mb-4"
+              className="mb-4 min-h-[52px]"
             >
               Sign In
             </Button>
@@ -158,14 +160,14 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               </div>
 
               {/* Quick Login Buttons - Enhanced Design */}
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 {/* B2B Customer Button */}
                 <button
                   type="button"
                   onClick={() => quickLogin('shahid@squarehospital.com', 'password123')}
-                  className="group w-full px-5 py-4 bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#6D28D9] hover:to-[#5B21B6] text-white rounded-xl text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3"
+                  className="group w-full px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#6D28D9] hover:to-[#5B21B6] text-white rounded-xl text-[13px] md:text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 md:gap-3 min-h-[48px]"
                 >
-                  <span className="text-[24px] group-hover:scale-110 transition-transform duration-300">🏢</span>
+                  <span className="text-[20px] md:text-[24px] group-hover:scale-110 transition-transform duration-300">🏢</span>
                   <span>Login as B2B Customer</span>
                 </button>
 
@@ -173,9 +175,9 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => quickLogin('admin@medcorebd.com', 'admin123')}
-                  className="group w-full px-5 py-4 bg-gradient-to-r from-[#0E8A6E] to-[#0c7a61] hover:from-[#0c7a61] hover:to-[#0a6a51] text-white rounded-xl text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3"
+                  className="group w-full px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-[#0E8A6E] to-[#0c7a61] hover:from-[#0c7a61] hover:to-[#0a6a51] text-white rounded-xl text-[13px] md:text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 md:gap-3 min-h-[48px]"
                 >
-                  <span className="text-[24px] group-hover:scale-110 transition-transform duration-300">👨‍💼</span>
+                  <span className="text-[20px] md:text-[24px] group-hover:scale-110 transition-transform duration-300">👨‍💼</span>
                   <span>Login as Admin</span>
                 </button>
 
@@ -183,9 +185,9 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => quickLogin('kamal@example.com', 'password123')}
-                  className="group w-full px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d2d52] hover:from-[#0d2d52] hover:to-[#0f3560] text-white rounded-xl text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3"
+                  className="group w-full px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-[#0B2545] to-[#0d2d52] hover:from-[#0d2d52] hover:to-[#0f3560] text-white rounded-xl text-[13px] md:text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-2 md:gap-3 min-h-[48px]"
                 >
-                  <span className="text-[24px] group-hover:scale-110 transition-transform duration-300">👤</span>
+                  <span className="text-[20px] md:text-[24px] group-hover:scale-110 transition-transform duration-300">👤</span>
                   <span>Login as Customer</span>
                 </button>
               </div>
@@ -199,7 +201,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="text-[#0E8A6E] font-medium hover:underline"
+                className="text-[#0E8A6E] font-medium hover:underline min-h-[44px] inline-flex items-center"
               >
                 Register here
               </button>
@@ -208,7 +210,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
         </div>
 
         {/* Info */}
-        <div className="mt-6 text-center text-[11px] text-[var(--color-text-secondary)]">
+        <div className="mt-4 md:mt-6 text-center text-[10px] md:text-[11px] text-[var(--color-text-secondary)]">
           <p>Secure login with JWT authentication</p>
         </div>
       </div>

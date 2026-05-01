@@ -127,13 +127,13 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   ];
 
   return (
-    <div>
+    <div className="pb-20 md:pb-0">
       <Breadcrumb items={breadcrumbs} />
 
-      <div className="grid grid-cols-[1fr_380px]">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_380px]">
         {/* Left Column */}
-        <div className="border-r-[0.5px] border-[var(--color-border-tertiary)]">
-          <div className="p-6 px-7">
+        <div className="md:border-r-[0.5px] border-[var(--color-border-tertiary)]">
+          <div className="p-4 md:p-6 md:px-7">
             <ProductGallery
               images={product.images || []}
               product={product}
@@ -149,8 +149,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           <ProductTabs product={product} />
         </div>
 
-        {/* Right Column - Buy Box */}
-        <div className="p-6 bg-[var(--color-background-primary)] sticky top-0 self-start">
+        {/* Right Column - Buy Box (Desktop) */}
+        <div className="hidden md:block p-6 bg-[var(--color-background-primary)] sticky top-0 self-start">
           <ProductInfo
             product={product}
             quantity={quantity}
@@ -161,10 +161,56 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
             setSelectedWarranty={setSelectedWarranty}
           />
         </div>
+
+        {/* Mobile Sticky Bottom Bar */}
+        <div 
+          className="mobile-sticky-bar"
+          style={{
+            display: 'none',
+            position: 'fixed',
+            bottom: 60,
+            left: 0,
+            right: 0,
+            height: 64,
+            background: '#fff',
+            borderTop: '1px solid #E5E7EB',
+            padding: '0 16px',
+            paddingBottom: 'calc(0px + env(safe-area-inset-bottom))',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            zIndex: 500,
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 11, color: '#6B7280' }}>Price</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#0B2545' }}>
+              ৳{product.price?.toLocaleString()}
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              const event = new CustomEvent('addToCart', { detail: { product, quantity } });
+              window.dispatchEvent(event);
+            }}
+            style={{
+              background: '#0E8A6E',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 24px',
+              fontSize: 14,
+              fontWeight: 600,
+              minHeight: 44,
+              cursor: 'pointer',
+            }}
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
 
       {/* Reviews Section */}
-      <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] px-7 py-8">
+      <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] px-4 md:px-7 py-6 md:py-8">
         <ProductReviews productId={product._id || product.id} />
       </div>
     </div>

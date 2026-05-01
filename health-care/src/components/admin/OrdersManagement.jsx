@@ -139,13 +139,13 @@ export default function OrdersManagement() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
         {loading ? (
           <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading orders…</div>
         ) : orders.length === 0 ? (
           <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No orders found</div>
         ) : (
-          <table className="w-full">
+          <table className="w-full" style={{minWidth: '900px'}}>
             <thead>
               <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
                 {['Order ID', 'Customer', 'Items', 'Amount', 'Status', 'Date', 'Invoice', 'Notifications'].map(h => (

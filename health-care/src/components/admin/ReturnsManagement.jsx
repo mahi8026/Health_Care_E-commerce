@@ -166,7 +166,7 @@ export default function ReturnsManagement() {
 
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-lg border p-4">
             <p className="text-sm text-gray-600 mb-1">Total Returns</p>
             <p className="text-2xl font-bold text-[#0B2545]">{stats.total}</p>
@@ -215,8 +215,8 @@ export default function ReturnsManagement() {
 
       {/* Returns Table */}
       <div className="bg-white rounded-lg border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <table className="w-full" style={{minWidth: '900px'}}>
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Return ID</th>

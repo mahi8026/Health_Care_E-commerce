@@ -94,16 +94,22 @@ export default function SearchPage({ onProductClick }) {
 
   return (
     <div className="min-h-screen bg-[var(--color-background-secondary)]">
-      <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
+      {/* Mobile Sticky Search Bar */}
+      <div className="md:static md:bg-transparent sticky top-0 z-10 bg-white border-b md:border-b-0 border-[var(--color-border-tertiary)]">
+        <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
+      </div>
 
       <Breadcrumb items={breadcrumbs} />
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-[280px_1fr] gap-6">
-          <SearchFilters
-            onFilterChange={handleFilterChange}
-            activeFilters={filters}
-          />
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+        <div className="md:grid md:grid-cols-[280px_1fr] md:gap-6">
+          {/* Desktop Filters */}
+          <div className="hidden md:block">
+            <SearchFilters
+              onFilterChange={handleFilterChange}
+              activeFilters={filters}
+            />
+          </div>
 
           <div>
             <div className="flex items-center justify-between mb-4">

@@ -10,15 +10,15 @@ export default function PaymentMethods({ selected, onSelect }) {
   ];
 
   return (
-    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] px-[18px] py-[18px] mb-[14px]">
-      <div className="text-[13px] font-semibold mb-[14px]">Payment method</div>
+    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] px-4 md:px-[18px] py-4 md:py-[18px] mb-[14px]">
+      <div className="text-[13px] md:text-[13px] font-semibold mb-[14px]">Payment method</div>
       
-      <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
         {methods.map((method) => (
           <div
             key={method.id}
             onClick={() => onSelect(method.id)}
-            className={`border-[0.5px] rounded-lg px-[10px] py-[10px] cursor-pointer text-center flex flex-col items-center gap-[5px] ${
+            className={`border-[0.5px] rounded-lg px-[10px] py-3 md:py-[10px] cursor-pointer text-center flex flex-col items-center gap-[5px] min-h-[64px] md:min-h-0 ${
               selected === method.id
                 ? 'border-[#0B2545] bg-[#E6F1FB] border-[1.5px]'
                 : 'border-[var(--color-border-secondary)]'
@@ -53,7 +53,7 @@ export default function PaymentMethods({ selected, onSelect }) {
                 )}
               </svg>
             </div>
-            <div className="text-[10px] font-medium text-[var(--color-text-primary)]">
+            <div className="text-[10px] md:text-[10px] font-medium text-[var(--color-text-primary)]">
               {method.label}
             </div>
           </div>

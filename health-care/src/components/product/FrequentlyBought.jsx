@@ -38,11 +38,11 @@ export default function FrequentlyBought({ productId, category }) {
       <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">
         Frequently bought together
       </div>
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 overflow-x-auto pb-2 md:flex-wrap" style={{WebkitOverflowScrolling: 'touch'}}>
         {related.map((product) => (
           <div
             key={product._id || product.id}
-            className="border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg px-[10px] py-2 flex items-center gap-2 bg-[var(--color-background-primary)] hover:border-[#0B2545] transition-colors"
+            className="border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg px-[10px] py-2 flex items-center gap-2 bg-[var(--color-background-primary)] hover:border-[#0B2545] transition-colors flex-shrink-0 min-w-[140px] md:min-w-0"
           >
             <div className="w-8 h-8 rounded-md bg-[var(--color-background-tertiary)] flex items-center justify-center text-[18px] overflow-hidden">
               {(() => {

@@ -8,6 +8,7 @@ import SearchFilters from '@/components/search/SearchFilters';
 import SearchResults from '@/components/search/SearchResults';
 import SortOptions from '@/components/search/SortOptions';
 import Breadcrumb from '@/components/ui/Breadcrumb';
+import { FaFilter, FaTimes } from 'react-icons/fa';
 
 export default function ProductsPage({ onProductClick }) {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function ProductsPage({ onProductClick }) {
   });
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
   const [page, setPage] = useState(1);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Sync state to URL query params
   useEffect(() => {
@@ -39,6 +41,18 @@ export default function ProductsPage({ onProductClick }) {
     if (sortBy !== 'name') params.set('sort', sortBy);
     router.replace(`/products?${params.toString()}`, { scroll: false });
   }, [searchQuery, searchCategory, filters, sortBy, router]);
+
+  // Lock body scroll when mobile filters open
+  useEffect(() => {
+    if (mobileFiltersOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileFiltersOpen]);
 
   const productFilters = useMemo(() => {
     const categoryValue = searchCategory || filters.categories?.[0] || '';
@@ -72,6 +86,7 @@ export default function ProductsPage({ onProductClick }) {
     }
     setFilters(newFilters);
     setPage(1);
+    setMobileFiltersOpen(false);
   }, []);
 
   const handleSortChange = useCallback((newSort) => {
@@ -90,8 +105,9 @@ export default function ProductsPage({ onProductClick }) {
 
       <Breadcrumb items={breadcrumbs} />
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-[280px_1fr] gap-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+        {/* Desktop Layout */}
+        <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-6">
           <SearchFilters
             onFilterChange={handleFilterChange}
             activeFilters={filters}
@@ -117,6 +133,93 @@ export default function ProductsPage({ onProductClick }) {
               onProductClick={onProductClick}
             />
           </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="md:hidden">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-[20px] font-semibold font-[family-name:var(--font-lora)]">
+                All Products
+              </h1>
+              <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
+                {products?.length || 0} products found
+              </p>
+            </div>
+            <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
+          </div>
+
+          {/* Mobile Results */}
+          <SearchResults
+            products={products}
+            loading={loading}
+            query={searchQuery}
+            onProductClick={onProductClick}
+          />
+
+          {/* Mobile Filter Button - Fixed Bottom Left */}
+          <button
+            onClick={() => setMobileFiltersOpen(true)}
+            className="md:hidden fixed bottom-20 left-4 z-50 bg-[#0E8A6E] text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2 font-semibold text-[14px]"
+            style={{
+              boxShadow: '0 4px 12px rgba(14, 138, 110, 0.4)',
+            }}
+          >
+            <FaFilter size={14} />
+            Filters
+          </button>
+
+          {/* Mobile Filter Bottom Sheet */}
+          {mobileFiltersOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                onClick={() => setMobileFiltersOpen(false)}
+                className="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+                style={{ animation: 'fadeIn 0.3s' }}
+              />
+
+              {/* Bottom Sheet */}
+              <div
+                className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-[1000] max-h-[85vh] overflow-y-auto"
+                style={{
+                  animation: 'slideUp 0.3s ease-out',
+                  paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)',
+                }}
+              >
+                {/* Sheet Header */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between z-10">
+                  <h2 className="text-[18px] font-semibold">Filters</h2>
+                  <button
+                    onClick={() => setMobileFiltersOpen(false)}
+                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+                  >
+                    <FaTimes size={16} />
+                  </button>
+                </div>
+
+                {/* Filters Content */}
+                <div className="px-4 py-4">
+                  <SearchFilters
+                    onFilterChange={handleFilterChange}
+                    activeFilters={filters}
+                  />
+                </div>
+              </div>
+
+              <style jsx>{`
+                @keyframes fadeIn {
+                  from { opacity: 0; }
+                  to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                  from { transform: translateY(100%); }
+                  to { transform: translateY(0); }
+                }
+              `}</style>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -136,7 +136,7 @@ export default function NewsletterManagement() {
   return (
     <div>
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg p-4 border-[0.5px] border-[var(--color-border-tertiary)]">
           <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">Total Subscribers</div>
           <div className="text-[24px] font-bold text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
@@ -210,7 +210,8 @@ export default function NewsletterManagement() {
 
       {/* Subscribers Table */}
       <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
-        <table className="w-full">
+        <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <table className="w-full" style={{minWidth: '800px'}}>
           <thead>
             <tr className="bg-[var(--color-background-secondary)] border-b border-[var(--color-border-tertiary)]">
               <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Email</th>
@@ -269,6 +270,7 @@ export default function NewsletterManagement() {
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (

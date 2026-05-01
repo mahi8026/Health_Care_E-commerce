@@ -4,6 +4,7 @@ import WebVitalsReporter from "@/components/WebVitalsReporter";
 import Footer from "@/components/layout/Footer";
 import TopBar from "@/components/layout/TopBar";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
+import BottomNav from "@/components/layout/BottomNav";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
@@ -41,8 +42,9 @@ export default function RootLayout({ children }) {
               {/* <WebVitalsReporter /> */}
               <TopBar />
               <HeaderWrapper />
-              {children}
+              <main>{children}</main>
               <Footer />
+              <BottomNav />
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

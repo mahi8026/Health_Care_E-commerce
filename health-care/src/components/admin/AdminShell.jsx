@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
@@ -7,6 +8,7 @@ export default function AdminShell({ children, title, action, onAction }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const adminUser = {
     name: user?.name || 'Admin',
@@ -47,9 +49,23 @@ export default function AdminShell({ children, title, action, onAction }) {
   };
 
   return (
-    <div className="grid grid-cols-[220px_1fr] min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="min-h-screen bg-[var(--color-background-tertiary)]">
+      {/* Mobile Backdrop */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-[899] md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="bg-[#0B2545] text-white flex flex-col h-screen sticky top-0">
+      <div className={`
+        bg-[#0B2545] text-white flex flex-col h-screen fixed top-0 left-0 z-[900]
+        transition-transform duration-300
+        w-[240px] md:w-[220px] lg:w-[220px]
+        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0 md:sticky
+      `}>
         {/* Logo */}
         <div className="p-5 border-b border-white/10">
           <div 
@@ -132,10 +148,22 @@ export default function AdminShell({ children, title, action, onAction }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col">
+      <div className="flex flex-col md:ml-[220px]">
         {/* Top Bar */}
-        <div className="bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div>
+        <div className="bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden w-8 h-8 flex items-center justify-center text-[#0B2545]"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+
+          <div className="flex-1 md:flex-initial">
             <h1 className="text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
               {title || 'Admin Panel'}
             </h1>
@@ -149,15 +177,15 @@ export default function AdminShell({ children, title, action, onAction }) {
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <button className="w-8 h-8 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] flex items-center justify-center hover:bg-[var(--color-background-secondary)]">
+          <div className="flex items-center gap-2 md:gap-3">
+            <button className="hidden md:flex w-8 h-8 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] items-center justify-center hover:bg-[var(--color-background-secondary)]">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.35-4.35"/>
               </svg>
             </button>
             
-            <button className="relative w-8 h-8 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] flex items-center justify-center hover:bg-[var(--color-background-secondary)]">
+            <button className="hidden md:flex relative w-8 h-8 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] items-center justify-center hover:bg-[var(--color-background-secondary)]">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 01-3.46 0"/>

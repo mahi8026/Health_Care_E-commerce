@@ -6,7 +6,8 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import AccountMenu from './AccountMenu';
 import WishlistButton from './WishlistButton';
-import { FaSearch, FaShoppingCart } from 'react-icons/fa';
+import MobileMenu from './MobileMenu';
+import { FaSearch, FaShoppingCart, FaBars } from 'react-icons/fa';
 
 const FALLBACK_CATEGORIES = [
   { name: 'Diagnostic Equipment' },
@@ -27,6 +28,8 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -34,6 +37,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
         ? `&category=${encodeURIComponent(selectedCategory)}`
         : '';
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}${categoryParam}`);
+      setMobileSearchOpen(false);
     }
   };
 
@@ -41,17 +45,17 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
     <>
       {/* Main Navbar with Search */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-6 py-3 flex items-center gap-4">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-3 flex items-center gap-2 md:gap-4">
           {/* Logo */}
           <div 
             onClick={() => router.push('/')}
-            className="font-[family-name:var(--font-lora)] text-[20px] font-bold text-[#0B2545] flex-shrink-0 cursor-pointer"
+            className="font-[family-name:var(--font-lora)] text-[18px] md:text-[20px] font-bold text-[#0B2545] flex-shrink-0 cursor-pointer"
           >
             MedCore<span className="text-[#0E8A6E]">BD</span>
           </div>
           
-          {/* Mega Search Bar */}
-          <div className="flex-1 flex border-2 border-[#0B2545] rounded-lg overflow-hidden max-w-[680px]">
+          {/* Desktop Search Bar */}
+          <div className="hidden md:flex flex-1 border-2 border-[#0B2545] rounded-lg overflow-hidden max-w-[680px]">
             <select 
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
@@ -77,80 +81,128 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
             </button>
           </div>
           
+          {/* Mobile Search Icon */}
+          <button
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            className="md:hidden w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer"
+          >
+            <FaSearch size={16} className="text-gray-700" />
+          </button>
+          
           {/* Right Side Icons */}
           <div className="flex gap-2 items-center ml-auto">
-            <WishlistButton />
+            {/* Wishlist - Hidden on mobile */}
+            <div className="hidden md:block">
+              <WishlistButton />
+            </div>
             
+            {/* Cart */}
             <button
               onClick={onCartClick}
               aria-label={cartCount > 0 ? `Shopping cart, ${cartCount} items` : 'Shopping cart'}
-              className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer relative hover:bg-gray-50 transition-colors"
+              className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer relative hover:bg-gray-50 transition-colors"
               title={cartCount > 0 ? `${cartCount} items in cart` : 'Shopping cart'}
             >
-              <FaShoppingCart size={14} className="text-gray-700" />
+              <FaShoppingCart size={16} className="text-gray-700" />
               {cartCount > 0 && (
-                <div className="absolute -top-[5px] -right-[5px] bg-[#E24B4A] text-white text-[8px] w-[14px] h-[14px] rounded-full flex items-center justify-center border-[1.5px] border-white font-bold">
-                  {cartCount}
+                <div className="absolute -top-[5px] -right-[5px] bg-[#E24B4A] text-white text-[8px] w-[16px] h-[16px] rounded-full flex items-center justify-center border-[1.5px] border-white font-bold">
+                  {cartCount > 9 ? '9+' : cartCount}
                 </div>
               )}
             </button>
             
-            <AccountMenu 
-              onNavigate={onNavigate}
-              onLoginClick={onLoginClick}
-              onLogout={onLogout}
-            />
+            {/* Desktop Account Menu */}
+            <div className="hidden md:block">
+              <AccountMenu 
+                onNavigate={onNavigate}
+                onLoginClick={onLoginClick}
+                onLogout={onLogout}
+              />
+            </div>
             
-            {isAuthenticated() ? (
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] text-gray-600">
-                  {user?.name}
-                </span>
-                {user?.role === 'admin' && (
+            {/* Desktop Auth Buttons */}
+            <div className="hidden lg:flex items-center gap-2">
+              {isAuthenticated() ? (
+                <>
+                  <span className="text-[11px] text-gray-600">
+                    {user?.name}
+                  </span>
+                  {user?.role === 'admin' && (
+                    <button
+                      onClick={() => router.push('/admin')}
+                      className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-[11px] font-medium cursor-pointer hover:bg-purple-700 transition-colors"
+                    >
+                      Admin
+                    </button>
+                  )}
                   <button
-                    onClick={() => router.push('/admin')}
-                    className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-[11px] font-medium cursor-pointer hover:bg-purple-700 transition-colors"
+                    onClick={onLogout}
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 bg-transparent text-gray-700 text-[12px] cursor-pointer hover:bg-gray-50 transition-colors"
                   >
-                    Shahid Admin
+                    Logout
                   </button>
-                )}
-                <button
-                  onClick={onLogout}
-                  className="px-3 py-1.5 rounded-lg border border-gray-300 bg-transparent text-gray-700 text-[12px] cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <>
-                <button
-                  onClick={onLoginClick}
-                  className="px-3 py-1.5 rounded-lg border border-gray-300 bg-transparent text-gray-700 text-[12px] cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  Log in
-                </button>
-                <button
-                  onClick={onRegisterClick}
-                  className="px-3 py-1.5 rounded-lg border-none bg-[#0B2545] text-white text-[12px] font-medium cursor-pointer hover:bg-[#0d2d52] transition-colors"
-                >
-                  Register
-                </button>
-              </>
-            )}
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={onLoginClick}
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 bg-transparent text-gray-700 text-[12px] cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    Log in
+                  </button>
+                  <button
+                    onClick={onRegisterClick}
+                    className="px-3 py-1.5 rounded-lg border-none bg-[#0B2545] text-white text-[12px] font-medium cursor-pointer hover:bg-[#0d2d52] transition-colors"
+                  >
+                    Register
+                  </button>
+                </>
+              )}
+              
+              <button
+                onClick={() => router.push('/b2b')}
+                className="px-4 py-1.5 bg-[#0E8A6E] text-white border-none rounded-lg text-[12px] font-semibold cursor-pointer hover:bg-[#0c7a61] transition-colors"
+              >
+                B2B Portal
+              </button>
+            </div>
             
+            {/* Mobile Hamburger Menu */}
             <button
-              onClick={() => router.push('/b2b')}
-              className="px-4 py-1.5 bg-[#0E8A6E] text-white border-none rounded-lg text-[12px] font-semibold cursor-pointer hover:bg-[#0c7a61] transition-colors"
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer"
             >
-              B2B Portal
+              <FaBars size={18} className="text-gray-700" />
             </button>
           </div>
         </div>
+        
+        {/* Mobile Search Bar (Expandable) */}
+        {mobileSearchOpen && (
+          <div className="md:hidden px-4 pb-3 border-t border-gray-100 pt-3 animate-slide-in">
+            <div className="flex border-2 border-[#0B2545] rounded-lg overflow-hidden">
+              <input 
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="flex-1 border-none px-3 py-2 text-[14px] outline-none"
+                autoFocus
+              />
+              <button 
+                onClick={handleSearch}
+                className="bg-[#0B2545] text-white border-none px-4 text-[13px] font-semibold cursor-pointer"
+              >
+                <FaSearch size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* Secondary Navigation */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1400px] mx-auto px-6 flex items-center gap-0">
+      {/* Secondary Navigation - Desktop Only */}
+      <div className="hidden md:block bg-white border-b border-gray-200">
+        <div className="max-w-[1400px] mx-auto px-6 flex items-center gap-0 overflow-x-auto">
           {[
             { label: 'Home', path: '/' },
             { label: 'Diagnostics', path: '/products?category=Diagnostic+Equipment' },
@@ -170,6 +222,9 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           ))}
         </div>
       </div>
+      
+      {/* Mobile Menu */}
+      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
     </>
   );
 }

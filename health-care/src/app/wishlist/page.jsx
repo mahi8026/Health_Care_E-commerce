@@ -67,7 +67,7 @@ export default function WishlistPage() {
         </div>
       ) : (
         /* Product Grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {wishlist.map((product) => {
             const primaryImage = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
             const imageUrl = primaryImage ? (typeof primaryImage === 'string' ? primaryImage : primaryImage.url) : null;

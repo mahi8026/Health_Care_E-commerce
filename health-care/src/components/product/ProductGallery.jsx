@@ -28,93 +28,149 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
   };
 
   return (
-    <div className="grid grid-cols-[64px_1fr] gap-[10px] mb-5">
-      {/* Thumbnails column */}
-      <div className="flex flex-col gap-2">
-        {images.length > 0 ? images.map((img, idx) => (
-          <div
-            key={img.publicId || idx}
-            onClick={() => setActiveIndex(idx)}
-            className={`w-16 h-16 rounded-lg border-[0.5px] ${
-              activeIndex === idx
-                ? 'border-[#0B2545] border-[1.5px]'
-                : 'border-[var(--color-border-tertiary)]'
-            } bg-[var(--color-background-secondary)] overflow-hidden cursor-pointer flex-shrink-0`}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={img.url}
-              alt={img.alt || `${product.name} view ${idx + 1}`}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </div>
-        )) : (
-          // No images — show 4 placeholder thumbnails
-          [0, 1, 2, 3].map(i => (
-            <div
-              key={i}
-              className={`w-16 h-16 rounded-lg border-[0.5px] ${
-                i === 0 ? 'border-[#0B2545] border-[1.5px]' : 'border-[var(--color-border-tertiary)]'
-              } bg-[var(--color-background-secondary)] flex items-center justify-center text-[20px] cursor-pointer flex-shrink-0`}
-            >
+    <div className="mb-5">
+      {/* Mobile: Full width image with dots */}
+      <div className="md:hidden">
+        <div
+          className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center h-[300px] relative overflow-hidden"
+          data-hero-priority={heroPriority ? 'true' : undefined}
+        >
+          {activeImage ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={activeImage.url}
+                alt={activeImage.alt || product.name}
+                className="w-full h-full object-contain p-2"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  if (e.currentTarget.nextElementSibling) {
+                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                  }
+                }}
+              />
+              <div className="hidden absolute inset-0 items-center justify-center text-[80px] text-[#D1D5DB]">
+                🏥
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-[80px] text-[#D1D5DB]">
               🏥
             </div>
-          ))
+          )}
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-[6px]">
+            {badges.map((badge, idx) => (
+              <span key={idx} className={`text-[9px] px-2 py-[3px] rounded font-medium ${badgeStyles[badge] || 'bg-[#E6F1FB] text-[#0C447C]'}`}>
+                {badge}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Dots indicator */}
+        {images.length > 1 && (
+          <div className="flex justify-center gap-2 mt-3">
+            {images.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveIndex(idx)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  activeIndex === idx ? 'bg-[#0B2545] w-6' : 'bg-[var(--color-border-secondary)]'
+                }`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Main Image */}
-      <div
-        className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center h-[320px] relative overflow-hidden"
-        data-hero-priority={heroPriority ? 'true' : undefined}
-      >
-        {activeImage ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={activeImage.url}
-              alt={activeImage.alt || product.name}
-              className="w-full h-full object-contain p-2"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                if (e.currentTarget.nextElementSibling) {
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
-                }
-              }}
-            />
-            {/* Fallback for broken image */}
-            <div className="hidden absolute inset-0 items-center justify-center text-[80px] text-[#D1D5DB]">
-              🏥
+      {/* Desktop: Thumbnails + Main Image */}
+      <div className="hidden md:grid grid-cols-[64px_1fr] gap-[10px]">
+        {/* Thumbnails column */}
+        <div className="flex flex-col gap-2">
+          {images.length > 0 ? images.map((img, idx) => (
+            <div
+              key={img.publicId || idx}
+              onClick={() => setActiveIndex(idx)}
+              className={`w-16 h-16 rounded-lg border-[0.5px] ${
+                activeIndex === idx
+                  ? 'border-[#0B2545] border-[1.5px]'
+                  : 'border-[var(--color-border-tertiary)]'
+              } bg-[var(--color-background-secondary)] overflow-hidden cursor-pointer flex-shrink-0`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img.url}
+                alt={img.alt || `${product.name} view ${idx + 1}`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             </div>
-          </>
-        ) : (
-          /* Fallback when no images */
-          <div className="flex items-center justify-center w-full h-full text-[80px] text-[#D1D5DB]">
-            🏥
-          </div>
-        )}
-
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-[6px]">
-          {badges.map((badge, idx) => (
-            <span key={idx} className={`text-[9px] px-2 py-[3px] rounded font-medium ${badgeStyles[badge] || 'bg-[#E6F1FB] text-[#0C447C]'}`}>
-              {badge}
-            </span>
-          ))}
+          )) : (
+            [0, 1, 2, 3].map(i => (
+              <div
+                key={i}
+                className={`w-16 h-16 rounded-lg border-[0.5px] ${
+                  i === 0 ? 'border-[#0B2545] border-[1.5px]' : 'border-[var(--color-border-tertiary)]'
+                } bg-[var(--color-background-secondary)] flex items-center justify-center text-[20px] cursor-pointer flex-shrink-0`}
+              >
+                🏥
+              </div>
+            ))
+          )}
         </div>
 
-        {/* Zoom Button */}
-        <button className="absolute top-3 right-3 w-[30px] h-[30px] rounded-[7px] bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center cursor-pointer">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-            <line x1="11" y1="8" x2="11" y2="14"/>
-            <line x1="8" y1="11" x2="14" y2="11"/>
-          </svg>
-        </button>
+        {/* Main Image */}
+        <div
+          className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center h-[320px] relative overflow-hidden"
+          data-hero-priority={heroPriority ? 'true' : undefined}
+        >
+          {activeImage ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={activeImage.url}
+                alt={activeImage.alt || product.name}
+                className="w-full h-full object-contain p-2"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  if (e.currentTarget.nextElementSibling) {
+                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                  }
+                }}
+              />
+              <div className="hidden absolute inset-0 items-center justify-center text-[80px] text-[#D1D5DB]">
+                🏥
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-[80px] text-[#D1D5DB]">
+              🏥
+            </div>
+          )}
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-[6px]">
+            {badges.map((badge, idx) => (
+              <span key={idx} className={`text-[9px] px-2 py-[3px] rounded font-medium ${badgeStyles[badge] || 'bg-[#E6F1FB] text-[#0C447C]'}`}>
+                {badge}
+              </span>
+            ))}
+          </div>
+
+          {/* Zoom Button */}
+          <button className="absolute top-3 right-3 w-[30px] h-[30px] rounded-[7px] bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center cursor-pointer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+              <line x1="11" y1="8" x2="11" y2="14"/>
+              <line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -70,23 +70,23 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
   };
 
   const fieldClass = (name) =>
-    `w-full px-3 py-[9px] border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none ${
+    `w-full px-3 py-[9px] md:py-[9px] min-h-[48px] border-[0.5px] rounded-lg text-[16px] md:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none ${
       errors[name]
         ? 'border-[#E24B4A] focus:border-[#E24B4A]'
         : 'border-[var(--color-border-secondary)] focus:border-[#0E8A6E]'
     }`;
 
   return (
-    <div className="bg-white rounded-lg p-5 mb-4 border-[0.5px] border-[var(--color-border-tertiary)]">
+    <div className="bg-white rounded-lg p-4 md:p-5 mb-4 border-[0.5px] border-[var(--color-border-tertiary)]">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+        <h3 className="text-[14px] md:text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
           Delivery address
         </h3>
         {(savedAddress || user?.addresses?.[0]) && (
           <button
             type="button"
             onClick={handleUseSaved}
-            className="text-[12px] text-[#0E8A6E] font-medium hover:underline"
+            className="text-[12px] text-[#0E8A6E] font-medium hover:underline min-h-[44px] flex items-center"
           >
             Use saved address
           </button>
@@ -94,7 +94,7 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
       </div>
 
       {/* Full name */}
-      <div className="grid grid-cols-2 gap-3 mb-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <div>
           <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
             Full name / facility name *
@@ -150,7 +150,7 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
       </div>
 
       {/* District / Thana / Postcode */}
-      <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
         <div>
           <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
             District *
@@ -159,7 +159,7 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             name="district"
             value={formData.district}
             onChange={handleChange}
-            className="w-full px-3 py-[9px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] bg-white"
+            className="w-full px-3 py-[9px] min-h-[48px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[16px] md:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] bg-white"
           >
             {DISTRICTS.map(d => (
               <option key={d} value={d}>{d}</option>
@@ -214,7 +214,7 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
           onChange={handleChange}
           rows={2}
           placeholder="e.g. Call before delivery, leave at reception"
-          className="w-full px-3 py-[9px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] resize-none"
+          className="w-full px-3 py-[9px] min-h-[48px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[16px] md:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] resize-none"
         />
       </div>
     </div>

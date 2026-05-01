@@ -152,7 +152,7 @@ export default function ReviewsManagement() {
 
       {/* Stats Cards */}
       <div className="p-4 border-b border-[var(--color-border-tertiary)]">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4">
             <div className="text-[11px] text-[var(--color-text-secondary)] mb-1">Total Reviews</div>
             <div className="text-[24px] font-bold font-[family-name:var(--font-plus-jakarta)]">
@@ -212,7 +212,7 @@ export default function ReviewsManagement() {
       </div>
 
       {/* Reviews Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
         {loading ? (
           <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">
             Loading reviews…
@@ -222,7 +222,7 @@ export default function ReviewsManagement() {
             No reviews found
           </div>
         ) : (
-          <table className="w-full">
+          <table className="w-full" style={{minWidth: '900px'}}>
             <thead>
               <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
                 {['Product', 'Customer', 'Rating', 'Review', 'Status', 'Date', 'Actions'].map(h => (

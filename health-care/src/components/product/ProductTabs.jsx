@@ -15,12 +15,12 @@ export default function ProductTabs({ product }) {
   return (
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Tab Headers */}
-      <div className="flex border-b-[0.5px] border-[var(--color-border-tertiary)]">
+      <div className="flex border-b-[0.5px] border-[var(--color-border-tertiary)] overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
+            className={`flex-1 min-w-[100px] px-4 py-3 text-[13px] font-medium transition-colors whitespace-nowrap ${
               activeTab === tab.id
                 ? 'text-[#0B2545] border-b-2 border-[#0B2545] -mb-[0.5px]'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -38,21 +38,23 @@ export default function ProductTabs({ product }) {
             <h3 className="text-[16px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
               Technical Specifications
             </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {product?.specifications ? (
-                Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex border-b-[0.5px] border-[var(--color-border-tertiary)] pb-2">
-                    <div className="text-[12px] text-[var(--color-text-secondary)] w-32 flex-shrink-0">
-                      {key}
+            <div className="overflow-x-auto -mx-6 px-6" style={{WebkitOverflowScrolling: 'touch'}}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-[300px]">
+                {product?.specifications ? (
+                  Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="flex border-b-[0.5px] border-[var(--color-border-tertiary)] pb-2">
+                      <div className="text-[12px] text-[var(--color-text-secondary)] w-32 flex-shrink-0">
+                        {key}
+                      </div>
+                      <div className="text-[12px] font-medium">{value}</div>
                     </div>
-                    <div className="text-[12px] font-medium">{value}</div>
+                  ))
+                ) : (
+                  <div className="col-span-2 text-[12px] text-[var(--color-text-secondary)]">
+                    No specifications available
                   </div>
-                ))
-              ) : (
-                <div className="col-span-2 text-[12px] text-[var(--color-text-secondary)]">
-                  No specifications available
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}

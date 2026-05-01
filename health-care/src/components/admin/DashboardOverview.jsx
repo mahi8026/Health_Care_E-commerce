@@ -121,7 +121,7 @@ export default function DashboardOverview() {
   return (
     <div>
       {/* KPI Grid */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
         {kpis.map((kpi, index) => (
           <button
             key={index}
@@ -166,9 +166,9 @@ export default function DashboardOverview() {
         />
       )}
 
-      <div className="grid grid-cols-[1fr_320px] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         {/* Recent Orders */}
-        <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="bg-white rounded-lg p-4 md:p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
               Recent Orders
@@ -230,7 +230,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Abandoned Cart Stats */}
-        <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="bg-white rounded-lg p-4 md:p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
               Cart Recovery
@@ -278,7 +278,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* Stock Alerts Section */}
-      <div className="mt-4 bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
+      <div className="mt-4 bg-white rounded-lg p-4 md:p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
             Stock Alerts
@@ -294,7 +294,7 @@ export default function DashboardOverview() {
         {stockAlerts.length === 0 ? (
           <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-6">No stock alerts</p>
         ) : (
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {stockAlerts.map((alert, index) => (
               <div key={index} className="p-3 bg-[#FEF3C7] rounded-lg border-[0.5px] border-[#FDE68A]">
                 <div className="flex items-start gap-2 mb-2">

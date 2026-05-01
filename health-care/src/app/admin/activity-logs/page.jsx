@@ -172,7 +172,7 @@ export default function ActivityLogsPage() {
 
       {/* Stats Row */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow p-4">
             <div className="text-sm text-gray-600">Total Actions Today</div>
             <div className="text-2xl font-bold text-gray-900">{stats.totalToday}</div>
@@ -267,8 +267,8 @@ export default function ActivityLogsPage() {
 
       {/* Activity Logs Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <table className="min-w-full divide-y divide-gray-200" style={{minWidth: '1000px'}}>
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

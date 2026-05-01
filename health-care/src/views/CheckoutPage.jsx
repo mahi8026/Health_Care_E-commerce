@@ -164,11 +164,11 @@ export default function CheckoutPage({ onBackToCart }) {
   }));
 
   return (
-    <div>
+    <div className="min-h-screen bg-[var(--color-background-tertiary)]">
       <Breadcrumb items={breadcrumbs} />
 
-      <div className="grid grid-cols-[1fr_360px] gap-0 bg-[var(--color-background-tertiary)]">
-        <div className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-0">
+        <div className="p-4 md:p-6 order-2 md:order-1">
           <CheckoutSteps currentStep={currentStep} />
 
           {!isConfirmed ? (
@@ -202,7 +202,8 @@ export default function CheckoutPage({ onBackToCart }) {
                 }}
               />
 
-              <div className="flex gap-[10px]">
+              {/* Desktop Buttons */}
+              <div className="hidden md:flex gap-[10px]">
                 <button
                   onClick={() => onBackToCart ? onBackToCart() : router.push('/cart')}
                   className="flex-1 px-[14px] py-3 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent text-[var(--color-text-primary)] text-[13px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)]"
@@ -224,6 +225,24 @@ export default function CheckoutPage({ onBackToCart }) {
                   )}
                 </button>
               </div>
+
+              {/* Mobile Fixed Bottom Button */}
+              <div className="md:hidden fixed bottom-[60px] left-0 right-0 p-4 bg-white border-t border-gray-200 z-[500]" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}>
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={loading}
+                  className="w-full bg-[#0B2545] text-white border-none px-4 py-4 rounded-lg text-[14px] font-semibold cursor-pointer font-[family-name:var(--font-plus-jakarta)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[56px]"
+                >
+                  {loading ? (
+                    <>
+                      <Spinner size="small" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Place Order'
+                  )}
+                </button>
+              </div>
             </>
           ) : (
             <OrderConfirmation
@@ -233,7 +252,7 @@ export default function CheckoutPage({ onBackToCart }) {
           )}
         </div>
 
-        <div className="p-6 bg-[var(--color-background-primary)] border-l-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="p-4 md:p-6 bg-[var(--color-background-primary)] md:border-l-[0.5px] border-[var(--color-border-tertiary)] order-1 md:order-2">
           <OrderSummary 
             items={cartItems} 
             deliveryMethod={selectedDelivery}

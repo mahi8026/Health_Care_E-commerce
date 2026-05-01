@@ -92,17 +92,19 @@ export default function B2BDashboardPage() {
   };
 
   return (
-    <div className="grid grid-cols-[220px_1fr]">
-      <Sidebar accountData={accountData} />
+    <div className="md:grid md:grid-cols-[220px_1fr]">
+      <div className="hidden md:block">
+        <Sidebar accountData={accountData} />
+      </div>
 
-      <div className="p-5 px-6 bg-[var(--color-background-tertiary)]">
+      <div className="p-4 md:p-5 md:px-6 bg-[var(--color-background-tertiary)]">
         <DashboardHeader accountData={accountData} />
 
         <KPIGrid accountData={accountData} />
 
         <QuickActions />
 
-        <div className="grid grid-cols-[1fr_280px] gap-3 mb-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-3 mb-5">
           <RecentOrders orders={dashboardData?.recentOrders} />
 
           <div>
