@@ -908,14 +908,13 @@ export default function HomePage() {
           <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {[
-              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', path: '/products?category=Diagnostic+Equipment' },
-              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', path: '/products?category=Surgical+Instruments' },
-              { name: 'Reagents', emoji: '🧪', color: '#FAF5FF', path: '/products?category=Laboratory+Reagents' },
+              { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', path: '/products?category=Laboratory+Reagents' },
               { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', path: '/products?category=Hospital+Machines' },
               { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', path: '/products?category=Lab+Equipment' },
-              { name: 'PPE', emoji: '🛡️', color: '#FFF1F2', path: '/products?category=PPE+%26+Safety' },
-              { name: 'Dental', emoji: '🦷', color: '#FFFBEB', path: '/products?category=Dental+Equipment' },
-              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', path: '/products?category=Implants+%26+Ortho' },
+              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', path: '/products?category=PPE' },
+              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', path: '/products?category=Implants' },
+              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', path: '/products?category=Diagnostic+Equipment' },
+              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', path: '/products?category=Surgical+Instruments' },
             ].map(cat => (
               <div key={cat.name} onClick={() => router.push(cat.path)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
