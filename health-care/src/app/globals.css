@@ -129,7 +129,12 @@ input, textarea, select {
 
 @media (max-width: 767px) {
   .bottom-nav-mobile {
-    display: flex;
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
   }
   
   /* Add bottom padding to main content to prevent overlap */

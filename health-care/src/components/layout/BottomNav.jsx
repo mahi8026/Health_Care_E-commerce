@@ -82,10 +82,10 @@ export default function BottomNav() {
         height: 60,
         background: '#fff',
         borderTop: '1px solid #E5E7EB',
-        display: 'flex',
-        zIndex: 'var(--z-bottom-nav)',
+        zIndex: 1000,
         paddingBottom: 'env(safe-area-inset-bottom)',
         boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
+        width: '100%',
       }}
     >
       {NAV_ITEMS.map(item => {
