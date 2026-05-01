@@ -35,6 +35,36 @@ router.get('/featured', async (req, res) => {
   }
 });
 
+// Public: get approved reviews (for homepage)
+router.get('/', async (req, res) => {
+  try {
+    const { isApproved, limit = 10 } = req.query;
+    
+    // Only allow public access for approved reviews
+    if (isApproved !== 'true') {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required' 
+      });
+    }
+
+    const Review = require('../models/Review');
+    const reviews = await Review.find({
+      status: 'approved',
+      rating: { $gte: 4 },
+    })
+      .populate('user', 'name companyName')
+      .populate('product', 'name category')
+      .sort({ rating: -1, helpfulCount: -1, createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
+    
+    res.json({ success: true, reviews, data: { reviews } });
+  } catch (err) {
+    res.json({ success: true, reviews: [], data: { reviews: [] } });
+  }
+});
+
 // Public routes
 router.get('/product/:productId', getProductReviews);
 
