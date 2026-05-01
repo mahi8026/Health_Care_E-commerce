@@ -1154,7 +1154,7 @@ export default function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 10: TOP DIAGNOSTIC EQUIPMENT (Curated) */}
+      {/* SECTION 10: TOP LAB EQUIPMENT (Curated) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ background: '#F8FAFC', padding: '48px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
@@ -1163,10 +1163,10 @@ export default function HomePage() {
               <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>CURATED</p>
               <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>
-                Top diagnostic equipment
+                Top lab equipment
               </h2>
             </div>
-            <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
+            <button onClick={() => router.push('/products?category=Lab+Equipment')}
               style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                 border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
               Shop all <span style={{ fontSize: 16 }}>→</span>
@@ -1175,27 +1175,27 @@ export default function HomePage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20 }}>
             {/* Left: Category card */}
-            <div style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+            <div style={{ background: 'linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%)',
               borderRadius: 16, padding: '28px 24px', display: 'flex', flexDirection: 'column',
-              justifyContent: 'space-between', border: '1px solid #BFDBFE' }}>
+              justifyContent: 'space-between', border: '1px solid #99F6E4' }}>
               <div>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>🩺</div>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>🔬</div>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0B2545', marginBottom: 8 }}>
-                  DIAGNOSTIC
+                  LAB EQUIPMENT
                 </h3>
                 <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 16 }}>
-                  ECG, Ultrasound &<br />Monitors
+                  Centrifuges, Balances &<br />PCR Systems
                 </p>
                 <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>
-                  <span style={{ fontWeight: 600 }}>CE Certified</span> · DGDA Cleared
+                  <span style={{ fontWeight: 600 }}>ISO Certified</span> · Lab Grade
                 </div>
               </div>
-              <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
-                style={{ width: '100%', padding: '12px', background: '#2563EB', color: '#fff',
+              <button onClick={() => router.push('/products?category=Lab+Equipment')}
+                style={{ width: '100%', padding: '12px', background: '#0D9488', color: '#fff',
                   border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700,
                   cursor: 'pointer', transition: 'background 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#1D4ED8'}
-                onMouseLeave={e => e.currentTarget.style.background = '#2563EB'}>
+                onMouseEnter={e => e.currentTarget.style.background = '#0F766E'}
+                onMouseLeave={e => e.currentTarget.style.background = '#0D9488'}>
                 Shop All →
               </button>
             </div>
@@ -1204,7 +1204,7 @@ export default function HomePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
               {featuredProducts.filter(p => {
                 const catName = typeof p.category === 'object' ? p.category?.name : p.category;
-                return catName?.toLowerCase().includes('diagnostic');
+                return catName?.toLowerCase().includes('lab equipment');
               }).slice(0, 4).map(product => {
                 const img = product.images?.[0]?.url || product.images?.[0];
                 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
@@ -1219,12 +1219,12 @@ export default function HomePage() {
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          height: '100%', fontSize: 48 }}>🩺</div>
+                          height: '100%', fontSize: 48 }}>🔬</div>
                       )}
                     </div>
                     <div style={{ padding: 14 }}>
                       {brandName && (
-                        <div style={{ fontSize: 10, color: '#2563EB', fontWeight: 600,
+                        <div style={{ fontSize: 10, color: '#0D9488', fontWeight: 600,
                           textTransform: 'uppercase', marginBottom: 4 }}>
                           {brandName}
                         </div>
