@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('../config/passport');
+const logger = require('../utils/logger');
 const {
   register,
   login,
@@ -47,10 +48,26 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', { 
-    failureRedirect: '/api/auth/google/failure',
-    session: false
-  }),
+  (req, res, next) => {
+    passport.authenticate('google', { 
+      failureRedirect: '/api/auth/google/failure',
+      session: false
+    }, (err, user, info) => {
+      if (err) {
+        logger.error(`[Google OAuth Callback] Error: ${err.message}`);
+        return res.redirect(`${process.env.FRONTEND_URL}/login?error=authentication_failed`);
+      }
+      
+      if (!user) {
+        logger.error('[Google OAuth Callback] No user returned');
+        return res.redirect(`${process.env.FRONTEND_URL}/login?error=authentication_incomplete`);
+      }
+      
+      // Manually attach user to request
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   googleAuthSuccess
 );
 
