@@ -48,8 +48,10 @@ exports.getProducts = async (req, res) => {
       if (mongoose.isValidObjectId(category)) {
         query.category = new mongoose.Types.ObjectId(category);
       } else {
+        // Decode URL-encoded category name and normalize spaces
+        const categoryName = decodeURIComponent(category.trim()).replace(/\+/g, ' ');
         const categoryDoc = await Category.findOne({
-          name: { $regex: new RegExp('^' + escapeRegex(category.trim()) + '$', 'i') }
+          name: { $regex: new RegExp('^' + escapeRegex(categoryName) + '$', 'i') }
         }).lean();
         if (categoryDoc) {
           query.category = categoryDoc._id;
@@ -69,8 +71,10 @@ exports.getProducts = async (req, res) => {
       if (mongoose.isValidObjectId(brand)) {
         query.brand = new mongoose.Types.ObjectId(brand);
       } else {
+        // Decode URL-encoded brand name and normalize spaces
+        const brandName = decodeURIComponent(brand.trim()).replace(/\+/g, ' ');
         const brandDoc = await Manufacturer.findOne({
-          name: { $regex: new RegExp('^' + escapeRegex(brand.trim()) + '$', 'i') }
+          name: { $regex: new RegExp('^' + escapeRegex(brandName) + '$', 'i') }
         }).lean();
         if (brandDoc) {
           query.brand = brandDoc._id;
