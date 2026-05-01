@@ -189,6 +189,7 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isSliderHovered, setIsSliderHovered] = useState(false);
   const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
+  const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
   
   const statsRef = useRef(null);
 
@@ -295,7 +296,8 @@ export default function HomePage() {
       safe(fetch(`${API}/manufacturers`)),
       safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
       safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
-    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews]) => {
+      safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)), // Lab equipment products
+    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews, labEquip]) => {
       const fp = featured.data?.products || featured.products || [];
       const ap = allProducts.data?.products || allProducts.products || [];
       // Use featured products if available, otherwise use all products
@@ -321,6 +323,9 @@ export default function HomePage() {
 
       const reviewList = reviews.data?.reviews || reviews.reviews || [];
       setTestimonials(reviewList);
+
+      const labEquipList = labEquip.data?.products || labEquip.products || [];
+      setLabEquipmentProducts(labEquipList);
     }).catch(() => {
       setFeaturedLoading(false);
       setCategories(FALLBACK_CATEGORIES);
@@ -1202,10 +1207,7 @@ export default function HomePage() {
 
             {/* Right: Product grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
-              {featuredProducts.filter(p => {
-                const catName = typeof p.category === 'object' ? p.category?.name : p.category;
-                return catName?.toLowerCase().includes('lab equipment');
-              }).slice(0, 4).map(product => {
+              {labEquipmentProducts.slice(0, 4).map(product => {
                 const img = product.images?.[0]?.url || product.images?.[0];
                 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
                 return (
@@ -1241,6 +1243,18 @@ export default function HomePage() {
                   </div>
                 );
               })}
+              {/* Show message if no products found */}
+              {labEquipmentProducts.length === 0 && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px', color: '#6B7280' }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🔬</div>
+                  <p style={{ fontSize: 14, marginBottom: 8 }}>No lab equipment products available yet</p>
+                  <button onClick={() => router.push('/products')}
+                    style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                      border: '1px solid #0E8A6E', padding: '8px 16px', borderRadius: 8, cursor: 'pointer' }}>
+                    Browse All Products
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
