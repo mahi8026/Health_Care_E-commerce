@@ -1,56 +1,87 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { setToken, setRefreshToken } from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
 
 export default function GoogleCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setAuthData } = useAuth();
+  const [status, setStatus] = useState('processing');
 
   useEffect(() => {
     const handleCallback = async () => {
-      const token = searchParams.get('token');
-      const refreshToken = searchParams.get('refreshToken');
-      const error = searchParams.get('error');
+      try {
+        const token = searchParams.get('token');
+        const refreshToken = searchParams.get('refreshToken');
+        const error = searchParams.get('error');
 
-      if (error) {
-        // Handle error
-        console.error('Google OAuth error:', error);
-        router.push(`/login?error=${error}`);
-        return;
-      }
-
-      if (token && refreshToken) {
-        // Store tokens
-        localStorage.setItem('token', token);
-        localStorage.setItem('refreshToken', refreshToken);
-
-        // Update auth context
-        if (setAuthData) {
-          setAuthData({ token, refreshToken });
+        if (error) {
+          // Handle error
+          console.error('Google OAuth error:', error);
+          setStatus('error');
+          setTimeout(() => {
+            router.push(`/login?error=${error}`);
+          }, 1500);
+          return;
         }
 
-        // Redirect to home page
-        router.push('/');
-      } else {
-        // Missing tokens
-        router.push('/login?error=missing_tokens');
+        if (token && refreshToken) {
+          // Store tokens using the api utility functions
+          setToken(token);
+          setRefreshToken(refreshToken);
+
+          // Trigger cart sync event
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('user-logged-in'));
+          }
+
+          setStatus('success');
+          
+          // Small delay to show success message, then redirect with full page reload
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        } else {
+          // Missing tokens
+          console.error('Missing tokens in callback');
+          setStatus('error');
+          setTimeout(() => {
+            router.push('/login?error=missing_tokens');
+          }, 1500);
+        }
+      } catch (error) {
+        console.error('Callback error:', error);
+        setStatus('error');
+        setTimeout(() => {
+          router.push('/login?error=callback_failed');
+        }, 1500);
       }
     };
 
     handleCallback();
-  }, [searchParams, router, setAuthData]);
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center">
       <div className="text-center">
         <Spinner size="large" />
-        <p className="mt-4 text-[var(--color-text-secondary)]">
-          Completing Google sign in...
-        </p>
+        {status === 'processing' && (
+          <p className="mt-4 text-[var(--color-text-secondary)]">
+            Completing Google sign in...
+          </p>
+        )}
+        {status === 'success' && (
+          <p className="mt-4 text-green-600 font-medium">
+            ✓ Login successful! Redirecting...
+          </p>
+        )}
+        {status === 'error' && (
+          <p className="mt-4 text-red-600 font-medium">
+            ✗ Authentication failed. Redirecting...
+          </p>
+        )}
       </div>
     </div>
   );
