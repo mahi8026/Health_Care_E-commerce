@@ -146,39 +146,47 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           {/* Divider */}
           {process.env.NODE_ENV === 'development' && (
             <>
-              <div className="relative my-6">
+              <div className="relative my-8">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-[var(--color-border-tertiary)]"></div>
                 </div>
-                <div className="relative flex justify-center text-[11px]">
-                  <span className="px-2 bg-white text-[var(--color-text-secondary)]">
+                <div className="relative flex justify-center text-[13px]">
+                  <span className="px-4 bg-white text-[var(--color-text-secondary)] font-medium">
                     Quick Login (Testing)
                   </span>
                 </div>
               </div>
 
-              {/* Quick Login Buttons */}
-              <div className="space-y-2">
+              {/* Quick Login Buttons - Enhanced Design */}
+              <div className="space-y-3">
+                {/* B2B Customer Button */}
                 <button
                   type="button"
-                  onClick={() => quickLogin('shahid@example.com', 'password123')}
-                  className="w-full px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] hover:bg-[var(--color-background-tertiary)] transition-colors"
+                  onClick={() => quickLogin('shahid@squarehospital.com', 'password123')}
+                  className="group w-full px-5 py-4 bg-gradient-to-r from-[#7C3AED] to-[#6D28D9] hover:from-[#6D28D9] hover:to-[#5B21B6] text-white rounded-xl text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3"
                 >
-                  🏢 Login as B2B Customer
+                  <span className="text-[24px] group-hover:scale-110 transition-transform duration-300">🏢</span>
+                  <span>Login as B2B Customer</span>
                 </button>
+
+                {/* Admin Button */}
                 <button
                   type="button"
                   onClick={() => quickLogin('admin@medcorebd.com', 'admin123')}
-                  className="w-full px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] hover:bg-[var(--color-background-tertiary)] transition-colors"
+                  className="group w-full px-5 py-4 bg-gradient-to-r from-[#0E8A6E] to-[#0c7a61] hover:from-[#0c7a61] hover:to-[#0a6a51] text-white rounded-xl text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3"
                 >
-                  👨‍💼 Login as Admin
+                  <span className="text-[24px] group-hover:scale-110 transition-transform duration-300">👨‍💼</span>
+                  <span>Login as Admin</span>
                 </button>
+
+                {/* Customer Button */}
                 <button
                   type="button"
-                  onClick={() => quickLogin('customer@example.com', 'password123')}
-                  className="w-full px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] hover:bg-[var(--color-background-tertiary)] transition-colors"
+                  onClick={() => quickLogin('kamal@example.com', 'password123')}
+                  className="group w-full px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d2d52] hover:from-[#0d2d52] hover:to-[#0f3560] text-white rounded-xl text-[14px] font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center gap-3"
                 >
-                  👤 Login as Customer
+                  <span className="text-[24px] group-hover:scale-110 transition-transform duration-300">👤</span>
+                  <span>Login as Customer</span>
                 </button>
               </div>
             </>

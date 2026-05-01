@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import Spinner from '@/components/ui/Spinner';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 export default function LotSearch() {
   const [query, setQuery] = useState('');

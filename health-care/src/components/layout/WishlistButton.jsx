@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { FaHeart } from 'react-icons/fa';
 
 export default function WishlistButton() {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -18,27 +19,16 @@ export default function WishlistButton() {
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         aria-label="Wishlist"
-        className="w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)] transition-colors group"
+        className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer relative hover:bg-gray-50 transition-colors group"
       >
-        <svg 
-          width="13" 
-          height="13" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="1.5" 
-          aria-hidden="true"
-          className="group-hover:stroke-[#E24B4A] transition-colors"
-        >
-          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-        </svg>
+        <FaHeart size={14} className="text-gray-700 group-hover:text-[#E24B4A] transition-colors" />
         
         {/* Badge for wishlist count (placeholder) */}
         {/* Uncomment when wishlist is implemented
         {wishlistCount > 0 && (
           <div 
             aria-hidden="true" 
-            className="absolute -top-[5px] -right-[5px] bg-[#E24B4A] text-white text-[8px] w-[14px] h-[14px] rounded-full flex items-center justify-center border-[1.5px] border-[var(--color-background-primary)]"
+            className="absolute -top-[5px] -right-[5px] bg-[#E24B4A] text-white text-[8px] w-[14px] h-[14px] rounded-full flex items-center justify-center border-[1.5px] border-white"
           >
             {wishlistCount}
           </div>

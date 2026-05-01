@@ -3,9 +3,10 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import GA4Tracker from '@/services/GA4Tracker';
 
+import { API } from '@/constants/api';
+
 const MAX_CART_ITEMS = 50;
 const CartContext = createContext();
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);

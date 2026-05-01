@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { API as API_BASE } from '@/constants/api';
 import Spinner from '@/components/ui/Spinner';
 
 export default function StripePaymentForm({ amount, orderId, onSuccess, onError }) {
@@ -22,7 +23,6 @@ export default function StripePaymentForm({ amount, orderId, onSuccess, onError 
 
     try {
       // Create payment intent on backend
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const token = localStorage.getItem('medcore_token');
       const response = await fetch(`${API_BASE}/payments/stripe/intent`, {
         method: 'POST',

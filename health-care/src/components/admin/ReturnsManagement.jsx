@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 const STATUS_OPTIONS = ['pending', 'approved', 'rejected', 'refunded'];
 const REFUND_METHODS = [

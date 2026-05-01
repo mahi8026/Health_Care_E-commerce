@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const VAT_RATE = 0.05; // 5%
+import { API } from '@/constants/api';
+import { VAT_RATE } from '@/constants';
 
 export default function OrderSummary({ items, deliveryMethod = 'standard', appliedCoupon, onCouponApply, userId }) {
   const { isAuthenticated } = useAuth();

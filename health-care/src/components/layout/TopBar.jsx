@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { FaTruck, FaSnowflake, FaTag } from 'react-icons/fa';
 
 const ANNOUNCEMENTS = [
-  '🚀 Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet',
-  '❄️ Cold chain delivery for temperature-sensitive reagents — door to door',
-  '🏷️ B2B institutions get up to 30% bulk discount — Register today',
+  { icon: <FaTruck />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
+  { icon: <FaSnowflake />, text: 'Cold chain delivery for temperature-sensitive reagents — door to door' },
+  { icon: <FaTag />, text: 'B2B institutions get up to 30% bulk discount — Register today' },
 ];
 
 export default function TopBar() {
@@ -26,12 +27,14 @@ export default function TopBar() {
   return (
     <div className="bg-[#0B2545] text-white/80 text-[11px] px-6 py-[6px] flex justify-between items-center">
       <span
+        className="flex items-center gap-2"
         style={{
           transition: 'opacity 0.3s ease',
           opacity: visible ? 1 : 0,
         }}
       >
-        {ANNOUNCEMENTS[index]}
+        <span className="text-white/90">{ANNOUNCEMENTS[index].icon}</span>
+        {ANNOUNCEMENTS[index].text}
       </span>
       <span className="flex items-center gap-0">
         <a href="/track" className="hover:text-white transition-colors">Track Order</a>

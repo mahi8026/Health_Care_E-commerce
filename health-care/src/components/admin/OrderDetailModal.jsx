@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import OrderStatusUpdate from './OrderStatusUpdate';
 import { InvoiceGenerator } from '@/utils/invoiceGenerator';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 export default function OrderDetailModal({ orderId, onClose }) {
   const [order, setOrder] = useState(null);

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 const STATUS_OPTIONS = [
   { value: 'placed', label: 'Placed', color: 'bg-[#FEF3C7] text-[#92400E]', icon: '📝' },

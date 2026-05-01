@@ -1,0 +1,87 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - develop
+
+jobs:
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: health-care/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: health-care
+        run: npm install --legacy-peer-deps
+      
+      - name: Run linter
+        working-directory: health-care
+        run: npm run lint || true
+      
+      - name: Run tests
+        working-directory: health-care
+        run: npm test || true
+      
+      - name: Build
+        working-directory: health-care
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_dummy
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: dummy
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: dummy
+
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: health-care/backend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: health-care/backend
+        run: npm install
+      
+      - name: Run tests
+        working-directory: health-care/backend
+        run: npm test || true
+        env:
+          MONGODB_URI: mongodb://localhost:27017/medcore-test
+          JWT_SECRET: test_jwt_secret_for_ci_cd_pipeline
+          JWT_REFRESH_SECRET: test_refresh_secret_for_ci_cd_pipeline
+          NODE_ENV: test

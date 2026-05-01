@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 export default function FrequentlyBought({ productId, category }) {
   const [related, setRelated] = useState([]);

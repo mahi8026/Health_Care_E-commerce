@@ -10,8 +10,7 @@ import FrequentlyBought from '@/components/product/FrequentlyBought';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
 import GA4Tracker from '@/services/GA4Tracker';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API as API_BASE } from '@/constants/api';
 
 /**
  * @param {Object} props

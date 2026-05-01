@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardSkeleton from './DashboardSkeleton';
 import OrderDetailModal from './OrderDetailModal';
 import KPIDetailModal from './KPIDetailModal';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 export default function DashboardOverview() {
   const router = useRouter();

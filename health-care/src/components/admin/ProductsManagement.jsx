@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 const UNITS = ['piece', 'box', 'kit', 'pack'];
 const CERTIFICATIONS = ['CE', 'FDA', 'ISO', 'DGDA'];

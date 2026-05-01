@@ -19,7 +19,6 @@ class GA4Tracker {
    */
   static initialize(measurementId) {
     if (!measurementId) {
-      console.warn('GA4 Measurement ID not provided');
       return;
     }
     
@@ -32,7 +31,6 @@ class GA4Tracker {
       
       this.isInitialized = true;
       this.sessionId = this.generateSessionId();
-      console.log('GA4 Tracker initialized');
     } catch (error) {
       console.error('GA4 Initialization Error:', error);
     }
@@ -327,7 +325,6 @@ class GA4Tracker {
     
     try {
       ReactGA.set({ user_id: userId });
-      console.log('GA4 User ID set:', userId);
     } catch (error) {
       console.error('GA4 Set User ID Error:', error);
     }
@@ -342,7 +339,6 @@ class GA4Tracker {
     
     try {
       ReactGA.set({ user_id: null });
-      console.log('GA4 User ID cleared');
     } catch (error) {
       console.error('GA4 Clear User ID Error:', error);
     }

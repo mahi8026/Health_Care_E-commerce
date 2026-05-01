@@ -3,9 +3,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
-const WishlistContext = createContext();
+import { API } from '@/constants/api';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
   const { user, isAuthenticated } = useAuth();

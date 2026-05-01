@@ -63,11 +63,12 @@ function createRateLimiter(options = {}) {
 
 /**
  * Strict rate limiter for authentication endpoints
- * 5 requests per 15 minutes per IP
+ * Development: 50 requests per 15 minutes
+ * Production: 5 requests per 15 minutes per IP
  */
 const authLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: process.env.NODE_ENV === 'development' ? 50 : 5,
   message: 'Too many authentication attempts, please try again after 15 minutes',
   skipSuccessfulRequests: false,
   skipFailedRequests: false
@@ -75,11 +76,12 @@ const authLimiter = createRateLimiter({
 
 /**
  * Login rate limiter
- * 5 login attempts per 15 minutes per IP
+ * Development: 50 attempts per 15 minutes
+ * Production: 5 login attempts per 15 minutes per IP
  */
 const loginLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: process.env.NODE_ENV === 'development' ? 50 : 5,
   message: 'Too many login attempts, please try again after 15 minutes',
   skipSuccessfulRequests: true, // Don't count successful logins
   skipFailedRequests: false
@@ -87,11 +89,12 @@ const loginLimiter = createRateLimiter({
 
 /**
  * Register rate limiter
- * 3 registrations per hour per IP
+ * Development: 20 registrations per hour
+ * Production: 3 registrations per hour per IP
  */
 const registerLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000,
-  max: 3,
+  max: process.env.NODE_ENV === 'development' ? 20 : 3,
   message: 'Too many registration attempts, please try again after 1 hour'
 });
 

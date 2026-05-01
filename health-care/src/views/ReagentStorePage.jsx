@@ -7,8 +7,7 @@ import ReagentGrid from '@/components/reagent/ReagentGrid';
 import LotSearch from '@/components/reagent/LotSearch';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API as API_BASE } from '@/constants/api';
 
 export default function ReagentStorePage({ onNavigateToProduct }) {
   const [reagents, setReagents] = useState([]);

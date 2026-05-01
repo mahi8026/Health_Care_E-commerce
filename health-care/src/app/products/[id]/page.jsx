@@ -5,8 +5,7 @@ import StructuredData, {
 } from '@/utils/structuredData';
 import { siteConfig } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API as API_BASE } from '@/constants/api';
 
 // ---------------------------------------------------------------------------
 // Data fetching helper

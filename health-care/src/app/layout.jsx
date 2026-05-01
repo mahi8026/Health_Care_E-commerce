@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <WebVitalsReporter />
+              {/* <WebVitalsReporter /> */}
               <TopBar />
               <HeaderWrapper />
               {children}

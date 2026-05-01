@@ -1,12 +1,20 @@
+import React from 'react';
 import WishlistButton from './wishlist/WishlistButton';
 
-export default function ProductCard({ product }) {
+const ProductCard = React.memo(function ProductCard({ product }) {
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
   const primaryImage = imageData ? {
     url: typeof imageData === 'string' ? imageData : imageData.url,
     alt: typeof imageData === 'object' ? imageData.alt : product.name
   } : null;
+
+  // Calculate savings and discount percentage
+  const price = product.price || 0;
+  const oldPrice = product.oldPrice || 0;
+  const savings = oldPrice > price ? oldPrice - price : 0;
+  const discountPercent = oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0;
+  const hasDiscount = savings > 0 && discountPercent > 0;
 
   return (
     <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col">
@@ -38,13 +46,25 @@ export default function ProductCard({ product }) {
           </div>
         )}
         
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        {/* Save Badge - Top Left */}
+        {hasDiscount && (
+          <div className="absolute top-2 left-2 bg-[#7C3AED] text-white px-3 py-1.5 rounded-md shadow-md">
+            <span className="text-[11px] font-semibold">
+              Save: {savings.toLocaleString()}৳ (-{discountPercent}%)
+            </span>
+          </div>
+        )}
+        
+        {/* Other Badges */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1" style={{ marginTop: hasDiscount ? '38px' : '0' }}>
           {product.badges?.map((badge, idx) => (
             <span key={idx} className={`text-[9px] px-[7px] py-[3px] rounded font-medium ${badge.className}`}>
               {badge.text}
             </span>
           ))}
         </div>
+        
+        {/* Wishlist Button - Top Right */}
         <div className="absolute top-2 right-2">
           <WishlistButton productId={product._id || product.id} size="small" />
         </div>
@@ -78,4 +98,6 @@ export default function ProductCard({ product }) {
       </div>
     </div>
   );
-}
+});
+
+export default ProductCard;

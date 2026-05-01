@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import Header from './Header';
 
 export default function HeaderWrapper() {
   const router = useRouter();
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   // Don't show header on these pages
   const hideHeaderPaths = ['/admin', '/b2b', '/mobile-app'];
@@ -21,8 +23,20 @@ export default function HeaderWrapper() {
     router.push('/register');
   };
 
-  const handleLogout = () => {
-    // Logout is handled by the Header component itself
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Use window.location for more reliable navigation after logout
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect even if logout API fails
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
+    }
   };
 
   const handleCartClick = () => {

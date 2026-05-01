@@ -140,7 +140,7 @@ export function generateProductMetadata(product) {
   // Graceful fallback when product data is missing
   if (!product) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('[metadata] generateProductMetadata called with null/undefined product')
+      // Product is null/undefined
     }
     return generatePageMetadata({
       title: 'Product Not Found',

@@ -42,16 +42,6 @@ export default function ProductsPage({ onProductClick }) {
 
   const productFilters = useMemo(() => {
     const categoryValue = searchCategory || filters.categories?.[0] || '';
-    console.log('[ProductsPage] Building filters:', {
-      search: searchQuery,
-      category: categoryValue,
-      brands: filters.brands,
-      minPrice: filters.minPrice,
-      maxPrice: filters.maxPrice,
-      inStock: filters.inStock,
-      sortBy,
-      page
-    });
     
     return {
       search: searchQuery,

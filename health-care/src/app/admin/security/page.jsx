@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import AdminShell from '@/components/admin/AdminShell';
 import { useAuth } from '@/context/AuthContext';
 import api, { getToken } from '@/utils/api';
-
-// Import helper functions from api.js
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API as API_BASE_URL } from '@/constants/api';
 
 async function fetchWithAuth(url, options = {}) {
   const token = getToken();

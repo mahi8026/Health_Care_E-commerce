@@ -1,6 +1,7 @@
 'use client'
 
 import { useReportWebVitals } from 'next/web-vitals'
+import { API } from '@/constants/api';
 
 /**
  * WebVitalsReporter - Reports Core Web Vitals metrics to analytics services.
@@ -24,7 +25,7 @@ export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(metric)
+      // Web vitals metric logged
     }
 
     // Send to Google Analytics 4 — lazy-load react-ga4 to keep initial bundle small
@@ -41,8 +42,7 @@ export function WebVitalsReporter() {
     // Send to custom analytics endpoint when metric exceeds threshold
     const threshold = THRESHOLDS[metric.name]
     if (threshold !== undefined && metric.value > threshold) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-      fetch(`${apiUrl}/analytics/web-vitals`, {
+      fetch(`${API}/analytics/web-vitals`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

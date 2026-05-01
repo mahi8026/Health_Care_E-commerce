@@ -120,6 +120,7 @@ exports.getProducts = async (req, res) => {
 
     const [products, total] = await Promise.all([
       Product.find(query)
+        .select('name price images brand category stock discount badge slug isActive createdAt rating oldPrice sku')
         .populate('category', 'name slug')
         .populate('brand', 'name slug logo')
         .sort(sort)
@@ -325,6 +326,7 @@ exports.deleteProduct = async (req, res) => {
 exports.getFeaturedProducts = async (req, res) => {
   try {
     const products = await Product.find({ isFeatured: true, isActive: true })
+      .select('name price images brand category stock discount badge slug isActive createdAt rating oldPrice sku')
       .populate('category', 'name slug')
       .populate('brand', 'name slug logo')
       .limit(6)

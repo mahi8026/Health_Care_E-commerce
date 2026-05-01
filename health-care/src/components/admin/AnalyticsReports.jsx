@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import ChartSkeleton from './ChartSkeleton';
+import { API } from '@/constants/api';
 
 const AnalyticsCharts = dynamic(
   () => import('./AnalyticsCharts'),
@@ -17,7 +18,6 @@ const AnalyticsCharts = dynamic(
   }
 );
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const PERIODS = [
   { value: 'week', label: 'This Week' },
   { value: 'month', label: 'This Month' },

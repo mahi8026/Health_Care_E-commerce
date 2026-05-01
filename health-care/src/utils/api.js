@@ -1,6 +1,5 @@
 // API configuration and helper functions
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API as API_BASE_URL } from '@/constants/api';
 
 // Get token from localStorage
 const getToken = () => {
@@ -64,31 +63,40 @@ function onTokenRefreshed(token) {
 }
 
 async function handleResponse(response) {
-  console.log('[API] handleResponse - status:', response.status);
-  console.log('[API] handleResponse - ok:', response.ok);
-  
   const contentType = response.headers.get('content-type');
-  console.log('[API] handleResponse - content-type:', contentType);
   
   // Check if response is JSON
   if (contentType && contentType.includes('application/json')) {
-    const data = await response.json();
-    console.log('[API] handleResponse - JSON data:', data);
-    
-    if (!response.ok) {
-      console.error('[API] handleResponse - Error response:', data);
+    try {
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Only log unexpected errors (not 400-level client errors)
+        if (response.status >= 500) {
+          console.error('[API] Server error:', data);
+        }
+        throw new ApiError(
+          data.message || `HTTP Error ${response.status}`,
+          response.status,
+          data
+        );
+      }
+      
+      return data;
+    } catch (error) {
+      // If JSON parsing fails
+      if (error instanceof ApiError) throw error;
+      
+      console.error('[API] handleResponse - JSON parse error:', error);
       throw new ApiError(
-        data.message || 'An error occurred',
+        `Failed to parse response: ${error.message}`,
         response.status,
-        data
+        {}
       );
     }
-    
-    return data;
   } else {
     // Handle non-JSON responses (HTML error pages, plain text, etc.)
     const text = await response.text();
-    console.log('[API] handleResponse - Text response:', text.substring(0, 200));
     
     if (!response.ok) {
       console.error('[API] handleResponse - Non-JSON error:', text.substring(0, 200));
@@ -184,7 +192,13 @@ async function fetchWithAuth(url, options = {}) {
     
     return response;
   } catch (error) {
-    throw error;
+    // Network error (backend not running, no internet, etc.)
+    console.error('[API] Network error:', error.message);
+    throw new ApiError(
+      'Unable to connect to server. Please check if the backend is running.',
+      0,
+      { originalError: error.message }
+    );
   }
 }
 
@@ -200,7 +214,6 @@ function getAuthHeaders() {
 export const api = {
   // Products
   async getProducts(filters = {}) {
-    console.log('[API] getProducts called with filters:', filters);
     const params = new URLSearchParams();
     
     // Only add non-empty filter values
@@ -211,14 +224,12 @@ export const api = {
     });
     
     const url = `${API_BASE_URL}/products?${params}`;
-    console.log('[API] Fetching from URL:', url);
     
     try {
       const response = await fetchWithAuth(url, {
         credentials: 'include'
       });
       const data = await handleResponse(response);
-      console.log('[API] getProducts response:', data);
       return data;
     } catch (error) {
       console.error('[API] getProducts error:', error);

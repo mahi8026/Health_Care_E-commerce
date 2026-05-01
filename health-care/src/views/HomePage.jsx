@@ -2,127 +2,133 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { 
+  FaStethoscope, 
+  FaSyringe, 
+  FaFlask, 
+  FaHospital, 
+  FaMicroscope, 
+  FaShieldAlt, 
+  FaTooth, 
+  FaBone,
+  FaTruck,
+  FaSnowflake,
+  FaTag,
+  FaCheckCircle,
+  FaTools,
+  FaPhoneAlt,
+  FaCreditCard,
+  FaUndo,
+  FaSearch,
+  FaShoppingCart,
+  FaBox,
+  FaIndustry
+} from 'react-icons/fa';
+import { API } from '@/constants/api';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// ══════════════════════════════════════════════════════════════════════════════
+// FALLBACK DATA & CONSTANTS
+// ══════════════════════════════════════════════════════════════════════════════
 
 const FALLBACK_CATEGORIES = [
-  { name: 'Diagnostic Equipment', slug: 'diagnostic', icon: '🩺', desc: 'ECG, Ultrasound, Monitors', color: '#EFF6FF', iconColor: '#2563EB' },
-  { name: 'Surgical Instruments', slug: 'surgical', icon: '🔬', desc: 'Scissors, Forceps, Scalpels', color: '#F0FDF4', iconColor: '#16A34A' },
-  { name: 'Laboratory Reagents', slug: 'reagents', icon: '🧪', desc: 'HbA1c, CBC, Troponin Kits', color: '#FAF5FF', iconColor: '#9333EA' },
-  { name: 'Hospital Machines', slug: 'hospital', icon: '🏥', desc: 'Ventilators, Dialysis, ICU', color: '#FFF7ED', iconColor: '#EA580C' },
-  { name: 'Lab Equipment', slug: 'lab-equipment', icon: '🔭', desc: 'Centrifuges, Microscopes, PCR', color: '#F0FDFA', iconColor: '#0D9488' },
-  { name: 'PPE & Safety', slug: 'ppe', icon: '🛡️', desc: 'Masks, Gloves, Gowns', color: '#FFF1F2', iconColor: '#E11D48' },
-  { name: 'Dental Equipment', slug: 'dental', icon: '🦷', desc: 'Chairs, Drills, Instruments', color: '#FFFBEB', iconColor: '#D97706' },
-  { name: 'Implants & Ortho', slug: 'implants', icon: '🦴', desc: 'Bone Plates, Screws, Joints', color: '#F8FAFC', iconColor: '#475569' },
+  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: '#EFF6FF' },
+  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: '#F0FDF4' },
+  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical · Molecular', color: '#FAF5FF' },
+  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU · Ventilators · Dialysis', color: '#FFF7ED' },
+  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges · Microscopes', color: '#F0FDFA' },
+  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: '#FFF1F2' },
+  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: '#FFFBEB' },
+  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: '#F8FAFC' },
 ];
 
-const POPULAR_SEARCHES = ['ECG Machine', 'N95 Mask', 'HbA1c Kit', 'Pulse Oximeter'];
+const ANNOUNCEMENTS = [
+  { icon: <FaTruck />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
+  { icon: <FaSnowflake />, text: 'Cold chain delivery available for temperature-sensitive reagents' },
+  { icon: <FaTag />, text: 'B2B institutions get up to 30% bulk discount — Register today' },
+];
 
 const WHY_US = [
-  { icon: '🏆', title: 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
-  { icon: '��', title: 'Fast Delivery', desc: 'Same-day dispatch for orders before 12 PM. Free delivery in Dhaka metro.' },
-  { icon: '🔧', title: 'Free Installation', desc: 'Professional installation and staff training included for all equipment.' },
-  { icon: '📞', title: '24/7 Support', desc: 'Dedicated technical support team available round the clock.' },
-  { icon: '💳', title: 'Flexible Payment', desc: 'Bank transfer, bKash, Nagad, and B2B credit terms available.' },
-  { icon: '🔄', title: '30-Day Returns', desc: 'Hassle-free returns and replacement policy on all products.' },
+  { icon: <FaCheckCircle />, title: 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
+  { icon: <FaTruck />, title: 'Fast Delivery', desc: 'Same-day dispatch for orders before 12 PM. Free delivery in Dhaka metro.' },
+  { icon: <FaTools />, title: 'Free Installation', desc: 'Professional installation and staff training included for all equipment.' },
+  { icon: <FaPhoneAlt />, title: '24/7 Support', desc: 'Dedicated technical support team available round the clock.' },
+  { icon: <FaCreditCard />, title: 'Flexible Payment', desc: 'Bank transfer, bKash, Nagad, and B2B credit terms available.' },
+  { icon: <FaUndo />, title: '30-Day Returns', desc: 'Hassle-free returns and replacement policy on all products.' },
 ];
 
-// Skeleton loader component
+const HOW_IT_WORKS = [
+  { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 50+ global brands' },
+  { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
+  { step: 3, icon: <FaCreditCard />, title: 'Secure Checkout', desc: 'Multiple payment options available' },
+  { step: 4, icon: <FaTruck />, title: 'Fast Delivery', desc: 'Free installation & training included' },
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// HELPER COMPONENTS
+// ══════════════════════════════════════════════════════════════════════════════
+
 function Skeleton({ w = '100%', h = 20, r = 8 }) {
   return (
-    <div style={{
-      width: w, height: h, borderRadius: r,
-      background: 'linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%)',
-      backgroundSize: '200% 100%',
-      animation: 'shimmer 1.4s infinite',
-    }} />
+    <div className="skeleton" style={{ width: w, height: h, borderRadius: r }} />
   );
 }
 
-// Product Card Component
-function ProductCard({ product, onNavigateToProduct }) {
-  const imageData = product.images?.[0];
-  const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
+function ProductCard({ product, onClick }) {
+  const img = product.images?.[0]?.url || product.images?.[0];
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const ratingVal = typeof product.rating === 'object' ? product.rating?.average : (product.rating || 0);
   const reviewCount = product.reviewCount || product.rating?.count || 0;
-  const discount = product.oldPrice && product.price < product.oldPrice 
+  const discount = product.discountPct || (product.oldPrice && product.price < product.oldPrice 
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) 
-    : 0;
+    : 0);
+  
+  // Calculate savings amount
+  const price = product.price || 0;
+  const oldPrice = product.oldPrice || 0;
+  const savings = oldPrice > price ? oldPrice - price : 0;
+  const hasDiscount = savings > 0 && discount > 0;
 
   return (
-    <div
-      onClick={() => onNavigateToProduct && onNavigateToProduct(product._id || product.id)}
-      style={{
-        cursor: 'pointer', background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB',
-        overflow: 'hidden', display: 'flex', flexDirection: 'column', minWidth: 220,
-        transition: 'all 0.2s'
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
-        e.currentTarget.style.transform = 'translateY(-4px)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.transform = 'none';
-      }}
-    >
-      <div style={{ position: 'relative', width: '100%', height: 180, background: '#F9FAFB', overflow: 'hidden' }}>
-        {imageUrl ? (
-          <img src={imageUrl} alt={product.name} loading='lazy'
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={e => { e.currentTarget.style.display = 'none'; }}
-          />
+    <div className="product-card-hover" onClick={onClick}
+      style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid #E5E7EB', cursor: 'pointer' }}>
+      <div style={{ position: 'relative', height: 180, background: '#F9FAFB' }}>
+        {img ? (
+          <img src={img} alt={product.name} loading="lazy"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 48 }}>🏥</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52 }}>🏥</div>
         )}
-        {discount > 0 && (
-          <div style={{
-            position: 'absolute', top: 8, left: 8,
-            background: '#DC2626', color: '#fff', padding: '4px 8px',
-            borderRadius: 6, fontSize: 11, fontWeight: 700
-          }}>
-            Save {discount}%
+        {hasDiscount && (
+          <div style={{ position: 'absolute', top: 10, left: 10, background: '#7C3AED',
+            color: '#fff', fontSize: 11, fontWeight: 700, padding: '6px 12px', borderRadius: 6, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+            Save: {savings.toLocaleString()}৳ (-{discount}%)
           </div>
         )}
-        <button
-          onClick={e => { e.stopPropagation(); }}
-          style={{
-            position: 'absolute', top: 8, right: 8,
-            background: 'rgba(255,255,255,0.9)', border: 'none',
-            width: 32, height: 32, borderRadius: '50%', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}
-        >
-          ❤️
-        </button>
       </div>
-      <div style={{ padding: 14, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: 14 }}>
         {brandName && (
-          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', marginBottom: 4 }}>
             {brandName}
           </div>
         )}
-        <div style={{
-          fontSize: 13, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
-        }}>
+        <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {product.name}
         </div>
         {ratingVal > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
             <div style={{ display: 'flex', gap: 1 }}>
               {[1, 2, 3, 4, 5].map(s => (
-                <svg key={s} width='12' height='12' viewBox='0 0 24 24' fill={s <= Math.round(ratingVal) ? '#F59E0B' : '#E5E7EB'}>
-                  <path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' />
-                </svg>
+                <span key={s} style={{ color: s <= Math.round(ratingVal) ? '#F59E0B' : '#E5E7EB', fontSize: 14 }}>★</span>
               ))}
             </div>
             <span style={{ fontSize: 10, color: '#6B7280' }}>({reviewCount})</span>
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 'auto' }}>
-          <span style={{ fontSize: 18, fontWeight: 700, color: '#0B2545' }}>৳{product.price?.toLocaleString()}</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+          <span style={{ fontSize: 18, fontWeight: 800, color: '#0B2545' }}>
+            ৳{product.price?.toLocaleString()}
+          </span>
           {product.oldPrice > product.price && (
             <span style={{ fontSize: 12, color: '#9CA3AF', textDecoration: 'line-through' }}>
               ৳{product.oldPrice?.toLocaleString()}
@@ -134,7 +140,6 @@ function ProductCard({ product, onNavigateToProduct }) {
   );
 }
 
-// Animated counter hook
 function useCountUp(target, duration = 1500, started = false) {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -152,45 +157,39 @@ function useCountUp(target, duration = 1500, started = false) {
   return count;
 }
 
-
 // ══════════════════════════════════════════════════════════════════════════════
 // MAIN HOMEPAGE COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
-export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterClick, initialFeaturedProducts = [] }) {
+
+export default function HomePage() {
   const router = useRouter();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [announcementIdx, setAnnouncementIdx] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   const [typewriterText, setTypewriterText] = useState('Diagnostic Equipment');
   const [categories, setCategories] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [featuredProducts, setFeaturedProducts] = useState(initialFeaturedProducts);
-  const [featuredLoading, setFeaturedLoading] = useState(initialFeaturedProducts.length === 0);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
   const [dealProducts, setDealProducts] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
-  const [diagnosticProducts, setDiagnosticProducts] = useState([]);
-  const [reagentProducts, setReagentProducts] = useState([]);
-  const [hospitalProducts, setHospitalProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [promo, setPromo] = useState(null);
-  const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 });
+  const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
   const [statsStarted, setStatsStarted] = useState(false);
-  const [countdown, setCountdown] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [popularSearches, setPopularSearches] = useState(POPULAR_SEARCHES);
-  const [settings, setSettings] = useState({
-    freeDeliveryThreshold: 50000,
-    returnPolicyDays: 30,
-    b2bMaxDiscount: 22,
-    b2bCreditDays: 90,
-    certifications: ['DGDA Registered', 'ISO 13485 Certified'],
-    supportHours: '24/7',
-    contactPhone: '+880 1800-MED-CORE',
-    contactEmail: 'info@medcorebd.com',
-  });
-  const [serviceStatus, setServiceStatus] = useState('operational');
-  const [retryCount, setRetryCount] = useState(0);
+  const [timeLeft, setTimeLeft] = useState({ h: 11, m: 45, s: 22 });
+  const [testimonials, setTestimonials] = useState([]);
+  const [email, setEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState('idle');
+  const [user, setUser] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isSliderHovered, setIsSliderHovered] = useState(false);
+  const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
+  
   const statsRef = useRef(null);
 
   // Animated counters
@@ -199,38 +198,24 @@ export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterCl
   const ordersCount = useCountUp(stats.totalOrders, 1500, statsStarted);
   const clientsCount = useCountUp(stats.totalB2BClients, 1500, statsStarted);
 
-  // ── Navigation ─────────────────────────────────────────────────────────────
-  const goTo = useCallback((view) => {
-    if (onNavigate) return onNavigate(view);
-    const map = {
-      diagnostics: '/products?category=Diagnostic+Equipment',
-      surgical: '/products?category=Surgical+Instruments',
-      machines: '/products?category=Hospital+Machines',
-      'lab-equipment': '/products?category=Lab+Equipment',
-      reagent: '/products?category=Laboratory+Reagents',
-      product: '/products',
-      b2b: '/b2b',
-    };
-    router.push(map[view] || '/');
-  }, [onNavigate, router]);
+  // ── Effects ────────────────────────────────────────────────────────────────
 
-  const goToProduct = useCallback((id) => {
-    if (onNavigateToProduct) return onNavigateToProduct(id);
-    router.push(`/products/${id}`);
-  }, [onNavigateToProduct, router]);
-
-  const goToRegister = useCallback(() => {
-    if (onRegisterClick) return onRegisterClick();
-    router.push('/register');
-  }, [onRegisterClick, router]);
-
-  const handleSearch = useCallback(() => {
-    if (searchQuery.trim()) router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-  }, [searchQuery, router]);
-
-  // ── Typewriter effect ──────────────────────────────────────────────────────
+  // Announcement rotation
   useEffect(() => {
-    const words = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents'];
+    const t = setInterval(() => setAnnouncementIdx(i => (i + 1) % ANNOUNCEMENTS.length), 4000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Sticky navbar
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', handler);
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
+
+  // Typewriter effect
+  useEffect(() => {
+    const words = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'];
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % words.length;
@@ -239,57 +224,42 @@ export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterCl
     return () => clearInterval(interval);
   }, []);
 
-  // ── Countdown timer (dynamic based on promo end date) ────────────────────────
+  // Hero slider auto-play
   useEffect(() => {
-    if (!promo?.endDate) {
-      // Default countdown if no promo
-      setCountdown({ hours: 11, minutes: 45, seconds: 22 });
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          let { hours, minutes, seconds } = prev;
-          if (seconds > 0) {
-            seconds--;
-          } else if (minutes > 0) {
-            minutes--;
-            seconds = 59;
-          } else if (hours > 0) {
-            hours--;
-            minutes = 59;
-            seconds = 59;
-          } else {
-            hours = 23;
-            minutes = 59;
-            seconds = 59;
-          }
-          return { hours, minutes, seconds };
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
+    if (isSliderHovered) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % 4);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isSliderHovered]);
 
-    // Calculate countdown from promo end date
-    const endTime = new Date(promo.endDate).getTime();
-    const updateCountdown = () => {
-      const now = Date.now();
-      const diff = endTime - now;
-      
-      if (diff <= 0) {
-        setCountdown({ hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-      
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      setCountdown({ hours, minutes, seconds });
-    };
-    
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
-    return () => clearInterval(timer);
-  }, [promo]);
+  // Search placeholder cycling
+  useEffect(() => {
+    const placeholders = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
+    let i = 0;
+    const interval = setInterval(() => {
+      i = (i + 1) % placeholders.length;
+      setSearchPlaceholder(placeholders[i]);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // ── Stats counter trigger ──────────────────────────────────────────────────
+  // Countdown timer
+  useEffect(() => {
+    const t = setInterval(() => {
+      setTimeLeft(prev => {
+        let { h, m, s } = prev;
+        if (s > 0) s--;
+        else if (m > 0) { m--; s = 59; }
+        else if (h > 0) { h--; m = 59; s = 59; }
+        else { h = 23; m = 59; s = 59; }
+        return { h, m, s };
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Stats counter trigger
   useEffect(() => {
     if (!statsRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
@@ -302,118 +272,40 @@ export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterCl
     return () => observer.disconnect();
   }, []);
 
-  // ── Retry function with exponential backoff ───────────────────────────────
-  const retryWithBackoff = useCallback(async (fn, attempt = 0) => {
-    try {
-      const result = await fn();
-      
-      // Check if response indicates service unavailable
-      if (result.status === 503) {
-        throw { response: { status: 503 }, code: 'DB_UNAVAILABLE' };
-      }
-      
-      // Success - restore service status
-      if (serviceStatus === 'degraded') {
-        setServiceStatus('operational');
-        setRetryCount(0);
-        // Auto-hide success message after 3 seconds
-        setTimeout(() => {
-          if (serviceStatus === 'operational') {
-            setServiceStatus('operational');
-          }
-        }, 3000);
-      }
-      
-      return result;
-    } catch (error) {
-      // Check for 503 error or DB_UNAVAILABLE code
-      const is503 = error?.response?.status === 503 || error?.code === 'DB_UNAVAILABLE';
-      
-      if (is503 && attempt < 5) {
-        const delay = Math.min(2 ** attempt * 2000, 30000);
-        setServiceStatus('degraded');
-        setRetryCount(attempt + 1);
-        
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return retryWithBackoff(fn, attempt + 1);
-      }
-      
-      throw error;
-    }
-  }, [serviceStatus]);
-
-  // ── Parallel data fetch ────────────────────────────────────────────────────
+  // Fetch data
   useEffect(() => {
     const safe = async (p) => {
       try {
         const response = await p;
-        
-        // Check for 503 status
-        if (response.status === 503) {
-          setServiceStatus('degraded');
-          return { success: false, data: null, status: 503 };
-        }
-        
         const data = await response.json();
         return data;
-      } catch (error) {
-        // Check if error is 503
-        if (error?.response?.status === 503 || error?.status === 503) {
-          setServiceStatus('degraded');
-        }
+      } catch {
         return { success: false, data: null };
       }
     };
 
-    const fetchData = async () => {
-      const results = await Promise.all([
-        safe(fetch(`${API}/products?isFeatured=true&limit=8`)),
-        safe(fetch(`${API}/categories`)),
-        safe(fetch(`${API}/products/category-counts`)),
-        safe(fetch(`${API}/stats`)),
-        safe(fetch(`${API}/coupons/active-promo`)),
-        safe(fetch(`${API}/products?sortBy=newest&limit=10`)),
-        safe(fetch(`${API}/manufacturers`)),
-        safe(fetch(`${API}/products?badge=sale&limit=8`)),
-        safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=4`)),
-        safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=4`)),
-        safe(fetch(`${API}/products?category=Hospital+Machines&limit=4`)),
-        safe(fetch(`${API}/settings`)),
-        safe(fetch(`${API}/search/trending`)),
-      ]);
-
-      const [featured, cats, counts, statsData, promoData, newest, mfrs, deals, diagnostic, reagents, hospital, settingsData, trendingData] = results;
-
-      // Check if any request returned 503
-      const has503 = results.some(r => r.status === 503);
-      
-      if (has503) {
-        // Use fallback data
-        setCategories(FALLBACK_CATEGORIES);
-        setPopularSearches(POPULAR_SEARCHES);
-        setCategoriesLoading(false);
-        setFeaturedLoading(false);
-        
-        // Retry after delay
-        const retryDelay = Math.min(2 ** retryCount * 2000, 30000);
-        setTimeout(() => {
-          if (retryCount < 5) {
-            setRetryCount(prev => prev + 1);
-            fetchData();
-          }
-        }, retryDelay);
-        return;
-      }
-
-      // Process successful responses
+    Promise.all([
+      safe(fetch(`${API}/products?isFeatured=true&limit=24`)),
+      safe(fetch(`${API}/products?limit=24`)), // Fallback: all products
+      safe(fetch(`${API}/categories`)),
+      safe(fetch(`${API}/products/category-counts`)),
+      safe(fetch(`${API}/stats`)),
+      safe(fetch(`${API}/coupons/active-promo`)),
+      safe(fetch(`${API}/products?sortBy=newest&limit=10`)),
+      safe(fetch(`${API}/manufacturers`)),
+      safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
+      safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
+    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews]) => {
       const fp = featured.data?.products || featured.products || [];
-      if (fp.length > 0) setFeaturedProducts(fp);
+      const ap = allProducts.data?.products || allProducts.products || [];
+      // Use featured products if available, otherwise use all products
+      const productsToShow = fp.length >= 12 ? fp : ap;
+      setFeaturedProducts(productsToShow);
       setFeaturedLoading(false);
 
       const catList = cats.data?.categories || cats.categories || [];
       setCategories(catList.length > 0 ? catList : FALLBACK_CATEGORIES);
       setCategoryCounts(counts.data || {});
-      setCategoriesLoading(false);
 
       if (statsData.data) setStats(statsData.data);
       setPromo(promoData.data?.coupon || null);
@@ -427,745 +319,953 @@ export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterCl
       const dealList = deals.data?.products || deals.products || [];
       setDealProducts(dealList);
 
-      const diagList = diagnostic.data?.products || diagnostic.products || [];
-      setDiagnosticProducts(diagList);
-
-      const reagList = reagents.data?.products || reagents.products || [];
-      setReagentProducts(reagList);
-
-      const hospList = hospital.data?.products || hospital.products || [];
-      setHospitalProducts(hospList);
-
-      // Update settings if API returns data
-      if (settingsData.data || settingsData.settings) {
-        setSettings(prev => ({ ...prev, ...(settingsData.data || settingsData.settings) }));
-      }
-
-      // Update popular searches if API returns data
-      if (trendingData.data?.searches || trendingData.searches) {
-        setPopularSearches(trendingData.data?.searches || trendingData.searches);
-      }
-
-      // Service restored
-      if (serviceStatus === 'degraded') {
-        setServiceStatus('operational');
-        setRetryCount(0);
-      }
-    };
-
-    fetchData().catch(() => {
+      const reviewList = reviews.data?.reviews || reviews.reviews || [];
+      setTestimonials(reviewList);
+    }).catch(() => {
       setFeaturedLoading(false);
-      setCategoriesLoading(false);
       setCategories(FALLBACK_CATEGORIES);
-      setPopularSearches(POPULAR_SEARCHES);
     });
-  }, [retryCount, serviceStatus]);
+
+    // Check user auth
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json())
+        .then(data => {
+          if (data.user) setUser(data.user);
+        })
+        .catch(() => {});
+    }
+
+    // Get cart count
+    const cartData = localStorage.getItem('cart');
+    if (cartData) {
+      try {
+        const cart = JSON.parse(cartData);
+        setCartCount(cart.items?.length || 0);
+      } catch {}
+    }
+  }, []);
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
+
+  const handleSearch = useCallback(() => {
+    if (searchQuery.trim()) router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  }, [searchQuery, router]);
+
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
+    setFeaturedLoading(true);
+    const featuredUrl = tab === 'all' 
+      ? `${API}/products?isFeatured=true&limit=24`
+      : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
+    const fallbackUrl = tab === 'all' 
+      ? `${API}/products?limit=24`
+      : `${API}/products?category=${encodeURIComponent(tab)}&limit=24`;
+    
+    // Try featured first, fallback to all products if not enough
+    Promise.all([
+      fetch(featuredUrl).then(r => r.json()),
+      fetch(fallbackUrl).then(r => r.json())
+    ]).then(([featuredData, fallbackData]) => {
+      const featured = featuredData.data?.products || featuredData.products || [];
+      const fallback = fallbackData.data?.products || fallbackData.products || [];
+      const products = featured.length >= 12 ? featured : fallback;
+      setFeaturedProducts(products);
+      setFeaturedLoading(false);
+    }).catch(() => setFeaturedLoading(false));
+  }, []);
+
+  const handleSubscribe = useCallback(async () => {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setSubscribeStatus('error');
+      return;
+    }
+    setSubscribeStatus('loading');
+    try {
+      const response = await fetch(`${API}/newsletter/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        setSubscribeStatus('success');
+        setEmail('');
+      } else {
+        setSubscribeStatus('error');
+      }
+    } catch {
+      setSubscribeStatus('error');
+    }
+  }, [email]);
 
   // ══════════════════════════════════════════════════════════════════════════════
   // RENDER
   // ══════════════════════════════════════════════════════════════════════════════
+
   return (
-    <div style={{ minHeight: '100vh', background: '#F9FAFB' }}>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
+      {/* Global Styles */}
       <style>{`
-        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-        @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
-        .scroll-container { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; scroll-behavior: smooth; }
-        .scroll-container::-webkit-scrollbar { height: 6px; }
-        .scroll-container::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 10px; }
-        .scroll-container::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
-        .scroll-container::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
-        .category-circle { transition: all 0.3s; }
-        .category-circle:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        @media(max-width:768px){
-          .hero-split{flex-direction:column!important;}
-          .hero-right{display:none!important;}
-          .cat-grid{grid-template-columns:repeat(2,1fr)!important;}
-          .prod-grid{grid-template-columns:repeat(2,1fr)!important;}
-          .stats-grid{grid-template-columns:repeat(2,1fr)!important;}
-          .b2b-split{flex-direction:column!important;}
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.3); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -30px); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+        .marquee-wrap { overflow: hidden; }
+        .marquee-track { display: flex; animation: marquee 25s linear infinite; width: max-content; }
+        .marquee-track:hover { animation-play-state: paused; }
+        .product-card-hover { transition: box-shadow 0.2s, transform 0.2s; }
+        .product-card-hover:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.12); transform: translateY(-3px); }
+        .cat-tile { transition: all 0.2s; }
+        .cat-tile:hover { border-color: #0E8A6E !important; }
+        .cat-tile:hover .cat-tile-arrow { opacity: 1 !important; transform: translateX(3px) !important; }
+        .section-in { animation: fadeInUp 0.5s ease both; }
+        .tab-active { background: #0B2545 !important; color: #fff !important; }
+        .pill-hover:hover { background: rgba(255,255,255,0.2) !important; }
+        .btn-primary-hover:hover { background: #0a1f3d !important; }
+        .btn-teal-hover:hover { background: #0c7a61 !important; transform: scale(1.02); }
+        .trust-item { transition: transform 0.2s; }
+        .trust-item:hover { transform: translateY(-2px); }
+        .hero-content > * { animation: slideIn 0.6s ease forwards; opacity: 0; }
+        .hero-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .hero-content > *:nth-child(2) { animation-delay: 0.2s; }
+        .hero-content > *:nth-child(3) { animation-delay: 0.3s; }
+        .hero-content > *:nth-child(4) { animation-delay: 0.4s; }
+        .hero-content > *:nth-child(5) { animation-delay: 0.5s; }
+        .hero-content > *:nth-child(6) { animation-delay: 0.6s; }
+        .hero-content > *:nth-child(7) { animation-delay: 0.7s; }
+        .floating-card { animation: float 3s ease-in-out infinite; }
+        .orb-drift { animation: drift 20s ease-in-out infinite; }
+        .slide-active { animation: scaleIn 0.6s ease forwards; }
+        .typewriter-text { animation: fadeSlide 0.5s ease forwards; }
+        .hero-grid-container { width: 100%; }
+        /* Custom scrollbar for category navigation */
+        *::-webkit-scrollbar { height: 6px; }
+        *::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 10px; }
+        *::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
+        *::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+        @media (max-width: 1024px) {
+          .hero-grid-container { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .hero-right-panel { display: none !important; }
+          .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .cat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media(max-width:480px){
-          .cat-grid{grid-template-columns:1fr!important;}
-          .prod-grid{grid-template-columns:1fr!important;}
-          .stats-grid{grid-template-columns:1fr!important;}
+        @media (max-width: 640px) {
+          .prod-grid-4 { grid-template-columns: 1fr !important; }
+          .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .b2b-cols { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SERVICE STATUS BANNER */}
+      {/* WORLD-CLASS HERO SECTION WITH ANIMATED SLIDER */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {serviceStatus === 'degraded' && (
-        <div style={{
-          background: '#FEF3C7',
-          color: '#92400E',
-          padding: '12px 20px',
-          textAlign: 'center',
-          fontSize: 14,
-          fontWeight: 500,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8
-        }}>
-          <span>⚠️</span>
-          <span>Service temporarily unavailable. Using cached data. Retrying... (Attempt {retryCount}/5)</span>
-        </div>
-      )}
+      <section style={{
+        background: '#0B2545',
+        position: 'relative', overflow: 'hidden', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '100px 0 80px'
+      }}>
+        {/* Dot grid texture */}
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.04,
+          backgroundImage: 'radial-gradient(circle, white 1px, transparent 0)',
+          backgroundSize: '28px 28px', pointerEvents: 'none', zIndex: 1 }} />
+        {/* Animated glow orbs */}
+        <div className="orb-drift" style={{ position: 'absolute', top: '-10%', right: '25%', width: 500, height: 500,
+          background: 'radial-gradient(circle, #0E8A6E 0%, transparent 70%)', opacity: 0.12, pointerEvents: 'none', zIndex: 1 }} />
+        <div className="orb-drift" style={{ position: 'absolute', bottom: '-20%', left: '-5%', width: 400, height: 400,
+          background: 'radial-gradient(circle, #4DDBB8 0%, transparent 70%)', opacity: 0.07, pointerEvents: 'none', animationDelay: '-10s', zIndex: 1 }} />
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 1: TOP TICKER BAR */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#0B2545', color: '#fff', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 24px', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <div style={{ display: 'flex', gap: 32, fontSize: 11, whiteSpace: 'nowrap' }}>
-              <span>🏥 DGDA Registered Products</span>
-              <span>🚚 Free Delivery over ৳{settings.freeDeliveryThreshold.toLocaleString()}</span>
-              <span>🔧 Free Installation</span>
-              <span>↺ {settings.returnPolicyDays}-Day Returns</span>
-              <span>📞 {settings.supportHours} Support</span>
+        <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '0 24px',
+          position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60,
+          alignItems: 'center', zIndex: 2 }}
+          className="hero-grid-container">
+
+          {/* ═══════════════════ LEFT SIDE: CONTENT PANEL ═══════════════════ */}
+          <div className="hero-content" style={{ position: 'relative', zIndex: 3 }}>
+            
+            {/* Trust badge with pulsing dot */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 24,
+              background: 'rgba(14,138,110,0.12)', border: '1px solid rgba(77,219,184,0.25)',
+              borderRadius: 999, padding: '8px 20px' }}>
+              <span style={{ width: 8, height: 8, background: '#4DDBB8', borderRadius: '50%',
+                display: 'inline-block', animation: 'pulse-dot 2s ease infinite' }} />
+              <span style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                DGDA Registered · ISO 13485 · Trusted by 1,200+ Hospitals
+              </span>
             </div>
-          </div>
-          <div style={{ display: 'flex', gap: 16, fontSize: 11 }}>
-            <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0 }}>📱 Get App</button>
-            <button onClick={goToRegister} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 0 }}>Sell on MedCore</button>
-          </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 2: HERO - SPLIT LAYOUT */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d2d52 100%)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 24px' }}>
-          <div className='hero-split' style={{ display: 'flex', gap: 32, alignItems: 'stretch' }}>
-            {/* LEFT: Hero Content */}
-            <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(14,138,110,0.15)', border: '1px solid rgba(77,219,184,0.3)', borderRadius: 999, padding: '6px 14px', marginBottom: 20, width: 'fit-content' }}>
-                <span style={{ width: 6, height: 6, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse 2s ease infinite' }} />
-                <span style={{ fontSize: 10, color: '#4DDBB8', fontWeight: 600 }}>
-                  {settings.certifications.join(' · ')} · {stats.totalBrands > 0 ? `${stats.totalBrands}+` : '29+'} Global Brands
+            {/* Main Headline (3 lines) */}
+            <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 52px)',
+              fontWeight: 400, lineHeight: 1.15, color: '#fff', marginBottom: 20 }}>
+              Bangladesh's Most Trusted<br />
+              <span key={typewriterText} className="typewriter-text" style={{ color: '#4DDBB8', display: 'inline-block',
+                fontWeight: 700, minWidth: '18ch' }}>{typewriterText}</span><br />
+              <span style={{ color: '#fff', fontWeight: 400 }}>Supplier</span>
+            </h1>
+
+            {/* Sub-description */}
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8,
+              marginBottom: 32, maxWidth: 560 }}>
+              Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines
+              from <strong style={{ color: '#fff' }}>50+ world-leading brands</strong>.
+              Serving hospitals and clinics nationwide with DGDA-cleared genuine products.
+            </p>
+
+            {/* CTA Buttons row */}
+            <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
+              <button className="btn-teal-hover" onClick={() => router.push('/products')}
+                style={{ padding: '14px 32px', background: '#0E8A6E', color: '#fff', border: 'none',
+                  borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                  transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(14,138,110,0.3)' }}>
+                Browse Products →
+              </button>
+              <button onClick={() => router.push('/register?type=b2b')}
+                style={{ padding: '14px 28px', background: 'rgba(255,255,255,0.08)',
+                  border: '1.5px solid rgba(255,255,255,0.25)', color: '#fff', borderRadius: 10,
+                  fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'scale(1)'; }}>
+                Register B2B Account
+              </button>
+              <button onClick={() => router.push('/quote')}
+                style={{ padding: '14px 24px', background: 'transparent', border: 'none',
+                  color: '#4DDBB8', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                  transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6 }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}>
+                Get a Quote <span style={{ fontSize: 16 }}>→</span>
+              </button>
+            </div>
+
+            {/* Large Search Bar with Category Dropdown */}
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.12)', borderRadius: 12,
+              overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', marginBottom: 16,
+              backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+              <select style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff',
+                fontSize: 13, padding: '14px 16px', outline: 'none', fontFamily: 'inherit',
+                cursor: 'pointer', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                <option value="">All Categories</option>
+                <option value="diagnostic">Diagnostic</option>
+                <option value="surgical">Surgical</option>
+                <option value="reagents">Reagents</option>
+                <option value="hospital">Hospital</option>
+              </select>
+              <input placeholder={searchPlaceholder}
+                value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff',
+                  fontSize: 14, padding: '14px 18px', outline: 'none', fontFamily: 'inherit' }} />
+              <button onClick={handleSearch}
+                style={{ background: '#0E8A6E', color: '#fff', border: 'none', padding: '14px 28px',
+                  fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#0c7a61'}
+                onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
+                Search
+              </button>
+            </div>
+
+            {/* Popular search pills */}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 32 }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>Popular:</span>
+              {['ECG Machine', 'N95 Mask', 'HbA1c Kit', 'Trocar Set', 'Pulse Oximeter', 'Centrifuge'].map(t => (
+                <span key={t} className="pill-hover"
+                  onClick={() => router.push(`/search?q=${encodeURIComponent(t)}`)}
+                  style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: 20, padding: '5px 14px', cursor: 'pointer', transition: 'all 0.2s',
+                    background: 'rgba(255,255,255,0.05)' }}>
+                  {t}
                 </span>
-              </div>
-              
-              <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, lineHeight: 1.1, marginBottom: 16 }}>
-                Bangladesh's Most Trusted<br />
-                <span style={{ color: '#4DDBB8' }}>Medical Equipment Supplier</span>
-              </h1>
-              
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', marginBottom: 24, lineHeight: 1.6, maxWidth: 560 }}>
-                Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines from world-leading brands.
-              </p>
+              ))}
+            </div>
 
-              {/* Search Bar */}
-              <div style={{ display: 'flex', gap: 0, background: '#fff', borderRadius: 10, overflow: 'hidden', marginBottom: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
-                <select
-                  value={selectedCategory}
-                  onChange={e => setSelectedCategory(e.target.value)}
-                  style={{ padding: '14px 16px', border: 'none', borderRight: '1px solid #E5E7EB', fontSize: 13, color: '#374151', cursor: 'pointer', background: '#F9FAFB' }}
-                >
-                  <option>All Categories</option>
-                  {FALLBACK_CATEGORIES.map(cat => (
-                    <option key={cat.slug}>{cat.name}</option>
-                  ))}
-                </select>
-                <input
-                  placeholder='Search ECG machine, HbA1c kit, trocar set...'
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                  style={{ flex: 1, padding: '14px 16px', border: 'none', fontSize: 14, fontFamily: 'inherit', outline: 'none' }}
-                />
-                <button
-                  onClick={handleSearch}
-                  style={{ padding: '14px 32px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#0c7a61'}
-                  onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}
-                >
-                  Search
-                </button>
-              </div>
+          </div>
 
-              {/* Popular Searches */}
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 24 }}>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>Popular:</span>
-                {popularSearches.map(term => (
-                  <button
-                    key={term}
-                    onClick={() => router.push(`/search?q=${encodeURIComponent(term)}`)}
-                    style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 20, padding: '5px 12px', cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                  >
-                    {term}
+          {/* ═══════════════════ RIGHT SIDE: ANIMATED SLIDER PANEL ═══════════════════ */}
+          <div className="hero-right-panel" style={{ position: 'relative', height: '600px', maxHeight: '80vh', zIndex: 3 }}
+            onMouseEnter={() => setIsSliderHovered(true)}
+            onMouseLeave={() => setIsSliderHovered(false)}>
+            
+            {/* Slide counter */}
+            <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 10,
+              color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600,
+              background: 'rgba(0,0,0,0.3)', padding: '6px 12px', borderRadius: 20,
+              backdropFilter: 'blur(10px)' }}>
+              {String(currentSlide + 1).padStart(2, '0')} / 04
+            </div>
+
+            {/* SLIDE 1: Diagnostic Equipment */}
+            {currentSlide === 0 && (
+              <div className="slide-active" style={{ position: 'absolute', inset: 0,
+                background: 'linear-gradient(135deg, #0d3162 0%, #0B2545 100%)',
+                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', alignItems: 'center' }}>
+                
+                {/* Central illustration */}
+                <div style={{ position: 'relative', marginBottom: 40 }}>
+                  <div style={{ width: 300, height: 300, borderRadius: '50%',
+                    border: '2px solid rgba(77,219,184,0.3)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 60px rgba(77,219,184,0.2)' }}>
+                    <div style={{ fontSize: 80 }}>🩺</div>
+                  </div>
+                  
+                  {/* Floating cards */}
+                  <div className="floating-card" style={{ position: 'absolute', top: 20, left: -40,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    animationDelay: '0s' }}>
+                    ❤️ Heart Rate: 72 bpm
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', top: 30, right: -30,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    animationDelay: '1s' }}>
+                    ✓ SpO2: 98%
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', bottom: 20, left: '50%',
+                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
+                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    boxShadow: '0 4px 12px rgba(16,185,129,0.3)', animationDelay: '0.5s' }}>
+                    ✓ ECG Normal
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 13, color: '#4DDBB8', fontWeight: 600, marginBottom: 8,
+                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    🩺 Diagnostic Equipment
+                  </div>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+                    ECG · Ultrasound · Patient Monitors
+                  </h3>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
+                    Siemens · GE · Philips · Mindray
+                  </div>
+                  <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
+                    style={{ padding: '10px 24px', background: '#0E8A6E', color: '#fff',
+                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', transition: 'all 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    Shop Diagnostic →
                   </button>
-                ))}
+                </div>
               </div>
+            )}
 
-              {/* Trust Badges */}
-              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', fontSize: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>✓</span>
-                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>DGDA Registered</span>
+            {/* SLIDE 2: Laboratory Reagents */}
+            {currentSlide === 1 && (
+              <div className="slide-active" style={{ position: 'absolute', inset: 0,
+                background: 'linear-gradient(135deg, #2d1b69 0%, #0B2545 100%)',
+                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', alignItems: 'center' }}>
+                
+                <div style={{ position: 'relative', marginBottom: 40 }}>
+                  <div style={{ width: 300, height: 300, borderRadius: '50%',
+                    border: '2px solid rgba(147,51,234,0.3)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 60px rgba(147,51,234,0.2)' }}>
+                    <div style={{ fontSize: 80 }}>🧪</div>
+                  </div>
+                  
+                  <div className="floating-card" style={{ position: 'absolute', top: 30, left: -30,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    ✓ HbA1c: 5.2% Normal
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', top: 40, right: -40,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    animationDelay: '1s' }}>
+                    CBC Results Ready
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', bottom: 30, left: '50%',
+                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
+                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    animationDelay: '0.5s' }}>
+                    Troponin: Negative
+                  </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>🚚</span>
-                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>Free Delivery ৳{(settings.freeDeliveryThreshold / 1000).toFixed(0)}K+</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>🔧</span>
-                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>Free Installation</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>↺</span>
-                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>{settings.returnPolicyDays}-Day Returns</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>💳</span>
-                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>B2B Credit Available</span>
+
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 13, color: '#A78BFA', fontWeight: 600, marginBottom: 8,
+                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    🧪 Laboratory Reagents
+                  </div>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+                    HbA1c · CBC · Troponin · PCR Kits
+                  </h3>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
+                    Roche · Abbott · Beckman · Randox
+                  </div>
+                  <button onClick={() => router.push('/products?category=Laboratory+Reagents')}
+                    style={{ padding: '10px 24px', background: '#8B5CF6', color: '#fff',
+                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', transition: 'all 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    Shop Reagents →
+                  </button>
                 </div>
               </div>
+            )}
+
+            {/* SLIDE 3: Hospital Machines */}
+            {currentSlide === 2 && (
+              <div className="slide-active" style={{ position: 'absolute', inset: 0,
+                background: 'linear-gradient(135deg, #1a0a00 0%, #0B2545 100%)',
+                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', alignItems: 'center' }}>
+                
+                <div style={{ position: 'relative', marginBottom: 40 }}>
+                  <div style={{ width: 300, height: 300, borderRadius: '50%',
+                    border: '2px solid rgba(251,146,60,0.3)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 60px rgba(251,146,60,0.2)' }}>
+                    <div style={{ fontSize: 80 }}>🏥</div>
+                  </div>
+                  
+                  <div className="floating-card" style={{ position: 'absolute', top: 20, left: -40,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    ✓ Ventilator: Ready
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', top: 30, right: -30,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    animationDelay: '1s' }}>
+                    ICU Bed 1: Monitored
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', bottom: 20, left: '50%',
+                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
+                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    animationDelay: '0.5s' }}>
+                    O2 Saturation: 99%
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 13, color: '#FB923C', fontWeight: 600, marginBottom: 8,
+                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    🏥 Hospital Machines
+                  </div>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+                    Ventilators · Dialysis · ICU Equipment
+                  </h3>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
+                    Dräger · Fresenius · Medtronic · Mindray
+                  </div>
+                  <button onClick={() => router.push('/products?category=Hospital+Machines')}
+                    style={{ padding: '10px 24px', background: '#EA580C', color: '#fff',
+                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', transition: 'all 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    Shop Hospital →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* SLIDE 4: Surgical Instruments */}
+            {currentSlide === 3 && (
+              <div className="slide-active" style={{ position: 'absolute', inset: 0,
+                background: 'linear-gradient(135deg, #0a1f0a 0%, #0B2545 100%)',
+                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', alignItems: 'center' }}>
+                
+                <div style={{ position: 'relative', marginBottom: 40 }}>
+                  <div style={{ width: 300, height: 300, borderRadius: '50%',
+                    border: '2px solid rgba(16,185,129,0.3)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 60px rgba(16,185,129,0.2)' }}>
+                    <div style={{ fontSize: 80 }}>💉</div>
+                  </div>
+                  
+                  <div className="floating-card" style={{ position: 'absolute', top: 30, left: -30,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    ✓ Sterile: Certified
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', top: 40, right: -40,
+                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
+                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    animationDelay: '1s' }}>
+                    CE Marked
+                  </div>
+                  <div className="floating-card" style={{ position: 'absolute', bottom: 30, left: '50%',
+                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
+                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    animationDelay: '0.5s' }}>
+                    ISO 13485
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 13, color: '#34D399', fontWeight: 600, marginBottom: 8,
+                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    💉 Surgical Instruments
+                  </div>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+                    Forceps · Trocars · Implants · Sutures
+                  </h3>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
+                    Ethicon · Stryker · Aesculap · Medtronic
+                  </div>
+                  <button onClick={() => router.push('/products?category=Surgical+Instruments')}
+                    style={{ padding: '10px 24px', background: '#10B981', color: '#fff',
+                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', transition: 'all 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    Shop Surgical →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Dot indicators */}
+            <div style={{ position: 'absolute', bottom: 30, left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', gap: 8, zIndex: 10 }}>
+              {[0, 1, 2, 3].map(i => (
+                <button key={i} onClick={() => setCurrentSlide(i)}
+                  style={{ width: currentSlide === i ? 32 : 10, height: 10,
+                    borderRadius: 999, border: 'none', cursor: 'pointer',
+                    background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.3)',
+                    transition: 'all 0.3s' }} />
+              ))}
             </div>
 
-            {/* RIGHT: Promo Banners */}
-            <div className='hero-right' style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {/* B2B Program Banner */}
-              <div style={{ background: 'linear-gradient(135deg, #0E8A6E, #0c7a61)', borderRadius: 12, padding: 20, border: '1px solid rgba(77,219,184,0.3)' }}>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>B2B PROGRAM</div>
-                <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Up to {settings.b2bMaxDiscount}% discount</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12 }}>For hospitals & clinics</div>
-                <button
-                  onClick={goToRegister}
-                  style={{ background: '#fff', color: '#0E8A6E', border: 'none', padding: '8px 16px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', width: '100%' }}
-                >
-                  Register now →
-                </button>
-              </div>
-
-              {/* Flash Sale Banner */}
-              <div style={{ background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.3)', borderRadius: 12, padding: 20 }}>
-                <div style={{ fontSize: 11, color: '#FCA5A5', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>LIMITED TIME OFFER</div>
-                <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>MEDCORE10</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12 }}>10% off your first order</div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 18, fontWeight: 700, fontFamily: 'monospace' }}>
-                  <span>{String(countdown.hours).padStart(2, '0')}</span>
-                  <span>:</span>
-                  <span>{String(countdown.minutes).padStart(2, '0')}</span>
-                  <span>:</span>
-                  <span>{String(countdown.seconds).padStart(2, '0')}</span>
-                </div>
-              </div>
-
-              {/* Free Installation Banner */}
-              <div style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: 20 }}>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>DHAKA METRO</div>
-                <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Free Installation</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>Staff training included</div>
-              </div>
-            </div>
+            {/* Navigation arrows */}
+            <button onClick={() => setCurrentSlide(prev => (prev - 1 + 4) % 4)}
+              style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)',
+                width: 40, height: 40, borderRadius: '50%', border: 'none',
+                background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 20,
+                cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
+                opacity: isSliderHovered ? 1 : 0 }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+              ‹
+            </button>
+            <button onClick={() => setCurrentSlide(prev => (prev + 1) % 4)}
+              style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)',
+                width: 40, height: 40, borderRadius: '50%', border: 'none',
+                background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 20,
+                cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
+                opacity: isSliderHovered ? 1 : 0 }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+              ›
+            </button>
           </div>
         </div>
       </section>
 
-
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 3: POLICY ICONS ROW */}
+      {/* SECTION 4: TRUST BAR */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: 16 }}>
+      <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '20px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 20 }}>
           {[
-            { icon: '📦', text: 'DGDA Registered' },
-            { icon: '🚚', text: `Free Delivery ৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K+` },
-            { icon: '🔧', text: 'Free Installation' },
-            { icon: '↺', text: `${settings.returnPolicyDays}-Day Returns` },
-            { icon: '💳', text: 'B2B Credit Available' },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', borderLeft: i > 0 ? '1px solid #E5E7EB' : 'none' }}>
-              <span style={{ fontSize: 24 }}>{item.icon}</span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.text}</span>
+            { icon: <FaCheckCircle size={28} />, title: 'DGDA Registered', sub: 'All products certified' },
+            { icon: <FaTruck size={28} />, title: 'Free Delivery', sub: 'Orders over ৳50,000' },
+            { icon: <FaTools size={28} />, title: 'Free Installation', sub: 'Dhaka metro area' },
+            { icon: <FaUndo size={28} />, title: '30-Day Returns', sub: 'Hassle-free policy' },
+            { icon: <FaPhoneAlt size={28} />, title: '24/7 Support', sub: 'Technical assistance' },
+          ].map(t => (
+            <div key={t.title} className="trust-item" style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 32, marginBottom: 8, color: '#0E8A6E' }}>{t.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{t.title}</div>
+              <div style={{ fontSize: 11, color: '#6B7280' }}>{t.sub}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 4: CATEGORY NAVIGATION (Circular Icons) */}
+      {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '24px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div className='scroll-container' style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8 }}>
-            {(categories.length > 0 ? categories : FALLBACK_CATEGORIES).map((cat, i) => {
-              const fallback = FALLBACK_CATEGORIES.find(f => f.name === cat.name);
-              const icon = cat.icon || fallback?.icon || '📦';
-              const bgColor = fallback?.color || '#F0FDF4';
-              const slug = cat.slug || cat.name;
-              return (
-                <div
-                  key={i}
-                  className='category-circle'
-                  onClick={() => router.push(`/products?category=${encodeURIComponent(cat.name || slug)}`)}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer', minWidth: 80 }}
-                >
-                  <div style={{ width: 72, height: 72, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, border: '2px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-                    {icon}
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', textAlign: 'center', maxWidth: 80 }}>{cat.name}</span>
+      <section style={{ background: '#fff', padding: '32px 0', borderBottom: '1px solid #E5E7EB' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div>
+              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Our Catalog</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
+                Shop by Category
+              </h2>
+            </div>
+          </div>
+          
+          {/* Horizontal scrollable category circles */}
+          <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
+            scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
+            {[
+              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', path: '/products?category=Diagnostic+Equipment' },
+              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', path: '/products?category=Surgical+Instruments' },
+              { name: 'Reagents', emoji: '🧪', color: '#FAF5FF', path: '/products?category=Laboratory+Reagents' },
+              { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', path: '/products?category=Hospital+Machines' },
+              { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', path: '/products?category=Lab+Equipment' },
+              { name: 'PPE', emoji: '🛡️', color: '#FFF1F2', path: '/products?category=PPE+%26+Safety' },
+              { name: 'Dental', emoji: '🦷', color: '#FFFBEB', path: '/products?category=Dental+Equipment' },
+              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', path: '/products?category=Implants+%26+Ortho' },
+            ].map(cat => (
+              <div key={cat.name} onClick={() => router.push(cat.path)}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                {/* Circular icon */}
+                <div style={{ width: 80, height: 80, borderRadius: '50%', background: cat.color,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 36, marginBottom: 10, border: '2px solid #E5E7EB',
+                  transition: 'all 0.2s' }}>
+                  {cat.emoji}
                 </div>
-              );
-            })}
-            <div
-              className='category-circle'
-              onClick={() => goTo('product')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer', minWidth: 80 }}
-            >
-              <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, border: '2px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                {/* Category name */}
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#374151',
+                  textAlign: 'center', lineHeight: 1.3 }}>
+                  {cat.name}
+                </span>
+              </div>
+            ))}
+            
+            {/* View All button */}
+            <div onClick={() => router.push('/products')}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
+                minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 28, marginBottom: 10, border: '2px solid #0E8A6E',
+                color: '#fff', fontWeight: 700 }}>
                 →
               </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', textAlign: 'center' }}>View All</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#0E8A6E',
+                textAlign: 'center' }}>
+                View All
+              </span>
             </div>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 5: DEAL OF THE DAY */}
+      {/* SECTION 6: PROMO BANNER (conditional) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 24px' }}>
-        <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
-          {/* LEFT: Deal Box */}
-          <div style={{ flex: '0 0 280px', background: 'linear-gradient(135deg, #DC2626, #991B1B)', borderRadius: 16, padding: 32, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8, opacity: 0.9 }}>TODAY ONLY</div>
-            <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 16, lineHeight: 1.1 }}>Deal of the Day</div>
-            <div style={{ display: 'flex', gap: 8, fontSize: 28, fontWeight: 700, fontFamily: 'monospace', marginBottom: 20 }}>
-              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: 8 }}>{String(countdown.hours).padStart(2, '0')}</div>
-              <span>:</span>
-              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: 8 }}>{String(countdown.minutes).padStart(2, '0')}</div>
-              <span>:</span>
-              <div style={{ background: 'rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: 8 }}>{String(countdown.seconds).padStart(2, '0')}</div>
-            </div>
-            <button
-              onClick={() => goTo('product')}
-              style={{ background: '#fff', color: '#DC2626', border: 'none', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%' }}
-            >
-              See all deals →
-            </button>
+      {promo && (
+        <div style={{ background: 'linear-gradient(90deg, #085041, #0E8A6E, #085041)',
+          padding: '14px 24px', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', gap: 20, flexWrap: 'wrap', position: 'relative' }}>
+          <span style={{ fontSize: 20 }}>🏷️</span>
+          <div style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>
+            Limited time: Use code{' '}
+            <span style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 10px',
+              borderRadius: 5, fontWeight: 800, fontSize: 16, letterSpacing: '0.05em' }}>
+              {promo.code}
+            </span>
+            {' '}for {promo.type === 'percentage' ? `${promo.value}% off` : `৳${promo.value} off`}
+            {promo.description ? ` — ${promo.description}` : ''}
           </div>
-
-          {/* RIGHT: Deal Products */}
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <div className='scroll-container'>
-              {dealProducts.length > 0 ? (
-                dealProducts.slice(0, 4).map(product => (
-                  <ProductCard key={product._id} product={product} onNavigateToProduct={goToProduct} />
-                ))
-              ) : (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} style={{ minWidth: 220, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: 14 }}>
-                    <Skeleton w='100%' h={180} r={8} />
-                    <div style={{ marginTop: 12 }}><Skeleton h={14} /></div>
-                    <div style={{ marginTop: 8 }}><Skeleton h={12} w='70%' /></div>
-                    <div style={{ marginTop: 12 }}><Skeleton h={20} w='50%' /></div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <button onClick={() => { navigator.clipboard.writeText(promo.code); alert('Code copied!'); }}
+            style={{ background: '#fff', color: '#0E8A6E', border: 'none', padding: '6px 14px',
+              borderRadius: 16, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+            Copy code
+          </button>
+          <button onClick={() => router.push('/products')}
+            style={{ background: 'transparent', color: '#fff', border: '1.5px solid rgba(255,255,255,0.6)',
+              padding: '6px 14px', borderRadius: 16, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            Shop now →
+          </button>
         </div>
-      </section>
+      )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 6: SHOP BY CATEGORY - Image Grid */}
+      {/* SECTION 7: DEAL OF THE DAY */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <p style={{ fontSize: 12, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>OUR CATALOG</p>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#0B2545', marginBottom: 8 }}>Shop by category</h2>
-            <button onClick={() => goTo('product')} style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>View all →</button>
-          </div>
-
-          <div className='cat-grid' style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
-            {(categories.length > 0 ? categories : FALLBACK_CATEGORIES).slice(0, 5).map((cat, i) => {
-              const fallback = FALLBACK_CATEGORIES.find(f => f.name === cat.name);
-              const icon = cat.icon || fallback?.icon || '📦';
-              const bgColor = fallback?.color || '#F0FDF4';
-              const iconColor = fallback?.iconColor || '#0E8A6E';
-              const slug = cat.slug || cat.name;
-              const count = categoryCounts[cat.name] || categoryCounts[slug] || 0;
-              return (
-                <div
-                  key={i}
-                  onClick={() => router.push(`/products?category=${encodeURIComponent(cat.name || slug)}`)}
-                  style={{ background: bgColor, borderRadius: 16, padding: 24, cursor: 'pointer', transition: 'all 0.3s', position: 'relative', overflow: 'hidden', minHeight: 200, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.1)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'none';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  <div style={{ fontSize: 48, marginBottom: 12 }}>{icon}</div>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 4 }}>{cat.name}</div>
-                    <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12 }}>{fallback?.desc || cat.desc || ''}</div>
-                    <div style={{ display: 'inline-block', background: iconColor, color: '#fff', fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 20 }}>
-                      {count > 0 ? `${count} products` : 'CE Certified'}
-                    </div>
-                  </div>
+      {dealProducts.length > 0 && (
+        <section style={{ background: '#0B2545', padding: '32px 24px' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
+                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+                  🔥 Flash Deals
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 7: FLASH DEALS Horizontal Carousel */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <p style={{ fontSize: 12, color: '#DC2626', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>FLASH SALE</p>
-            <h2 style={{ fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: 800, color: '#0B2545' }}>Flash deals on top picks!</h2>
-          </div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>
-            Ends in {String(countdown.hours).padStart(2, '0')}:{String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
-          </div>
-        </div>
-
-        <div className='scroll-container'>
-          {featuredLoading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{ minWidth: 220, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: 14 }}>
-                <Skeleton w='100%' h={180} r={8} />
-                <div style={{ marginTop: 12 }}><Skeleton h={14} /></div>
-                <div style={{ marginTop: 8 }}><Skeleton h={12} w='70%' /></div>
-                <div style={{ marginTop: 12 }}><Skeleton h={20} w='50%' /></div>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700,
+                  color: '#fff', margin: 0 }}>Deal of the Day</h2>
               </div>
-            ))
-          ) : featuredProducts.length > 0 ? (
-            featuredProducts.map(product => (
-              <ProductCard key={product._id} product={product} onNavigateToProduct={goToProduct} />
-            ))
-          ) : (
-            <div style={{ padding: 40, textAlign: 'center', color: '#6B7280' }}>No flash deals available</div>
-          )}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 8: FEATURED PRODUCTS BY CATEGORY */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      
-      {/* Diagnostic Equipment */}
-      <section style={{ background: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
-            {/* Category Banner */}
-            <div style={{ flex: '0 0 280px', background: 'linear-gradient(135deg, #2563EB, #1E40AF)', borderRadius: 16, padding: 32, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8, opacity: 0.9 }}>CURATED</div>
-              <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>Top diagnostic equipment</div>
-              <div style={{ fontSize: 13, marginBottom: 20, opacity: 0.9 }}>ECG, Ultrasound & Monitors</div>
-              <div style={{ fontSize: 11, marginBottom: 16, opacity: 0.8 }}>CE Certified · DGDA Cleared</div>
-              <button
-                onClick={() => goTo('diagnostics')}
-                style={{ background: '#fff', color: '#2563EB', border: 'none', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-              >
-                Shop All →
+              {/* Countdown */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>Ends in:</span>
+                {[
+                  { val: timeLeft.h, label: 'hrs' },
+                  { val: timeLeft.m, label: 'min' },
+                  { val: timeLeft.s, label: 'sec' },
+                ].map((t, i) => (
+                  <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 6 : 0 }}>
+                    {i > 0 && <span style={{ color: '#4DDBB8', fontWeight: 700, fontSize: 18 }}>:</span>}
+                    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 8,
+                      padding: '8px 12px', textAlign: 'center', minWidth: 52 }}>
+                      <div style={{ fontSize: 22, fontWeight: 700, color: '#4DDBB8', lineHeight: 1 }}>
+                        {String(t.val).padStart(2, '0')}
+                      </div>
+                      <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => router.push('/products?sortBy=discount')}
+                style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', color: '#fff',
+                  border: '1px solid rgba(255,255,255,0.2)', padding: '8px 20px', borderRadius: 8,
+                  fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>
+                See all deals →
               </button>
             </div>
 
-            {/* Products */}
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <div className='scroll-container'>
-                {diagnosticProducts.length > 0 ? (
-                  diagnosticProducts.map(product => (
-                    <ProductCard key={product._id} product={product} onNavigateToProduct={goToProduct} />
-                  ))
-                ) : (
-                  Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} style={{ minWidth: 220, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: 14 }}>
-                      <Skeleton w='100%' h={180} r={8} />
-                      <div style={{ marginTop: 12 }}><Skeleton h={14} /></div>
-                      <div style={{ marginTop: 8 }}><Skeleton h={12} w='70%' /></div>
-                      <div style={{ marginTop: 12 }}><Skeleton h={20} w='50%' /></div>
-                    </div>
-                  ))
-                )}
-              </div>
+            {/* 4 deal product cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+              {dealProducts.slice(0, 4).map(product => (
+                <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product._id}`)} />
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Laboratory Reagents */}
-      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 24px' }}>
-        <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
-          <div style={{ flex: '0 0 280px', background: 'linear-gradient(135deg, #9333EA, #7E22CE)', borderRadius: 16, padding: 32, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8, opacity: 0.9 }}>BEST-SELLING</div>
-            <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>Laboratory Reagents</div>
-            <div style={{ fontSize: 13, marginBottom: 20, opacity: 0.9 }}>HbA1c, CBC, Troponin kits</div>
-            <div style={{ fontSize: 11, marginBottom: 16, opacity: 0.8 }}>Clinical · Molecular</div>
-            <button
-              onClick={() => goTo('reagent')}
-              style={{ background: '#fff', color: '#9333EA', border: 'none', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-            >
-              Shop All →
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#F8FAFC', padding: '48px 0' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div>
+              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Hand-picked</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>Featured Products</h2>
+            </div>
+            <button onClick={() => router.push('/products')}
+              style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+              View all →
             </button>
           </div>
 
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <div className='scroll-container'>
-              {reagentProducts.length > 0 ? (
-                reagentProducts.map(product => (
-                  <ProductCard key={product._id} product={product} onNavigateToProduct={goToProduct} />
-                ))
-              ) : (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} style={{ minWidth: 220, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: 14 }}>
-                    <Skeleton w='100%' h={180} r={8} />
-                    <div style={{ marginTop: 12 }}><Skeleton h={14} /></div>
-                    <div style={{ marginTop: 8 }}><Skeleton h={12} w='70%' /></div>
-                    <div style={{ marginTop: 12 }}><Skeleton h={20} w='50%' /></div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Hospital Machines */}
-      <section style={{ background: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', gap: 24, alignItems: 'stretch' }}>
-            <div style={{ flex: '0 0 280px', background: 'linear-gradient(135deg, #EA580C, #C2410C)', borderRadius: 16, padding: 32, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8, opacity: 0.9 }}>HOSPITAL GRADE</div>
-              <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>ICU Equipment</div>
-              <div style={{ fontSize: 13, marginBottom: 20, opacity: 0.9 }}>Ventilators, Dialysis</div>
-              <div style={{ fontSize: 11, marginBottom: 16, opacity: 0.8 }}>FDA Approved</div>
-              <button
-                onClick={() => goTo('machines')}
-                style={{ background: '#fff', color: '#EA580C', border: 'none', padding: '10px 24px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-              >
-                Shop All →
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+            {[
+              { key: 'all', label: 'All Products' },
+              { key: 'Diagnostic Equipment', label: '🩺 Diagnostic' },
+              { key: 'Surgical Instruments', label: '💉 Surgical' },
+              { key: 'Laboratory Reagents', label: '🧪 Reagents' },
+              { key: 'Hospital Machines', label: '🏥 Machines' },
+            ].map(tab => (
+              <button key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
+                className={activeTab === tab.key ? 'tab-active' : ''}
+                style={{ padding: '9px 18px', borderRadius: 8, border: '1.5px solid #E5E7EB',
+                  background: activeTab === tab.key ? '#0B2545' : '#fff',
+                  color: activeTab === tab.key ? '#fff' : '#374151',
+                  fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>
+                {tab.label}
               </button>
-            </div>
-
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <div className='scroll-container'>
-                {hospitalProducts.length > 0 ? (
-                  hospitalProducts.map(product => (
-                    <ProductCard key={product._id} product={product} onNavigateToProduct={goToProduct} />
-                  ))
-                ) : (
-                  Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} style={{ minWidth: 220, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: 14 }}>
-                      <Skeleton w='100%' h={180} r={8} />
-                      <div style={{ marginTop: 12 }}><Skeleton h={14} /></div>
-                      <div style={{ marginTop: 8 }}><Skeleton h={12} w='70%' /></div>
-                      <div style={{ marginTop: 12 }}><Skeleton h={20} w='50%' /></div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
-      </section>
 
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 9: NEW ARRIVALS */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <p style={{ fontSize: 12, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>JUST ARRIVED</p>
-            <h2 style={{ fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: 800, color: '#0B2545' }}>Explore new arrivals</h2>
-          </div>
-          <button onClick={() => goTo('product')} style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>View all →</button>
-        </div>
-
-        <div className='scroll-container'>
-          {newArrivals.length > 0 ? (
-            newArrivals.map(product => (
-              <ProductCard key={product._id} product={{ ...product, badge: 'new' }} onNavigateToProduct={goToProduct} />
-            ))
-          ) : (
-            Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} style={{ minWidth: 220, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', padding: 14 }}>
-                <Skeleton w='100%' h={180} r={8} />
-                <div style={{ marginTop: 12 }}><Skeleton h={14} /></div>
-                <div style={{ marginTop: 8 }}><Skeleton h={12} w='70%' /></div>
-                <div style={{ marginTop: 12 }}><Skeleton h={20} w='50%' /></div>
+          {/* Products grid */}
+          {featuredLoading
+            ? <div style={{ display: 'flex', justifyContent: 'center', padding: 64 }}>
+                <div style={{ width: 36, height: 36, border: '3px solid #E5E7EB',
+                  borderTopColor: '#0B2545', borderRadius: '50%',
+                  animation: 'spin 0.7s linear infinite' }} />
+                <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
               </div>
-            ))
-          )}
+            : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+                {featuredProducts.map(p => (
+                  <ProductCard key={p._id} product={p} onClick={() => router.push(`/products/${p._id}`)} />
+                ))}
+              </div>
+          }
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 10: TOP BRANDS */}
+      {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <p style={{ fontSize: 12, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>TRUSTED PARTNERS</p>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#0B2545' }}>Top medical equipment brands</h2>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
-            {brands.length > 0 ? (
-              brands.slice(0, 8).map((brand, i) => {
-                const brandName = typeof brand === 'string' ? brand : brand.name;
-                const productCount = typeof brand === 'object' ? brand.productCount : 0;
-                const initials = brandName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                const colors = ['#2563EB', '#9333EA', '#0E8A6E', '#EA580C', '#DC2626', '#0D9488', '#7C3AED', '#059669'];
-                const bgColor = colors[i % colors.length];
-                
+      {newArrivals.length > 0 && (
+        <section style={{ padding: '40px 0', background: '#fff' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '0 24px', marginBottom: 20 }}>
+              <div>
+                <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Just Arrived</p>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
+                  New Arrivals
+                </h2>
+              </div>
+              <button onClick={() => router.push('/products?sortBy=newest')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none',
+                  border: 'none', cursor: 'pointer' }}>View all →</button>
+            </div>
+            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', padding: '4px 24px 16px',
+              scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {newArrivals.map(p => {
+                const img = p.images?.[0]?.url || p.images?.[0];
                 return (
-                  <div
-                    key={i}
-                    onClick={() => router.push(`/products?brand=${encodeURIComponent(brandName)}`)}
-                    style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20, cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = bgColor;
-                      e.currentTarget.style.boxShadow = `0 4px 16px ${bgColor}20`;
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = '#E5E7EB';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                      <div style={{ width: 48, height: 48, borderRadius: 8, background: bgColor, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700 }}>
-                        {initials}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 2 }}>{brandName}</div>
-                        <div style={{ fontSize: 11, color: '#6B7280' }}>{productCount > 0 ? `${productCount} products` : '2 products'}</div>
-                      </div>
+                  <div key={p._id} className="product-card-hover"
+                    onClick={() => router.push(`/products/${p._id}`)}
+                    style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12,
+                      border: '1px solid #E5E7EB', overflow: 'hidden', flexShrink: 0 }}>
+                    <div style={{ height: 160, background: '#F9FAFB', position: 'relative', overflow: 'hidden' }}>
+                      {img
+                        ? <img src={img} alt={p.name} loading="lazy"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            height: '100%', fontSize: 40 }}>🏥</div>
+                      }
+                      <span style={{ position: 'absolute', top: 8, left: 8, background: '#0E8A6E',
+                        color: '#fff', fontSize: 9, padding: '3px 8px', borderRadius: 20, fontWeight: 700 }}>
+                        ✨ NEW
+                      </span>
                     </div>
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      {[1, 2, 3, 4, 5].map(s => (
-                        <svg key={s} width='14' height='14' viewBox='0 0 24 24' fill='#F59E0B'>
-                          <path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' />
-                        </svg>
-                      ))}
+                    <div style={{ padding: '10px 12px' }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 4,
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {p.name}
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: '#0B2545' }}>
+                        ৳{p.price?.toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 );
-              })
-            ) : (
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                    <Skeleton w={48} h={48} r={8} />
-                    <div style={{ flex: 1 }}>
-                      <Skeleton h={14} w='80%' />
-                      <div style={{ marginTop: 4 }}><Skeleton h={11} w='50%' /></div>
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 10: TOP DIAGNOSTIC EQUIPMENT (Curated) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#F8FAFC', padding: '48px 0' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28 }}>
+            <div>
+              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>CURATED</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>
+                Top diagnostic equipment
+              </h2>
+            </div>
+            <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
+              style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              Shop all <span style={{ fontSize: 16 }}>→</span>
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20 }}>
+            {/* Left: Category card */}
+            <div style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+              borderRadius: 16, padding: '28px 24px', display: 'flex', flexDirection: 'column',
+              justifyContent: 'space-between', border: '1px solid #BFDBFE' }}>
+              <div>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>🩺</div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0B2545', marginBottom: 8 }}>
+                  DIAGNOSTIC
+                </h3>
+                <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 16 }}>
+                  ECG, Ultrasound &<br />Monitors
+                </p>
+                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>
+                  <span style={{ fontWeight: 600 }}>CE Certified</span> · DGDA Cleared
+                </div>
+              </div>
+              <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
+                style={{ width: '100%', padding: '12px', background: '#2563EB', color: '#fff',
+                  border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700,
+                  cursor: 'pointer', transition: 'background 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#1D4ED8'}
+                onMouseLeave={e => e.currentTarget.style.background = '#2563EB'}>
+                Shop All →
+              </button>
+            </div>
+
+            {/* Right: Product grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+              {featuredProducts.filter(p => {
+                const catName = typeof p.category === 'object' ? p.category?.name : p.category;
+                return catName?.toLowerCase().includes('diagnostic');
+              }).slice(0, 4).map(product => {
+                const img = product.images?.[0]?.url || product.images?.[0];
+                const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+                return (
+                  <div key={product._id} className="product-card-hover"
+                    onClick={() => router.push(`/products/${product._id}`)}
+                    style={{ background: '#fff', borderRadius: 12, overflow: 'hidden',
+                      border: '1px solid #E5E7EB', cursor: 'pointer' }}>
+                    <div style={{ position: 'relative', height: 160, background: '#F9FAFB' }}>
+                      {img ? (
+                        <img src={img} alt={product.name} loading="lazy"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          height: '100%', fontSize: 48 }}>🩺</div>
+                      )}
+                    </div>
+                    <div style={{ padding: 14 }}>
+                      {brandName && (
+                        <div style={{ fontSize: 10, color: '#2563EB', fontWeight: 600,
+                          textTransform: 'uppercase', marginBottom: 4 }}>
+                          {brandName}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
+                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden', minHeight: 36 }}>
+                        {product.name}
+                      </div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: '#0B2545' }}>
+                        ৳{product.price?.toLocaleString()}
+                      </div>
                     </div>
                   </div>
-                  <Skeleton h={14} w='60%' />
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 11: STATS COUNTER ROW */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section ref={statsRef} style={{ background: 'linear-gradient(135deg, #0B2545, #0d2d52)', color: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div className='stats-grid' style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, textAlign: 'center' }}>
-            <div>
-              <div style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, color: '#4DDBB8' }}>
-                {statsStarted ? `${productsCount.toLocaleString()}+` : '0'}
-              </div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>Products</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, color: '#4DDBB8' }}>
-                {statsStarted ? `${brandsCount}+` : '0'}
-              </div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>Global Brands</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, color: '#4DDBB8' }}>
-                {statsStarted ? `${clientsCount.toLocaleString()}+` : '0'}
-              </div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>B2B Clients</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 48, fontWeight: 800, marginBottom: 8, color: '#4DDBB8' }}>
-                {statsStarted ? `${ordersCount.toLocaleString()}+` : '0'}
-              </div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>Orders Fulfilled</div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 12: B2B PROGRAM BANNER */}
+      {/* SECTION 11: BRAND MARQUEE */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '56px 24px' }}>
-        <div className='b2b-split' style={{ display: 'flex', gap: 32, background: 'linear-gradient(135deg, #0E8A6E, #0c7a61)', borderRadius: 20, overflow: 'hidden', color: '#fff' }}>
-          {/* LEFT */}
-          <div style={{ flex: 1, padding: 48 }}>
-            <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12, opacity: 0.9 }}>EXCLUSIVE BENEFITS</div>
-            <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 20, lineHeight: 1.2 }}>For Hospitals & Clinics</h2>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
-              {[
-                `✓ Up to ${settings.b2bMaxDiscount}% bulk discount`,
-                `✓ ${settings.b2bCreditDays}-day credit terms`,
-                '✓ Dedicated account manager',
-                '✓ Priority technical support',
-                '✓ Free installation & training',
-                '✓ Customized quotations',
-              ].map((item, i) => (
-                <div key={i} style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button
-                onClick={goToRegister}
-                style={{ background: '#fff', color: '#0E8A6E', border: 'none', padding: '12px 28px', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-              >
-                Register for B2B
-              </button>
-              <button
-                onClick={() => goTo('b2b')}
-                style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', padding: '12px 28px', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-              >
-                Learn More
-              </button>
-            </div>
-          </div>
-
-          {/* RIGHT */}
-          <div style={{ flex: '0 0 320px', background: 'rgba(0,0,0,0.1)', padding: 48, display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {[
-              { label: 'Active Clients', value: stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+' },
-              { label: 'Max Discount', value: `${settings.b2bMaxDiscount}%` },
-              { label: 'Credit Terms', value: `${settings.b2bCreditDays} Days` },
-              { label: 'Support', value: settings.supportHours },
-            ].map((stat, i) => (
-              <div key={i} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: 20, border: '1px solid rgba(255,255,255,0.2)' }}>
-                <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 4 }}>{stat.value}</div>
-                <div style={{ fontSize: 12, opacity: 0.9 }}>{stat.label}</div>
+      <section style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB',
+        background: '#F8FAFC', padding: '24px 0' }}>
+        <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 500,
+          textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
+          Authorised distributor of world-leading brands
+        </p>
+        <div className="marquee-wrap">
+          <div className="marquee-track">
+            {[...brands, ...brands].map((brand, i) => (
+              <div key={i} style={{ padding: '0 40px', fontSize: 14, fontWeight: 600,
+                color: '#374151', whiteSpace: 'nowrap', borderRight: '1px solid #E5E7EB',
+                display: 'flex', alignItems: 'center', height: 36 }}>
+                {typeof brand === 'object' && brand.logo?.url
+                  ? <img src={brand.logo.url} alt={brand.name} style={{ height: 24, objectFit: 'contain' }} />
+                  : (typeof brand === 'string' ? brand : brand.name)
+                }
               </div>
             ))}
           </div>
@@ -1173,218 +1273,135 @@ export default function HomePage({ onNavigate, onNavigateToProduct, onRegisterCl
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 13: WHY MEDCORE BD */}
+      {/* SECTION 12: WHY MEDCORE BD */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, color: '#0B2545', marginBottom: 12 }}>Why MedCore BD</h2>
-            <p style={{ fontSize: 15, color: '#6B7280', maxWidth: 600, margin: '0 auto' }}>
-              Your trusted partner for medical equipment in Bangladesh
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-            {WHY_US.map((item, i) => (
-              <div
-                key={i}
-                style={{ background: '#fff', border: '1px solid #E5E7EB', borderLeft: '4px solid #0E8A6E', borderRadius: 12, padding: 24, transition: 'all 0.2s' }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)';
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                <div style={{ fontSize: 36, marginBottom: 12 }}>{item.icon}</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#111827', marginBottom: 8 }}>{item.title}</div>
-                <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>{item.desc}</div>
-              </div>
-            ))}
-          </div>
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Why MedCore BD</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
+            The MedCore Advantage
+          </h2>
+          <p style={{ fontSize: 14, color: '#6B7280', marginTop: 10, maxWidth: 500, margin: '10px auto 0' }}>
+            Trusted by over 1,200 hospitals and clinics across Bangladesh for genuine medical supplies
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          {WHY_US.map((w, i) => (
+            <div key={w.title} className="section-in"
+              style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB',
+                padding: '28px 24px', animationDelay: `${i * 0.08}s`, transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
+              <div style={{ fontSize: 40, marginBottom: 16, color: '#0E8A6E' }}>{w.icon}</div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{w.title}</h3>
+              <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.7 }}>{w.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 14: NEWSLETTER + APP DOWNLOAD */}
+      {/* SECTION 13: ANIMATED STATS COUNTER */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: 'linear-gradient(135deg, #0E8A6E, #0c7a61)', padding: '48px 0' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', gap: 48, alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Newsletter */}
-            <div style={{ flex: 1, minWidth: 300 }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 8 }}>✉️ Subscribe to our newsletter</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 20 }}>Get latest products, offers & medical news</div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  placeholder='Enter your email address'
-                  style={{ flex: 1, padding: '12px 16px', border: 'none', borderRadius: 8, fontSize: 14, outline: 'none' }}
-                />
-                <button style={{ background: '#0B2545', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                  Subscribe
+      <section ref={statsRef} style={{ background: '#0B2545', padding: '56px 24px' }}>
+        <div className="stats-grid-4" style={{ maxWidth: 1200, margin: '0 auto',
+          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+          {[
+            { count: productsCount, suffix: '+', label: 'Products Available', icon: <FaBox size={28} /> },
+            { count: brandsCount, suffix: '+', label: 'Global Brands', icon: <FaIndustry size={28} /> },
+            { count: clientsCount, suffix: '+', label: 'B2B Clients', icon: <FaHospital size={28} /> },
+            { count: ordersCount, suffix: '+', label: 'Orders Fulfilled', icon: <FaTruck size={28} /> },
+          ].map(s => (
+            <div key={s.label} style={{ textAlign: 'center', padding: '28px 16px',
+              background: 'rgba(255,255,255,0.05)', borderRadius: 16,
+              border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: 32, marginBottom: 12, color: '#4DDBB8' }}>{s.icon}</div>
+              <div style={{ fontFamily: 'Georgia, serif', fontSize: 44, fontWeight: 700,
+                color: '#4DDBB8', lineHeight: 1 }}>
+                {s.count > 0 ? `${s.count.toLocaleString()}${s.suffix}` : '—'}
+              </div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginTop: 10 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 14: B2B PROGRAM BANNER */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 100%)',
+          borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
+          {/* Background decoration */}
+          <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 400, height: 400,
+            background: 'radial-gradient(circle, #0E8A6E, transparent 70%)', opacity: 0.15 }} />
+          <div className="b2b-cols" style={{ position: 'relative', display: 'grid',
+            gridTemplateColumns: '1fr 220px', gap: 40, alignItems: 'center' }}>
+            {/* Left */}
+            <div>
+              <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: '#4DDBB8',
+                padding: '4px 14px', borderRadius: 999, fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.08em' }}>B2B Program</span>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700,
+                color: '#fff', margin: '14px 0 12px' }}>
+                Exclusive Benefits for<br />Hospitals & Clinics
+              </h3>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.8 }}>
+                Join {stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} healthcare institutions saving with our B2B program.
+                Get bulk discounts, flexible credit terms, and a dedicated account manager.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 460, marginBottom: 28 }}>
+                {['8–22% bulk discounts', '30–90 day credit terms',
+                  'Dedicated account manager', 'Priority order processing',
+                  'Free installation & training', 'Custom quotations'].map(f => (
+                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
+                    fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
+                    <span style={{ color: '#4DDBB8', fontWeight: 700 }}>✓</span> {f}
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <button className="btn-teal-hover"
+                  onClick={() => router.push('/register?type=b2b')}
+                  style={{ padding: '13px 28px', background: '#0E8A6E', color: '#fff',
+                    border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                  Register for B2B →
+                </button>
+                <button onClick={() => router.push('/b2b')}
+                  style={{ padding: '13px 24px', background: 'rgba(255,255,255,0.1)',
+                    border: '1.5px solid rgba(255,255,255,0.25)', color: '#fff',
+                    borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+                  Learn more
                 </button>
               </div>
             </div>
-
-            {/* App Download */}
-            <div style={{ flex: '0 0 auto' }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 12 }}>📱 Download our App</div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <div style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8, padding: '8px 16px', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                  App Store
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8, padding: '8px 16px', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                  Play Store
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 15: SEO TEXT BLOCK */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '56px 0' }}>
-        <div style={{ maxWidth: 1024, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#0B2545', marginBottom: 20 }}>
-            MedCore BD: Bangladesh's Most Trusted Medical Equipment Supplier
-          </h2>
-          
-          <div style={{ fontSize: 14, color: '#4B5563', lineHeight: 1.8, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <p>
-              <strong>MedCore BD</strong> is Bangladesh's leading supplier of medical equipment, diagnostic devices, surgical instruments, laboratory reagents, and hospital machines. We are proud to be <strong>DGDA registered</strong> and <strong>ISO 13485 certified</strong>, ensuring that all our products meet the highest international quality standards.
-            </p>
-            
-            <p>
-              Our extensive catalog includes over <strong>{stats.totalProducts > 0 ? `${stats.totalProducts.toLocaleString()}+` : '500+'} products</strong> from <strong>{stats.totalBrands > 0 ? `${stats.totalBrands}+` : '29+'} global brands</strong> including Siemens Healthineers, GE Healthcare, Philips, Abbott Laboratories, Roche Diagnostics, Beckman Coulter, Medtronic, and Mindray. We serve over <strong>{stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} hospitals, clinics, and diagnostic centers</strong> across Bangladesh with reliable products and exceptional service.
-            </p>
-            
-            <p>
-              <strong>Product Categories:</strong> Our comprehensive range covers Diagnostic Equipment (ECG machines, ultrasound systems, patient monitors), Surgical Instruments (scissors, forceps, scalpels, trocars), Laboratory Reagents (HbA1c kits, CBC reagents, troponin tests), Hospital Machines (ventilators, dialysis machines, ICU equipment), Lab Equipment (centrifuges, microscopes, PCR machines), PPE & Safety products, Dental Equipment, and Orthopedic Implants.
-            </p>
-            
-            <p>
-              <strong>B2B Services:</strong> We offer exclusive benefits for hospitals and clinics including up to {settings.b2bMaxDiscount}% bulk discounts, {settings.b2bCreditDays}-day credit terms, dedicated account managers, priority technical support, free installation and staff training, and customized quotations. Our B2B program is designed to support healthcare institutions with flexible payment options and comprehensive after-sales service.
-            </p>
-            
-            <p>
-              <strong>Why Choose MedCore BD:</strong> Free delivery on orders over ৳{settings.freeDeliveryThreshold.toLocaleString()} within Dhaka metro area, professional installation and staff training included, {settings.returnPolicyDays}-day hassle-free return policy, {settings.supportHours} technical support, DGDA-cleared products, CE and FDA certified equipment, and flexible payment methods including bKash, Nagad, bank transfer, and B2B credit terms.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 16: FOOTER */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <footer style={{ background: '#0B2545', color: '#fff', padding: '56px 0 24px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          {/* Main Footer Content */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 40, marginBottom: 40 }}>
-            {/* Company Info */}
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 28 }}>M</span>
-                <span>MedCore BD</span>
-              </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 16 }}>
-                Bangladesh's most trusted medical equipment supplier. DGDA registered, ISO certified.
-              </p>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>
-                📞 +880 1800-MED-CORE
-              </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
-                ✉️ info@medcorebd.com
-              </div>
-            </div>
-
-            {/* Company Links */}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Company</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {['About Us', 'Blog', 'Careers', 'Contact'].map(link => (
-                  <button
-                    key={link}
-                    onClick={() => router.push(`/${link.toLowerCase().replace(' ', '-')}`)}
-                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 13, cursor: 'pointer', textAlign: 'left', padding: 0, transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#4DDBB8'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-                  >
-                    {link}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* My Account Links */}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>My Account</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { label: 'Sign In / Register', path: '/login' },
-                  { label: 'Orders', path: '/orders' },
-                  { label: 'Wishlist', path: '/wishlist' },
-                  { label: 'B2B Portal', path: '/b2b' },
-                ].map(link => (
-                  <button
-                    key={link.label}
-                    onClick={() => router.push(link.path)}
-                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 13, cursor: 'pointer', textAlign: 'left', padding: 0, transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#4DDBB8'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-                  >
-                    {link.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Customer Service Links */}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Customer Service</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[
-                  { label: 'Payment Methods', path: '/payment-methods' },
-                  { label: 'Shipping Policy', path: '/shipping' },
-                  { label: 'Return & Refund', path: '/returns' },
-                  { label: 'Track Order', path: '/track' },
-                ].map(link => (
-                  <button
-                    key={link.label}
-                    onClick={() => router.push(link.path)}
-                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', fontSize: 13, cursor: 'pointer', textAlign: 'left', padding: 0, transition: 'color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#4DDBB8'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-                  >
-                    {link.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
-              © 2026 MedCore BD. All rights reserved.
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Payment:</span>
-              {['bKash', 'Nagad', 'Stripe', 'Bank'].map(method => (
-                <div
-                  key={method}
-                  style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, padding: '4px 10px', fontSize: 10, fontWeight: 600 }}
-                >
-                  {method}
+            {/* Right stat boxes */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                { val: stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+', label: 'Active B2B Clients' },
+                { val: '30%', label: 'Max Bulk Discount' },
+                { val: '90 days', label: 'Credit Terms' },
+                { val: '24/7', label: 'Dedicated Support' },
+              ].map(s => (
+                <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
+                  padding: '14px 18px', display: 'flex', alignItems: 'center',
+                  justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{s.label}</span>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: '#4DDBB8' }}>{s.val}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* FOOTER - Add your footer component here */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
     </div>
   );
 }

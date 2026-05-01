@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/utils/api';
-
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { API } from '@/constants/api';
 
 const STATUS_OPTIONS = ['All', 'placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
 
