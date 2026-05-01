@@ -212,6 +212,29 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// ── Root Route ────────────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'MedCore BD API Server',
+    version: '2.0.0',
+    status: 'operational',
+    documentation: '/api/health',
+    endpoints: {
+      health: '/api/health',
+      stats: '/api/stats',
+      products: '/api/products',
+      categories: '/api/categories',
+      manufacturers: '/api/manufacturers',
+      auth: '/api/auth',
+      orders: '/api/orders',
+      cart: '/api/cart',
+      wishlist: '/api/wishlist'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.originalUrl}` });
