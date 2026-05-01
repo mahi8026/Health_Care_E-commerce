@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('../config/passport');
 const {
   register,
   login,
@@ -15,7 +16,9 @@ const {
   enable2FA,
   disable2FA,
   verify2FA,
-  get2FAStatus
+  get2FAStatus,
+  googleAuthSuccess,
+  googleAuthFailure
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { noStore } = require('../middleware/cache');
@@ -34,6 +37,25 @@ router.post('/login', loginLimiter, login); // CAPTCHA temporarily disabled
 router.post('/refresh', authLimiter, refreshToken);
 router.post('/forgot-password', passwordResetLimiter, passwordResetCaptcha, forgotPassword);
 router.post('/reset-password', passwordResetLimiter, resetPassword);
+
+// Google OAuth routes
+router.get('/google', 
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    session: false 
+  })
+);
+
+router.get('/google/callback',
+  passport.authenticate('google', { 
+    failureRedirect: '/api/auth/google/failure',
+    session: false
+  }),
+  googleAuthSuccess
+);
+
+router.get('/google/success', googleAuthSuccess);
+router.get('/google/failure', googleAuthFailure);
 
 // Protected routes
 router.post('/logout', protect, noStore, logout);

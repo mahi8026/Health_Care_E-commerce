@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const compression = require('compression');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const passport = require('./config/passport');
 const connectDB = require('./config/database');
 const { dbHealthCheck } = require('./middleware/dbHealthCheck');
 const errorHandler = require('./middleware/errorHandler');
@@ -94,6 +95,9 @@ app.use(cors({
 app.use('/api/payments/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// ── Passport Initialization ──────────────────────────────────────────────────
+app.use(passport.initialize());
 
 // ── Security & Optimization ──────────────────────────────────────────────────
 app.use(mongoSanitize()); // Prevent NoSQL injection

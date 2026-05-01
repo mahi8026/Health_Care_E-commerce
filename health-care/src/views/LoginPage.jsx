@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const [email, setEmail] = useState('');
@@ -13,6 +14,21 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const [error, setError] = useState('');
   const { login, loading, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Check for OAuth errors in URL
+  useEffect(() => {
+    const errorParam = searchParams?.get('error');
+    if (errorParam) {
+      const errorMessages = {
+        'authentication_failed': 'Google authentication failed. Please try again.',
+        'google_auth_failed': 'Unable to sign in with Google. Please try again.',
+        'server_error': 'Server error occurred. Please try again later.',
+        'missing_tokens': 'Authentication incomplete. Please try again.'
+      };
+      setError(errorMessages[errorParam] || 'An error occurred. Please try again.');
+    }
+  }, [searchParams]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -144,6 +160,21 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               Sign In
             </Button>
           </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[var(--color-border-tertiary)]"></div>
+            </div>
+            <div className="relative flex justify-center text-[13px]">
+              <span className="px-4 bg-white text-[var(--color-text-secondary)]">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          {/* Google Login Button */}
+          <GoogleLoginButton fullWidth className="mb-4" />
 
           {/* Divider */}
           {process.env.NODE_ENV === 'development' && (

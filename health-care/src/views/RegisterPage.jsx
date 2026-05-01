@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 
 export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -213,6 +214,21 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               Create Account
             </Button>
           </form>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[var(--color-border-tertiary)]"></div>
+            </div>
+            <div className="relative flex justify-center text-[13px]">
+              <span className="px-4 bg-white text-[var(--color-text-secondary)]">
+                Or sign up with
+              </span>
+            </div>
+          </div>
+
+          {/* Google Signup Button */}
+          <GoogleLoginButton fullWidth className="mb-4" />
 
           {/* Login Link */}
           <div className="mt-6 text-center">

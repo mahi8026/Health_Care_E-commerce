@@ -24,13 +24,32 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    required: function() {
+      // Password not required for OAuth users
+      return !this.googleId;
+    },
     minlength: 8,
     select: false
   },
   phone: {
     type: String,
-    required: [true, 'Please provide a phone number']
+    required: function() {
+      // Phone not required for OAuth users initially
+      return !this.googleId;
+    }
+  },
+  // OAuth fields
+  googleId: {
+    type: String,
+    sparse: true
+  },
+  avatar: {
+    type: String
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   },
   role: {
     type: String,
@@ -107,5 +126,6 @@ userSchema.methods.getAvailableCredit = function() {
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ b2bId: 1 }, { sparse: true });
 userSchema.index({ role: 1 });
+userSchema.index({ googleId: 1 }, { sparse: true });
 
 module.exports = mongoose.model('User', userSchema);

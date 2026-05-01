@@ -677,3 +677,45 @@ exports.get2FAStatus = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
   }
 };
+
+// ── Google OAuth Success ──────────────────────────────────────────────────────
+// GET /api/auth/google/success
+exports.googleAuthSuccess = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.redirect(`${process.env.FRONTEND_URL}/login?error=authentication_failed`);
+    }
+
+    const token = generateAccessToken(req.user._id);
+    const refreshToken = generateRefreshToken(req.user._id);
+
+    // Update user's refresh token
+    req.user.refreshToken = refreshToken;
+    await req.user.save({ validateBeforeSave: false });
+
+    // Log Google login activity
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.AUTH.LOGIN,
+      targetModel: 'User',
+      targetId: req.user._id,
+      targetName: req.user.email,
+      req,
+      metadata: { authProvider: 'google', role: req.user.role }
+    });
+
+    // Redirect to frontend with tokens
+    const redirectUrl = `${process.env.FRONTEND_URL}/auth/google/callback?token=${token}&refreshToken=${refreshToken}`;
+    res.redirect(redirectUrl);
+  } catch (error) {
+    logger.error(`[googleAuthSuccess] ${error.message}`);
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
+  }
+};
+
+// ── Google OAuth Failure ──────────────────────────────────────────────────────
+// GET /api/auth/google/failure
+exports.googleAuthFailure = (req, res) => {
+  logger.error('[googleAuthFailure] Google authentication failed');
+  res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`);
+};
