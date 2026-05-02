@@ -1,8 +1,10 @@
 {
     "javascript.autoClosingTags": false,
+    "tailwindCSS.experimental.configFile": "health-care/tailwind.config.js",
     "tailwindCSS.experimental.classRegex": [
         ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-        ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+        "className=[\"'`]([^\"'`]*)[\"'`]"
     ],
     "tailwindCSS.includeLanguages": {
         "javascript": "javascript",
@@ -10,11 +12,25 @@
         "typescript": "typescript",
         "typescriptreact": "typescriptreact"
     },
+    "tailwindCSS.files.exclude": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/.next/**",
+        "**/.vercel/**"
+    ],
     "editor.quickSuggestions": {
-        "strings": true
+        "strings": "on"
     },
     "css.validate": false,
     "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.validate": true,
+    "tailwindCSS.lint.cssConflict": "warning",
+    "tailwindCSS.lint.invalidApply": "error",
+    "tailwindCSS.lint.invalidScreen": "error",
+    "tailwindCSS.lint.invalidVariant": "error",
+    "tailwindCSS.lint.invalidConfigPath": "error",
+    "tailwindCSS.lint.invalidTailwindDirective": "error",
+    "tailwindCSS.lint.recommendedVariantOrder": "warning",
     "files.associations": {
         "*.css": "tailwindcss"
     }
