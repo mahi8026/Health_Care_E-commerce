@@ -25,25 +25,25 @@ export default function TopBar() {
   }, []);
 
   return (
-    <div className="bg-[#0B2545] text-white/80 text-[11px] px-6 py-[6px] flex justify-between items-center">
+    <div className="bg-[#0B2545] text-white/80 text-[11px] px-6 py-[6px] flex justify-between items-center flex-nowrap overflow-hidden">
       <span
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 flex-shrink min-w-0"
         style={{
           transition: 'opacity 0.3s ease',
           opacity: visible ? 1 : 0,
         }}
       >
-        <span className="text-white/90">{ANNOUNCEMENTS[index].icon}</span>
-        {ANNOUNCEMENTS[index].text}
+        <span className="text-white/90 flex-shrink-0">{ANNOUNCEMENTS[index].icon}</span>
+        <span className="truncate">{ANNOUNCEMENTS[index].text}</span>
       </span>
-      <span className="flex items-center gap-0">
-        <a href="/track" className="hover:text-white transition-colors">Track Order</a>
+      <span className="flex items-center gap-0 flex-shrink-0 ml-4">
+        <a href="/track" className="hover:text-white transition-colors whitespace-nowrap">Track Order</a>
         <span className="mx-2 opacity-40">·</span>
-        <a href="/about" className="hover:text-white transition-colors">DGDA Info</a>
+        <a href="/about" className="hover:text-white transition-colors whitespace-nowrap">DGDA Info</a>
         <span className="mx-2 opacity-40">·</span>
-        <a href="/help" className="hover:text-white transition-colors">Support</a>
+        <a href="/help" className="hover:text-white transition-colors whitespace-nowrap">Support</a>
         <span className="mx-2 opacity-40">·</span>
-        <a href="tel:+8801800000000" className="hover:text-white transition-colors">+880 1800-MED</a>
+        <a href="tel:+8801800000000" className="hover:text-white transition-colors whitespace-nowrap">+880 1800-MED</a>
       </span>
     </div>
   );
