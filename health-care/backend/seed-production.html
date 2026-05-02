@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Database Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .status-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .status-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #e9ecef;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .log.show {
+            display: block;
+        }
+        
+        .log-line {
+            margin-bottom: 5px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Production Database Setup</h1>
+        <p class="subtitle">MedCore BD Healthcare E-Commerce</p>
+        
+        <div id="alert" class="alert"></div>
+        
+        <div class="status-box">
+            <h3 style="margin-bottom: 15px; color: #333;">Database Status</h3>
+            <div class="status-item">
+                <span class="status-label">Products:</span>
+                <span class="status-value" id="productCount">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">With Images:</span>
+                <span class="status-value" id="imagesCount">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Manufacturers:</span>
+                <span class="status-value" id="manufacturerCount">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Categories:</span>
+                <span class="status-value" id="categoryCount">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Image Coverage:</span>
+                <span class="status-value" id="imageCoverage">-</span>
+            </div>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="checkStatus()">
+            🔄 Refresh Status
+        </button>
+        
+        <button class="btn btn-primary" onclick="addImages()" id="addImagesBtn">
+            🖼️ Add Images to Products (50 at a time)
+        </button>
+        
+        <div id="log" class="log"></div>
+    </div>
+    
+    <script>
+        const API_URL = 'https://health-care-e-commerce.onrender.com/api/seed';
+        
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alert');
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+        
+        function addLog(message) {
+            const log = document.getElementById('log');
+            log.classList.add('show');
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        async function checkStatus() {
+            try {
+                addLog('Checking database status...');
+                const response = await fetch(`${API_URL}/status`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('productCount').textContent = data.database.products;
+                    document.getElementById('imagesCount').textContent = data.database.productsWithImages;
+                    document.getElementById('manufacturerCount').textContent = data.database.manufacturers;
+                    document.getElementById('categoryCount').textContent = data.database.categories;
+                    document.getElementById('imageCoverage').textContent = data.database.imageCoverage;
+                    
+                    addLog(`✅ Status updated: ${data.database.products} products, ${data.database.imageCoverage} image coverage`);
+                    
+                    if (data.database.productsWithoutImages === 0) {
+                        showAlert('🎉 All products have images!', 'success');
+                    } else {
+                        showAlert(`⚠️ ${data.database.productsWithoutImages} products need images`, 'warning');
+                    }
+                }
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`);
+                showAlert('Failed to check status', 'error');
+            }
+        }
+        
+        async function addImages() {
+            const btn = document.getElementById('addImagesBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Adding images...';
+            
+            try {
+                addLog('Starting image upload...');
+                const response = await fetch(`${API_URL}/add-images`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLog(`✅ Processed ${data.processed} products`);
+                    addLog(`✅ Successful: ${data.successful}`);
+                    addLog(`❌ Failed: ${data.failed}`);
+                    addLog(`📦 Remaining: ${data.remaining}`);
+                    
+                    if (data.remaining > 0) {
+                        showAlert(`✅ Added images to ${data.successful} products. ${data.remaining} remaining. Click again to continue.`, 'success');
+                    } else {
+                        showAlert('🎉 All products now have images!', 'success');
+                    }
+                    
+                    await checkStatus();
+                }
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`);
+                showAlert('Failed to add images', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🖼️ Add Images to Products (50 at a time)';
+            }
+        }
+        
+        // Check status on load
+        checkStatus();
+    </script>
+</body>
+</html>

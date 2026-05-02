@@ -40,8 +40,7 @@ const userSchema = new mongoose.Schema({
   },
   // OAuth fields
   googleId: {
-    type: String,
-    sparse: true
+    type: String
   },
   avatar: {
     type: String

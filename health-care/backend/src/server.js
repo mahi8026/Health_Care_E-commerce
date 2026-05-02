@@ -152,6 +152,7 @@ app.use('/api/sms', dbHealthCheck, require('./routes/smsRoutes'));
 app.use('/api/migration', dbHealthCheck, require('./routes/migrationRoutes')); // Database migration endpoints
 app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site settings
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
+app.use('/api/seed', require('./routes/seed')); // Database seeding (production setup)
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
