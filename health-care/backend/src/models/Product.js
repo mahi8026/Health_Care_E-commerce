@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, required: true, min: 0, default: 0 },
   lowStockThreshold: { type: Number, default: 10 },
   minStock: { type: Number, default: 10 }, // legacy alias
-  unit: { type: String, enum: ['piece', 'box', 'kit', 'pack'], default: 'piece' },
+  unit: { type: String, enum: ['piece', 'box', 'kit', 'pack', 'set'], default: 'piece' },
   minOrderQty: { type: Number, default: 1 },
   minOrder: { type: Number, default: 1 }, // legacy alias
   images: [
@@ -40,7 +40,7 @@ const productSchema = new mongoose.Schema({
     warranty: [String]
   },
   specifications: { type: Map, of: String },
-  certifications: [{ type: String, enum: ['CE', 'FDA', 'ISO', 'DGDA'] }],
+  certifications: [{ type: String }], // Removed enum to allow any certification string
   storageTemp: { type: String, enum: ['room', 'cold', 'frozen', null] },
   temperature: { type: String, enum: ['cold', 'freeze', 'room', null] }, // legacy alias
   hazardClass: { type: String, enum: ['safe', 'biohazard', 'chemical', null] },

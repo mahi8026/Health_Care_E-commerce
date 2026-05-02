@@ -3,6 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { API } from '@/constants/api';
 const TIERS = ['all', 'Silver', 'Gold', 'Platinum'];
+const ROLES = [
+  { value: 'customer', label: 'Customer' },
+  { value: 'b2b_customer', label: 'B2B Customer' },
+  { value: 'admin', label: 'Admin' }
+];
+const ROLE_FILTERS = [
+  { value: 'all', label: 'All Roles' },
+  { value: 'customer', label: 'Customers' },
+  { value: 'b2b_customer', label: 'B2B Customers' },
+  { value: 'admin', label: 'Admins' }
+];
 
 export default function CustomersManagement() {
   const [customers, setCustomers] = useState([]);
@@ -10,6 +21,7 @@ export default function CustomersManagement() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [tierFilter, setTierFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [message, setMessage] = useState({ text: '', type: '' });
@@ -19,36 +31,104 @@ export default function CustomersManagement() {
       setLoading(true);
       const token = localStorage.getItem('medcore_token');
       const params = new URLSearchParams({ page, limit: 10 });
-      if (tierFilter !== 'all') params.set('b2bTier', tierFilter);
+      if (tierFilter !== 'all') params.set('tier', tierFilter);
+      if (roleFilter !== 'all') params.set('role', roleFilter);
       if (search) params.set('search', search);
       const res = await fetch(`${API}/admin/customers?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      setCustomers(data.data?.customers || data.customers || []);
+      const customersList = data.data?.customers || data.customers || [];
+      console.log('Fetched customers:', customersList.length);
+      console.log('First customer:', JSON.stringify(customersList[0], null, 2));
+      console.log('Customer keys:', customersList[0] ? Object.keys(customersList[0]) : 'No customers');
+      setCustomers(customersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
+      console.error('Failed to load customers:', err);
       showMessage('Failed to load customers', 'error');
     } finally {
       setLoading(false);
     }
-  }, [page, tierFilter, search]);
+  }, [page, tierFilter, roleFilter, search]);
 
   useEffect(() => { fetchCustomers(); }, [fetchCustomers]);
 
   const handleUpdateTier = async (customerId, newTier) => {
     try {
       const token = localStorage.getItem('medcore_token');
+      console.log('Updating tier for customer:', customerId, 'to:', newTier);
+      
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ b2bTier: newTier }),
       });
-      if (!res.ok) throw new Error('Update failed');
+      
+      console.log('Response status:', res.status, res.statusText);
+      
+      // Try to parse response as JSON
+      let data;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned non-JSON response');
+      }
+      
+      console.log('Response data:', data);
+      
+      if (!res.ok) {
+        console.error('Tier update error:', data);
+        throw new Error(data.message || `Update failed with status ${res.status}`);
+      }
+      
       showMessage('Customer tier updated', 'success');
       fetchCustomers();
-    } catch {
-      showMessage('Failed to update tier', 'error');
+    } catch (error) {
+      console.error('Tier update failed:', error);
+      showMessage(error.message || 'Failed to update tier', 'error');
+    }
+  };
+
+  const handleUpdateRole = async (customerId, newRole) => {
+    try {
+      const token = localStorage.getItem('medcore_token');
+      console.log('Updating role for customer:', customerId, 'to:', newRole);
+      
+      const res = await fetch(`${API}/admin/customers/${customerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ role: newRole }),
+      });
+      
+      console.log('Response status:', res.status, res.statusText);
+      
+      // Try to parse response as JSON
+      let data;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned non-JSON response');
+      }
+      
+      console.log('Response data:', data);
+      
+      if (!res.ok) {
+        console.error('Role update error:', data);
+        throw new Error(data.message || `Update failed with status ${res.status}`);
+      }
+      
+      showMessage('Customer role updated', 'success');
+      fetchCustomers();
+    } catch (error) {
+      console.error('Role update failed:', error);
+      showMessage(error.message || 'Failed to update role', 'error');
     }
   };
 
@@ -72,6 +152,24 @@ export default function CustomersManagement() {
     return colors[tier] || 'bg-[#F3F4F6] text-[#374151]';
   };
 
+  const getRoleColor = (role) => {
+    const colors = {
+      admin: 'bg-[#FEE2E2] text-[#991B1B]',
+      b2b_customer: 'bg-[#DBEAFE] text-[#1E40AF]',
+      customer: 'bg-[#D1FAE5] text-[#065F46]',
+    };
+    return colors[role] || 'bg-[#F3F4F6] text-[#374151]';
+  };
+
+  const getRoleLabel = (role) => {
+    const labels = {
+      admin: 'Admin',
+      b2b_customer: 'B2B Customer',
+      customer: 'Customer',
+    };
+    return labels[role] || role;
+  };
+
   const getStatusColor = (isActive) =>
     isActive !== false
       ? 'bg-[#D1FAE5] text-[#065F46]'
@@ -80,6 +178,7 @@ export default function CustomersManagement() {
   const totalPages = Math.ceil(total / 10);
 
   return (
+    <div className="p-6">
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)]">
       {/* Toast */}
       {message.text && (
@@ -92,6 +191,15 @@ export default function CustomersManagement() {
 
       {/* Filters */}
       <div className="p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex gap-3 flex-wrap">
+        <select
+          value={roleFilter}
+          onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
+          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
+        >
+          {ROLE_FILTERS.map(r => (
+            <option key={r.value} value={r.value}>{r.label}</option>
+          ))}
+        </select>
         <select
           value={tierFilter}
           onChange={e => { setTierFilter(e.target.value); setPage(1); }}
@@ -142,7 +250,7 @@ export default function CustomersManagement() {
           <table className="w-full" style={{minWidth: '900px'}}>
             <thead>
               <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                {['Customer', 'Email', 'Phone', 'Tier', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
+                {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                     {h}
                   </th>
@@ -150,8 +258,13 @@ export default function CustomersManagement() {
               </tr>
             </thead>
             <tbody>
-              {customers.map((customer, index) => (
-                <tr key={customer._id || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+              {customers.map((customer, index) => {
+                const customerId = customer._id || customer.id;
+                if (!customerId) {
+                  console.error('Customer missing ID:', customer);
+                }
+                return (
+                <tr key={customerId || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
                   <td className="px-4 py-3">
                     <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       {customer.companyName || customer.name}
@@ -164,9 +277,24 @@ export default function CustomersManagement() {
                   <td className="px-4 py-3 text-[11px]">{customer.phone || '—'}</td>
                   <td className="px-4 py-3">
                     <select
+                      value={customer.role || 'customer'}
+                      onChange={e => handleUpdateRole(customerId, e.target.value)}
+                      disabled={!customerId}
+                      className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getRoleColor(customer.role)} ${!customerId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {ROLES.map(role => (
+                        <option key={role.value} value={role.value}>
+                          {role.label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
                       value={customer.b2bTier || 'Silver'}
-                      onChange={e => handleUpdateTier(customer._id, e.target.value)}
-                      className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getTierColor(customer.b2bTier)}`}
+                      onChange={e => handleUpdateTier(customerId, e.target.value)}
+                      disabled={!customerId}
+                      className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getTierColor(customer.b2bTier)} ${!customerId ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <option value="Silver">Silver</option>
                       <option value="Gold">Gold</option>
@@ -190,7 +318,8 @@ export default function CustomersManagement() {
                     </button>
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         )}
@@ -216,6 +345,7 @@ export default function CustomersManagement() {
           </button>
         </div>
       )}
+    </div>
     </div>
   );
 }

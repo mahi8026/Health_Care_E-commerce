@@ -63,13 +63,11 @@ passport.use(
           role: 'customer',
           accountType: 'Retail',
           isVerified: true, // Google accounts are verified
-          isActive: true,
-          // Password and phone not required for OAuth users
-          password: Math.random().toString(36).slice(-8) + 'Aa1!', // Random password (won't be used)
-          phone: '' // Will be collected later if needed
+          isActive: true
+          // Password and phone not required for OAuth users (handled by model validation)
         });
 
-        logger.info(`[Google OAuth] New user created: ${newUser.email}`);
+        logger.info(`[Google OAuth] New user created: ${newUser.email} (ID: ${newUser._id})`);
         done(null, newUser);
       } catch (error) {
         logger.error(`[Google OAuth] Error: ${error.message}`);

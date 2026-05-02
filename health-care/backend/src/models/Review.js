@@ -173,7 +173,7 @@ reviewSchema.statics.getProductStats = async function(productId) {
   const stats = await this.aggregate([
     {
       $match: {
-        product: mongoose.Types.ObjectId(productId),
+        product: new mongoose.Types.ObjectId(productId),
         status: 'approved'
       }
     },

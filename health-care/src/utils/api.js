@@ -216,8 +216,14 @@ export const api = {
   async getProducts(filters = {}) {
     const params = new URLSearchParams();
     
+    // Set default limit to 20 per page if not specified
+    const filtersWithLimit = {
+      limit: 20,
+      ...filters
+    };
+    
     // Only add non-empty filter values
-    Object.entries(filters).forEach(([key, value]) => {
+    Object.entries(filtersWithLimit).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         params.append(key, value);
       }

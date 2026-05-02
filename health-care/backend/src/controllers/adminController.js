@@ -256,14 +256,15 @@ exports.getCustomers = async (req, res) => {
       .select('-password -refreshToken')
       .sort('-createdAt')
       .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
 
     const total = await User.countDocuments(filter);
 
-    // Enrich with order stats
-    const enriched = await Promise.all(customers.map(async (c) => {
+    // Enrich with order stats - preserve _id
+    const enriched = await Promise.all(customers.map(async (customer) => {
       const orderAgg = await Order.aggregate([
-        { $match: { user: c._id, status: { $nin: ['cancelled'] } } },
+        { $match: { user: customer._id, status: { $nin: ['cancelled'] } } },
         {
           $group: {
             _id: null,
@@ -274,12 +275,14 @@ exports.getCustomers = async (req, res) => {
         }
       ]);
       const stats = orderAgg[0] || { totalSpend: 0, orderCount: 0, lastOrder: null };
-      return { ...c.toObject(), ...stats };
+      // Remove the _id: null from stats to avoid overwriting customer._id
+      delete stats._id;
+      return { ...customer, ...stats };
     }));
 
     res.status(200).json({ success: true, count: enriched.length, total, customers: enriched });
   } catch (error) {
-    logger.error(`[adminController] ${error.message}`);
+    logger.error(`[adminController] getCustomers error: ${error.message}`, { stack: error.stack });
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
   }
 };
@@ -288,6 +291,15 @@ exports.getCustomers = async (req, res) => {
 exports.updateCustomer = async (req, res) => {
   try {
     const { b2bTier, creditLimit, accountManager, paymentTerms, isActive, role } = req.body;
+    
+    logger.info(`[adminController] Updating customer ${req.params.id} with:`, { b2bTier, creditLimit, accountManager, paymentTerms, isActive, role });
+    
+    // Validate customer ID
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      logger.warn(`[adminController] Invalid customer ID format: ${req.params.id}`);
+      return res.status(400).json({ success: false, message: 'Invalid customer ID format' });
+    }
+    
     const updates = {};
     if (b2bTier) updates.b2bTier = b2bTier;
     if (creditLimit !== undefined) updates.creditLimit = creditLimit;
@@ -296,15 +308,52 @@ exports.updateCustomer = async (req, res) => {
     if (isActive !== undefined) updates.isActive = isActive;
     if (role) updates.role = role;
 
-    const customer = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
-      .select('-password -refreshToken');
+    logger.info(`[adminController] Updates to apply:`, updates);
 
-    if (!customer) return res.status(404).json({ success: false, message: 'Customer not found' });
+    const customer = await User.findByIdAndUpdate(
+      req.params.id, 
+      updates, 
+      { new: true, runValidators: true }
+    ).select('-password -refreshToken');
 
+    if (!customer) {
+      logger.warn(`[adminController] Customer not found: ${req.params.id}`);
+      return res.status(404).json({ success: false, message: 'Customer not found' });
+    }
+
+    logger.info(`[adminController] Customer updated successfully: ${customer._id}`);
     res.status(200).json({ success: true, message: 'Customer updated', customer });
   } catch (error) {
-    logger.error(`[adminController] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    logger.error(`[adminController] Update customer error: ${error.message}`, { 
+      stack: error.stack,
+      name: error.name,
+      customerId: req.params.id,
+      body: req.body
+    });
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Validation error', 
+        error: error.message 
+      });
+    }
+    
+    // Handle cast errors (invalid ObjectId)
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid customer ID', 
+        error: error.message 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error' 
+    });
   }
 };
 

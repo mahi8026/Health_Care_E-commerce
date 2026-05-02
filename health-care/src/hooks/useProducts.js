@@ -12,6 +12,12 @@ export function useProducts(filters = {}, initialData = null) {
     !(initialData && initialData.length > 0)
   );
   const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    pages: 0,
+    count: 0
+  });
   const filtersRef = useRef('');
   const isMountedRef = useRef(false);
 
@@ -21,11 +27,19 @@ export function useProducts(filters = {}, initialData = null) {
     try {
       const response = await api.getProducts(filters);
       setProducts(response.products || response.data?.products || response || []);
+      // Store pagination metadata
+      setPagination({
+        total: response.total || 0,
+        page: response.page || 1,
+        pages: response.pages || 0,
+        count: response.count || 0
+      });
     } catch (err) {
       // FIX 9: show error state instead of silently showing fake mock data
       const errorMessage = err.message || 'Failed to load products';
       setError(`Failed to load products. Please check your connection and try again.`);
       setProducts([]);
+      setPagination({ total: 0, page: 1, pages: 0, count: 0 });
       console.error('[useProducts] fetch error:', errorMessage);
       console.error('[useProducts] error details:', err);
       console.error('[useProducts] filters:', filters);
@@ -51,7 +65,7 @@ export function useProducts(filters = {}, initialData = null) {
     }
   }, [JSON.stringify(filters), fetchProducts]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { products, loading, error, refetch: fetchProducts };
+  return { products, loading, error, pagination, refetch: fetchProducts };
 }
 
 export function useProduct(productId) {

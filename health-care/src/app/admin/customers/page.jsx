@@ -10,10 +10,8 @@ export const metadata = {
 
 export default function CustomersPage() {
   return (
-    <AdminShell title="B2B Customers" action="+ Add B2B account">
-      <div className="p-5 px-6">
-        <CustomersManagement />
-      </div>
+    <AdminShell title="Customer Management" action="+ Add Customer">
+      <CustomersManagement />
     </AdminShell>
   );
 }

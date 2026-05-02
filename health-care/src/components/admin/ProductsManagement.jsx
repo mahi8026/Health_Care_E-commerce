@@ -112,13 +112,25 @@ export default function ProductsManagement({ openCreateRef }) {
       const token = localStorage.getItem('medcore_token');
       const params = new URLSearchParams({ page, limit: 20 });
       if (categoryFilter) params.set('category', categoryFilter);
+      // Add cache buster to force fresh data
+      params.set('_t', Date.now().toString());
       const res = await fetch(`${API}/products?${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        cache: 'no-store'
       });
       const data = await res.json();
+      console.log('Fetched products data:', data);
+      console.log('First product:', data.products?.[0]);
+      console.log('First product has description?', !!data.products?.[0]?.description);
+      console.log('First product description value:', data.products?.[0]?.description);
       setProducts(data.products || data.data?.products || []);
       setTotal(data.total || data.data?.total || 0);
-    } catch {
+    } catch (error) {
+      console.error('Failed to load products:', error);
       showMessage('Failed to load products', 'error');
     } finally {
       setLoading(false);
@@ -144,6 +156,9 @@ export default function ProductsManagement({ openCreateRef }) {
   };
 
   const handleEditOpen = (product) => {
+    console.log('Opening edit for product:', product);
+    console.log('Product description:', product.description);
+    
     setModalMode('edit');
     setModalProduct(product);
     
@@ -152,7 +167,7 @@ export default function ProductsManagement({ openCreateRef }) {
     const brandId = typeof product.brand === 'object' ? product.brand._id : product.brand;
     
     // Pre-fill createForm with all product fields
-    setCreateForm({
+    const formData = {
       name:              product.name || '',
       sku:               product.sku || '',
       brand:             brandId || '',
@@ -179,14 +194,17 @@ export default function ProductsManagement({ openCreateRef }) {
       isFeatured:        product.isFeatured || false,
       isActive:          product.isActive !== false,
       images:            product.images || [],
-    });
+    };
+    
+    console.log('Form data being set:', formData);
+    setCreateForm(formData);
     
     // Set brand search to display name
     if (typeof product.brand === 'object' && product.brand.name) {
       setBrandSearch(product.brand.name);
     } else if (typeof product.brand === 'string') {
       // Legacy string brand - find matching manufacturer
-      const manufacturer = manufacturers.find(m => m._id === product.brand || m.name === product.brand);
+      const manufacturer = manufacturers?.find(m => m._id === product.brand || m.name === product.brand);
       setBrandSearch(manufacturer?.name || product.brand);
     }
     
@@ -208,17 +226,32 @@ export default function ProductsManagement({ openCreateRef }) {
         ...(createForm.oldPrice ? { oldPrice: Number(createForm.oldPrice) } : {}),
         ...(createForm.discountPct ? { discountPct: Number(createForm.discountPct) } : {}),
       };
+      
+      console.log('Updating product with payload:', payload);
+      
       const res = await fetch(`${API}/products/${modalProduct._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error('Update failed');
-      showMessage('Product updated', 'success');
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error('Update failed:', errorData);
+        throw new Error(errorData.message || 'Update failed');
+      }
+      
+      const result = await res.json();
+      console.log('Update successful:', result);
+      
+      showMessage('Product updated successfully', 'success');
       closeModal();
-      fetchProducts();
-    } catch {
-      showMessage('Failed to update product', 'error');
+      
+      // Force refresh the products list
+      await fetchProducts();
+    } catch (error) {
+      console.error('Failed to update product:', error);
+      showMessage(error.message || 'Failed to update product', 'error');
     } finally {
       setCreating(false);
     }
@@ -283,7 +316,7 @@ export default function ProductsManagement({ openCreateRef }) {
     if (createForm.stock === '' || isNaN(Number(createForm.stock))) return showMessage('Valid stock quantity is required', 'error');
     
     // Reagent validation
-    const selectedCategory = categories.find(c => c._id === createForm.category);
+    const selectedCategory = categories?.find(c => c._id === createForm.category);
     if (selectedCategory?.name === 'Laboratory Reagents' && !createForm.lotNumber.trim()) {
       return showMessage('Lot number is required for reagents', 'error');
     }
@@ -885,7 +918,7 @@ export default function ProductsManagement({ openCreateRef }) {
 
               {/* Reagent-specific fields */}
               {(() => {
-                const selectedCategory = categories.find(c => c._id === createForm.category);
+                const selectedCategory = categories?.find(c => c._id === createForm.category);
                 return selectedCategory?.name === 'Laboratory Reagents' && (
                   <div className="bg-[#E6F1FB] rounded-lg p-4">
                     <div className="text-[12px] font-semibold text-[#0C447C] mb-3 flex items-center gap-2">

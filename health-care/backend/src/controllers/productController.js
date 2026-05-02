@@ -124,7 +124,7 @@ exports.getProducts = async (req, res) => {
 
     const [products, total] = await Promise.all([
       Product.find(query)
-        .select('name price images brand category stock discount badge slug isActive createdAt rating oldPrice sku')
+        .select('name description price images brand category stock discount badge slug isActive createdAt rating oldPrice sku b2bPrice unit minOrderQty certifications specifications storageTemp hazardClass compatibleWith tags lotNumber expiryDate hasAMC isFeatured lowStockThreshold subcategory discountPct')
         .populate('category', 'name slug')
         .populate('brand', 'name slug logo')
         .sort(sort)
@@ -133,6 +133,11 @@ exports.getProducts = async (req, res) => {
         .lean(),
       Product.countDocuments(query)
     ]);
+
+    // Log first product to verify description is included
+    if (products.length > 0) {
+      logger.info(`[getProducts] First product has description: ${!!products[0].description}, keys: ${Object.keys(products[0]).join(', ')}`);
+    }
 
     res.set('Cache-Control', 'public, max-age=300');
     res.status(200).json({

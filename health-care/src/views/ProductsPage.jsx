@@ -28,6 +28,9 @@ export default function ProductsPage({ onProductClick }) {
   });
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
   const [page, setPage] = useState(1);
+  const [allProducts, setAllProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Sync state to URL query params
@@ -69,12 +72,44 @@ export default function ProductsPage({ onProductClick }) {
     };
   }, [searchQuery, searchCategory, filters, sortBy, page]);
 
-  const { products, loading } = useProducts(productFilters);
+  const { products, loading, pagination } = useProducts(productFilters);
+
+  // Update allProducts when new products are fetched
+  useEffect(() => {
+    if (products && products.length > 0) {
+      if (page === 1) {
+        // First page - replace all products
+        setAllProducts(products);
+      } else {
+        // Subsequent pages - append products, but filter out duplicates
+        setAllProducts(prev => {
+          const existingIds = new Set(prev.map(p => p._id || p.id));
+          const newProducts = products.filter(p => !existingIds.has(p._id || p.id));
+          return [...prev, ...newProducts];
+        });
+      }
+      setLoadingMore(false);
+      
+      // Use pagination metadata to determine if there are more pages
+      setHasMore(pagination.page < pagination.pages);
+    } else if (products && products.length === 0 && page > 1) {
+      // No more products
+      setHasMore(false);
+      setLoadingMore(false);
+    }
+  }, [products, page, pagination]);
+
+  const handleLoadMore = useCallback(() => {
+    setLoadingMore(true);
+    setPage(prev => prev + 1);
+  }, []);
 
   const handleSearch = useCallback(({ query, category }) => {
     setSearchQuery(query);
     setSearchCategory(category);
     setPage(1);
+    setAllProducts([]);
+    setHasMore(true);
   }, []);
 
   const handleFilterChange = useCallback((newFilters) => {
@@ -86,12 +121,16 @@ export default function ProductsPage({ onProductClick }) {
     }
     setFilters(newFilters);
     setPage(1);
+    setAllProducts([]);
+    setHasMore(true);
     setMobileFiltersOpen(false);
   }, []);
 
   const handleSortChange = useCallback((newSort) => {
     setSortBy(newSort);
     setPage(1);
+    setAllProducts([]);
+    setHasMore(true);
   }, []);
 
   const breadcrumbs = [
@@ -127,10 +166,14 @@ export default function ProductsPage({ onProductClick }) {
             </div>
 
             <SearchResults
-              products={products}
-              loading={loading}
+              products={allProducts}
+              loading={loading && page === 1}
               query={searchQuery}
               onProductClick={onProductClick}
+              hasMore={hasMore}
+              onLoadMore={handleLoadMore}
+              loadingMore={loadingMore}
+              totalProducts={pagination.total}
             />
           </div>
         </div>
@@ -144,7 +187,7 @@ export default function ProductsPage({ onProductClick }) {
                 All Products
               </h1>
               <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
-                {products?.length || 0} products found
+                {allProducts?.length || 0} products found
               </p>
             </div>
             <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
@@ -152,10 +195,14 @@ export default function ProductsPage({ onProductClick }) {
 
           {/* Mobile Results */}
           <SearchResults
-            products={products}
-            loading={loading}
+            products={allProducts}
+            loading={loading && page === 1}
             query={searchQuery}
             onProductClick={onProductClick}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+            loadingMore={loadingMore}
+            totalProducts={pagination.total}
           />
 
           {/* Mobile Filter Button - Fixed Bottom Left */}

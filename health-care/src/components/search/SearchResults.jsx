@@ -2,8 +2,8 @@
 
 import Spinner from '@/components/ui/Spinner';
 
-export default function SearchResults({ products, loading, query, onProductClick }) {
-  if (loading) {
+export default function SearchResults({ products, loading, query, onProductClick, hasMore, onLoadMore, loadingMore, totalProducts }) {
+  if (loading && products.length === 0) {
     return (
       <div className="flex justify-center items-center py-20">
         <Spinner />
@@ -33,7 +33,7 @@ export default function SearchResults({ products, loading, query, onProductClick
       {/* Results Header */}
       <div className="mb-4">
         <div className="text-[12px] md:text-[13px] text-[var(--color-text-secondary)]">
-          {products.length} {products.length === 1 ? 'product' : 'products'} found
+          Showing {products.length} of {totalProducts || products.length} {totalProducts === 1 ? 'product' : 'products'}
           {query && <span> for "{query}"</span>}
         </div>
       </div>
@@ -128,13 +128,39 @@ export default function SearchResults({ products, loading, query, onProductClick
               </div>
               
               {/* View Details Button */}
-              <button className="w-full py-[7px] md:py-[8px] bg-[#0B2545] text-white rounded-lg text-[11px] md:text-[12px] font-semibold hover:bg-[#0d2d52] transition-colors">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onProductClick && onProductClick(product._id || product.id);
+                }}
+                className="w-full py-[7px] md:py-[8px] bg-[#0B2545] text-white rounded-lg text-[11px] md:text-[12px] font-semibold hover:bg-[#0d2d52] transition-colors"
+              >
                 View details
               </button>
             </div>
           );
         })}
       </div>
+
+      {/* Load More Button */}
+      {hasMore && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={onLoadMore}
+            disabled={loadingMore}
+            className="px-8 py-3 bg-[#0E8A6E] text-white rounded-lg text-[14px] font-semibold hover:bg-[#0c7359] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {loadingMore ? (
+              <>
+                <Spinner size="sm" />
+                Loading...
+              </>
+            ) : (
+              'Load More Products'
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

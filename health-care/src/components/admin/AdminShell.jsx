@@ -49,7 +49,7 @@ export default function AdminShell({ children, title, action, onAction }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="flex min-h-screen bg-[var(--color-background-tertiary)]">
       {/* Mobile Backdrop */}
       {mobileMenuOpen && (
         <div 
@@ -64,7 +64,7 @@ export default function AdminShell({ children, title, action, onAction }) {
         transition-transform duration-300
         w-[240px] md:w-[220px] lg:w-[220px]
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:translate-x-0 md:sticky
+        md:translate-x-0
       `}>
         {/* Logo */}
         <div className="p-5 border-b border-white/10">
@@ -148,9 +148,9 @@ export default function AdminShell({ children, title, action, onAction }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:ml-[220px]">
+      <div className="flex-1 flex flex-col md:ml-[220px]">
         {/* Top Bar */}
-        <div className="bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div className="bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-4 md:px-6 py-4 flex items-center justify-between">
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -211,9 +211,7 @@ export default function AdminShell({ children, title, action, onAction }) {
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
