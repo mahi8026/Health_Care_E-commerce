@@ -135,7 +135,7 @@ router.post('/run-all', async (req, res) => {
     let totalAdded = 0;
     
     // Import seed functions
-    const seedFunctions = {
+    const seedModules = {
       'seedAllBrands-complete': require('../scripts/seedAllBrands-complete'),
       'seedGPLBiochemistry': require('../scripts/seedGPLBiochemistry'),
       'seedTurbilatex': require('../scripts/seedTurbilatex'),
@@ -152,12 +152,15 @@ router.post('/run-all', async (req, res) => {
       'seedTrologyAtlasProducts': require('../scripts/seedTrologyAtlasProducts')
     };
 
-    for (const [scriptName, seedFn] of Object.entries(seedFunctions)) {
+    for (const [scriptName, seedModule] of Object.entries(seedModules)) {
       try {
         const beforeCount = await Product.countDocuments();
         
-        if (typeof seedFn === 'function') {
-          await seedFn();
+        // Call the seedProducts function from the module
+        if (seedModule && typeof seedModule.seedProducts === 'function') {
+          await seedModule.seedProducts();
+        } else if (typeof seedModule === 'function') {
+          await seedModule();
         }
         
         const afterCount = await Product.countDocuments();
@@ -191,6 +194,27 @@ router.post('/run-all', async (req, res) => {
         manufacturers: manufacturerCount,
         categories: categoryCount
       }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/seed/clear - Clear all products (DANGEROUS - use with caution)
+router.post('/clear', async (req, res) => {
+  try {
+    const productCount = await Product.countDocuments();
+    
+    // Delete all products
+    await Product.deleteMany({});
+    
+    const newCount = await Product.countDocuments();
+    
+    res.json({
+      success: true,
+      message: `Cleared ${productCount} products`,
+      before: productCount,
+      after: newCount
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
