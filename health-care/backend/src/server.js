@@ -154,6 +154,11 @@ app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site s
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
 app.use('/api/seed', require('./routes/seed')); // Database seeding (production setup)
 
+// Serve seed production HTML tool
+app.get('/seed-production.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../seed-production.html'));
+});
+
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   const mongoose = require('mongoose');
