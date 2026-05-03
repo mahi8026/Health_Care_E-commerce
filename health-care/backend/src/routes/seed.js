@@ -200,6 +200,14 @@ router.post('/run-all', async (req, res) => {
 // POST /api/seed/add-images - Add images to products without images
 router.post('/add-images', async (req, res) => {
   try {
+    // Verify Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Cloudinary not configured. Please check environment variables.' 
+      });
+    }
+
     const products = await Product.find({
       $or: [
         { images: { $exists: false } },
@@ -217,6 +225,7 @@ router.post('/add-images', async (req, res) => {
 
     let successCount = 0;
     let failedCount = 0;
+    const errors = [];
 
     for (const product of products) {
       try {
@@ -230,9 +239,11 @@ router.post('/add-images', async (req, res) => {
           successCount++;
         } else {
           failedCount++;
+          errors.push(`${product.sku}: Upload failed`);
         }
       } catch (error) {
         failedCount++;
+        errors.push(`${product.sku}: ${error.message}`);
       }
     }
 
@@ -249,6 +260,7 @@ router.post('/add-images', async (req, res) => {
       successful: successCount,
       failed: failedCount,
       remaining,
+      errors: errors.slice(0, 5), // Show first 5 errors
       message: remaining > 0 ? 'Call this endpoint again to process more products' : 'All products now have images!'
     });
   } catch (error) {
