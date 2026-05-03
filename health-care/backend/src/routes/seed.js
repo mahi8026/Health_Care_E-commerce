@@ -157,8 +157,16 @@ router.post('/run-all', async (req, res) => {
         const beforeCount = await Product.countDocuments();
         
         // Call the seedProducts function from the module
+        // Note: We don't close the connection between scripts
         if (seedModule && typeof seedModule.seedProducts === 'function') {
+          // Temporarily disable connection closing in seed scripts
+          const originalClose = mongoose.connection.close;
+          mongoose.connection.close = () => Promise.resolve();
+          
           await seedModule.seedProducts();
+          
+          // Restore original close function
+          mongoose.connection.close = originalClose;
         } else if (typeof seedModule === 'function') {
           await seedModule();
         }
