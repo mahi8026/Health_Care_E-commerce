@@ -209,6 +209,10 @@
             🔄 Refresh Status
         </button>
         
+        <button class="btn btn-primary" onclick="seedAllProducts()" id="seedAllBtn">
+            📦 Seed All Products (486 products)
+        </button>
+        
         <button class="btn btn-primary" onclick="addImages()" id="addImagesBtn">
             🖼️ Add Images to Products (50 at a time)
         </button>
@@ -253,15 +257,60 @@
                     
                     addLog(`✅ Status updated: ${data.database.products} products, ${data.database.imageCoverage} image coverage`);
                     
-                    if (data.database.productsWithoutImages === 0) {
+                    if (data.database.productsWithoutImages === 0 && data.database.products > 0) {
                         showAlert('🎉 All products have images!', 'success');
-                    } else {
+                    } else if (data.database.products === 0) {
+                        showAlert('⚠️ No products in database. Click "Seed All Products" first!', 'warning');
+                    } else if (data.database.productsWithoutImages > 0) {
                         showAlert(`⚠️ ${data.database.productsWithoutImages} products need images`, 'warning');
                     }
                 }
             } catch (error) {
                 addLog(`❌ Error: ${error.message}`);
                 showAlert('Failed to check status', 'error');
+            }
+        }
+        
+        async function seedAllProducts() {
+            const btn = document.getElementById('seedAllBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Seeding all products... (this may take 2-3 minutes)';
+            
+            try {
+                addLog('Starting product seeding...');
+                addLog('⏳ This will take 2-3 minutes. Please wait...');
+                
+                const response = await fetch(`${API_URL}/run-all`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLog(`✅ ${data.message}`);
+                    addLog(`📦 Total products: ${data.final.products}`);
+                    addLog(`🏭 Manufacturers: ${data.final.manufacturers}`);
+                    addLog(`📂 Categories: ${data.final.categories}`);
+                    
+                    data.results.forEach(result => {
+                        if (result.success) {
+                            addLog(`  ✅ ${result.script}: +${result.productsAdded} products`);
+                        } else {
+                            addLog(`  ❌ ${result.script}: ${result.error}`);
+                        }
+                    });
+                    
+                    showAlert(`🎉 Successfully seeded ${data.final.products} products! Now click "Add Images" to add product images.`, 'success');
+                    await checkStatus();
+                } else {
+                    addLog(`❌ Error: ${data.error}`);
+                    showAlert('Failed to seed products', 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`);
+                showAlert('Failed to seed products. The operation may have timed out but could still be running. Wait 2 minutes and refresh status.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '📦 Seed All Products (486 products)';
             }
         }
         

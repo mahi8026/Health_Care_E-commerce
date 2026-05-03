@@ -128,34 +128,53 @@ router.get('/status', async (req, res) => {
 // POST /api/seed/run-all - Run all seed scripts
 router.post('/run-all', async (req, res) => {
   try {
-    const results = [];
+    // Set a longer timeout for this operation
+    req.setTimeout(600000); // 10 minutes
     
-    // List of all seed scripts
-    const seedScripts = [
-      require('../scripts/seedAllBrands-complete'),
-      require('../scripts/seedGPLBiochemistry'),
-      require('../scripts/seedTurbilatex'),
-      require('../scripts/seedSerologyProducts'),
-      require('../scripts/seedBiochemistryPage3'),
-      require('../scripts/seedBSMIProducts'),
-      require('../scripts/seedPacificSurgical'),
-      require('../scripts/seedCareForceShantoProducts'),
-      require('../scripts/seedLabKitPadma'),
-      require('../scripts/seedGp1100Devices'),
-      require('../scripts/seedGenesisInternational'),
-      require('../scripts/seedSalmonellaLabInstruments'),
-      require('../scripts/seedMRTradingProducts'),
-      require('../scripts/seedTrologyAtlasProducts')
-    ];
+    const results = [];
+    let totalAdded = 0;
+    
+    // Import seed functions
+    const seedFunctions = {
+      'seedAllBrands-complete': require('../scripts/seedAllBrands-complete'),
+      'seedGPLBiochemistry': require('../scripts/seedGPLBiochemistry'),
+      'seedTurbilatex': require('../scripts/seedTurbilatex'),
+      'seedSerologyProducts': require('../scripts/seedSerologyProducts'),
+      'seedBiochemistryPage3': require('../scripts/seedBiochemistryPage3'),
+      'seedBSMIProducts': require('../scripts/seedBSMIProducts'),
+      'seedPacificSurgical': require('../scripts/seedPacificSurgical'),
+      'seedCareForceShantoProducts': require('../scripts/seedCareForceShantoProducts'),
+      'seedLabKitPadma': require('../scripts/seedLabKitPadma'),
+      'seedGp1100Devices': require('../scripts/seedGp1100Devices'),
+      'seedGenesisInternational': require('../scripts/seedGenesisInternational'),
+      'seedSalmonellaLabInstruments': require('../scripts/seedSalmonellaLabInstruments'),
+      'seedMRTradingProducts': require('../scripts/seedMRTradingProducts'),
+      'seedTrologyAtlasProducts': require('../scripts/seedTrologyAtlasProducts')
+    };
 
-    for (const seedFn of seedScripts) {
+    for (const [scriptName, seedFn] of Object.entries(seedFunctions)) {
       try {
+        const beforeCount = await Product.countDocuments();
+        
         if (typeof seedFn === 'function') {
           await seedFn();
-          results.push({ success: true, script: seedFn.name });
         }
+        
+        const afterCount = await Product.countDocuments();
+        const added = afterCount - beforeCount;
+        totalAdded += added;
+        
+        results.push({ 
+          success: true, 
+          script: scriptName,
+          productsAdded: added
+        });
       } catch (error) {
-        results.push({ success: false, script: seedFn.name, error: error.message });
+        results.push({ 
+          success: false, 
+          script: scriptName, 
+          error: error.message 
+        });
       }
     }
 
@@ -165,7 +184,7 @@ router.post('/run-all', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Seeding completed',
+      message: `Seeding completed! Added ${totalAdded} new products.`,
       results,
       final: {
         products: productCount,
