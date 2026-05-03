@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Manufacturer = require('../models/Manufacturer');
@@ -156,19 +157,23 @@ router.post('/run-all', async (req, res) => {
       try {
         const beforeCount = await Product.countDocuments();
         
-        // Call the seedProducts function from the module
-        // Note: We don't close the connection between scripts
         if (seedModule && typeof seedModule.seedProducts === 'function') {
-          // Temporarily disable connection closing in seed scripts
-          const originalClose = mongoose.connection.close;
+          // Patch mongoose to prevent scripts from disconnecting/reconnecting
+          const originalConnect = mongoose.connect.bind(mongoose);
+          const originalClose = mongoose.connection.close.bind(mongoose.connection);
+          
+          // Override connect - skip it since we're already connected
+          mongoose.connect = () => Promise.resolve(mongoose);
+          // Override close - skip it to keep connection alive
           mongoose.connection.close = () => Promise.resolve();
           
-          await seedModule.seedProducts();
-          
-          // Restore original close function
-          mongoose.connection.close = originalClose;
-        } else if (typeof seedModule === 'function') {
-          await seedModule();
+          try {
+            await seedModule.seedProducts();
+          } finally {
+            // Always restore original functions
+            mongoose.connect = originalConnect;
+            mongoose.connection.close = originalClose;
+          }
         }
         
         const afterCount = await Product.countDocuments();
