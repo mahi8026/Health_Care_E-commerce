@@ -704,8 +704,8 @@ exports.googleAuthSuccess = async (req, res) => {
       metadata: { authProvider: 'google', role: req.user.role }
     });
 
-    // Redirect to frontend with tokens
-    const redirectUrl = `${process.env.FRONTEND_URL}/auth/google/callback?token=${token}&refreshToken=${refreshToken}`;
+    // Redirect to frontend with tokens - use /oauth/ path to avoid Vercel SSO interception
+    const redirectUrl = `${process.env.FRONTEND_URL}/oauth/google/callback?token=${token}&refreshToken=${refreshToken}`;
     res.redirect(redirectUrl);
   } catch (error) {
     logger.error(`[googleAuthSuccess] ${error.message}`);
