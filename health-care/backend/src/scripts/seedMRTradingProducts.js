@@ -164,3 +164,5 @@ async function seedProducts() {
 }
 
 seedProducts();
+
+module.exports = { seedProducts };
