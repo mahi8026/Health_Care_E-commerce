@@ -180,7 +180,7 @@ export default function HomePage() {
   const [promo, setPromo] = useState(null);
   const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
   const [statsStarted, setStatsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({ h: 11, m: 45, s: 22 });
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
   const [testimonials, setTestimonials] = useState([]);
   const [email, setEmail] = useState('');
   const [subscribeStatus, setSubscribeStatus] = useState('idle');
@@ -245,17 +245,24 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Countdown timer
+  // Countdown timer - counts to midnight
   useEffect(() => {
+    const getTimeUntilMidnight = () => {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0);  // next midnight
+      const diff = midnight - now;
+      return {
+        h: Math.floor(diff / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000),
+      };
+    };
+    
+    setTimeLeft(getTimeUntilMidnight()); // set immediately on mount
+    
     const t = setInterval(() => {
-      setTimeLeft(prev => {
-        let { h, m, s } = prev;
-        if (s > 0) s--;
-        else if (m > 0) { m--; s = 59; }
-        else if (h > 0) { h--; m = 59; s = 59; }
-        else { h = 23; m = 59; s = 59; }
-        return { h, m, s };
-      });
+      setTimeLeft(getTimeUntilMidnight());
     }, 1000);
     return () => clearInterval(t);
   }, []);
@@ -501,7 +508,7 @@ export default function HomePage() {
               <span style={{ width: 8, height: 8, background: '#4DDBB8', borderRadius: '50%',
                 display: 'inline-block', animation: 'pulse-dot 2s ease infinite' }} />
               <span style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                DGDA Registered · ISO 13485 · Trusted by 1,200+ Hospitals
+                DGDA Registered · ISO 13485 · Trusted by {stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} Hospitals
               </span>
             </div>
 
@@ -518,7 +525,7 @@ export default function HomePage() {
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8,
               marginBottom: 32, maxWidth: 560 }}>
               Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines
-              from <strong style={{ color: '#fff' }}>50+ world-leading brands</strong>.
+              from <strong style={{ color: '#fff' }}>{stats.totalBrands > 0 ? `${stats.totalBrands}+` : '50+'} world-leading brands</strong>.
               Serving hospitals and clinics nationwide with DGDA-cleared genuine products.
             </p>
 
@@ -1296,7 +1303,7 @@ export default function HomePage() {
             The MedCore Advantage
           </h2>
           <p style={{ fontSize: 14, color: '#6B7280', marginTop: 10, maxWidth: 500, margin: '10px auto 0' }}>
-            Trusted by over 1,200 hospitals and clinics across Bangladesh for genuine medical supplies
+            Trusted by over {stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} hospitals and clinics across Bangladesh for genuine medical supplies
           </p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>

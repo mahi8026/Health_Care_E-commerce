@@ -29,9 +29,9 @@ export default function B2BDashboardPage() {
         const headers = { Authorization: `Bearer ${token}` };
 
         const [ordersRes, quotesRes, profileRes] = await Promise.all([
-          fetch(`${API}/api/orders?limit=10`, { headers }),
-          fetch(`${API}/api/quotes?limit=5`, { headers }),
-          fetch(`${API}/api/auth/me`, { headers }),
+          fetch(`${API}/orders?limit=10`, { headers }),
+          fetch(`${API}/quotes?limit=5`, { headers }),
+          fetch(`${API}/auth/me`, { headers }),
         ]);
 
         const [ordersData, quotesData, profileData] = await Promise.all([

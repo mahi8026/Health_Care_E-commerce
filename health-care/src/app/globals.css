@@ -330,3 +330,23 @@ input, textarea, select {
     display: flex !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAVIGATION - FIX 1 & 2
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Hide bottom nav on desktop, show on mobile only */
+.mobile-bottom-nav {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+  
+  /* Add bottom padding to main content on mobile for the bottom nav */
+  .main-content {
+    padding-bottom: 64px;
+  }
+}

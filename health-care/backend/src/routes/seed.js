@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Manufacturer = require('../models/Manufacturer');
 const cloudinary = require('cloudinary').v2;
+const { protect, adminOnly } = require('../middleware/auth');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -94,8 +95,8 @@ async function uploadToCloudinary(imageUrl, productName, productSku) {
   }
 }
 
-// GET /api/seed/status - Check database status
-router.get('/status', async (req, res) => {
+// GET /api/seed/status - Check database status (ADMIN ONLY)
+router.get('/status', protect, adminOnly, async (req, res) => {
   try {
     const productCount = await Product.countDocuments();
     const productsWithImages = await Product.countDocuments({ 
@@ -126,8 +127,16 @@ router.get('/status', async (req, res) => {
   }
 });
 
-// POST /api/seed/run-all - Run all seed scripts
-router.post('/run-all', async (req, res) => {
+// POST /api/seed/run-all - Run all seed scripts (ADMIN ONLY + PRODUCTION BLOCK)
+router.post('/run-all', protect, adminOnly, async (req, res) => {
+  // CRITICAL: Block in production
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({
+      success: false,
+      message: 'Seed operations are disabled in production for security'
+    });
+  }
+  
   try {
     // Set a longer timeout for this operation
     req.setTimeout(600000); // 10 minutes
@@ -213,8 +222,16 @@ router.post('/run-all', async (req, res) => {
   }
 });
 
-// POST /api/seed/clear - Clear all products (DANGEROUS - use with caution)
-router.post('/clear', async (req, res) => {
+// POST /api/seed/clear - Clear all products (ADMIN ONLY + PRODUCTION BLOCK)
+router.post('/clear', protect, adminOnly, async (req, res) => {
+  // CRITICAL: Block in production
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({
+      success: false,
+      message: 'Seed operations are disabled in production for security'
+    });
+  }
+  
   try {
     const productCount = await Product.countDocuments();
     
@@ -234,8 +251,8 @@ router.post('/clear', async (req, res) => {
   }
 });
 
-// POST /api/seed/add-images - Add images to products without images
-router.post('/add-images', async (req, res) => {
+// POST /api/seed/add-images - Add images to products without images (ADMIN ONLY)
+router.post('/add-images', protect, adminOnly, async (req, res) => {
   try {
     // Verify Cloudinary is configured
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
