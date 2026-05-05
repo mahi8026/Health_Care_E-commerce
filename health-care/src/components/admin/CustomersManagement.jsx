@@ -39,9 +39,6 @@ export default function CustomersManagement() {
       });
       const data = await res.json();
       const customersList = data.data?.customers || data.customers || [];
-      console.log('Fetched customers:', customersList.length);
-      console.log('First customer:', JSON.stringify(customersList[0], null, 2));
-      console.log('Customer keys:', customersList[0] ? Object.keys(customersList[0]) : 'No customers');
       setCustomers(customersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
@@ -57,15 +54,12 @@ export default function CustomersManagement() {
   const handleUpdateTier = async (customerId, newTier) => {
     try {
       const token = localStorage.getItem('medcore_token');
-      console.log('Updating tier for customer:', customerId, 'to:', newTier);
       
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ b2bTier: newTier }),
       });
-      
-      console.log('Response status:', res.status, res.statusText);
       
       // Try to parse response as JSON
       let data;
@@ -77,8 +71,6 @@ export default function CustomersManagement() {
         console.error('Non-JSON response:', text);
         throw new Error('Server returned non-JSON response');
       }
-      
-      console.log('Response data:', data);
       
       if (!res.ok) {
         console.error('Tier update error:', data);
@@ -96,15 +88,12 @@ export default function CustomersManagement() {
   const handleUpdateRole = async (customerId, newRole) => {
     try {
       const token = localStorage.getItem('medcore_token');
-      console.log('Updating role for customer:', customerId, 'to:', newRole);
       
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role: newRole }),
       });
-      
-      console.log('Response status:', res.status, res.statusText);
       
       // Try to parse response as JSON
       let data;
@@ -116,8 +105,6 @@ export default function CustomersManagement() {
         console.error('Non-JSON response:', text);
         throw new Error('Server returned non-JSON response');
       }
-      
-      console.log('Response data:', data);
       
       if (!res.ok) {
         console.error('Role update error:', data);

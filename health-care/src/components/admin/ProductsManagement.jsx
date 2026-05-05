@@ -123,10 +123,6 @@ export default function ProductsManagement({ openCreateRef }) {
         cache: 'no-store'
       });
       const data = await res.json();
-      console.log('Fetched products data:', data);
-      console.log('First product:', data.products?.[0]);
-      console.log('First product has description?', !!data.products?.[0]?.description);
-      console.log('First product description value:', data.products?.[0]?.description);
       setProducts(data.products || data.data?.products || []);
       setTotal(data.total || data.data?.total || 0);
     } catch (error) {
@@ -156,8 +152,6 @@ export default function ProductsManagement({ openCreateRef }) {
   };
 
   const handleEditOpen = (product) => {
-    console.log('Opening edit for product:', product);
-    console.log('Product description:', product.description);
     
     setModalMode('edit');
     setModalProduct(product);
@@ -196,7 +190,6 @@ export default function ProductsManagement({ openCreateRef }) {
       images:            product.images || [],
     };
     
-    console.log('Form data being set:', formData);
     setCreateForm(formData);
     
     // Set brand search to display name
@@ -227,8 +220,6 @@ export default function ProductsManagement({ openCreateRef }) {
         ...(createForm.discountPct ? { discountPct: Number(createForm.discountPct) } : {}),
       };
       
-      console.log('Updating product with payload:', payload);
-      
       const res = await fetch(`${API}/products/${modalProduct._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -242,7 +233,6 @@ export default function ProductsManagement({ openCreateRef }) {
       }
       
       const result = await res.json();
-      console.log('Update successful:', result);
       
       showMessage('Product updated successfully', 'success');
       closeModal();
