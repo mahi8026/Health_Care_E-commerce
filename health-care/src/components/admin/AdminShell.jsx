@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
@@ -9,6 +9,11 @@ export default function AdminShell({ children, title, action, onAction }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [badges, setBadges] = useState({
+    orders: 0,
+    quotes: 0,
+    notifications: 0
+  });
 
   const adminUser = {
     name: user?.name || 'Admin',
@@ -17,15 +22,53 @@ export default function AdminShell({ children, title, action, onAction }) {
     isOnline: true,
   };
 
+  // Fetch badge counts
+  useEffect(() => {
+    const fetchBadges = async () => {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+        if (!token) return;
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/badges`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setBadges({
+              orders: data.data.pendingOrders || 0,
+              quotes: data.data.pendingQuotes || 0,
+              notifications: data.data.unreadNotifications || 0
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch badges:', error);
+      }
+    };
+
+    if (user?.role === 'admin') {
+      fetchBadges();
+      // Refresh badges every 30 seconds
+      const interval = setInterval(fetchBadges, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
   const menuItems = [
     { id: 'dashboard', path: '/admin', icon: '📊', label: 'Dashboard' },
-    { id: 'orders', path: '/admin/orders', icon: '📦', label: 'Orders', badge: '24' },
+    { id: 'orders', path: '/admin/orders', icon: '📦', label: 'Orders', badge: badges.orders > 0 ? String(badges.orders) : null },
     { id: 'products', path: '/admin/products', icon: '🏥', label: 'Products' },
     { id: 'customers', path: '/admin/customers', icon: '👥', label: 'Customers' },
     { id: 'coupons', path: '/admin/coupons', icon: '🎟️', label: 'Coupons' },
     { id: 'categories', path: '/admin/categories', icon: '📁', label: 'Categories' },
     { id: 'manufacturers', path: '/admin/manufacturers', icon: '🏭', label: 'Manufacturers' },
-    { id: 'quotes', path: '/admin/quotes', icon: '📋', label: 'Quotations', badge: '8' },
+    { id: 'quotes', path: '/admin/quotes', icon: '📋', label: 'Quotations', badge: badges.quotes > 0 ? String(badges.quotes) : null },
     { id: 'returns', path: '/admin/returns', icon: '↩️', label: 'Returns' },
     { id: 'reviews', path: '/admin/reviews', icon: '⭐', label: 'Reviews' },
     { id: 'newsletter', path: '/admin/newsletter', icon: '📧', label: 'Newsletter' },
@@ -190,9 +233,11 @@ export default function AdminShell({ children, title, action, onAction }) {
                 <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 01-3.46 0"/>
               </svg>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#E24B4A] rounded-full text-white text-[9px] flex items-center justify-center">
-                3
-              </div>
+              {badges.notifications > 0 && (
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#E24B4A] rounded-full text-white text-[9px] flex items-center justify-center">
+                  {badges.notifications > 9 ? '9+' : badges.notifications}
+                </div>
+              )}
             </button>
 
             <div className="w-8 h-8 bg-[#0B2545] rounded-lg flex items-center justify-center text-white text-[11px] font-bold">

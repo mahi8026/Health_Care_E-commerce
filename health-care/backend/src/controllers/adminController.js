@@ -377,3 +377,37 @@ exports.manualStockCheck = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
   }
 };
+
+// GET /api/admin/badges - Get badge counts for sidebar
+exports.getBadges = async (req, res) => {
+  try {
+    // Count pending orders (placed, confirmed status)
+    const pendingOrders = await Order.countDocuments({
+      status: { $in: ['placed', 'confirmed'] }
+    });
+
+    // Count pending quotes
+    const pendingQuotes = await Quote.countDocuments({
+      status: 'pending'
+    });
+
+    // For now, set notifications to 0 (can be enhanced later with a notifications system)
+    const unreadNotifications = 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        pendingOrders,
+        pendingQuotes,
+        unreadNotifications
+      }
+    });
+  } catch (error) {
+    logger.error(`[adminController] getBadges error: ${error.message}`);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  }
+};

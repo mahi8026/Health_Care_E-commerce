@@ -6,7 +6,8 @@ const {
   getAnalytics,
   getCustomers,
   updateCustomer,
-  manualStockCheck
+  manualStockCheck,
+  getBadges
 } = require('../controllers/adminController');
 const {
   getAllQuotes,
@@ -20,6 +21,7 @@ router.use(protect, authorize('admin'), adminApiLimiter);
 
 router.get('/dashboard', getDashboard);
 router.get('/analytics', getAnalytics);
+router.get('/badges', getBadges);
 router.get('/customers', getCustomers);
 router.patch('/customers/:id', updateCustomer);
 router.post('/stock-check', manualStockCheck);

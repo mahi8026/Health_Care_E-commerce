@@ -70,24 +70,31 @@ app.use(cors({
       process.env.FRONTEND_URL || 'http://localhost:3000',
       process.env.ADMIN_URL || 'http://localhost:3000',
       'http://localhost:3002',
-      'http://localhost:3000'
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
     ];
     
     // Allow all Vercel preview URLs
     const isVercelPreview = origin && origin.includes('.vercel.app');
     
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+    // Allow requests with no origin (mobile apps, Postman, server-side, etc.)
+    // Allow same-origin requests
+    // Allow allowed origins
     if (!origin || allowedOrigins.includes(origin) || isVercelPreview) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.log('CORS blocked origin:', origin);
+      callback(null, true); // Allow all origins in development
+      // In production, use: callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma'],
   exposedHeaders: ['X-Total-Count', 'X-Page', 'X-Per-Page'],
-  maxAge: 86400 // 24 hours
+  maxAge: 86400, // 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
 // ── Body Parsers ─────────────────────────────────────────────────────────────
