@@ -47,34 +47,38 @@ function wrapHtml(content) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MedCore BD</title>
   <style>
-    body { margin:0; padding:0; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; }
-    .wrapper { max-width:600px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; }
-    .header { background:#0B2545; padding:28px 32px; }
-    .header h1 { margin:0; color:#fff; font-size:22px; font-weight:700; letter-spacing:0.5px; }
-    .header p { margin:4px 0 0; color:#4DDBB8; font-size:13px; }
-    .body { padding:28px 32px; }
-    .footer { background:#F1F3F6; padding:16px 32px; font-size:12px; color:#666; text-align:center; }
-    .btn { display:inline-block; background:#0E8A6E; color:#fff !important; padding:12px 28px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; margin:16px 0; }
-    .badge { display:inline-block; background:#E1F5EE; color:#085041; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
-    table.items { width:100%; border-collapse:collapse; margin:16px 0; }
-    table.items th { background:#0B2545; color:#fff; padding:10px 12px; text-align:left; font-size:13px; }
-    table.items td { padding:10px 12px; border-bottom:1px solid #eee; font-size:13px; }
-    .total-row { background:#0B2545; color:#fff; font-weight:700; }
-    .total-row td { padding:12px; }
-    .info-row { display:flex; gap:24px; margin:16px 0; }
-    .info-box { flex:1; background:#F1F3F6; border-radius:8px; padding:14px; }
-    .info-box h4 { margin:0 0 6px; font-size:12px; color:#666; text-transform:uppercase; letter-spacing:0.5px; }
-    .info-box p { margin:0; font-size:14px; font-weight:600; }
-    .timeline { margin:20px 0; }
-    .step { display:flex; align-items:center; gap:12px; margin:8px 0; }
-    .dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-    .dot.done { background:#0E8A6E; }
-    .dot.pending { background:#ccc; }
-    .step-label { font-size:13px; }
+    body { margin:0; padding:0; font-family:'Segoe UI',Arial,sans-serif; background:#f5f7fa; color:#1a1a2e; }
+    .wrapper { max-width:650px; margin:0 auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+    .header { background:linear-gradient(135deg, #0B2545 0%, #134074 100%); padding:32px 40px; text-align:center; }
+    .header h1 { margin:0; color:#fff; font-size:28px; font-weight:700; letter-spacing:0.5px; }
+    .header p { margin:8px 0 0; color:#4DDBB8; font-size:14px; font-weight:500; }
+    .body { padding:32px 40px; line-height:1.6; }
+    .footer { background:#f8f9fa; padding:24px 40px; font-size:12px; color:#6c757d; text-align:center; border-top:1px solid #e9ecef; }
+    .btn { display:inline-block; background:linear-gradient(135deg, #0E8A6E 0%, #0a6b56 100%); color:#fff !important; padding:14px 32px; border-radius:10px; text-decoration:none; font-weight:600; font-size:15px; margin:20px 0; box-shadow:0 4px 12px rgba(14,138,110,0.3); transition:all 0.3s; }
+    .btn:hover { box-shadow:0 6px 16px rgba(14,138,110,0.4); transform:translateY(-2px); }
+    .badge { display:inline-block; background:#E1F5EE; color:#085041; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; }
+    table.items { width:100%; border-collapse:collapse; margin:20px 0; border:1px solid #e9ecef; border-radius:8px; overflow:hidden; }
+    table.items th { background:#0B2545; color:#fff; padding:14px 16px; text-align:left; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+    table.items td { padding:14px 16px; border-bottom:1px solid #e9ecef; font-size:14px; }
+    table.items tr:last-child td { border-bottom:none; }
+    .total-row { background:#f8f9fa; font-weight:700; font-size:16px; }
+    .total-row td { padding:16px; border-top:2px solid #0B2545; }
+    .info-row { display:flex; gap:16px; margin:24px 0; }
+    .info-box { flex:1; background:#f8f9fa; border-radius:12px; padding:18px; border-left:4px solid #0E8A6E; }
+    .info-box h4 { margin:0 0 8px; font-size:11px; color:#6c757d; text-transform:uppercase; letter-spacing:0.8px; font-weight:600; }
+    .info-box p { margin:0; font-size:16px; font-weight:700; color:#0B2545; }
+    .timeline { margin:24px 0; }
+    .step { display:flex; align-items:center; gap:14px; margin:10px 0; }
+    .dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+    .dot.done { background:#0E8A6E; box-shadow:0 0 0 4px rgba(14,138,110,0.2); }
+    .dot.pending { background:#dee2e6; }
+    .step-label { font-size:14px; }
+    .highlight { background:#fff3cd; padding:16px; border-radius:8px; border-left:4px solid #ffc107; margin:20px 0; }
+    .success-box { background:#d4edda; padding:16px; border-radius:8px; border-left:4px solid #28a745; margin:20px 0; color:#155724; }
   </style>
 </head>
 <body>
-  <div style="padding:24px 16px;">
+  <div style="padding:32px 16px;">
     <div class="wrapper">
       <div class="header">
         <h1>🏥 MedCore BD</h1>
@@ -82,9 +86,11 @@ function wrapHtml(content) {
       </div>
       <div class="body">${content}</div>
       <div class="footer">
-        <p>MedCore BD | DGDA Reg. No. DA-2024-0891 | BIN: 003456789-0101</p>
-        <p>Dhaka, Bangladesh | +880 1700-000000 | support@medcorebd.com</p>
-        <p style="margin-top:8px;color:#999;">This is an automated email. Please do not reply directly.</p>
+        <p style="margin:0 0 8px;font-weight:600;color:#495057;">MedCore BD</p>
+        <p style="margin:4px 0;">DGDA Reg. No. DA-2024-0891 | BIN: 003456789-0101</p>
+        <p style="margin:4px 0;">📍 Dhaka, Bangladesh</p>
+        <p style="margin:4px 0;">📞 +880 1700-000000 | 📧 support@medcorebd.com</p>
+        <p style="margin-top:16px;color:#adb5bd;font-size:11px;">This is an automated email. Please do not reply directly to this message.</p>
       </div>
     </div>
   </div>
@@ -97,41 +103,98 @@ async function sendOrderConfirmation(order, user) {
   const t = await getTransporter();
   const itemRows = order.items.map(i => `
     <tr>
-      <td>${i.name || 'Product'}</td>
-      <td>${i.sku || '-'}</td>
-      <td>${i.qty || i.quantity || 1}</td>
-      <td>৳${(i.price || 0).toLocaleString()}</td>
-      <td>৳${((i.price || 0) * (i.qty || i.quantity || 1)).toLocaleString()}</td>
+      <td style="font-weight:500;">${i.name || 'Product'}</td>
+      <td style="color:#6c757d;">${i.sku || '-'}</td>
+      <td style="text-align:center;">${i.qty || i.quantity || 1}</td>
+      <td style="text-align:right;">৳${(i.price || 0).toLocaleString()}</td>
+      <td style="text-align:right;font-weight:600;">৳${((i.price || 0) * (i.qty || i.quantity || 1)).toLocaleString()}</td>
     </tr>`).join('');
 
   const html = wrapHtml(`
-    <h2 style="color:#0B2545;margin-top:0;">Order Confirmed ✓</h2>
-    <p>Hi ${user.name}, your order has been placed successfully.</p>
-    <div class="info-row">
-      <div class="info-box"><h4>Order Number</h4><p>${order.orderNumber || order.orderId}</p></div>
-      <div class="info-box"><h4>Est. Delivery</h4><p>${order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString('en-BD') : '2–5 business days'}</p></div>
+    <div class="success-box">
+      <h2 style="color:#155724;margin:0 0 8px;font-size:20px;">✓ Order Confirmed Successfully!</h2>
+      <p style="margin:0;font-size:14px;">Hi <strong>${user.name}</strong>, thank you for your order. We're preparing your items for shipment.</p>
     </div>
+    
+    <div class="info-row">
+      <div class="info-box">
+        <h4>Order Number</h4>
+        <p>${order.orderNumber || order.orderId}</p>
+      </div>
+      <div class="info-box">
+        <h4>Order Date</h4>
+        <p>${new Date(order.createdAt || Date.now()).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+      </div>
+      <div class="info-box">
+        <h4>Est. Delivery</h4>
+        <p>${order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : '2–5 days'}</p>
+      </div>
+    </div>
+
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">📦 Order Items</h3>
     <table class="items">
-      <thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>SKU</th>
+          <th style="text-align:center;">Qty</th>
+          <th style="text-align:right;">Unit Price</th>
+          <th style="text-align:right;">Total</th>
+        </tr>
+      </thead>
       <tbody>${itemRows}</tbody>
     </table>
-    <table class="items">
+
+    <table class="items" style="margin-top:8px;">
       <tbody>
-        <tr><td>Subtotal</td><td>৳${(order.subtotal || 0).toLocaleString()}</td></tr>
-        ${order.b2bDiscount ? `<tr><td>B2B Discount</td><td>-৳${order.b2bDiscount.toLocaleString()}</td></tr>` : ''}
-        <tr><td>Delivery</td><td>৳${(order.deliveryFee || 0).toLocaleString()}</td></tr>
-        <tr><td>VAT (5%)</td><td>৳${(order.vatAmount || 0).toLocaleString()}</td></tr>
-        <tr class="total-row"><td>Total Payable</td><td>৳${(order.totalAmount || order.total || 0).toLocaleString()}</td></tr>
+        <tr><td style="color:#6c757d;">Subtotal</td><td style="text-align:right;font-weight:600;">৳${(order.subtotal || 0).toLocaleString()}</td></tr>
+        ${order.b2bDiscount ? `<tr><td style="color:#28a745;">B2B Discount (${order.b2bDiscountPct || 0}%)</td><td style="text-align:right;font-weight:600;color:#28a745;">-৳${order.b2bDiscount.toLocaleString()}</td></tr>` : ''}
+        ${order.couponDiscount ? `<tr><td style="color:#28a745;">Coupon Discount${order.appliedCoupon?.code ? ` (${order.appliedCoupon.code})` : ''}</td><td style="text-align:right;font-weight:600;color:#28a745;">-৳${order.couponDiscount.toLocaleString()}</td></tr>` : ''}
+        <tr><td style="color:#6c757d;">Delivery Fee</td><td style="text-align:right;font-weight:600;">৳${(order.deliveryFee || 0).toLocaleString()}</td></tr>
+        <tr><td style="color:#6c757d;">VAT (5%)</td><td style="text-align:right;font-weight:600;">৳${(order.vatAmount || 0).toLocaleString()}</td></tr>
+        <tr class="total-row">
+          <td style="color:#0B2545;">Total Payable</td>
+          <td style="text-align:right;color:#0B2545;">৳${(order.totalAmount || order.total || 0).toLocaleString()}</td>
+        </tr>
       </tbody>
     </table>
-    <p><strong>Delivery Address:</strong> ${order.deliveryAddress?.street}, ${order.deliveryAddress?.district}</p>
-    <a href="${FRONTEND_URL}/track/${order.orderNumber || order.orderId}" class="btn">Track Your Order →</a>
+
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">🚚 Delivery Information</h3>
+    <div style="background:#f8f9fa;padding:18px;border-radius:12px;border-left:4px solid #0E8A6E;">
+      <p style="margin:0 0 8px;"><strong>Delivery Address:</strong></p>
+      <p style="margin:0;color:#495057;line-height:1.6;">
+        ${order.deliveryAddress?.street || 'N/A'}<br/>
+        ${order.deliveryAddress?.area ? order.deliveryAddress.area + '<br/>' : ''}
+        ${order.deliveryAddress?.district || ''}, ${order.deliveryAddress?.postalCode || ''}<br/>
+        ${order.deliveryAddress?.phone ? '📞 ' + order.deliveryAddress.phone : ''}
+      </p>
+      <p style="margin:12px 0 0;"><strong>Delivery Method:</strong> <span class="badge">${(order.deliveryType || order.deliveryMethod || 'Standard').toUpperCase()}</span></p>
+    </div>
+
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">💳 Payment Information</h3>
+    <div style="background:#f8f9fa;padding:18px;border-radius:12px;border-left:4px solid #0E8A6E;">
+      <p style="margin:0;"><strong>Payment Method:</strong> <span class="badge">${(order.paymentMethod || 'N/A').toUpperCase().replace('_', ' ')}</span></p>
+      <p style="margin:8px 0 0;"><strong>Payment Status:</strong> <span class="badge" style="${order.paymentStatus === 'paid' ? 'background:#d4edda;color:#155724;' : 'background:#fff3cd;color:#856404;'}">${(order.paymentStatus || 'Pending').toUpperCase()}</span></p>
+    </div>
+
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${FRONTEND_URL}/track/${order.orderNumber || order.orderId}" class="btn">Track Your Order →</a>
+    </div>
+
+    <div class="highlight">
+      <p style="margin:0 0 8px;font-weight:600;color:#856404;">📋 What's Next?</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• You'll receive a shipping notification once your order is dispatched</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Track your order anytime using the button above</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Contact us at support@medcorebd.com for any questions</p>
+    </div>
+
+    <p style="margin-top:24px;color:#6c757d;font-size:13px;text-align:center;">Thank you for choosing MedCore BD! 🙏</p>
   `);
 
   const info = await t.sendMail({
     from: `"MedCore BD" <${FROM}>`,
     to: user.email,
-    subject: `Order Confirmed — ${order.orderNumber || order.orderId}`,
+    subject: `✓ Order Confirmed — ${order.orderNumber || order.orderId}`,
     html
   });
   logger.info('Order confirmation sent:', nodemailer.getTestMessageUrl(info) || info.messageId);
@@ -142,21 +205,51 @@ async function sendOrderConfirmation(order, user) {
 async function sendPaymentReceipt(order, user, pdfBuffer) {
   const t = await getTransporter();
   const html = wrapHtml(`
-    <h2 style="color:#0B2545;margin-top:0;">Payment Receipt</h2>
-    <p>Hi ${user.name}, we've received your payment. Thank you!</p>
-    <div class="info-row">
-      <div class="info-box"><h4>Transaction ID</h4><p style="font-family:monospace;">${order.transactionId || order.paymentDetails?.transactionId || 'N/A'}</p></div>
-      <div class="info-box"><h4>Amount Paid</h4><p>৳${(order.totalAmount || order.total || 0).toLocaleString()}</p></div>
-      <div class="info-box"><h4>Method</h4><p>${(order.paymentMethod || '').toUpperCase()}</p></div>
+    <div class="success-box">
+      <h2 style="color:#155724;margin:0 0 8px;font-size:20px;">✓ Payment Received Successfully!</h2>
+      <p style="margin:0;font-size:14px;">Hi <strong>${user.name}</strong>, we've received your payment. Thank you!</p>
     </div>
-    <p>Your invoice is attached to this email as a PDF.</p>
-    <a href="${FRONTEND_URL}/track/${order.orderNumber || order.orderId}" class="btn">View Order →</a>
+    
+    <div class="info-row">
+      <div class="info-box">
+        <h4>Transaction ID</h4>
+        <p style="font-family:monospace;font-size:14px;">${order.transactionId || order.paymentDetails?.transactionId || 'N/A'}</p>
+      </div>
+      <div class="info-box">
+        <h4>Amount Paid</h4>
+        <p style="color:#28a745;">৳${(order.totalAmount || order.total || 0).toLocaleString()}</p>
+      </div>
+      <div class="info-box">
+        <h4>Payment Method</h4>
+        <p>${(order.paymentMethod || 'N/A').toUpperCase().replace('_', ' ')}</p>
+      </div>
+    </div>
+
+    <div style="background:#f8f9fa;padding:20px;border-radius:12px;margin:24px 0;border-left:4px solid #28a745;">
+      <h3 style="color:#0B2545;margin:0 0 12px;font-size:16px;">📄 Invoice Details</h3>
+      <p style="margin:4px 0;color:#495057;"><strong>Order Number:</strong> ${order.orderNumber || order.orderId}</p>
+      <p style="margin:4px 0;color:#495057;"><strong>Payment Date:</strong> ${new Date().toLocaleDateString('en-BD', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+      <p style="margin:12px 0 0;font-size:13px;color:#6c757d;">Your invoice is attached to this email as a PDF document.</p>
+    </div>
+
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${FRONTEND_URL}/orders/${order._id}" class="btn">View Order Details →</a>
+    </div>
+
+    <div class="highlight">
+      <p style="margin:0 0 8px;font-weight:600;color:#856404;">📋 What's Next?</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Your order is being prepared for shipment</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• You'll receive a shipping notification with tracking details</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Keep this email for your records</p>
+    </div>
+
+    <p style="margin-top:24px;color:#6c757d;font-size:13px;text-align:center;">Thank you for your payment! 🙏</p>
   `);
 
   const mailOptions = {
     from: `"MedCore BD" <${FROM}>`,
     to: user.email,
-    subject: `Payment Receipt — ${order.orderNumber || order.orderId}`,
+    subject: `✓ Payment Receipt — ${order.orderNumber || order.orderId}`,
     html
   };
 
@@ -181,24 +274,60 @@ async function sendShippingNotification(order, user) {
   const stepsHtml = steps.map((s, i) => `
     <div class="step">
       <div class="dot ${i <= currentStep ? 'done' : 'pending'}"></div>
-      <span class="step-label" style="color:${i <= currentStep ? '#0E8A6E' : '#999'};font-weight:${i === currentStep ? '700' : '400'}">${s}</span>
+      <span class="step-label" style="color:${i <= currentStep ? '#0E8A6E' : '#adb5bd'};font-weight:${i === currentStep ? '700' : '400'}">${s}</span>
     </div>`).join('');
 
   const html = wrapHtml(`
-    <h2 style="color:#0B2545;margin-top:0;">Your Order is on the Way! 🚚</h2>
-    <p>Hi ${user.name}, your order has been dispatched.</p>
-    <div class="info-row">
-      <div class="info-box"><h4>Courier</h4><p>${order.tracking?.courier || 'Sundarban Courier'}</p></div>
-      <div class="info-box"><h4>Tracking No.</h4><p style="font-family:monospace;">${order.tracking?.trackingNumber || order.trackingNumber || 'N/A'}</p></div>
+    <div class="success-box">
+      <h2 style="color:#155724;margin:0 0 8px;font-size:20px;">🚚 Your Order is on the Way!</h2>
+      <p style="margin:0;font-size:14px;">Hi <strong>${user.name}</strong>, great news! Your order has been dispatched and is on its way to you.</p>
     </div>
-    <div class="timeline">${stepsHtml}</div>
-    <a href="${FRONTEND_URL}/track/${order.orderNumber || order.orderId}" class="btn">Track Live →</a>
+    
+    <div class="info-row">
+      <div class="info-box">
+        <h4>Order Number</h4>
+        <p>${order.orderNumber || order.orderId}</p>
+      </div>
+      <div class="info-box">
+        <h4>Courier Partner</h4>
+        <p>${order.tracking?.courier || 'Sundarban Courier'}</p>
+      </div>
+      <div class="info-box">
+        <h4>Tracking Number</h4>
+        <p style="font-family:monospace;font-size:14px;">${order.tracking?.trackingNumber || order.trackingNumber || 'N/A'}</p>
+      </div>
+    </div>
+
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">📍 Delivery Status</h3>
+    <div style="background:#f8f9fa;padding:20px;border-radius:12px;">
+      <div class="timeline">${stepsHtml}</div>
+    </div>
+
+    <div style="background:#e7f3ff;padding:18px;border-radius:12px;margin:24px 0;border-left:4px solid #0d6efd;">
+      <p style="margin:0 0 8px;font-weight:600;color:#084298;">📦 Delivery Information</p>
+      <p style="margin:4px 0;color:#084298;font-size:13px;">• Estimated delivery: <strong>${order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString('en-BD', { day: 'numeric', month: 'long' }) : '2-3 business days'}</strong></p>
+      <p style="margin:4px 0;color:#084298;font-size:13px;">• Delivery address: ${order.deliveryAddress?.street}, ${order.deliveryAddress?.district}</p>
+      <p style="margin:4px 0;color:#084298;font-size:13px;">• Contact: ${order.deliveryAddress?.phone || 'N/A'}</p>
+    </div>
+
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${FRONTEND_URL}/track/${order.orderNumber || order.orderId}" class="btn">Track Live Location →</a>
+    </div>
+
+    <div class="highlight">
+      <p style="margin:0 0 8px;font-weight:600;color:#856404;">💡 Delivery Tips</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Please keep your phone accessible for delivery updates</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Ensure someone is available to receive the package</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Check the package condition before accepting delivery</p>
+    </div>
+
+    <p style="margin-top:24px;color:#6c757d;font-size:13px;text-align:center;">Your order will arrive soon! 📦</p>
   `);
 
   const info = await t.sendMail({
     from: `"MedCore BD" <${FROM}>`,
     to: user.email,
-    subject: `Shipped — ${order.orderNumber || order.orderId}`,
+    subject: `🚚 Shipped — ${order.orderNumber || order.orderId}`,
     html
   });
   logger.info('Shipping notification sent:', nodemailer.getTestMessageUrl(info) || info.messageId);

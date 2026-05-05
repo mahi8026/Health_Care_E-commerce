@@ -15,16 +15,26 @@ const logger = require('../utils/logger');
 exports.sendOrderConfirmation = async (req, res) => {
   try {
     const { orderId } = req.body;
+    
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: 'Order ID is required' });
+    }
+
     const order = await Order.findById(orderId).populate('items.product', 'name sku brand');
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
 
     const user = await User.findById(order.user);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
     await sendOrderConfirmation(order, user);
-    res.status(200).json({ success: true, message: 'Order confirmation email sent' });
+    res.status(200).json({ success: true, message: 'Order confirmation email sent successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(`[sendOrderConfirmation] ${error.message}`);
+    res.status(500).json({ success: false, message: error.message || 'Failed to send order confirmation' });
   }
 };
 
@@ -32,11 +42,20 @@ exports.sendOrderConfirmation = async (req, res) => {
 exports.sendPaymentReceipt = async (req, res) => {
   try {
     const { orderId } = req.body;
+    
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: 'Order ID is required' });
+    }
+
     const order = await Order.findById(orderId).populate('items.product', 'name sku brand');
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
 
     const user = await User.findById(order.user);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
     // Generate PDF invoice
     let pdfBuffer;
@@ -44,12 +63,14 @@ exports.sendPaymentReceipt = async (req, res) => {
       pdfBuffer = await generateInvoice(order, user);
     } catch (pdfErr) {
       logger.error('PDF generation failed:', pdfErr.message);
+      // Continue without PDF attachment
     }
 
     await sendPaymentReceipt(order, user, pdfBuffer);
-    res.status(200).json({ success: true, message: 'Payment receipt email sent' });
+    res.status(200).json({ success: true, message: 'Payment receipt email sent successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(`[sendPaymentReceipt] ${error.message}`);
+    res.status(500).json({ success: false, message: error.message || 'Failed to send payment receipt' });
   }
 };
 
@@ -57,16 +78,26 @@ exports.sendPaymentReceipt = async (req, res) => {
 exports.sendShipping = async (req, res) => {
   try {
     const { orderId } = req.body;
+    
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: 'Order ID is required' });
+    }
+
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
 
     const user = await User.findById(order.user);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
 
     await sendShippingNotification(order, user);
-    res.status(200).json({ success: true, message: 'Shipping notification sent' });
+    res.status(200).json({ success: true, message: 'Shipping notification sent successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    logger.error(`[sendShipping] ${error.message}`);
+    res.status(500).json({ success: false, message: error.message || 'Failed to send shipping notification' });
   }
 };
 

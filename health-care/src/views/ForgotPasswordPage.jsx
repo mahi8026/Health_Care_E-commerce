@@ -1,15 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { API } from '@/constants/api';
 
-export default function ResetPasswordPage({ onNavigateToLogin }) {
-  const searchParams = useSearchParams();
-  const token = searchParams?.get('token') || '';
-
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+export default function ForgotPasswordPage({ onNavigateToLogin }) {
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -18,35 +13,28 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
     e.preventDefault();
     setError('');
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
-    if (!token) {
-      setError('Invalid or missing reset token. Please request a new password reset link.');
+    if (!email) {
+      setError('Please enter your email address.');
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/reset-password`, {
+      const res = await fetch(`${API}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ email: email.toLowerCase().trim() }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Reset failed');
-      setSuccess(true);
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        if (onNavigateToLogin) onNavigateToLogin();
-      }, 2000);
+      
+      // Always show success message to prevent email enumeration
+      if (res.ok || res.status === 200) {
+        setSuccess(true);
+      } else {
+        throw new Error(data.message || 'Failed to send reset link');
+      }
     } catch (err) {
-      setError(err.message || 'Failed to reset password. The link may have expired.');
+      setError(err.message || 'Failed to send reset link. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -61,59 +49,53 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
             MedCore<span className="text-[#0E8A6E]">BD</span>
           </div>
           <p className="text-[13px] text-[var(--color-text-secondary)]">
-            Set your new password
+            Reset your password
           </p>
         </div>
 
         <div className="bg-white rounded-lg p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-[40px] mb-4">✅</div>
+              <div className="text-[40px] mb-4">📧</div>
               <h3 className="text-[16px] font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
-                Password reset successfully
+                Check your email
               </h3>
-              <p className="text-[12px] text-[var(--color-text-secondary)] mb-4">
-                Redirecting you to login…
+              <p className="text-[12px] text-[var(--color-text-secondary)] mb-6">
+                If an account exists with <strong>{email}</strong>, you will receive a password reset link shortly.
+              </p>
+              <p className="text-[11px] text-[var(--color-text-secondary)] mb-4">
+                Didn't receive the email? Check your spam folder or try again.
               </p>
               <button
                 onClick={onNavigateToLogin}
                 className="text-[12px] text-[#0E8A6E] font-medium hover:underline"
               >
-                Go to login →
+                ← Back to login
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
+              <div className="mb-6">
+                <p className="text-[13px] text-[var(--color-text-secondary)] mb-4">
+                  Enter your email address and we'll send you a link to reset your password.
+                </p>
+              </div>
+
               {error && (
                 <div className="mb-4 p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px]">
                   {error}
                 </div>
               )}
 
-              <div className="mb-4">
-                <label className="block text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  required
-                  minLength={8}
-                  className="w-full px-3 py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
-                />
-              </div>
-
               <div className="mb-6">
                 <label className="block text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
-                  Confirm New Password
+                  Email Address
                 </label>
                 <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat your new password"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="your@email.com"
                   required
                   className="w-full px-3 py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
                 />
@@ -124,7 +106,7 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
                 disabled={loading}
                 className="w-full py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2d52] transition-colors"
               >
-                {loading ? 'Resetting…' : 'Reset Password'}
+                {loading ? 'Sending…' : 'Send Reset Link'}
               </button>
             </form>
           )}

@@ -10,7 +10,8 @@ const {
   sendStockAlert
 } = require('../controllers/notificationController');
 
-// All notification routes require admin
+// All notification routes require admin authentication
+// These are manual admin tools, not automatic notifications
 router.post('/order-confirmation', protect, authorize('admin'), sendOrderConfirmation);
 router.post('/payment-receipt', protect, authorize('admin'), sendPaymentReceipt);
 router.post('/shipping', protect, authorize('admin'), sendShipping);

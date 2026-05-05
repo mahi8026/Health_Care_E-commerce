@@ -589,27 +589,57 @@ export const api = {
 
   // Notifications (Admin)
   async sendOrderConfirmation(orderId) {
-    return this.post('/notifications/order-confirmation', { orderId });
+    try {
+      return await this.post('/notifications/order-confirmation', { orderId });
+    } catch (error) {
+      console.error('[API] Send order confirmation failed:', error.message);
+      throw error;
+    }
   },
 
   async sendPaymentReceipt(orderId) {
-    return this.post('/notifications/payment-receipt', { orderId });
+    try {
+      return await this.post('/notifications/payment-receipt', { orderId });
+    } catch (error) {
+      console.error('[API] Send payment receipt failed:', error.message);
+      throw error;
+    }
   },
 
   async sendShippingNotification(orderId) {
-    return this.post('/notifications/shipping', { orderId });
+    try {
+      return await this.post('/notifications/shipping', { orderId });
+    } catch (error) {
+      console.error('[API] Send shipping notification failed:', error.message);
+      throw error;
+    }
   },
 
   async sendDeliveryConfirmation(orderId) {
-    return this.post('/notifications/delivered', { orderId });
+    try {
+      return await this.post('/notifications/delivered', { orderId });
+    } catch (error) {
+      console.error('[API] Send delivery confirmation failed:', error.message);
+      throw error;
+    }
   },
 
   async sendQuotationReady(quoteId) {
-    return this.post('/notifications/quotation-ready', { quoteId });
+    try {
+      return await this.post('/notifications/quotation-ready', { quoteId });
+    } catch (error) {
+      console.error('[API] Send quotation ready failed:', error.message);
+      throw error;
+    }
   },
 
   async sendStockAlert() {
-    return this.post('/notifications/stock-alert', {});
+    try {
+      return await this.post('/notifications/stock-alert', {});
+    } catch (error) {
+      console.error('[API] Send stock alert failed:', error.message);
+      throw error;
+    }
   },
 
   // Payments

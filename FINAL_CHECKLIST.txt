@@ -1,0 +1,106 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║              MedCore BD — Final Configuration Checklist               ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+⏱️  TIME REQUIRED: 10 minutes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔴 CONFIGURATION 1: SMTP EMAIL (5 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPTION A: Gmail (Fastest)
+─────────────────────────
+
+□ Step 1: Get Gmail App Password (2 min)
+  → Go to: myaccount.google.com
+  → Security → 2-Step Verification → App Passwords
+  → Create: "MedCore BD Production"
+  → Copy: 16-character password (remove spaces)
+
+□ Step 2: Add to Render (3 min)
+  → dashboard.render.com → Your backend service → Environment
+  → Add 6 variables:
+     SMTP_HOST=smtp.gmail.com
+     SMTP_PORT=587
+     SMTP_USER=your.email@gmail.com
+     SMTP_PASS=[16-char password, no spaces]
+     SMTP_FROM=MedCore BD <your.email@gmail.com>
+     ADMIN_EMAIL=admin@medcorebd.com
+  → Save Changes → Wait for restart
+
+□ Step 3: Test Email (1 min)
+  → Place test order on live site
+  → Check real email inbox
+  → Confirm order email arrives
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔴 CONFIGURATION 2: STRIPE WEBHOOK (5 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ Step 1: Get Backend URL (30 sec)
+  → Render dashboard → Copy your backend URL
+  → Example: https://medcore-backend-abc123.onrender.com
+
+□ Step 2: Create Webhook in Stripe (2 min)
+  → dashboard.stripe.com/webhooks → Add endpoint
+  → URL: https://your-backend-url.onrender.com/api/payments/stripe/webhook
+  → Events: payment_intent.succeeded, payment_intent.payment_failed, charge.refunded
+  → Add endpoint
+
+□ Step 3: Copy Signing Secret (1 min)
+  → Click endpoint → Reveal signing secret
+  → Copy: whsec_...
+
+□ Step 4: Add to Render (1.5 min)
+  → Render → Environment → Edit STRIPE_WEBHOOK_SECRET
+  → Paste: whsec_your_actual_secret
+  → Save Changes → Wait for restart
+
+□ Step 5: Test Webhook (30 sec)
+  → Stripe → Webhooks → Your endpoint
+  → Send test webhook → payment_intent.succeeded
+  → Confirm: 200 OK response
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ FINAL VERIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ Email Test
+  □ Test order email arrives in real inbox
+  □ Email has correct branding
+  □ No errors in Render logs
+
+□ Stripe Webhook Test
+  □ Test webhook shows 200 OK
+  □ Test payment auto-confirms order
+  □ Payment email arrives
+  □ No errors in Stripe logs
+
+□ Production Ready
+  □ All environment variables saved
+  □ Backend service running
+  □ Emails sending to real addresses
+  □ Payments confirming automatically
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 SUCCESS CRITERIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When ALL boxes are checked:
+
+✅ Order confirmation emails arrive in real inbox
+✅ Stripe webhook returns 200 OK
+✅ Test payments auto-confirm orders
+✅ No errors in logs
+✅ Production score: 100%
+
+STATUS: 🚀 PRODUCTION READY!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📄 Detailed Guide: See RENDER_CONFIG_GUIDE.md
+🆘 Troubleshooting: See RENDER_CONFIG_GUIDE.md (bottom section)
+
+⏱️  Total Time: 10 minutes
+🎯 Target: 100% production ready
+✅ Current: 95% (code complete, config pending)
