@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 
-export default function OrderConfirmation({ orderId, estimatedDelivery }) {
+export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery }) {
   const router = useRouter();
   const [downloading, setDownloading] = useState(false);
 
   const handleDownloadInvoice = async () => {
     setDownloading(true);
     try {
-      const blob = await api.downloadInvoice(orderId);
+      // Use mongoId for API call if available, otherwise fall back to orderId
+      const idForDownload = mongoId || orderId;
+      const blob = await api.downloadInvoice(idForDownload);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

@@ -34,7 +34,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${lora.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${lora.variable}`} data-scroll-behavior="smooth">
       <body className="min-h-screen">
         <AuthProvider>
           <CartProvider>

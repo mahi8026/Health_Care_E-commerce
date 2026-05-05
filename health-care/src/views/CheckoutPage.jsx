@@ -93,20 +93,22 @@ export default function CheckoutPage({ onBackToCart }) {
       };
 
       const response = await api.createOrder(orderData);
-      const newOrderId = response.order._id || response.order.id;
-      setCreatedOrderId(newOrderId);
+      const orderNumber = response.order.orderNumber || response.order.orderId || `ORD-${response.order._id}`;
+      const mongoId = response.order._id || response.order.id;
+      
+      setCreatedOrderId(mongoId);
+      setOrderId(orderNumber);
 
       if (['stripe', 'bkash', 'nagad', 'b2b_credit'].includes(selectedPayment)) {
         setShowPaymentModal(true);
       } else {
         GA4Tracker.trackPurchase({
-          orderId: newOrderId,
+          orderId: orderNumber,
           total: getCartTotal(),
           deliveryFee: selectedDelivery === 'express' ? 300 : 150,
           items: cart.map(item => ({ product: item.id, name: item.name, price: item.price || 0, quantity: item.quantity })),
           paymentMethod: selectedPayment
         });
-        setOrderId(newOrderId);
         setIsConfirmed(true);
         clearCart();
       }
@@ -119,17 +121,16 @@ export default function CheckoutPage({ onBackToCart }) {
 
   const handlePaymentSuccess = useCallback(() => {
     GA4Tracker.trackPurchase({
-      orderId: createdOrderId,
+      orderId: orderId,
       total: getCartTotal(),
       deliveryFee: selectedDelivery === 'express' ? 300 : 150,
       items: cart.map(item => ({ product: item.id, name: item.name, price: item.price || 0, quantity: item.quantity })),
       paymentMethod: selectedPayment
     });
-    setOrderId(createdOrderId);
     setIsConfirmed(true);
     clearCart();
     setShowPaymentModal(false);
-  }, [cart, clearCart, createdOrderId, getCartTotal, selectedDelivery, selectedPayment]);
+  }, [cart, clearCart, orderId, getCartTotal, selectedDelivery, selectedPayment]);
 
   const handlePaymentError = useCallback((err) => {
     setError(err?.message || 'Payment failed. Please try again.');
@@ -247,6 +248,7 @@ export default function CheckoutPage({ onBackToCart }) {
           ) : (
             <OrderConfirmation
               orderId={orderId || 'ORD-XXXX'}
+              mongoId={createdOrderId}
               estimatedDelivery="2–5 business days"
             />
           )}

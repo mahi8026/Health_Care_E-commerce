@@ -5,7 +5,6 @@ export const metadata = {
   description: 'Track your order status and delivery progress in real-time'
 };
 
-export default async function TrackOrderPage({ params }) {
-  const { orderNumber } = await params;
-  return <OrderTrackingPage orderNumber={orderNumber} />;
+export default function TrackPage() {
+  return <OrderTrackingPage />;
 }

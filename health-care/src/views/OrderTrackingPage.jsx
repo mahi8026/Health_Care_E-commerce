@@ -16,7 +16,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
     if (initialOrderNumber) {
       handleTrack(initialOrderNumber);
     }
-  }, [initialOrderNumber]);
+  }, [initialOrderNumber]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTrack = async (orderNum = orderNumber) => {
     if (!orderNum.trim()) {
