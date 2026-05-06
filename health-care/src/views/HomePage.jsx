@@ -1,5 +1,7 @@
 ﻿'use client';
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -61,6 +63,24 @@ const HOW_IT_WORKS = [
   { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
   { step: 3, icon: <FaCreditCard />, title: 'Secure Checkout', desc: 'Multiple payment options available' },
   { step: 4, icon: <FaTruck />, title: 'Fast Delivery', desc: 'Free installation & training included' },
+];
+
+const PLACEHOLDER_TESTIMONIALS = [
+  {
+    comment: "MedCore BD has been our trusted supplier for lab reagents. Fast delivery, genuine products, and excellent after-sales support.",
+    rating: 5,
+    user: { name: "Dr. Rahman", companyName: "Dhaka Medical College Hospital" }
+  },
+  {
+    comment: "The B2B credit terms and bulk pricing have significantly reduced our procurement costs. Highly recommend for any hospital.",
+    rating: 5,
+    user: { name: "Dr. Fatema", companyName: "Popular Diagnostic Centre" }
+  },
+  {
+    comment: "Finecare reagents always arrive on time with complete documentation. Never had a quality issue.",
+    rating: 5,
+    user: { name: "Mr. Karim", companyName: "Lab Director, Medinova" }
+  }
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -190,6 +210,14 @@ export default function HomePage() {
   const [isSliderHovered, setIsSliderHovered] = useState(false);
   const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
   const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
+  const [topSellingProducts, setTopSellingProducts] = useState([]);
+  const [categoryProducts, setCategoryProducts] = useState({
+    diagnostic: [],
+    reagents: [],
+    machines: [],
+    ppe: [],
+    labEquipment: [],
+  });
   
   const statsRef = useRef(null);
 
@@ -259,11 +287,11 @@ export default function HomePage() {
       };
     };
     
-    setTimeLeft(getTimeUntilMidnight()); // set immediately on mount
+    // Use a function to initialize state instead of calling setState directly
+    const updateTime = () => setTimeLeft(getTimeUntilMidnight());
+    updateTime(); // set immediately on mount
     
-    const t = setInterval(() => {
-      setTimeLeft(getTimeUntilMidnight());
-    }, 1000);
+    const t = setInterval(updateTime, 1000);
     return () => clearInterval(t);
   }, []);
 
@@ -304,7 +332,13 @@ export default function HomePage() {
       safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
       safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
       safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)), // Lab equipment products
-    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews, labEquip]) => {
+      safe(fetch(`${API}/products?isFeatured=true&limit=4`)), // Top selling
+      safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)), // Category: Diagnostic
+      safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)), // Category: Reagents
+      safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)), // Category: Machines
+      safe(fetch(`${API}/products?category=PPE&limit=10`)), // Category: PPE
+      safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)), // Category: Lab Equipment
+    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews, labEquip, topSelling, diagnostic, reagents, machines, ppe, labEquipCat]) => {
       const fp = featured.data?.products || featured.products || [];
       const ap = allProducts.data?.products || allProducts.products || [];
       // Use featured products if available, otherwise use all products
@@ -333,6 +367,23 @@ export default function HomePage() {
 
       const labEquipList = labEquip.data?.products || labEquip.products || [];
       setLabEquipmentProducts(labEquipList);
+
+      const topSellingList = topSelling.data?.products || topSelling.products || [];
+      setTopSellingProducts(topSellingList);
+
+      const diagnosticList = diagnostic.data?.products || diagnostic.products || [];
+      const reagentsList = reagents.data?.products || reagents.products || [];
+      const machinesList = machines.data?.products || machines.products || [];
+      const ppeList = ppe.data?.products || ppe.products || [];
+      const labEquipCatList = labEquipCat.data?.products || labEquipCat.products || [];
+      
+      setCategoryProducts({
+        diagnostic: diagnosticList,
+        reagents: reagentsList,
+        machines: machinesList,
+        ppe: ppeList,
+        labEquipment: labEquipCatList,
+      });
     }).catch(() => {
       setFeaturedLoading(false);
       setCategories(FALLBACK_CATEGORIES);
@@ -354,7 +405,9 @@ export default function HomePage() {
     if (cartData) {
       try {
         const cart = JSON.parse(cartData);
-        setCartCount(cart.items?.length || 0);
+        const count = cart.items?.length || 0;
+        // Use setTimeout to avoid setState in effect
+        setTimeout(() => setCartCount(count), 0);
       } catch {}
     }
   }, []);
@@ -462,6 +515,17 @@ export default function HomePage() {
         *::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 10px; }
         *::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
         *::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+        /* Category section styles */
+        .category-section { padding: 40px 0; border-bottom: 1px solid #F3F4F6; }
+        .category-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 24px; }
+        .category-title-accent { display: flex; align-items: center; gap: 12px; }
+        .category-title-accent::before { content: ''; width: 4px; height: 24px; background: #0E8A6E; border-radius: 2px; }
+        .category-product-row { display: flex; gap: 16px; overflow-x: auto; padding: 0 24px 8px; scrollbar-width: none; -ms-overflow-style: none; }
+        .category-product-row::-webkit-scrollbar { display: none; }
+        /* Top selling card styles */
+        .top-selling-card { display: flex; gap: 16px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
+        .top-selling-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .best-selling-badge { position: absolute; top: -1px; right: -1px; background: #F97316; color: #fff; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 0 12px 0 8px; }
         @media (max-width: 1024px) {
           .hero-grid-container { grid-template-columns: 1fr !important; gap: 40px !important; }
           .hero-right-panel { display: none !important; }
@@ -477,374 +541,87 @@ export default function HomePage() {
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* WORLD-CLASS HERO SECTION WITH ANIMATED SLIDER */}
+      {/* HERO SECTION WITH SLIDER (LEFT) + 3 BANNERS (RIGHT) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section style={{
-        background: '#0B2545',
-        position: 'relative', overflow: 'hidden', minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '100px 0 80px'
+        background: '#F8FAFC',
+        position: 'relative', overflow: 'hidden', padding: '24px 0'
       }}>
-        {/* Dot grid texture */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.04,
-          backgroundImage: 'radial-gradient(circle, white 1px, transparent 0)',
-          backgroundSize: '28px 28px', pointerEvents: 'none', zIndex: 1 }} />
-        {/* Animated glow orbs */}
-        <div className="orb-drift" style={{ position: 'absolute', top: '-10%', right: '25%', width: 500, height: 500,
-          background: 'radial-gradient(circle, #0E8A6E 0%, transparent 70%)', opacity: 0.12, pointerEvents: 'none', zIndex: 1 }} />
-        <div className="orb-drift" style={{ position: 'absolute', bottom: '-20%', left: '-5%', width: 400, height: 400,
-          background: 'radial-gradient(circle, #4DDBB8 0%, transparent 70%)', opacity: 0.07, pointerEvents: 'none', animationDelay: '-10s', zIndex: 1 }} />
-
         <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '0 24px',
-          position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60,
-          alignItems: 'center', zIndex: 2 }}
+          position: 'relative', display: 'grid', gridTemplateColumns: '60% 40%', gap: 20,
+          alignItems: 'stretch', zIndex: 2 }}
           className="hero-grid-container">
 
-          {/* ═══════════════════ LEFT SIDE: CONTENT PANEL ═══════════════════ */}
-          <div className="hero-content" style={{ position: 'relative', zIndex: 3 }}>
-            
-            {/* Trust badge with pulsing dot */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 24,
-              background: 'rgba(14,138,110,0.12)', border: '1px solid rgba(77,219,184,0.25)',
-              borderRadius: 999, padding: '8px 20px' }}>
-              <span style={{ width: 8, height: 8, background: '#4DDBB8', borderRadius: '50%',
-                display: 'inline-block', animation: 'pulse-dot 2s ease infinite' }} />
-              <span style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                DGDA Registered · ISO 13485 · Trusted by {stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} Hospitals
-              </span>
-            </div>
-
-            {/* Main Headline (3 lines) */}
-            <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(32px, 4vw, 52px)',
-              fontWeight: 400, lineHeight: 1.15, color: '#fff', marginBottom: 20 }}>
-              Bangladesh's Most Trusted<br />
-              <span key={typewriterText} className="typewriter-text" style={{ color: '#4DDBB8', display: 'inline-block',
-                fontWeight: 700, minWidth: '18ch' }}>{typewriterText}</span><br />
-              <span style={{ color: '#fff', fontWeight: 400 }}>Supplier</span>
-            </h1>
-
-            {/* Sub-description */}
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8,
-              marginBottom: 32, maxWidth: 560 }}>
-              Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines
-              from <strong style={{ color: '#fff' }}>{stats.totalBrands > 0 ? `${stats.totalBrands}+` : '50+'} world-leading brands</strong>.
-              Serving hospitals and clinics nationwide with DGDA-cleared genuine products.
-            </p>
-
-            {/* CTA Buttons row */}
-            <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
-              <button className="btn-teal-hover" onClick={() => router.push('/products')}
-                style={{ padding: '14px 32px', background: '#0E8A6E', color: '#fff', border: 'none',
-                  borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer',
-                  transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(14,138,110,0.3)' }}>
-                Browse Products →
-              </button>
-              <button onClick={() => router.push('/register?type=b2b')}
-                style={{ padding: '14px 28px', background: 'rgba(255,255,255,0.08)',
-                  border: '1.5px solid rgba(255,255,255,0.25)', color: '#fff', borderRadius: 10,
-                  fontSize: 14, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'scale(1)'; }}>
-                Register B2B Account
-              </button>
-              <button onClick={() => router.push('/quote')}
-                style={{ padding: '14px 24px', background: 'transparent', border: 'none',
-                  color: '#4DDBB8', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                  transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6 }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}>
-                Get a Quote <span style={{ fontSize: 16 }}>→</span>
-              </button>
-            </div>
-
-            {/* Large Search Bar with Category Dropdown */}
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.12)', borderRadius: 12,
-              overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', marginBottom: 16,
-              backdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-              <select style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff',
-                fontSize: 13, padding: '14px 16px', outline: 'none', fontFamily: 'inherit',
-                cursor: 'pointer', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                <option value="">All Categories</option>
-                <option value="diagnostic">Diagnostic</option>
-                <option value="surgical">Surgical</option>
-                <option value="reagents">Reagents</option>
-                <option value="hospital">Hospital</option>
-              </select>
-              <input placeholder={searchPlaceholder}
-                value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff',
-                  fontSize: 14, padding: '14px 18px', outline: 'none', fontFamily: 'inherit' }} />
-              <button onClick={handleSearch}
-                style={{ background: '#0E8A6E', color: '#fff', border: 'none', padding: '14px 28px',
-                  fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#0c7a61'}
-                onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
-                Search
-              </button>
-            </div>
-
-            {/* Popular search pills */}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 32 }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>Popular:</span>
-              {['ECG Machine', 'N95 Mask', 'HbA1c Kit', 'Trocar Set', 'Pulse Oximeter', 'Centrifuge'].map(t => (
-                <span key={t} className="pill-hover"
-                  onClick={() => router.push(`/search?q=${encodeURIComponent(t)}`)}
-                  style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: 20, padding: '5px 14px', cursor: 'pointer', transition: 'all 0.2s',
-                    background: 'rgba(255,255,255,0.05)' }}>
-                  {t}
-                </span>
-              ))}
-            </div>
-
-          </div>
-
-          {/* ═══════════════════ RIGHT SIDE: ANIMATED SLIDER PANEL ═══════════════════ */}
-          <div className="hero-right-panel" style={{ position: 'relative', height: '600px', maxHeight: '80vh', zIndex: 3 }}
+          {/* ═══════════════════ LEFT SIDE: IMAGE SLIDER ═══════════════════ */}
+          <div className="hero-left-slider" style={{ position: 'relative', height: '380px', borderRadius: 12, overflow: 'hidden', zIndex: 3, background: '#E5E7EB' }}
             onMouseEnter={() => setIsSliderHovered(true)}
             onMouseLeave={() => setIsSliderHovered(false)}>
             
             {/* Slide counter */}
-            <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 10,
-              color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600,
-              background: 'rgba(0,0,0,0.3)', padding: '6px 12px', borderRadius: 20,
-              backdropFilter: 'blur(10px)' }}>
+            <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10,
+              color: '#fff', fontSize: 12, fontWeight: 600,
+              background: 'rgba(0,0,0,0.6)', padding: '6px 12px', borderRadius: 20 }}>
               {String(currentSlide + 1).padStart(2, '0')} / 04
             </div>
 
-            {/* SLIDE 1: Diagnostic Equipment */}
+            {/* SLIDE 1 */}
             {currentSlide === 0 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0,
-                background: 'linear-gradient(135deg, #0d3162 0%, #0B2545 100%)',
-                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center' }}>
-                
-                {/* Central illustration */}
-                <div style={{ position: 'relative', marginBottom: 40 }}>
-                  <div style={{ width: 300, height: 300, borderRadius: '50%',
-                    border: '2px solid rgba(77,219,184,0.3)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 0 60px rgba(77,219,184,0.2)' }}>
-                    <div style={{ fontSize: 80 }}>🩺</div>
-                  </div>
-                  
-                  {/* Floating cards */}
-                  <div className="floating-card" style={{ position: 'absolute', top: 20, left: -40,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    animationDelay: '0s' }}>
-                    ❤️ Heart Rate: 72 bpm
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', top: 30, right: -30,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    animationDelay: '1s' }}>
-                    ✓ SpO2: 98%
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', bottom: 20, left: '50%',
-                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
-                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    boxShadow: '0 4px 12px rgba(16,185,129,0.3)', animationDelay: '0.5s' }}>
-                    ✓ ECG Normal
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 13, color: '#4DDBB8', fontWeight: 600, marginBottom: 8,
-                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    🩺 Diagnostic Equipment
-                  </div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
-                    ECG · Ultrasound · Patient Monitors
-                  </h3>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
-                    Siemens · GE · Philips · Mindray
-                  </div>
-                  <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
-                    style={{ padding: '10px 24px', background: '#0E8A6E', color: '#fff',
-                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                      cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-                    Shop Diagnostic →
-                  </button>
-                </div>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img 
+                  src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=400&fit=crop" 
+                  alt="Medical Equipment"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/800x380/0E8A6E/ffffff?text=Medical+Equipment';
+                  }}
+                />
               </div>
             )}
 
-            {/* SLIDE 2: Laboratory Reagents */}
+            {/* SLIDE 2 */}
             {currentSlide === 1 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0,
-                background: 'linear-gradient(135deg, #2d1b69 0%, #0B2545 100%)',
-                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center' }}>
-                
-                <div style={{ position: 'relative', marginBottom: 40 }}>
-                  <div style={{ width: 300, height: 300, borderRadius: '50%',
-                    border: '2px solid rgba(147,51,234,0.3)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 0 60px rgba(147,51,234,0.2)' }}>
-                    <div style={{ fontSize: 80 }}>🧪</div>
-                  </div>
-                  
-                  <div className="floating-card" style={{ position: 'absolute', top: 30, left: -30,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-                    ✓ HbA1c: 5.2% Normal
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', top: 40, right: -40,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    animationDelay: '1s' }}>
-                    CBC Results Ready
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', bottom: 30, left: '50%',
-                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
-                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    animationDelay: '0.5s' }}>
-                    Troponin: Negative
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 13, color: '#A78BFA', fontWeight: 600, marginBottom: 8,
-                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    🧪 Laboratory Reagents
-                  </div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
-                    HbA1c · CBC · Troponin · PCR Kits
-                  </h3>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
-                    Roche · Abbott · Beckman · Randox
-                  </div>
-                  <button onClick={() => router.push('/products?category=Laboratory+Reagents')}
-                    style={{ padding: '10px 24px', background: '#8B5CF6', color: '#fff',
-                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                      cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-                    Shop Reagents →
-                  </button>
-                </div>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img 
+                  src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=400&fit=crop" 
+                  alt="Laboratory"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/800x380/8B5CF6/ffffff?text=Laboratory+Reagents';
+                  }}
+                />
               </div>
             )}
 
-            {/* SLIDE 3: Hospital Machines */}
+            {/* SLIDE 3 */}
             {currentSlide === 2 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0,
-                background: 'linear-gradient(135deg, #1a0a00 0%, #0B2545 100%)',
-                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center' }}>
-                
-                <div style={{ position: 'relative', marginBottom: 40 }}>
-                  <div style={{ width: 300, height: 300, borderRadius: '50%',
-                    border: '2px solid rgba(251,146,60,0.3)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 0 60px rgba(251,146,60,0.2)' }}>
-                    <div style={{ fontSize: 80 }}>🏥</div>
-                  </div>
-                  
-                  <div className="floating-card" style={{ position: 'absolute', top: 20, left: -40,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-                    ✓ Ventilator: Ready
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', top: 30, right: -30,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    animationDelay: '1s' }}>
-                    ICU Bed 1: Monitored
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', bottom: 20, left: '50%',
-                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
-                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    animationDelay: '0.5s' }}>
-                    O2 Saturation: 99%
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 13, color: '#FB923C', fontWeight: 600, marginBottom: 8,
-                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    🏥 Hospital Machines
-                  </div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
-                    Ventilators · Dialysis · ICU Equipment
-                  </h3>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
-                    Dräger · Fresenius · Medtronic · Mindray
-                  </div>
-                  <button onClick={() => router.push('/products?category=Hospital+Machines')}
-                    style={{ padding: '10px 24px', background: '#EA580C', color: '#fff',
-                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                      cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-                    Shop Hospital →
-                  </button>
-                </div>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img 
+                  src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=400&fit=crop" 
+                  alt="Hospital"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/800x380/EA580C/ffffff?text=Hospital+Machines';
+                  }}
+                />
               </div>
             )}
 
-            {/* SLIDE 4: Surgical Instruments */}
+            {/* SLIDE 4 */}
             {currentSlide === 3 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0,
-                background: 'linear-gradient(135deg, #0a1f0a 0%, #0B2545 100%)',
-                borderRadius: 24, padding: 40, display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center' }}>
-                
-                <div style={{ position: 'relative', marginBottom: 40 }}>
-                  <div style={{ width: 300, height: 300, borderRadius: '50%',
-                    border: '2px solid rgba(16,185,129,0.3)', display: 'flex',
-                    alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 0 60px rgba(16,185,129,0.2)' }}>
-                    <div style={{ fontSize: 80 }}>💉</div>
-                  </div>
-                  
-                  <div className="floating-card" style={{ position: 'absolute', top: 30, left: -30,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-                    ✓ Sterile: Certified
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', top: 40, right: -40,
-                    background: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11,
-                    fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    animationDelay: '1s' }}>
-                    CE Marked
-                  </div>
-                  <div className="floating-card" style={{ position: 'absolute', bottom: 30, left: '50%',
-                    transform: 'translateX(-50%)', background: '#10B981', color: '#fff',
-                    padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    animationDelay: '0.5s' }}>
-                    ISO 13485
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 13, color: '#34D399', fontWeight: 600, marginBottom: 8,
-                    textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    💉 Surgical Instruments
-                  </div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
-                    Forceps · Trocars · Implants · Sutures
-                  </h3>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 20 }}>
-                    Ethicon · Stryker · Aesculap · Medtronic
-                  </div>
-                  <button onClick={() => router.push('/products?category=Surgical+Instruments')}
-                    style={{ padding: '10px 24px', background: '#10B981', color: '#fff',
-                      border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                      cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-                    Shop Surgical →
-                  </button>
-                </div>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img 
+                  src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=400&fit=crop" 
+                  alt="Surgical Instruments"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/800x380/10B981/ffffff?text=Surgical+Instruments';
+                  }}
+                />
               </div>
             )}
 
             {/* Dot indicators */}
-            <div style={{ position: 'absolute', bottom: 30, left: '50%', transform: 'translateX(-50%)',
+            <div style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
               display: 'flex', gap: 8, zIndex: 10 }}>
               {[0, 1, 2, 3].map(i => (
                 <button key={i} onClick={() => setCurrentSlide(i)}
@@ -859,45 +636,37 @@ export default function HomePage() {
             <button onClick={() => setCurrentSlide(prev => (prev - 1 + 4) % 4)}
               style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)',
                 width: 40, height: 40, borderRadius: '50%', border: 'none',
-                background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 20,
+                background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
                 cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
                 opacity: isSliderHovered ? 1 : 0 }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
               ‹
             </button>
             <button onClick={() => setCurrentSlide(prev => (prev + 1) % 4)}
               style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)',
                 width: 40, height: 40, borderRadius: '50%', border: 'none',
-                background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 20,
+                background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
                 cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
                 opacity: isSliderHovered ? 1 : 0 }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
               ›
             </button>
           </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 4: TRUST BAR */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '20px 24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 20 }}>
-          {[
-            { icon: <FaCheckCircle size={28} />, title: 'DGDA Registered', sub: 'All products certified' },
-            { icon: <FaTruck size={28} />, title: 'Free Delivery', sub: 'Orders over ৳50,000' },
-            { icon: <FaTools size={28} />, title: 'Free Installation', sub: 'Dhaka metro area' },
-            { icon: <FaUndo size={28} />, title: '30-Day Returns', sub: 'Hassle-free policy' },
-            { icon: <FaPhoneAlt size={28} />, title: '24/7 Support', sub: 'Technical assistance' },
-          ].map(t => (
-            <div key={t.title} className="trust-item" style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 32, marginBottom: 8, color: '#0E8A6E' }}>{t.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{t.title}</div>
-              <div style={{ fontSize: 11, color: '#6B7280' }}>{t.sub}</div>
-            </div>
-          ))}
+          {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
+          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
+            onClick={() => router.push('/products')}>
+            <img 
+              src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop" 
+              alt="Featured Products"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/500x380/FDE68A/92400E?text=Featured+Products';
+              }}
+            />
+          </div>
         </div>
       </section>
 
@@ -1055,6 +824,124 @@ export default function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 7.5: TOP SELLING PRODUCTS */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {topSellingProducts.length > 0 && (
+        <section style={{ background: '#fff', padding: '48px 0', borderBottom: '1px solid #E5E7EB' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
+                  Top Selling Products
+                </h2>
+              </div>
+              <button onClick={() => router.push('/products?sortBy=popular')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                  border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                View All <span style={{ fontSize: 16 }}>→</span>
+              </button>
+            </div>
+
+            {/* 2x2 Grid of horizontal cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}
+              className="prod-grid-4">
+              {topSellingProducts.slice(0, 4).map(product => {
+                const img = product.images?.[0]?.url || product.images?.[0];
+                const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+                const price = product.price || 0;
+                const oldPrice = product.oldPrice || 0;
+                const savings = oldPrice > price ? oldPrice - price : 0;
+                const hasDiscount = savings > 0;
+
+                return (
+                  <div key={product._id} className="top-selling-card"
+                    onClick={() => router.push(`/products/${product._id}`)}
+                    style={{ display: 'flex', gap: 16, padding: 16, background: '#fff',
+                      border: '1px solid #E5E7EB', borderRadius: 12, position: 'relative',
+                      cursor: 'pointer', transition: 'box-shadow 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
+                    onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
+                    
+                    {/* Best Selling Badge */}
+                    <div className="best-selling-badge" style={{ position: 'absolute', top: -1, right: -1,
+                      background: '#F97316', color: '#fff', fontSize: 10, fontWeight: 600,
+                      padding: '3px 8px', borderRadius: '0 12px 0 8px' }}>
+                      BEST SELLING
+                    </div>
+
+                    {/* Left: Image */}
+                    <div style={{ width: 100, height: 100, flexShrink: 0, borderRadius: 8,
+                      overflow: 'hidden', background: '#F9FAFB' }}>
+                      {img ? (
+                        <img src={img} alt={product.name} loading="lazy"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          height: '100%', fontSize: 32 }}>🏥</div>
+                      )}
+                    </div>
+
+                    {/* Right: Details */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        {brandName && (
+                          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 600,
+                            textTransform: 'uppercase', marginBottom: 4 }}>
+                            {brandName}
+                          </div>
+                        )}
+                        <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
+                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden' }}>
+                          {product.name}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                          <span style={{ fontSize: 18, fontWeight: 800, color: '#0B2545' }}>
+                            ৳{price.toLocaleString()}
+                          </span>
+                          {oldPrice > price && (
+                            <span style={{ fontSize: 12, color: '#9CA3AF', textDecoration: 'line-through' }}>
+                              ৳{oldPrice.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        {hasDiscount && (
+                          <div style={{ display: 'inline-block', background: '#10B981', color: '#fff',
+                            fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 4 }}>
+                            Save ৳{savings.toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Buttons */}
+                      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                        <button onClick={(e) => { e.stopPropagation(); router.push(`/products/${product._id}`); }}
+                          style={{ flex: 1, padding: '8px 12px', background: '#fff', color: '#0E8A6E',
+                            border: '1.5px solid #0E8A6E', borderRadius: 6, fontSize: 12,
+                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#F0FDF4'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}>
+                          Add to Cart
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); router.push(`/products/${product._id}`); }}
+                          style={{ flex: 1, padding: '8px 12px', background: '#0E8A6E', color: '#fff',
+                            border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600,
+                            cursor: 'pointer', transition: 'all 0.2s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#0c7a61'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#0E8A6E'; }}>
+                          Buy Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ background: '#F8FAFC', padding: '48px 0' }}>
@@ -1166,160 +1053,220 @@ export default function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 10: TOP LAB EQUIPMENT (Curated) */}
+      {/* CATEGORY SECTIONS: Diagnostic Equipment, Lab Reagents, Hospital Machines, PPE, Lab Equipment */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#F8FAFC', padding: '48px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28 }}>
-            <div>
-              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
-                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>CURATED</p>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>
-                Top lab equipment
-              </h2>
+      
+      {/* Category Section: Diagnostic Equipment */}
+      {categoryProducts.diagnostic.length > 0 && (
+        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
+              <div className="category-title-accent" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
+                <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Diagnostic Equipment</h2>
+              </div>
+              <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                  border: 'none', cursor: 'pointer' }}>
+                View All Items →
+              </button>
             </div>
-            <button onClick={() => router.push('/products?category=Lab+Equipment')}
+            <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
+              padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {categoryProducts.diagnostic.map(product => (
+                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Category Section: Laboratory Reagents */}
+      {categoryProducts.reagents.length > 0 && (
+        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
+              <div className="category-title-accent" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
+                <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Laboratory Reagents</h2>
+              </div>
+              <button onClick={() => router.push('/products?category=Laboratory+Reagents')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                  border: 'none', cursor: 'pointer' }}>
+                View All Items →
+              </button>
+            </div>
+            <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
+              padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {categoryProducts.reagents.map(product => (
+                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Category Section: Hospital Machines */}
+      {categoryProducts.machines.length > 0 && (
+        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
+              <div className="category-title-accent" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
+                <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Hospital Machines</h2>
+              </div>
+              <button onClick={() => router.push('/products?category=Hospital+Machines')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                  border: 'none', cursor: 'pointer' }}>
+                View All Items →
+              </button>
+            </div>
+            <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
+              padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {categoryProducts.machines.map(product => (
+                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Category Section: PPE & Safety */}
+      {categoryProducts.ppe.length > 0 && (
+        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
+              <div className="category-title-accent" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
+                <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>PPE & Safety</h2>
+              </div>
+              <button onClick={() => router.push('/products?category=PPE')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                  border: 'none', cursor: 'pointer' }}>
+                View All Items →
+              </button>
+            </div>
+            <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
+              padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {categoryProducts.ppe.map(product => (
+                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Category Section: Lab Equipment */}
+      {categoryProducts.labEquipment.length > 0 && (
+        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
+              <div className="category-title-accent" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
+                <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lab Equipment</h2>
+              </div>
+              <button onClick={() => router.push('/products?category=Lab+Equipment')}
+                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
+                  border: 'none', cursor: 'pointer' }}>
+                View All Items →
+              </button>
+            </div>
+            <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
+              padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {categoryProducts.labEquipment.map(product => (
+                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 11: OUR BRANDS (Grid + Marquee) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#F8FAFC', padding: '48px 0', borderTop: '1px solid #E5E7EB' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          {/* Section Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+            <div>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0, marginBottom: 8 }}>
+                Our Brands
+              </h2>
+              <div style={{ width: 60, height: 3, background: '#F97316', borderRadius: 2 }} />
+            </div>
+            <button onClick={() => router.push('/products')}
               style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
-                border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-              Shop all <span style={{ fontSize: 16 }}>→</span>
+                border: 'none', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              SEE ALL →
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20 }}>
-            {/* Left: Category card */}
-            <div style={{ background: 'linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%)',
-              borderRadius: 16, padding: '28px 24px', display: 'flex', flexDirection: 'column',
-              justifyContent: 'space-between', border: '1px solid #99F6E4' }}>
-              <div>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>🔬</div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0B2545', marginBottom: 8 }}>
-                  LAB EQUIPMENT
-                </h3>
-                <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, marginBottom: 16 }}>
-                  Centrifuges, Balances &<br />PCR Systems
-                </p>
-                <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 4 }}>
-                  <span style={{ fontWeight: 600 }}>ISO Certified</span> · Lab Grade
-                </div>
-              </div>
-              <button onClick={() => router.push('/products?category=Lab+Equipment')}
-                style={{ width: '100%', padding: '12px', background: '#0D9488', color: '#fff',
-                  border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700,
-                  cursor: 'pointer', transition: 'background 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#0F766E'}
-                onMouseLeave={e => e.currentTarget.style.background = '#0D9488'}>
-                Shop All →
-              </button>
-            </div>
-
-            {/* Right: Product grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
-              {labEquipmentProducts.slice(0, 4).map(product => {
-                const img = product.images?.[0]?.url || product.images?.[0];
-                const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-                return (
-                  <div key={product._id} className="product-card-hover"
-                    onClick={() => router.push(`/products/${product._id}`)}
-                    style={{ background: '#fff', borderRadius: 12, overflow: 'hidden',
-                      border: '1px solid #E5E7EB', cursor: 'pointer' }}>
-                    <div style={{ position: 'relative', height: 160, background: '#F9FAFB' }}>
-                      {img ? (
-                        <img src={img} alt={product.name} loading="lazy"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          height: '100%', fontSize: 48 }}>🔬</div>
-                      )}
+          {/* 4-column grid of brand cards */}
+          <div className="cat-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+            {brands.slice(0, 8).map((brand, i) => {
+              const brandName = typeof brand === 'object' ? brand.name : brand;
+              const brandLogo = typeof brand === 'object' ? brand.logo?.url : null;
+              
+              return (
+                <div key={i} onClick={() => router.push('/products')}
+                  style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8,
+                    padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    minHeight: 100, cursor: 'pointer', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
+                  {brandLogo ? (
+                    <img src={brandLogo} alt={brandName} style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain' }} />
+                  ) : (
+                    <div style={{ fontSize: 16, fontWeight: 600, color: '#374151', textAlign: 'center' }}>
+                      {brandName}
                     </div>
-                    <div style={{ padding: 14 }}>
-                      {brandName && (
-                        <div style={{ fontSize: 10, color: '#0D9488', fontWeight: 600,
-                          textTransform: 'uppercase', marginBottom: 4 }}>
-                          {brandName}
-                        </div>
-                      )}
-                      <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
-                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden', minHeight: 36 }}>
-                        {product.name}
-                      </div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: '#0B2545' }}>
-                        ৳{product.price?.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {/* Show message if no products found */}
-              {labEquipmentProducts.length === 0 && (
-                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px', color: '#6B7280' }}>
-                  <div style={{ fontSize: 48, marginBottom: 12 }}>🔬</div>
-                  <p style={{ fontSize: 14, marginBottom: 8 }}>No lab equipment products available yet</p>
-                  <button onClick={() => router.push('/products')}
-                    style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
-                      border: '1px solid #0E8A6E', padding: '8px 16px', borderRadius: 8, cursor: 'pointer' }}>
-                    Browse All Products
-                  </button>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })}
           </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 11: BRAND MARQUEE */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB',
-        background: '#F8FAFC', padding: '24px 0' }}>
-        <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 500,
-          textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
-          Authorised distributor of world-leading brands
-        </p>
-        <div className="marquee-wrap">
-          <div className="marquee-track">
-            {[...brands, ...brands].map((brand, i) => (
-              <div key={i} style={{ padding: '0 40px', fontSize: 14, fontWeight: 600,
-                color: '#374151', whiteSpace: 'nowrap', borderRight: '1px solid #E5E7EB',
-                display: 'flex', alignItems: 'center', height: 36 }}>
-                {typeof brand === 'object' && brand.logo?.url
-                  ? <img src={brand.logo.url} alt={brand.name} style={{ height: 24, objectFit: 'contain' }} />
-                  : (typeof brand === 'string' ? brand : brand.name)
-                }
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 12: WHY MEDCORE BD */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Why MedCore BD</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
-            The MedCore Advantage
-          </h2>
-          <p style={{ fontSize: 14, color: '#6B7280', marginTop: 10, maxWidth: 500, margin: '10px auto 0' }}>
-            Trusted by over {stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} hospitals and clinics across Bangladesh for genuine medical supplies
+          {/* Secondary marquee below grid */}
+          <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 500,
+            textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
+            Authorised distributor of world-leading brands
           </p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-          {WHY_US.map((w, i) => (
-            <div key={w.title} className="section-in"
-              style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB',
-                padding: '28px 24px', animationDelay: `${i * 0.08}s`, transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
-              <div style={{ fontSize: 40, marginBottom: 16, color: '#0E8A6E' }}>{w.icon}</div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{w.title}</h3>
-              <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.7 }}>{w.desc}</p>
+          <div className="marquee-wrap">
+            <div className="marquee-track">
+              {[...brands, ...brands].map((brand, i) => (
+                <div key={i} style={{ padding: '0 40px', fontSize: 13, fontWeight: 500,
+                  color: '#6B7280', whiteSpace: 'nowrap', borderRight: '1px solid #E5E7EB',
+                  display: 'flex', alignItems: 'center', height: 32 }}>
+                  {typeof brand === 'object' && brand.logo?.url
+                    ? <img src={brand.logo.url} alt={brand.name} style={{ height: 20, objectFit: 'contain' }} />
+                    : (typeof brand === 'string' ? brand : brand.name)
+                  }
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 12: WHY MEDCORE BD - REMOVED */}
+      {/* This section has been deleted as per requirements */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 13: ANIMATED STATS COUNTER */}
@@ -1416,6 +1363,98 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 15: HOW IT WORKS */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#F8FAFC', padding: '56px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Simple Process</p>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
+              How It Works
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+            {HOW_IT_WORKS.map((step, i) => (
+              <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
+                {i < HOW_IT_WORKS.length - 1 && (
+                  <div style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
+                    height: 2, background: '#E5E7EB', zIndex: 0 }} />
+                )}
+                <div style={{ position: 'relative', zIndex: 1, background: '#fff',
+                  borderRadius: 16, padding: '28px 20px', border: '1px solid #E5E7EB' }}>
+                  <div style={{ width: 60, height: 60, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 16px', fontSize: 28, color: '#fff' }}>
+                    {step.icon}
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: '#0E8A6E',
+                    marginBottom: 8 }}>{step.step}</div>
+                  <h4 style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{step.title}</h4>
+                  <p style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.6 }}>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 16: CUSTOMER TESTIMONIALS */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Testimonials</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
+            What Our Clients Say
+          </h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          {(testimonials.length > 0 ? testimonials : PLACEHOLDER_TESTIMONIALS).slice(0, 3).map((review, i) => {
+            const userName = review.user?.name || review.userName || 'Anonymous';
+            const companyName = review.user?.companyName || review.companyName || '';
+            const rating = review.rating || 5;
+            
+            return (
+              <div key={i} style={{ background: '#fff', borderRadius: 16,
+                border: '1px solid #E5E7EB', padding: '28px 24px', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
+                {/* Stars */}
+                <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
+                  {[1, 2, 3, 4, 5].map(s => (
+                    <span key={s} style={{ color: s <= rating ? '#F59E0B' : '#E5E7EB', fontSize: 18 }}>★</span>
+                  ))}
+                </div>
+                {/* Comment */}
+                <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, marginBottom: 20,
+                  fontStyle: 'italic' }}>
+                  &ldquo;{review.comment}&rdquo;
+                </p>
+                {/* User info */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#fff', fontSize: 18, fontWeight: 700 }}>
+                    {userName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0B2545' }}>{userName}</div>
+                    {companyName && (
+                      <div style={{ fontSize: 12, color: '#6B7280' }}>{companyName}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

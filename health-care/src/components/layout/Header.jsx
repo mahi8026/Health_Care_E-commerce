@@ -55,30 +55,47 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           </div>
           
           {/* Desktop Search Bar */}
-          <div className="hidden md:flex flex-1 border-2 border-[#0B2545] rounded-lg overflow-hidden max-w-[680px]">
-            <select 
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border-none border-r border-gray-200 px-3 text-[12px] text-gray-700 bg-gray-50 cursor-pointer outline-none min-w-[130px]"
-            >
-              <option>All Categories</option>
-              {FALLBACK_CATEGORIES.map(cat => (
-                <option key={cat.name}>{cat.name}</option>
-              ))}
-            </select>
-            <input 
-              placeholder="Search products, brands, catalogue numbers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="flex-1 border-none px-4 text-[13px] outline-none"
-            />
-            <button 
-              onClick={handleSearch}
-              className="bg-[#0B2545] text-white border-none px-5 text-[13px] font-semibold cursor-pointer hover:bg-[#0d2d52] transition-colors flex items-center gap-2"
-            >
-              <FaSearch size={14} /> Search
-            </button>
+          <div className="hidden md:flex flex-1 max-w-[680px]">
+            <div className="flex w-full border-2 border-gray-300 rounded-lg overflow-hidden bg-white hover:border-[#0E8A6E] transition-colors focus-within:border-[#0E8A6E] focus-within:shadow-md">
+              <select 
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="border-none bg-gray-50 px-4 py-3 text-[13px] text-gray-700 cursor-pointer outline-none min-w-[150px] font-medium"
+              >
+                <option value="All Categories">All Categories</option>
+                {FALLBACK_CATEGORIES.map(cat => (
+                  <option key={cat.name} value={cat.name}>{cat.name}</option>
+                ))}
+              </select>
+              <div className="w-px bg-gray-300"></div>
+              <div className="flex-1 relative">
+                <input 
+                  placeholder="Search products, brands, catalogue numbers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  className="w-full border-none px-4 py-3 text-[14px] outline-none"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                    aria-label="Clear search"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-1 1L8 9l-2.5 2.5-1-1L7 8 4.5 5.5l1-1L8 7l2.5-2.5 1 1L9 8l2.5 2.5z"/>
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <button 
+                onClick={handleSearch}
+                className="bg-[#0E8A6E] text-white border-none px-6 py-3 text-[14px] font-semibold cursor-pointer hover:bg-[#0c7a61] transition-colors flex items-center gap-2"
+              >
+                <FaSearch size={14} /> 
+                <span className="hidden lg:inline">Search</span>
+              </button>
+            </div>
           </div>
           
           {/* Mobile Search Icon */}
@@ -199,29 +216,6 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           </div>
         )}
       </nav>
-
-      {/* Secondary Navigation - Desktop Only */}
-      <div className="hidden md:block bg-white border-b border-gray-200">
-        <div className="max-w-[1400px] mx-auto px-6 flex items-center gap-0 overflow-x-auto">
-          {[
-            { label: 'Home', path: '/' },
-            { label: 'Diagnostics', path: '/products?category=Diagnostic+Equipment' },
-            { label: 'Surgical', path: '/products?category=Surgical+Instruments' },
-            { label: 'Reagents', path: '/products?category=Laboratory+Reagents' },
-            { label: 'Machines', path: '/products?category=Hospital+Machines' },
-            { label: 'Lab Equipment', path: '/products?category=Lab+Equipment' },
-            { label: 'B2B Portal', path: '/b2b' },
-          ].map(item => (
-            <button 
-              key={item.label}
-              onClick={() => router.push(item.path)}
-              className="px-3 py-2.5 bg-transparent border-none border-b-2 border-transparent text-[12px] font-medium text-gray-600 cursor-pointer whitespace-nowrap transition-all hover:text-[#0E8A6E] hover:border-[#0E8A6E]"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
       
       {/* Mobile Menu */}
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
