@@ -76,18 +76,18 @@ export default function StripePaymentForm({ amount, orderId, onSuccess, onError 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg p-4">
-        <label className="block text-[12px] font-medium mb-2 text-[var(--color-text-secondary)]">
+    <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+      <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg p-3 md:p-4">
+        <label className="block text-[11px] md:text-[12px] font-medium mb-2 text-[var(--color-text-secondary)]">
           Card Details
         </label>
-        <div className="p-3 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg bg-white">
+        <div className="p-2.5 md:p-3 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg bg-white">
           <CardElement options={cardElementOptions} />
         </div>
       </div>
 
       {error && (
-        <div className="p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px]">
+        <div className="p-2 md:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] md:text-[12px]">
           {error}
         </div>
       )}
@@ -95,7 +95,7 @@ export default function StripePaymentForm({ amount, orderId, onSuccess, onError 
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full bg-[#635BFF] text-white px-4 py-3 rounded-lg text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#5449E0] transition-colors"
+        className="w-full bg-[#635BFF] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-[12px] md:text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#5449E0] transition-colors"
       >
         {loading ? (
           <>
@@ -109,7 +109,7 @@ export default function StripePaymentForm({ amount, orderId, onSuccess, onError 
         )}
       </button>
 
-      <div className="flex items-center justify-center gap-2 text-[11px] text-[var(--color-text-secondary)]">
+      <div className="flex items-center justify-center gap-2 text-[10px] md:text-[11px] text-[var(--color-text-secondary)]">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M6 1L7.5 4.5L11 5L8.5 7.5L9 11L6 9L3 11L3.5 7.5L1 5L4.5 4.5L6 1Z" fill="currentColor" />
         </svg>

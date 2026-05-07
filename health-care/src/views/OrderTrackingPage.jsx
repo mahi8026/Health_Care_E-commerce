@@ -59,7 +59,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Failed to download invoice:', error);
+      // Failed to download invoice
       alert('Failed to download invoice. Please try again.');
     } finally {
       setDownloading(false);

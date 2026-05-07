@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
 import { 
   FaStethoscope, 
   FaSyringe, 
@@ -183,6 +184,7 @@ function useCountUp(target, duration = 1500, started = false) {
 
 export default function HomePage() {
   const router = useRouter();
+  const { addToCart } = useCart();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = useState('');
@@ -925,7 +927,10 @@ export default function HomePage() {
                       
                       {/* Buttons */}
                       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                        <button onClick={(e) => { e.stopPropagation(); router.push(`/products/${product._id}`); }}
+                        <button onClick={(e) => { 
+                          e.stopPropagation(); 
+                          addToCart(product, 1);
+                        }}
                           style={{ flex: 1, padding: '8px 12px', background: '#fff', color: '#0E8A6E',
                             border: '1.5px solid #0E8A6E', borderRadius: 6, fontSize: 12,
                             fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}

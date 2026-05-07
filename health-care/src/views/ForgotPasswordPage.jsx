@@ -41,54 +41,54 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-4 sm:p-6">
       <div className="max-w-md w-full">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="font-[family-name:var(--font-lora)] text-[32px] font-semibold text-[#0B2545] mb-2">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="font-[family-name:var(--font-lora)] text-[28px] sm:text-[32px] font-semibold text-[#0B2545] mb-2">
             MedCore<span className="text-[#0E8A6E]">BD</span>
           </div>
-          <p className="text-[13px] text-[var(--color-text-secondary)]">
+          <p className="text-[12px] sm:text-[13px] text-[var(--color-text-secondary)]">
             Reset your password
           </p>
         </div>
 
-        <div className="bg-white rounded-lg p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="bg-white rounded-lg p-5 sm:p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-[40px] mb-4">📧</div>
-              <h3 className="text-[16px] font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
+              <div className="text-[36px] sm:text-[40px] mb-3 sm:mb-4">📧</div>
+              <h3 className="text-[15px] sm:text-[16px] font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 Check your email
               </h3>
-              <p className="text-[12px] text-[var(--color-text-secondary)] mb-6">
-                If an account exists with <strong>{email}</strong>, you will receive a password reset link shortly.
+              <p className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] mb-4 sm:mb-6 px-2">
+                If an account exists with <strong className="break-all">{email}</strong>, you will receive a password reset link shortly.
               </p>
-              <p className="text-[11px] text-[var(--color-text-secondary)] mb-4">
+              <p className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] mb-3 sm:mb-4">
                 Didn't receive the email? Check your spam folder or try again.
               </p>
               <button
                 onClick={onNavigateToLogin}
-                className="text-[12px] text-[#0E8A6E] font-medium hover:underline"
+                className="text-[11px] sm:text-[12px] text-[#0E8A6E] font-medium hover:underline"
               >
                 ← Back to login
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <div className="mb-6">
-                <p className="text-[13px] text-[var(--color-text-secondary)] mb-4">
+              <div className="mb-4 sm:mb-6">
+                <p className="text-[12px] sm:text-[13px] text-[var(--color-text-secondary)] mb-3 sm:mb-4">
                   Enter your email address and we'll send you a link to reset your password.
                 </p>
               </div>
 
               {error && (
-                <div className="mb-4 p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px]">
+                <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] sm:text-[12px]">
                   {error}
                 </div>
               )}
 
-              <div className="mb-6">
-                <label className="block text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-[11px] sm:text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
                   Email Address
                 </label>
                 <input
@@ -97,25 +97,25 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full px-3 py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
+                  className="w-full px-2.5 sm:px-3 py-2.5 sm:py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2d52] transition-colors"
+                className="w-full py-3 sm:py-3 bg-[#0B2545] text-white rounded-lg text-[12px] sm:text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2d52] transition-colors min-h-[48px]"
               >
                 {loading ? 'Sending…' : 'Send Reset Link'}
               </button>
             </form>
           )}
 
-          <div className="mt-6 text-center">
+          <div className="mt-4 sm:mt-6 text-center">
             <button
               type="button"
               onClick={onNavigateToLogin}
-              className="text-[12px] text-[var(--color-text-secondary)] hover:text-[#0E8A6E]"
+              className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] hover:text-[#0E8A6E]"
             >
               ← Back to login
             </button>

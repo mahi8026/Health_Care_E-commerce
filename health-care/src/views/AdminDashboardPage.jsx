@@ -62,17 +62,27 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="grid grid-cols-[220px_1fr] min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="flex flex-col md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] min-h-screen bg-[var(--color-background-tertiary)]">
       <h2 className="absolute w-px h-px overflow-hidden clip-[rect(0,0,0,0)]">
         MedCore BD Admin Panel — full dashboard with orders, products, customers and analytics
       </h2>
 
-      {/* Sidebar */}
-      <AdminSidebar 
-        user={adminUser} 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-      />
+      {/* Mobile Header - Only visible on mobile */}
+      <div className="md:hidden bg-[#0B2545] text-white p-4 flex items-center justify-between">
+        <div className="font-[family-name:var(--font-lora)] text-[18px] font-semibold">
+          MedCore<span className="text-[#4DDBB8]">BD</span>
+        </div>
+        <div className="text-[10px] text-white/60">Admin Panel</div>
+      </div>
+
+      {/* Sidebar - Hidden on mobile, visible on desktop */}
+      <div className="hidden md:block">
+        <AdminSidebar 
+          user={adminUser} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+        />
+      </div>
 
       {/* Main Content */}
       <div className="flex flex-col overflow-hidden">
@@ -88,7 +98,7 @@ export default function AdminDashboardPage() {
         />
 
         {/* Content Area */}
-        <div className="p-5 px-6 overflow-y-auto">
+        <div className="p-3 sm:p-4 md:p-5 md:px-6 overflow-y-auto">
           {activeTab === 'dashboard' && <DashboardOverview setActiveTab={setActiveTab} />}
           {activeTab === 'orders' && <OrdersManagement />}
           {activeTab === 'products' && (

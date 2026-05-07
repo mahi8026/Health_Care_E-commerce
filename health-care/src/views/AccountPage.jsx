@@ -1,0 +1,271 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { API } from '@/constants/api';
+import Spinner from '@/components/ui/Spinner';
+import { 
+  FaUser, 
+  FaShoppingBag, 
+  FaHeart, 
+  FaStar, 
+  FaMapMarkerAlt, 
+  FaCreditCard,
+  FaBell,
+  FaShieldAlt,
+  FaSignOutAlt,
+  FaEdit,
+  FaChevronRight
+} from 'react-icons/fa';
+
+export default function AccountPage() {
+  const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    pendingOrders: 0,
+    wishlistItems: 0,
+    reviewsWritten: 0
+  });
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      router.push('/login?redirect=/account');
+      return;
+    }
+
+    // Fetch user stats
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('medcore_token');
+        
+        // Fetch each endpoint separately to handle errors individually
+        let orders = [];
+        let wishlist = [];
+        let reviews = [];
+
+        // Fetch orders
+        try {
+          const ordersRes = await fetch(`${API}/orders`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (ordersRes.ok) {
+            const ordersData = await ordersRes.json();
+            orders = ordersData.data?.orders || ordersData.orders || [];
+          }
+        } catch (error) {
+          // Silently fail - orders will show as 0
+        }
+
+        // Fetch wishlist
+        try {
+          const wishlistRes = await fetch(`${API}/wishlist`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (wishlistRes.ok) {
+            const wishlistData = await wishlistRes.json();
+            wishlist = wishlistData.data?.items || wishlistData.items || [];
+          }
+        } catch (error) {
+          // Silently fail - wishlist will show as 0
+        }
+
+        // Fetch reviews
+        try {
+          const reviewsRes = await fetch(`${API}/reviews/user`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (reviewsRes.ok) {
+            const reviewsData = await reviewsRes.json();
+            reviews = reviewsData.data?.reviews || reviewsData.reviews || [];
+          }
+        } catch (error) {
+          // Silently fail - reviews will show as 0
+        }
+
+        setStats({
+          totalOrders: orders.length,
+          pendingOrders: orders.filter(o => o.status === 'pending' || o.status === 'processing').length,
+          wishlistItems: wishlist.length,
+          reviewsWritten: reviews.length
+        });
+      } catch (error) {
+        // Error already handled - stats will show as 0
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [isAuthenticated, router]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const menuItems = [
+    {
+      section: 'Orders & Shopping',
+      items: [
+        { icon: <FaShoppingBag />, label: 'My Orders', description: `${stats.totalOrders} orders`, href: '/orders', badge: stats.pendingOrders > 0 ? stats.pendingOrders : null },
+        { icon: <FaHeart />, label: 'Wishlist', description: `${stats.wishlistItems} items`, href: '/wishlist' },
+        { icon: <FaStar />, label: 'My Reviews', description: `${stats.reviewsWritten} reviews`, href: '/account/reviews' },
+      ]
+    },
+    {
+      section: 'Account Settings',
+      items: [
+        { icon: <FaUser />, label: 'Profile Information', description: 'Edit your details', href: '/account/profile' },
+        { icon: <FaMapMarkerAlt />, label: 'Addresses', description: 'Manage delivery addresses', href: '/account/addresses' },
+        { icon: <FaCreditCard />, label: 'Payment Methods', description: 'Saved cards & methods', href: '/account/payment-methods' },
+      ]
+    },
+    {
+      section: 'Preferences',
+      items: [
+        { icon: <FaBell />, label: 'Notifications', description: 'Email & SMS preferences', href: '/account/notifications' },
+        { icon: <FaShieldAlt />, label: 'Privacy & Security', description: 'Password & security', href: '/account/security' },
+      ]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[var(--color-background-secondary)]">
+      {/* Header */}
+      <div className="bg-white border-b border-[var(--color-border-tertiary)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#0E8A6E] rounded-full flex items-center justify-center text-white text-[20px] sm:text-[24px] font-bold flex-shrink-0">
+                {user?.name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              <div>
+                <h1 className="text-[18px] sm:text-[20px] md:text-[24px] font-semibold text-[#0B2545] font-[family-name:var(--font-lora)]">
+                  {user?.name || 'User'}
+                </h1>
+                <p className="text-[11px] sm:text-[12px] md:text-[13px] text-[var(--color-text-secondary)] mt-0.5">
+                  {user?.email}
+                </p>
+                {user?.role === 'b2b' && (
+                  <span className="inline-block mt-1 text-[10px] sm:text-[11px] bg-[#E1F5EE] text-[#0E8A6E] px-2 py-0.5 rounded-full font-medium">
+                    B2B Customer
+                  </span>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => router.push('/account/profile')}
+              className="hidden sm:flex items-center gap-2 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] font-medium hover:bg-[var(--color-background-tertiary)] transition-colors"
+            >
+              <FaEdit size={14} />
+              Edit Profile
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
+            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#0B2545] mb-1">
+              {stats.totalOrders}
+            </div>
+            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+              Total Orders
+            </div>
+          </div>
+          <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
+            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#F59E0B] mb-1">
+              {stats.pendingOrders}
+            </div>
+            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+              Pending
+            </div>
+          </div>
+          <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
+            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#E24B4A] mb-1">
+              {stats.wishlistItems}
+            </div>
+            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+              Wishlist
+            </div>
+          </div>
+          <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
+            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#0E8A6E] mb-1">
+              {stats.reviewsWritten}
+            </div>
+            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+              Reviews
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Sections */}
+        <div className="space-y-4 sm:space-y-6">
+          {menuItems.map((section, idx) => (
+            <div key={idx}>
+              <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--color-text-secondary)] mb-2 sm:mb-3 px-1">
+                {section.section}
+              </h2>
+              <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] divide-y divide-[var(--color-border-tertiary)]">
+                {section.items.map((item, itemIdx) => (
+                  <button
+                    key={itemIdx}
+                    onClick={() => router.push(item.href)}
+                    className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-background-tertiary)] transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[var(--color-background-secondary)] rounded-lg flex items-center justify-center text-[#0B2545] flex-shrink-0">
+                        {item.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] sm:text-[14px] font-medium text-[#0B2545] flex items-center gap-2">
+                          {item.label}
+                          {item.badge && (
+                            <span className="bg-[#E24B4A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] mt-0.5 truncate">
+                          {item.description}
+                        </div>
+                      </div>
+                    </div>
+                    <FaChevronRight className="text-[var(--color-text-tertiary)] flex-shrink-0 ml-2" size={14} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Logout Button */}
+        <div className="mt-6">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-white border border-[var(--color-border-tertiary)] rounded-lg p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 text-[#E24B4A] hover:bg-[#FEE2E2] transition-colors font-medium text-[13px] sm:text-[14px]"
+          >
+            <FaSignOutAlt size={16} />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Spacing */}
+      <div className="h-20 sm:h-0"></div>
+    </div>
+  );
+}

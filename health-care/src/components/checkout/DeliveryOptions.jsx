@@ -29,15 +29,15 @@ export default function DeliveryOptions({ selected, onSelect }) {
   ];
 
   return (
-    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] px-[18px] py-[18px] mb-[14px]">
-      <div className="text-[13px] font-semibold mb-[14px]">Delivery method</div>
+    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] px-3 sm:px-[18px] py-3 sm:py-[18px] mb-3 sm:mb-[14px]">
+      <div className="text-[12px] sm:text-[13px] font-semibold mb-3 sm:mb-[14px]">Delivery method</div>
       
       <div className="flex flex-col gap-2">
         {options.map((option) => (
           <div
             key={option.id}
             onClick={() => onSelect(option.id)}
-            className={`border-[0.5px] rounded-lg px-[14px] py-3 cursor-pointer flex items-center gap-3 ${
+            className={`border-[0.5px] rounded-lg px-3 sm:px-[14px] py-2.5 sm:py-3 cursor-pointer flex items-start sm:items-center gap-2 sm:gap-3 ${
               selected === option.id
                 ? option.highlight
                   ? 'border-[#185FA5] bg-[#E6F1FB]'
@@ -46,7 +46,7 @@ export default function DeliveryOptions({ selected, onSelect }) {
             }`}
           >
             <div
-              className={`w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 ${
+              className={`w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0 ${
                 selected === option.id
                   ? option.highlight
                     ? 'border-[#185FA5] bg-[#185FA5]'
@@ -56,20 +56,20 @@ export default function DeliveryOptions({ selected, onSelect }) {
             >
               {selected === option.id && <div className="w-2 h-2 rounded-full bg-white" />}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div
-                className={`text-[12px] font-medium ${
+                className={`text-[11px] sm:text-[12px] font-medium ${
                   option.highlight && selected === option.id ? 'text-[#0C447C]' : ''
                 }`}
               >
                 {option.name}
               </div>
-              <div className="text-[10px] text-[var(--color-text-secondary)] mt-[1px]">
+              <div className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)] mt-[1px]">
                 {option.description}
               </div>
             </div>
             <div
-              className={`ml-auto text-[12px] font-medium flex-shrink-0 ${
+              className={`ml-auto text-[11px] sm:text-[12px] font-medium flex-shrink-0 ${
                 option.isFree
                   ? 'text-[#0E8A6E]'
                   : option.highlight && selected === option.id

@@ -7,7 +7,6 @@ import SearchBar from '@/components/search/SearchBar';
 import SearchFilters from '@/components/search/SearchFilters';
 import SearchResults from '@/components/search/SearchResults';
 import SortOptions from '@/components/search/SortOptions';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import { FaFilter, FaTimes } from 'react-icons/fa';
 
 export default function ProductsPage({ onProductClick }) {
@@ -78,10 +77,8 @@ export default function ProductsPage({ onProductClick }) {
   useEffect(() => {
     if (products && products.length > 0) {
       if (page === 1) {
-        // First page - replace all products
         setAllProducts(products);
       } else {
-        // Subsequent pages - append products, but filter out duplicates
         setAllProducts(prev => {
           const existingIds = new Set(prev.map(p => p._id || p.id));
           const newProducts = products.filter(p => !existingIds.has(p._id || p.id));
@@ -89,11 +86,8 @@ export default function ProductsPage({ onProductClick }) {
         });
       }
       setLoadingMore(false);
-      
-      // Use pagination metadata to determine if there are more pages
       setHasMore(pagination.page < pagination.pages);
     } else if (products && products.length === 0 && page > 1) {
-      // No more products
       setHasMore(false);
       setLoadingMore(false);
     }
@@ -132,11 +126,6 @@ export default function ProductsPage({ onProductClick }) {
     setAllProducts([]);
     setHasMore(true);
   }, []);
-
-  const breadcrumbs = [
-    { label: 'Home', href: '/' },
-    { label: 'Products', href: '/products' }
-  ];
 
   return (
     <div className="min-h-screen bg-[var(--color-background-secondary)]">

@@ -52,10 +52,10 @@ export default function SearchResults({ products, loading, query, onProductClick
             <div
               key={product.id || product._id}
               onClick={() => onProductClick && onProductClick(product._id || product.id)}
-              className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#0E8A6E] hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
+              className="group bg-white rounded-xl border border-gray-100 hover:border-[#0E8A6E] hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
             >
-              {/* Image Container */}
-              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 aspect-square overflow-hidden">
+              {/* Image Container - Fixed height */}
+              <div className="relative bg-gray-100 w-full h-44 rounded-t-xl overflow-hidden flex-shrink-0">
                 {(() => {
                   const imageData = product.images?.[0];
                   const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
@@ -65,67 +65,61 @@ export default function SearchResults({ products, loading, query, onProductClick
                     <img 
                       src={imageUrl} 
                       alt={typeof imageData === 'object' ? imageData.alt : product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        display: 'block',
+                        transition: 'transform 0.4s ease'
+                      }}
+                      className="group-hover:scale-105"
                       loading="lazy"
                       onError={(e) => {
-                        console.error('[SearchResults] Image failed to load:', imageUrl);
-                        // Replace with placeholder SVG
                         e.currentTarget.src = '/placeholder.svg';
-                        e.currentTarget.className = 'w-full h-full object-contain p-8';
-                        e.currentTarget.onerror = null; // Prevent infinite loop
+                        e.currentTarget.style.objectFit = 'contain';
+                        e.currentTarget.style.padding = '24px';
+                        e.currentTarget.style.opacity = '0.4';
+                        e.currentTarget.onerror = null;
                       }}
                     />
                   ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img 
-                      src="/placeholder.svg" 
-                      alt={product.name}
-                      className="w-full h-full object-contain p-8"
-                    />
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                      </svg>
+                    </div>
                   );
                 })()}
                 
                 {/* Discount Badge */}
                 {hasDiscount && (
-                  <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-lg shadow-lg">
+                  <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md shadow-md z-10">
                     <div className="text-xs font-bold">-{discountPercent}%</div>
                   </div>
                 )}
                 
                 {/* New/Sale Badge */}
                 {product.badge && !hasDiscount && (
-                  <div className={`absolute top-2 left-2 px-3 py-1.5 rounded-lg shadow-lg text-xs font-bold ${
+                  <div className={`absolute top-2 left-2 px-2 py-1 rounded-md shadow-md text-xs font-bold z-10 ${
                     product.badge === 'sale'
-                      ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white'
-                      : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-green-500 text-white'
                   }`}>
-                    {product.badge === 'sale' ? '🔥 SALE' : '✨ NEW'}
+                    {product.badge === 'sale' ? 'SALE' : 'NEW'}
                   </div>
                 )}
                 
                 {/* Stock Badge */}
                 {product.stock !== undefined && (
-                  <div className={`absolute top-2 right-2 px-2 py-1 rounded-lg text-xs font-semibold shadow-lg ${
+                  <div className={`absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-semibold shadow-md z-10 ${
                     product.stock > 0 
                       ? 'bg-green-500 text-white' 
                       : 'bg-red-500 text-white'
                   }`}>
-                    {product.stock > 0 ? `${product.stock} left` : 'Out'}
+                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                   </div>
                 )}
-                
-                {/* Quick View Overlay */}
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onProductClick && onProductClick(product._id || product.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white text-[#0E8A6E] px-4 py-2 rounded-lg font-semibold text-sm shadow-lg hover:bg-[#0E8A6E] hover:text-white"
-                  >
-                    Quick View
-                  </button>
-                </div>
               </div>
               
               {/* Content */}

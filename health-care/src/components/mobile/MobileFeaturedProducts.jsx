@@ -1,7 +1,18 @@
+'use client';
+
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
+
 export default function MobileFeaturedProducts() {
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const [addingToCart, setAddingToCart] = useState({});
+
   const products = [
     {
       id: 1,
+      _id: '1',
       name: 'Siemens ECG 12-lead',
       brand: 'Siemens',
       price: 95000,
@@ -11,6 +22,7 @@ export default function MobileFeaturedProducts() {
     },
     {
       id: 2,
+      _id: '2',
       name: 'Roche HbA1c kit',
       brand: 'Roche',
       price: 8500,
@@ -19,6 +31,7 @@ export default function MobileFeaturedProducts() {
     },
     {
       id: 3,
+      _id: '3',
       name: 'Abbott Troponin I',
       brand: 'Abbott',
       price: 22000,
@@ -26,13 +39,35 @@ export default function MobileFeaturedProducts() {
     }
   ];
 
+  const handleAddToCart = useCallback((product, e) => {
+    e.stopPropagation();
+    setAddingToCart(prev => ({ ...prev, [product.id]: true }));
+    
+    try {
+      addToCart(product, 1);
+      setTimeout(() => {
+        setAddingToCart(prev => ({ ...prev, [product.id]: false }));
+      }, 1000);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setAddingToCart(prev => ({ ...prev, [product.id]: false }));
+    }
+  }, [addToCart]);
+
+  const handleViewAll = useCallback(() => {
+    router.push('/products?featured=true');
+  }, [router]);
+
   return (
     <div className="px-4 py-4 bg-[var(--color-background-secondary)]">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
           Featured products
         </div>
-        <button className="text-[10px] text-[#0E8A6E] font-medium">
+        <button 
+          onClick={handleViewAll}
+          className="text-[10px] text-[#0E8A6E] font-medium"
+        >
           View all →
         </button>
       </div>
@@ -82,8 +117,22 @@ export default function MobileFeaturedProducts() {
             </div>
 
             {/* Button */}
-            <button className="w-full py-[6px] bg-[#0B2545] text-white rounded text-[10px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-              Add to cart
+            <button 
+              onClick={(e) => handleAddToCart(product, e)}
+              disabled={addingToCart[product.id]}
+              className="w-full py-[6px] bg-[#0B2545] text-white rounded text-[10px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+            >
+              {addingToCart[product.id] ? (
+                <>
+                  <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  Adding...
+                </>
+              ) : (
+                'Add to cart'
+              )}
             </button>
           </div>
         ))}

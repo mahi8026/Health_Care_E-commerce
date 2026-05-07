@@ -16,7 +16,7 @@ export default function Input({
       {label && (
         <label
           htmlFor={name}
-          className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]"
+          className="block text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]"
         >
           {label} {required && <span className="text-[#E24B4A]">*</span>}
         </label>
@@ -30,7 +30,7 @@ export default function Input({
         placeholder={placeholder}
         disabled={disabled}
         required={required}
-        className={`w-full px-3 py-[9px] border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none transition-colors ${
+        className={`w-full px-2.5 sm:px-3 py-2 sm:py-[9px] border-[0.5px] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none transition-colors ${
           error
             ? 'border-[#E24B4A] focus:border-[#E24B4A] focus:ring-1 focus:ring-[#E24B4A]'
             : 'border-[var(--color-border-secondary)] focus:border-[#0E8A6E] focus:ring-1 focus:ring-[#0E8A6E]'
@@ -38,7 +38,7 @@ export default function Input({
         {...props}
       />
       {error && (
-        <p className="mt-1 text-[10px] text-[#E24B4A]">{error}</p>
+        <p className="mt-1 text-[9px] sm:text-[10px] text-[#E24B4A]">{error}</p>
       )}
     </div>
   );

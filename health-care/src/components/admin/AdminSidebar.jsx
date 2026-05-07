@@ -12,10 +12,10 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
   ];
 
   return (
-    <div className="bg-[#0B2545] text-white flex flex-col h-screen">
+    <div className="bg-[#0B2545] text-white flex flex-col h-screen w-full md:w-64 lg:w-72">
       {/* Logo */}
-      <div className="p-5 border-b border-white/10">
-        <div className="font-[family-name:var(--font-lora)] text-[18px] font-semibold">
+      <div className="p-4 md:p-5 border-b border-white/10">
+        <div className="font-[family-name:var(--font-lora)] text-[16px] md:text-[18px] font-semibold">
           MedCore<span className="text-[#4DDBB8]">BD</span>
         </div>
         <div className="text-[10px] text-white/60 mt-1">Admin Panel</div>

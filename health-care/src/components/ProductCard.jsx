@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
 import WishlistButton from './wishlist/WishlistButton';
 
-const ProductCard = React.memo(function ProductCard({ product }) {
+const ProductCard = React.memo(function ProductCard({ product, onProductClick }) {
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const [addingToCart, setAddingToCart] = useState(false);
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
   const primaryImage = imageData ? {
@@ -16,8 +21,46 @@ const ProductCard = React.memo(function ProductCard({ product }) {
   const discountPercent = oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0;
   const hasDiscount = savings > 0 && discountPercent > 0;
 
+  // Handle add to cart
+  const handleAddToCart = useCallback(async (e) => {
+    e.stopPropagation(); // Prevent card click
+    setAddingToCart(true);
+    try {
+      addToCart(product, 1);
+      // Show brief success feedback
+      setTimeout(() => setAddingToCart(false), 1000);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setAddingToCart(false);
+    }
+  }, [addToCart, product]);
+
+  // Handle view details
+  const handleViewDetails = useCallback((e) => {
+    e.stopPropagation();
+    const productId = product._id || product.id;
+    if (onProductClick) {
+      onProductClick(productId);
+    } else {
+      router.push(`/products/${productId}`);
+    }
+  }, [product, onProductClick, router]);
+
+  // Handle card click
+  const handleCardClick = useCallback(() => {
+    const productId = product._id || product.id;
+    if (onProductClick) {
+      onProductClick(productId);
+    } else {
+      router.push(`/products/${productId}`);
+    }
+  }, [product, onProductClick, router]);
+
   return (
-    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+    <div 
+      className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-lg transition-shadow cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Image Container - Responsive Height */}
       <div className="h-[140px] sm:h-[160px] md:h-[130px] bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {primaryImage ? (
@@ -122,11 +165,35 @@ const ProductCard = React.memo(function ProductCard({ product }) {
         
         {/* Action Buttons - Responsive */}
         <div className="grid grid-cols-2 gap-[5px] sm:gap-[6px]">
-          <button className="bg-[#0B2545] text-white border-none px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] transition-colors">
-            {product.button1}
+          <button 
+            onClick={handleAddToCart}
+            disabled={addingToCart}
+            className="bg-[#0B2545] text-white border-none px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+          >
+            {addingToCart ? (
+              <>
+                <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                <span className="hidden sm:inline">Adding...</span>
+              </>
+            ) : (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:inline">
+                  <circle cx="9" cy="21" r="1"/>
+                  <circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                Add to Cart
+              </>
+            )}
           </button>
-          <button className="bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-gray-50 transition-colors">
-            {product.button2}
+          <button 
+            onClick={handleViewDetails}
+            className="bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-gray-50 transition-colors"
+          >
+            View Details
           </button>
         </div>
       </div>
