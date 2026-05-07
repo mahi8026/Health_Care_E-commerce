@@ -10,7 +10,7 @@ export async function createStripePaymentIntent(amount, orderId) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to create payment intent:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to create payment intent:', error);
     throw error;
   }
 }
@@ -23,7 +23,7 @@ export async function confirmStripePayment(paymentIntentId, orderId) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to confirm payment:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to confirm payment:', error);
     throw error;
   }
 }
@@ -37,7 +37,7 @@ export async function initiateBkashPayment(amount, orderId) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to initiate bKash payment:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to initiate bKash payment:', error);
     throw error;
   }
 }
@@ -50,7 +50,7 @@ export async function verifyBkashPayment(paymentId, orderId) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to verify bKash payment:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to verify bKash payment:', error);
     throw error;
   }
 }
@@ -64,7 +64,7 @@ export async function initiateSSLCommerzPayment(amount, orderId) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to initiate SSL Commerz payment:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to initiate SSL Commerz payment:', error);
     throw error;
   }
 }
@@ -78,7 +78,7 @@ export async function submitBankTransfer(orderId, transactionReference) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to submit bank transfer:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to submit bank transfer:', error);
     throw error;
   }
 }
@@ -91,7 +91,7 @@ export async function processB2BCreditPayment(orderId) {
     });
     return response;
   } catch (error) {
-    console.error('Failed to process B2B credit payment:', error);
+    process.env.NODE_ENV !== "production" && console.error('Failed to process B2B credit payment:', error);
     throw error;
   }
 }
@@ -157,3 +157,4 @@ export const PAYMENT_METHODS = {
     color: '#534AB7'
   }
 };
+

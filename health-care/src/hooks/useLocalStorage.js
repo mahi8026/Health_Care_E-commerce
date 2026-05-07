@@ -34,7 +34,7 @@ export function useLocalStorage(key, initialValue) {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
-      console.error('useLocalStorage setValue error:', error);
+      process.env.NODE_ENV !== "production" && console.error('useLocalStorage setValue error:', error);
     }
   }, [key, storedValue]);
 
@@ -45,9 +45,10 @@ export function useLocalStorage(key, initialValue) {
         window.localStorage.removeItem(key);
       }
     } catch (error) {
-      console.error('useLocalStorage removeValue error:', error);
+      process.env.NODE_ENV !== "production" && console.error('useLocalStorage removeValue error:', error);
     }
   }, [key, initialValue]);
 
   return [storedValue, setValue, removeValue];
 }
+

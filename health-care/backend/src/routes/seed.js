@@ -6,6 +6,7 @@ const Category = require('../models/Category');
 const Manufacturer = require('../models/Manufacturer');
 const cloudinary = require('cloudinary').v2;
 const { protect, adminOnly } = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -90,7 +91,7 @@ async function uploadToCloudinary(imageUrl, productName, productSku) {
       alt: productName
     };
   } catch (error) {
-    console.error(`Failed to upload image for ${productName}:`, error.message);
+    logger.error(`[seed] Failed to upload image for ${productName}: ${error.message}`);
     return null;
   }
 }

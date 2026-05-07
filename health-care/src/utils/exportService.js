@@ -46,7 +46,7 @@ export class ExportService {
       
       return true;
     } catch (error) {
-      console.error('CSV export error:', error);
+      process.env.NODE_ENV !== "production" && console.error('CSV export error:', error);
       throw error;
     }
   }
@@ -155,7 +155,7 @@ export class ExportService {
       this.downloadFile(json, filename, 'application/json');
       return true;
     } catch (error) {
-      console.error('JSON export error:', error);
+      process.env.NODE_ENV !== "production" && console.error('JSON export error:', error);
       throw error;
     }
   }
@@ -221,3 +221,4 @@ export class ExportService {
 }
 
 export default ExportService;
+

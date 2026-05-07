@@ -32,7 +32,7 @@ class GA4Tracker {
       this.isInitialized = true;
       this.sessionId = this.generateSessionId();
     } catch (error) {
-      console.error('GA4 Initialization Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Initialization Error:', error);
     }
   }
   
@@ -61,7 +61,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Page View Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Page View Error:', error);
     }
   }
   
@@ -86,7 +86,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 View Item Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 View Item Error:', error);
     }
   }
   
@@ -113,7 +113,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Add to Cart Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Add to Cart Error:', error);
     }
   }
   
@@ -140,7 +140,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Remove from Cart Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Remove from Cart Error:', error);
     }
   }
   
@@ -167,7 +167,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Begin Checkout Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Begin Checkout Error:', error);
     }
   }
   
@@ -195,7 +195,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Purchase Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Purchase Error:', error);
     }
   }
   
@@ -215,7 +215,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Search Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Search Error:', error);
     }
   }
   
@@ -235,7 +235,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Filter Applied Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Filter Applied Error:', error);
     }
   }
   
@@ -253,7 +253,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Sort Applied Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Sort Applied Error:', error);
     }
   }
   
@@ -271,7 +271,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Payment Method Selected Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Payment Method Selected Error:', error);
     }
   }
   
@@ -291,7 +291,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Quotation Request Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Quotation Request Error:', error);
     }
   }
   
@@ -311,7 +311,7 @@ class GA4Tracker {
         session_id: this.sessionId
       });
     } catch (error) {
-      console.error('GA4 Credit Usage Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Credit Usage Error:', error);
     }
   }
   
@@ -326,7 +326,7 @@ class GA4Tracker {
     try {
       ReactGA.set({ user_id: userId });
     } catch (error) {
-      console.error('GA4 Set User ID Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Set User ID Error:', error);
     }
   }
   
@@ -340,9 +340,10 @@ class GA4Tracker {
     try {
       ReactGA.set({ user_id: null });
     } catch (error) {
-      console.error('GA4 Clear User ID Error:', error);
+      process.env.NODE_ENV !== "production" && console.error('GA4 Clear User ID Error:', error);
     }
   }
 }
 
 export default GA4Tracker;
+

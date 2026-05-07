@@ -1,6 +1,11 @@
 // API configuration and helper functions
 import { API as API_BASE_URL } from '@/constants/api';
 
+// Dev-only logger — silent in production
+const devLog = {
+  error: (...args) => { if (process.env.NODE_ENV === 'development') devLog.error(...args); }, // eslint-disable-line no-console
+};
+
 // Get token from localStorage
 const getToken = () => {
   if (typeof window !== 'undefined') {
@@ -73,7 +78,7 @@ async function handleResponse(response) {
       if (!response.ok) {
         // Only log unexpected errors (not 400-level client errors)
         if (response.status >= 500) {
-          console.error('[API] Server error:', data);
+          devLog.error('[API] Server error:', data);
         }
         throw new ApiError(
           data.message || `HTTP Error ${response.status}`,
@@ -87,7 +92,7 @@ async function handleResponse(response) {
       // If JSON parsing fails
       if (error instanceof ApiError) throw error;
       
-      console.error('[API] handleResponse - JSON parse error:', error);
+      devLog.error('[API] handleResponse - JSON parse error:', error);
       throw new ApiError(
         `Failed to parse response: ${error.message}`,
         response.status,
@@ -99,7 +104,7 @@ async function handleResponse(response) {
     const text = await response.text();
     
     if (!response.ok) {
-      console.error('[API] handleResponse - Non-JSON error:', text.substring(0, 200));
+      devLog.error('[API] handleResponse - Non-JSON error:', text.substring(0, 200));
       throw new ApiError(
         text || `HTTP Error ${response.status}`,
         response.status,
@@ -193,7 +198,7 @@ async function fetchWithAuth(url, options = {}) {
     return response;
   } catch (error) {
     // Network error (backend not running, no internet, etc.)
-    console.error('[API] Network error:', error.message);
+    devLog.error('[API] Network error:', error.message);
     throw new ApiError(
       'Unable to connect to server. Please check if the backend is running.',
       0,
@@ -238,7 +243,7 @@ export const api = {
       const data = await handleResponse(response);
       return data;
     } catch (error) {
-      console.error('[API] getProducts error:', error);
+      devLog.error('[API] getProducts error:', error);
       throw error;
     }
   },
@@ -592,7 +597,7 @@ export const api = {
     try {
       return await this.post('/notifications/order-confirmation', { orderId });
     } catch (error) {
-      console.error('[API] Send order confirmation failed:', error.message);
+      devLog.error('[API] Send order confirmation failed:', error.message);
       throw error;
     }
   },
@@ -601,7 +606,7 @@ export const api = {
     try {
       return await this.post('/notifications/payment-receipt', { orderId });
     } catch (error) {
-      console.error('[API] Send payment receipt failed:', error.message);
+      devLog.error('[API] Send payment receipt failed:', error.message);
       throw error;
     }
   },
@@ -610,7 +615,7 @@ export const api = {
     try {
       return await this.post('/notifications/shipping', { orderId });
     } catch (error) {
-      console.error('[API] Send shipping notification failed:', error.message);
+      devLog.error('[API] Send shipping notification failed:', error.message);
       throw error;
     }
   },
@@ -619,7 +624,7 @@ export const api = {
     try {
       return await this.post('/notifications/delivered', { orderId });
     } catch (error) {
-      console.error('[API] Send delivery confirmation failed:', error.message);
+      devLog.error('[API] Send delivery confirmation failed:', error.message);
       throw error;
     }
   },
@@ -628,7 +633,7 @@ export const api = {
     try {
       return await this.post('/notifications/quotation-ready', { quoteId });
     } catch (error) {
-      console.error('[API] Send quotation ready failed:', error.message);
+      devLog.error('[API] Send quotation ready failed:', error.message);
       throw error;
     }
   },
@@ -637,7 +642,7 @@ export const api = {
     try {
       return await this.post('/notifications/stock-alert', {});
     } catch (error) {
-      console.error('[API] Send stock alert failed:', error.message);
+      devLog.error('[API] Send stock alert failed:', error.message);
       throw error;
     }
   },

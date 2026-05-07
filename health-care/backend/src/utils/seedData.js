@@ -5,12 +5,13 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const Quote = require('../models/Quote');
+const logger = require('./logger');
 
 // Comprehensive seed data for MedCore BD
 const seedDatabase = async () => {
   try {
     await connectDB();
-    console.log('🗑️  Clearing existing data...');
+    logger.info('Clearing existing data...');
     
     await Promise.all([
       Product.deleteMany(),
@@ -19,7 +20,7 @@ const seedDatabase = async () => {
       Quote.deleteMany()
     ]);
 
-    console.log('👥 Creating users...');
+    logger.info('Creating users...');
     
     // 3 Admin users
     const admin1 = await User.create({
@@ -240,9 +241,9 @@ const seedDatabase = async () => {
       customers.push(customer);
     }
 
-    console.log(`✓ ${3 + 5 + 10} users created`);
+    logger.info(`${3 + 5 + 10} users created`);
 
-    console.log('📦 Creating products...');
+    logger.info('Creating products...');
     
     const products = [];
 
@@ -298,9 +299,9 @@ const seedDatabase = async () => {
       products.push(product);
     }
 
-    console.log(`✓ ${products.length} products created`);
+    logger.info(`${products.length} products created`);
 
-    console.log('📋 Creating orders...');
+    logger.info('Creating orders...');
     
     // 20 Orders with various statuses
     const orders = [];
@@ -412,9 +413,9 @@ const seedDatabase = async () => {
       orders.push(order);
     }
 
-    console.log(`✓ ${orders.length} orders created`);
+    logger.info(`${orders.length} orders created`);
 
-    console.log('💼 Creating quotations...');
+    logger.info('Creating quotations...');
     
     // 5 Quotations
     const quotes = [];
@@ -466,25 +467,14 @@ const seedDatabase = async () => {
       quotes.push(quote);
     }
 
-    console.log(`✓ ${quotes.length} quotations created`);
+    logger.info(`${quotes.length} quotations created`);
 
-    console.log('\n✅ Database seeded successfully!\n');
-    console.log('═══════════════════════════════════════════════════════');
-    console.log('📊 DATA SUMMARY:');
-    console.log('═══════════════════════════════════════════════════════');
-    console.log(`   • ${3} Admin users`);
-    console.log(`   • ${5} B2B customers (2 Gold, 2 Silver, 1 Platinum)`);
-    console.log(`   • ${10} Retail customers`);
-    console.log(`   • ${products.length} Products across 7 categories`);
-    console.log(`   • ${orders.length} Orders (10 B2B, 10 Retail)`);
-    console.log(`   • ${quotes.length} Quotations`);
-    console.log('═══════════════════════════════════════════════════════');
-    console.log('⚠️  Seed credentials are defined in seedData.js — do NOT log them here.');
-    console.log('═══════════════════════════════════════════════════════\n');
+    logger.info('Database seeded successfully');
+    logger.info(`Summary: ${3} admins | ${5} B2B customers | ${10} retail customers | ${products.length} products | ${orders.length} orders | ${quotes.length} quotations`);
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
+    logger.error(`[seedDatabase] ${error.message}`);
     process.exit(1);
   }
 };

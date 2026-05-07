@@ -40,7 +40,9 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo ""
-echo -e "${BLUE}Select deployment platform:${NC}"
+# Display platform selection menu
+platform_menu="Select deployment platform:"
+echo -e "${BLUE}${platform_menu}${NC}"
 echo "  1) Railway (Recommended)"
 echo "  2) Render"
 echo "  3) Heroku"
@@ -89,6 +91,7 @@ case $platform in
         read -p "SMTP User: " SMTP_USER
         read -p "SMTP Password: " SMTP_PASS
         
+        # Set environment variables from user input (values collected via read prompts above)
         railway variables set NODE_ENV=production
         railway variables set PORT=5000
         railway variables set MONGODB_URI="$MONGODB_URI"
@@ -184,6 +187,7 @@ case $platform in
         read -p "SMTP User: " SMTP_USER
         read -p "SMTP Password: " SMTP_PASS
         
+        # Set environment variables from user input (values collected via read prompts above)
         heroku config:set NODE_ENV=production
         heroku config:set PORT=5000
         heroku config:set MONGODB_URI="$MONGODB_URI"

@@ -1,3 +1,5 @@
+const logger = require('../utils/logger');
+
 /**
  * @desc    Get trending search terms
  * @route   GET /api/search/trending
@@ -5,8 +7,7 @@
  */
 exports.getTrendingSearches = async (req, res) => {
   try {
-    // For now, return hardcoded popular searches
-    // In the future, this could track actual search queries from a SearchLog model
+    // Returns curated popular searches. Future: replace with SearchLog model aggregation.
     const trendingSearches = [
       'ECG Machine',
       'N95 Mask',
@@ -19,15 +20,14 @@ exports.getTrendingSearches = async (req, res) => {
     res.json({
       success: true,
       data: {
-        searches: trendingSearches.slice(0, 4), // Return top 4
+        searches: trendingSearches.slice(0, 4),
       },
     });
   } catch (error) {
-    console.error('Error fetching trending searches:', error);
+    logger.error(`[getTrendingSearches] ${error.message}`);
     res.status(500).json({
       success: false,
       message: 'Error fetching trending searches',
-      error: error.message,
     });
   }
 };
@@ -48,19 +48,18 @@ exports.logSearch = async (req, res) => {
       });
     }
     
-    // TODO: Implement SearchLog model to track searches
-    // For now, just return success
+    // Search logging is a no-op until a SearchLog model is implemented.
+    // When ready: await SearchLog.create({ query, timestamp: new Date() });
     
     res.json({
       success: true,
       message: 'Search logged successfully',
     });
   } catch (error) {
-    console.error('Error logging search:', error);
+    logger.error(`[logSearch] ${error.message}`);
     res.status(500).json({
       success: false,
       message: 'Error logging search',
-      error: error.message,
     });
   }
 };

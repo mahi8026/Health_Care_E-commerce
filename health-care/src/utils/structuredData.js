@@ -36,18 +36,18 @@ function validateSchema(schema) {
   }
 
   if (!schema || typeof schema !== 'object') {
-    console.error('[StructuredData] Schema must be a non-null object');
+    process.env.NODE_ENV !== "production" && console.error('[StructuredData] Schema must be a non-null object');
     return false;
   }
 
   if (!schema['@context']) {
-    console.error('[StructuredData] Missing required field "@context" in schema');
+    process.env.NODE_ENV !== "production" && console.error('[StructuredData] Missing required field "@context" in schema');
     return false;
   }
 
   const type = schema['@type'];
   if (!type) {
-    console.error('[StructuredData] Missing required field "@type" in schema');
+    process.env.NODE_ENV !== "production" && console.error('[StructuredData] Missing required field "@type" in schema');
     return false;
   }
 
@@ -56,7 +56,7 @@ function validateSchema(schema) {
 
   for (const field of required) {
     if (schema[field] === undefined || schema[field] === null) {
-      console.error(
+      process.env.NODE_ENV !== "production" && console.error(
         `[StructuredData] Missing required field "${field}" in ${type} schema`
       );
       valid = false;
@@ -91,7 +91,7 @@ function validateSchema(schema) {
 export function generateProductSchema(product) {
   if (!product) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[StructuredData] generateProductSchema: product data is required');
+      process.env.NODE_ENV !== "production" && console.error('[StructuredData] generateProductSchema: product data is required');
     }
     return null;
   }
@@ -191,7 +191,7 @@ export function generateOrganizationSchema() {
 export function generateBreadcrumbSchema(breadcrumbs) {
   if (!Array.isArray(breadcrumbs) || breadcrumbs.length === 0) {
     if (process.env.NODE_ENV === 'development') {
-      console.error(
+      process.env.NODE_ENV !== "production" && console.error(
         '[StructuredData] generateBreadcrumbSchema: breadcrumbs must be a non-empty array'
       );
     }
@@ -271,3 +271,4 @@ export function StructuredData({ schema }) {
 }
 
 export default StructuredData;
+
