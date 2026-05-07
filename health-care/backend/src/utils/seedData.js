@@ -470,29 +470,16 @@ const seedDatabase = async () => {
 
     console.log('\n✅ Database seeded successfully!\n');
     console.log('═══════════════════════════════════════════════════════');
-    console.log('📝 TEST CREDENTIALS:');
+    console.log('📊 DATA SUMMARY:');
     console.log('═══════════════════════════════════════════════════════');
-    console.log('\n🔐 ADMIN ACCOUNTS:');
-    console.log('   Email: admin@medcorebd.com      | Password: admin123');
-    console.log('   Email: manager@medcorebd.com    | Password: manager123');
-    console.log('   Email: support@medcorebd.com    | Password: support123');
-    console.log('\n💼 B2B CUSTOMERS:');
-    console.log('   Platinum: shahid@squarehospital.com     | Password: password123');
-    console.log('   Gold:     ayesha@labaid.com             | Password: password123');
-    console.log('   Gold:     mahmud@ibnsinahospital.com    | Password: password123');
-    console.log('   Silver:   nasrin@populardiagnostic.com  | Password: password123');
-    console.log('   Silver:   rafiq@uniteddiagnostic.com    | Password: password123');
-    console.log('\n👤 RETAIL CUSTOMERS:');
-    console.log('   Email: kamal@example.com        | Password: password123');
-    console.log('   Email: rima@example.com         | Password: password123');
-    console.log('   (+ 8 more retail customers)');
-    console.log('\n📊 DATA SUMMARY:');
     console.log(`   • ${3} Admin users`);
     console.log(`   • ${5} B2B customers (2 Gold, 2 Silver, 1 Platinum)`);
     console.log(`   • ${10} Retail customers`);
     console.log(`   • ${products.length} Products across 7 categories`);
     console.log(`   • ${orders.length} Orders (10 B2B, 10 Retail)`);
     console.log(`   • ${quotes.length} Quotations`);
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('⚠️  Seed credentials are defined in seedData.js — do NOT log them here.');
     console.log('═══════════════════════════════════════════════════════\n');
 
     process.exit(0);

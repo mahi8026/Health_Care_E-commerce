@@ -83,9 +83,13 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin) || isVercelPreview) {
       callback(null, true);
     } else {
-      console.log('CORS blocked origin:', origin);
-      callback(null, true); // Allow all origins in development
-      // In production, use: callback(new Error('Not allowed by CORS'));
+      if (process.env.NODE_ENV !== 'production') {
+        logger.warn(`CORS blocked origin: ${origin}`);
+        callback(null, true); // Allow all origins in development only
+      } else {
+        logger.warn(`CORS rejected origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
     }
   },
   credentials: true,

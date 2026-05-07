@@ -26,23 +26,33 @@ export function useProducts(filters = {}, initialData = null) {
     setError(null);
     try {
       const response = await api.getProducts(filters);
-      setProducts(response.products || response.data?.products || response || []);
+      
+      // Handle different response structures
+      const productsData = response.products || response.data?.products || response.data || [];
+      
+      setProducts(Array.isArray(productsData) ? productsData : []);
+      
       // Store pagination metadata
       setPagination({
-        total: response.total || 0,
-        page: response.page || 1,
-        pages: response.pages || 0,
-        count: response.count || 0
+        total: response.total || response.pagination?.total || 0,
+        page: response.page || response.pagination?.page || filters.page || 1,
+        pages: response.pages || response.pagination?.pages || 0,
+        count: response.count || productsData.length || 0
       });
     } catch (err) {
-      // FIX 9: show error state instead of silently showing fake mock data
-      const errorMessage = err.message || 'Failed to load products';
-      setError(`Failed to load products. Please check your connection and try again.`);
+      // Provide more specific error messages
+      let errorMessage = 'Failed to load products';
+      if (err.status === 0) {
+        errorMessage = 'Cannot connect to server. Please check your connection.';
+      } else if (err.status === 404) {
+        errorMessage = 'Products not found.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
       setProducts([]);
       setPagination({ total: 0, page: 1, pages: 0, count: 0 });
-      console.error('[useProducts] fetch error:', errorMessage);
-      console.error('[useProducts] error details:', err);
-      console.error('[useProducts] filters:', filters);
     } finally {
       setLoading(false);
     }
@@ -81,10 +91,21 @@ export function useProduct(productId) {
     setError(null);
     try {
       const response = await api.getProduct(productId);
-      setProduct(response.product || response.data || response);
+      
+      const productData = response.product || response.data?.product || response.data || response;
+      
+      setProduct(productData);
     } catch (err) {
-      setError('Product not found or failed to load.');
-      console.error('[useProduct] fetch error:', err.message);
+      let errorMessage = 'Product not found or failed to load.';
+      if (err.status === 0) {
+        errorMessage = 'Cannot connect to server. Please check your connection.';
+      } else if (err.status === 404) {
+        errorMessage = 'Product not found.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
