@@ -72,7 +72,7 @@ export default function ProductsPage({ onProductClick }) {
     };
   }, [searchQuery, searchCategory, filters, sortBy, page]);
 
-  const { products, loading, pagination } = useProducts(productFilters);
+  const { products, loading, pagination, error } = useProducts(productFilters);
 
   // Update allProducts when new products are fetched
   useEffect(() => {
@@ -142,8 +142,6 @@ export default function ProductsPage({ onProductClick }) {
     <div className="min-h-screen bg-[var(--color-background-secondary)]">
       <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
 
-      <Breadcrumb items={breadcrumbs} />
-
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
         {/* Desktop Layout */}
         <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-6">
@@ -153,17 +151,43 @@ export default function ProductsPage({ onProductClick }) {
           />
 
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-[24px] font-semibold font-[family-name:var(--font-lora)]">
-                  All Products
-                </h1>
-                <p className="text-[13px] text-[var(--color-text-secondary)] mt-1">
+            {/* Compact Header Section */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 px-4 py-3 mb-4 flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-xl font-bold text-gray-900">
+                    All Products
+                  </h1>
+                  {pagination.total > 0 && (
+                    <>
+                      <span className="bg-[#0E8A6E] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                        {pagination.total}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Showing {allProducts.length} of {pagination.total}
+                      </span>
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-gray-600 mt-0.5">
                   Browse our complete catalog of medical equipment and supplies
                 </p>
               </div>
               <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
             </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚠️</span>
+                  <div>
+                    <div className="font-semibold">Error Loading Products</div>
+                    <div className="text-sm">{error}</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <SearchResults
               products={allProducts}
@@ -192,6 +216,19 @@ export default function ProductsPage({ onProductClick }) {
             </div>
             <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
           </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg mb-4 text-sm">
+              <div className="flex items-center gap-2">
+                <span>⚠️</span>
+                <div>
+                  <div className="font-semibold">Error</div>
+                  <div className="text-xs">{error}</div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Mobile Results */}
           <SearchResults

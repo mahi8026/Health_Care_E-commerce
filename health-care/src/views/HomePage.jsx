@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   FaStethoscope, 
@@ -93,7 +93,7 @@ function Skeleton({ w = '100%', h = 20, r = 8 }) {
   );
 }
 
-function ProductCard({ product, onClick }) {
+const ProductCard = memo(function ProductCard({ product, onClick }) {
   const img = product.images?.[0]?.url || product.images?.[0];
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const ratingVal = typeof product.rating === 'object' ? product.rating?.average : (product.rating || 0);
@@ -158,7 +158,7 @@ function ProductCard({ product, onClick }) {
       </div>
     </div>
   );
-}
+});
 
 function useCountUp(target, duration = 1500, started = false) {
   const [count, setCount] = useState(0);
@@ -235,10 +235,19 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  // Sticky navbar
+  // Sticky navbar - throttled for better performance
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', handler);
+    let ticking = false;
+    const handler = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 60);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
@@ -253,27 +262,27 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Hero slider auto-play
+  // Hero slider auto-play - increased interval for performance
   useEffect(() => {
     if (isSliderHovered) return;
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % 4);
-    }, 4000);
+    }, 6000); // Increased from 4s to 6s
     return () => clearInterval(interval);
   }, [isSliderHovered]);
 
-  // Search placeholder cycling
+  // Search placeholder cycling - increased interval for performance
   useEffect(() => {
     const placeholders = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % placeholders.length;
       setSearchPlaceholder(placeholders[i]);
-    }, 2000);
+    }, 4000); // Increased from 2s to 4s
     return () => clearInterval(interval);
   }, []);
 
-  // Countdown timer - counts to midnight
+  // Countdown timer - counts to midnight (reduced frequency for performance)
   useEffect(() => {
     const getTimeUntilMidnight = () => {
       const now = new Date();
@@ -291,7 +300,8 @@ export default function HomePage() {
     const updateTime = () => setTimeLeft(getTimeUntilMidnight());
     updateTime(); // set immediately on mount
     
-    const t = setInterval(updateTime, 1000);
+    // Update every 5 seconds instead of every second to reduce re-renders
+    const t = setInterval(updateTime, 5000);
     return () => clearInterval(t);
   }, []);
 
@@ -481,11 +491,11 @@ export default function HomePage() {
         @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes fadeSlide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; will-change: background-position; }
         .marquee-wrap { overflow: hidden; }
-        .marquee-track { display: flex; animation: marquee 25s linear infinite; width: max-content; }
+        .marquee-track { display: flex; animation: marquee 25s linear infinite; width: max-content; will-change: transform; }
         .marquee-track:hover { animation-play-state: paused; }
-        .product-card-hover { transition: box-shadow 0.2s, transform 0.2s; }
+        .product-card-hover { transition: box-shadow 0.2s, transform 0.2s; will-change: transform; }
         .product-card-hover:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.12); transform: translateY(-3px); }
         .cat-tile { transition: all 0.2s; }
         .cat-tile:hover { border-color: #0E8A6E !important; }
@@ -505,10 +515,10 @@ export default function HomePage() {
         .hero-content > *:nth-child(5) { animation-delay: 0.5s; }
         .hero-content > *:nth-child(6) { animation-delay: 0.6s; }
         .hero-content > *:nth-child(7) { animation-delay: 0.7s; }
-        .floating-card { animation: float 3s ease-in-out infinite; }
-        .orb-drift { animation: drift 20s ease-in-out infinite; }
-        .slide-active { animation: scaleIn 0.6s ease forwards; }
-        .typewriter-text { animation: fadeSlide 0.5s ease forwards; }
+        .floating-card { animation: float 3s ease-in-out infinite; will-change: transform; }
+        .orb-drift { animation: drift 20s ease-in-out infinite; will-change: transform; }
+        .slide-active { animation: scaleIn 0.6s ease forwards; will-change: transform, opacity; }
+        .typewriter-text { animation: fadeSlide 0.5s ease forwards; will-change: transform, opacity; }
         .hero-grid-container { width: 100%; }
         /* Custom scrollbar for category navigation */
         *::-webkit-scrollbar { height: 6px; }

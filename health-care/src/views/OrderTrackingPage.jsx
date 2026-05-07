@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
+import { CONTACT } from '@/constants/api';
 
 export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
   const router = useRouter();
@@ -330,7 +331,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 Continue Shopping
               </button>
               <a
-                href={`https://wa.me/8801700000000?text=I need help with order ${order.orderNumber}`}
+                href={`https://wa.me/${CONTACT.whatsapp}?text=I need help with order ${order.orderNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center gap-2"

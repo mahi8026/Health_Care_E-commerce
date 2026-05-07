@@ -642,7 +642,15 @@ export const api = {
     }
   },
 
-  // Payments
+  // Generic HTTP methods
+  async get(endpoint) {
+    const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
+      headers: getAuthHeaders(),
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
   async post(endpoint, data) {
     const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
@@ -653,6 +661,36 @@ export const api = {
     return handleResponse(response);
   },
 
+  async put(endpoint, data) {
+    const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
+  async patch(endpoint, data) {
+    const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
+  async delete(endpoint) {
+    const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
+  // Payments
   async createPaymentIntent(amount, orderId) {
     return this.post('/payments/stripe/create-intent', { amount, orderId });
   },

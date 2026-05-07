@@ -4,6 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 
+// Check if user is authenticated
+const isAuthenticated = () => {
+  if (typeof window !== 'undefined') {
+    return !!localStorage.getItem('medcore_token');
+  }
+  return false;
+};
+
 export default function ManufacturersPage() {
   const router = useRouter();
   const [manufacturers, setManufacturers] = useState([]);
@@ -12,22 +20,60 @@ export default function ManufacturersPage() {
   const [includeInactive, setIncludeInactive] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Check authentication on mount
   useEffect(() => {
-    fetchManufacturers();
+    if (!isAuthenticated()) {
+      console.warn('[Manufacturers] No authentication token found');
+      setError('Please log in to access the admin panel');
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      fetchManufacturers();
+    }
   }, [includeInactive, searchTerm]);
 
   const fetchManufacturers = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       const params = new URLSearchParams();
       if (includeInactive) params.append('includeInactive', 'true');
       if (searchTerm) params.append('search', searchTerm);
       
+      console.log('[Manufacturers] Fetching with params:', params.toString());
       const response = await api.get(`/manufacturers?${params.toString()}`);
-      setManufacturers(response.data.manufacturers || []);
-      setError(null);
+      console.log('[Manufacturers] API response:', response);
+      
+      // Handle different response structures
+      const manufacturersData = response.manufacturers || response.data?.manufacturers || response.data || [];
+      console.log('[Manufacturers] Extracted manufacturers data:', manufacturersData);
+      
+      setManufacturers(Array.isArray(manufacturersData) ? manufacturersData : []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load manufacturers');
+      console.error('[Manufacturers] Fetch error:', err);
+      console.error('[Manufacturers] Error details:', {
+        message: err.message,
+        status: err.status,
+        data: err.data
+      });
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to load manufacturers';
+      if (err.status === 0) {
+        errorMessage = 'Cannot connect to server. Please ensure the backend is running on http://localhost:5000';
+      } else if (err.status === 401) {
+        errorMessage = 'Authentication required. Please log in as admin.';
+      } else if (err.status === 403) {
+        errorMessage = 'Access denied. Admin privileges required.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -97,6 +143,15 @@ export default function ManufacturersPage() {
             />
             <span className="text-sm text-gray-700">Show inactive</span>
           </label>
+          <button
+            onClick={() => {
+              console.log('[Manufacturers] Manual refresh triggered');
+              fetchManufacturers();
+            }}
+            className="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap"
+          >
+            Refresh
+          </button>
         </div>
 
         {/* Error */}

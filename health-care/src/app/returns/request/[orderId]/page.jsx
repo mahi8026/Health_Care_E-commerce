@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { API } from '@/constants/api';
+import { getProductImageUrl, IMAGES } from '@/constants/images';
 
 const RETURN_REASONS = [
   { value: 'damaged', label: 'Product arrived damaged' },
@@ -35,8 +36,11 @@ export default function ReturnRequestPage() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
+      
       if (data.success) {
-        setOrder(data.data);
+        // Handle both data.order and data.data response structures
+        const orderData = data.order || data.data?.order || data.data;
+        setOrder(orderData);
       } else {
         alert(data.message || 'Order not found');
         router.push('/orders');
@@ -44,6 +48,7 @@ export default function ReturnRequestPage() {
     } catch (err) {
       console.error(err);
       alert('Failed to load order');
+      router.push('/orders');
     } finally {
       setLoading(false);
     }
@@ -118,12 +123,15 @@ export default function ReturnRequestPage() {
     try {
       const token = localStorage.getItem('medcore_token');
       
-      // Prepare products array
-      const products = order.items.map(item => ({
-        product: item.product._id,
-        quantity: item.quantity,
-        reason: reason
-      }));
+      // Prepare products array - handle both populated and non-populated product references
+      const products = order.items.map(item => {
+        const productId = typeof item.product === 'object' ? item.product._id : item.product;
+        return {
+          product: productId,
+          quantity: item.quantity || item.qty || 1,
+          reason: reason
+        };
+      });
 
       const res = await fetch(`${API}/returns`, {
         method: 'POST',
@@ -218,24 +226,33 @@ export default function ReturnRequestPage() {
           </div>
 
           <div className="border-t pt-4 space-y-4">
-            {order.items?.map((item, idx) => (
-              <div key={idx} className="flex gap-4 items-center">
-                <img 
-                  src={item.product?.images?.[0]?.url || '/placeholder.png'} 
-                  alt={item.product?.name}
-                  className="w-20 h-20 object-cover rounded-lg border"
-                />
-                <div className="flex-1">
-                  <h3 className="font-medium text-[#0B2545]">{item.product?.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    Quantity: {item.quantity} × ৳{item.price?.toLocaleString()}
-                  </p>
-                  <p className="text-sm font-medium text-[#0E8A6E]">
-                    Subtotal: ৳{(item.quantity * item.price)?.toLocaleString()}
-                  </p>
+            {order.items?.map((item, idx) => {
+              const productData = item.product || {};
+              const productImage = getProductImageUrl(productData);
+              const productName = productData.name || 'Product';
+              const itemPrice = item.price || 0;
+              const itemQty = item.quantity || item.qty || 1;
+              
+              return (
+                <div key={idx} className="flex gap-4 items-center">
+                  <img 
+                    src={productImage} 
+                    alt={productName}
+                    className="w-20 h-20 object-cover rounded-lg border"
+                    onError={(e) => { e.target.src = IMAGES.placeholder; }}
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-medium text-[#0B2545]">{productName}</h3>
+                    <p className="text-sm text-gray-600">
+                      Quantity: {itemQty} × ৳{itemPrice.toLocaleString()}
+                    </p>
+                    <p className="text-sm font-medium text-[#0E8A6E]">
+                      Subtotal: ৳{(itemQty * itemPrice).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

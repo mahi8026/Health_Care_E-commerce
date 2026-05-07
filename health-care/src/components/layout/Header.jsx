@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import AccountMenu from './AccountMenu';
-import WishlistButton from './WishlistButton';
+import WishlistButton from '../wishlist/WishlistButton';
 import MobileMenu from './MobileMenu';
 import { FaSearch, FaShoppingCart, FaBars } from 'react-icons/fa';
 

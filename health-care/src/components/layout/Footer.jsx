@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { API } from '@/constants/api';
+import { API, CONTACT } from '@/constants/api';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -219,20 +219,20 @@ export default function Footer() {
             {/* Contact */}
             <div className="space-y-1">
               <a
-                href="https://wa.me/8801700000000"
+                href={`https://wa.me/${CONTACT.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-[12px] text-white/70 hover:text-white transition-colors"
               >
                 <span>📱</span>
-                <span>+880 1700-000000 (WhatsApp)</span>
+                <span>{CONTACT.phone} (WhatsApp)</span>
               </a>
               <a
-                href="mailto:info@medcorebd.com"
+                href={`mailto:${CONTACT.email}`}
                 className="flex items-center gap-2 text-[12px] text-white/70 hover:text-white transition-colors"
               >
                 <span>✉️</span>
-                <span>info@medcorebd.com</span>
+                <span>{CONTACT.email}</span>
               </a>
             </div>
           </div>
@@ -273,20 +273,20 @@ export default function Footer() {
             {/* Contact - Mobile */}
             <div className="mt-6 space-y-2">
               <a
-                href="https://wa.me/8801700000000"
+                href={`https://wa.me/${CONTACT.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-[12px] text-white/70 hover:text-white transition-colors min-h-[44px]"
               >
                 <span>📱</span>
-                <span>+880 1700-000000 (WhatsApp)</span>
+                <span>{CONTACT.phone} (WhatsApp)</span>
               </a>
               <a
-                href="mailto:info@medcorebd.com"
+                href={`mailto:${CONTACT.email}`}
                 className="flex items-center gap-2 text-[12px] text-white/70 hover:text-white transition-colors min-h-[44px]"
               >
                 <span>✉️</span>
-                <span>info@medcorebd.com</span>
+                <span>{CONTACT.email}</span>
               </a>
             </div>
           </div>

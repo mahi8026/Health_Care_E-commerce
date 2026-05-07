@@ -41,7 +41,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
       try {
         const token = localStorage.getItem('medcore_token');
         const params = new URLSearchParams({ page, limit: PAGE_SIZE, sort: '-createdAt' });
-        const res = await fetch(`${API}/api/orders?${params}`, {
+        const res = await fetch(`${API}/orders?${params}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error('Failed to load orders');
@@ -63,9 +63,9 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   };
 
   const handleInvoice = (order) => {
-    // FIX 8: use order._id (MongoDB ObjectId), not orderNumber
+    // Use order._id (MongoDB ObjectId), not orderNumber
     const invoiceId = order._id;
-    window.open(`${API}/api/invoices/${invoiceId}`, '_blank', 'noreferrer');
+    window.open(`${API}/invoices/${invoiceId}`, '_blank', 'noreferrer');
   };
 
   const handleRequestReturn = (orderId) => {

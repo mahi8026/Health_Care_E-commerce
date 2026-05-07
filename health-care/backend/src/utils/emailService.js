@@ -89,7 +89,7 @@ function wrapHtml(content) {
         <p style="margin:0 0 8px;font-weight:600;color:#495057;">MedCore BD</p>
         <p style="margin:4px 0;">DGDA Reg. No. DA-2024-0891 | BIN: 003456789-0101</p>
         <p style="margin:4px 0;">📍 Dhaka, Bangladesh</p>
-        <p style="margin:4px 0;">📞 +880 1700-000000 | 📧 support@medcorebd.com</p>
+        <p style="margin:4px 0;">📞 +880 1646-886795 | 📧 support@medcorebd.com</p>
         <p style="margin-top:16px;color:#adb5bd;font-size:11px;">This is an automated email. Please do not reply directly to this message.</p>
       </div>
     </div>

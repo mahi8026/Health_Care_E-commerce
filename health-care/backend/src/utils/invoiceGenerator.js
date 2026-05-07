@@ -171,7 +171,7 @@ function generateInvoice(order, user) {
     doc.rect(50, footerY, pageWidth, 1).fill('#ddd');
     doc.fillColor('#666').font('Helvetica').fontSize(8)
       .text('MedCore BD Ltd. | DGDA Reg. No. DA-2024-0891 | BIN: 003456789-0101', 50, footerY + 8, { align: 'center', width: pageWidth })
-      .text('Dhaka, Bangladesh | +880 1700-000000 | support@medcorebd.com | www.medcorebd.com', 50, footerY + 20, { align: 'center', width: pageWidth })
+      .text('Dhaka, Bangladesh | +880 1646-886795 | support@medcorebd.com | www.medcorebd.com', 50, footerY + 20, { align: 'center', width: pageWidth })
       .text('This is a computer-generated invoice and does not require a signature.', 50, footerY + 32, { align: 'center', width: pageWidth });
 
     doc.end();

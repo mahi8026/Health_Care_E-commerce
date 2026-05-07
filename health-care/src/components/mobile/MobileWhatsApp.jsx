@@ -1,7 +1,9 @@
+import { CONTACT } from '@/constants/api';
+
 export default function MobileWhatsApp() {
   return (
     <a
-      href="https://wa.me/8801700000000"
+      href={`https://wa.me/${CONTACT.whatsapp}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

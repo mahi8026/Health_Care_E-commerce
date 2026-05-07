@@ -39,7 +39,7 @@ export default function SearchResults({ products, loading, query, onProductClick
       </div>
 
       {/* Product Grid - Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
         {products.map((product) => {
           // Calculate savings and discount percentage
           const price = product.price || 0;
@@ -52,33 +52,11 @@ export default function SearchResults({ products, loading, query, onProductClick
             <div
               key={product.id || product._id}
               onClick={() => onProductClick && onProductClick(product._id || product.id)}
-              className="bg-white rounded-lg p-2.5 md:p-4 border-[0.5px] border-[var(--color-border-tertiary)] hover:shadow-md transition-shadow cursor-pointer"
+              className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#0E8A6E] hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
             >
-              {/* Save Badge */}
-              {hasDiscount && (
-                <div className="flex justify-start mb-2">
-                  <span className="text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 rounded-md font-semibold bg-[#7C3AED] text-white shadow-sm">
-                    Save: {savings.toLocaleString()}৳ (-{discountPercent}%)
-                  </span>
-                </div>
-              )}
-
-              {product.badge && !hasDiscount && (
-                <div className="flex justify-end mb-2">
-                  <span className={`text-[8px] md:text-[9px] px-2 py-[2px] rounded font-medium ${
-                    product.badge === 'sale'
-                      ? 'bg-[#FCEBEB] text-[#791F1F]'
-                      : 'bg-[#E1F5EE] text-[#085041]'
-                  }`}>
-                    {product.badge === 'sale' ? '🔥 SALE' : '✨ NEW'}
-                  </span>
-                </div>
-              )}
-              
-              {/* Product Image */}
-              <div className="w-full h-28 md:h-32 bg-[var(--color-background-tertiary)] rounded-lg mb-2 md:mb-3 flex items-center justify-center text-[32px] md:text-[40px]">
+              {/* Image Container */}
+              <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 aspect-square overflow-hidden">
                 {(() => {
-                  // Handle both old (string) and new (object) image formats
                   const imageData = product.images?.[0];
                   const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
                   
@@ -87,56 +65,115 @@ export default function SearchResults({ products, loading, query, onProductClick
                     <img 
                       src={imageUrl} 
                       alt={typeof imageData === 'object' ? imageData.alt : product.name}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.parentElement.innerHTML = '📦';
+                        console.error('[SearchResults] Image failed to load:', imageUrl);
+                        // Replace with placeholder SVG
+                        e.currentTarget.src = '/placeholder.svg';
+                        e.currentTarget.className = 'w-full h-full object-contain p-8';
+                        e.currentTarget.onerror = null; // Prevent infinite loop
                       }}
                     />
-                  ) : '📦';
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img 
+                      src="/placeholder.svg" 
+                      alt={product.name}
+                      className="w-full h-full object-contain p-8"
+                    />
+                  );
                 })()}
-              </div>
-              
-              {/* Product Name */}
-              <div className="text-[11px] md:text-[13px] font-medium mb-1 font-[family-name:var(--font-plus-jakarta)] line-clamp-2">
-                {product.name}
-              </div>
-              
-              {/* Brand */}
-              <div className="text-[10px] md:text-[11px] text-[var(--color-text-secondary)] mb-2 md:mb-3">
-                {typeof product.brand === 'object' ? product.brand?.name : product.brand}
-              </div>
-              
-              {/* Price and Stock */}
-              <div className="flex items-end justify-between mb-2 md:mb-3">
-                <div>
-                  <div className="text-[14px] md:text-[16px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-                    ৳{product.price.toLocaleString()}
-                  </div>
-                  {product.oldPrice && (
-                    <div className="text-[10px] md:text-[11px] text-[var(--color-text-tertiary)] line-through">
-                      ৳{product.oldPrice.toLocaleString()}
-                    </div>
-                  )}
-                </div>
-                {product.stock !== undefined && (
-                  <div className={`text-[9px] md:text-[10px] ${product.stock > 0 ? 'text-[#0E8A6E]' : 'text-[#E24B4A]'}`}>
-                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                
+                {/* Discount Badge */}
+                {hasDiscount && (
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-lg shadow-lg">
+                    <div className="text-xs font-bold">-{discountPercent}%</div>
                   </div>
                 )}
+                
+                {/* New/Sale Badge */}
+                {product.badge && !hasDiscount && (
+                  <div className={`absolute top-2 left-2 px-3 py-1.5 rounded-lg shadow-lg text-xs font-bold ${
+                    product.badge === 'sale'
+                      ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white'
+                      : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                  }`}>
+                    {product.badge === 'sale' ? '🔥 SALE' : '✨ NEW'}
+                  </div>
+                )}
+                
+                {/* Stock Badge */}
+                {product.stock !== undefined && (
+                  <div className={`absolute top-2 right-2 px-2 py-1 rounded-lg text-xs font-semibold shadow-lg ${
+                    product.stock > 0 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-red-500 text-white'
+                  }`}>
+                    {product.stock > 0 ? `${product.stock} left` : 'Out'}
+                  </div>
+                )}
+                
+                {/* Quick View Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onProductClick && onProductClick(product._id || product.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white text-[#0E8A6E] px-4 py-2 rounded-lg font-semibold text-sm shadow-lg hover:bg-[#0E8A6E] hover:text-white"
+                  >
+                    Quick View
+                  </button>
+                </div>
               </div>
               
-              {/* View Details Button */}
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onProductClick && onProductClick(product._id || product.id);
-                }}
-                className="w-full py-[7px] md:py-[8px] bg-[#0B2545] text-white rounded-lg text-[11px] md:text-[12px] font-semibold hover:bg-[#0d2d52] transition-colors"
-              >
-                View details
-              </button>
+              {/* Content */}
+              <div className="p-3 md:p-4 flex-1 flex flex-col">
+                {/* Brand */}
+                <div className="text-[10px] md:text-xs text-[#0E8A6E] font-semibold uppercase tracking-wider mb-1">
+                  {typeof product.brand === 'object' ? product.brand?.name : product.brand}
+                </div>
+                
+                {/* Product Name */}
+                <h3 className="text-sm md:text-base font-semibold text-gray-800 mb-2 line-clamp-2 flex-1 group-hover:text-[#0E8A6E] transition-colors">
+                  {product.name}
+                </h3>
+                
+                {/* Price Section */}
+                <div className="mt-auto">
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="text-lg md:text-xl font-bold text-gray-900">
+                      ৳{product.price.toLocaleString()}
+                    </span>
+                    {product.oldPrice && (
+                      <span className="text-xs md:text-sm text-gray-400 line-through">
+                        ৳{product.oldPrice.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Savings Display */}
+                  {hasDiscount && (
+                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg px-2 py-1 mb-3">
+                      <span className="text-xs font-semibold text-purple-700">
+                        💰 Save ৳{savings.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Action Button */}
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onProductClick && onProductClick(product._id || product.id);
+                    }}
+                    className="w-full bg-gradient-to-r from-[#0E8A6E] to-[#0c7359] text-white py-2.5 md:py-3 rounded-lg font-semibold text-xs md:text-sm hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}
@@ -144,20 +181,31 @@ export default function SearchResults({ products, loading, query, onProductClick
 
       {/* Load More Button */}
       {hasMore && (
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-10">
           <button
             onClick={onLoadMore}
             disabled={loadingMore}
-            className="px-8 py-3 bg-[#0E8A6E] text-white rounded-lg text-[14px] font-semibold hover:bg-[#0c7359] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="group relative px-10 py-4 bg-gradient-to-r from-[#0E8A6E] to-[#0c7359] text-white rounded-xl text-[15px] font-bold hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-3 overflow-hidden"
           >
-            {loadingMore ? (
-              <>
-                <Spinner size="sm" />
-                Loading...
-              </>
-            ) : (
-              'Load More Products'
-            )}
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0c7359] to-[#0E8A6E] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Content */}
+            <span className="relative z-10 flex items-center gap-3">
+              {loadingMore ? (
+                <>
+                  <Spinner size="sm" />
+                  Loading More Products...
+                </>
+              ) : (
+                <>
+                  Load More Products
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </>
+              )}
+            </span>
           </button>
         </div>
       )}

@@ -4,6 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 
+// Check if user is authenticated
+const isAuthenticated = () => {
+  if (typeof window !== 'undefined') {
+    return !!localStorage.getItem('medcore_token');
+  }
+  return false;
+};
+
 export default function CategoriesPage() {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
@@ -11,18 +19,58 @@ export default function CategoriesPage() {
   const [error, setError] = useState(null);
   const [includeInactive, setIncludeInactive] = useState(false);
 
+  // Check authentication on mount
   useEffect(() => {
-    fetchCategories();
+    if (!isAuthenticated()) {
+      console.warn('[Categories] No authentication token found');
+      setError('Please log in to access the admin panel');
+      setLoading(false);
+      // Optionally redirect to login
+      // router.push('/login');
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      fetchCategories();
+    }
   }, [includeInactive]);
 
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/categories?includeInactive=${includeInactive}`);
-      setCategories(response.data.categories || []);
       setError(null);
+      
+      console.log('[Categories] Fetching categories with includeInactive:', includeInactive);
+      const response = await api.get(`/categories?includeInactive=${includeInactive}`);
+      console.log('[Categories] API response:', response);
+      
+      // Handle different response structures
+      const categoriesData = response.categories || response.data?.categories || response.data || [];
+      console.log('[Categories] Extracted categories data:', categoriesData);
+      
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load categories');
+      console.error('[Categories] Fetch error:', err);
+      console.error('[Categories] Error details:', {
+        message: err.message,
+        status: err.status,
+        data: err.data
+      });
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to load categories';
+      if (err.status === 0) {
+        errorMessage = 'Cannot connect to server. Please ensure the backend is running on http://localhost:5000';
+      } else if (err.status === 401) {
+        errorMessage = 'Authentication required. Please log in as admin.';
+      } else if (err.status === 403) {
+        errorMessage = 'Access denied. Admin privileges required.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -76,15 +124,26 @@ export default function CategoriesPage() {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={includeInactive}
-              onChange={(e) => setIncludeInactive(e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded"
-            />
-            <span className="text-sm text-gray-700">Show inactive categories</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={includeInactive}
+                onChange={(e) => setIncludeInactive(e.target.checked)}
+                className="w-4 h-4 text-blue-600 rounded"
+              />
+              <span className="text-sm text-gray-700">Show inactive categories</span>
+            </label>
+            <button
+              onClick={() => {
+                console.log('[Categories] Manual refresh triggered');
+                fetchCategories();
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800 underline"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Error */}

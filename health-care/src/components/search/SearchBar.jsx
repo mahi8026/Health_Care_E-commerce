@@ -23,7 +23,7 @@ export default function SearchBar({ onSearch, placeholder = "Search products..."
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[var(--color-background-primary)] border-b-[0.5px] border-[var(--color-border-tertiary)] px-6 py-4">
+    <form onSubmit={handleSubmit} className="bg-[var(--color-background-primary)] border-b-[0.5px] border-[var(--color-border-tertiary)] px-6 py-3">
       <div className="flex gap-3 items-center max-w-6xl mx-auto">
         <div className="flex-1 flex items-center border-[0.5px] border-[var(--color-border-secondary)] rounded-lg bg-[var(--color-background-secondary)] px-4 h-[42px] gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="flex-shrink-0 opacity-40">
@@ -65,27 +65,6 @@ export default function SearchBar({ onSearch, placeholder = "Search products..."
         >
           Advanced filter
         </button>
-      </div>
-
-      {/* Popular Searches */}
-      <div className="flex gap-2 mt-3 flex-wrap max-w-6xl mx-auto">
-        <span className="text-[11px] text-[var(--color-text-secondary)] py-[5px]">Popular:</span>
-        {['ECG Machine', 'Suction Device', 'HbA1c Kit', 'Surgical Gloves', 'Pulse Oximeter'].map((term) => (
-          <button
-            key={term}
-            type="button"
-            onClick={() => {
-              setQuery(term);
-              const searchParams = { query: term, category: '' };
-              onSearch(searchParams);
-              // Track popular search click
-              GA4Tracker.trackSearch(term, 0);
-            }}
-            className="text-[11px] px-3 py-[5px] rounded-[20px] border-[0.5px] border-[var(--color-border-secondary)] cursor-pointer text-[var(--color-text-secondary)] bg-[var(--color-background-primary)] whitespace-nowrap hover:border-[#0B2545] hover:text-[#0B2545]"
-          >
-            {term}
-          </button>
-        ))}
       </div>
     </form>
   );
