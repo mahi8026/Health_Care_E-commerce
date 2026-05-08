@@ -36,7 +36,7 @@
     "csurf": "^1.11.0",
     "csv-parse": "^6.2.1",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2",
+    "express": "^5.2.1",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.5.1",
     "express-session": "^1.19.0",
