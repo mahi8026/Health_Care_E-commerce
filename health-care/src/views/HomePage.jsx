@@ -186,55 +186,50 @@ export default function HomePage() {
   const router = useRouter();
   const { addToCart } = useCart();
 
-  // ── State - Consolidated for better performance ──────────────────────────────────────────
+  // ── State ──────────────────────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = useState('');
   const [announcementIdx, setAnnouncementIdx] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [typewriterText, setTypewriterText] = useState('Diagnostic Equipment');
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isSliderHovered, setIsSliderHovered] = useState(false);
-  const [currentRightBanner, setCurrentRightBanner] = useState(0);
-  const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
+  const [categories, setCategories] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [dealProducts, setDealProducts] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [promo, setPromo] = useState(null);
+  const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+  const [statsStarted, setStatsStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
+  const [testimonials, setTestimonials] = useState([]);
   const [email, setEmail] = useState('');
   const [subscribeStatus, setSubscribeStatus] = useState('idle');
-  const [statsStarted, setStatsStarted] = useState(false);
-  
-  // Consolidated data state
-  const [data, setData] = useState({
-    categories: [],
-    categoryCounts: {},
-    featuredProducts: [],
-    dealProducts: [],
-    newArrivals: [],
-    brands: [],
-    promo: null,
-    stats: { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 },
-    timeLeft: { h: 0, m: 0, s: 0 },
-    testimonials: [],
-    user: null,
-    cartCount: 0,
-    labEquipmentProducts: [],
-    topSellingProducts: [],
-    categoryProducts: {
-      diagnostic: [],
-      reagents: [],
-      machines: [],
-      ppe: [],
-      labEquipment: [],
-    },
-    featuredLoading: true,
+  const [user, setUser] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isSliderHovered, setIsSliderHovered] = useState(false);
+  const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
+  const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
+  const [topSellingProducts, setTopSellingProducts] = useState([]);
+  const [categoryProducts, setCategoryProducts] = useState({
+    diagnostic: [],
+    reagents: [],
+    machines: [],
+    ppe: [],
+    labEquipment: [],
   });
   
   const statsRef = useRef(null);
 
   // Animated counters
-  const productsCount = useCountUp(data.stats.totalProducts, 1500, statsStarted);
-  const brandsCount = useCountUp(data.stats.totalBrands, 1500, statsStarted);
-  const ordersCount = useCountUp(data.stats.totalOrders, 1500, statsStarted);
-  const clientsCount = useCountUp(data.stats.totalB2BClients, 1500, statsStarted);
+  const productsCount = useCountUp(stats.totalProducts, 1500, statsStarted);
+  const brandsCount = useCountUp(stats.totalBrands, 1500, statsStarted);
+  const ordersCount = useCountUp(stats.totalOrders, 1500, statsStarted);
+  const clientsCount = useCountUp(stats.totalB2BClients, 1500, statsStarted);
 
-  // ── Effects - Optimized with proper dependencies ────────────────────────────────────────────
+  // ── Effects ────────────────────────────────────────────────────────────────
 
   // Announcement rotation
   useEffect(() => {
@@ -269,40 +264,32 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Hero slider auto-play
+  // Hero slider auto-play - increased interval for performance
   useEffect(() => {
     if (isSliderHovered) return;
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % 4);
-    }, 6000);
+    }, 6000); // Increased from 4s to 6s
     return () => clearInterval(interval);
   }, [isSliderHovered]);
 
-  // Right banner auto-rotate
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentRightBanner(prev => (prev + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Search placeholder cycling
+  // Search placeholder cycling - increased interval for performance
   useEffect(() => {
     const placeholders = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % placeholders.length;
       setSearchPlaceholder(placeholders[i]);
-    }, 4000);
+    }, 4000); // Increased from 2s to 4s
     return () => clearInterval(interval);
   }, []);
 
-  // Countdown timer - optimized to update every 10 seconds
+  // Countdown timer - counts to midnight (reduced frequency for performance)
   useEffect(() => {
     const getTimeUntilMidnight = () => {
       const now = new Date();
       const midnight = new Date();
-      midnight.setHours(24, 0, 0, 0);
+      midnight.setHours(24, 0, 0, 0);  // next midnight
       const diff = midnight - now;
       return {
         h: Math.floor(diff / 3600000),
@@ -311,12 +298,12 @@ export default function HomePage() {
       };
     };
     
-    const updateTime = () => {
-      setData(prev => ({ ...prev, timeLeft: getTimeUntilMidnight() }));
-    };
-    updateTime();
+    // Use a function to initialize state instead of calling setState directly
+    const updateTime = () => setTimeLeft(getTimeUntilMidnight());
+    updateTime(); // set immediately on mount
     
-    const t = setInterval(updateTime, 10000); // Update every 10 seconds
+    // Update every 5 seconds instead of every second to reduce re-renders
+    const t = setInterval(updateTime, 5000);
     return () => clearInterval(t);
   }, []);
 
@@ -333,7 +320,7 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, []);
 
-  // Fetch data - consolidated into single effect
+  // Fetch data
   useEffect(() => {
     const safe = async (p) => {
       try {
@@ -347,7 +334,7 @@ export default function HomePage() {
 
     Promise.all([
       safe(fetch(`${API}/products?isFeatured=true&limit=24`)),
-      safe(fetch(`${API}/products?limit=24`)),
+      safe(fetch(`${API}/products?limit=24`)), // Fallback: all products
       safe(fetch(`${API}/categories`)),
       safe(fetch(`${API}/products/category-counts`)),
       safe(fetch(`${API}/stats`)),
@@ -356,60 +343,62 @@ export default function HomePage() {
       safe(fetch(`${API}/manufacturers`)),
       safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
       safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
-      safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)),
-      safe(fetch(`${API}/products?isFeatured=true&limit=4`)),
-      safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)),
-      safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)),
-      safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)),
-      safe(fetch(`${API}/products?category=PPE&limit=10`)),
-      safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)),
+      safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)), // Lab equipment products
+      safe(fetch(`${API}/products?isFeatured=true&limit=4`)), // Top selling
+      safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)), // Category: Diagnostic
+      safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)), // Category: Reagents
+      safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)), // Category: Machines
+      safe(fetch(`${API}/products?category=PPE&limit=10`)), // Category: PPE
+      safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)), // Category: Lab Equipment
     ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews, labEquip, topSelling, diagnostic, reagents, machines, ppe, labEquipCat]) => {
       const fp = featured.data?.products || featured.products || [];
       const ap = allProducts.data?.products || allProducts.products || [];
+      // Use featured products if available, otherwise use all products
       const productsToShow = fp.length >= 12 ? fp : ap;
-      
+      setFeaturedProducts(productsToShow);
+      setFeaturedLoading(false);
+
       const catList = cats.data?.categories || cats.categories || [];
-      const mfrList = mfrs.data?.manufacturers || mfrs.manufacturers || [];
+      setCategories(catList.length > 0 ? catList : FALLBACK_CATEGORIES);
+      setCategoryCounts(counts.data || {});
+
+      if (statsData.data) setStats(statsData.data);
+      setPromo(promoData.data?.coupon || null);
+
       const na = newest.data?.products || newest.products || [];
+      setNewArrivals(na);
+
+      const mfrList = mfrs.data?.manufacturers || mfrs.manufacturers || [];
+      setBrands(mfrList);
+
       const dealList = deals.data?.products || deals.products || [];
+      setDealProducts(dealList);
+
       const reviewList = reviews.data?.reviews || reviews.reviews || [];
+      setTestimonials(reviewList);
+
       const labEquipList = labEquip.data?.products || labEquip.products || [];
+      setLabEquipmentProducts(labEquipList);
+
       const topSellingList = topSelling.data?.products || topSelling.products || [];
-      
+      setTopSellingProducts(topSellingList);
+
       const diagnosticList = diagnostic.data?.products || diagnostic.products || [];
       const reagentsList = reagents.data?.products || reagents.products || [];
       const machinesList = machines.data?.products || machines.products || [];
       const ppeList = ppe.data?.products || ppe.products || [];
       const labEquipCatList = labEquipCat.data?.products || labEquipCat.products || [];
       
-      setData(prev => ({
-        ...prev,
-        featuredProducts: productsToShow,
-        categories: catList.length > 0 ? catList : FALLBACK_CATEGORIES,
-        categoryCounts: counts.data || {},
-        stats: statsData.data || prev.stats,
-        promo: promoData.data?.coupon || null,
-        newArrivals: na,
-        brands: mfrList,
-        dealProducts: dealList,
-        testimonials: reviewList,
-        labEquipmentProducts: labEquipList,
-        topSellingProducts: topSellingList,
-        categoryProducts: {
-          diagnostic: diagnosticList,
-          reagents: reagentsList,
-          machines: machinesList,
-          ppe: ppeList,
-          labEquipment: labEquipCatList,
-        },
-        featuredLoading: false,
-      }));
+      setCategoryProducts({
+        diagnostic: diagnosticList,
+        reagents: reagentsList,
+        machines: machinesList,
+        ppe: ppeList,
+        labEquipment: labEquipCatList,
+      });
     }).catch(() => {
-      setData(prev => ({
-        ...prev,
-        featuredLoading: false,
-        categories: FALLBACK_CATEGORIES,
-      }));
+      setFeaturedLoading(false);
+      setCategories(FALLBACK_CATEGORIES);
     });
 
     // Check user auth
@@ -418,7 +407,7 @@ export default function HomePage() {
       fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
         .then(data => {
-          if (data.user) setData(prev => ({ ...prev, user: data.user }));
+          if (data.user) setUser(data.user);
         })
         .catch(() => {});
     }
@@ -429,12 +418,13 @@ export default function HomePage() {
       try {
         const cart = JSON.parse(cartData);
         const count = cart.items?.length || 0;
-        setData(prev => ({ ...prev, cartCount: count }));
+        // Use setTimeout to avoid setState in effect
+        setTimeout(() => setCartCount(count), 0);
       } catch {}
     }
   }, []);
 
-  // ── Handlers - Memoized for better performance ───────────────────────────────────────────
+  // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleSearch = useCallback(() => {
     if (searchQuery.trim()) router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
@@ -442,7 +432,7 @@ export default function HomePage() {
 
   const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
-    setData(prev => ({ ...prev, featuredLoading: true }));
+    setFeaturedLoading(true);
     const featuredUrl = tab === 'all' 
       ? `${API}/products?isFeatured=true&limit=24`
       : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
@@ -503,7 +493,6 @@ export default function HomePage() {
         @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes fadeSlide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; will-change: background-position; }
         .marquee-wrap { overflow: hidden; }
         .marquee-track { display: flex; animation: marquee 25s linear infinite; width: max-content; will-change: transform; }
@@ -552,20 +541,10 @@ export default function HomePage() {
         @media (max-width: 1024px) {
           .hero-grid-container { grid-template-columns: 1fr !important; gap: 40px !important; }
           .hero-right-panel { display: none !important; }
-          .hero-left-slider { height: 400px !important; }
-          .hero-content h1 { font-size: 36px !important; }
-          .hero-content p { font-size: 16px !important; }
-          .hero-content { padding: 0 40px !important; }
           .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .cat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 640px) {
-          .hero-left-slider { height: 320px !important; }
-          .hero-content h1 { font-size: 28px !important; }
-          .hero-content p { font-size: 14px !important; max-width: 100% !important; }
-          .hero-content { padding: 0 24px !important; }
-          .hero-content > div:first-child { font-size: 12px !important; }
-          .hero-content button { padding: 12px 24px !important; font-size: 14px !important; }
           .prod-grid-4 { grid-template-columns: 1fr !important; }
           .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -581,12 +560,12 @@ export default function HomePage() {
         position: 'relative', overflow: 'hidden', padding: '24px 0'
       }}>
         <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '0 24px',
-          position: 'relative', display: 'grid', gridTemplateColumns: '70% 30%', gap: 20,
+          position: 'relative', display: 'grid', gridTemplateColumns: '60% 40%', gap: 20,
           alignItems: 'stretch', zIndex: 2 }}
           className="hero-grid-container">
 
-          {/* ═══════════════════ LEFT SIDE: IMAGE SLIDER WITH OVERLAY (70%) ═══════════════════ */}
-          <div className="hero-left-slider" style={{ position: 'relative', height: '480px', borderRadius: 12, overflow: 'hidden', zIndex: 3, background: '#E5E7EB' }}
+          {/* ═══════════════════ LEFT SIDE: IMAGE SLIDER ═══════════════════ */}
+          <div className="hero-left-slider" style={{ position: 'relative', height: '380px', borderRadius: 12, overflow: 'hidden', zIndex: 3, background: '#E5E7EB' }}
             onMouseEnter={() => setIsSliderHovered(true)}
             onMouseLeave={() => setIsSliderHovered(false)}>
             
@@ -597,9 +576,9 @@ export default function HomePage() {
               {String(currentSlide + 1).padStart(2, '0')} / 04
             </div>
 
-            {/* SLIDE 1: Medical Equipment */}
+            {/* SLIDE 1 */}
             {currentSlide === 0 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img 
                   src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=400&fit=crop" 
                   alt="Medical Equipment"
@@ -608,39 +587,12 @@ export default function HomePage() {
                     e.target.src = 'https://via.placeholder.com/800x380/0E8A6E/ffffff?text=Medical+Equipment';
                   }}
                 />
-                {/* Gradient overlay */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(14,138,110,0.85) 0%, rgba(14,138,110,0.4) 100%)' }} />
-                {/* Content overlay */}
-                <div className="hero-content" style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', color: '#fff' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, opacity: 0.95 }}>
-                    🩺 Premium Quality
-                  </div>
-                  <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.1, marginBottom: 16, maxWidth: 600 }}>
-                    Medical Equipment for Modern Healthcare
-                  </h1>
-                  <p style={{ fontSize: 18, lineHeight: 1.6, marginBottom: 28, maxWidth: 520, opacity: 0.95 }}>
-                    ECG machines, ultrasound systems, patient monitors, and diagnostic tools from trusted global brands
-                  </p>
-                  <div style={{ display: 'flex', gap: 16 }}>
-                    <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
-                      style={{ background: '#fff', color: '#0E8A6E', border: 'none', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      className="btn-teal-hover">
-                      Shop Now →
-                    </button>
-                    <button onClick={() => router.push('/products')}
-                      style={{ background: 'transparent', color: '#fff', border: '2px solid #fff', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      View Catalog
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
 
-            {/* SLIDE 2: Laboratory Reagents */}
+            {/* SLIDE 2 */}
             {currentSlide === 1 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img 
                   src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=400&fit=crop" 
                   alt="Laboratory"
@@ -649,39 +601,12 @@ export default function HomePage() {
                     e.target.src = 'https://via.placeholder.com/800x380/8B5CF6/ffffff?text=Laboratory+Reagents';
                   }}
                 />
-                {/* Gradient overlay */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(139,92,246,0.85) 0%, rgba(139,92,246,0.4) 100%)' }} />
-                {/* Content overlay */}
-                <div className="hero-content" style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', color: '#fff' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, opacity: 0.95 }}>
-                    🧪 Laboratory Excellence
-                  </div>
-                  <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.1, marginBottom: 16, maxWidth: 600 }}>
-                    Clinical & Molecular Reagents
-                  </h1>
-                  <p style={{ fontSize: 18, lineHeight: 1.6, marginBottom: 28, maxWidth: 520, opacity: 0.95 }}>
-                    Finecare, Roche, Abbott reagents with cold chain delivery. DGDA approved and quality assured
-                  </p>
-                  <div style={{ display: 'flex', gap: 16 }}>
-                    <button onClick={() => router.push('/products?category=Laboratory+Reagents')}
-                      style={{ background: '#fff', color: '#8B5CF6', border: 'none', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      className="btn-teal-hover">
-                      Browse Reagents →
-                    </button>
-                    <button onClick={() => router.push('/quote')}
-                      style={{ background: 'transparent', color: '#fff', border: '2px solid #fff', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      Request Quote
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
 
-            {/* SLIDE 3: Hospital Machines */}
+            {/* SLIDE 3 */}
             {currentSlide === 2 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img 
                   src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=400&fit=crop" 
                   alt="Hospital"
@@ -690,74 +615,20 @@ export default function HomePage() {
                     e.target.src = 'https://via.placeholder.com/800x380/EA580C/ffffff?text=Hospital+Machines';
                   }}
                 />
-                {/* Gradient overlay */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(234,88,12,0.85) 0%, rgba(234,88,12,0.4) 100%)' }} />
-                {/* Content overlay */}
-                <div className="hero-content" style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', color: '#fff' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, opacity: 0.95 }}>
-                    🏥 Critical Care
-                  </div>
-                  <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.1, marginBottom: 16, maxWidth: 600 }}>
-                    ICU & Hospital Equipment
-                  </h1>
-                  <p style={{ fontSize: 18, lineHeight: 1.6, marginBottom: 28, maxWidth: 520, opacity: 0.95 }}>
-                    Ventilators, dialysis machines, anesthesia systems. Free installation & staff training included
-                  </p>
-                  <div style={{ display: 'flex', gap: 16 }}>
-                    <button onClick={() => router.push('/products?category=Hospital+Machines')}
-                      style={{ background: '#fff', color: '#EA580C', border: 'none', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      className="btn-teal-hover">
-                      View Equipment →
-                    </button>
-                    <button onClick={() => router.push('/contact')}
-                      style={{ background: 'transparent', color: '#fff', border: '2px solid #fff', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      Contact Sales
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
 
-            {/* SLIDE 4: Surgical Instruments */}
+            {/* SLIDE 4 */}
             {currentSlide === 3 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img 
                   src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=400&fit=crop" 
                   alt="Surgical Instruments"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/800x380/0B2545/ffffff?text=Surgical+Instruments';
+                    e.target.src = 'https://via.placeholder.com/800x380/10B981/ffffff?text=Surgical+Instruments';
                   }}
                 />
-                {/* Gradient overlay */}
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(11,37,69,0.85) 0%, rgba(11,37,69,0.4) 100%)' }} />
-                {/* Content overlay */}
-                <div className="hero-content" style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', color: '#fff' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, opacity: 0.95 }}>
-                    💉 Surgical Excellence
-                  </div>
-                  <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.1, marginBottom: 16, maxWidth: 600 }}>
-                    Precision Surgical Instruments
-                  </h1>
-                  <p style={{ fontSize: 18, lineHeight: 1.6, marginBottom: 28, maxWidth: 520, opacity: 0.95 }}>
-                    Trocars, laparoscopic sets, implants, and orthopedic instruments. Bulk discounts available
-                  </p>
-                  <div style={{ display: 'flex', gap: 16 }}>
-                    <button onClick={() => router.push('/products?category=Surgical+Instruments')}
-                      style={{ background: '#fff', color: '#0B2545', border: 'none', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      className="btn-teal-hover">
-                      Shop Surgical →
-                    </button>
-                    <button onClick={() => router.push('/b2b')}
-                      style={{ background: 'transparent', color: '#fff', border: '2px solid #fff', padding: '14px 32px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      B2B Pricing
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
 
@@ -796,132 +667,17 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* ═══════════════════ RIGHT SIDE: 2 STACKED VERTICAL BANNERS (30%) ═══════════════════ */}
-          <div className="hero-right-panel" style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '480px', zIndex: 3 }}>
-            
-            {/* TOP BANNER: B2B Registration */}
-            <div style={{ position: 'relative', flex: 1, borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.3s' }}
-              onClick={() => router.push('/b2b')}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-              <img 
-                src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=234&fit=crop" 
-                alt="B2B Registration"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/400x234/0E8A6E/ffffff?text=B2B+Registration';
-                }}
-              />
-              {/* Gradient overlay */}
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(14,138,110,0.9) 0%, rgba(14,138,110,0.6) 100%)' }} />
-              {/* Content */}
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 20, color: '#fff', textAlign: 'center' }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🏢</div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, lineHeight: 1.2 }}>
-                  B2B Registration
-                </h3>
-                <p style={{ fontSize: 13, opacity: 0.95, marginBottom: 12, lineHeight: 1.4 }}>
-                  Get up to 30% bulk discount
-                </p>
-                <div style={{ background: '#fff', color: '#0E8A6E', padding: '8px 20px', borderRadius: 6, fontSize: 13, fontWeight: 700 }}>
-                  Register Now →
-                </div>
-              </div>
-            </div>
-
-            {/* BOTTOM BANNER: Rotating Special Offers */}
-            <div style={{ position: 'relative', flex: 1, borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.3s' }}
-              onClick={() => router.push('/products?hasDiscount=true')}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-              
-              {/* Banner 1: Special Offers */}
-              {currentRightBanner === 0 && (
-                <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <img 
-                    src="https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=234&fit=crop" 
-                    alt="Special Offers"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/400x234/F97316/ffffff?text=Special+Offers';
-                    }}
-                  />
-                  {/* Gradient overlay */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(249,115,22,0.9) 0%, rgba(249,115,22,0.6) 100%)' }} />
-                  {/* Content */}
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 20, color: '#fff', textAlign: 'center' }}>
-                    <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
-                    <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, lineHeight: 1.2 }}>
-                      Special Offers
-                    </h3>
-                    <p style={{ fontSize: 13, opacity: 0.95, marginBottom: 12, lineHeight: 1.4 }}>
-                      Up to 25% off selected items
-                    </p>
-                    <div style={{ background: '#fff', color: '#F97316', padding: '8px 20px', borderRadius: 6, fontSize: 13, fontWeight: 700 }}>
-                      Shop Deals →
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Banner 2: New Arrivals */}
-              {currentRightBanner === 1 && (
-                <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <img 
-                    src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=234&fit=crop" 
-                    alt="New Arrivals"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/400x234/8B5CF6/ffffff?text=New+Arrivals';
-                    }}
-                  />
-                  {/* Gradient overlay */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(139,92,246,0.9) 0%, rgba(139,92,246,0.6) 100%)' }} />
-                  {/* Content */}
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 20, color: '#fff', textAlign: 'center' }}>
-                    <div style={{ fontSize: 32, marginBottom: 8 }}>✨</div>
-                    <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, lineHeight: 1.2 }}>
-                      New Arrivals
-                    </h3>
-                    <p style={{ fontSize: 13, opacity: 0.95, marginBottom: 12, lineHeight: 1.4 }}>
-                      Latest medical equipment
-                    </p>
-                    <div style={{ background: '#fff', color: '#8B5CF6', padding: '8px 20px', borderRadius: 6, fontSize: 13, fontWeight: 700 }}>
-                      Explore New →
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Banner 3: Free Delivery */}
-              {currentRightBanner === 2 && (
-                <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <img 
-                    src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=400&h=234&fit=crop" 
-                    alt="Free Delivery"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/400x234/10B981/ffffff?text=Free+Delivery';
-                    }}
-                  />
-                  {/* Gradient overlay */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(16,185,129,0.9) 0%, rgba(16,185,129,0.6) 100%)' }} />
-                  {/* Content */}
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 20, color: '#fff', textAlign: 'center' }}>
-                    <div style={{ fontSize: 32, marginBottom: 8 }}>🚚</div>
-                    <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, lineHeight: 1.2 }}>
-                      Free Delivery
-                    </h3>
-                    <p style={{ fontSize: 13, opacity: 0.95, marginBottom: 12, lineHeight: 1.4 }}>
-                      On orders over ৳50,000
-                    </p>
-                    <div style={{ background: '#fff', color: '#10B981', padding: '8px 20px', borderRadius: 6, fontSize: 13, fontWeight: 700 }}>
-                      Learn More →
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
+          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
+            onClick={() => router.push('/products')}>
+            <img 
+              src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop" 
+              alt="Featured Products"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/500x380/FDE68A/92400E?text=Featured+Products';
+              }}
+            />
           </div>
         </div>
       </section>
