@@ -27,7 +27,7 @@ let upload;
 
 if (CLOUDINARY_CONFIGURED) {
   const cloudinary = require('cloudinary').v2;
-  const CloudinaryStorage = require('multer-storage-cloudinary').CloudinaryStorage;
+  const CloudinaryStorage = require('multer-storage-cloudinary');
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -35,16 +35,18 @@ if (CLOUDINARY_CONFIGURED) {
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
 
-  const storage = new CloudinaryStorage({
+  const storage = CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (req, file) => {
       return {
         folder: 'medcorebd/products',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+        format: async (req, file) => {
+          const ext = file.originalname.split('.').pop().toLowerCase();
+          return ['jpg', 'jpeg', 'png', 'webp'].includes(ext) ? ext : 'jpg';
+        },
         transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
-        resource_type: 'auto',
         // Generate unique filename
-        public_id: `product-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+        public_id: (req, file) => `product-${Date.now()}-${Math.round(Math.random() * 1e9)}`,
       };
     },
   });
