@@ -24,11 +24,7 @@ const app = express();
 initSentry(app);
 
 // Connect to database
-connectDB().then(async () => {
-  // Run data synchronization after database connection
-  const { syncData } = require('./services/dataSync');
-  await syncData();
-});
+connectDB();
 
 // Initialize Redis cache
 (async () => {

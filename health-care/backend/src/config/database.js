@@ -54,6 +54,15 @@ const connectDB = async () => {
     // Reset reconnection attempts on successful initial connection
     reconnectionAttempts = 0;
     
+    // Run data synchronization after successful connection
+    try {
+      const { syncData } = require('../services/dataSync');
+      await syncData();
+    } catch (syncError) {
+      logger.error(`Data sync error: ${syncError.message}`);
+      // Don't exit - allow server to continue
+    }
+    
     // Connection event handlers
     mongoose.connection.on('connected', () => {
       logger.info('MongoDB connection established');
