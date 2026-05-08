@@ -56,10 +56,13 @@ const connectDB = async () => {
     
     // Run data synchronization after successful connection
     try {
+      logger.info('🔄 Initializing data synchronization...');
       const { syncData } = require('../services/dataSync');
       await syncData();
+      logger.info('✅ Data synchronization initialization complete');
     } catch (syncError) {
-      logger.error(`Data sync error: ${syncError.message}`);
+      logger.error(`❌ Data sync error: ${syncError.message}`);
+      logger.error(`   Stack: ${syncError.stack}`);
       // Don't exit - allow server to continue
     }
     
