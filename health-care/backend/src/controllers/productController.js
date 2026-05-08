@@ -247,6 +247,10 @@ exports.createProduct = async (req, res) => {
 
     const product = await Product.create(req.body);
     invalidateProductListCache();
+    
+    // Also clear Redis cache
+    const { invalidateCache } = require('../middleware/cache');
+    await invalidateCache('products:*');
 
     logActivityAsync({
       user: req.user,
@@ -257,6 +261,8 @@ exports.createProduct = async (req, res) => {
       req,
       metadata: { sku: product.sku, price: product.price, category: product.category }
     });
+
+    logger.info(`[createProduct] Product ${product._id} created, cache cleared`);
 
     res.status(201).json({ success: true, message: 'Product created successfully', product });
   } catch (error) {
@@ -296,10 +302,17 @@ exports.updateProduct = async (req, res) => {
     }
 
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    
+    // Invalidate both memory cache and Redis cache
     invalidateProductCache(req.params.id);
+    invalidateProductListCache();
+    
+    // Also clear Redis cache directly
+    const { invalidateCache } = require('../middleware/cache');
+    await invalidateCache('products:*');
 
     const changes = {};
-    const fieldsToTrack = ['name', 'price', 'stock', 'isActive', 'category'];
+    const fieldsToTrack = ['name', 'price', 'stock', 'isActive', 'category', 'images'];
     fieldsToTrack.forEach(field => {
       if (req.body[field] !== undefined && String(oldProduct[field]) !== String(req.body[field])) {
         if (!changes.before) changes.before = {};
@@ -319,6 +332,8 @@ exports.updateProduct = async (req, res) => {
       changes: Object.keys(changes).length > 0 ? changes : undefined,
       metadata: { sku: product.sku }
     });
+
+    logger.info(`[updateProduct] Product ${product._id} updated, cache cleared`);
 
     res.status(200).json({ success: true, message: 'Product updated successfully', product });
   } catch (error) {
@@ -342,6 +357,11 @@ exports.deleteProduct = async (req, res) => {
     }
 
     invalidateProductCache(req.params.id);
+    invalidateProductListCache();
+    
+    // Also clear Redis cache
+    const { invalidateCache } = require('../middleware/cache');
+    await invalidateCache('products:*');
 
     logActivityAsync({
       user: req.user,
@@ -352,6 +372,8 @@ exports.deleteProduct = async (req, res) => {
       req,
       metadata: { sku: product.sku, price: product.price }
     });
+
+    logger.info(`[deleteProduct] Product ${product._id} deleted, cache cleared`);
 
     res.status(200).json({ success: true, message: 'Product deleted successfully' });
   } catch (error) {
