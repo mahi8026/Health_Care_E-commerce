@@ -36,7 +36,7 @@
     "@commitlint/cli": "^20.5.3",
     "@commitlint/config-conventional": "^20.5.3",
     "@lhci/cli": "^0.15.1",
-    "@next/bundle-analyzer": "^16.2.3",
+    "@next/bundle-analyzer": "^16.2.6",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "eslint": "^9",
