@@ -59,7 +59,7 @@
     "rate-limit-redis": "^4.3.1",
     "slugify": "^1.6.9",
     "speakeasy": "^2.0.0",
-    "stripe": "^22.0.1",
+    "stripe": "^22.1.1",
     "uuid": "^11.0.5",
     "winston": "^3.19.0",
     "xss-clean": "^0.1.4"
