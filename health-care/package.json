@@ -13,7 +13,7 @@
     "test:coverage": "jest --coverage",
     "lighthouse": "lhci autorun",
     "analyze": "ANALYZE=true npm run build",
-    "prepare": "husky"
+    "prepare": "node -e \"if (process.env.HUSKY === '0') process.exit(0)\" && husky || true"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.52.0",
