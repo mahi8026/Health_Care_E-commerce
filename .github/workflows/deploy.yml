@@ -25,7 +25,7 @@ jobs:
       
       - name: Install frontend dependencies
         working-directory: health-care
-        run: npm install --legacy-peer-deps
+        run: npm ci --ignore-scripts
       
       - name: Run frontend linter
         working-directory: health-care
