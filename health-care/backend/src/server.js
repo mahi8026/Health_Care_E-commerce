@@ -24,7 +24,11 @@ const app = express();
 initSentry(app);
 
 // Connect to database
-connectDB();
+connectDB().then(async () => {
+  // Run data synchronization after database connection
+  const { syncData } = require('./services/dataSync');
+  await syncData();
+});
 
 // Initialize Redis cache
 (async () => {
@@ -167,6 +171,7 @@ app.use('/api/migration', dbHealthCheck, require('./routes/migrationRoutes')); /
 app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site settings
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
 app.use('/api/seed', require('./routes/seed')); // Database seeding (production setup)
+app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
 
 // Serve seed production HTML tool
 app.get('/seed-production.html', (req, res) => {

@@ -35,6 +35,8 @@ router.post('/quotes/:id/convert', convertQuoteToOrder);
 // Seed Finecare manufacturer (quick fix for missing brand)
 router.post('/seed-finecare', async (req, res) => {
   try {
+    const { invalidateCache } = require('../middleware/cache');
+    
     // Check if Finecare already exists
     let finecare = await Manufacturer.findOne({ 
       name: { $regex: new RegExp('^Finecare$', 'i') } 
@@ -45,16 +47,21 @@ router.post('/seed-finecare', async (req, res) => {
       if (!finecare.isActive) {
         finecare.isActive = true;
         await finecare.save();
+        
+        // Clear cache
+        await invalidateCache('manufacturers:*');
+        await invalidateCache('products:*');
+        
         return res.status(200).json({
           success: true,
-          message: 'Finecare manufacturer was inactive and has been activated',
+          message: 'Finecare manufacturer was inactive and has been activated. Cache cleared.',
           manufacturer: finecare
         });
       }
 
       return res.status(200).json({
         success: true,
-        message: 'Finecare manufacturer already exists',
+        message: 'Finecare manufacturer already exists and is active',
         manufacturer: finecare
       });
     }
@@ -68,9 +75,13 @@ router.post('/seed-finecare', async (req, res) => {
       isActive: true
     });
 
+    // Clear cache after creating manufacturer
+    await invalidateCache('manufacturers:*');
+    await invalidateCache('products:*');
+
     res.status(201).json({
       success: true,
-      message: 'Finecare manufacturer created successfully',
+      message: 'Finecare manufacturer created successfully. Cache cleared.',
       manufacturer: finecare
     });
 
