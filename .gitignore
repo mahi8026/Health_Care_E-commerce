@@ -18,6 +18,10 @@
 # Keep template files ONLY
 !**/.env.example
 
+# ── Documentation Files (DO NOT COMMIT) ──────────────────────────────────────
+*.md
+!node_modules/**/*.md
+
 # ── Dependencies ─────────────────────────────────────────────────────────────
 **/node_modules/
 **/.pnp
