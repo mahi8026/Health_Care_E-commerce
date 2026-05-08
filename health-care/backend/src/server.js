@@ -168,10 +168,16 @@ app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site s
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
 app.use('/api/seed', require('./routes/seed')); // Database seeding (production setup)
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
+app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
 
 // Serve seed production HTML tool
 app.get('/seed-production.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../seed-production.html'));
+});
+
+// Serve product sync HTML tool
+app.get('/product-sync.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../product-sync.html'));
 });
 
 // ── Health Check ─────────────────────────────────────────────────────────────

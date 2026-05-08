@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Sync Tool - MedCore BD</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #2d3748;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #718096;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .warning {
+      background: #fff5f5;
+      border-left: 4px solid #f56565;
+      padding: 15px;
+      margin-bottom: 25px;
+      border-radius: 4px;
+    }
+
+    .warning-title {
+      color: #c53030;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .warning-text {
+      color: #742a2a;
+      font-size: 14px;
+    }
+
+    .info-box {
+      background: #ebf8ff;
+      border-left: 4px solid #4299e1;
+      padding: 15px;
+      margin-bottom: 25px;
+      border-radius: 4px;
+    }
+
+    .info-title {
+      color: #2c5282;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .info-text {
+      color: #2a4365;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #4a5568;
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #cbd5e0;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .result.success {
+      background: #f0fff4;
+      border: 2px solid #9ae6b4;
+      display: block;
+    }
+
+    .result.error {
+      background: #fff5f5;
+      border: 2px solid #fc8181;
+      display: block;
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .result.success .result-title {
+      color: #22543d;
+    }
+
+    .result.error .result-title {
+      color: #742a2a;
+    }
+
+    .result-content {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .result.success .result-content {
+      color: #276749;
+    }
+
+    .result.error .result-content {
+      color: #9b2c2c;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #718096;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid #e2e8f0;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #4a5568;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔄 Product Sync Tool</h1>
+    <p class="subtitle">Import products from JSON export to production database</p>
+
+    <div class="warning">
+      <div class="warning-title">⚠️ Admin Access Required</div>
+      <div class="warning-text">
+        You must be logged in as an admin to use this tool. This will sync all products from the exported JSON file.
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">📋 Prerequisites</div>
+      <div class="info-text">
+        1. Upload <code>all-products.json</code> to <code>backend/exports/</code> on the server<br>
+        2. Login as admin and copy your JWT token<br>
+        3. Paste the token below and click "Import Products"
+      </div>
+    </div>
+
+    <form id="syncForm">
+      <div class="form-group">
+        <label for="token">Admin JWT Token</label>
+        <input 
+          type="text" 
+          id="token" 
+          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+          required
+        />
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" onclick="checkStatus()">
+          📊 Check Status
+        </button>
+        <button type="submit" class="btn-primary">
+          🚀 Import Products
+        </button>
+      </div>
+    </form>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Processing... Please wait</div>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const API_URL = window.location.origin;
+
+    document.getElementById('syncForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await importProducts();
+    });
+
+    async function importProducts() {
+      const token = document.getElementById('token').value.trim();
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+      const submitBtn = document.querySelector('.btn-primary');
+
+      if (!token) {
+        showResult('error', 'Please enter your admin JWT token');
+        return;
+      }
+
+      loading.classList.add('active');
+      result.style.display = 'none';
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(`${API_URL}/api/product-sync/import`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const stats = data.stats;
+          let html = `
+            <div class="result-title">✅ Import Completed Successfully!</div>
+            <div class="result-content">
+              <div class="stats">
+                <div class="stat-card">
+                  <div class="stat-label">Created</div>
+                  <div class="stat-value">${stats.created}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Updated</div>
+                  <div class="stat-value">${stats.updated}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Skipped</div>
+                  <div class="stat-value">${stats.skipped}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Failed</div>
+                  <div class="stat-value">${stats.failed}</div>
+                </div>
+              </div>
+              <p style="margin-top: 15px;">
+                <strong>Total Products in Database:</strong> ${stats.finalCount}<br>
+                <strong>Processed:</strong> ${stats.total} products
+              </p>
+              ${stats.errors && stats.errors.length > 0 ? `
+                <p style="margin-top: 10px; color: #c53030;">
+                  <strong>Errors:</strong><br>
+                  ${stats.errors.map(e => `${e.sku}: ${e.error}`).join('<br>')}
+                </p>
+              ` : ''}
+            </div>
+          `;
+          showResult('success', html);
+        } else {
+          showResult('error', `Import failed: ${data.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showResult('error', `Network error: ${error.message}`);
+      } finally {
+        loading.classList.remove('active');
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function checkStatus() {
+      const token = document.getElementById('token').value.trim();
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+
+      loading.classList.add('active');
+      result.style.display = 'none';
+
+      try {
+        const response = await fetch(`${API_URL}/api/product-sync/status`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const stats = data.stats;
+          let html = `
+            <div class="result-title">📊 Current Database Status</div>
+            <div class="result-content">
+              <div class="stats">
+                <div class="stat-card">
+                  <div class="stat-label">Total Products</div>
+                  <div class="stat-value">${stats.totalProducts}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Active</div>
+                  <div class="stat-value">${stats.activeProducts}</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">In Stock</div>
+                  <div class="stat-value">${stats.inStockProducts}</div>
+                </div>
+              </div>
+              <p style="margin-top: 15px;"><strong>Products by Manufacturer:</strong></p>
+              <div style="margin-top: 10px; font-size: 13px;">
+                ${stats.manufacturerCounts.map(m => `${m._id}: ${m.count}`).join('<br>')}
+              </div>
+            </div>
+          `;
+          showResult('success', html);
+        } else {
+          showResult('error', `Failed to get status: ${data.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showResult('error', `Network error: ${error.message}`);
+      } finally {
+        loading.classList.remove('active');
+      }
+    }
+
+    function showResult(type, content) {
+      const result = document.getElementById('result');
+      result.className = `result ${type}`;
+      result.innerHTML = typeof content === 'string' && !content.includes('<') 
+        ? `<div class="result-title">${type === 'success' ? '✅' : '❌'} ${type === 'success' ? 'Success' : 'Error'}</div><div class="result-content">${content}</div>`
+        : content;
+      result.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
