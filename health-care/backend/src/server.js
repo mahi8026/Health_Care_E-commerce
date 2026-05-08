@@ -169,6 +169,7 @@ app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and
 app.use('/api/seed', require('./routes/seed')); // Database seeding (production setup)
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
 app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
+app.use('/api/diagnostic', require('./routes/diagnosticRoutes')); // System diagnostics
 
 // Serve seed production HTML tool
 app.get('/seed-production.html', (req, res) => {
@@ -178,6 +179,11 @@ app.get('/seed-production.html', (req, res) => {
 // Serve product sync HTML tool
 app.get('/product-sync.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../product-sync.html'));
+});
+
+// Serve Cloudinary diagnostic tool
+app.get('/cloudinary-check.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../cloudinary-check.html'));
 });
 
 // ── Health Check ─────────────────────────────────────────────────────────────
