@@ -9,13 +9,15 @@ const {
   getFeaturedProducts,
   getCategoryCounts
 } = require('../controllers/productController');
-const { protect, authorize } = require('../middleware/auth');
-const { cacheMiddleware } = require('../middleware/cache');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
+const { cacheMiddleware, redisCacheMiddleware } = require('../middleware/cache');
 
-router.get('/', cacheMiddleware({ maxAge: 60, swr: 300 }), getProducts);
-router.get('/featured', cacheMiddleware({ maxAge: 60, swr: 300 }), getFeaturedProducts);
-router.get('/category-counts', cacheMiddleware({ maxAge: 600, swr: 1800 }), getCategoryCounts);
-router.get('/:id', cacheMiddleware({ maxAge: 3600, swr: 86400 }), getProduct);
+// Use optionalAuth for getProducts so admin filters work
+// Disable cache for admin to ensure filters work properly
+router.get('/', optionalAuth, getProducts);
+router.get('/featured', redisCacheMiddleware({ ttl: 300, keyPrefix: 'products:' }), getFeaturedProducts);
+router.get('/category-counts', redisCacheMiddleware({ ttl: 600, keyPrefix: 'products:' }), getCategoryCounts);
+router.get('/:id', redisCacheMiddleware({ ttl: 300, keyPrefix: 'products:' }), getProduct);
 
 // Admin only routes
 router.post('/', protect, authorize('admin'), createProduct);

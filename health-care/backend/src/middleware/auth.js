@@ -59,3 +59,37 @@ exports.adminOnly = (req, res, next) => {
   }
   next();
 };
+
+// Optional authentication - attach user if token exists, but don't fail if missing
+exports.optionalAuth = async (req, res, next) => {
+  try {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    // If no token, just continue without user
+    if (!token) {
+      return next();
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select('-password');
+      
+      // Only attach user if found and active
+      if (user && user.isActive) {
+        req.user = user;
+      }
+    } catch (err) {
+      // Token invalid or expired - just continue without user
+      logger.debug(`[optionalAuth] Token verification failed: ${err.message}`);
+    }
+
+    next();
+  } catch (error) {
+    logger.error(`[optionalAuth] ${error.message}`);
+    next(); // Continue even on error
+  }
+};

@@ -4,8 +4,9 @@ const User = require('../models/User');
 const CacheService = require('../services/cacheService');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
+const mongoose = require('mongoose');
+const { DELIVERY_FEES } = require('../config/constants');
 
-const VAT_RATE = 0.05; // 5%
 const cacheService = new CacheService();
 
 // Generate a collision-resistant order number
@@ -24,32 +25,38 @@ async function generateOrderNumber() {
 // @route   POST /api/orders
 // @access  Private
 exports.createOrder = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
     const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber } = req.body;
 
     if (!items || !items.length) {
+      await session.abortTransaction();
       return res.status(400).json({ success: false, message: 'Order must contain at least one item' });
     }
 
     let subtotal = 0;
     const orderItems = [];
 
-    // Validate all items first, then decrement stock
+    // Validate all items and check stock atomically
     for (const item of items) {
-      const product = await Product.findById(item.product);
+      const product = await Product.findById(item.product).session(session);
       if (!product) {
+        await session.abortTransaction();
         return res.status(404).json({ success: false, message: `Product not found: ${item.product}` });
       }
       const qty = item.qty || item.quantity || 1;
       if (product.stock < qty) {
-        return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}` });
+        await session.abortTransaction();
+        return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}` });
       }
       subtotal += product.price * qty;
       orderItems.push({ product: product._id, name: product.name, sku: product.sku, brand: product.brand, price: product.price, qty, quantity: qty });
     }
 
     // B2B discount — use user's b2bDiscountPct or default 8%
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).session(session);
     let b2bDiscountPct = 0;
     let b2bDiscount = 0;
     if (user.role === 'b2b_customer') {
@@ -62,7 +69,7 @@ exports.createOrder = async (req, res) => {
     let appliedCoupon = null;
     if (promoCode) {
       const Coupon = require('../models/Coupon');
-      const coupon = await Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true });
+      const coupon = await Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true }).session(session);
       
       if (coupon) {
         const now = new Date();
@@ -74,7 +81,7 @@ exports.createOrder = async (req, res) => {
         
         let isFirstOrder = true;
         if (coupon.isFirstOrderOnly) {
-          const orderCount = await Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } });
+          const orderCount = await Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } }).session(session);
           isFirstOrder = orderCount === 0;
         }
         
@@ -83,6 +90,7 @@ exports.createOrder = async (req, res) => {
           if (coupon.type === 'percentage') {
             // Validate percentage value
             if (coupon.value < 0 || coupon.value > 100) {
+              await session.abortTransaction();
               return res.status(400).json({ 
                 success: false, 
                 message: 'Invalid coupon configuration' 
@@ -114,8 +122,9 @@ exports.createOrder = async (req, res) => {
           // Update coupon usage
           coupon.usageCount += 1;
           coupon.usedBy.push(req.user.id);
-          await coupon.save();
+          await coupon.save({ session });
         } else {
+          await session.abortTransaction();
           // Return specific error message
           let errorMessage = 'Invalid or expired coupon';
           if (!isValid) errorMessage = 'This coupon has expired or is not yet valid';
@@ -128,25 +137,21 @@ exports.createOrder = async (req, res) => {
           return res.status(400).json({ success: false, message: errorMessage });
         }
       } else {
+        await session.abortTransaction();
         return res.status(404).json({ success: false, message: 'Invalid coupon code' });
       }
     }
 
     // Delivery fee
     const method = deliveryType || deliveryMethod || 'standard';
-    let deliveryFee = 150;
-    if (method === 'express') deliveryFee = 300;
-    else if (method === 'nationwide') deliveryFee = 200;
-    else if (method === 'cold_chain') deliveryFee = 500;
+    const deliveryFee = DELIVERY_FEES[method] || DELIVERY_FEES.standard;
 
-    // VAT applies to (subtotal - b2bDiscount - couponDiscount + deliveryFee)
-    const taxableAmount = subtotal - b2bDiscount - couponDiscount + deliveryFee;
-    const vatAmount = Math.round(taxableAmount * VAT_RATE * 100) / 100;
-    const totalAmount = Math.round((taxableAmount + vatAmount) * 100) / 100;
+    // Total calculation without VAT
+    const totalAmount = Math.round((subtotal - b2bDiscount - couponDiscount + deliveryFee) * 100) / 100;
 
     const orderNumber = await generateOrderNumber();
 
-    const order = await Order.create({
+    const order = await Order.create([{
       orderNumber,
       orderId: orderNumber,
       user: req.user.id,
@@ -155,11 +160,11 @@ exports.createOrder = async (req, res) => {
       b2bDiscount,
       b2bDiscountPct,
       discount: b2bDiscount,
-      promoDiscount: couponDiscount, // Keep legacy field for backward compatibility
+      promoDiscount: couponDiscount,
       couponDiscount,
       appliedCoupon,
       deliveryFee,
-      vatAmount,
+      vatAmount: 0,
       totalAmount,
       total: totalAmount,
       deliveryAddress,
@@ -170,19 +175,33 @@ exports.createOrder = async (req, res) => {
       notes,
       poNumber,
       statusTimestamps: { placed: new Date() }
-    });
+    }], { session });
 
-    // Decrement stock after order is created successfully
+    // Decrement stock atomically within transaction
     for (const item of orderItems) {
-      await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.qty } });
+      const result = await Product.findOneAndUpdate(
+        { _id: item.product, stock: { $gte: item.qty } },
+        { $inc: { stock: -item.qty } },
+        { session, new: true }
+      );
+      
+      if (!result) {
+        await session.abortTransaction();
+        return res.status(400).json({ 
+          success: false, 
+          message: `Stock changed during order processing. Please try again.` 
+        });
+      }
     }
+
+    await session.commitTransaction();
 
     // Invalidate analytics cache
     cacheService.invalidateAnalytics();
 
     // Send order confirmation email asynchronously
     const { sendOrderConfirmation } = require('../utils/emailService');
-    sendOrderConfirmation(order, user).catch(err => logger.error(`[createOrder] email failed: ${err.message}`));
+    sendOrderConfirmation(order[0], user).catch(err => logger.error(`[createOrder] email failed: ${err.message}`));
 
     // Send order confirmation SMS asynchronously (non-blocking)
     if (user.phone) {
@@ -197,7 +216,7 @@ exports.createOrder = async (req, res) => {
       user: req.user,
       action: ACTIONS.ORDER.PLACED,
       targetModel: 'Order',
-      targetId: order._id,
+      targetId: order[0]._id,
       targetName: orderNumber,
       req,
       metadata: {
@@ -207,10 +226,13 @@ exports.createOrder = async (req, res) => {
       }
     });
 
-    res.status(201).json({ success: true, message: 'Order created successfully', order });
+    res.status(201).json({ success: true, message: 'Order created successfully', order: order[0] });
   } catch (error) {
+    await session.abortTransaction();
     logger.error(`[createOrder] ${error.message}`);
     res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  } finally {
+    session.endSession();
   }
 };
 

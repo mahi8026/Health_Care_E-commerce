@@ -180,9 +180,8 @@ exports.convertQuoteToOrder = async (req, res) => {
     const Order = require('../models/Order');
     const { deliveryAddress, paymentMethod, deliveryType } = req.body;
 
-    const vatRate = 0.05;
-    const vatAmount = Math.round(quote.finalAmount * vatRate);
-    const totalAmount = quote.finalAmount + vatAmount;
+    // Total without VAT
+    const totalAmount = quote.finalAmount;
 
     const order = await Order.create({
       user: quote.user._id,
@@ -201,7 +200,7 @@ exports.convertQuoteToOrder = async (req, res) => {
       b2bDiscountPct: quote.discountPct,
       discount: quote.discountAmount,
       deliveryFee: 0,
-      vatAmount,
+      vatAmount: 0,
       totalAmount,
       total: totalAmount,
       deliveryAddress: deliveryAddress || {},

@@ -6,6 +6,7 @@ const CacheService = require('../services/cacheService');
 const { invalidateProductCache, invalidateProductListCache } = require('../services/cacheInvalidation');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
+const { PAGINATION } = require('../config/constants');
 
 const cacheService = new CacheService();
 
@@ -26,16 +27,35 @@ exports.getProducts = async (req, res) => {
       minPrice,
       maxPrice,
       inStock,
+      lowStock,
+      outOfStock,
       isFeatured,
+      isActive,
       sortBy,
       page = 1,
       limit = 20
     } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page) || 1);
-    const limitNum = Math.min(100, parseInt(limit) || 20);
+    // Debug logging
+    logger.info('[getProducts] Query params:', req.query);
+    logger.info('[getProducts] User:', req.user ? { id: req.user._id, role: req.user.role } : 'No user');
 
-    let query = { isActive: true };
+    const pageNum = Math.max(1, parseInt(page) || PAGINATION.DEFAULT_PAGE);
+    const limitNum = Math.min(PAGINATION.MAX_LIMIT, parseInt(limit) || PAGINATION.DEFAULT_LIMIT);
+
+    // For admin, allow filtering by isActive status
+    // For public, default to only active products
+    let query = {};
+    if (isActive === 'true') {
+      query.isActive = true;
+    } else if (isActive === 'false') {
+      query.isActive = false;
+    } else if (!req.user || req.user.role !== 'admin') {
+      // Public users only see active products
+      query.isActive = true;
+    }
+
+    logger.info('[getProducts] Initial query:', query);
 
     // ── Featured filter ──────────────────────────────────────────────────────
     if (isFeatured === 'true') {
@@ -83,9 +103,19 @@ exports.getProducts = async (req, res) => {
       }
     }
 
-    // ── In-stock filter ──────────────────────────────────────────────────────
+    // ── Stock filters ────────────────────────────────────────────────────────
     if (inStock === 'true') {
       query.stock = { $gt: 0 };
+    } else if (lowStock === 'true') {
+      // Low stock: stock > 0 AND stock <= lowStockThreshold
+      query.$expr = {
+        $and: [
+          { $gt: ['$stock', 0] },
+          { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', 10] }] }
+        ]
+      };
+    } else if (outOfStock === 'true') {
+      query.stock = 0;
     }
 
     // ── Price range filter ───────────────────────────────────────────────────
@@ -122,6 +152,9 @@ exports.getProducts = async (req, res) => {
     else if (sortBy === 'rating') sort['rating.average'] = -1;
     else sort.createdAt = -1;
 
+    logger.info('[getProducts] Final query:', JSON.stringify(query, null, 2));
+    logger.info('[getProducts] Sort:', sort);
+
     const [products, total] = await Promise.all([
       Product.find(query)
         .select('name description price images brand category stock discount badge slug isActive createdAt rating oldPrice sku b2bPrice unit minOrderQty certifications specifications storageTemp hazardClass compatibleWith tags lotNumber expiryDate hasAMC isFeatured lowStockThreshold subcategory discountPct')
@@ -134,12 +167,14 @@ exports.getProducts = async (req, res) => {
       Product.countDocuments(query)
     ]);
 
+    logger.info('[getProducts] Found', products.length, 'products out of', total, 'total');
+
     // Log first product to verify description is included
     if (products.length > 0) {
       logger.info(`[getProducts] First product has description: ${!!products[0].description}, keys: ${Object.keys(products[0]).join(', ')}`);
     }
 
-    res.set('Cache-Control', 'public, max-age=300');
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.status(200).json({
       success: true,
       count: products.length,

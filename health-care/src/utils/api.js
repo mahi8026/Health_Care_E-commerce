@@ -1,9 +1,9 @@
-// API configuration and helper functions
 import { API as API_BASE_URL } from '@/constants/api';
+import { TIMEOUTS } from '@/constants/config';
 
 // Dev-only logger — silent in production
 const devLog = {
-  error: (...args) => { if (process.env.NODE_ENV === 'development') devLog.error(...args); }, // eslint-disable-line no-console
+  error: (...args) => { if (process.env.NODE_ENV === 'development') console.error('[API Error]', ...args); }, // eslint-disable-line no-console
 };
 
 // Get token from localStorage
@@ -121,10 +121,18 @@ async function handleResponse(response) {
   }
 }
 
-// Enhanced fetch with auto-retry on 401
+// Enhanced fetch with auto-retry on 401 and timeout
 async function fetchWithAuth(url, options = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
+  
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
     
     // If 401 and we have a refresh token, try to refresh
     if (response.status === 401 && getRefreshToken()) {
@@ -197,7 +205,16 @@ async function fetchWithAuth(url, options = {}) {
     
     return response;
   } catch (error) {
-    // Network error (backend not running, no internet, etc.)
+    clearTimeout(timeoutId);
+    // Network error or timeout
+    if (error.name === 'AbortError') {
+      devLog.error('[API] Request timeout:', url);
+      throw new ApiError(
+        'Request timeout. Please check your connection and try again.',
+        0,
+        { originalError: 'timeout' }
+      );
+    }
     devLog.error('[API] Network error:', error.message);
     throw new ApiError(
       'Unable to connect to server. Please check if the backend is running.',
@@ -219,30 +236,36 @@ function getAuthHeaders() {
 export const api = {
   // Products
   async getProducts(filters = {}) {
-    const params = new URLSearchParams();
-    
-    // Set default limit to 20 per page if not specified
-    const filtersWithLimit = {
-      limit: 20,
-      ...filters
-    };
-    
-    // Only add non-empty filter values
-    Object.entries(filtersWithLimit).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        params.append(key, value);
-      }
-    });
-    
-    const url = `${API_BASE_URL}/products?${params}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
     
     try {
-      const response = await fetchWithAuth(url, {
-        credentials: 'include'
+      const params = new URLSearchParams();
+      
+      // Set default limit to 20 per page if not specified
+      const filtersWithLimit = {
+        limit: 20,
+        ...filters
+      };
+      
+      // Only add non-empty filter values
+      Object.entries(filtersWithLimit).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          params.append(key, value);
+        }
       });
+      
+      const url = `${API_BASE_URL}/products?${params}`;
+      
+      const response = await fetchWithAuth(url, {
+        credentials: 'include',
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
       const data = await handleResponse(response);
       return data;
     } catch (error) {
+      clearTimeout(timeoutId);
       devLog.error('[API] getProducts error:', error);
       throw error;
     }
@@ -263,11 +286,22 @@ export const api = {
   },
 
   // Orders
-  async getOrders(userId) {
-    const response = await fetchWithAuth(`${API_BASE_URL}/orders?userId=${userId}`, {
-      credentials: 'include'
-    });
-    return handleResponse(response);
+  async getOrders(filters = {}) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
+    try {
+      const params = new URLSearchParams(filters);
+      const response = await fetchWithAuth(`${API_BASE_URL}/orders?${params}`, {
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      return handleResponse(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   },
 
   async getOrder(id) {
@@ -697,7 +731,16 @@ export const api = {
 
   // Payments
   async createPaymentIntent(amount, orderId) {
-    return this.post('/payments/stripe/create-intent', { amount, orderId });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
+    try {
+      const result = await this.post('/payments/stripe/create-intent', { amount, orderId });
+      clearTimeout(timeoutId);
+      return result;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
   },
 
   async confirmPayment(paymentIntentId, orderId) {

@@ -5,7 +5,9 @@ import GA4Tracker from '@/services/GA4Tracker';
 
 import { API } from '@/constants/api';
 
-const MAX_CART_ITEMS = 50;
+import { CART_CONFIG } from '@/constants/config';
+
+const MAX_CART_ITEMS = CART_CONFIG.MAX_ITEMS;
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
