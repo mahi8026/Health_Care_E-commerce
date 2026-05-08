@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { CldUploadWidget } from 'next-cloudinary';
 import { API } from '@/constants/api';
 
 const UNITS = ['piece', 'box', 'kit', 'pack'];
@@ -308,26 +307,73 @@ export default function ProductsManagement({ openCreateRef }) {
     setShowBrandDropdown(false);
   };
 
-  // ── Image upload (via CldUploadWidget) ─────────────────────────────────────
-  const handleUploadSuccess = (result) => {
-    // CldUploadWidget returns result.info with the upload data
-    if (!result?.info || typeof result.info === 'string') return;
+  // ── Image upload (via Backend API) ─────────────────────────────────────────
+  const [uploading, setUploading] = useState(false);
+  
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     
-    const info = result.info;
-    const newImage = {
-      url:       info.secure_url,
-      publicId:  info.public_id,
-      isPrimary: createForm.images.length === 0, // first uploaded = primary
-      alt:       createForm.name || 'Product image',
-    };
+    if (createForm.images.length + files.length > 5) {
+      showMessage('Maximum 5 images per product', 'error');
+      return;
+    }
     
-    setCreateForm(f => {
-      if (f.images.length >= 5) {
-        showMessage('Maximum 5 images per product', 'error');
-        return f;
+    setUploading(true);
+    
+    try {
+      for (const file of files) {
+        // Validate file type
+        if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+          showMessage(`Invalid file type: ${file.name}. Only JPEG, PNG, WebP allowed.`, 'error');
+          continue;
+        }
+        
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          showMessage(`File too large: ${file.name}. Max 5MB.`, 'error');
+          continue;
+        }
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: formData,
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.url) {
+          const newImage = {
+            url: data.url,
+            publicId: data.url.split('/').pop().split('.')[0], // Extract public ID from URL
+            isPrimary: createForm.images.length === 0,
+            alt: createForm.name || 'Product image',
+          };
+          
+          setCreateForm(f => ({
+            ...f,
+            images: [...f.images, newImage],
+          }));
+        } else {
+          showMessage(data.message || 'Upload failed', 'error');
+        }
       }
-      return { ...f, images: [...f.images, newImage] };
-    });
+      
+      showMessage('Images uploaded successfully', 'success');
+    } catch (error) {
+      console.error('Upload error:', error);
+      showMessage('Upload failed. Please try again.', 'error');
+    } finally {
+      setUploading(false);
+      // Reset file input
+      e.target.value = '';
+    }
   };
 
   const handleRemoveImage = (idx) => {
@@ -451,62 +497,30 @@ export default function ProductsManagement({ openCreateRef }) {
                   Product Images <span className="font-normal text-[var(--color-text-secondary)]">(up to 5 — JPEG, PNG, WebP)</span>
                 </label>
 
-                <CldUploadWidget
-                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'medcorebd_products'}
-                  options={{
-                    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-                    maxFiles: 5 - createForm.images.length,
-                    multiple: true,
-                    resourceType: 'image',
-                    clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
-                    maxFileSize: 5242880, // 5 MB
-                    folder: 'medcorebd/products',
-                    transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
-                    styles: {
-                      palette: {
-                        window: '#FFFFFF',
-                        windowBorder: '#E5E7EB',
-                        tabIcon: '#0E8A6E',
-                        menuIcons: '#0E8A6E',
-                        textDark: '#0B2545',
-                        textLight: '#FFFFFF',
-                        link: '#0E8A6E',
-                        action: '#0E8A6E',
-                        inactiveTabIcon: '#6B7280',
-                        error: '#E24B4A',
-                        inProgress: '#0E8A6E',
-                        complete: '#065F46',
-                        sourceBg: '#F9FAFB',
-                      },
-                    },
-                  }}
-                  onSuccess={handleUploadSuccess}
+                <label
+                  htmlFor="image-upload"
+                  className={`w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-[#0E8A6E] hover:bg-[#F0FDF9] rounded-lg p-5 text-center transition-colors cursor-pointer block ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
-                  {({ open }) => (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (createForm.images.length >= 5) {
-                          showMessage('Maximum 5 images per product', 'error');
-                          return;
-                        }
-                        open();
-                      }}
-                      className="w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-[#0E8A6E] hover:bg-[#F0FDF9] rounded-lg p-5 text-center transition-colors cursor-pointer"
-                    >
-                      <svg className="mx-auto mb-2 w-8 h-8 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <p className="text-[12px] text-[var(--color-text-secondary)]">
-                        Click to upload images
-                        {createForm.images.length > 0 && (
-                          <span className="ml-1 text-[#0E8A6E] font-medium">({createForm.images.length}/5 added)</span>
-                        )}
-                      </p>
-                      <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">JPEG, PNG, WebP — max 5 MB each</p>
-                    </button>
-                  )}
-                </CldUploadWidget>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    multiple
+                    onChange={handleFileUpload}
+                    disabled={uploading || createForm.images.length >= 5}
+                    className="hidden"
+                  />
+                  <svg className="mx-auto mb-2 w-8 h-8 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-[12px] text-[var(--color-text-secondary)]">
+                    {uploading ? 'Uploading...' : 'Click to upload images'}
+                    {createForm.images.length > 0 && !uploading && (
+                      <span className="ml-1 text-[#0E8A6E] font-medium">({createForm.images.length}/5 added)</span>
+                    )}
+                  </p>
+                  <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">JPEG, PNG, WebP — max 5 MB each</p>
+                </label>
 
                 {/* Image previews */}
                 {createForm.images.length > 0 && (
