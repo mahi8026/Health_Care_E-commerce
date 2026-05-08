@@ -69,7 +69,7 @@ jobs:
           working-directory: health-care
           vercel-args: '--prod'
 
-  # Deploy backend (Railway auto-deploys on push, so this is just a notification)
+  # Deploy backend (Render auto-deploys on push, so this is just a notification)
   deploy-backend:
     name: Backend Deployment Status
     runs-on: ubuntu-latest
@@ -79,8 +79,8 @@ jobs:
     steps:
       - name: Notify backend deployment
         run: |
-          echo "✅ Backend will be automatically deployed by Railway"
-          echo "Monitor deployment at: https://railway.app"
+          echo "✅ Backend will be automatically deployed by Render"
+          echo "Monitor deployment at: https://dashboard.render.com"
 
   # Post-deployment checks
   post-deployment:

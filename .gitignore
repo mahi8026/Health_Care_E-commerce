@@ -73,13 +73,13 @@
 **/uploads/
 **/invoices/*.pdf
 
-# ── Documentation (Don't push to GitHub) ─────────────────────────────────────
-*.md
-!README.md
+# ── Documentation (Allow deployment guides) ──────────────────────────────────
+# Allow all markdown files for documentation
+# *.md files are now allowed
 
-# ── Deployment Guides (Contains sensitive info) ──────────────────────────────
-DEPLOYMENT_CHECKLIST.md
+# ── Sensitive Files Only ─────────────────────────────────────────────────────
 ENV_VARIABLES_QUICK_COPY.txt
+SECRETS.md
 
 # ── Lighthouse Reports ──────────────────────────────────────────────────────
 **/.lighthouseci/
