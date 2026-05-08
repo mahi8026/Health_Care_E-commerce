@@ -2,6 +2,7 @@ const Category = require('../models/Category');
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
+const { invalidateCache } = require('../middleware/cache');
 
 // @desc    Get all categories (with nested children)
 // @route   GET /api/categories
@@ -130,6 +131,10 @@ exports.getCategory = async (req, res) => {
 exports.createCategory = async (req, res) => {
   try {
     const category = await Category.create(req.body);
+    
+    // Invalidate category cache
+    await invalidateCache('categories:*');
+    await invalidateCache('products:*'); // Products may be affected by new category
     
     // Log category creation activity
     logActivityAsync({

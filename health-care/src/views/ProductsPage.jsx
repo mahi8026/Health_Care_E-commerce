@@ -4,10 +4,8 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
 import SearchBar from '@/components/search/SearchBar';
-import SearchFilters from '@/components/search/SearchFilters';
 import SearchResults from '@/components/search/SearchResults';
-import SortOptions from '@/components/search/SortOptions';
-import { FaFilter, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 
 export default function ProductsPage({ onProductClick }) {
   const router = useRouter();
@@ -30,7 +28,40 @@ export default function ProductsPage({ onProductClick }) {
   const [allProducts, setAllProducts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+
+  // Fetch categories and brands
+  useEffect(() => {
+    const fetchFiltersData = async () => {
+      try {
+        const [categoriesRes, brandsRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/manufacturers`)
+        ]);
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          console.log('Categories loaded:', categoriesData);
+          setCategories(categoriesData.categories || []);
+        } else {
+          console.error('Failed to fetch categories:', categoriesRes.status);
+        }
+
+        if (brandsRes.ok) {
+          const brandsData = await brandsRes.json();
+          console.log('Brands loaded:', brandsData);
+          setBrands(brandsData.manufacturers || []);
+        } else {
+          console.error('Failed to fetch brands:', brandsRes.status);
+        }
+      } catch (error) {
+        console.error('Error fetching filter data:', error);
+      }
+    };
+
+    fetchFiltersData();
+  }, []);
 
   // Sync state to URL query params
   useEffect(() => {
@@ -44,25 +75,14 @@ export default function ProductsPage({ onProductClick }) {
     router.replace(`/products?${params.toString()}`, { scroll: false });
   }, [searchQuery, searchCategory, filters, sortBy, router]);
 
-  // Lock body scroll when mobile filters open
-  useEffect(() => {
-    if (mobileFiltersOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [mobileFiltersOpen]);
-
   const productFilters = useMemo(() => {
     const categoryValue = searchCategory || filters.categories?.[0] || '';
+    const brandValue = filters.brands?.[0] || '';
     
     return {
       search: searchQuery,
       category: categoryValue,
-      brands: filters.brands,
+      brand: brandValue, // Changed from 'brands' to 'brand'
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
       inStock: filters.inStock,
@@ -117,7 +137,6 @@ export default function ProductsPage({ onProductClick }) {
     setPage(1);
     setAllProducts([]);
     setHasMore(true);
-    setMobileFiltersOpen(false);
   }, []);
 
   const handleSortChange = useCallback((newSort) => {
@@ -132,167 +151,187 @@ export default function ProductsPage({ onProductClick }) {
       <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
-        {/* Desktop Layout */}
-        <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-6">
-          <SearchFilters
-            onFilterChange={handleFilterChange}
-            activeFilters={filters}
-          />
-
-          <div>
-            {/* Compact Header Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 px-4 py-3 mb-4 flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-bold text-gray-900">
-                    All Products
-                  </h1>
-                  {pagination.total > 0 && (
-                    <>
-                      <span className="bg-[#0E8A6E] text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">
-                        {pagination.total}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        Showing {allProducts.length} of {pagination.total}
-                      </span>
-                    </>
-                  )}
-                </div>
-                <p className="text-xs text-gray-600 mt-0.5">
-                  Browse our complete catalog of medical equipment and supplies
-                </p>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Sidebar - Filters */}
+          <aside className="w-full lg:w-64 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 sticky top-4">
+              {/* Filter Header */}
+              <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200">
+                <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+                {(searchCategory || filters.brands?.length > 0 || filters.minPrice || filters.maxPrice || filters.inStock) && (
+                  <button
+                    onClick={() => {
+                      setSearchCategory('');
+                      handleFilterChange({});
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
+                  >
+                    <FaTimes className="text-xs" />
+                    Clear all
+                  </button>
+                )}
               </div>
-              <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
-            </div>
 
-            {/* Error Display */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚠️</span>
+              {/* Category Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  📂 Category
+                </label>
+                <select
+                  value={searchCategory}
+                  onChange={(e) => {
+                    setSearchCategory(e.target.value);
+                    setPage(1);
+                    setAllProducts([]);
+                    setHasMore(true);
+                  }}
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer"
+                >
+                  <option value="">All categories</option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Brand Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  🏭 Brand
+                </label>
+                <select
+                  value={filters.brands?.[0] || ''}
+                  onChange={(e) => {
+                    const brand = e.target.value;
+                    handleFilterChange({
+                      ...filters,
+                      brands: brand ? [brand] : []
+                    });
+                  }}
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer"
+                >
+                  <option value="">All brands</option>
+                  {brands.map((brand) => (
+                    <option key={brand._id} value={brand.name}>
+                      {brand.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Price Range */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  💰 Price Range
+                </label>
+                <div className="space-y-3">
                   <div>
-                    <div className="font-semibold">Error Loading Products</div>
-                    <div className="text-sm">{error}</div>
+                    <label className="block text-xs text-gray-600 mb-1.5">Minimum</label>
+                    <input
+                      type="number"
+                      placeholder="Min price"
+                      value={filters.minPrice || ''}
+                      onChange={(e) => {
+                        handleFilterChange({
+                          ...filters,
+                          minPrice: e.target.value ? Number(e.target.value) : undefined
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1.5">Maximum</label>
+                    <input
+                      type="number"
+                      placeholder="Max price"
+                      value={filters.maxPrice || ''}
+                      onChange={(e) => {
+                        handleFilterChange({
+                          ...filters,
+                          maxPrice: e.target.value ? Number(e.target.value) : undefined
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all"
+                    />
                   </div>
                 </div>
               </div>
-            )}
 
+              {/* Availability */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  📦 Availability
+                </label>
+                <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-[#0E8A6E] hover:bg-[#0E8A6E]/5 transition-all cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.inStock || false}
+                    onChange={(e) => {
+                      handleFilterChange({
+                        ...filters,
+                        inStock: e.target.checked
+                      });
+                    }}
+                    className="w-4 h-4 text-[#0E8A6E] border-gray-300 rounded focus:ring-[#0E8A6E] focus:ring-2 cursor-pointer"
+                  />
+                  <span className="text-sm text-gray-700">
+                    In stock only
+                  </span>
+                </label>
+              </div>
+
+              {/* Results Count */}
+              {pagination.total > 0 && (
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0E8A6E]/5 border border-[#0E8A6E]/20 rounded-lg">
+                    <span className="text-sm font-bold text-[#0E8A6E]">
+                      {pagination.total}
+                    </span>
+                    <span className="text-sm text-gray-700">
+                      product{pagination.total !== 1 ? 's' : ''} found
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </aside>
+
+          {/* Right Content - Products */}
+          <main className="flex-1 min-w-0">
+            {/* Top Bar - Sort */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 px-4 py-2.5 mb-4 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {allProducts.length} of {pagination.total || 0} products
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 font-medium">Sort by:</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer"
+                >
+                  <option value="name">Name: A to Z</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="newest">Newest First</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Products Grid */}
             <SearchResults
               products={allProducts}
-              loading={loading && page === 1}
-              query={searchQuery}
+              loading={loading}
+              error={error}
               onProductClick={onProductClick}
-              hasMore={hasMore}
               onLoadMore={handleLoadMore}
+              hasMore={hasMore}
               loadingMore={loadingMore}
-              totalProducts={pagination.total}
             />
-          </div>
-        </div>
-
-        {/* Mobile Layout */}
-        <div className="md:hidden">
-          {/* Mobile Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-[20px] font-semibold font-[family-name:var(--font-lora)]">
-                All Products
-              </h1>
-              <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
-                {allProducts?.length || 0} products found
-              </p>
-            </div>
-            <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
-          </div>
-
-          {/* Error Display */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg mb-4 text-sm">
-              <div className="flex items-center gap-2">
-                <span>⚠️</span>
-                <div>
-                  <div className="font-semibold">Error</div>
-                  <div className="text-xs">{error}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Mobile Results */}
-          <SearchResults
-            products={allProducts}
-            loading={loading && page === 1}
-            query={searchQuery}
-            onProductClick={onProductClick}
-            hasMore={hasMore}
-            onLoadMore={handleLoadMore}
-            loadingMore={loadingMore}
-            totalProducts={pagination.total}
-          />
-
-          {/* Mobile Filter Button - Fixed Bottom Left */}
-          <button
-            onClick={() => setMobileFiltersOpen(true)}
-            className="md:hidden fixed bottom-20 left-4 z-50 bg-[#0E8A6E] text-white px-5 py-3 rounded-full shadow-lg flex items-center gap-2 font-semibold text-[14px]"
-            style={{
-              boxShadow: '0 4px 12px rgba(14, 138, 110, 0.4)',
-            }}
-          >
-            <FaFilter size={14} />
-            Filters
-          </button>
-
-          {/* Mobile Filter Bottom Sheet */}
-          {mobileFiltersOpen && (
-            <>
-              {/* Backdrop */}
-              <div
-                onClick={() => setMobileFiltersOpen(false)}
-                className="fixed inset-0 bg-black bg-opacity-50 z-[999]"
-                style={{ animation: 'fadeIn 0.3s' }}
-              />
-
-              {/* Bottom Sheet */}
-              <div
-                className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-[1000] max-h-[85vh] overflow-y-auto"
-                style={{
-                  animation: 'slideUp 0.3s ease-out',
-                  paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)',
-                }}
-              >
-                {/* Sheet Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between z-10">
-                  <h2 className="text-[18px] font-semibold">Filters</h2>
-                  <button
-                    onClick={() => setMobileFiltersOpen(false)}
-                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
-                  >
-                    <FaTimes size={16} />
-                  </button>
-                </div>
-
-                {/* Filters Content */}
-                <div className="px-4 py-4">
-                  <SearchFilters
-                    onFilterChange={handleFilterChange}
-                    activeFilters={filters}
-                  />
-                </div>
-              </div>
-
-              <style jsx>{`
-                @keyframes fadeIn {
-                  from { opacity: 0; }
-                  to { opacity: 1; }
-                }
-                @keyframes slideUp {
-                  from { transform: translateY(100%); }
-                  to { transform: translateY(0); }
-                }
-              `}</style>
-            </>
-          )}
+          </main>
         </div>
       </div>
     </div>

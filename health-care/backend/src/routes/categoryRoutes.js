@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
+const { redisCacheMiddleware } = require('../middleware/cache');
 const {
   getCategories,
   getCategoryTree,
@@ -13,7 +14,7 @@ const {
 
 // Import upload middleware (reuse existing upload setup)
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const CloudinaryStorage = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
@@ -24,7 +25,7 @@ cloudinary.config({
 });
 
 // Configure multer storage for Cloudinary
-const storage = new CloudinaryStorage({
+const storage = CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'medcore/categories',
@@ -38,10 +39,10 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Public routes
-router.get('/', getCategories);
-router.get('/tree', getCategoryTree);
-router.get('/:slug', getCategory);
+// Public routes with caching (10 minutes TTL)
+router.get('/', redisCacheMiddleware({ ttl: 600, keyPrefix: 'categories:' }), getCategories);
+router.get('/tree', redisCacheMiddleware({ ttl: 600, keyPrefix: 'categories:' }), getCategoryTree);
+router.get('/:slug', redisCacheMiddleware({ ttl: 600, keyPrefix: 'categories:' }), getCategory);
 
 // Admin routes
 router.post('/', protect, authorize('admin'), createCategory);

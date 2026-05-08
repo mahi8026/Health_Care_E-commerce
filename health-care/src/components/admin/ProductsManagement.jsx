@@ -41,6 +41,10 @@ export default function ProductsManagement({ openCreateRef }) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [stockFilter, setStockFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ text: '', type: '' });
 
@@ -86,18 +90,32 @@ export default function ProductsManagement({ openCreateRef }) {
         const token = localStorage.getItem('medcore_token');
         const headers = { Authorization: `Bearer ${token}` };
         
+        console.log('[ProductsManagement] Fetching categories and manufacturers...');
+        
         const [categoriesRes, manufacturersRes] = await Promise.all([
           fetch(`${API}/categories`, { headers }),
           fetch(`${API}/manufacturers`, { headers })
         ]);
         
+        console.log('[ProductsManagement] Categories response status:', categoriesRes.status);
+        console.log('[ProductsManagement] Manufacturers response status:', manufacturersRes.status);
+        
         const categoriesData = await categoriesRes.json();
         const manufacturersData = await manufacturersRes.json();
         
-        setCategories(categoriesData.success ? categoriesData.data : []);
-        setManufacturers(manufacturersData.success ? manufacturersData.data : []);
+        console.log('[ProductsManagement] Categories data:', categoriesData);
+        console.log('[ProductsManagement] Manufacturers data:', manufacturersData);
+        
+        const cats = categoriesData.categories || categoriesData.data || [];
+        const mfrs = manufacturersData.manufacturers || manufacturersData.data || [];
+        
+        console.log('[ProductsManagement] Setting categories:', cats.length, 'items');
+        console.log('[ProductsManagement] Setting manufacturers:', mfrs.length, 'items');
+        
+        setCategories(cats);
+        setManufacturers(mfrs);
       } catch (err) {
-        console.error('Failed to load metadata:', err);
+        console.error('[ProductsManagement] Failed to load metadata:', err);
         showMessage('Failed to load categories/manufacturers', 'error');
       } finally {
         setLoadingMeta(false);
@@ -109,12 +127,33 @@ export default function ProductsManagement({ openCreateRef }) {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
-      const params = new URLSearchParams({ page, limit: 20 });
-      if (categoryFilter) params.set('category', categoryFilter);
+      const filters = { page, limit: 20 };
+      if (categoryFilter) filters.category = categoryFilter;
+      if (brandFilter) filters.brand = brandFilter;
+      if (searchQuery) filters.search = searchQuery;
+      if (statusFilter) {
+        if (statusFilter === 'active') filters.isActive = 'true';
+        if (statusFilter === 'inactive') filters.isActive = 'false';
+        if (statusFilter === 'featured') filters.isFeatured = 'true';
+      }
+      if (stockFilter) {
+        if (stockFilter === 'instock') filters.inStock = 'true';
+        if (stockFilter === 'lowstock') filters.lowStock = 'true';
+        if (stockFilter === 'outofstock') filters.outOfStock = 'true';
+      }
       // Add cache buster to force fresh data
-      params.set('_t', Date.now().toString());
-      const res = await fetch(`${API}/products?${params}`, {
+      filters._t = Date.now().toString();
+      
+      console.log('[ProductsManagement] Fetching with filters:', filters);
+      
+      // Use the API helper which includes auth headers
+      const token = localStorage.getItem('medcore_token');
+      console.log('[ProductsManagement] Token exists:', !!token);
+      
+      const url = `${API}/products?${new URLSearchParams(filters)}`;
+      console.log('[ProductsManagement] Request URL:', url);
+      
+      const res = await fetch(url, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache',
@@ -122,16 +161,24 @@ export default function ProductsManagement({ openCreateRef }) {
         },
         cache: 'no-store'
       });
+      
+      console.log('[ProductsManagement] Response status:', res.status);
+      
       const data = await res.json();
+      console.log('[ProductsManagement] Response data:', { 
+        count: data.products?.length || data.data?.products?.length || 0,
+        total: data.total || data.data?.total || 0
+      });
+      
       setProducts(data.products || data.data?.products || []);
       setTotal(data.total || data.data?.total || 0);
     } catch (error) {
-      console.error('Failed to load products:', error);
+      console.error('[ProductsManagement] Failed to load products:', error);
       showMessage('Failed to load products', 'error');
     } finally {
       setLoading(false);
     }
-  }, [page, categoryFilter]);
+  }, [page, categoryFilter, brandFilter, statusFilter, stockFilter, searchQuery]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
@@ -985,27 +1032,158 @@ export default function ProductsManagement({ openCreateRef }) {
       )}
 
       {/* Filters */}
-      <div className="p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex gap-3">
-        <select
-          value={categoryFilter}
-          onChange={e => { setCategoryFilter(e.target.value); setPage(1); }}
-          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
-        >
-          <option value="">All categories</option>
-          {(categories || []).map(c => (
-            <option key={c._id} value={c._id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-        <div className="ml-auto flex items-center gap-3">
-          <span className="text-[12px] text-[var(--color-text-secondary)]">{total} products total</span>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="px-4 py-[8px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors"
-          >
-            + Add product
-          </button>
+      <div className="p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
+        {/* Search Bar */}
+        <div className="mb-3">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by product name, SKU, or description..."
+              value={searchQuery}
+              onChange={e => { setSearchQuery(e.target.value); setPage(1); }}
+              className="w-full px-4 py-2.5 pl-10 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all"
+            />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {searchQuery && (
+              <button
+                onClick={() => { setSearchQuery(''); setPage(1); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[#E24B4A] transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Filter Pills Row */}
+        <div className="flex flex-wrap gap-2 items-center">
+          {/* Category Filter */}
+          <div className="relative">
+            <select
+              value={categoryFilter}
+              onChange={e => { setCategoryFilter(e.target.value); setPage(1); }}
+              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                categoryFilter 
+                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
+                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+              }`}
+            >
+              <option value="">📂 All categories</option>
+              {(categories || []).map(c => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${categoryFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* Brand Filter */}
+          <div className="relative">
+            <select
+              value={brandFilter}
+              onChange={e => { setBrandFilter(e.target.value); setPage(1); }}
+              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                brandFilter 
+                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
+                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+              }`}
+            >
+              <option value="">🏭 All brands</option>
+              {(manufacturers || []).map(m => (
+                <option key={m._id} value={m._id}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
+            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${brandFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* Status Filter */}
+          <div className="relative">
+            <select
+              value={statusFilter}
+              onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                statusFilter 
+                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
+                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+              }`}
+            >
+              <option value="">⚡ All status</option>
+              <option value="active">✓ Active</option>
+              <option value="inactive">✗ Inactive</option>
+              <option value="featured">⭐ Featured</option>
+            </select>
+            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${statusFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* Stock Filter */}
+          <div className="relative">
+            <select
+              value={stockFilter}
+              onChange={e => { setStockFilter(e.target.value); setPage(1); }}
+              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                stockFilter 
+                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
+                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+              }`}
+            >
+              <option value="">📦 All stock levels</option>
+              <option value="instock">✓ In Stock</option>
+              <option value="lowstock">⚠️ Low Stock</option>
+              <option value="outofstock">✗ Out of Stock</option>
+            </select>
+            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${stockFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* Clear Filters Button */}
+          {(categoryFilter || brandFilter || statusFilter || stockFilter || searchQuery) && (
+            <button
+              onClick={() => {
+                setCategoryFilter('');
+                setBrandFilter('');
+                setStatusFilter('');
+                setStockFilter('');
+                setSearchQuery('');
+                setPage(1);
+              }}
+              className="px-3 py-2 border-[0.5px] border-[#E24B4A] bg-[#FEF2F2] text-[#E24B4A] rounded-lg text-[12px] font-medium hover:bg-[#E24B4A] hover:text-white transition-all flex items-center gap-1.5 shadow-sm"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear all
+            </button>
+          )}
+
+          {/* Spacer */}
+          <div className="flex-1"></div>
+
+          {/* Results Count */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-white border-[0.5px] border-[var(--color-border-secondary)] rounded-lg">
+            <svg className="w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <span className="text-[12px] font-semibold text-[var(--color-text-primary)]">
+              {total}
+            </span>
+            <span className="text-[12px] text-[var(--color-text-secondary)]">
+              product{total !== 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
       </div>
 

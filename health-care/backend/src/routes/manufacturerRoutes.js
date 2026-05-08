@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
+const { redisCacheMiddleware } = require('../middleware/cache');
 const {
   getManufacturers,
   getManufacturer,
@@ -12,7 +13,7 @@ const {
 
 // Import upload middleware
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const CloudinaryStorage = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
@@ -23,7 +24,7 @@ cloudinary.config({
 });
 
 // Configure multer storage for Cloudinary
-const storage = new CloudinaryStorage({
+const storage = CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'medcore/manufacturers',
@@ -37,9 +38,9 @@ const upload = multer({
   limits: { fileSize: 2 * 1024 * 1024 } // 2MB limit for logos
 });
 
-// Public routes
-router.get('/', getManufacturers);
-router.get('/:slug', getManufacturer);
+// Public routes with caching (10 minutes TTL)
+router.get('/', redisCacheMiddleware({ ttl: 600, keyPrefix: 'manufacturers:' }), getManufacturers);
+router.get('/:slug', redisCacheMiddleware({ ttl: 600, keyPrefix: 'manufacturers:' }), getManufacturer);
 
 // Admin routes
 router.post('/', protect, authorize('admin'), createManufacturer);

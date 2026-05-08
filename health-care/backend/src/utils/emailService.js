@@ -151,7 +151,6 @@ async function sendOrderConfirmation(order, user) {
         ${order.b2bDiscount ? `<tr><td style="color:#28a745;">B2B Discount (${order.b2bDiscountPct || 0}%)</td><td style="text-align:right;font-weight:600;color:#28a745;">-৳${order.b2bDiscount.toLocaleString()}</td></tr>` : ''}
         ${order.couponDiscount ? `<tr><td style="color:#28a745;">Coupon Discount${order.appliedCoupon?.code ? ` (${order.appliedCoupon.code})` : ''}</td><td style="text-align:right;font-weight:600;color:#28a745;">-৳${order.couponDiscount.toLocaleString()}</td></tr>` : ''}
         <tr><td style="color:#6c757d;">Delivery Fee</td><td style="text-align:right;font-weight:600;">৳${(order.deliveryFee || 0).toLocaleString()}</td></tr>
-        <tr><td style="color:#6c757d;">VAT (5%)</td><td style="text-align:right;font-weight:600;">৳${(order.vatAmount || 0).toLocaleString()}</td></tr>
         <tr class="total-row">
           <td style="color:#0B2545;">Total Payable</td>
           <td style="text-align:right;color:#0B2545;">৳${(order.totalAmount || order.total || 0).toLocaleString()}</td>

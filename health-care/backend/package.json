@@ -6,12 +6,15 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
     "seed": "node src/utils/seedData.js",
     "fix:categories": "node src/scripts/fixProductCategories.js",
     "fix:brands": "node src/scripts/fixProductBrands.js",
     "diagnose": "node diagnose-connection.js",
-    "restart": "powershell -ExecutionPolicy Bypass -File restart-server.ps1"
+    "restart": "powershell -ExecutionPolicy Bypass -File restart-server.ps1",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix"
   },
   "keywords": [
     "medical",
@@ -21,11 +24,16 @@
   "author": "MedCore BD",
   "license": "MIT",
   "dependencies": {
+    "@sentry/node": "^8.0.0",
+    "@sentry/profiling-node": "^8.0.0",
+    "@sentry/tracing": "^7.114.0",
     "axios": "^1.15.2",
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^1.41.3",
+    "cloudinary": "^2.10.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
+    "csrf-csrf": "^4.0.3",
+    "csurf": "^1.11.0",
     "csv-parse": "^6.2.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -40,7 +48,7 @@
     "mongoose": "^8.0.0",
     "morgan": "^1.10.0",
     "multer": "^2.1.1",
-    "multer-storage-cloudinary": "^4.0.0",
+    "multer-storage-cloudinary": "^2.2.1",
     "node-cache": "^5.1.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.5",
@@ -57,6 +65,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "eslint": "^8.57.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
     "supertest": "^7.2.2"

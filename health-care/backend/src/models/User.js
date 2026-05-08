@@ -28,7 +28,16 @@ const userSchema = new mongoose.Schema({
       // Password not required for OAuth users
       return !this.googleId;
     },
-    minlength: 8,
+    minlength: [8, 'Password must be at least 8 characters'],
+    validate: {
+      validator: function(v) {
+        // Skip validation for OAuth users
+        if (this.googleId) return true;
+        // Require uppercase, lowercase, number, and special character
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(v);
+      },
+      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    },
     select: false
   },
   phone: {
@@ -126,5 +135,7 @@ userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ b2bId: 1 }, { sparse: true });
 userSchema.index({ role: 1 });
 userSchema.index({ googleId: 1 }, { sparse: true });
+// Compound indexes for common query patterns
+userSchema.index({ role: 1, isActive: 1 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -81,6 +81,11 @@ productSchema.index({ name: 'text', brand: 'text', description: 'text' });
 productSchema.index({ sku: 1 }, { unique: true });
 productSchema.index({ stock: 1 });
 productSchema.index({ isFeatured: 1, isActive: 1 });
+// Compound indexes for common query patterns
+productSchema.index({ category: 1, brand: 1, isActive: 1 });
+productSchema.index({ category: 1, isActive: 1, isFeatured: 1 });
+productSchema.index({ isActive: 1, price: 1 });
+productSchema.index({ createdAt: -1, isActive: 1 });
 
 // ── Pre-save hook: auto-generate slug + sync legacy aliases ──────────────────
 productSchema.pre('save', function (next) {

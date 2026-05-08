@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
-import { VAT_RATE } from '@/constants';
 
 export default function OrderSummary({ items, deliveryMethod = 'standard', appliedCoupon, onCouponApply, userId }) {
   const { isAuthenticated } = useAuth();
@@ -24,12 +23,8 @@ export default function OrderSummary({ items, deliveryMethod = 'standard', appli
   // Coupon discount
   const couponDiscount = appliedCoupon?.discountAmount || 0;
 
-  // VAT calculation (after discount)
-  const taxableAmount = subtotal - couponDiscount + deliveryFee;
-  const vatAmount = Math.round(taxableAmount * VAT_RATE * 100) / 100;
-
-  // Total
-  const total = Math.round((taxableAmount + vatAmount) * 100) / 100;
+  // Total calculation without VAT
+  const total = Math.round((subtotal - couponDiscount + deliveryFee) * 100) / 100;
 
   // Clear error when coupon code changes
   useEffect(() => {
@@ -280,13 +275,6 @@ export default function OrderSummary({ items, deliveryMethod = 'standard', appli
           <span className="text-[var(--color-text-secondary)]">Delivery fee</span>
           <span className="font-medium font-[family-name:var(--font-plus-jakarta)]">
             ৳{deliveryFee.toLocaleString()}
-          </span>
-        </div>
-
-        <div className="flex justify-between text-[12px]">
-          <span className="text-[var(--color-text-secondary)]">VAT (5%)</span>
-          <span className="font-medium font-[family-name:var(--font-plus-jakarta)]">
-            ৳{vatAmount.toLocaleString()}
           </span>
         </div>
       </div>

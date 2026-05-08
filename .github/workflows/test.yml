@@ -27,7 +27,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: health-care
-        run: npm install --legacy-peer-deps
+        run: npm ci --ignore-scripts
       
       - name: Run linter
         working-directory: health-care

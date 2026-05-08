@@ -123,23 +123,34 @@ function generateInvoice(order, user) {
     (order.items || []).forEach((item, idx) => {
       const bg = idx % 2 === 0 ? WHITE : BG;
       doc.rect(50, rowY, pageWidth, 22).fill(bg);
+      
+      const unitPrice = Number(item.price || 0);
+      const quantity = Number(item.qty || item.quantity || 1);
+      const discountPct = Number(item.discount || 0);
+      const lineTotal = unitPrice * quantity * (1 - discountPct / 100);
+      
       doc.fillColor('#111')
         .text(item.name || 'Product', cols.name + 4, rowY + 7, { width: 175, ellipsis: true })
         .text(item.sku || '-', cols.sku, rowY + 7)
-        .text(String(item.qty || item.quantity || 1), cols.qty, rowY + 7)
-        .text(`৳${(item.price || 0).toLocaleString()}`, cols.unitPrice, rowY + 7)
-        .text(`${item.discount || 0}%`, cols.disc, rowY + 7)
-        .text(`৳${((item.price || 0) * (item.qty || item.quantity || 1) * (1 - (item.discount || 0) / 100)).toLocaleString()}`, cols.total, rowY + 7);
+        .text(String(quantity), cols.qty, rowY + 7)
+        .text('Tk ' + unitPrice.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), cols.unitPrice, rowY + 7)
+        .text(`${discountPct}%`, cols.disc, rowY + 7)
+        .text('Tk ' + lineTotal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), cols.total, rowY + 7);
       rowY += 22;
     });
 
     // ── Totals ───────────────────────────────────────────────────────────────
     rowY += 10;
+    
+    const subtotal = Number(order.subtotal || 0);
+    const b2bDiscount = Number(order.b2bDiscount || 0);
+    const deliveryFee = Number(order.deliveryFee || 0);
+    const totalAmount = Number(order.totalAmount || order.total || 0);
+    
     const totals = [
-      ['Subtotal', `৳${(order.subtotal || 0).toLocaleString()}`],
-      ...(order.b2bDiscount ? [['B2B Discount', `-৳${order.b2bDiscount.toLocaleString()}`]] : []),
-      ['Delivery Fee', `৳${(order.deliveryFee || 0).toLocaleString()}`],
-      ['VAT (5%)', `৳${(order.vatAmount || 0).toLocaleString()}`]
+      ['Subtotal', 'Tk ' + subtotal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')],
+      ...(b2bDiscount > 0 ? [['B2B Discount', '-Tk ' + b2bDiscount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')]] : []),
+      ['Delivery Fee', 'Tk ' + deliveryFee.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')]
     ];
 
     totals.forEach(([label, value]) => {
@@ -154,7 +165,7 @@ function generateInvoice(order, user) {
     doc.rect(350, rowY, 200, 30).fill(NAVY);
     doc.fillColor(WHITE).font('Helvetica-Bold').fontSize(12)
       .text('TOTAL PAYABLE', 355, rowY + 9, { width: 100 })
-      .text(`৳${(order.totalAmount || order.total || 0).toLocaleString()}`, 355, rowY + 9, { width: 190, align: 'right' });
+      .text('Tk ' + totalAmount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), 355, rowY + 9, { width: 190, align: 'right' });
 
     // ── Bank Transfer Details ────────────────────────────────────────────────
     rowY += 50;

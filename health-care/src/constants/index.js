@@ -76,8 +76,6 @@ export const POPULAR_SEARCHES = [
   'Centrifuge'
 ];
 
-export const VAT_RATE = 0.05; // 5%
-
 export const PHONE_REGEX = /^(\+88)?01[3-9]\d{8}$/;
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

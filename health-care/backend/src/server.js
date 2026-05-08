@@ -15,9 +15,13 @@ const logger = require('./utils/logger');
 const { performanceMonitor } = require('./middleware/performanceMonitor');
 const { monitorConnections } = require('./utils/databaseMonitor');
 const redisCache = require('./services/redisCache');
+const { initSentry, sentryErrorHandler } = require('./config/sentry');
 
 // Initialize express app
 const app = express();
+
+// Initialize Sentry (must be before other middleware)
+initSentry(app);
 
 // Connect to database
 connectDB();
@@ -71,25 +75,24 @@ app.use(cors({
       process.env.ADMIN_URL || 'http://localhost:3000',
       'http://localhost:3002',
       'http://localhost:3000',
-      'http://127.0.0.1:3000'
+      'http://127.0.0.1:3000',
+      'http://localhost:3001'
     ];
     
     // Allow all Vercel preview URLs
     const isVercelPreview = origin && origin.includes('.vercel.app');
     
     // Allow requests with no origin (mobile apps, Postman, server-side, etc.)
-    // Allow same-origin requests
-    // Allow allowed origins
-    if (!origin || allowedOrigins.includes(origin) || isVercelPreview) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Check if origin is allowed
+    if (allowedOrigins.includes(origin) || isVercelPreview) {
       callback(null, true);
     } else {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.warn(`CORS blocked origin: ${origin}`);
-        callback(null, true); // Allow all origins in development only
-      } else {
-        logger.warn(`CORS rejected origin: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
-      }
+      logger.warn(`CORS rejected origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -262,6 +265,8 @@ app.use((req, res) => {
 });
 
 // ── Centralised Error Handler ─────────────────────────────────────────────────
+// Sentry error handler (must be before custom error handler)
+app.use(sentryErrorHandler());
 app.use(errorHandler);
 
 // ── Start Server ──────────────────────────────────────────────────────────────
