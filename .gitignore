@@ -8,12 +8,14 @@
 # ── Environment Variables (CRITICAL - NEVER COMMIT) ─────────────────────────
 **/.env
 **/.env.local
+**/.env.production
+**/.env.development
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
 **/.env.*.local
 
-# Keep template files
+# Keep template files ONLY
 !**/.env.example
 
 # ── Dependencies ─────────────────────────────────────────────────────────────

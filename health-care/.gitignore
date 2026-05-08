@@ -7,6 +7,7 @@
 
 # ── Environment Variables (CRITICAL - NEVER COMMIT) ─────────────────────────
 # These files contain sensitive credentials and API keys
+# NEVER COMMIT THESE FILES!
 .env
 .env.local
 .env.production
@@ -15,9 +16,13 @@
 .env.test.local
 .env.production.local
 .env.*.local
+*.env
+*.env.local
+*.env.production
 
-# Keep template files for reference (no sensitive data)
+# Keep template files for reference ONLY (no sensitive data)
 !.env.example
+!**/.env.example
 
 # ── Dependencies ─────────────────────────────────────────────────────────────
 node_modules/
