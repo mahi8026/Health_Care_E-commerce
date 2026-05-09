@@ -47,6 +47,22 @@ const settingsSchema = new mongoose.Schema({
     type: String,
     default: "Bangladesh's Most Trusted Medical Equipment Supplier",
   },
+  heroSlides: {
+    type: [{
+      imageUrl: { type: String, default: '' },
+      altText: { type: String, default: 'Banner' },
+      linkUrl: { type: String, default: '/products' },
+      order: { type: Number, default: 0 },
+      isActive: { type: Boolean, default: true },
+    }],
+    default: [],
+  },
+  promoBanner: {
+    imageUrl: { type: String, default: '' },
+    altText: { type: String, default: 'Promo Banner' },
+    linkUrl: { type: String, default: '/products' },
+    isActive: { type: Boolean, default: true },
+  },
   updatedAt: {
     type: Date,
     default: Date.now,

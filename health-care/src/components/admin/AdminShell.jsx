@@ -64,6 +64,7 @@ export default function AdminShell({ children, title, action, onAction }) {
     { id: 'dashboard', path: '/admin', icon: '📊', label: 'Dashboard' },
     { id: 'orders', path: '/admin/orders', icon: '📦', label: 'Orders', badge: badges.orders > 0 ? String(badges.orders) : null },
     { id: 'products', path: '/admin/products', icon: '🏥', label: 'Products' },
+    { id: 'banners', path: '/admin/banners', icon: '🖼️', label: 'Banners' },
     { id: 'customers', path: '/admin/customers', icon: '👥', label: 'Customers' },
     { id: 'coupons', path: '/admin/coupons', icon: '🎟️', label: 'Coupons' },
     { id: 'categories', path: '/admin/categories', icon: '📁', label: 'Categories' },

@@ -210,6 +210,8 @@ export default function HomePage() {
   const [cartCount, setCartCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isSliderHovered, setIsSliderHovered] = useState(false);
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [promoBanner, setPromoBanner] = useState(null);
   const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
   const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
   const [topSellingProducts, setTopSellingProducts] = useState([]);
@@ -267,11 +269,32 @@ export default function HomePage() {
   // Hero slider auto-play - increased interval for performance
   useEffect(() => {
     if (isSliderHovered) return;
+    const count = heroSlides.filter(s => s.isActive).length || 4;
     const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % 4);
-    }, 6000); // Increased from 4s to 6s
+      setCurrentSlide(prev => (prev + 1) % count);
+    }, 6000);
     return () => clearInterval(interval);
-  }, [isSliderHovered]);
+  }, [isSliderHovered, heroSlides]);
+
+  // Load banner settings
+  useEffect(() => {
+    const loadBanners = async () => {
+      try {
+        const res = await fetch(`${API}/settings`);
+        const data = await res.json();
+        const s = data.data || {};
+        if (s.heroSlides?.length) {
+          setHeroSlides(s.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order));
+        }
+        if (s.promoBanner?.imageUrl) {
+          setPromoBanner(s.promoBanner);
+        }
+      } catch {
+        // silently fall back to default images
+      }
+    };
+    loadBanners();
+  }, []);
 
   // Search placeholder cycling - increased interval for performance
   useEffect(() => {
@@ -570,114 +593,111 @@ export default function HomePage() {
             onMouseLeave={() => setIsSliderHovered(false)}>
             
             {/* Slide counter */}
-            <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10,
-              color: '#fff', fontSize: 12, fontWeight: 600,
-              background: 'rgba(0,0,0,0.6)', padding: '6px 12px', borderRadius: 20 }}>
-              {String(currentSlide + 1).padStart(2, '0')} / 04
-            </div>
+            {(() => {
+              const activeSlides = heroSlides.length > 0 ? heroSlides : null;
+              const total = activeSlides ? activeSlides.length : 4;
+              return (
+                <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10,
+                  color: '#fff', fontSize: 12, fontWeight: 600,
+                  background: 'rgba(0,0,0,0.6)', padding: '6px 12px', borderRadius: 20 }}>
+                  {String(currentSlide + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+                </div>
+              );
+            })()}
 
-            {/* SLIDE 1 */}
-            {currentSlide === 0 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img 
-                  src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=400&fit=crop" 
-                  alt="Medical Equipment"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/800x380/0E8A6E/ffffff?text=Medical+Equipment';
-                  }}
-                />
-              </div>
-            )}
-
-            {/* SLIDE 2 */}
-            {currentSlide === 1 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img 
-                  src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=400&fit=crop" 
-                  alt="Laboratory"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/800x380/8B5CF6/ffffff?text=Laboratory+Reagents';
-                  }}
-                />
-              </div>
-            )}
-
-            {/* SLIDE 3 */}
-            {currentSlide === 2 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img 
-                  src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=400&fit=crop" 
-                  alt="Hospital"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/800x380/EA580C/ffffff?text=Hospital+Machines';
-                  }}
-                />
-              </div>
-            )}
-
-            {/* SLIDE 4 */}
-            {currentSlide === 3 && (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img 
-                  src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=400&fit=crop" 
-                  alt="Surgical Instruments"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/800x380/10B981/ffffff?text=Surgical+Instruments';
-                  }}
-                />
-              </div>
+            {/* Dynamic slides from settings, fallback to defaults */}
+            {heroSlides.length > 0 ? (
+              heroSlides.map((slide, i) => (
+                currentSlide === i && (
+                  <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6' }}>
+                    <img
+                      src={slide.imageUrl}
+                      alt={slide.altText || `Slide ${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                )
+              ))
+            ) : (
+              <>
+                {currentSlide === 0 && (
+                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=400&fit=crop" alt="Medical Equipment" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                {currentSlide === 1 && (
+                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=400&fit=crop" alt="Laboratory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                {currentSlide === 2 && (
+                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=400&fit=crop" alt="Hospital" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                {currentSlide === 3 && (
+                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=400&fit=crop" alt="Surgical Instruments" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Dot indicators */}
-            <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', gap: 5, zIndex: 10, alignItems: 'center' }}>
-              {[0, 1, 2, 3].map(i => (
-                <span key={i} onClick={() => setCurrentSlide(i)}
-                  role="button" aria-label={`Slide ${i + 1}`}
-                  style={{ display: 'block', width: currentSlide === i ? 18 : 6, height: 6,
-                    borderRadius: 999, cursor: 'pointer', padding: 0, margin: 0,
-                    background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)',
-                    transition: 'all 0.3s', flexShrink: 0 }} />
-              ))}
-            </div>
+            {(() => {
+              const total = heroSlides.length > 0 ? heroSlides.length : 4;
+              return (
+                <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
+                  display: 'flex', gap: 5, zIndex: 10, alignItems: 'center' }}>
+                  {Array.from({ length: total }).map((_, i) => (
+                    <span key={i} onClick={() => setCurrentSlide(i)}
+                      role="button" aria-label={`Slide ${i + 1}`}
+                      style={{ display: 'block', width: currentSlide === i ? 18 : 6, height: 6,
+                        borderRadius: 999, cursor: 'pointer', padding: 0, margin: 0,
+                        background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)',
+                        transition: 'all 0.3s', flexShrink: 0 }} />
+                  ))}
+                </div>
+              );
+            })()}
 
             {/* Navigation arrows */}
-            <button onClick={() => setCurrentSlide(prev => (prev - 1 + 4) % 4)}
-              style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)',
-                width: 40, height: 40, borderRadius: '50%', border: 'none',
-                background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
-                cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
-                opacity: isSliderHovered ? 1 : 0 }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
-              ‹
-            </button>
-            <button onClick={() => setCurrentSlide(prev => (prev + 1) % 4)}
-              style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)',
-                width: 40, height: 40, borderRadius: '50%', border: 'none',
-                background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
-                cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
-                opacity: isSliderHovered ? 1 : 0 }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
-              ›
-            </button>
+            {(() => {
+              const total = heroSlides.length > 0 ? heroSlides.length : 4;
+              return (
+                <>
+                  <button onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
+                    style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)',
+                      width: 40, height: 40, borderRadius: '50%', border: 'none',
+                      background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
+                      cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
+                      opacity: isSliderHovered ? 1 : 0 }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
+                    ‹
+                  </button>
+                  <button onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
+                    style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)',
+                      width: 40, height: 40, borderRadius: '50%', border: 'none',
+                      background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
+                      cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
+                      opacity: isSliderHovered ? 1 : 0 }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
+                    ›
+                  </button>
+                </>
+              );
+            })()}
           </div>
 
           {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
           <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
-            onClick={() => router.push('/products')}>
-            <img 
-              src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop" 
-              alt="Featured Products"
+            onClick={() => router.push(promoBanner?.linkUrl || '/products')}>
+            <img
+              src={promoBanner?.imageUrl || 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop'}
+              alt={promoBanner?.altText || 'Featured Products'}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/500x380/FDE68A/92400E?text=Featured+Products';
-              }}
             />
           </div>
         </div>
