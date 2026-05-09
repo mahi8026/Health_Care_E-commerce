@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finecare Products Import Tool</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #0E8A6E 0%, #0B6B56 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .content {
+      padding: 30px;
+    }
+    .step {
+      background: #F9FAFB;
+      border: 2px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .step h2 {
+      color: #0E8A6E;
+      font-size: 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-number {
+      background: #0E8A6E;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 14px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+    }
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+    button {
+      background: #0E8A6E;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    button:hover:not(:disabled) {
+      background: #0B6B56;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(14, 138, 110, 0.3);
+    }
+    button:disabled {
+      background: #9CA3AF;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .result.success {
+      background: #D1FAE5;
+      border: 1px solid #10B981;
+      color: #065F46;
+    }
+    .result.error {
+      background: #FEE2E2;
+      border: 1px solid #EF4444;
+      color: #991B1B;
+    }
+    .result.info {
+      background: #DBEAFE;
+      border: 1px solid #3B82F6;
+      color: #1E40AF;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .summary-item {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .summary-item .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0E8A6E;
+    }
+    .summary-item .label {
+      font-size: 12px;
+      color: #6B7280;
+      margin-top: 4px;
+    }
+    .code-block {
+      background: #1F2937;
+      color: #F9FAFB;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #0E8A6E;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 Finecare Products Import Tool</h1>
+      <p>Import Finecare products from local to production database</p>
+    </div>
+
+    <div class="content">
+      <!-- Step 1: Get Export Data -->
+      <div class="step">
+        <h2>
+          <span class="step-number">1</span>
+          Get Export Data from Local Server
+        </h2>
+        <p style="margin-bottom: 15px; color: #6B7280; font-size: 14px;">
+          Run this command on your local machine to get the export data:
+        </p>
+        <div class="code-block">
+          curl http://localhost:5000/api/product-sync/export/Finecare
+        </div>
+        <p style="margin-top: 10px; color: #6B7280; font-size: 13px;">
+          Copy the entire JSON response and paste it in Step 2 below.
+        </p>
+      </div>
+
+      <!-- Step 2: Paste and Import -->
+      <div class="step">
+        <h2>
+          <span class="step-number">2</span>
+          Import to Production
+        </h2>
+        
+        <div class="form-group">
+          <label for="apiUrl">Production API URL</label>
+          <input 
+            type="text" 
+            id="apiUrl" 
+            value="https://health-care-e-commerce.onrender.com/api/product-sync/import"
+            placeholder="https://your-api.com/api/product-sync/import"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="token">Admin Token</label>
+          <input 
+            type="password" 
+            id="token" 
+            placeholder="Paste your admin JWT token here"
+          />
+          <p style="margin-top: 5px; color: #6B7280; font-size: 12px;">
+            Get this from localStorage.medcore_token in your browser console
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="exportData">Export Data (JSON)</label>
+          <textarea 
+            id="exportData" 
+            placeholder='Paste the JSON response from Step 1 here...'
+          ></textarea>
+        </div>
+
+        <button id="importBtn" onclick="importProducts()">
+          Import Products to Production
+        </button>
+
+        <div id="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function importProducts() {
+      const apiUrl = document.getElementById('apiUrl').value.trim();
+      const token = document.getElementById('token').value.trim();
+      const exportDataStr = document.getElementById('exportData').value.trim();
+      const resultDiv = document.getElementById('result');
+      const importBtn = document.getElementById('importBtn');
+
+      // Validation
+      if (!apiUrl) {
+        resultDiv.innerHTML = '<div class="result error">❌ Please enter the API URL</div>';
+        return;
+      }
+      if (!token) {
+        resultDiv.innerHTML = '<div class="result error">❌ Please enter your admin token</div>';
+        return;
+      }
+      if (!exportDataStr) {
+        resultDiv.innerHTML = '<div class="result error">❌ Please paste the export data</div>';
+        return;
+      }
+
+      // Parse JSON
+      let exportData;
+      try {
+        exportData = JSON.parse(exportDataStr);
+      } catch (error) {
+        resultDiv.innerHTML = '<div class="result error">❌ Invalid JSON format. Please check the export data.</div>';
+        return;
+      }
+
+      // Validate structure
+      if (!exportData.manufacturer || !exportData.products) {
+        resultDiv.innerHTML = '<div class="result error">❌ Invalid export data structure. Expected { manufacturer, products }</div>';
+        return;
+      }
+
+      // Show loading
+      importBtn.disabled = true;
+      resultDiv.innerHTML = '<div class="result info"><span class="spinner"></span>Importing products to production...</div>';
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            manufacturer: exportData.manufacturer,
+            products: exportData.products
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          resultDiv.innerHTML = `
+            <div class="result success">
+              <h3 style="margin-bottom: 10px;">✅ Import Successful!</h3>
+              <div class="summary">
+                <div class="summary-item">
+                  <div class="value">${result.summary.total}</div>
+                  <div class="label">Total</div>
+                </div>
+                <div class="summary-item">
+                  <div class="value">${result.summary.created}</div>
+                  <div class="label">Created</div>
+                </div>
+                <div class="summary-item">
+                  <div class="value">${result.summary.updated}</div>
+                  <div class="label">Updated</div>
+                </div>
+                <div class="summary-item">
+                  <div class="value">${result.summary.errors}</div>
+                  <div class="label">Errors</div>
+                </div>
+              </div>
+              ${result.errors && result.errors.length > 0 ? `
+                <div style="margin-top: 15px;">
+                  <strong>Errors:</strong>
+                  <ul style="margin-top: 5px; padding-left: 20px;">
+                    ${result.errors.map(e => `<li>${e.sku}: ${e.error}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+              <p style="margin-top: 15px;">
+                🎉 Finecare products are now available in production!<br>
+                <a href="https://health-care-e-commerce.onrender.com/products?brand=Finecare" target="_blank" style="color: #0E8A6E; font-weight: 600;">View Products →</a>
+              </p>
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="result error">
+              <strong>❌ Import Failed</strong><br>
+              ${result.message || 'Unknown error'}<br>
+              ${result.error ? `<small>${result.error}</small>` : ''}
+            </div>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="result error">
+            <strong>❌ Network Error</strong><br>
+            ${error.message}<br>
+            <small>Make sure the API URL is correct and accessible.</small>
+          </div>
+        `;
+      } finally {
+        importBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

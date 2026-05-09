@@ -1,80 +1,96 @@
 /**
- * Product Sync Routes
- * API endpoints for syncing products from JSON export
+ * Product Sync Routes - Import/Export products between environments
  */
 
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
+const Manufacturer = require('../models/Manufacturer');
 const { protect, authorize } = require('../middleware/auth');
-const fs = require('fs');
-const path = require('path');
+const logger = require('../utils/logger');
 
-/**
- * @route   POST /api/product-sync/import
- * @desc    Import products from JSON file (admin only)
- * @access  Private/Admin
- */
+// @desc    Import products from JSON
+// @route   POST /api/product-sync/import
+// @access  Private/Admin
 router.post('/import', protect, authorize('admin'), async (req, res) => {
   try {
-    const jsonPath = path.join(__dirname, '../../exports/all-products.json');
-    
-    if (!fs.existsSync(jsonPath)) {
-      return res.status(404).json({
+    const { manufacturer, products } = req.body;
+
+    if (!manufacturer || !products || !Array.isArray(products)) {
+      return res.status(400).json({
         success: false,
-        message: 'Export file not found. Upload all-products.json to backend/exports/ first.'
+        message: 'Invalid import data. Expected { manufacturer, products }'
       });
     }
 
-    console.log('📖 Reading products from JSON...');
-    const products = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    console.log(`   Found: ${products.length} products`);
+    logger.info(`[ProductSync] Starting import of ${products.length} products`);
 
+    // Step 1: Ensure manufacturer exists
+    let mfr = await Manufacturer.findOne({ 
+      name: { $regex: new RegExp(`^${manufacturer.name}$`, 'i') }
+    });
+
+    if (!mfr) {
+      logger.info(`[ProductSync] Creating manufacturer: ${manufacturer.name}`);
+      const mfrData = { ...manufacturer };
+      delete mfrData._id;
+      mfr = await Manufacturer.create(mfrData);
+      logger.info(`[ProductSync] Created manufacturer: ${mfr._id}`);
+    } else {
+      logger.info(`[ProductSync] Manufacturer exists: ${mfr._id}`);
+    }
+
+    // Step 2: Import products
     let created = 0;
     let updated = 0;
-    let skipped = 0;
-    let failed = 0;
-    const errors = [];
+    let errors = [];
 
-    for (const product of products) {
+    for (const productData of products) {
       try {
-        const result = await Product.updateOne(
-          { sku: product.sku },
-          { $set: product },
-          { upsert: true }
-        );
+        const existingProduct = await Product.findOne({ sku: productData.sku });
 
-        if (result.upsertedCount > 0) {
-          created++;
-        } else if (result.modifiedCount > 0) {
+        if (existingProduct) {
+          // Update existing
+          const updateData = { ...productData };
+          delete updateData._id;
+          updateData.brand = mfr._id;
+          
+          await Product.findByIdAndUpdate(existingProduct._id, updateData);
           updated++;
+          logger.info(`[ProductSync] Updated: ${productData.sku}`);
         } else {
-          skipped++;
+          // Create new
+          const newProductData = { ...productData };
+          delete newProductData._id;
+          newProductData.brand = mfr._id;
+          
+          await Product.create(newProductData);
+          created++;
+          logger.info(`[ProductSync] Created: ${productData.sku}`);
         }
       } catch (error) {
-        failed++;
-        errors.push({ sku: product.sku, error: error.message });
+        errors.push({ sku: productData.sku, error: error.message });
+        logger.error(`[ProductSync] Error importing ${productData.sku}: ${error.message}`);
       }
     }
 
-    const finalCount = await Product.countDocuments();
+    // Clear cache
+    const { invalidateCache } = require('../middleware/cache');
+    await invalidateCache('products:*');
 
-    res.json({
+    res.status(200).json({
       success: true,
-      message: 'Product import completed',
-      stats: {
+      message: 'Import completed',
+      summary: {
+        total: products.length,
         created,
         updated,
-        skipped,
-        failed,
-        total: products.length,
-        finalCount
+        errors: errors.length
       },
-      errors: errors.slice(0, 10) // Only return first 10 errors
+      errors: errors.length > 0 ? errors : undefined
     });
-
   } catch (error) {
-    console.error('Import error:', error);
+    logger.error(`[ProductSync] Import failed: ${error.message}`);
     res.status(500).json({
       success: false,
       message: 'Import failed',
@@ -83,52 +99,40 @@ router.post('/import', protect, authorize('admin'), async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/product-sync/status
- * @desc    Get product count and sync status
- * @access  Public
- */
-router.get('/status', async (req, res) => {
+// @desc    Export products by brand
+// @route   GET /api/product-sync/export/:brandName
+// @access  Private/Admin
+router.get('/export/:brandName', protect, authorize('admin'), async (req, res) => {
   try {
-    const totalProducts = await Product.countDocuments();
-    const activeProducts = await Product.countDocuments({ isActive: true });
-    const inStockProducts = await Product.countDocuments({ stock: { $gt: 0 } });
-    
-    // Count by manufacturer
-    const manufacturerCounts = await Product.aggregate([
-      {
-        $lookup: {
-          from: 'manufacturers',
-          localField: 'manufacturer',
-          foreignField: '_id',
-          as: 'manufacturerInfo'
-        }
-      },
-      { $unwind: '$manufacturerInfo' },
-      {
-        $group: {
-          _id: '$manufacturerInfo.name',
-          count: { $sum: 1 }
-        }
-      },
-      { $sort: { count: -1 } }
-    ]);
+    const { brandName } = req.params;
 
-    res.json({
+    // Find manufacturer
+    const manufacturer = await Manufacturer.findOne({
+      name: { $regex: new RegExp(`^${brandName}$`, 'i') }
+    }).lean();
+
+    if (!manufacturer) {
+      return res.status(404).json({
+        success: false,
+        message: `Manufacturer "${brandName}" not found`
+      });
+    }
+
+    // Find products
+    const products = await Product.find({ brand: manufacturer._id }).lean();
+
+    res.status(200).json({
       success: true,
-      stats: {
-        totalProducts,
-        activeProducts,
-        inStockProducts,
-        manufacturerCounts
-      }
+      manufacturer,
+      products,
+      totalProducts: products.length,
+      exportDate: new Date().toISOString()
     });
-
   } catch (error) {
-    console.error('Status error:', error);
+    logger.error(`[ProductSync] Export failed: ${error.message}`);
     res.status(500).json({
       success: false,
-      message: 'Failed to get status',
+      message: 'Export failed',
       error: error.message
     });
   }

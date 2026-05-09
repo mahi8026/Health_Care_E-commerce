@@ -1,0 +1,411 @@
+{
+  "manufacturer": {
+    "_id": "69f5edaf7f06b435655895e6",
+    "name": "Finecare",
+    "description": "Finecare - Medical equipment and reagents manufacturer",
+    "country": "China",
+    "seo": {
+      "keywords": []
+    },
+    "isActive": true,
+    "createdAt": "2026-05-02T12:27:27.848Z",
+    "updatedAt": "2026-05-03T17:49:36.774Z",
+    "slug": "finecare",
+    "__v": 0
+  },
+  "products": [
+    {
+      "_id": "69f5edaf7f06b435655895ee",
+      "sku": "FC-TSH-25T",
+      "name": "Finecare TSH Rapid Quantitative Test",
+      "slug": "finecare-tsh-rapid-quantitative-test-fc-tsh-25t",
+      "description": "Rapid fluorescence immunoassay test for Thyroid Stimulating Hormone (TSH) quantitative detection. For use with Finecare FIA Meter series analyzers. Results in 15 minutes.",
+      "brand": "69f5edaf7f06b435655895e6",
+      "category": "69f5edaf7f06b435655895eb",
+      "price": 3250,
+      "b2bPrice": 3250,
+      "discountPct": 0,
+      "stock": 20,
+      "lowStockThreshold": 10,
+      "minStock": 10,
+      "unit": "pack",
+      "minOrderQty": 1,
+      "minOrder": 1,
+      "images": [
+        {
+          "url": "https://res.cloudinary.com/dm8eqxwlz/image/upload/v1778182477/medcorebd/products/dhzqufatarebcgc7uwuf.png",
+          "publicId": "medcorebd/products/dhzqufatarebcgc7uwuf",
+          "isPrimary": true,
+          "alt": "Finecare TSH Rapid Quantitative Test",
+          "_id": "69fce9626849c3463f78ba0e"
+        }
+      ],
+      "variants": {
+        "connectivity": [],
+        "warranty": []
+      },
+      "specifications": {
+        "Test Parameter": "TSH (Thyroid Stimulating Hormone)",
+        "Panel": "Thyroid Function",
+        "Pack Size": "25 Tests",
+        "Sample Type": "Whole blood, serum, plasma",
+        "Result Time": "15 minutes",
+        "Storage": "2-8°C",
+        "Shelf Life": "18 months",
+        "Analyzer Compatibility": "Finecare FIA Meter, Finecare Plus"
+      },
+      "certifications": [
+        "CE IVD",
+        "NMPA"
+      ],
+      "compatibleWith": [],
+      "documents": [],
+      "tags": [
+        "TSH",
+        "thyroid",
+        "finecare",
+        "rapid test",
+        "immunoassay",
+        "FIA"
+      ],
+      "hasAMC": false,
+      "rating": {
+        "average": 0,
+        "count": 0,
+        "distribution": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "reviewsCount": 0,
+      "reviewCount": 0,
+      "isActive": true,
+      "isFeatured": true,
+      "createdAt": "2026-05-02T12:27:27.887Z",
+      "updatedAt": "2026-05-08T12:52:56.088Z",
+      "__v": 0,
+      "expiryDate": null,
+      "hazardClass": "safe",
+      "lotNumber": "LOT-2026-50548",
+      "oldPrice": 0,
+      "storageTemp": "room",
+      "subcategory": ""
+    },
+    {
+      "_id": "69f5edaf7f06b435655895fa",
+      "sku": "FC-T3-25T",
+      "name": "Finecare T3 Rapid Quantitative Test",
+      "slug": "finecare-t3-rapid-quantitative-test-fc-t3-25t",
+      "description": "Rapid fluorescence immunoassay test for Triiodothyronine (T3) quantitative detection. Part of complete thyroid function testing panel.",
+      "brand": "69f5edaf7f06b435655895e6",
+      "category": "69f5edaf7f06b435655895eb",
+      "price": 3500,
+      "b2bPrice": 3500,
+      "discountPct": 0,
+      "stock": 15,
+      "lowStockThreshold": 10,
+      "minStock": 10,
+      "unit": "pack",
+      "minOrderQty": 1,
+      "minOrder": 1,
+      "images": [
+        {
+          "url": "https://res.cloudinary.com/dm8eqxwlz/image/upload/v1778182437/medcorebd/products/pyoeezrx1acxgdfmj9yj.png",
+          "publicId": "medcorebd/products/pyoeezrx1acxgdfmj9yj",
+          "isPrimary": true,
+          "alt": "Finecare T3 Rapid Quantitative Test",
+          "_id": "69fce93b6849c3463f78b9ff"
+        }
+      ],
+      "variants": {
+        "connectivity": [],
+        "warranty": []
+      },
+      "specifications": {
+        "Test Parameter": "T3 (Triiodothyronine)",
+        "Panel": "Thyroid Function",
+        "Pack Size": "25 Tests",
+        "Sample Type": "Whole blood, serum, plasma",
+        "Result Time": "15 minutes",
+        "Storage": "2-8°C",
+        "Analyzer Compatibility": "Finecare FIA Meter series"
+      },
+      "certifications": [
+        "CE IVD",
+        "NMPA"
+      ],
+      "compatibleWith": [],
+      "documents": [],
+      "tags": [
+        "T3",
+        "thyroid",
+        "finecare",
+        "rapid test",
+        "FIA"
+      ],
+      "hasAMC": false,
+      "rating": {
+        "average": 0,
+        "count": 0,
+        "distribution": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "reviewsCount": 0,
+      "reviewCount": 0,
+      "isActive": true,
+      "isFeatured": false,
+      "createdAt": "2026-05-02T12:27:27.929Z",
+      "updatedAt": "2026-05-08T12:52:56.128Z",
+      "__v": 0,
+      "expiryDate": null,
+      "hazardClass": "safe",
+      "lotNumber": "LOT-2026-50548",
+      "oldPrice": 0,
+      "storageTemp": "room",
+      "subcategory": ""
+    },
+    {
+      "_id": "69f5edaf7f06b43565589601",
+      "sku": "FC-T4-25T",
+      "name": "Finecare T4 Rapid Quantitative Test",
+      "slug": "finecare-t4-rapid-quantitative-test-fc-t4-25t",
+      "description": "Rapid fluorescence immunoassay for Thyroxine (T4) quantitative detection.",
+      "brand": "69f5edaf7f06b435655895e6",
+      "category": "69f5edaf7f06b435655895eb",
+      "price": 3500,
+      "b2bPrice": 3500,
+      "discountPct": 0,
+      "stock": 15,
+      "lowStockThreshold": 10,
+      "minStock": 10,
+      "unit": "pack",
+      "minOrderQty": 1,
+      "minOrder": 1,
+      "images": [
+        {
+          "url": "https://res.cloudinary.com/dm8eqxwlz/image/upload/v1778182394/medcorebd/products/tixiiglbjsjfdf18xkwo.png",
+          "publicId": "medcorebd/products/tixiiglbjsjfdf18xkwo",
+          "isPrimary": true,
+          "alt": "Finecare T4 Rapid Quantitative Test",
+          "_id": "69fce9176849c3463f78b9ed"
+        }
+      ],
+      "variants": {
+        "connectivity": [],
+        "warranty": []
+      },
+      "specifications": {
+        "Test Parameter": "T4 (Thyroxine)",
+        "Panel": "Thyroid Function",
+        "Pack Size": "25 Tests",
+        "Sample Type": "Whole blood, serum, plasma",
+        "Result Time": "15 minutes",
+        "Storage": "2-8°C",
+        "Analyzer Compatibility": "Finecare FIA Meter series"
+      },
+      "certifications": [
+        "CE IVD",
+        "NMPA"
+      ],
+      "compatibleWith": [],
+      "documents": [],
+      "tags": [
+        "T4",
+        "thyroxine",
+        "thyroid",
+        "finecare"
+      ],
+      "hasAMC": false,
+      "rating": {
+        "average": 0,
+        "count": 0,
+        "distribution": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "reviewsCount": 0,
+      "reviewCount": 0,
+      "isActive": true,
+      "isFeatured": false,
+      "createdAt": "2026-05-02T12:27:27.951Z",
+      "updatedAt": "2026-05-08T12:52:56.137Z",
+      "__v": 0,
+      "expiryDate": null,
+      "hazardClass": "safe",
+      "lotNumber": "LOT-2026-50548",
+      "oldPrice": 0,
+      "storageTemp": "room",
+      "subcategory": ""
+    },
+    {
+      "_id": "69f5edaf7f06b43565589606",
+      "sku": "FC-FT3-25T",
+      "name": "Finecare FT3 Rapid Quantitative Test",
+      "slug": "finecare-ft3-rapid-quantitative-test-fc-ft3-25t",
+      "description": "Rapid fluorescence immunoassay for Free Triiodothyronine (FT3) quantitative detection.",
+      "brand": "69f5edaf7f06b435655895e6",
+      "category": "69f5edaf7f06b435655895eb",
+      "price": 4250,
+      "b2bPrice": 4250,
+      "discountPct": 0,
+      "stock": 15,
+      "lowStockThreshold": 10,
+      "minStock": 10,
+      "unit": "pack",
+      "minOrderQty": 1,
+      "minOrder": 1,
+      "images": [
+        {
+          "url": "https://res.cloudinary.com/dm8eqxwlz/image/upload/v1778182031/medcorebd/products/ykql8wuywyixxg0swvbj.png",
+          "publicId": "medcorebd/products/ykql8wuywyixxg0swvbj",
+          "isPrimary": true,
+          "alt": "Finecare FT3 Rapid Quantitative Test",
+          "_id": "69fce7e06849c3463f78b8a2"
+        }
+      ],
+      "variants": {
+        "connectivity": [],
+        "warranty": []
+      },
+      "specifications": {
+        "Test Parameter": "FT3 (Free T3)",
+        "Panel": "Thyroid Function",
+        "Pack Size": "25 Tests",
+        "Sample Type": "Whole blood, serum, plasma",
+        "Result Time": "15 minutes",
+        "Storage": "2-8°C",
+        "Analyzer Compatibility": "Finecare FIA Meter series"
+      },
+      "certifications": [
+        "CE IVD",
+        "NMPA"
+      ],
+      "compatibleWith": [],
+      "documents": [],
+      "tags": [
+        "FT3",
+        "free T3",
+        "thyroid",
+        "finecare"
+      ],
+      "hasAMC": false,
+      "rating": {
+        "average": 0,
+        "count": 0,
+        "distribution": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "reviewsCount": 0,
+      "reviewCount": 0,
+      "isActive": true,
+      "isFeatured": true,
+      "createdAt": "2026-05-02T12:27:27.967Z",
+      "updatedAt": "2026-05-08T12:52:56.150Z",
+      "__v": 0,
+      "expiryDate": null,
+      "hazardClass": "safe",
+      "lotNumber": "LOT-2026-100256",
+      "oldPrice": 0,
+      "storageTemp": "room",
+      "subcategory": ""
+    },
+    {
+      "_id": "69f5edaf7f06b4356558960b",
+      "sku": "FC-VITB12-25T",
+      "name": "Finecare Vitamin B12 Rapid Quantitative Test",
+      "slug": "finecare-vitamin-b12-rapid-quantitative-test-fc-vitb12-25t",
+      "description": "Rapid quantitative Vitamin B12 (Cobalamin) test. Common deficiency in Bangladesh due to dietary patterns.",
+      "brand": "69f5edaf7f06b435655895e6",
+      "category": "69f5edaf7f06b435655895eb",
+      "price": 9000,
+      "b2bPrice": 9000,
+      "discountPct": 0,
+      "stock": 15,
+      "lowStockThreshold": 10,
+      "minStock": 10,
+      "unit": "pack",
+      "minOrderQty": 1,
+      "minOrder": 1,
+      "images": [
+        {
+          "url": "https://res.cloudinary.com/dm8eqxwlz/image/upload/v1778182273/medcorebd/products/vvknf18icmrpwe8lz8gh.png",
+          "publicId": "medcorebd/products/vvknf18icmrpwe8lz8gh",
+          "isPrimary": true,
+          "alt": "Finecare Vitamin B12 Rapid Quantitative Test",
+          "_id": "69fce8ce6849c3463f78b9db"
+        }
+      ],
+      "variants": {
+        "connectivity": [],
+        "warranty": []
+      },
+      "specifications": {
+        "Test Parameter": "Vitamin B12 (Cobalamin)",
+        "Panel": "Others",
+        "Pack Size": "25 Tests",
+        "Sample Type": "Whole blood, serum, plasma",
+        "Result Time": "15 minutes",
+        "Clinical Use": "B12 deficiency, neurological symptoms, anemia",
+        "Storage": "2-8°C",
+        "Analyzer Compatibility": "Finecare FIA Meter series"
+      },
+      "certifications": [
+        "CE IVD",
+        "NMPA"
+      ],
+      "compatibleWith": [],
+      "documents": [],
+      "tags": [
+        "Vitamin B12",
+        "cobalamin",
+        "deficiency",
+        "anemia",
+        "finecare"
+      ],
+      "hasAMC": false,
+      "rating": {
+        "average": 0,
+        "count": 0,
+        "distribution": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0
+        }
+      },
+      "reviewsCount": 0,
+      "reviewCount": 0,
+      "isActive": true,
+      "isFeatured": false,
+      "createdAt": "2026-05-02T12:27:27.981Z",
+      "updatedAt": "2026-05-08T12:52:56.156Z",
+      "__v": 0,
+      "expiryDate": null,
+      "hazardClass": "safe",
+      "lotNumber": "LOT-2026-50548",
+      "oldPrice": 0,
+      "storageTemp": "room",
+      "subcategory": ""
+    }
+  ],
+  "exportDate": "2026-05-09T05:23:36.944Z",
+  "totalProducts": 5
+}
