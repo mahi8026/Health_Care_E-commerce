@@ -374,9 +374,6 @@ export default function ProductsManagement({ openCreateRef }) {
     
     // Reagent validation
     const selectedCategory = categories?.find(c => c._id === createForm.category);
-    if (selectedCategory?.name === 'Laboratory Reagents' && !createForm.lotNumber.trim()) {
-      return showMessage('Lot number is required for reagents', 'error');
-    }
 
     setCreating(true);
     try {
@@ -952,7 +949,7 @@ export default function ProductsManagement({ openCreateRef }) {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[11px] text-[#6B7280] mb-1">
-                          Lot Number <span className="text-red-500">*</span>
+                          Lot Number
                         </label>
                         <input
                           value={createForm.lotNumber}
