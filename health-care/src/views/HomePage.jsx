@@ -212,6 +212,7 @@ export default function HomePage() {
   const [isSliderHovered, setIsSliderHovered] = useState(false);
   const [heroSlides, setHeroSlides] = useState([]);
   const [promoBanner, setPromoBanner] = useState(null);
+  const [bannersLoaded, setBannersLoaded] = useState(false);
   const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
   const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
   const [topSellingProducts, setTopSellingProducts] = useState([]);
@@ -291,6 +292,8 @@ export default function HomePage() {
         }
       } catch {
         // silently fall back to default images
+      } finally {
+        setBannersLoaded(true);
       }
     };
     loadBanners();
@@ -593,9 +596,8 @@ export default function HomePage() {
             onMouseLeave={() => setIsSliderHovered(false)}>
             
             {/* Slide counter */}
-            {(() => {
-              const activeSlides = heroSlides.length > 0 ? heroSlides : null;
-              const total = activeSlides ? activeSlides.length : 4;
+            {bannersLoaded && (() => {
+              const total = heroSlides.length > 0 ? heroSlides.length : 4;
               return (
                 <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10,
                   color: '#fff', fontSize: 12, fontWeight: 600,
@@ -606,7 +608,7 @@ export default function HomePage() {
             })()}
 
             {/* Dynamic slides from settings, fallback to defaults */}
-            {heroSlides.length > 0 ? (
+            {!bannersLoaded ? null : heroSlides.length > 0 ? (
               heroSlides.map((slide, i) => (
                 currentSlide === i && (
                   <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6' }}>
@@ -692,13 +694,21 @@ export default function HomePage() {
           </div>
 
           {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
-          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
+          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer', background: '#E5E7EB' }}
             onClick={() => router.push(promoBanner?.linkUrl || '/products')}>
-            <img
-              src={promoBanner?.imageUrl || 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop'}
-              alt={promoBanner?.altText || 'Featured Products'}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+            {bannersLoaded && (promoBanner?.imageUrl ? (
+              <img
+                src={promoBanner.imageUrl}
+                alt={promoBanner.altText || 'Featured Products'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <img
+                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop"
+                alt="Featured Products"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ))}
           </div>
         </div>
       </section>
