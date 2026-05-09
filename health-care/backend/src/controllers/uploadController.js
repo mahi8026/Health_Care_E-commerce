@@ -10,30 +10,55 @@ const { CLOUDINARY_CONFIGURED } = require('../services/uploadService');
 const logger = require('../utils/logger');
 const Product = require('../models/Product');
 
-// Import cloudinary for delete operations
+// Configure Cloudinary once
 let cloudinary;
 if (CLOUDINARY_CONFIGURED) {
   cloudinary = require('cloudinary').v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
+
+// Helper: upload a buffer to Cloudinary and return the secure URL
+function uploadBufferToCloudinary(buffer, originalname) {
+  return new Promise((resolve, reject) => {
+    const publicId = `product-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'medcorebd/products',
+        public_id: publicId,
+        transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
 }
 
 // @desc    Upload a single image
 // @route   POST /api/upload/image
 // @access  Private/Admin
-exports.uploadImage = (req, res) => {
+exports.uploadImage = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
     let url;
+
     if (CLOUDINARY_CONFIGURED) {
-      // Cloudinary: multer-storage-cloudinary puts the URL in req.file.path
-      url = req.file.path;
+      // Memory storage: req.file.buffer contains the image bytes
+      const result = await uploadBufferToCloudinary(req.file.buffer, req.file.originalname);
+      url = result.secure_url;
     } else {
-      // Local fallback: build a URL pointing to the static /uploads route
-      const filename = req.file.filename;
-      const baseUrl = process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 5000}`;
-      url = `${baseUrl}/uploads/${filename}`;
+      // Local fallback
+      const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+      url = `${baseUrl}/uploads/${req.file.filename}`;
     }
 
     logger.info(`[uploadImage] Uploaded: ${url}`);
@@ -47,17 +72,23 @@ exports.uploadImage = (req, res) => {
 // @desc    Upload multiple images (max 5)
 // @route   POST /api/upload/images
 // @access  Private/Admin
-exports.uploadImages = (req, res) => {
+exports.uploadImages = async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ success: false, message: 'No files uploaded' });
     }
 
-    const urls = req.files.map(file => {
-      if (CLOUDINARY_CONFIGURED) return file.path;
-      const baseUrl = process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 5000}`;
-      return `${baseUrl}/uploads/${file.filename}`;
-    });
+    let urls;
+
+    if (CLOUDINARY_CONFIGURED) {
+      const results = await Promise.all(
+        req.files.map(f => uploadBufferToCloudinary(f.buffer, f.originalname))
+      );
+      urls = results.map(r => r.secure_url);
+    } else {
+      const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+      urls = req.files.map(f => `${baseUrl}/uploads/${f.filename}`);
+    }
 
     logger.info(`[uploadImages] Uploaded ${urls.length} images`);
     res.status(200).json({ success: true, urls });
