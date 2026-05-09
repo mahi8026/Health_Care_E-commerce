@@ -116,7 +116,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-6 md:gap-8 md:items-start">
           {/* Link columns - 2x2 grid on mobile */}
           <div className="grid grid-cols-2 gap-6 md:contents">
             {links.map((col) => (
@@ -129,7 +129,7 @@ export default function Footer() {
                     <li key={item.label}>
                       <a
                         href={item.href}
-                        className="text-[12px] text-white/70 hover:text-white transition-colors min-h-[44px] inline-flex items-center"
+                        className="text-[12px] text-white/70 hover:text-white transition-colors"
                       >
                         {item.label}
                       </a>
