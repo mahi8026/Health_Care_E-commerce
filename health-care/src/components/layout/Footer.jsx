@@ -116,20 +116,20 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-6 md:gap-8 md:items-start">
-          {/* Link columns - 2x2 grid on mobile */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_1.6fr] gap-6 md:gap-8 md:items-start">
+          {/* Link columns */}
           <div className="grid grid-cols-2 gap-6 md:contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h4 className="text-[12px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-3 md:mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-4 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h4>
-                <ul className="space-y-2">
+                <ul className="space-y-[10px]">
                   {col.items.map((item) => (
                     <li key={item.label}>
                       <a
                         href={item.href}
-                        className="text-[12px] text-white/70 hover:text-white transition-colors"
+                        className="text-[12px] text-white/70 hover:text-white transition-colors leading-snug"
                       >
                         {item.label}
                       </a>
@@ -140,9 +140,9 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Brand column with Newsletter - Desktop only (mobile shown above) */}
+          {/* Brand column with Newsletter - Desktop only */}
           <div className="hidden md:block">
-            <div className="font-[family-name:var(--font-lora)] text-[24px] font-semibold mb-2">
+            <div className="font-[family-name:var(--font-lora)] text-[22px] font-semibold mb-2">
               MedCore<span className="text-[#0E8A6E]">BD</span>
             </div>
             <p className="text-[12px] text-white/70 mb-4 leading-relaxed">
@@ -172,7 +172,7 @@ export default function Footer() {
                     {loading ? '...' : 'Subscribe'}
                   </button>
                 </div>
-                
+
                 {!showNameInput && !message && (
                   <button
                     type="button"
@@ -196,8 +196,8 @@ export default function Footer() {
 
                 {message && (
                   <div className={`text-[11px] p-2 rounded ${
-                    messageType === 'success' 
-                      ? 'bg-[#0E8A6E]/20 text-[#4DDBB8]' 
+                    messageType === 'success'
+                      ? 'bg-[#0E8A6E]/20 text-[#4DDBB8]'
                       : 'bg-[#E24B4A]/20 text-[#FCA5A5]'
                   }`}>
                     {messageType === 'success' ? '✓' : '✗'} {message}
@@ -207,7 +207,7 @@ export default function Footer() {
             </div>
 
             {/* Badges */}
-            <div className="flex gap-2 flex-wrap mb-4">
+            <div className="flex gap-2 flex-wrap mb-3">
               <span className="text-[10px] px-2 py-1 rounded border border-[#0E8A6E] text-[#4DDBB8] font-medium">
                 DGDA Registered
               </span>
