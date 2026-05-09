@@ -669,7 +669,7 @@ export default function HomePage() {
           </div>
 
           {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
-          <div className="hero-right-image" style={{ position: 'relative', height: '260px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
+          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
             onClick={() => router.push('/products')}>
             <img 
               src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop" 
