@@ -27,7 +27,7 @@ let upload;
 
 if (CLOUDINARY_CONFIGURED) {
   const cloudinary = require('cloudinary').v2;
-  const { CloudinaryStorage } = require('multer-storage-cloudinary');
+  const CloudinaryStorage = require('multer-storage-cloudinary');
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -35,7 +35,8 @@ if (CLOUDINARY_CONFIGURED) {
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
 
-  const storage = new CloudinaryStorage({
+  // multer-storage-cloudinary v2 exports a factory function directly
+  const storage = CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
       folder: 'medcorebd/products',
