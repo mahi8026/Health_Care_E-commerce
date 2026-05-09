@@ -633,13 +633,13 @@ export default function HomePage() {
             )}
 
             {/* Dot indicators */}
-            <div style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', gap: 8, zIndex: 10 }}>
+            <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', gap: 5, zIndex: 10 }}>
               {[0, 1, 2, 3].map(i => (
                 <button key={i} onClick={() => setCurrentSlide(i)}
-                  style={{ width: currentSlide === i ? 32 : 10, height: 10,
+                  style={{ width: currentSlide === i ? 18 : 6, height: 6,
                     borderRadius: 999, border: 'none', cursor: 'pointer',
-                    background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.3)',
+                    background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)',
                     transition: 'all 0.3s' }} />
               ))}
             </div>
@@ -668,7 +668,7 @@ export default function HomePage() {
           </div>
 
           {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
-          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
+          <div className="hero-right-image" style={{ position: 'relative', height: '260px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
             onClick={() => router.push('/products')}>
             <img 
               src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop" 
