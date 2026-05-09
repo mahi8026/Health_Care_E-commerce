@@ -313,10 +313,10 @@ export default function ProductsManagement({ openCreateRef }) {
         const formData = new FormData();
         formData.append('image', file);
         
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/image`, {
+        const response = await fetch(`${API}/upload/image`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('medcore_token')}`,
           },
           body: formData,
         });
