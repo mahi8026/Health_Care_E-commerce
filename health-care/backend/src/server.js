@@ -163,28 +163,10 @@ app.use('/api/cart', dbHealthCheck, require('./routes/cartRoutes'));
 app.use('/api/newsletter', dbHealthCheck, require('./routes/newsletterRoutes'));
 app.use('/api/activity-logs', dbHealthCheck, require('./routes/activityLogRoutes'));
 app.use('/api/sms', dbHealthCheck, require('./routes/smsRoutes'));
-app.use('/api/migration', dbHealthCheck, require('./routes/migrationRoutes')); // Database migration endpoints
 app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site settings
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
-app.use('/api/seed', require('./routes/seed')); // Database seeding (production setup)
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
 app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
-app.use('/api/diagnostic', require('./routes/diagnosticRoutes')); // System diagnostics
-
-// Serve seed production HTML tool
-app.get('/seed-production.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../seed-production.html'));
-});
-
-// Serve product sync HTML tool
-app.get('/product-sync.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../product-sync.html'));
-});
-
-// Serve Cloudinary diagnostic tool
-app.get('/cloudinary-check.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../cloudinary-check.html'));
-});
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
