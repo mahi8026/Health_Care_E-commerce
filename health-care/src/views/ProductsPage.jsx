@@ -42,21 +42,16 @@ export default function ProductsPage({ onProductClick }) {
 
         if (categoriesRes.ok) {
           const categoriesData = await categoriesRes.json();
-          console.log('Categories loaded:', categoriesData);
           setCategories(categoriesData.categories || []);
         } else {
-          console.error('Failed to fetch categories:', categoriesRes.status);
         }
 
         if (brandsRes.ok) {
           const brandsData = await brandsRes.json();
-          console.log('Brands loaded:', brandsData);
           setBrands(brandsData.manufacturers || []);
         } else {
-          console.error('Failed to fetch brands:', brandsRes.status);
         }
       } catch (error) {
-        console.error('Error fetching filter data:', error);
       }
     };
 

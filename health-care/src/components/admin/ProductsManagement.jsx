@@ -89,32 +89,20 @@ export default function ProductsManagement({ openCreateRef }) {
         const token = localStorage.getItem('medcore_token');
         const headers = { Authorization: `Bearer ${token}` };
         
-        console.log('[ProductsManagement] Fetching categories and manufacturers...');
-        
         const [categoriesRes, manufacturersRes] = await Promise.all([
           fetch(`${API}/categories`, { headers }),
           fetch(`${API}/manufacturers`, { headers })
         ]);
         
-        console.log('[ProductsManagement] Categories response status:', categoriesRes.status);
-        console.log('[ProductsManagement] Manufacturers response status:', manufacturersRes.status);
-        
         const categoriesData = await categoriesRes.json();
         const manufacturersData = await manufacturersRes.json();
-        
-        console.log('[ProductsManagement] Categories data:', categoriesData);
-        console.log('[ProductsManagement] Manufacturers data:', manufacturersData);
         
         const cats = categoriesData.categories || categoriesData.data || [];
         const mfrs = manufacturersData.manufacturers || manufacturersData.data || [];
         
-        console.log('[ProductsManagement] Setting categories:', cats.length, 'items');
-        console.log('[ProductsManagement] Setting manufacturers:', mfrs.length, 'items');
-        
         setCategories(cats);
         setManufacturers(mfrs);
       } catch (err) {
-        console.error('[ProductsManagement] Failed to load metadata:', err);
         showMessage('Failed to load categories/manufacturers', 'error');
       } finally {
         setLoadingMeta(false);
@@ -143,14 +131,10 @@ export default function ProductsManagement({ openCreateRef }) {
       // Add cache buster to force fresh data
       filters._t = Date.now().toString();
       
-      console.log('[ProductsManagement] Fetching with filters:', filters);
-      
       // Use the API helper which includes auth headers
       const token = localStorage.getItem('medcore_token');
-      console.log('[ProductsManagement] Token exists:', !!token);
       
       const url = `${API}/products?${new URLSearchParams(filters)}`;
-      console.log('[ProductsManagement] Request URL:', url);
       
       const res = await fetch(url, {
         headers: { 
@@ -161,18 +145,11 @@ export default function ProductsManagement({ openCreateRef }) {
         cache: 'no-store'
       });
       
-      console.log('[ProductsManagement] Response status:', res.status);
-      
       const data = await res.json();
-      console.log('[ProductsManagement] Response data:', { 
-        count: data.products?.length || data.data?.products?.length || 0,
-        total: data.total || data.data?.total || 0
-      });
       
       setProducts(data.products || data.data?.products || []);
       setTotal(data.total || data.data?.total || 0);
     } catch (error) {
-      console.error('[ProductsManagement] Failed to load products:', error);
       showMessage('Failed to load products', 'error');
     } finally {
       setLoading(false);
@@ -274,7 +251,6 @@ export default function ProductsManagement({ openCreateRef }) {
       
       if (!res.ok) {
         const errorData = await res.json();
-        console.error('Update failed:', errorData);
         throw new Error(errorData.message || 'Update failed');
       }
       
@@ -286,7 +262,6 @@ export default function ProductsManagement({ openCreateRef }) {
       // Force refresh the products list
       await fetchProducts();
     } catch (error) {
-      console.error('Failed to update product:', error);
       showMessage(error.message || 'Failed to update product', 'error');
     } finally {
       setCreating(false);
@@ -367,7 +342,6 @@ export default function ProductsManagement({ openCreateRef }) {
       
       showMessage('Images uploaded successfully', 'success');
     } catch (error) {
-      console.error('Upload error:', error);
       showMessage('Upload failed. Please try again.', 'error');
     } finally {
       setUploading(false);

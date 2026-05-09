@@ -259,7 +259,6 @@ async function fixProductBrandReferences() {
  */
 async function syncData() {
   try {
-    console.log('🔄 Starting data synchronization...');
     logger.info('🔄 Starting data synchronization...');
 
     const stats = {
@@ -269,7 +268,6 @@ async function syncData() {
     };
 
     // 1. Ensure all core manufacturers exist
-    console.log('📋 Syncing manufacturers...');
     logger.info('📋 Syncing manufacturers...');
     for (const mfrData of CORE_MANUFACTURERS) {
       const result = await ensureManufacturer(mfrData);
@@ -279,7 +277,6 @@ async function syncData() {
     }
 
     // 2. Ensure all core categories exist
-    console.log('📋 Syncing categories...');
     logger.info('📋 Syncing categories...');
     for (const catData of CORE_CATEGORIES) {
       const result = await ensureCategory(catData);
@@ -289,7 +286,6 @@ async function syncData() {
     }
 
     // 3. Fix products with missing brand/category references
-    console.log('📋 Fixing product references...');
     logger.info('📋 Fixing product references...');
     stats.productsFixed = await fixProductBrandReferences();
 
@@ -302,7 +298,6 @@ async function syncData() {
       stats.productsFixed > 0;
 
     if (hasChanges) {
-      console.log('🗑️  Clearing cache...');
       logger.info('🗑️  Clearing cache...');
       await invalidateCache('manufacturers:*');
       await invalidateCache('categories:*');
@@ -315,14 +310,11 @@ async function syncData() {
    Categories - Created: ${stats.categories.created}, Activated: ${stats.categories.activated}, Exists: ${stats.categories.exists}
    Products Fixed: ${stats.productsFixed}`;
     
-    console.log(summary);
     logger.info(summary);
 
     return stats;
   } catch (error) {
     const errorMsg = `❌ Data synchronization failed: ${error.message}`;
-    console.error(errorMsg);
-    console.error('Stack:', error.stack);
     logger.error(errorMsg, error.stack);
     // Don't throw - allow server to start even if sync fails
     return null;

@@ -2,7 +2,6 @@ const Sentry = require('@sentry/node');
 
 function initSentry(app) {
   if (!process.env.SENTRY_DSN) {
-    console.log('⚠️  Sentry DSN not configured. Error tracking disabled.');
     return;
   }
 
@@ -16,9 +15,7 @@ function initSentry(app) {
   try {
     const { ProfilingIntegration } = require('@sentry/profiling-node');
     integrations.push(new ProfilingIntegration());
-    console.log('✅ Sentry profiling enabled');
   } catch (error) {
-    console.log('⚠️  Sentry profiling not available (optional feature)');
   }
 
   Sentry.init({
@@ -32,8 +29,6 @@ function initSentry(app) {
   // Request handler must be the first middleware
   app.use(Sentry.Handlers.requestHandler());
   app.use(Sentry.Handlers.tracingHandler());
-
-  console.log('✅ Sentry error tracking initialized');
 }
 
 function sentryErrorHandler() {

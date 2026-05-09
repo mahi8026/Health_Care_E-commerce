@@ -22,16 +22,12 @@ try {
   });
 
   redisClient.on('error', (err) => {
-    console.error('Redis Client Error:', err);
   });
 
   redisClient.on('connect', () => {
-    console.log('✅ Redis connected successfully');
   });
 } catch (error) {
-  console.warn('⚠️  Redis not available, caching disabled:', error.message);
 }
-
 /**
  * Creates an Express middleware that sets Cache-Control headers.
  *
@@ -106,7 +102,6 @@ const redisCacheMiddleware = (options = {}) => {
         // Only cache successful responses
         if (res.statusCode === 200) {
           redisClient.setex(cacheKey, ttl, JSON.stringify(data)).catch(err => {
-            console.error('Redis cache set error:', err);
           });
         }
         res.setHeader('X-Cache', 'MISS');
@@ -115,7 +110,6 @@ const redisCacheMiddleware = (options = {}) => {
 
       next();
     } catch (error) {
-      console.error('Redis cache middleware error:', error);
       next();
     }
   };
@@ -132,10 +126,8 @@ const invalidateCache = async (pattern) => {
     const keys = await redisClient.keys(pattern);
     if (keys.length > 0) {
       await redisClient.del(...keys);
-      console.log(`✅ Invalidated ${keys.length} cache keys matching: ${pattern}`);
     }
   } catch (error) {
-    console.error('Cache invalidation error:', error);
   }
 };
 
