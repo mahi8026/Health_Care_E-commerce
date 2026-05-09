@@ -634,13 +634,14 @@ export default function HomePage() {
 
             {/* Dot indicators */}
             <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', gap: 5, zIndex: 10 }}>
+              display: 'flex', gap: 5, zIndex: 10, alignItems: 'center' }}>
               {[0, 1, 2, 3].map(i => (
-                <button key={i} onClick={() => setCurrentSlide(i)}
-                  style={{ width: currentSlide === i ? 18 : 6, height: 6,
-                    borderRadius: 999, border: 'none', cursor: 'pointer',
+                <span key={i} onClick={() => setCurrentSlide(i)}
+                  role="button" aria-label={`Slide ${i + 1}`}
+                  style={{ display: 'block', width: currentSlide === i ? 18 : 6, height: 6,
+                    borderRadius: 999, cursor: 'pointer', padding: 0, margin: 0,
                     background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)',
-                    transition: 'all 0.3s' }} />
+                    transition: 'all 0.3s', flexShrink: 0 }} />
               ))}
             </div>
 
