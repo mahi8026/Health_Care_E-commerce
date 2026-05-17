@@ -370,7 +370,7 @@ export default function HomePage() {
       safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
       safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
       safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)), // Lab equipment products
-      safe(fetch(`${API}/products?isFeatured=true&limit=4`)), // Top selling
+      safe(fetch(`${API}/products?sortBy=popular&limit=4`)), // Top selling
       safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)), // Category: Diagnostic
       safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)), // Category: Reagents
       safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)), // Category: Machines
@@ -870,109 +870,165 @@ export default function HomePage() {
       {/* SECTION 7.5: TOP SELLING PRODUCTS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {topSellingProducts.length > 0 && (
-        <section style={{ background: '#fff', padding: '48px 0', borderBottom: '1px solid #E5E7EB' }}>
+        <section style={{ background: '#F8FAFC', padding: '56px 0', borderBottom: '1px solid #E5E7EB' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32 }}>
               <div>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
-                  Top Selling Products
-                </h2>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#0E8A6E', textTransform: 'uppercase',
+                  letterSpacing: '0.08em', marginBottom: 6 }}>🏆 Most Popular</div>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0,
+                  color: '#0B2545', lineHeight: 1.2 }}>Top Selling Products</h2>
               </div>
               <button onClick={() => router.push('/products?sortBy=popular')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
-                  border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
-                View All <span style={{ fontSize: 16 }}>→</span>
+                  border: '1.5px solid #0E8A6E', borderRadius: 8, cursor: 'pointer',
+                  padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6,
+                  transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#0E8A6E'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#0E8A6E'; }}>
+                View All <span>→</span>
               </button>
             </div>
 
-            {/* 2x2 Grid of horizontal cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}
+            {/* 2×2 Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}
               className="prod-grid-4">
-              {topSellingProducts.slice(0, 4).map(product => {
-                const img = product.images?.[0]?.url || product.images?.[0];
+              {topSellingProducts.slice(0, 4).map((product, idx) => {
+                const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
+                const imgUrl = typeof imageData === 'string' ? imageData : imageData?.url;
                 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+                const catName = typeof product.category === 'object' ? product.category?.name : product.category;
                 const price = product.price || 0;
                 const oldPrice = product.oldPrice || 0;
-                const savings = oldPrice > price ? oldPrice - price : 0;
-                const hasDiscount = savings > 0;
+                const hasDiscount = oldPrice > price && oldPrice > 0;
+                const discountPct = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+                const rank = idx + 1;
 
                 return (
-                  <div key={product._id} className="top-selling-card"
+                  <div key={product._id}
                     onClick={() => router.push(`/products/${product._id}`)}
-                    style={{ display: 'flex', gap: 16, padding: 16, background: '#fff',
-                      border: '1px solid #E5E7EB', borderRadius: 12, position: 'relative',
-                      cursor: 'pointer', transition: 'box-shadow 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
-                    onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
-                    
-                    {/* Best Selling Badge */}
-                    <div className="best-selling-badge" style={{ position: 'absolute', top: -1, right: -1,
-                      background: '#F97316', color: '#fff', fontSize: 10, fontWeight: 600,
-                      padding: '3px 8px', borderRadius: '0 12px 0 8px' }}>
-                      BEST SELLING
-                    </div>
+                    style={{
+                      display: 'flex', gap: 0, background: '#fff',
+                      border: '1px solid #E5E7EB', borderRadius: 16,
+                      overflow: 'hidden', cursor: 'pointer',
+                      transition: 'box-shadow 0.25s, transform 0.25s',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.boxShadow = '0 8px 32px rgba(11,37,69,0.12)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}>
 
-                    {/* Left: Image */}
-                    <div style={{ width: 100, height: 100, flexShrink: 0, borderRadius: 8,
-                      overflow: 'hidden', background: '#F9FAFB' }}>
-                      {img ? (
-                        <img src={img} alt={product.name} loading="lazy"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          height: '100%', fontSize: 32 }}>🏥</div>
+                    {/* Left: Image with rank badge */}
+                    <div style={{ width: 140, minHeight: 160, flexShrink: 0, position: 'relative',
+                      background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {imgUrl ? (
+                        <img src={imgUrl} alt={product.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover',
+                            position: 'absolute', inset: 0 }}
+                          onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                      ) : null}
+                      {/* Fallback icon */}
+                      <div style={{ fontSize: 40, display: imgUrl ? 'none' : 'flex',
+                        alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>🏥</div>
+
+                      {/* Rank badge */}
+                      <div style={{
+                        position: 'absolute', top: 10, left: 10,
+                        width: 28, height: 28, borderRadius: '50%',
+                        background: rank === 1 ? '#F59E0B' : rank === 2 ? '#94A3B8' : rank === 3 ? '#CD7C2F' : '#0E8A6E',
+                        color: '#fff', fontSize: 12, fontWeight: 800,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                      }}>#{rank}</div>
+
+                      {/* Discount badge */}
+                      {hasDiscount && (
+                        <div style={{
+                          position: 'absolute', top: 10, right: 10,
+                          background: '#EF4444', color: '#fff', fontSize: 10,
+                          fontWeight: 700, padding: '3px 7px', borderRadius: 6
+                        }}>-{discountPct}%</div>
                       )}
                     </div>
 
-                    {/* Right: Details */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    {/* Right: Content */}
+                    <div style={{ flex: 1, padding: '16px 18px', display: 'flex',
+                      flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
                       <div>
-                        {brandName && (
-                          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 600,
-                            textTransform: 'uppercase', marginBottom: 4 }}>
-                            {brandName}
-                          </div>
-                        )}
-                        <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
-                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden' }}>
+                        {/* Category + Brand */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
+                          {catName && (
+                            <span style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 700,
+                              textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                              {catName}
+                            </span>
+                          )}
+                          {catName && brandName && <span style={{ color: '#D1D5DB', fontSize: 10 }}>•</span>}
+                          {brandName && (
+                            <span style={{ fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{brandName}</span>
+                          )}
+                        </div>
+
+                        {/* Product name */}
+                        <div style={{
+                          fontSize: 14, fontWeight: 700, color: '#0B2545', lineHeight: 1.45,
+                          marginBottom: 10, display: '-webkit-box',
+                          WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                        }}>
                           {product.name}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-                          <span style={{ fontSize: 18, fontWeight: 800, color: '#0B2545' }}>
-                            ৳{price.toLocaleString()}
+
+                        {/* Price row */}
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+                          <span style={{ fontSize: 20, fontWeight: 800, color: '#0B2545', letterSpacing: '-0.02em' }}>
+                            {price > 0 ? `৳${price.toLocaleString()}` : 'Contact for Price'}
                           </span>
-                          {oldPrice > price && (
+                          {hasDiscount && (
                             <span style={{ fontSize: 12, color: '#9CA3AF', textDecoration: 'line-through' }}>
                               ৳{oldPrice.toLocaleString()}
                             </span>
                           )}
                         </div>
-                        {hasDiscount && (
-                          <div style={{ display: 'inline-block', background: '#10B981', color: '#fff',
-                            fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 4 }}>
-                            Save ৳{savings.toLocaleString()}
-                          </div>
-                        )}
+
+                        {/* Stock indicator */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>
+                          <div style={{
+                            width: 6, height: 6, borderRadius: '50%',
+                            background: product.stock > 0 ? '#10B981' : '#EF4444'
+                          }} />
+                          <span style={{ fontSize: 11, color: product.stock > 0 ? '#059669' : '#DC2626', fontWeight: 500 }}>
+                            {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                          </span>
+                        </div>
                       </div>
-                      
+
                       {/* Buttons */}
-                      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                        <button onClick={(e) => { 
-                          e.stopPropagation(); 
-                          addToCart(product, 1);
-                        }}
-                          style={{ flex: 1, padding: '8px 12px', background: '#fff', color: '#0E8A6E',
-                            border: '1.5px solid #0E8A6E', borderRadius: 6, fontSize: 12,
-                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
+                          style={{
+                            flex: 1, padding: '9px 10px', background: '#fff', color: '#0E8A6E',
+                            border: '1.5px solid #0E8A6E', borderRadius: 8, fontSize: 12,
+                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
+                          }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#F0FDF4'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}>
                           Add to Cart
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); router.push(`/products/${product._id}`); }}
-                          style={{ flex: 1, padding: '8px 12px', background: '#0E8A6E', color: '#fff',
-                            border: 'none', borderRadius: 6, fontSize: 12, fontWeight: 600,
-                            cursor: 'pointer', transition: 'all 0.2s' }}
+                        <button
+                          onClick={e => { e.stopPropagation(); router.push(`/products/${product._id}`); }}
+                          style={{
+                            flex: 1, padding: '9px 10px', background: '#0E8A6E', color: '#fff',
+                            border: 'none', borderRadius: 8, fontSize: 12,
+                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
+                          }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#0c7a61'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#0E8A6E'; }}>
                           Buy Now
