@@ -37,7 +37,7 @@ export default function NewsletterManagement() {
         setStats(data.data);
       }
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to fetch stats:', error);
     }
   };
 
@@ -68,7 +68,7 @@ export default function NewsletterManagement() {
         setTotalPages(data.data.pagination.pages);
       }
     } catch (error) {
-      console.error('Failed to fetch subscribers:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to fetch subscribers:', error);
     } finally {
       setLoading(false);
     }

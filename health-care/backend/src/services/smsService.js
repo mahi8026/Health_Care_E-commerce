@@ -68,15 +68,26 @@ async function sendTwilioSMS(phone, message) {
   try {
     const formattedPhone = formatPhoneNumber(phone);
     
-    // Twilio API endpoint
+    // Twilio API endpoint — always uses the main Account SID in the URL
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
     const fromNumber = process.env.TWILIO_PHONE_NUMBER;
     
+    // Support both auth methods:
+    // 1. API Key (preferred, more secure): TWILIO_API_KEY_SID + TWILIO_API_KEY_SECRET
+    // 2. Auth Token (legacy): TWILIO_AUTH_TOKEN
+    let authUser, authPass;
+    if (process.env.TWILIO_API_KEY_SID && process.env.TWILIO_API_KEY_SECRET) {
+      authUser = process.env.TWILIO_API_KEY_SID;
+      authPass = process.env.TWILIO_API_KEY_SECRET;
+    } else {
+      authUser = accountSid;
+      authPass = process.env.TWILIO_AUTH_TOKEN;
+    }
+
     const apiUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
     
     // Create Basic Auth header
-    const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+    const auth = Buffer.from(`${authUser}:${authPass}`).toString('base64');
     
     // Send SMS
     const response = await axios.post(
@@ -219,7 +230,8 @@ async function sendSMS(phone, message) {
     // Route to appropriate provider
     switch (provider.toLowerCase()) {
       case 'twilio':
-        if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+        if (!process.env.TWILIO_ACCOUNT_SID || 
+            (!process.env.TWILIO_AUTH_TOKEN && !process.env.TWILIO_API_KEY_SID)) {
           logger.warn('[SMS] Twilio credentials not configured, using mock mode');
           return sendMockSMS(phone, message);
         }

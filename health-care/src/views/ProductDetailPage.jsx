@@ -175,6 +175,38 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         <ProductReviews productId={product._id || product.id} />
       </div>
 
+      {/* SEO Content Section — price transparency + where to buy (helps rank for long-tail searches) */}
+      <div className="border-t border-[#E5E7EB] px-4 md:px-7 py-8 bg-[#F9FAFB]">
+        <div className="max-w-3xl">
+          <h2 className="text-[15px] font-semibold text-[#0B2545] mb-3">
+            About {product.name}
+          </h2>
+          {product.description && (
+            <p className="text-[13px] text-[#6B7280] leading-relaxed mb-5">
+              {product.description}
+            </p>
+          )}
+
+          <h3 className="text-[14px] font-semibold text-[#0B2545] mb-2">
+            {product.name} Price in Bangladesh
+          </h3>
+          <p className="text-[13px] text-[#6B7280] leading-relaxed mb-5">
+            The retail price of {product.name} in Bangladesh is ৳{product.price?.toLocaleString()}.
+            B2B institutions (hospitals, clinics, diagnostic centres) receive up to 22% bulk discount.
+            Contact MedCore BD for institutional pricing and credit terms.
+          </p>
+
+          <h3 className="text-[14px] font-semibold text-[#0B2545] mb-2">
+            Buy {product.name} in Bangladesh
+          </h3>
+          <p className="text-[13px] text-[#6B7280] leading-relaxed">
+            MedCore BD is an authorised distributor of{product.brand ? ` ${typeof product.brand === 'object' ? product.brand.name : product.brand}` : ''} products in Bangladesh.
+            Order online with free delivery to Dhaka, Chittagong and Sylhet.
+            All products are DGDA registered and come with full manufacturer warranty.
+          </p>
+        </div>
+      </div>
+
       {/* Mobile Sticky Bottom Bar */}
       <div 
         className="lg:hidden fixed bottom-[60px] left-0 right-0 h-16 bg-white border-t border-[#E5E7EB] px-4 flex items-center justify-between z-[500] shadow-lg"

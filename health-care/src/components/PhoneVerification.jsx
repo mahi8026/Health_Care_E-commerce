@@ -52,7 +52,7 @@ export default function PhoneVerification({ onVerified }) {
         setError(data.message || 'Failed to send OTP');
       }
     } catch (error) {
-      console.error('Send OTP error:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Send OTP error:', error);
       setError('Failed to send OTP. Please try again.');
     } finally {
       setSending(false);
@@ -135,7 +135,7 @@ export default function PhoneVerification({ onVerified }) {
         inputRefs.current[0]?.focus();
       }
     } catch (error) {
-      console.error('Verify OTP error:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Verify OTP error:', error);
       setError('Failed to verify OTP. Please try again.');
     } finally {
       setLoading(false);

@@ -23,7 +23,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Failed to download invoice:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Failed to download invoice:', error);
       alert('Failed to download invoice. Please try again.');
     } finally {
       setDownloading(false);

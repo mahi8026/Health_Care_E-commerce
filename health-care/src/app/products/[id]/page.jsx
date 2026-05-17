@@ -3,7 +3,8 @@ import StructuredData, {
   generateProductSchema,
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
-import { siteConfig } from '@/config/seo';
+import FAQSchema from '@/components/seo/FAQSchema';
+import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 import { API as API_BASE } from '@/constants/api';
 
@@ -13,7 +14,7 @@ import { API as API_BASE } from '@/constants/api';
 async function fetchProduct(id) {
   try {
     const res = await fetch(`${API_BASE}/products/${id}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: [`product-${id}`] },
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -24,12 +25,47 @@ async function fetchProduct(id) {
 }
 
 // ---------------------------------------------------------------------------
-// Dynamic metadata
+// Dynamic metadata — rich title/description/keywords for Google rankings
 // ---------------------------------------------------------------------------
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const product = await fetchProduct(id);
-  return generateProductMetadata(product);
+
+  if (!product) return { title: 'Product Not Found | MedCore BD', robots: { index: false } };
+
+  const name      = product.name || 'Product';
+  const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+  const catName   = typeof product.category === 'object' ? product.category?.name : product.category;
+  const slug      = product.slug || id;
+
+  const title = `${name} — Price in Bangladesh | MedCore BD`;
+  const descChunk = product.description?.replace(/\s+/g, ' ').trim().slice(0, 110) || '';
+  const description = `Buy ${name} in Bangladesh. ${descChunk}${descChunk ? ' ' : ''}Brand: ${brandName || 'N/A'}. Price: ৳${product.price?.toLocaleString()}. DGDA certified. Free delivery Dhaka.`;
+
+  const primaryImg = product.images?.find(i => i?.isPrimary) || product.images?.[0];
+  const imageUrl   = (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) || '/images/og-default.jpg';
+
+  const canonicalUrl = `${SITE_CONFIG.url}/products/${slug}`;
+
+  return {
+    title,
+    description,
+    keywords: `${name}, ${brandName || ''}, ${catName || ''} Bangladesh, buy ${name} online BD, ${product.sku || ''}`.replace(/,\s*,/g, ','),
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      url:    canonicalUrl,
+      type:   'website',
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: name }],
+    },
+    twitter: {
+      card:        'summary_large_image',
+      title,
+      description,
+      images:      [imageUrl],
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -39,29 +75,25 @@ export default async function ProductPage({ params }) {
   const { id } = await params;
   const product = await fetchProduct(id);
 
+  const catName = typeof product?.category === 'object'
+    ? product.category?.name
+    : product?.category || 'Products';
+
   const breadcrumbs = [
-    { name: 'Home', url: siteConfig.url },
-    {
-      name: typeof product?.category === 'object'
-        ? product.category?.name
-        : product?.category || 'Products',
-      url: `${siteConfig.url}/products`,
-    },
-    {
-      name: product?.name ?? 'Product',
-      url: `${siteConfig.url}/products/${id}`,
-    },
+    { name: 'Home',    url: SITE_CONFIG.url },
+    { name: catName,   url: `${SITE_CONFIG.url}/products` },
+    { name: product?.name ?? 'Product', url: `${SITE_CONFIG.url}/products/${id}` },
   ];
 
-  const productSchema = product ? generateProductSchema(product) : null;
+  const productSchema   = product ? generateProductSchema(product) : null;
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs);
 
   return (
     <>
-      {productSchema && <StructuredData schema={productSchema} />}
+      {productSchema    && <StructuredData schema={productSchema} />}
       {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
+      {product          && <FAQSchema product={product} />}
 
-      {/* Pass the id so ProductDetailPage fetches the correct product */}
       <ProductDetailPage productId={id} heroPriority={true} />
     </>
   );

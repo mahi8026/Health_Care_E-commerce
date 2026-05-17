@@ -46,10 +46,10 @@ export default function MyReturnsPage() {
       if (data.success) {
         setReturns(data.data);
       } else {
-        console.error(data.message);
+        process.env.NODE_ENV !== "production" && console.error(data.message);
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
     } finally {
       setLoading(false);
     }

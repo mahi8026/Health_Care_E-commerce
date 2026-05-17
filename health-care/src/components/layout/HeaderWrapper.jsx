@@ -31,7 +31,7 @@ export default function HeaderWrapper() {
         window.location.href = '/';
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Logout error:', error);
       // Still redirect even if logout API fails
       if (typeof window !== 'undefined') {
         window.location.href = '/';

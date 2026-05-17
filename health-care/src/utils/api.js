@@ -3,7 +3,7 @@ import { TIMEOUTS } from '@/constants/config';
 
 // Dev-only logger — silent in production
 const devLog = {
-  error: (...args) => { if (process.env.NODE_ENV === 'development') console.error('[API Error]', ...args); }, // eslint-disable-line no-console
+  error: (...args) => { if (process.env.NODE_ENV === 'development') process.env.NODE_ENV !== "production" && console.error('[API Error]', ...args); }, // eslint-disable-line no-console
 };
 
 // Get token from localStorage
@@ -730,23 +730,6 @@ export const api = {
   },
 
   // Payments
-  async createPaymentIntent(amount, orderId) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
-    try {
-      const result = await this.post('/payments/stripe/create-intent', { amount, orderId });
-      clearTimeout(timeoutId);
-      return result;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
-    }
-  },
-
-  async confirmPayment(paymentIntentId, orderId) {
-    return this.post('/payments/stripe/confirm', { paymentIntentId, orderId });
-  },
-
   async initiateBkashPayment(amount, orderId) {
     return this.post('/payments/bkash/initiate', { amount, orderId });
   },

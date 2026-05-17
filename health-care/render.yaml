@@ -57,7 +57,5 @@ services:
         value: MedCore BD
       - key: NEXT_PUBLIC_ENABLE_ANALYTICS
         value: true
-      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-        sync: false
       - key: NODE_ENV
         value: production

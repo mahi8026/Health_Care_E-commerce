@@ -23,8 +23,11 @@ export function CartProvider({ children }) {
   }, []);
 
   // Sync cart to backend when user logs in
-  const syncCartToBackend = useCallback(async () => {
+  const syncCartToBackend = useCallback(async (retryCount = 0) => {
     if (!isLoggedIn || syncPending || cart.length === 0) return;
+
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // Start with 1 second
 
     setSyncPending(true);
     try {
@@ -56,7 +59,18 @@ export function CartProvider({ children }) {
         setCart(mergedCart);
       }
     } catch (error) {
-      console.error('Cart sync error:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Cart sync error:', error);
+      
+      // Retry with exponential backoff for network errors
+      if (retryCount < MAX_RETRIES && error.message?.includes('network')) {
+        const delay = RETRY_DELAY * Math.pow(2, retryCount);
+        // Retry cart sync after delay
+        setTimeout(() => {
+          setSyncPending(false);
+          syncCartToBackend(retryCount + 1);
+        }, delay);
+        return; // Don't set syncPending to false yet
+      }
     } finally {
       setSyncPending(false);
     }
@@ -142,7 +156,7 @@ export function CartProvider({ children }) {
         body: method !== 'DELETE' ? JSON.stringify(body) : undefined
       });
     } catch (error) {
-      console.error('Backend cart update error:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Backend cart update error:', error);
     }
   }, [isLoggedIn]);
 
@@ -151,7 +165,7 @@ export function CartProvider({ children }) {
     const productId = product.id || product._id;
     
     if (!productId) {
-      console.error('Product missing ID:', product);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Product missing ID:', product);
       return;
     }
 

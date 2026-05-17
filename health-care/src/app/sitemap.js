@@ -1,90 +1,74 @@
 /**
  * Sitemap Generator for MedCore BD
  *
- * Next.js App Router convention: this file is automatically picked up
- * and served at /sitemap.xml by the framework.
- *
- * Requirements: 7.1, 7.2, 7.3, 7.6
+ * Served at /sitemap.xml by the Next.js App Router convention.
+ * Includes static pages, category landing pages, and all product detail pages.
  */
 
-import { siteConfig } from '@/config/seo'
+import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
 
-// Inline fetch helper — replaces the deleted serverFetch utility
-async function fetchProducts() {
-  const res = await fetch(`${API}/products?limit=200&page=1`, {
-    next: { revalidate: 3600 }, // revalidate every hour
-  });
-  if (!res.ok) throw new Error(`Products fetch failed: ${res.status}`);
-  const data = await res.json();
-  return data.products || data.data?.products || [];
-}
+const SITE_URL = SITE_CONFIG.url;
 
-/**
- * Generate sitemap entries for all public pages.
- *
- * Includes:
- *  - Static pages with fixed priority and changeFrequency values
- *  - Dynamic product detail pages fetched from the database
- *
- * If the product fetch fails, only static pages are returned so the
- * sitemap is always available (Requirement 7.1, error-handling per design).
- *
- * @returns {Promise<Array<{url: string, lastModified?: Date, changeFrequency: string, priority: number}>>}
- */
+// Product categories to include as crawlable category pages
+const CATEGORIES = [
+  'Diagnostic Equipment',
+  'Surgical Instruments',
+  'Laboratory Reagents',
+  'Hospital Machines',
+  'Lab Equipment',
+  'PPE & Safety',
+  'Dental Equipment',
+  'Implants & Ortho',
+];
+
 export default async function sitemap() {
-  const baseUrl = siteConfig.url
+  const now = new Date().toISOString();
 
-  // Static pages — always included regardless of database availability
+  // ── Static pages ──────────────────────────────────────────────────────────
   const staticPages = [
-    {
-      url: baseUrl,
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/search`,
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/reagent-store`,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/mobile-app`,
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/login`,
-      changeFrequency: 'monthly',
-      priority: 0.4,
-    },
-    {
-      url: `${baseUrl}/register`,
-      changeFrequency: 'monthly',
-      priority: 0.4,
-    },
-  ]
+    { url: SITE_URL,                    lastModified: now, changeFrequency: 'daily',   priority: 1.0 },
+    { url: `${SITE_URL}/products`,      lastModified: now, changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${SITE_URL}/reagent-store`, lastModified: now, changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${SITE_URL}/b2b`,           lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${SITE_URL}/search`,        lastModified: now, changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${SITE_URL}/register`,      lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${SITE_URL}/login`,         lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+  ];
 
-  // Dynamic product pages — fetched from the database
+  // ── Category landing pages ────────────────────────────────────────────────
+  const categoryPages = CATEGORIES.map(cat => ({
+    url:             `${SITE_URL}/products?category=${encodeURIComponent(cat)}`,
+    lastModified:    now,
+    changeFrequency: 'daily',
+    priority:        0.85,
+  }));
+
+  // ── Dynamic product pages ─────────────────────────────────────────────────
+  let productPages = [];
   try {
-    const products = await fetchProducts()
+    // Build absolute URL for API call
+    // In dev: API is '/api', need to prepend SITE_URL
+    // In prod: API is already absolute 'https://...'
+    const apiUrl = API.startsWith('http') ? API : `${SITE_URL}${API}`;
+    const productsUrl = `${apiUrl}/products?limit=5000&fields=slug,_id,updatedAt`;
+    
+    const res = await fetch(productsUrl, { next: { revalidate: 3600 } });
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const data = await res.json();
+    const products = data.data?.products || data.products || [];
 
-    const productPages = products.map((product) => ({
-      url: `${baseUrl}/products/${product._id}`,
-      lastModified: product.updatedAt ? new Date(product.updatedAt) : new Date(),
+    productPages = products.map(product => ({
+      url:             `${SITE_URL}/products/${product.slug || product._id}`,
+      lastModified:    product.updatedAt ? new Date(product.updatedAt).toISOString() : now,
       changeFrequency: 'weekly',
-      priority: 0.7,
-    }))
-
-    return [...staticPages, ...productPages]
-  } catch (error) {
-    // Gracefully degrade — return static pages only so the sitemap is
-    // always accessible even when the database is unavailable.
-    console.error('[sitemap] Failed to fetch products for sitemap:', error.message)
-    return staticPages
+      priority:        0.7,
+    }));
+  } catch (err) {
+    // Graceful degrade — static + category pages always returned
+    // Note: During build time, backend may not be running, so this is expected
+    process.env.NODE_ENV !== "production" && console.error('[sitemap] Failed to fetch products:', err.message);
   }
+
+  return [...staticPages, ...categoryPages, ...productPages];
 }

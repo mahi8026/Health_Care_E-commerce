@@ -1,30 +1,39 @@
 import HomeClient from './HomeClient';
-import { generatePageMetadata } from '@/utils/metadata';
-import { pageMetadata } from '@/config/seo';
+import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import StructuredData, {
   generateOrganizationSchema,
   generateWebSiteSchema,
 } from '@/utils/structuredData';
 
-export const metadata = generatePageMetadata(pageMetadata.home);
+export const metadata = {
+  title:       PAGE_SEO.home.title,
+  description: PAGE_SEO.home.description,
+  keywords:    PAGE_SEO.home.keywords,
+  alternates:  { canonical: SITE_CONFIG.url },
+  openGraph: {
+    title:       PAGE_SEO.home.title,
+    description: PAGE_SEO.home.description,
+    url:         SITE_CONFIG.url,
+    images: [{ url: '/images/og-home.jpg', width: 1200, height: 630, alt: 'MedCore BD — Bangladesh Medical Equipment Supplier' }],
+  },
+  twitter: {
+    card:        'summary_large_image',
+    title:       PAGE_SEO.home.title,
+    description: PAGE_SEO.home.description,
+    images:      ['/images/og-home.jpg'],
+  },
+};
 
 /**
  * Homepage — Server Component.
- *
- * Temporarily disabled server-side fetch to improve initial load performance.
- * All data will be fetched client-side instead.
- *
- * Requirements: 8.6, 8.7
+ * Schema injected server-side; data fetched client-side via HomeClient.
  */
 export default function Home() {
-  // Disabled server-side fetch - let client handle all data fetching
-  const initialFeaturedProducts = [];
-
   return (
     <>
       <StructuredData schema={generateOrganizationSchema()} />
       <StructuredData schema={generateWebSiteSchema()} />
-      <HomeClient initialFeaturedProducts={initialFeaturedProducts} />
+      <HomeClient initialFeaturedProducts={[]} />
     </>
   );
 }

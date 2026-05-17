@@ -52,9 +52,9 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com", "https://www.google.com", "https://www.gstatic.com"],
-      frameSrc: ["'self'", "https://js.stripe.com", "https://www.google.com"],
-      connectSrc: ["'self'", "https://api.stripe.com", "https://*.cloudinary.com"]
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com"],
+      frameSrc: ["'self'", "https://www.google.com"],
+      connectSrc: ["'self'", "https://*.cloudinary.com"]
     }
   },
   hsts: {
@@ -68,26 +68,30 @@ app.use(helmet({
 }));
 
 // Enhanced CORS configuration
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
+    // In development, allow all localhost origins
+    if (process.env.NODE_ENV !== 'production') {
+      if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+        return callback(null, true);
+      }
+    }
+
     const allowedOrigins = [
-      process.env.FRONTEND_URL || 'http://localhost:3000',
-      process.env.ADMIN_URL || 'http://localhost:3000',
-      'http://localhost:3002',
+      process.env.FRONTEND_URL,
+      process.env.ADMIN_URL,
       'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
       'http://127.0.0.1:3000',
-      'http://localhost:3001'
-    ];
-    
+    ].filter(Boolean);
+
     // Allow all Vercel preview URLs
     const isVercelPreview = origin && origin.includes('.vercel.app');
-    
+
     // Allow requests with no origin (mobile apps, Postman, server-side, etc.)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // Check if origin is allowed
+    if (!origin) return callback(null, true);
+
     if (allowedOrigins.includes(origin) || isVercelPreview) {
       callback(null, true);
     } else {
@@ -99,14 +103,16 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma'],
   exposedHeaders: ['X-Total-Count', 'X-Page', 'X-Per-Page'],
-  maxAge: 86400, // 24 hours
+  maxAge: 86400,
   preflightContinue: false,
   optionsSuccessStatus: 204
-}));
+};
+
+app.use(cors(corsOptions));
+// Explicitly handle preflight for all routes
+app.options('*', cors(corsOptions));
 
 // ── Body Parsers ─────────────────────────────────────────────────────────────
-// Raw body for Stripe webhooks (must come before express.json())
-app.use('/api/payments/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 

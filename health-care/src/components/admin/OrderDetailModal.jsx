@@ -21,7 +21,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
         const data = await res.json();
         setOrder(data.data || data.order || data);
       } catch (err) {
-        console.error('Failed to load order:', err);
+        process.env.NODE_ENV !== "production" && console.error('Failed to load order:', err);
       } finally {
         setLoading(false);
       }

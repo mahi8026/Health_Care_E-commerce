@@ -6,6 +6,7 @@ import { useProducts } from '@/hooks/useProducts';
 import SearchBar from '@/components/search/SearchBar';
 import SearchResults from '@/components/search/SearchResults';
 import { FaTimes } from 'react-icons/fa';
+import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
 
 export default function ProductsPage({ onProductClick }) {
   const router = useRouter();
@@ -296,10 +297,20 @@ export default function ProductsPage({ onProductClick }) {
 
           {/* Right Content - Products */}
           <main className="flex-1 min-w-0">
+            {/* SEO H1 — dynamic based on selected category */}
+            <h1 className="sr-only">
+              {searchCategory
+                ? CATEGORY_SEO[searchCategory]?.h1 || `${searchCategory} in Bangladesh`
+                : 'Medical Equipment in Bangladesh'}
+            </h1>
+
             {/* Top Bar - Sort */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 px-4 py-2.5 mb-4 flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Showing {allProducts.length} of {pagination.total || 0} products
+                {searchCategory
+                  ? <span className="font-medium text-[#0B2545]">{searchCategory}</span>
+                  : 'All Products'}
+                {' '}— Showing {allProducts.length} of {pagination.total || 0}
               </div>
               <div className="flex items-center gap-2">
                 <label className="text-sm text-gray-600 font-medium">Sort by:</label>
@@ -326,6 +337,21 @@ export default function ProductsPage({ onProductClick }) {
               hasMore={hasMore}
               loadingMore={loadingMore}
             />
+
+            {/* SEO Content Block — keyword-rich text for Google, hidden-ish below the fold */}
+            {CATEGORY_CONTENT[searchCategory] && (
+              <section
+                className="mt-10 bg-white border border-gray-100 rounded-xl p-6 shadow-sm"
+                aria-label={`About ${searchCategory} in Bangladesh`}
+              >
+                <h2 className="text-base font-semibold text-[#0B2545] mb-3">
+                  About {searchCategory} in Bangladesh
+                </h2>
+                <div className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">
+                  {CATEGORY_CONTENT[searchCategory]}
+                </div>
+              </section>
+            )}
           </main>
         </div>
       </div>

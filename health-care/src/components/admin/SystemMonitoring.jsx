@@ -42,7 +42,7 @@ export default function SystemMonitoring() {
         setHealth(data.data);
       }
     } catch (err) {
-      console.error('Health fetch error:', err);
+      process.env.NODE_ENV !== "production" && console.error('Health fetch error:', err);
     }
   };
 
@@ -57,7 +57,7 @@ export default function SystemMonitoring() {
         setMetrics(data.data);
       }
     } catch (err) {
-      console.error('Metrics fetch error:', err);
+      process.env.NODE_ENV !== "production" && console.error('Metrics fetch error:', err);
     }
   };
 
@@ -72,7 +72,7 @@ export default function SystemMonitoring() {
         setSystemInfo(data.data);
       }
     } catch (err) {
-      console.error('System info fetch error:', err);
+      process.env.NODE_ENV !== "production" && console.error('System info fetch error:', err);
     }
   };
 
@@ -91,7 +91,7 @@ export default function SystemMonitoring() {
         fetchAllData();
       }
     } catch (err) {
-      console.error('Reset error:', err);
+      process.env.NODE_ENV !== "production" && console.error('Reset error:', err);
       alert('Failed to reset metrics');
     }
   };

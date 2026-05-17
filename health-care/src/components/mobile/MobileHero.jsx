@@ -1,4 +1,32 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { API } from '@/constants/api';
+
 export default function MobileHero() {
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    totalBrands: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`${API}/stats`);
+        const data = await response.json();
+        if (data.success) {
+          setStats({
+            totalProducts: data.data.totalProducts || 0,
+            totalBrands: data.data.totalBrands || 0,
+          });
+        }
+      } catch (error) {
+        // Use fallback values on error
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
     <div className="px-4 py-4 bg-gradient-to-br from-[#0B2545] to-[#0d2d52] text-white">
       <div className="mb-3">
@@ -14,13 +42,13 @@ export default function MobileHero() {
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
           <div className="text-[14px] font-bold font-[family-name:var(--font-plus-jakarta)]">
-            5,200+
+            {stats.totalProducts > 0 ? `${stats.totalProducts.toLocaleString()}+` : '5,200+'}
           </div>
           <div className="text-[9px] opacity-80">Products</div>
         </div>
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
           <div className="text-[14px] font-bold font-[family-name:var(--font-plus-jakarta)]">
-            50+
+            {stats.totalBrands > 0 ? `${stats.totalBrands}+` : '50+'}
           </div>
           <div className="text-[9px] opacity-80">Brands</div>
         </div>

@@ -55,7 +55,6 @@ export const ENDPOINTS = {
   
   // Payments
   payments: `${API_BASE}/payments`,
-  stripeIntent: `${API_BASE}/payments/stripe/intent`,
   
   // Stats
   stats: `${API_BASE}/stats`,

@@ -306,7 +306,7 @@ const seedDatabase = async () => {
     // 20 Orders with various statuses
     const orders = [];
     const orderStatuses = ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
-    const paymentMethods = ['bkash', 'nagad', 'beftn', 'b2b_credit', 'stripe', 'bank_transfer'];
+    const paymentMethods = ['bkash', 'nagad', 'beftn', 'b2b_credit', 'bank_transfer'];
     
     // B2B orders
     for (let i = 0; i < 10; i++) {

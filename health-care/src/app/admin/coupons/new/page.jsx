@@ -52,7 +52,7 @@ export default function NewCouponPage() {
       setCategories(categoriesData.success ? (categoriesData.data || categoriesData.categories) : []);
       setProducts(productsData.success ? (productsData.products || productsData.data?.products || []) : []);
     } catch (error) {
-      console.error('Failed to load metadata:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to load metadata:', error);
     }
   };
 

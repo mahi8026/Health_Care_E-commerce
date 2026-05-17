@@ -20,9 +20,13 @@ function initRedis() {
   try {
     const redisConfig = {
       host: process.env.REDIS_HOST || 'localhost',
-      port: process.env.REDIS_PORT || 6379,
+      port: parseInt(process.env.REDIS_PORT) || 6379,
       password: process.env.REDIS_PASSWORD || undefined,
-      db: process.env.REDIS_DB || 0,
+      db: parseInt(process.env.REDIS_DB) || 0,
+      // Redis Cloud requires TLS on non-local connections
+      tls: process.env.REDIS_TLS === 'true'
+        ? { rejectUnauthorized: false }
+        : undefined,
       retryStrategy: (times) => {
         // Stop retrying after 3 attempts
         if (times > 3) {
@@ -34,7 +38,8 @@ function initRedis() {
       },
       maxRetriesPerRequest: 3,
       enableReadyCheck: true,
-      lazyConnect: false
+      lazyConnect: false,
+      connectTimeout: 10000
     };
 
     redisClient = new Redis(redisConfig);

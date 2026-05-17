@@ -2,18 +2,10 @@
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
-// â”€â”€ Stripe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-let _stripe = null;
-function getStripe() {
-  if (!_stripe) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) throw new Error('STRIPE_SECRET_KEY environment variable is not set');
-    _stripe = require('stripe')(key);
-  }
-  return _stripe;
-}
+// Stripe has been removed as it doesn't work in Bangladesh
+// Available payment methods: bKash, Nagad, Bank Transfer, B2B Credit, Cheque
 
-// â”€â”€ bKash Tokenized Checkout helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── bKash Tokenized Checkout helpers ──────────────────────────────────────────
 let _bkashToken = null;
 let _bkashTokenExpiry = 0;
 
@@ -76,108 +68,7 @@ async function bkashRequest(endpoint, body) {
   return data;
 }
 
-// â”€â”€ Stripe: Create Payment Intent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-exports.createPaymentIntent = async (req, res) => {
-  try {
-    const { amount, orderId, currency = 'bdt' } = req.body;
-    if (!amount || !orderId) {
-      return res.status(400).json({ success: false, message: 'Amount and orderId are required' });
-    }
-    const paymentIntent = await getStripe().paymentIntents.create({
-      amount: Math.round(amount * 100),
-      currency,
-      metadata: { orderId, userId: req.user.id }
-    });
-    res.status(200).json({
-      success: true,
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id
-    });
-  } catch (error) {
-    logger.error(`[createPaymentIntent] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to create payment intent' });
-  }
-};
-
-// â”€â”€ Stripe: Confirm Payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-exports.confirmPayment = async (req, res) => {
-  try {
-    const { paymentIntentId, orderId } = req.body;
-    if (!paymentIntentId || !orderId) {
-      return res.status(400).json({ success: false, message: 'Payment intent ID and order ID are required' });
-    }
-    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
-    if (paymentIntent.status === 'succeeded') {
-      const order = await Order.findById(orderId);
-      if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-      order.paymentStatus = 'paid';
-      order.transactionId = paymentIntentId;
-      order.paymentDetails = { method: 'stripe', transactionId: paymentIntentId, paidAt: new Date() };
-      await order.save();
-      res.status(200).json({ success: true, message: 'Payment confirmed', order });
-    } else {
-      res.status(400).json({ success: false, message: 'Payment not completed', status: paymentIntent.status });
-    }
-  } catch (error) {
-    logger.error(`[confirmPayment] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to confirm payment' });
-  }
-};
-
-// â”€â”€ Stripe: Webhook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-exports.stripeWebhook = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-  if (!webhookSecret || webhookSecret === 'whsec_REPLACE_WITH_REAL_KEY') {
-    logger.error('[stripeWebhook] STRIPE_WEBHOOK_SECRET not configured');
-    return res.status(500).json({ success: false, message: 'Webhook secret not configured' });
-  }
-
-  let event;
-  try {
-    event = getStripe().webhooks.constructEvent(req.body, sig, webhookSecret);
-  } catch (error) {
-    logger.error(`[stripeWebhook] Signature verification failed: ${error.message}`);
-    return res.status(400).send(`Webhook Error: ${error.message}`);
-  }
-
-  try {
-    switch (event.type) {
-      case 'payment_intent.succeeded': {
-        const pi = event.data.object;
-        const order = await Order.findById(pi.metadata.orderId);
-        if (order && order.paymentStatus !== 'paid') {
-          order.paymentStatus = 'paid';
-          order.status = 'confirmed';
-          order.transactionId = pi.id;
-          order.paymentDetails = { method: 'stripe', transactionId: pi.id, paidAt: new Date() };
-          await order.save();
-          logger.info(`[stripeWebhook] Order ${pi.metadata.orderId} marked as paid via webhook`);
-        }
-        break;
-      }
-      case 'payment_intent.payment_failed': {
-        const pi = event.data.object;
-        const order = await Order.findById(pi.metadata.orderId);
-        if (order) {
-          order.paymentStatus = 'failed';
-          await order.save();
-          logger.info(`[stripeWebhook] Order ${pi.metadata.orderId} payment failed`);
-        }
-        break;
-      }
-      default:
-        logger.info(`[stripeWebhook] Unhandled event type: ${event.type}`);
-    }
-    res.json({ received: true });
-  } catch (error) {
-    logger.error(`[stripeWebhook] Processing error: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Webhook processing failed' });
-  }
-};
-
-// â”€â”€ bKash: Initiate Payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── bKash: Initiate Payment ───────────────────────────────────────────────────
 exports.initiateBkashPayment = async (req, res) => {
   try {
     const { amount, orderId } = req.body;
@@ -235,7 +126,7 @@ exports.initiateBkashPayment = async (req, res) => {
   }
 };
 
-// â”€â”€ bKash: Execute Payment (called after user completes payment in bKash app) â”€
+// ── bKash: Execute Payment (called after user completes payment in bKash app) ─
 exports.executeBkashPayment = async (req, res) => {
   try {
     const { paymentID } = req.body;
@@ -270,7 +161,7 @@ exports.executeBkashPayment = async (req, res) => {
   }
 };
 
-// â”€â”€ bKash: Verify Payment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── bKash: Verify Payment ─────────────────────────────────────────────────────
 exports.verifyBkashPayment = async (req, res) => {
   try {
     const { paymentID, orderId } = req.body;
@@ -312,7 +203,7 @@ exports.verifyBkashPayment = async (req, res) => {
   }
 };
 
-// â”€â”€ Bank Transfer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Bank Transfer ─────────────────────────────────────────────────────────────
 exports.processBankTransfer = async (req, res) => {
   try {
     const { orderId, transactionReference } = req.body;
@@ -335,7 +226,7 @@ exports.processBankTransfer = async (req, res) => {
   }
 };
 
-// â”€â”€ B2B Credit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── B2B Credit ────────────────────────────────────────────────────────────────
 exports.processB2BCreditPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -354,7 +245,7 @@ exports.processB2BCreditPayment = async (req, res) => {
     if (totalAmount > availableCredit) {
       return res.status(400).json({
         success: false,
-        message: `Insufficient credit. Available: à§³${availableCredit.toLocaleString()}, Required: à§³${totalAmount.toLocaleString()}`
+        message: `Insufficient credit. Available: ৳${availableCredit.toLocaleString()}, Required: ৳${totalAmount.toLocaleString()}`
       });
     }
 
@@ -376,7 +267,7 @@ exports.processB2BCreditPayment = async (req, res) => {
   }
 };
 
-// â”€â”€ Nagad (stub â€” swap in real credentials when available) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Nagad (stub – swap in real credentials when available) ───────────────────
 exports.initiateNagadPayment = async (req, res) => {
   try {
     const { orderId, amount } = req.body;
@@ -405,7 +296,7 @@ exports.initiateNagadPayment = async (req, res) => {
   }
 };
 
-// â”€â”€ Cheque â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Cheque ────────────────────────────────────────────────────────────────────
 exports.submitChequePayment = async (req, res) => {
   try {
     const { orderId, chequeNumber, bankName, chequeDate, accountName } = req.body;

@@ -48,7 +48,7 @@ export default function AdminShell({ children, title, action, onAction }) {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch badges:', error);
+        process.env.NODE_ENV !== "production" && console.error('Failed to fetch badges:', error);
       }
     };
 

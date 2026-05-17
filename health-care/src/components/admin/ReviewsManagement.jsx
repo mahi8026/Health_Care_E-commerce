@@ -42,7 +42,7 @@ export default function ReviewsManagement() {
         setPagination(data.pagination);
       }
     } catch (error) {
-      console.error('Fetch reviews error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);
       showMessage('Failed to load reviews', 'error');
     } finally {
       setLoading(false);

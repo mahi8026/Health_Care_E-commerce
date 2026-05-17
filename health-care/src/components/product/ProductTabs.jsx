@@ -1,9 +1,33 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '@/utils/api';
 
 export default function ProductTabs({ product }) {
   const [activeTab, setActiveTab] = useState('specifications');
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState(null);
+
+  // Fetch reviews when component mounts or product changes
+  useEffect(() => {
+    if (product?._id) {
+      fetchReviews();
+    }
+  }, [product?._id]);
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    setReviewsError(null);
+    try {
+      const response = await api.get(`/reviews/product/${product._id}`);
+      setReviews(response.data?.reviews || response.reviews || []);
+    } catch (error) {
+      setReviewsError(error.message || 'Failed to load reviews');
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
 
   const tabs = [
     { id: 'specifications', label: 'Specifications' },
@@ -91,30 +115,61 @@ export default function ProductTabs({ product }) {
               Customer Reviews
             </h3>
             <div className="space-y-4">
-              {[
-                { name: 'Dr. Ahmed Hassan', rating: 5, date: '2025-03-15', comment: 'Excellent quality and reliable performance. Highly recommended for clinical use.' },
-                { name: 'Dhaka Medical Centre', rating: 5, date: '2025-03-10', comment: 'Great product with professional installation service. Very satisfied with the purchase.' },
-                { name: 'Dr. Fatima Rahman', rating: 4, date: '2025-03-05', comment: 'Good quality product. Delivery was on time and installation was smooth.' }
-              ].map((review, index) => (
-                <div key={index} className="border-b-[0.5px] border-[var(--color-border-tertiary)] pb-4 last:border-b-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-[12px] font-medium">{review.name}</div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">{review.date}</div>
-                  </div>
-                  <div className="flex gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-3 h-3 ${
-                          i < review.rating ? 'bg-[#F59E0B]' : 'bg-[var(--color-border-secondary)]'
-                        }`}
-                        style={{ clipPath: 'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' }}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-[12px] text-[var(--color-text-secondary)]">{review.comment}</p>
+              {reviewsLoading ? (
+                <div className="text-center py-8">
+                  <div className="inline-block w-6 h-6 border-3 border-[#0E8A6E] border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-[12px] text-[var(--color-text-secondary)] mt-2">Loading reviews...</p>
                 </div>
-              ))}
+              ) : reviewsError ? (
+                <div className="bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg p-4 text-center">
+                  <p className="text-[12px] text-[#DC2626]">{reviewsError}</p>
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="bg-[var(--color-background-secondary)] rounded-lg p-6 text-center">
+                  <p className="text-[12px] text-[var(--color-text-secondary)] mb-3">
+                    No reviews yet. Be the first to review this product!
+                  </p>
+                  <button className="px-4 py-2 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-lg text-[12px] font-medium transition-colors">
+                    Write a Review
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {reviews.map((review) => (
+                    <div key={review._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] pb-4 last:border-b-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-[12px] font-medium">
+                          {review.user?.name || review.userName || 'Anonymous'}
+                        </div>
+                        <div className="text-[10px] text-[var(--color-text-secondary)]">
+                          {new Date(review.createdAt).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </div>
+                      </div>
+                      <div className="flex gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-3 h-3 ${
+                              i < review.rating ? 'bg-[#F59E0B]' : 'bg-[var(--color-border-secondary)]'
+                            }`}
+                            style={{ clipPath: 'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' }}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-[12px] text-[var(--color-text-secondary)]">{review.comment}</p>
+                    </div>
+                  ))}
+                  <div className="mt-4 text-center">
+                    <button className="px-4 py-2 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-lg text-[12px] font-medium transition-colors">
+                      Write a Review
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

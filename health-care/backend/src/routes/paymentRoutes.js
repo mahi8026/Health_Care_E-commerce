@@ -2,24 +2,17 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 const {
-  createPaymentIntent,
-  confirmPayment,
   initiateBkashPayment,
   executeBkashPayment,
   verifyBkashPayment,
   initiateNagadPayment,
   submitChequePayment,
   processBankTransfer,
-  processB2BCreditPayment,
-  stripeWebhook
+  processB2BCreditPayment
 } = require('../controllers/paymentController');
 const { paymentLimiter } = require('../middleware/enhancedRateLimiter');
 
-// Stripe routes (with rate limiting)
-router.post('/stripe/create-intent', protect, paymentLimiter, createPaymentIntent);
-router.post('/stripe/intent', protect, paymentLimiter, createPaymentIntent); // alias used by frontend
-router.post('/stripe/confirm', protect, paymentLimiter, confirmPayment);
-router.post('/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
+// Stripe removed - doesn't work in Bangladesh
 
 // bKash Tokenized Checkout routes (with rate limiting)
 router.post('/bkash/initiate', protect, paymentLimiter, initiateBkashPayment);

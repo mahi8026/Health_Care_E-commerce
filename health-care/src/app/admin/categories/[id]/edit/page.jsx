@@ -75,7 +75,7 @@ export default function EditCategoryPage() {
         c._id !== categoryId && !c.parentCategory
       ));
     } catch (err) {
-      console.error('Failed to load categories:', err);
+      process.env.NODE_ENV !== "production" && console.error('Failed to load categories:', err);
     }
   };
 

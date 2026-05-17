@@ -68,7 +68,6 @@ const PAYMENT_METHODS = [
   'npsb',
   'cheque',
   'b2b_credit',
-  'stripe',
   'bank_transfer',
   'credit_terms',
   'card',

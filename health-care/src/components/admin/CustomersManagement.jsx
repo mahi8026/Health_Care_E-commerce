@@ -42,7 +42,7 @@ export default function CustomersManagement() {
       setCustomers(customersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
-      console.error('Failed to load customers:', err);
+      process.env.NODE_ENV !== "production" && console.error('Failed to load customers:', err);
       showMessage('Failed to load customers', 'error');
     } finally {
       setLoading(false);
@@ -68,19 +68,19 @@ export default function CustomersManagement() {
         data = await res.json();
       } else {
         const text = await res.text();
-        console.error('Non-JSON response:', text);
+        process.env.NODE_ENV !== "production" && console.error('Non-JSON response:', text);
         throw new Error('Server returned non-JSON response');
       }
       
       if (!res.ok) {
-        console.error('Tier update error:', data);
+        process.env.NODE_ENV !== "production" && console.error('Tier update error:', data);
         throw new Error(data.message || `Update failed with status ${res.status}`);
       }
       
       showMessage('Customer tier updated', 'success');
       fetchCustomers();
     } catch (error) {
-      console.error('Tier update failed:', error);
+      process.env.NODE_ENV !== "production" && console.error('Tier update failed:', error);
       showMessage(error.message || 'Failed to update tier', 'error');
     }
   };
@@ -102,19 +102,19 @@ export default function CustomersManagement() {
         data = await res.json();
       } else {
         const text = await res.text();
-        console.error('Non-JSON response:', text);
+        process.env.NODE_ENV !== "production" && console.error('Non-JSON response:', text);
         throw new Error('Server returned non-JSON response');
       }
       
       if (!res.ok) {
-        console.error('Role update error:', data);
+        process.env.NODE_ENV !== "production" && console.error('Role update error:', data);
         throw new Error(data.message || `Update failed with status ${res.status}`);
       }
       
       showMessage('Customer role updated', 'success');
       fetchCustomers();
     } catch (error) {
-      console.error('Role update failed:', error);
+      process.env.NODE_ENV !== "production" && console.error('Role update failed:', error);
       showMessage(error.message || 'Failed to update role', 'error');
     }
   };
@@ -248,7 +248,7 @@ export default function CustomersManagement() {
               {customers.map((customer, index) => {
                 const customerId = customer._id || customer.id;
                 if (!customerId) {
-                  console.error('Customer missing ID:', customer);
+                  process.env.NODE_ENV !== "production" && console.error('Customer missing ID:', customer);
                 }
                 return (
                 <tr key={customerId || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">

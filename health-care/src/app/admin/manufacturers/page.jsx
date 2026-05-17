@@ -23,7 +23,7 @@ export default function ManufacturersPage() {
   // Check authentication on mount
   useEffect(() => {
     if (!isAuthenticated()) {
-      console.warn('[Manufacturers] No authentication token found');
+      process.env.NODE_ENV !== "production" && console.warn('[Manufacturers] No authentication token found');
       setError('Please log in to access the admin panel');
       setLoading(false);
     }
@@ -44,18 +44,15 @@ export default function ManufacturersPage() {
       if (includeInactive) params.append('includeInactive', 'true');
       if (searchTerm) params.append('search', searchTerm);
       
-      console.log('[Manufacturers] Fetching with params:', params.toString());
       const response = await api.get(`/manufacturers?${params.toString()}`);
-      console.log('[Manufacturers] API response:', response);
       
       // Handle different response structures
       const manufacturersData = response.manufacturers || response.data?.manufacturers || response.data || [];
-      console.log('[Manufacturers] Extracted manufacturers data:', manufacturersData);
       
       setManufacturers(Array.isArray(manufacturersData) ? manufacturersData : []);
     } catch (err) {
-      console.error('[Manufacturers] Fetch error:', err);
-      console.error('[Manufacturers] Error details:', {
+      process.env.NODE_ENV !== "production" && console.error('[Manufacturers] Fetch error:', err);
+      process.env.NODE_ENV !== "production" && console.error('[Manufacturers] Error details:', {
         message: err.message,
         status: err.status,
         data: err.data
@@ -145,7 +142,6 @@ export default function ManufacturersPage() {
           </label>
           <button
             onClick={() => {
-              console.log('[Manufacturers] Manual refresh triggered');
               fetchManufacturers();
             }}
             className="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap"

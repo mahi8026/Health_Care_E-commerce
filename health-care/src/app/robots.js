@@ -1,29 +1,42 @@
 /**
  * robots.txt Generator for MedCore BD
  *
- * Next.js App Router convention: this file is automatically picked up
- * and served at /robots.txt by the framework.
- *
- * Requirements: 7.4, 7.5
+ * Served at /robots.txt by the Next.js App Router convention.
+ * Disallows private/transactional paths and provides Googlebot-specific rules.
  */
 
-/**
- * Generate robots.txt directives.
- *
- * Disallows crawling of authenticated/private paths and includes a
- * Sitemap directive so crawlers can discover all public URLs.
- *
- * @returns {{ rules: Array, sitemap: string }}
- */
+import { SITE_CONFIG } from '@/config/seo';
+
 export default function robots() {
+  const SITE_URL = SITE_CONFIG.url;
+
   return {
     rules: [
+      // All crawlers — allow everything except private paths
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/admin', '/b2b', '/checkout', '/cart', '/api'],
+        allow:     '/',
+        disallow: [
+          '/admin',
+          '/admin/*',
+          '/account',
+          '/account/*',
+          '/checkout',
+          '/cart',
+          '/b2b/dashboard',
+          '/api/*',
+          '/oauth/*',
+        ],
+      },
+      // Googlebot — same disallows with explicit crawl delay
+      {
+        userAgent:  'Googlebot',
+        allow:      '/',
+        disallow:   ['/admin/*', '/account/*', '/checkout', '/cart', '/api/*'],
+        crawlDelay: 2,
       },
     ],
-    sitemap: 'https://medcorebd.com/sitemap.xml',
-  }
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host:    SITE_URL,
+  };
 }

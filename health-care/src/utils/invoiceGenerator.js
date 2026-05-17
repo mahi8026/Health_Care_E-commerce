@@ -30,7 +30,7 @@ export class InvoiceGenerator {
 
       return true;
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Invoice generation error:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Invoice generation error:', error);
       throw error;
     }
   }

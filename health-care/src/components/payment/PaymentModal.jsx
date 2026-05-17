@@ -1,20 +1,13 @@
 "use client";
 
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
 import Modal from '@/components/ui/Modal';
 import BkashPaymentForm from './BkashPaymentForm';
 import BankTransferForm from './BankTransferForm';
 import B2BCreditForm from './B2BCreditForm';
-import PaymentSkeleton from './PaymentSkeleton';
 import { PAYMENT_METHODS } from '@/utils/payment';
 
-// Lazy-load the Stripe wrapper so @stripe/react-stripe-js and loadStripe are
-// only downloaded when the user actually selects the Stripe payment method.
-const StripePaymentWrapper = dynamic(
-  () => import('./StripePaymentWrapper'),
-  { loading: () => <PaymentSkeleton /> }
-);
+// Stripe has been removed — not supported in Bangladesh
 
 export default function PaymentModal({ 
   isOpen, 
@@ -38,16 +31,6 @@ export default function PaymentModal({
 
   const renderPaymentForm = () => {
     switch (currentMethod) {
-      case 'stripe':
-        return (
-          <StripePaymentWrapper
-            amount={amount}
-            orderId={orderId}
-            onSuccess={handleSuccess}
-            onError={handleError}
-          />
-        );
-      
       case 'bkash':
       case 'nagad':
         return (

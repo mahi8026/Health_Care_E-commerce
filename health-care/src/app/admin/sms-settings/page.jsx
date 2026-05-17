@@ -30,7 +30,7 @@ export default function SMSSettingsPage() {
         setConfig(data.config);
       }
     } catch (error) {
-      console.error('Failed to fetch SMS config:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to fetch SMS config:', error);
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function SMSSettingsPage() {
         setStats(data.stats);
       }
     } catch (error) {
-      console.error('Failed to fetch SMS stats:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to fetch SMS stats:', error);
     }
   };
 
@@ -77,7 +77,7 @@ export default function SMSSettingsPage() {
         setTestPhone('');
       }
     } catch (error) {
-      console.error('Test SMS error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Test SMS error:', error);
       setTestResult({
         success: false,
         message: 'Failed to send test SMS'

@@ -99,7 +99,7 @@ export default function CheckoutPage({ onBackToCart }) {
       setCreatedOrderId(mongoId);
       setOrderId(orderNumber);
 
-      if (['stripe', 'bkash', 'nagad', 'b2b_credit'].includes(selectedPayment)) {
+      if (['bkash', 'nagad', 'b2b_credit'].includes(selectedPayment)) {
         setShowPaymentModal(true);
       } else {
         GA4Tracker.trackPurchase({

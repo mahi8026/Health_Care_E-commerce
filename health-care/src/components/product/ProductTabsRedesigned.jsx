@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '@/utils/api';
 
 /**
  * Redesigned Product Tabs Component
@@ -8,6 +9,29 @@ import { useState } from 'react';
  */
 export default function ProductTabsRedesigned({ product }) {
   const [activeTab, setActiveTab] = useState('specifications');
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState(null);
+
+  // Fetch reviews when component mounts or product changes
+  useEffect(() => {
+    if (product?._id) {
+      fetchReviews();
+    }
+  }, [product?._id]);
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    setReviewsError(null);
+    try {
+      const response = await api.get(`/reviews/product/${product._id}`);
+      setReviews(response.data?.reviews || response.reviews || []);
+    } catch (error) {
+      setReviewsError(error.message || 'Failed to load reviews');
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
 
   const tabs = [
     { id: 'specifications', label: 'Specifications' },
@@ -171,48 +195,76 @@ export default function ProductTabsRedesigned({ product }) {
               </div>
             </div>
 
-            {/* Sample Reviews */}
+            {/* Reviews List */}
             <div className="space-y-4">
-              {[
-                { name: 'Dr. Ahmed Hassan', rating: 5, date: 'March 15, 2025', comment: 'Excellent quality and reliable performance. Highly recommended for clinical use. The installation was professional and the training provided was comprehensive.' },
-                { name: 'Dhaka Medical Centre', rating: 5, date: 'March 10, 2025', comment: 'Great product with professional installation service. Very satisfied with the purchase. Customer support is responsive and helpful.' },
-                { name: 'Dr. Fatima Rahman', rating: 4, date: 'March 5, 2025', comment: 'Good quality product. Delivery was on time and installation was smooth. Would recommend to other medical professionals.' }
-              ].map((review, index) => (
-                <div key={index} className="bg-white border border-[#E5E7EB] rounded-xl p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#0B2545] rounded-full flex items-center justify-center text-white text-[14px] font-bold">
-                        {review.name.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="text-[14px] font-semibold text-[#0B2545]">{review.name}</div>
-                        <div className="text-[11px] text-[#6B7280]">{review.date}</div>
+              {reviewsLoading ? (
+                <div className="text-center py-8">
+                  <div className="inline-block w-8 h-8 border-4 border-[#0E8A6E] border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-[13px] text-[#6B7280] mt-3">Loading reviews...</p>
+                </div>
+              ) : reviewsError ? (
+                <div className="bg-[#FEF2F2] border border-[#FCA5A5] rounded-xl p-6 text-center">
+                  <div className="text-[40px] mb-2">⚠️</div>
+                  <p className="text-[13px] text-[#DC2626]">{reviewsError}</p>
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="bg-[#F9FAFB] rounded-xl p-8 text-center">
+                  <div className="text-[40px] mb-2">💬</div>
+                  <p className="text-[13px] text-[#6B7280] mb-4">
+                    No reviews yet. Be the first to review this product!
+                  </p>
+                  <button className="px-6 py-3 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-lg text-[13px] font-semibold transition-colors">
+                    Write a Review
+                  </button>
+                </div>
+              ) : (
+                reviews.map((review) => (
+                  <div key={review._id} className="bg-white border border-[#E5E7EB] rounded-xl p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#0B2545] rounded-full flex items-center justify-center text-white text-[14px] font-bold">
+                          {(review.user?.name || review.userName || 'A').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="text-[14px] font-semibold text-[#0B2545]">
+                            {review.user?.name || review.userName || 'Anonymous'}
+                          </div>
+                          <div className="text-[11px] text-[#6B7280]">
+                            {new Date(review.createdAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <div className="flex gap-1 mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill={i < review.rating ? '#F59E0B' : '#E5E7EB'}
+                        >
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                      ))}
+                    </div>
+                    <p className="text-[13px] text-[#374151] leading-relaxed">{review.comment}</p>
                   </div>
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill={i < review.rating ? '#F59E0B' : '#E5E7EB'}
-                      >
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="text-[13px] text-[#374151] leading-relaxed">{review.comment}</p>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
-            <div className="mt-6 text-center">
-              <button className="px-6 py-3 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-lg text-[13px] font-semibold transition-colors">
-                Write a Review
-              </button>
-            </div>
+            {reviews.length > 0 && (
+              <div className="mt-6 text-center">
+                <button className="px-6 py-3 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-lg text-[13px] font-semibold transition-colors">
+                  Write a Review
+                </button>
+              </div>
+            )}
           </div>
         )}
 

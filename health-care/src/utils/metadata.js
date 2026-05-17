@@ -139,9 +139,6 @@ export function generatePageMetadata({
 export function generateProductMetadata(product) {
   // Graceful fallback when product data is missing
   if (!product) {
-    if (process.env.NODE_ENV !== 'production') {
-      // Product is null/undefined
-    }
     return generatePageMetadata({
       title: 'Product Not Found',
       description: 'The requested product could not be found on MedCore BD.',
@@ -150,28 +147,44 @@ export function generateProductMetadata(product) {
     })
   }
 
-  const name = product.name || 'Product'
-  const brand = product.brand ? ` | ${product.brand}` : ''
-  const category = product.category ? ` | ${product.category}` : ''
+  const name     = product.name || 'Product'
+  const brandRaw = typeof product.brand === 'object' ? product.brand?.name : product.brand
+  const catRaw   = typeof product.category === 'object' ? product.category?.name : product.category
 
-  const title = `${name}${brand}${category} | ${siteConfig.name}`
+  // Keyword-rich title targeting "price in Bangladesh" searches
+  const title = `${name} — Price in Bangladesh | ${siteConfig.name}`
 
-  const description =
-    product.description ||
-    `View detailed information, pricing, and availability for ${name} on ${siteConfig.name}.`
+  // Rich description: first 110 chars of description + brand + price
+  const descChunk = (product.description || '').replace(/\s+/g, ' ').trim().slice(0, 110)
+  const priceStr  = product.price ? `৳${Number(product.price).toLocaleString()}` : ''
+  const description = descChunk
+    ? `Buy ${name} in Bangladesh. ${descChunk} Brand: ${brandRaw || ''}. Price: ${priceStr}. DGDA certified. Free delivery Dhaka.`
+    : `Buy ${name} in Bangladesh. Brand: ${brandRaw || ''}. Price: ${priceStr}. DGDA certified. Free delivery Dhaka.`
 
-  const path = product._id ? `/products/${product._id}` : '/products'
+  // Use slug for canonical URL when available — avoids MongoDB ID in URL
+  const slugOrId = product.slug || product._id
+  const path     = slugOrId ? `/products/${slugOrId}` : '/products'
   const canonicalUrl = buildUrl(path)
 
-  const ogImage = product.image
-    ? product.image.startsWith('http')
-      ? product.image
-      : buildUrl(product.image)
+  // Primary image: support images array (new format) and legacy product.image string
+  const primaryImg = product.images?.find(i => i?.isPrimary) || product.images?.[0]
+  const rawImage   = (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) || product.image
+  const ogImage    = rawImage
+    ? rawImage.startsWith('http') ? rawImage : buildUrl(rawImage)
     : getDefaultOGImage()
+
+  const keywords = [
+    name,
+    brandRaw,
+    catRaw ? `${catRaw} Bangladesh` : '',
+    `buy ${name} online BD`,
+    product.sku || '',
+  ].filter(Boolean).join(', ')
 
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical: canonicalUrl,
     },

@@ -2,142 +2,216 @@
  * SEO Configuration for MedCore BD
  *
  * Central configuration for site metadata, organization schema,
- * and per-page metadata used across all 11 pages.
+ * and per-page metadata used across all pages.
+ *
+ * Exports both the new SITE_CONFIG / PAGE_SEO / CATEGORY_SEO format
+ * AND the legacy siteConfig / pageMetadata aliases so existing utilities
+ * (metadata.js, structuredData.js) continue to work without changes.
  */
 
 // ---------------------------------------------------------------------------
 // Site-wide configuration
 // ---------------------------------------------------------------------------
 
+export const SITE_CONFIG = {
+  name:         'MedCore BD',
+  fullName:     'MedCore Bangladesh — Medical Equipment Supplier',
+  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com',
+  description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered, ISO 13485 certified. B2B & retail. Dhaka, Chittagong, Sylhet.",
+  keywords:     'medical equipment Bangladesh, diagnostic equipment Dhaka, surgical instruments BD, laboratory reagents Bangladesh, hospital equipment supplier, DGDA registered medical devices, ECG machine price Bangladesh, reagent supplier Dhaka, B2B medical supplier Bangladesh',
+  ogImage:      '/images/og-default.jpg',
+  twitterHandle: '@medcorebd',
+  locale:       'en_BD',
+  phone:        '+8801800000000',
+  email:        'info@medcorebd.com',
+  address: {
+    street:     'Nawabpur Road',
+    city:       'Dhaka',
+    country:    'Bangladesh',
+    postalCode: '1000',
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Backward-compatible aliases used by metadata.js & structuredData.js
+// ---------------------------------------------------------------------------
+
 export const siteConfig = {
-  name: 'MedCore BD',
-  description:
-    'Your complete source for medical excellence. Surgical instruments, diagnostic machines, reagents, and lab equipment.',
-  url: 'https://medcorebd.com',
-  ogImage: '/og-default.png',
-  locale: 'en_US',
+  name:        SITE_CONFIG.name,
+  description: SITE_CONFIG.description,
+  url:         SITE_CONFIG.url,
+  ogImage:     SITE_CONFIG.ogImage,
+  locale:      SITE_CONFIG.locale,
   twitter: {
     card: 'summary_large_image',
-    site: '@medcorebd',
+    site: SITE_CONFIG.twitterHandle,
   },
-}
-
-// ---------------------------------------------------------------------------
-// Organization schema (Schema.org Organization)
-// ---------------------------------------------------------------------------
+};
 
 export const organization = {
-  name: 'MedCore BD',
-  url: 'https://medcorebd.com',
-  logo: 'https://medcorebd.com/logo.png',
+  name:  SITE_CONFIG.name,
+  url:   SITE_CONFIG.url,
+  logo:  `${SITE_CONFIG.url}/images/logo.png`,
   contactPoint: {
-    telephone: '+880-XXX-XXXXXX',
-    contactType: 'customer service',
-    areaServed: 'BD',
+    telephone:         SITE_CONFIG.phone,
+    contactType:       'customer service',
+    areaServed:        'BD',
     availableLanguage: ['en', 'bn'],
   },
   sameAs: [
-    'https://facebook.com/medcorebd',
-    'https://linkedin.com/company/medcorebd',
+    'https://www.facebook.com/medcorebd',
+    'https://www.linkedin.com/company/medcorebd',
   ],
-}
+};
 
 // ---------------------------------------------------------------------------
-// Per-page metadata for all 11 pages
+// Per-page metadata — new PAGE_SEO format
+// ---------------------------------------------------------------------------
+
+export const PAGE_SEO = {
+  home: {
+    title:       'MedCore BD — Medical Equipment Supplier Bangladesh | DGDA Certified',
+    description: 'Buy medical equipment online in Bangladesh. 10,000+ products: ECG machines, diagnostic kits, surgical instruments, lab reagents. B2B discounts up to 30%. Free delivery Dhaka. DGDA registered.',
+    keywords:    'medical equipment Bangladesh, buy medical equipment online BD, ECG machine Bangladesh, diagnostic equipment price Bangladesh',
+  },
+  products: {
+    title:       'Medical Equipment & Supplies — MedCore BD Bangladesh',
+    description: 'Browse 10,000+ medical products: diagnostic machines, surgical instruments, laboratory reagents, hospital equipment. Genuine brands. DGDA certified. B2B pricing available.',
+    keywords:    'medical supplies Bangladesh, buy surgical instruments online, lab equipment price BD',
+  },
+  reagentStore: {
+    title:       'Laboratory Reagents Bangladesh — HbA1c, CBC, Biochemistry Kits | MedCore BD',
+    description: 'Buy laboratory reagents in Bangladesh. HbA1c, CBC, troponin, lipid profile kits from Roche, Siemens, Abbott. Cold chain delivery. DGDA approved. Bulk B2B pricing.',
+    keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh',
+  },
+  b2b: {
+    title:       'B2B Medical Supply Bangladesh — Hospital & Clinic Bulk Orders | MedCore BD',
+    description: 'B2B medical equipment supplier for hospitals, clinics and diagnostic centers in Bangladesh. Credit terms 30–90 days. 8–30% bulk discounts. Dedicated account manager.',
+    keywords:    'B2B medical supplier Bangladesh, hospital equipment supplier Dhaka, bulk medical supplies BD',
+  },
+  search: {
+    title:       'Search Medical Equipment — MedCore BD Bangladesh',
+    description: 'Find medical equipment, surgical instruments and laboratory reagents in Bangladesh.',
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Backward-compatible pageMetadata (used by older page files)
 // ---------------------------------------------------------------------------
 
 export const pageMetadata = {
-  // 1. Home
-  home: {
-    title: 'MedCore BD - Medical Equipment & Supplies',
-    description:
-      'Your complete source for medical excellence. Surgical instruments, diagnostic machines, reagents, and lab equipment.',
-    path: '/',
-  },
-
-  // 2. Search — noindex to prevent indexing of search result pages
-  search: {
-    title: 'Search Products | MedCore BD',
-    description:
-      'Search our comprehensive catalog of medical equipment, surgical instruments, diagnostic machines, and laboratory supplies.',
-    path: '/search',
-    noindex: true,
-  },
-
-  // 3. Reagent Store
-  reagentStore: {
-    title: 'Reagent Store | MedCore BD',
-    description:
-      'Browse our extensive collection of laboratory reagents, chemicals, and testing supplies for medical and research applications.',
-    path: '/reagent-store',
-  },
-
-  // 4. Cart — noindex
+  home:         { ...PAGE_SEO.home,        path: '/' },
+  search:       { ...PAGE_SEO.search,      path: '/search',        noindex: true },
+  reagentStore: { ...PAGE_SEO.reagentStore, path: '/reagent-store' },
+  b2b:          { ...PAGE_SEO.b2b,         path: '/b2b',           noindex: true, nofollow: true },
   cart: {
-    title: 'Shopping Cart | MedCore BD',
-    description:
-      'Review your selected medical equipment and supplies before checkout.',
-    path: '/cart',
-    noindex: true,
+    title:       'Shopping Cart | MedCore BD',
+    description: 'Review your selected medical equipment and supplies before checkout.',
+    path:        '/cart',
+    noindex:     true,
   },
-
-  // 5. Checkout — noindex
   checkout: {
-    title: 'Checkout | MedCore BD',
+    title:       'Checkout | MedCore BD',
     description: 'Complete your purchase of medical equipment and supplies.',
-    path: '/checkout',
-    noindex: true,
+    path:        '/checkout',
+    noindex:     true,
   },
-
-  // 6. Login — noindex
   login: {
-    title: 'Login | MedCore BD',
-    description:
-      'Sign in to your MedCore BD account to access your orders and manage your profile.',
-    path: '/login',
-    noindex: true,
+    title:       'Login | MedCore BD',
+    description: 'Sign in to your MedCore BD account to access your orders and manage your profile.',
+    path:        '/login',
+    noindex:     true,
   },
-
-  // 7. Register — noindex
   register: {
-    title: 'Register | MedCore BD',
-    description:
-      'Create a MedCore BD account to start ordering medical equipment and supplies.',
-    path: '/register',
-    noindex: true,
+    title:       'Register | MedCore BD',
+    description: 'Create a MedCore BD account to start ordering medical equipment and supplies.',
+    path:        '/register',
+    noindex:     true,
   },
-
-  // 8. Mobile App
   mobileApp: {
-    title: 'Mobile App | MedCore BD',
-    description:
-      'Download the MedCore BD mobile app for convenient access to medical equipment and supplies on the go.',
-    path: '/mobile-app',
+    title:       'Mobile App | MedCore BD',
+    description: 'Download the MedCore BD mobile app for convenient access to medical equipment and supplies on the go.',
+    path:        '/mobile-app',
   },
-
-  // 9. Admin Dashboard — noindex + nofollow (authenticated-only page)
   admin: {
-    title: 'Admin Dashboard | MedCore BD',
+    title:       'Admin Dashboard | MedCore BD',
     description: 'MedCore BD administrative dashboard.',
-    path: '/admin',
-    noindex: true,
-    nofollow: true,
+    path:        '/admin',
+    noindex:     true,
+    nofollow:    true,
   },
-
-  // 10. B2B Dashboard — noindex + nofollow (authenticated-only page)
-  b2b: {
-    title: 'B2B Dashboard | MedCore BD',
-    description: 'MedCore BD B2B buyer dashboard.',
-    path: '/b2b',
-    noindex: true,
-    nofollow: true,
-  },
-
-  // 11. Product Detail — dynamic metadata generated per product via generateProductMetadata()
   product: {
-    title: 'Product | MedCore BD',
-    description:
-      'View detailed information, pricing, and availability for medical equipment and supplies on MedCore BD.',
-    path: '/products/[id]',
+    title:       'Product | MedCore BD',
+    description: 'View detailed information, pricing, and availability for medical equipment and supplies on MedCore BD.',
+    path:        '/products/[id]',
   },
-}
+};
+
+// ---------------------------------------------------------------------------
+// Category-specific SEO
+// ---------------------------------------------------------------------------
+
+export const CATEGORY_SEO = {
+  'Diagnostic Equipment': {
+    title:       'Diagnostic Equipment Bangladesh — ECG, Ultrasound, Patient Monitors | MedCore BD',
+    description: 'Buy diagnostic equipment in Bangladesh. ECG machines, ultrasound machines, patient monitors, pulse oximeters from Siemens, Mindray, GE. DGDA certified. Free installation Dhaka.',
+    h1:          'Diagnostic Equipment in Bangladesh',
+  },
+  'Surgical Instruments': {
+    title:       'Surgical Instruments Bangladesh — Scissors, Forceps, Trocar Sets | MedCore BD',
+    description: 'Quality surgical instruments in Bangladesh. Scissors, forceps, trocar sets, scalpels, needle holders. CE certified. Bulk B2B pricing for hospitals.',
+    h1:          'Surgical Instruments in Bangladesh',
+  },
+  'Laboratory Reagents': {
+    title:       'Laboratory Reagents Bangladesh — Diagnostic Kits & Analyser Reagents | MedCore BD',
+    description: 'Laboratory reagents and diagnostic kits in Bangladesh. HbA1c, CBC, liver function, cardiac markers, immunoassay. Roche, Abbott, Beckman Coulter. Cold chain delivery.',
+    h1:          'Laboratory Reagents in Bangladesh',
+  },
+  'Hospital Machines': {
+    title:       'Hospital Equipment Bangladesh — Ventilators, Dialysis, ICU Machines | MedCore BD',
+    description: 'Hospital equipment and ICU machines in Bangladesh. Ventilators, dialysis machines, infusion pumps, defibrillators. CE certified, free installation.',
+    h1:          'Hospital Machines & ICU Equipment in Bangladesh',
+  },
+  'Lab Equipment': {
+    title:       'Lab Equipment Bangladesh — Centrifuges, Microscopes, Autoclaves | MedCore BD',
+    description: 'Laboratory equipment in Bangladesh. Centrifuges, microscopes, autoclaves, incubators, spectrophotometers. Eppendorf, Beckman Coulter, Grant Instruments.',
+    h1:          'Laboratory Equipment in Bangladesh',
+  },
+  'PPE & Safety': {
+    title:       'PPE Bangladesh — Surgical Gloves, N95 Masks, Gowns | MedCore BD',
+    description: 'Personal protective equipment in Bangladesh. Surgical gloves, N95 respirators, surgical masks, protective gowns. Ansell, 3M, Cardinal Health. Bulk orders welcome.',
+    h1:          'PPE & Safety Equipment in Bangladesh',
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Category long-form content blocks (rendered below product grids for SEO)
+// ---------------------------------------------------------------------------
+
+export const CATEGORY_CONTENT = {
+  'Diagnostic Equipment': `MedCore BD is Bangladesh's leading supplier of diagnostic equipment for hospitals, clinics and diagnostic centers. Our catalog includes 12-lead ECG machines, digital ultrasound systems, patient monitors, pulse oximeters, blood pressure monitors and spirometers from world-leading brands including Siemens Healthineers, GE Healthcare, Philips, Mindray and Nihon Kohden.
+
+All diagnostic equipment is DGDA registered and CE certified. We offer free installation and staff training in Dhaka metro area. B2B clients receive 8–22% bulk discount and 30–90 day credit terms.
+
+Popular diagnostic equipment: Siemens Cardiostat ECG Machine price Bangladesh, Mindray Patient Monitor price Bangladesh, GE Ultrasound price in Bangladesh.`,
+
+  'Laboratory Reagents': `Buy laboratory reagents in Bangladesh from MedCore BD. We supply HbA1c reagents, CBC reagents, clinical chemistry kits, immunoassay reagents, coagulation reagents and urinalysis strips from Roche Diagnostics, Abbott Laboratories, Beckman Coulter and bioMérieux.
+
+All reagents are stored and transported with proper cold chain management (2–8°C or −20°C as required). DGDA approved. Compatible with Cobas, ARCHITECT, UniCel analyzers. Bulk pricing and regular supply contracts available for hospitals and reference labs.`,
+
+  'Surgical Instruments': `MedCore BD supplies premium surgical instruments to hospitals, clinics and operating theatres across Bangladesh. Our range includes scissors, forceps, needle holders, trocar sets, scalpels, retractors and specialised surgical sets from CE-certified manufacturers.
+
+All instruments are sterilisation-compatible and available in stainless steel. B2B bulk pricing available for hospitals and surgical centres. DGDA registered. Free delivery in Dhaka.`,
+
+  'Hospital Machines': `MedCore BD is a trusted supplier of hospital equipment and ICU machines in Bangladesh. Our range includes mechanical and electronic ventilators, haemodialysis machines, infusion pumps, syringe drivers, defibrillators and patient monitoring systems.
+
+All hospital machines are CE certified and DGDA registered. Professional installation and commissioning service available. 24/7 technical support for B2B clients. Financing options available for large orders.`,
+
+  'Lab Equipment': `Source laboratory equipment in Bangladesh from MedCore BD. We supply centrifuges, microcentrifuges, microscopes, autoclaves, incubators, water baths, spectrophotometers and analytical balances from Eppendorf, Beckman Coulter and Grant Instruments.
+
+Equipment calibration, installation and service contracts available. DGDA registered. University, research institute and hospital pricing available.`,
+
+  'PPE & Safety': `MedCore BD supplies personal protective equipment (PPE) and infection control supplies to healthcare facilities across Bangladesh. Our range includes surgical gloves, examination gloves, N95 respirators, surgical masks, face shields, protective gowns and shoe covers from Ansell, 3M and Cardinal Health.
+
+Bulk orders welcome. DGDA registered. Fast delivery within Dhaka. B2B contracts for regular supply.`,
+};

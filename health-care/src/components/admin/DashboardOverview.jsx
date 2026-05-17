@@ -48,7 +48,7 @@ export default function DashboardOverview() {
           setAbandonedCartStats(data.data);
         }
       } catch (err) {
-        console.error('Failed to load abandoned cart stats:', err);
+        process.env.NODE_ENV !== "production" && console.error('Failed to load abandoned cart stats:', err);
       }
     };
     fetchAbandonedCartStats();

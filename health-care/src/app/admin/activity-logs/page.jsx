@@ -82,7 +82,7 @@ export default function ActivityLogsPage() {
         setPagination(data.pagination);
       }
     } catch (error) {
-      console.error('Failed to fetch activity logs:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to fetch activity logs:', error);
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ export default function ActivityLogsPage() {
         setStats(data.data);
       }
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to fetch stats:', error);
     }
   };
 
@@ -131,7 +131,7 @@ export default function ActivityLogsPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Failed to export logs:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to export logs:', error);
       alert('Failed to export logs');
     }
   };

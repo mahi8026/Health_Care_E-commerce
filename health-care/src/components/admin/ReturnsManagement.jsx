@@ -53,7 +53,7 @@ export default function ReturnsManagement() {
         setPagination(data.pagination);
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ export default function ReturnsManagement() {
         setStats(data.data);
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
     }
   };
 
@@ -121,7 +121,7 @@ export default function ReturnsManagement() {
         alert(data.message || 'Failed to update status');
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
       alert('Error updating status');
     } finally {
       setUpdating(false);

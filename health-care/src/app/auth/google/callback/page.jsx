@@ -19,7 +19,7 @@ export default function GoogleCallbackPage() {
 
         if (error) {
           // Handle error
-          console.error('Google OAuth error:', error);
+          process.env.NODE_ENV !== "production" && console.error('Google OAuth error:', error);
           setStatus('error');
           setTimeout(() => {
             router.push(`/login?error=${error}`);
@@ -45,14 +45,14 @@ export default function GoogleCallbackPage() {
           }, 1000);
         } else {
           // Missing tokens
-          console.error('Missing tokens in callback');
+          process.env.NODE_ENV !== "production" && console.error('Missing tokens in callback');
           setStatus('error');
           setTimeout(() => {
             router.push('/login?error=missing_tokens');
           }, 1500);
         }
       } catch (error) {
-        console.error('Callback error:', error);
+        process.env.NODE_ENV !== "production" && console.error('Callback error:', error);
         setStatus('error');
         setTimeout(() => {
           router.push('/login?error=callback_failed');

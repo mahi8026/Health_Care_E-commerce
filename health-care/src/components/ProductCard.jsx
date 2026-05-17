@@ -30,7 +30,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
       // Show brief success feedback
       setTimeout(() => setAddingToCart(false), 1000);
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Error adding to cart:', error);
       setAddingToCart(false);
     }
   }, [addToCart, product]);
@@ -68,7 +68,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={primaryImage.url}
-              alt={primaryImage.alt || product.name}
+              alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
               loading="lazy"
               className="w-full h-full object-cover"
               onError={(e) => {

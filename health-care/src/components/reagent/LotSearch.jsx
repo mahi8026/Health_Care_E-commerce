@@ -17,7 +17,7 @@ export default function LotSearch() {
     setLoading(true);
     setSearched(true);
     try {
-      const res = await fetch(`${API}/api/products?lotNumber=${encodeURIComponent(query.trim())}&limit=10`);
+      const res = await fetch(`${API}/products?lotNumber=${encodeURIComponent(query.trim())}&limit=10`);
       const data = await res.json();
       setResults(data.products || data.data?.products || []);
     } catch {

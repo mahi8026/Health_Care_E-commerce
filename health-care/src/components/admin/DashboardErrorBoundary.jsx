@@ -22,7 +22,7 @@ class DashboardErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Dashboard Error Boundary caught an error:', error, errorInfo);
+    process.env.NODE_ENV !== "production" && console.error('Dashboard Error Boundary caught an error:', error, errorInfo);
     this.setState({
       error,
       errorInfo

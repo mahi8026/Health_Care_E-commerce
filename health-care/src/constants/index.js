@@ -39,7 +39,6 @@ export const COUPON_TYPES = {
 };
 
 export const PAYMENT_METHODS = [
-  'stripe',
   'bkash',
   'nagad',
   'bank_transfer',
@@ -48,7 +47,6 @@ export const PAYMENT_METHODS = [
 ];
 
 export const PAYMENT_METHOD_LABELS = {
-  stripe: 'Credit/Debit Card',
   bkash: 'bKash',
   nagad: 'Nagad',
   bank_transfer: 'Bank Transfer',

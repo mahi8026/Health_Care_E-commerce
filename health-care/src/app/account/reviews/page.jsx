@@ -41,7 +41,7 @@ export default function UserReviewsPage() {
         setPagination(data.pagination);
       }
     } catch (error) {
-      console.error('Fetch reviews error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export default function UserReviewsPage() {
         setEligibleProducts(data.data);
       }
     } catch (error) {
-      console.error('Fetch eligible products error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Fetch eligible products error:', error);
     }
   };
 

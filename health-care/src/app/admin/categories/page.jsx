@@ -22,7 +22,7 @@ export default function CategoriesPage() {
   // Check authentication on mount
   useEffect(() => {
     if (!isAuthenticated()) {
-      console.warn('[Categories] No authentication token found');
+      process.env.NODE_ENV !== "production" && console.warn('[Categories] No authentication token found');
       setError('Please log in to access the admin panel');
       setLoading(false);
       // Optionally redirect to login
@@ -41,18 +41,15 @@ export default function CategoriesPage() {
       setLoading(true);
       setError(null);
       
-      console.log('[Categories] Fetching categories with includeInactive:', includeInactive);
       const response = await api.get(`/categories?includeInactive=${includeInactive}`);
-      console.log('[Categories] API response:', response);
       
       // Handle different response structures
       const categoriesData = response.categories || response.data?.categories || response.data || [];
-      console.log('[Categories] Extracted categories data:', categoriesData);
       
       setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (err) {
-      console.error('[Categories] Fetch error:', err);
-      console.error('[Categories] Error details:', {
+      process.env.NODE_ENV !== "production" && console.error('[Categories] Fetch error:', err);
+      process.env.NODE_ENV !== "production" && console.error('[Categories] Error details:', {
         message: err.message,
         status: err.status,
         data: err.data
@@ -136,7 +133,6 @@ export default function CategoriesPage() {
             </label>
             <button
               onClick={() => {
-                console.log('[Categories] Manual refresh triggered');
                 fetchCategories();
               }}
               className="text-sm text-blue-600 hover:text-blue-800 underline"

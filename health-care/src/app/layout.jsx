@@ -1,6 +1,5 @@
 import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import "./globals.css";
-import WebVitalsReporter from "@/components/WebVitalsReporter";
 import Footer from "@/components/layout/Footer";
 import TopBar from "@/components/layout/TopBar";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
@@ -8,6 +7,13 @@ import BottomNav from "@/components/layout/BottomNav";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { SITE_CONFIG } from "@/config/seo";
+import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
+import StructuredData, {
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+} from "@/utils/structuredData";
+import Script from "next/script";
 
 export const dynamic = 'force-dynamic';
 
@@ -26,20 +32,100 @@ const lora = Lora({
   display: 'swap',
 });
 
+// Viewport configuration for mobile optimization
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#0E8A6E',
+};
+
 export const metadata = {
-  title: "MedCore BD - Medical Equipment & Supplies",
-  description: "Your complete source for medical excellence. Surgical instruments, diagnostic machines, reagents, and lab equipment.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce.vercel.app'),
+  metadataBase: new URL(SITE_CONFIG.url),
+
+  title: {
+    default:  SITE_CONFIG.fullName,
+    template: '%s | MedCore BD',
+  },
+  description: SITE_CONFIG.description,
+  keywords:    SITE_CONFIG.keywords,
+  authors:     [{ name: 'MedCore Bangladesh Ltd.' }],
+  creator:     'MedCore Bangladesh Ltd.',
+  publisher:   'MedCore Bangladesh Ltd.',
+
+  openGraph: {
+    type:        'website',
+    locale:      'en_BD',
+    url:         SITE_CONFIG.url,
+    siteName:    SITE_CONFIG.name,
+    title:       SITE_CONFIG.fullName,
+    description: SITE_CONFIG.description,
+    images: [{
+      url:    '/images/og-default.jpg',
+      width:  1200,
+      height: 630,
+      alt:    'MedCore BD — Medical Equipment Supplier Bangladesh',
+    }],
+  },
+
+  twitter: {
+    card:        'summary_large_image',
+    site:        SITE_CONFIG.twitterHandle,
+    title:       SITE_CONFIG.fullName,
+    description: SITE_CONFIG.description,
+    images:      ['/images/og-default.jpg'],
+  },
+
+  robots: {
+    index:  true,
+    follow: true,
+    googleBot: {
+      index:               true,
+      follow:              true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet':       -1,
+    },
+  },
+
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
+    other: {
+      'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || '',
+    },
+  },
+
+  alternates: {
+    canonical: SITE_CONFIG.url,
+    languages: {
+      'en-BD': SITE_CONFIG.url,
+      'en':    SITE_CONFIG.url,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable}`} data-scroll-behavior="smooth">
+      <head>
+        {/* Performance: preconnect to critical third-party origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="//res.cloudinary.com" />
+      </head>
       <body className="min-h-screen">
+        {/* Site-wide structured data */}
+        <StructuredData schema={generateOrganizationSchema()} />
+        <StructuredData schema={generateWebSiteSchema()} />
+        <LocalBusinessSchema />
+
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              {/* <WebVitalsReporter /> */}
               <TopBar />
               <HeaderWrapper />
               <main>{children}</main>
@@ -48,6 +134,24 @@ export default function RootLayout({ children }) {
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>
+
+        {/* Google Analytics 4 — loaded after interactive to avoid blocking */}
+        {gaId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}', { page_path: window.location.pathname });
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

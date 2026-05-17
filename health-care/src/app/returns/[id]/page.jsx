@@ -43,7 +43,7 @@ export default function ReturnDetailPage() {
         router.push('/returns/my-returns');
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
       alert('Failed to load return details');
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ export default function ReturnDetailPage() {
         alert(data.message || 'Failed to cancel return request');
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
       alert('Error cancelling return request');
     } finally {
       setCancelling(false);

@@ -46,7 +46,7 @@ export default function ReturnRequestPage() {
         router.push('/orders');
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
       alert('Failed to load order');
       router.push('/orders');
     } finally {
@@ -90,7 +90,7 @@ export default function ReturnRequestPage() {
 
       setImages([...images, ...uploadedImages]);
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
       alert('Failed to upload images');
     } finally {
       setUploadingImages(false);
@@ -156,7 +156,7 @@ export default function ReturnRequestPage() {
         alert(data.message || 'Failed to submit return request');
       }
     } catch (err) {
-      console.error(err);
+      process.env.NODE_ENV !== "production" && console.error(err);
       alert('Error submitting return request');
     } finally {
       setSubmitting(false);

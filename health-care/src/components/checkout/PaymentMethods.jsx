@@ -1,11 +1,10 @@
 export default function PaymentMethods({ selected, onSelect }) {
   const methods = [
-    { id: 'stripe', label: 'Credit/Debit Card', color: '#E6EBFF', textColor: '#635BFF' },
     { id: 'bkash', label: 'bKash', color: '#FBEAF0', textColor: '#E2136E' },
     { id: 'nagad', label: 'Nagad', color: '#E1F5EE', textColor: '#0E8A6E' },
-    { id: 'bank', label: 'Bank transfer (BEFTN)', color: '#E6F1FB', textColor: '#185FA5' },
+    { id: 'bank', label: 'Bank Transfer (BEFTN)', color: '#E6F1FB', textColor: '#185FA5' },
     { id: 'npsb', label: 'NPSB', color: '#FAEEDA', textColor: '#854F0B' },
-    { id: 'credit', label: 'B2B credit line', color: '#E1F5EE', textColor: '#0E8A6E' },
+    { id: 'credit', label: 'B2B Credit Line', color: '#E1F5EE', textColor: '#0E8A6E' },
     { id: 'cheque', label: 'Cheque', color: '#EEEDFE', textColor: '#534AB7' }
   ];
 
@@ -29,13 +28,6 @@ export default function PaymentMethods({ selected, onSelect }) {
               style={{ background: method.color }}
             >
               <svg width="18" height="13" viewBox="0 0 32 20" fill="none">
-                {method.id === 'stripe' && (
-                  <>
-                    <rect x="2" y="4" width="28" height="12" rx="2" fill={method.textColor} opacity="0.2" />
-                    <rect x="4" y="7" width="8" height="2" rx="1" fill={method.textColor} />
-                    <rect x="4" y="11" width="12" height="2" rx="1" fill={method.textColor} />
-                  </>
-                )}
                 {method.id === 'bank' && (
                   <>
                     <rect x="1" y="1" width="22" height="14" rx="3" stroke={method.textColor} strokeWidth="1.2" />
