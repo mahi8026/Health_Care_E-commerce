@@ -82,14 +82,16 @@ export default function ProductInfoPanel({
   }, [product, price, quantity]);
 
   return (
-    <div className="sticky top-20">
+    <div className="sticky top-20 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed top-4 right-4 z-50 bg-[#D1FAE5] text-[#065F46] rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 animate-slide-in">
-          <span className="text-[18px]">✓</span>
-          <p className="text-[13px] font-semibold">
-            {toastMessage}
-          </p>
+        <div className="fixed top-4 right-4 z-50 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3">
+          <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <p className="text-[13px] font-semibold">{toastMessage}</p>
         </div>
       )}
 
@@ -150,24 +152,24 @@ export default function ProductInfoPanel({
       </div>
 
       {/* Price Section */}
-      <div className="mb-4">
-        <div className="flex items-baseline gap-2 flex-wrap mb-1">
-          <span className="text-[32px] font-extrabold text-[#0B2545]">
-            ৳{price.toLocaleString()}
+      <div className="mb-5 p-4 bg-[#F8FAFC] rounded-2xl border border-gray-100">
+        <div className="flex items-baseline gap-3 flex-wrap mb-1">
+          <span className="text-[34px] font-extrabold text-[#0B2545] leading-none">
+            {price > 0 ? `৳${price.toLocaleString()}` : (
+              <span className="text-[20px] font-bold text-gray-500">Contact for Price</span>
+            )}
           </span>
           {oldPrice > price && (
             <>
-              <span className="text-[16px] text-[#6B7280] line-through">
-                ৳{oldPrice.toLocaleString()}
-              </span>
-              <span className="text-[12px] font-semibold bg-[#10B981] text-white px-2 py-1 rounded">
-                Save ৳{savings.toLocaleString()} ({discountPercent}%)
+              <span className="text-[16px] text-gray-400 line-through">৳{oldPrice.toLocaleString()}</span>
+              <span className="text-[12px] font-bold bg-emerald-500 text-white px-2.5 py-1 rounded-lg">
+                Save ৳{savings.toLocaleString()} ({discountPercent}% off)
               </span>
             </>
           )}
         </div>
-        <div className="text-[12px] text-[#6B7280]">
-          Inclusive of VAT · Free installation in Dhaka
+        <div className="text-[12px] text-gray-500 mt-1">
+          {price > 0 ? 'Inclusive of VAT · Free installation in Dhaka' : 'Call +880 1800-000-MED for pricing'}
         </div>
       </div>
 
@@ -285,33 +287,32 @@ export default function ProductInfoPanel({
       </div>
 
       {/* Action Buttons */}
-      <div className="space-y-3 mb-5">
+      <div className="space-y-2.5 mb-5">
         {/* Add to Cart */}
-        <button 
+        <button
           onClick={handleAddToCart}
           disabled={addingToCart}
-          className="w-full h-[52px] bg-[#0B2545] hover:bg-[#1a3a5c] text-white rounded-[10px] text-[15px] font-bold transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+          className="w-full h-[52px] bg-[#0B2545] hover:bg-[#0d2d52] text-white rounded-xl text-[15px] font-bold transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="9" cy="21" r="1"/>
-            <circle cx="20" cy="21" r="1"/>
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
             <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
           </svg>
           {buttonText}
         </button>
 
         {/* Request Quotation */}
-        <button 
+        <button
           onClick={handleQuotationRequest}
-          className="w-full h-[44px] bg-transparent hover:bg-[#F8FAFC] text-[#0B2545] border-[1.5px] border-[#0B2545] rounded-[10px] text-[13px] font-semibold transition-all"
+          className="w-full h-[46px] bg-transparent hover:bg-gray-50 text-[#0B2545] border border-[#0B2545]/30 hover:border-[#0B2545] rounded-xl text-[13px] font-semibold transition-all"
         >
-          Request formal quotation (B2B)
+          📋 Request Formal Quotation (B2B)
         </button>
 
         {/* WhatsApp */}
-        <button 
+        <button
           onClick={handleWhatsAppClick}
-          className="w-full h-[44px] bg-[#25D366] hover:bg-[#20b958] text-white rounded-[10px] text-[13px] font-semibold transition-all flex items-center justify-center gap-2"
+          className="w-full h-[46px] bg-[#25D366] hover:bg-[#20b958] text-white rounded-xl text-[13px] font-semibold transition-all flex items-center justify-center gap-2 shadow-sm"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -325,28 +326,28 @@ export default function ProductInfoPanel({
       <div className="grid grid-cols-2 gap-2 mb-5">
         {[
           { icon: '🚚', text: 'Free delivery', subtext: 'Dhaka metro area' },
-          { icon: '⏰', text: 'Order before 12 PM', subtext: 'Same-day dispatch' },
-          { icon: '🔧', text: 'Free installation', subtext: 'Dhaka' },
-          { icon: '🔄', text: '30-day return', subtext: 'Policy' }
+          { icon: '⚡', text: 'Order before 12 PM', subtext: 'Same-day dispatch' },
+          { icon: '🔧', text: 'Free installation', subtext: 'Dhaka metro' },
+          { icon: '🔄', text: '30-day return', subtext: 'Hassle-free policy' }
         ].map((item, idx) => (
-          <div key={idx} className="bg-[#F9FAFB] rounded-lg p-3 flex items-start gap-2">
-            <span className="text-[18px] flex-shrink-0">{item.icon}</span>
+          <div key={idx} className="bg-[#F8FAFC] rounded-xl p-3 flex items-start gap-2.5 border border-gray-100">
+            <span className="text-[20px] flex-shrink-0 leading-none mt-0.5">{item.icon}</span>
             <div>
-              <div className="text-[11px] font-semibold text-[#0B2545]">{item.text}</div>
-              <div className="text-[10px] text-[#6B7280]">{item.subtext}</div>
+              <div className="text-[11px] font-bold text-[#0B2545]">{item.text}</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">{item.subtext}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Certification Badges */}
-      <div className="flex flex-wrap gap-3 pt-4 border-t border-[#E5E7EB]">
+      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
         {['CE Certified', 'ISO 13485', 'DGDA Cleared', '24/7 Support'].map((trust, idx) => (
-          <div key={idx} className="flex items-center gap-1 text-[11px] text-[#6B7280]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5">
+          <div key={idx} className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            {trust}
+            <span className="text-[11px] font-semibold text-emerald-700">{trust}</span>
           </div>
         ))}
       </div>
