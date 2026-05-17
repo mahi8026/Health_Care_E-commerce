@@ -72,6 +72,7 @@ export default function ProductsPage({ onProductClick }) {
 
   const { products, loading, pagination, error } = useProducts(productFilters);
 
+  // Update allProducts when products change (pagination handling)
   useEffect(() => {
     if (products && products.length > 0) {
       if (page === 1) {
@@ -88,7 +89,8 @@ export default function ProductsPage({ onProductClick }) {
       setHasMore(false);
       setLoadingMore(false);
     }
-  }, [products, page, pagination]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, page, pagination.page, pagination.pages]);
 
   const resetPagination = () => { setPage(1); setAllProducts([]); setHasMore(true); };
 
