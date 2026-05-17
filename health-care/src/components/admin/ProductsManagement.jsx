@@ -175,56 +175,62 @@ export default function ProductsManagement({ openCreateRef }) {
   };
 
   const handleEditOpen = (product) => {
-    
-    setModalMode('edit');
-    setModalProduct(product);
-    
-    // Extract IDs from populated fields (handle both string and ObjectId formats)
-    const categoryId = product.category && typeof product.category === 'object' ? product.category._id : product.category;
-    const brandId = product.brand && typeof product.brand === 'object' ? product.brand._id : product.brand;
-    
-    // Pre-fill createForm with all product fields
-    const formData = {
-      name:              product.name || '',
-      sku:               product.sku || '',
-      brand:             brandId || '',
-      category:          categoryId || '',
-      subcategory:       product.subcategory || '',
-      description:       product.description || '',
-      price:             product.price?.toString() || '',
-      b2bPrice:          product.b2bPrice?.toString() || '',
-      oldPrice:          product.oldPrice?.toString() || '',
-      discountPct:       product.discountPct?.toString() || '0',
-      stock:             product.stock?.toString() || '',
-      lowStockThreshold: product.lowStockThreshold?.toString() || '10',
-      unit:              product.unit || 'piece',
-      minOrderQty:       product.minOrderQty?.toString() || '1',
-      certifications:    product.certifications || [],
-      specifications:    product.specifications ? Object.entries(product.specifications).map(([key, value]) => ({ key, value })) : [],
-      storageTemp:       product.storageTemp || 'room',
-      hazardClass:       product.hazardClass || 'safe',
-      compatibleWith:    product.compatibleWith || [],
-      tags:              product.tags || [],
-      lotNumber:         product.lotNumber || '',
-      expiryDate:        product.expiryDate ? product.expiryDate.split('T')[0] : '',
-      hasAMC:            product.hasAMC || false,
-      isFeatured:        product.isFeatured || false,
-      isActive:          product.isActive !== false,
-      images:            product.images || [],
-    };
-    
-    setCreateForm(formData);
-    
-    // Set brand search to display name
-    if (typeof product.brand === 'object' && product.brand.name) {
-      setBrandSearch(product.brand.name);
-    } else if (typeof product.brand === 'string') {
-      // Legacy string brand - find matching manufacturer
-      const manufacturer = manufacturers?.find(m => m._id === product.brand || m.name === product.brand);
-      setBrandSearch(manufacturer?.name || product.brand);
+    try {
+      setModalMode('edit');
+      setModalProduct(product);
+      
+      // Extract IDs from populated fields (handle both string and ObjectId formats)
+      const categoryId = product.category && typeof product.category === 'object' ? product.category._id : product.category;
+      const brandId = product.brand && typeof product.brand === 'object' ? product.brand._id : product.brand;
+      
+      // Pre-fill createForm with all product fields
+      const formData = {
+        name:              product.name || '',
+        sku:               product.sku || '',
+        brand:             brandId || '',
+        category:          categoryId || '',
+        subcategory:       product.subcategory || '',
+        description:       product.description || '',
+        price:             product.price?.toString() || '',
+        b2bPrice:          product.b2bPrice?.toString() || '',
+        oldPrice:          product.oldPrice?.toString() || '',
+        discountPct:       product.discountPct?.toString() || '0',
+        stock:             product.stock?.toString() || '',
+        lowStockThreshold: product.lowStockThreshold?.toString() || '10',
+        unit:              product.unit || 'piece',
+        minOrderQty:       product.minOrderQty?.toString() || '1',
+        certifications:    product.certifications || [],
+        specifications:    product.specifications ? Object.entries(product.specifications).map(([key, value]) => ({ key, value })) : [],
+        storageTemp:       product.storageTemp || 'room',
+        hazardClass:       product.hazardClass || 'safe',
+        compatibleWith:    product.compatibleWith || [],
+        tags:              product.tags || [],
+        lotNumber:         product.lotNumber || '',
+        expiryDate:        product.expiryDate ? product.expiryDate.split('T')[0] : '',
+        hasAMC:            product.hasAMC || false,
+        isFeatured:        product.isFeatured || false,
+        isActive:          product.isActive !== false,
+        images:            product.images || [],
+      };
+      
+      setCreateForm(formData);
+      
+      // Set brand search to display name
+      if (typeof product.brand === 'object' && product.brand?.name) {
+        setBrandSearch(product.brand.name);
+      } else if (typeof product.brand === 'string') {
+        // Legacy string brand - find matching manufacturer
+        const manufacturer = manufacturers?.find(m => m._id === product.brand || m.name === product.brand);
+        setBrandSearch(manufacturer?.name || product.brand);
+      } else {
+        setBrandSearch('');
+      }
+      
+      setShowCreate(true); // reuse the same modal
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") console.error('Error opening edit modal:', error);
+      showMessage('Failed to open edit form', 'error');
     }
-    
-    setShowCreate(true); // reuse the same modal
   };
 
   const handleEditSave = async () => {

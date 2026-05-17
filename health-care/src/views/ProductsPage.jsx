@@ -273,7 +273,7 @@ export default function ProductsPage({ onProductClick }) {
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700">
                     <option value="">All brands</option>
                     {brands.map(brand => (
-                      <option key={brand._id} value={brand.name}>{brand.name}</option>
+                      <option key={brand._id} value={brand?.name || brand}>{brand?.name || brand}</option>
                     ))}
                   </select>
                 </div>
@@ -440,7 +440,7 @@ export default function ProductsPage({ onProductClick }) {
                   onChange={e => { handleFilterChange({ ...filters, brands: e.target.value ? [e.target.value] : [] }); setSidebarOpen(false); }}
                   className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]">
                   <option value="">All brands</option>
-                  {brands.map(brand => <option key={brand._id} value={brand.name}>{brand.name}</option>)}
+                  {brands.map(brand => <option key={brand._id} value={brand?.name || brand}>{brand?.name || brand}</option>)}
                 </select>
               </div>
               <div>

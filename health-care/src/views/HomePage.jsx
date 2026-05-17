@@ -1321,7 +1321,7 @@ export default function HomePage() {
           {/* 4-column grid of brand cards */}
           <div className="cat-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
             {brands.slice(0, 8).map((brand, i) => {
-              const brandName = typeof brand === 'object' ? brand.name : brand;
+              const brandName = typeof brand === 'object' ? (brand?.name || 'Brand') : brand;
               const brandLogo = typeof brand === 'object' ? brand.logo?.url : null;
               
               return (
@@ -1355,8 +1355,8 @@ export default function HomePage() {
                   color: '#6B7280', whiteSpace: 'nowrap', borderRight: '1px solid #E5E7EB',
                   display: 'flex', alignItems: 'center', height: 32 }}>
                   {typeof brand === 'object' && brand.logo?.url
-                    ? <img src={brand.logo.url} alt={brand.name} style={{ height: 20, objectFit: 'contain' }} />
-                    : (typeof brand === 'string' ? brand : brand.name)
+                    ? <img src={brand.logo.url} alt={brand?.name || 'Brand'} style={{ height: 20, objectFit: 'contain' }} />
+                    : (typeof brand === 'string' ? brand : (brand?.name || 'Brand'))
                   }
                 </div>
               ))}
