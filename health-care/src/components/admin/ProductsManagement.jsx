@@ -180,8 +180,8 @@ export default function ProductsManagement({ openCreateRef }) {
     setModalProduct(product);
     
     // Extract IDs from populated fields (handle both string and ObjectId formats)
-    const categoryId = typeof product.category === 'object' ? product.category._id : product.category;
-    const brandId = typeof product.brand === 'object' ? product.brand._id : product.brand;
+    const categoryId = product.category && typeof product.category === 'object' ? product.category._id : product.category;
+    const brandId = product.brand && typeof product.brand === 'object' ? product.brand._id : product.brand;
     
     // Pre-fill createForm with all product fields
     const formData = {
