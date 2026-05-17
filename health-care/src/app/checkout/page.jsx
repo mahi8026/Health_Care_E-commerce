@@ -10,7 +10,6 @@ export default function Checkout() {
     <ErrorBoundary
       title="Checkout Error"
       message="We encountered an issue processing your checkout. Please refresh the page or contact support."
-      onReset={() => window.location.reload()}
     >
       <CheckoutPage />
     </ErrorBoundary>
