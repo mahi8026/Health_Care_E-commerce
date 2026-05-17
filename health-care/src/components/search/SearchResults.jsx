@@ -1,206 +1,249 @@
 "use client";
 
+import { useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
 import Spinner from '@/components/ui/Spinner';
+import WishlistButton from '@/components/wishlist/WishlistButton';
 
-export default function SearchResults({ products, loading, query, onProductClick, hasMore, onLoadMore, loadingMore, totalProducts }) {
+/* ─── Individual Product Card ─────────────────────────────────────────────── */
+function ProductCard({ product, onProductClick }) {
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
+  const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
+  const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+  const catName = typeof product.category === 'object' ? product.category?.name : product.category;
+  const price = product.price || 0;
+  const oldPrice = product.oldPrice || 0;
+  const hasDiscount = oldPrice > price && oldPrice > 0;
+  const discountPct = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  const inStock = product.stock > 0;
+
+  const handleClick = useCallback(() => {
+    const id = product._id || product.id;
+    if (onProductClick) onProductClick(id);
+    else router.push(`/products/${id}`);
+  }, [product, onProductClick, router]);
+
+  const handleAddToCart = useCallback(async (e) => {
+    e.stopPropagation();
+    if (addingToCart || added) return;
+    setAddingToCart(true);
+    try {
+      addToCart(product, 1);
+      setAdded(true);
+      setTimeout(() => { setAdded(false); setAddingToCart(false); }, 1500);
+    } catch {
+      setAddingToCart(false);
+    }
+  }, [addToCart, product, addingToCart, added]);
+
+  return (
+    <div
+      onClick={handleClick}
+      className="group bg-white rounded-2xl border border-gray-100 hover:border-[#0E8A6E]/40 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col overflow-hidden"
+    >
+      {/* Image */}
+      <div className="relative bg-[#F8FAFC] w-full aspect-[4/3] overflow-hidden flex-shrink-0">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Bangladesh`}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={e => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        {/* Fallback */}
+        <div className={`${imageUrl ? 'hidden' : 'flex'} absolute inset-0 items-center justify-center text-5xl bg-[#F1F5F9]`}>
+          🏥
+        </div>
+
+        {/* Badges */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {hasDiscount && (
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+              -{discountPct}%
+            </span>
+          )}
+          {product.isFeatured && !hasDiscount && (
+            <span className="bg-[#F59E0B] text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+              ⭐ Featured
+            </span>
+          )}
+        </div>
+
+        {/* Stock badge */}
+        <div className={`absolute top-2 right-8 px-2 py-0.5 rounded-md text-[10px] font-semibold shadow-sm ${
+          inStock ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+        }`}>
+          {inStock ? `${product.stock > 99 ? '99+' : product.stock} in stock` : 'Out of stock'}
+        </div>
+
+        {/* Wishlist */}
+        <div className="absolute top-1.5 right-1.5" onClick={e => e.stopPropagation()}>
+          <WishlistButton productId={product._id || product.id} size="small" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-3.5 flex-1 flex flex-col">
+        {/* Category + Brand */}
+        <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+          {catName && (
+            <span className="text-[10px] font-bold text-[#0E8A6E] uppercase tracking-wider">{catName}</span>
+          )}
+          {catName && brandName && <span className="text-gray-300 text-[10px]">·</span>}
+          {brandName && (
+            <span className="text-[10px] text-gray-400 font-medium">{brandName}</span>
+          )}
+        </div>
+
+        {/* Name */}
+        <h3 className="text-[13px] font-semibold text-gray-800 leading-snug line-clamp-2 flex-1 mb-3 group-hover:text-[#0E8A6E] transition-colors">
+          {product.name}
+        </h3>
+
+        {/* Price */}
+        <div className="flex items-baseline gap-2 mb-3">
+          <span className="text-[17px] font-bold text-[#0B2545]">
+            {price > 0 ? `৳${price.toLocaleString()}` : <span className="text-[13px] text-gray-500 font-medium">Contact for Price</span>}
+          </span>
+          {hasDiscount && (
+            <span className="text-[11px] text-gray-400 line-through">৳{oldPrice.toLocaleString()}</span>
+          )}
+          {hasDiscount && (
+            <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+              Save ৳{(oldPrice - price).toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleAddToCart}
+            disabled={!inStock}
+            className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-semibold transition-all ${
+              added
+                ? 'bg-emerald-500 text-white'
+                : inStock
+                  ? 'bg-[#0B2545] hover:bg-[#0d2d52] text-white'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            {addingToCart && !added ? (
+              <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+            ) : added ? (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Added
+              </>
+            ) : (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                Add to Cart
+              </>
+            )}
+          </button>
+          <button
+            onClick={e => { e.stopPropagation(); handleClick(); }}
+            className="py-2 rounded-xl text-[11px] font-semibold border border-[#0B2545]/20 text-[#0B2545] hover:bg-[#0B2545] hover:text-white transition-all"
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Search Results Container ────────────────────────────────────────────── */
+export default function SearchResults({ products, loading, query, onProductClick, hasMore, onLoadMore, loadingMore }) {
+
   if (loading && products.length === 0) {
     return (
-      <div className="flex justify-center items-center py-20">
+      <div className="flex flex-col items-center justify-center py-24 gap-4">
         <Spinner />
+        <p className="text-[13px] text-gray-400">Loading products...</p>
       </div>
     );
   }
 
-  if (products.length === 0) {
+  if (!loading && products.length === 0) {
     return (
-      <div className="text-center py-12 md:py-20">
-        <div className="text-[40px] md:text-[48px] mb-4">🔍</div>
-        <h3 className="text-[16px] md:text-[18px] font-semibold mb-2 font-[family-name:var(--font-lora)]">
+      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100">
+        <div className="text-[56px] mb-4">🔍</div>
+        <h3 className="text-[18px] font-semibold text-gray-800 mb-2 font-[family-name:var(--font-lora)]">
           No products found
         </h3>
-        <p className="text-[12px] md:text-[13px] text-[var(--color-text-secondary)] mb-6">
-          {query ? `No results for "${query}"` : 'Try adjusting your filters'}
+        <p className="text-[13px] text-gray-500 mb-6 text-center max-w-xs">
+          {query ? `No results for "${query}". Try different keywords.` : 'Try adjusting your filters or search terms.'}
         </p>
-        <button className="px-6 py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-medium hover:bg-[#0d2d52] transition-colors">
-          Clear filters
-        </button>
       </div>
     );
   }
 
   return (
     <div>
-      {/* Results Header */}
-      <div className="mb-4">
-        <div className="text-[12px] md:text-[13px] text-[var(--color-text-secondary)]">
-          Showing {products.length} of {totalProducts || products.length} {totalProducts === 1 ? 'product' : 'products'}
-          {query && <span> for "{query}"</span>}
-        </div>
+      {/* Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+        {products.map(product => (
+          <ProductCard
+            key={product._id || product.id}
+            product={product}
+            onProductClick={onProductClick}
+          />
+        ))}
       </div>
 
-      {/* Product Grid - Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-        {products.map((product) => {
-          // Calculate savings and discount percentage
-          const price = product.price || 0;
-          const oldPrice = product.oldPrice || 0;
-          const savings = oldPrice > price ? oldPrice - price : 0;
-          const discountPercent = oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0;
-          const hasDiscount = savings > 0 && discountPercent > 0;
-
-          return (
-            <div
-              key={product.id || product._id}
-              onClick={() => onProductClick && onProductClick(product._id || product.id)}
-              className="group bg-white rounded-xl border border-gray-100 hover:border-[#0E8A6E] hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
-            >
-              {/* Image Container - Fixed height */}
-              <div className="relative bg-gray-100 w-full h-44 rounded-t-xl overflow-hidden flex-shrink-0">
-                {(() => {
-                  const imageData = product.images?.[0];
-                  const imageUrl = typeof imageData === 'string' ? imageData : imageData?.url;
-                  
-                  return imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img 
-                      src={imageUrl} 
-                      alt={typeof imageData === 'object' ? imageData.alt : product.name}
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        objectFit: 'cover',
-                        display: 'block',
-                        transition: 'transform 0.4s ease'
-                      }}
-                      className="group-hover:scale-105"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg';
-                        e.currentTarget.style.objectFit = 'contain';
-                        e.currentTarget.style.padding = '24px';
-                        e.currentTarget.style.opacity = '0.4';
-                        e.currentTarget.onerror = null;
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                      </svg>
-                    </div>
-                  );
-                })()}
-                
-                {/* Discount Badge */}
-                {hasDiscount && (
-                  <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md shadow-md z-10">
-                    <div className="text-xs font-bold">-{discountPercent}%</div>
-                  </div>
-                )}
-                
-                {/* New/Sale Badge */}
-                {product.badge && !hasDiscount && (
-                  <div className={`absolute top-2 left-2 px-2 py-1 rounded-md shadow-md text-xs font-bold z-10 ${
-                    product.badge === 'sale'
-                      ? 'bg-red-500 text-white'
-                      : 'bg-green-500 text-white'
-                  }`}>
-                    {product.badge === 'sale' ? 'SALE' : 'NEW'}
-                  </div>
-                )}
-                
-                {/* Stock Badge */}
-                {product.stock !== undefined && (
-                  <div className={`absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-semibold shadow-md z-10 ${
-                    product.stock > 0 
-                      ? 'bg-green-500 text-white' 
-                      : 'bg-red-500 text-white'
-                  }`}>
-                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                  </div>
-                )}
-              </div>
-              
-              {/* Content */}
-              <div className="p-3 md:p-4 flex-1 flex flex-col">
-                {/* Brand */}
-                <div className="text-[10px] md:text-xs text-[#0E8A6E] font-semibold uppercase tracking-wider mb-1">
-                  {typeof product.brand === 'object' ? product.brand?.name : product.brand}
-                </div>
-                
-                {/* Product Name */}
-                <h3 className="text-sm md:text-base font-semibold text-gray-800 mb-2 line-clamp-2 flex-1 group-hover:text-[#0E8A6E] transition-colors">
-                  {product.name}
-                </h3>
-                
-                {/* Price Section */}
-                <div className="mt-auto">
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-lg md:text-xl font-bold text-gray-900">
-                      ৳{product.price.toLocaleString()}
-                    </span>
-                    {product.oldPrice && (
-                      <span className="text-xs md:text-sm text-gray-400 line-through">
-                        ৳{product.oldPrice.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Savings Display */}
-                  {hasDiscount && (
-                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg px-2 py-1 mb-3">
-                      <span className="text-xs font-semibold text-purple-700">
-                        💰 Save ৳{savings.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {/* Action Button */}
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onProductClick && onProductClick(product._id || product.id);
-                    }}
-                    className="w-full bg-gradient-to-r from-[#0E8A6E] to-[#0c7359] text-white py-2.5 md:py-3 rounded-lg font-semibold text-xs md:text-sm hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                  >
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Load More Button */}
+      {/* Load More */}
       {hasMore && (
         <div className="flex justify-center mt-10">
           <button
             onClick={onLoadMore}
             disabled={loadingMore}
-            className="group relative px-10 py-4 bg-gradient-to-r from-[#0E8A6E] to-[#0c7359] text-white rounded-xl text-[15px] font-bold hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-3 overflow-hidden"
+            className="flex items-center gap-3 px-10 py-3.5 bg-[#0B2545] hover:bg-[#0d2d52] text-white rounded-2xl text-[14px] font-semibold transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0c7359] to-[#0E8A6E] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            
-            {/* Content */}
-            <span className="relative z-10 flex items-center gap-3">
-              {loadingMore ? (
-                <>
-                  <Spinner size="sm" />
-                  Loading More Products...
-                </>
-              ) : (
-                <>
-                  Load More Products
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </>
-              )}
-            </span>
+            {loadingMore ? (
+              <>
+                <Spinner size="sm" />
+                Loading...
+              </>
+            ) : (
+              <>
+                Load More Products
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 9l-7 7-7-7"/>
+                </svg>
+              </>
+            )}
           </button>
+        </div>
+      )}
+
+      {/* End of results */}
+      {!hasMore && products.length > 0 && (
+        <div className="flex items-center justify-center gap-3 mt-10 text-[12px] text-gray-400">
+          <div className="h-px bg-gray-200 flex-1 max-w-24" />
+          All {products.length} products shown
+          <div className="h-px bg-gray-200 flex-1 max-w-24" />
         </div>
       )}
     </div>
