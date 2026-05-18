@@ -606,73 +606,109 @@ export default function HomePage() {
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* HERO SECTION — dark gradient with search + stats */}
+      {/* HERO — left: text+search  |  right: image slider */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 60%, #0E8A6E 100%)', position: 'relative', overflow: 'hidden', padding: '56px 0 48px' }}>
-        {/* Background orbs */}
+      <section style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 60%, #0E8A6E 100%)', position: 'relative', overflow: 'hidden', padding: '48px 0' }}>
         <div style={{ position: 'absolute', top: '-10%', right: '5%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(14,138,110,0.25), transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '-20%', left: '0%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(77,219,184,0.12), transparent 70%)', pointerEvents: 'none' }} />
 
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
-          {/* Badge */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: '#4DDBB8', fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            <span style={{ width: 7, height: 7, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
-            Bangladesh&apos;s #1 Medical Equipment Platform
-          </div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2, display: 'grid', gridTemplateColumns: '1fr 480px', gap: 40, alignItems: 'center' }}
+          className="hero-grid-container">
 
-          {/* Headline */}
-          <h1 className="hero-content" style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 16, maxWidth: 700 }}>
-            Medical Equipment &amp;<br />
-            <span style={{ color: '#4DDBB8' }}>
-              <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
-            </span>
-          </h1>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', marginBottom: 32, maxWidth: 560, lineHeight: 1.7 }}>
-            10,000+ DGDA-registered products from 50+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals &amp; clinics.
-          </p>
-
-          {/* Search bar */}
-          <div style={{ display: 'flex', gap: 0, maxWidth: 620, marginBottom: 32, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
-            <input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              placeholder={searchPlaceholder}
-              style={{ flex: 1, padding: '16px 20px', border: 'none', outline: 'none', fontSize: 14, color: '#1F2937', background: 'transparent' }}
-            />
-            <button onClick={handleSearch}
-              style={{ padding: '16px 28px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => e.currentTarget.style.background = '#0B7558'}
-              onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
-              🔍 Search
-            </button>
-          </div>
-
-          {/* Quick category pills */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 40 }}>
-            {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (
-              <button key={q} onClick={() => router.push(`/search?q=${encodeURIComponent(q)}`)}
-                style={{ padding: '7px 16px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
-                {q}
+          {/* LEFT: Text + Search */}
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: '#4DDBB8', fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ width: 7, height: 7, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
+              Bangladesh&apos;s #1 Medical Equipment Platform
+            </div>
+            <h1 style={{ fontSize: 'clamp(26px, 3.5vw, 48px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>
+              Medical Equipment &amp;<br />
+              <span style={{ color: '#4DDBB8' }}>
+                <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
+              </span>
+            </h1>
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 28, maxWidth: 480, lineHeight: 1.7 }}>
+              10,000+ DGDA-registered products from 50+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals &amp; clinics.
+            </p>
+            <div style={{ display: 'flex', gap: 0, maxWidth: 520, marginBottom: 24, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder={searchPlaceholder}
+                style={{ flex: 1, padding: '15px 18px', border: 'none', outline: 'none', fontSize: 14, color: '#1F2937', background: 'transparent' }} />
+              <button onClick={handleSearch}
+                style={{ padding: '15px 24px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#0B7558'}
+                onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
+                🔍 Search
               </button>
-            ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
+              {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (
+                <button key={q} onClick={() => router.push(`/search?q=${encodeURIComponent(q)}`)}
+                  style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
+                  {q}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
+              {[{ val: '10,000+', label: 'Products' }, { val: '50+', label: 'Global Brands' }, { val: '500+', label: 'B2B Clients' }, { val: 'DGDA', label: 'Registered' }].map(({ val, label }) => (
+                <div key={label}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#4DDBB8' }}>{val}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{label}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Mini stats row */}
-          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-            {[
-              { val: '10,000+', label: 'Products' },
-              { val: '50+', label: 'Global Brands' },
-              { val: '500+', label: 'B2B Clients' },
-              { val: 'DGDA', label: 'Registered' },
-            ].map(({ val, label }) => (
-              <div key={label} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#4DDBB8' }}>{val}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{label}</div>
-              </div>
-            ))}
+          {/* RIGHT: Image Slider */}
+          <div className="hero-right-panel"
+            style={{ position: 'relative', height: 420, borderRadius: 16, overflow: 'hidden', background: '#1a3a5c', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
+            onMouseEnter={() => setIsSliderHovered(true)}
+            onMouseLeave={() => setIsSliderHovered(false)}>
+            {heroSlides.length > 0 ? (
+              heroSlides.map((slide, i) => currentSlide === i && (
+                <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+                  <img src={slide.imageUrl} alt={slide.altText || `Slide ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              ))
+            ) : (
+              <>
+                {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" alt="Medical Equipment" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" alt="Laboratory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" alt="Hospital" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" alt="Surgical" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+              </>
+            )}
+            {/* Bottom gradient */}
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', zIndex: 5 }} />
+            {/* Dots */}
+            {(() => {
+              const total = heroSlides.length > 0 ? heroSlides.length : 4;
+              return (
+                <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 10 }}>
+                  {Array.from({ length: total }).map((_, i) => (
+                    <span key={i} onClick={() => setCurrentSlide(i)} role="button" aria-label={`Slide ${i + 1}`}
+                      style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} />
+                  ))}
+                </div>
+              );
+            })()}
+            {/* Counter */}
+            <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 10, color: '#fff', fontSize: 11, fontWeight: 700, background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: 20 }}>
+              {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length > 0 ? heroSlides.length : 4).padStart(2, '0')}
+            </div>
+            {/* Arrows */}
+            {(() => {
+              const total = heroSlides.length > 0 ? heroSlides.length : 4;
+              return (
+                <>
+                  <button onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
+                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}>‹</button>
+                  <button onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}>›</button>
+                </>
+              );
+            })()}
           </div>
         </div>
       </section>
@@ -682,155 +718,15 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '14px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-          {[
-            { icon: '🚚', text: 'Free delivery over ৳50,000' },
-            { icon: '❄️', text: 'Cold chain for reagents' },
-            { icon: '🔧', text: 'Free installation in Dhaka' },
-            { icon: '📞', text: '24/7 technical support' },
-            { icon: '↩', text: '30-day returns' },
-          ].map(({ icon, text }) => (
+          {[{ icon: '🚚', text: 'Free delivery over ৳50,000' }, { icon: '❄️', text: 'Cold chain for reagents' }, { icon: '🔧', text: 'Free installation in Dhaka' }, { icon: '📞', text: '24/7 technical support' }, { icon: '↩', text: '30-day returns' }].map(({ icon, text }) => (
             <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#374151', fontWeight: 500 }}>
-              <span style={{ fontSize: 16 }}>{icon}</span>
-              {text}
+              <span style={{ fontSize: 16 }}>{icon}</span>{text}
             </div>
           ))}
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* HERO SLIDER (image banner) — kept for admin-configured banners */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{
-        background: '#F8FAFC',
-        position: 'relative', overflow: 'hidden', padding: '24px 0', display: heroSlides.length > 0 || promoBanner ? 'block' : 'none'
-      }}>
-        <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '0 24px',
-          position: 'relative', display: 'grid', gridTemplateColumns: '60% 40%', gap: 20,
-          alignItems: 'stretch', zIndex: 2 }}
-          className="hero-grid-container">
 
-          {/* ═══════════════════ LEFT SIDE: IMAGE SLIDER ═══════════════════ */}
-          <div className="hero-left-slider" style={{ position: 'relative', height: '380px', borderRadius: 12, overflow: 'hidden', zIndex: 3, background: '#E5E7EB' }}
-            onMouseEnter={() => setIsSliderHovered(true)}
-            onMouseLeave={() => setIsSliderHovered(false)}>
-            
-            {/* Slide counter */}
-            {bannersLoaded && (() => {
-              const total = heroSlides.length > 0 ? heroSlides.length : 4;
-              return (
-                <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10,
-                  color: '#fff', fontSize: 12, fontWeight: 600,
-                  background: 'rgba(0,0,0,0.6)', padding: '6px 12px', borderRadius: 20 }}>
-                  {String(currentSlide + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-                </div>
-              );
-            })()}
-
-            {/* Dynamic slides from settings, fallback to defaults */}
-            {!bannersLoaded ? null : heroSlides.length > 0 ? (
-              heroSlides.map((slide, i) => (
-                currentSlide === i && (
-                  <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6' }}>
-                    <img
-                      src={slide.imageUrl}
-                      alt={slide.altText || `Slide ${i + 1}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </div>
-                )
-              ))
-            ) : (
-              <>
-                {currentSlide === 0 && (
-                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=400&fit=crop" alt="Medical Equipment" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-                {currentSlide === 1 && (
-                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=400&fit=crop" alt="Laboratory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-                {currentSlide === 2 && (
-                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=400&fit=crop" alt="Hospital" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-                {currentSlide === 3 && (
-                  <div className="slide-active" style={{ position: 'absolute', inset: 0, background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=400&fit=crop" alt="Surgical Instruments" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Dot indicators */}
-            {(() => {
-              const total = heroSlides.length > 0 ? heroSlides.length : 4;
-              return (
-                <div style={{ position: 'absolute', bottom: 14, left: '50%', transform: 'translateX(-50%)',
-                  display: 'flex', gap: 5, zIndex: 10, alignItems: 'center' }}>
-                  {Array.from({ length: total }).map((_, i) => (
-                    <span key={i} onClick={() => setCurrentSlide(i)}
-                      role="button" aria-label={`Slide ${i + 1}`}
-                      style={{ display: 'block', width: currentSlide === i ? 18 : 6, height: 6,
-                        borderRadius: 999, cursor: 'pointer', padding: 0, margin: 0,
-                        background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)',
-                        transition: 'all 0.3s', flexShrink: 0 }} />
-                  ))}
-                </div>
-              );
-            })()}
-
-            {/* Navigation arrows */}
-            {(() => {
-              const total = heroSlides.length > 0 ? heroSlides.length : 4;
-              return (
-                <>
-                  <button onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
-                    style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)',
-                      width: 40, height: 40, borderRadius: '50%', border: 'none',
-                      background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
-                      cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
-                      opacity: isSliderHovered ? 1 : 0 }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
-                    ‹
-                  </button>
-                  <button onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
-                    style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)',
-                      width: 40, height: 40, borderRadius: '50%', border: 'none',
-                      background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 20,
-                      cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(10px)',
-                      opacity: isSliderHovered ? 1 : 0 }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}>
-                    ›
-                  </button>
-                </>
-              );
-            })()}
-          </div>
-
-          {/* ═══════════════════ RIGHT SIDE: SINGLE PROMO IMAGE ═══════════════════ */}
-          <div className="hero-right-image" style={{ position: 'relative', height: '380px', zIndex: 3, borderRadius: 12, overflow: 'hidden', cursor: 'pointer', background: '#E5E7EB' }}
-            onClick={() => router.push(promoBanner?.linkUrl || '/products')}>
-            {bannersLoaded && (promoBanner?.imageUrl ? (
-              <img
-                src={promoBanner.imageUrl}
-                alt={promoBanner.altText || 'Featured Products'}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <img
-                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop"
-                alt="Featured Products"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
