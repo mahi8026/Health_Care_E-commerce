@@ -572,27 +572,55 @@ export default function ProductsManagement({ openCreateRef }) {
                       placeholder="Search manufacturer..."
                       value={brandSearch}
                       onChange={e => {
-                        setBrandSearch(e.target.value);
+                        const val = e.target.value;
+                        setBrandSearch(val);
                         setShowBrandDropdown(true);
+                        // Auto-match exact name (case-insensitive) as user types
+                        const exact = (manufacturers || []).find(m => m.name.toLowerCase() === val.toLowerCase());
+                        setCreateForm(f => ({ ...f, brand: exact ? exact._id : '' }));
                       }}
                       onFocus={() => setShowBrandDropdown(true)}
-                      className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                      onBlur={() => {
+                        // On blur, try to match whatever is typed
+                        setTimeout(() => {
+                          const match = (manufacturers || []).find(m => m.name.toLowerCase() === brandSearch.toLowerCase());
+                          if (match) {
+                            setCreateForm(f => ({ ...f, brand: match._id }));
+                            setBrandSearch(match.name);
+                          }
+                          setShowBrandDropdown(false);
+                        }, 200);
+                      }}
+                      className={`w-full px-3 py-2 border-[0.5px] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] ${
+                        createForm.brand ? 'border-[#0E8A6E] bg-[#F0FDF9]' : 'border-[var(--color-border-secondary)]'
+                      }`}
                     />
-                    {showBrandDropdown && (
+                    {/* Matched indicator */}
+                    {createForm.brand && (
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0E8A6E]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </div>
+                    )}
+                    {showBrandDropdown && brandSearch && (
                       <div className="absolute z-10 w-full mt-1 bg-white border-[0.5px] border-[var(--color-border-secondary)] rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {(manufacturers || [])
                           .filter(m => m.name.toLowerCase().includes(brandSearch.toLowerCase()))
                           .map(manufacturer => (
                             <div
                               key={manufacturer._id}
+                              onMouseDown={e => e.preventDefault()} // prevent blur before click
                               onClick={() => {
                                 setCreateForm(f => ({ ...f, brand: manufacturer._id }));
                                 setBrandSearch(manufacturer.name);
                                 setShowBrandDropdown(false);
                               }}
-                              className="px-3 py-2 hover:bg-[var(--color-background-tertiary)] cursor-pointer text-[13px]"
+                              className={`px-3 py-2 hover:bg-[var(--color-background-tertiary)] cursor-pointer text-[13px] flex items-center justify-between ${
+                                createForm.brand === manufacturer._id ? 'bg-[#F0FDF9] text-[#0E8A6E] font-semibold' : ''
+                              }`}
                             >
-                              {manufacturer.name}
+                              <span>{manufacturer.name}</span>
                               {manufacturer.country && (
                                 <span className="text-[11px] text-[var(--color-text-secondary)] ml-2">
                                   ({manufacturer.country})
@@ -608,6 +636,9 @@ export default function ProductsManagement({ openCreateRef }) {
                       </div>
                     )}
                   </div>
+                  {brandSearch && !createForm.brand && (
+                    <p className="text-[10px] text-amber-600 mt-1">Select a manufacturer from the list</p>
+                  )}
                 </div>
               </div>
 
