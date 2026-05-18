@@ -77,7 +77,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="bottom-nav-mobile"
+      className="bottom-nav-mobile lg:hidden"
       aria-label="Mobile navigation"
       style={{
         position: 'fixed',
@@ -91,9 +91,9 @@ export default function BottomNav() {
         paddingBottom: 'env(safe-area-inset-bottom)',
         boxShadow: '0 -2px 12px rgba(0,0,0,0.06)',
         width: '100%',
-        display: 'flex',
       }}
     >
+      <div className="flex w-full h-full">
       {NAV_ITEMS.map((item) => {
         const isActive = item.exactMatch
           ? pathname === item.path
@@ -180,6 +180,7 @@ export default function BottomNav() {
           </button>
         );
       })}
+      </div>
     </nav>
   );
 }
