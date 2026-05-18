@@ -2,24 +2,52 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaTimes, FaChevronRight, FaUser, FaBox, FaHeart, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import {
+  FaTimes,
+  FaChevronRight,
+  FaUser,
+  FaBox,
+  FaHeart,
+  FaSignOutAlt,
+  FaCog,
+  FaStethoscope,
+  FaSyringe,
+  FaFlask,
+  FaHospital,
+  FaMicroscope,
+  FaShieldAlt,
+  FaTooth,
+  FaBone,
+  FaBuilding,
+  FaSearch,
+} from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 
+const MAIN_LINKS = [
+  { label: 'Home', path: '/', icon: null },
+  { label: 'All Products', path: '/products', icon: null },
+  { label: 'Reagent Store', path: '/reagent-store', icon: <FaFlask size={14} /> },
+  { label: 'B2B Portal', path: '/b2b', icon: <FaBuilding size={14} /> },
+  { label: 'Track Order', path: '/track', icon: null },
+];
+
 const CATEGORIES = [
-  { label: 'Home', path: '/' },
-  { label: 'All Products', path: '/products' },
-  { label: 'Diagnostics', path: '/products?category=Diagnostic+Equipment' },
-  { label: 'Surgical', path: '/products?category=Surgical+Instruments' },
-  { label: 'Reagents', path: '/products?category=Laboratory+Reagents' },
-  { label: 'Machines', path: '/products?category=Hospital+Machines' },
-  { label: 'Lab Equipment', path: '/products?category=Lab+Equipment' },
-  { label: 'B2B Portal', path: '/b2b' },
+  { label: 'Diagnostic Equipment', path: '/products?category=Diagnostic+Equipment', icon: <FaStethoscope size={13} /> },
+  { label: 'Surgical Instruments', path: '/products?category=Surgical+Instruments', icon: <FaSyringe size={13} /> },
+  { label: 'Laboratory Reagents', path: '/reagent-store', icon: <FaFlask size={13} /> },
+  { label: 'Hospital Machines', path: '/products?category=Hospital+Machines', icon: <FaHospital size={13} /> },
+  { label: 'Lab Equipment', path: '/products?category=Lab+Equipment', icon: <FaMicroscope size={13} /> },
+  { label: 'PPE & Safety', path: '/products?category=PPE+%26+Safety', icon: <FaShieldAlt size={13} /> },
+  { label: 'Dental Equipment', path: '/products?category=Dental+Equipment', icon: <FaTooth size={13} /> },
+  { label: 'Implants & Ortho', path: '/products?category=Implants+%26+Ortho', icon: <FaBone size={13} /> },
 ];
 
 export default function MobileMenu({ isOpen, onClose }) {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -27,7 +55,11 @@ export default function MobileMenu({ isOpen, onClose }) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
-      const timer = setTimeout(() => setMounted(false), 300);
+      const timer = setTimeout(() => {
+        setMounted(false);
+        setCategoriesExpanded(false);
+        setSearchQuery('');
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
@@ -37,11 +69,24 @@ export default function MobileMenu({ isOpen, onClose }) {
     onClose();
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      onClose();
+    }
+  };
+
   const handleLogout = () => {
     logout();
     onClose();
     router.push('/');
   };
+
+  const authed = isAuthenticated();
+  const initials = user?.name
+    ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+    : '?';
 
   if (!mounted && !isOpen) return null;
 
@@ -50,6 +95,7 @@ export default function MobileMenu({ isOpen, onClose }) {
       {/* Backdrop */}
       <div
         onClick={onClose}
+        aria-hidden="true"
         style={{
           position: 'fixed',
           inset: 0,
@@ -63,6 +109,9 @@ export default function MobileMenu({ isOpen, onClose }) {
 
       {/* Menu Panel */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         style={{
           position: 'fixed',
           top: 0,
@@ -75,38 +124,35 @@ export default function MobileMenu({ isOpen, onClose }) {
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.3s ease-out',
           overflowY: 'auto',
-          boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
+          boxShadow: '-4px 0 24px rgba(0,0,0,0.12)',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {/* Header */}
         <div
           style={{
-            padding: '20px',
+            padding: '16px 20px',
             borderBottom: '1px solid #E5E7EB',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             background: '#0B2545',
             color: '#fff',
+            flexShrink: 0,
           }}
         >
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 700 }}>
-              MedCore<span style={{ color: '#0E8A6E' }}>BD</span>
-            </div>
-            {isAuthenticated() && user && (
-              <div style={{ fontSize: 12, marginTop: 4, opacity: 0.8 }}>
-                {user.name}
-              </div>
-            )}
-          </div>
+          <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.3px' }}>
+            MedCore<span style={{ color: '#0E8A6E' }}>BD</span>
+          </span>
           <button
             onClick={onClose}
+            aria-label="Close menu"
             style={{
               background: 'rgba(255,255,255,0.1)',
               border: 'none',
-              width: 36,
-              height: 36,
+              width: 34,
+              height: 34,
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
@@ -115,165 +161,159 @@ export default function MobileMenu({ isOpen, onClose }) {
               color: '#fff',
             }}
           >
-            <FaTimes size={18} />
+            <FaTimes size={16} />
           </button>
         </div>
 
+        {/* Search */}
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
+          <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F9FAFB', borderRadius: 10, padding: '8px 12px', border: '1px solid #E5E7EB' }}>
+            <FaSearch size={13} color="#9CA3AF" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search products…"
+              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 13, color: '#111827' }}
+              aria-label="Search products"
+            />
+          </form>
+        </div>
+
         {/* User Section */}
-        {isAuthenticated() && user && (
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E7EB' }}>
-            <div
+        {authed && user && (
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
+            <button
               onClick={() => handleNavigate('/account')}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                padding: '12px',
-                background: '#F9FAFB',
-                borderRadius: 8,
+                padding: '10px 12px',
+                background: '#F0FBF8',
+                borderRadius: 10,
                 cursor: 'pointer',
+                width: '100%',
+                border: 'none',
+                textAlign: 'left',
               }}
             >
               <div
                 style={{
-                  width: 48,
-                  height: 48,
+                  width: 40,
+                  height: 40,
                   borderRadius: '50%',
                   background: '#0E8A6E',
                   color: '#fff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 20,
+                  fontSize: 14,
                   fontWeight: 700,
+                  flexShrink: 0,
                 }}
               >
-                {user.name?.charAt(0).toUpperCase()}
+                {initials}
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{user.name}</div>
-                <div style={{ fontSize: 12, color: '#6B7280' }}>{user.email}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.name}
+                </div>
+                <div style={{ fontSize: 11, color: '#6B7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.email}
+                </div>
               </div>
-              <FaChevronRight size={14} color="#9CA3AF" />
-            </div>
+              <FaChevronRight size={12} color="#9CA3AF" />
+            </button>
           </div>
         )}
 
-        {/* Navigation Links */}
-        <div style={{ padding: '8px 0' }}>
-          {CATEGORIES.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => handleNavigate(item.path)}
-              style={{
-                width: '100%',
-                padding: '14px 20px',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                fontSize: 15,
-                fontWeight: 500,
-                color: '#111827',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                transition: 'background 0.2s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#F9FAFB')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
-            >
-              {item.label}
-              <FaChevronRight size={12} color="#9CA3AF" />
-            </button>
+        {/* Main Navigation */}
+        <div style={{ padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
+          <div style={{ padding: '4px 16px 6px', fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Navigation
+          </div>
+          {MAIN_LINKS.map((item) => (
+            <NavButton key={item.path} item={item} onClick={() => handleNavigate(item.path)} />
           ))}
         </div>
 
-        {/* Account Actions */}
-        {isAuthenticated() && (
-          <div style={{ padding: '8px 0', borderTop: '1px solid #E5E7EB', marginTop: 8 }}>
-            <button
-              onClick={() => handleNavigate('/account')}
-              style={{
-                width: '100%',
-                padding: '14px 20px',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                fontSize: 14,
-                color: '#111827',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-              }}
-            >
-              <FaUser size={16} color="#6B7280" />
+        {/* Categories */}
+        <div style={{ padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
+          <button
+            onClick={() => setCategoriesExpanded((v) => !v)}
+            style={{
+              width: '100%',
+              padding: '10px 16px',
+              background: 'none',
+              border: 'none',
+              textAlign: 'left',
+              fontSize: 13,
+              fontWeight: 600,
+              color: '#111827',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                Shop by Category
+              </span>
+            </span>
+            <FaChevronRight
+              size={11}
+              color="#9CA3AF"
+              style={{ transform: categoriesExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
+            />
+          </button>
+
+          {categoriesExpanded && (
+            <div>
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.path}
+                  onClick={() => handleNavigate(cat.path)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 16px 9px 28px',
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    fontSize: 13,
+                    color: '#374151',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                >
+                  <span style={{ color: '#0E8A6E', flexShrink: 0 }}>{cat.icon}</span>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Account Actions (authenticated) */}
+        {authed && (
+          <div style={{ padding: '8px 0', borderBottom: '1px solid #F3F4F6' }}>
+            <div style={{ padding: '4px 16px 6px', fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               My Account
-            </button>
-            <button
-              onClick={() => handleNavigate('/account')}
-              style={{
-                width: '100%',
-                padding: '14px 20px',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                fontSize: 14,
-                color: '#111827',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-              }}
-            >
-              <FaBox size={16} color="#6B7280" />
-              My Orders
-            </button>
-            <button
-              onClick={() => handleNavigate('/wishlist')}
-              style={{
-                width: '100%',
-                padding: '14px 20px',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                fontSize: 14,
-                color: '#111827',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-              }}
-            >
-              <FaHeart size={16} color="#6B7280" />
-              Wishlist
-            </button>
-            <button
-              onClick={handleLogout}
-              style={{
-                width: '100%',
-                padding: '14px 20px',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                fontSize: 14,
-                color: '#E24B4A',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-              }}
-            >
-              <FaSignOutAlt size={16} color="#E24B4A" />
-              Logout
-            </button>
+            </div>
+            <AccountButton icon={<FaUser size={13} />} label="My Account" onClick={() => handleNavigate('/account')} />
+            <AccountButton icon={<FaBox size={13} />} label="My Orders" onClick={() => handleNavigate('/account')} />
+            <AccountButton icon={<FaHeart size={13} />} label="Wishlist" onClick={() => handleNavigate('/wishlist')} />
+            <AccountButton icon={<FaCog size={13} />} label="Settings" onClick={() => handleNavigate('/account')} />
+            <AccountButton icon={<FaSignOutAlt size={13} />} label="Logout" onClick={handleLogout} danger />
           </div>
         )}
 
-        {/* Auth Buttons */}
-        {!isAuthenticated() && (
-          <div style={{ padding: '20px', borderTop: '1px solid #E5E7EB', marginTop: 8 }}>
+        {/* Auth Buttons (guest) */}
+        {!authed && (
+          <div style={{ padding: '16px' }}>
             <button
               onClick={() => handleNavigate('/login')}
               style={{
@@ -282,7 +322,7 @@ export default function MobileMenu({ isOpen, onClose }) {
                 background: '#0B2545',
                 color: '#fff',
                 border: 'none',
-                borderRadius: 8,
+                borderRadius: 10,
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -298,8 +338,8 @@ export default function MobileMenu({ isOpen, onClose }) {
                 padding: '12px',
                 background: 'transparent',
                 color: '#0B2545',
-                border: '1px solid #0B2545',
-                borderRadius: 8,
+                border: '1.5px solid #0B2545',
+                borderRadius: 10,
                 fontSize: 14,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -309,7 +349,84 @@ export default function MobileMenu({ isOpen, onClose }) {
             </button>
           </div>
         )}
+
+        {/* B2B CTA */}
+        <div style={{ padding: '0 16px 20px', marginTop: 'auto' }}>
+          <button
+            onClick={() => handleNavigate('/b2b')}
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: '#0E8A6E',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 10,
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            <FaBuilding size={14} />
+            B2B Portal — Bulk Pricing
+          </button>
+        </div>
       </div>
     </>
+  );
+}
+
+function NavButton({ item, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%',
+        padding: '10px 16px',
+        background: 'none',
+        border: 'none',
+        textAlign: 'left',
+        fontSize: 14,
+        fontWeight: 500,
+        color: '#111827',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {item.icon && <span style={{ color: '#0E8A6E' }}>{item.icon}</span>}
+        {item.label}
+      </span>
+      <FaChevronRight size={11} color="#D1D5DB" />
+    </button>
+  );
+}
+
+function AccountButton({ icon, label, onClick, danger }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%',
+        padding: '10px 16px',
+        background: 'none',
+        border: 'none',
+        textAlign: 'left',
+        fontSize: 13,
+        color: danger ? '#E24B4A' : '#374151',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+      }}
+    >
+      <span style={{ color: danger ? '#E24B4A' : '#6B7280' }}>{icon}</span>
+      {label}
+    </button>
   );
 }
