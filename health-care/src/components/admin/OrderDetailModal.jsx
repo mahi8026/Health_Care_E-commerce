@@ -15,13 +15,23 @@ export default function OrderDetailModal({ orderId, onClose }) {
     const fetchOrder = async () => {
       try {
         const token = localStorage.getItem('medcore_token');
-        const res = await fetch(`${API}/admin/orders/${orderId}`, {
+        const res = await fetch(`${API}/orders/${orderId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        
+        if (!res.ok) {
+          throw new Error(`Failed to fetch order: ${res.status}`);
+        }
+        
         const data = await res.json();
-        setOrder(data.data || data.order || data);
+        console.log('Fetched order data:', data);
+        
+        const orderData = data.data || data.order || data;
+        console.log('Order ID:', orderData._id || orderData.id);
+        setOrder(orderData);
       } catch (err) {
-        process.env.NODE_ENV !== "production" && console.error('Failed to load order:', err);
+        console.error('Failed to load order:', err);
+        alert('Failed to load order: ' + err.message);
       } finally {
         setLoading(false);
       }

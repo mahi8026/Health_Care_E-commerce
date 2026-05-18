@@ -33,9 +33,14 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
       const token = localStorage.getItem('medcore_token');
       if (!token) throw new Error('Not authenticated. Please log in again.');
 
-      console.log('Updating order status:', { orderId: order._id, status: selectedStatus, note, notifyCustomer });
+      const orderId = order._id || order.id;
+      if (!orderId) {
+        throw new Error('Order ID is missing');
+      }
 
-      const res = await fetch(`${API}/orders/${order._id}/status`, {
+      console.log('Updating order status:', { orderId, status: selectedStatus, note, notifyCustomer });
+
+      const res = await fetch(`${API}/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
