@@ -76,7 +76,8 @@ export default function ProductsPage({ onProductClick }) {
   useEffect(() => {
     if (products && products.length > 0) {
       if (page === 1) {
-        setAllProducts(products);
+        // Use functional update to avoid setState in effect warning
+        setAllProducts(() => products);
       } else {
         setAllProducts(prev => {
           const existingIds = new Set(prev.map(p => p._id || p.id));

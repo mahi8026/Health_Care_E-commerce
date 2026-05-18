@@ -1,249 +1,429 @@
 "use client";
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import Button from '@/components/ui/Button';
+import { useWishlist } from '@/context/WishlistContext';
 
 export default function CartPage({ onCheckout, onContinueShopping }) {
   const router = useRouter();
-  const { cart, updateQuantity, removeFromCart, getCartTotal, getCartCount } = useCart();
-  const { user, isB2BCustomer } = useAuth();
+  const { cart, updateQuantity, removeFromCart, getCartTotal, getCartCount, clearCart } = useCart();
+  const { isB2BCustomer } = useAuth();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
+  const [removingId, setRemovingId] = useState(null);
+  const [savingId, setSavingId] = useState(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const subtotal = getCartTotal();
-  const discount = isB2BCustomer() ? subtotal * 0.08 : 0;
-  const deliveryFee = cart.length > 0 ? 150 : 0;
-  const total = subtotal - discount + deliveryFee;
+  const b2bDiscount = isB2BCustomer() ? Math.round(subtotal * 0.08) : 0;
+  const freeDeliveryThreshold = 50000;
+  const deliveryFee = subtotal >= freeDeliveryThreshold ? 0 : (cart.length > 0 ? 150 : 0);
+  const total = subtotal - b2bDiscount + deliveryFee;
+  const amountToFreeDelivery = Math.max(0, freeDeliveryThreshold - subtotal);
+  const freeDeliveryProgress = Math.min(100, (subtotal / freeDeliveryThreshold) * 100);
 
-  // Use prop callbacks if provided (SPA mode), otherwise use router (App Router mode)
   const handleCheckout = onCheckout || (() => router.push('/checkout'));
   const handleContinueShopping = onContinueShopping || (() => router.push('/products'));
 
-  const getItemIcon = (name) => {
-    if (name.includes('ECG')) return '📊';
-    if (name.includes('reagent') || name.includes('Reagent')) return '🧪';
-    if (name.includes('cable') || name.includes('Cable')) return '🔌';
-    return '📦';
+  const showToast = (msg, type = 'success') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 2500);
   };
 
+  const handleRemove = (itemId) => {
+    setRemovingId(itemId);
+    setTimeout(() => {
+      removeFromCart(itemId);
+      setRemovingId(null);
+      showToast('Item removed from cart');
+    }, 280);
+  };
+
+  const handleSaveForLater = async (item) => {
+    const id = item.id || item._id;
+    setSavingId(id);
+    const result = await toggleWishlist(id);
+    if (result?.requiresLogin) {
+      showToast('Please log in to save items', 'error');
+    } else {
+      removeFromCart(id);
+      showToast('Saved to wishlist');
+    }
+    setSavingId(null);
+  };
+
+  const handleClearCart = () => {
+    clearCart();
+    setShowClearConfirm(false);
+    showToast('Cart cleared');
+  };
+
+  const getImageUrl = (item) => {
+    if (!item.images || item.images.length === 0) return null;
+    const img = item.images[0];
+    const url = typeof img === 'string' ? img : img?.url;
+    // Only return if it's a valid http/https URL (Cloudinary, etc.)
+    return url && url.startsWith('http') ? url : null;
+  };
+
+  // ── Empty state ──────────────────────────────────────────────────────────────
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
-          <div className="text-[64px] mb-4">🛒</div>
-          <h2 className="text-[20px] font-semibold mb-2 font-[family-name:var(--font-lora)]">
-            Your cart is empty
-          </h2>
-          <p className="text-[13px] text-[var(--color-text-secondary)] mb-6">
-            Add some products to your cart to get started
+      <div className="min-h-[70vh] bg-[#F8FAFC] flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <div className="w-28 h-28 mx-auto mb-6 bg-[#E1F5EE] rounded-full flex items-center justify-center">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#0E8A6E" strokeWidth="1.5">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+            </svg>
+          </div>
+          <h2 className="text-[22px] font-bold text-[#0B2545] mb-2">Your cart is empty</h2>
+          <p className="text-[13px] text-[#6B7280] mb-6 leading-relaxed">
+            You haven't added any medical equipment yet. Browse our catalog to get started.
           </p>
-          <Button 
-            variant="primary"
+          <button
             onClick={handleContinueShopping}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0B2545] hover:bg-[#0d2e56] text-white rounded-xl text-[14px] font-semibold transition-colors"
           >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
             Browse Products
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
+  // ── Main cart ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] p-4 md:p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-4 md:mb-6">
-          <h1 className="text-[20px] md:text-[24px] font-semibold mb-2 font-[family-name:var(--font-lora)]">
-            Shopping Cart
-          </h1>
-          <p className="text-[12px] md:text-[13px] text-[var(--color-text-secondary)]">
-            {getCartCount()} {getCartCount() === 1 ? 'item' : 'items'} in your cart
-          </p>
+    <div className="min-h-screen bg-[#F8FAFC] py-6 md:py-8">
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-[13px] font-semibold flex items-center gap-2 transition-all ${
+          toast.type === 'error' ? 'bg-[#FEE2E2] text-[#991B1B]' : 'bg-[#D1FAE5] text-[#065F46]'
+        }`}>
+          {toast.type === 'error'
+            ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          }
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Clear Cart Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="w-14 h-14 mx-auto mb-4 bg-[#FEE2E2] rounded-full flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E24B4A" strokeWidth="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+            </div>
+            <h3 className="text-[17px] font-bold text-[#0B2545] mb-2 text-center">Clear entire cart?</h3>
+            <p className="text-[13px] text-[#6B7280] mb-6 text-center">
+              All {cart.length} items will be removed. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowClearConfirm(false)}
+                className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-[13px] font-semibold hover:bg-[#F9FAFB] transition-colors">
+                Cancel
+              </button>
+              <button onClick={handleClearCart}
+                className="flex-1 py-2.5 bg-[#E24B4A] hover:bg-[#C93A39] text-white rounded-xl text-[13px] font-semibold transition-colors">
+                Clear Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+
+        {/* Page header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-[22px] md:text-[26px] font-bold text-[#0B2545]">Shopping Cart</h1>
+            <p className="text-[13px] text-[#6B7280] mt-0.5">
+              {getCartCount()} {getCartCount() === 1 ? 'item' : 'items'}
+            </p>
+          </div>
+          <button onClick={() => setShowClearConfirm(true)}
+            className="text-[12px] text-[#E24B4A] hover:underline font-medium">
+            Clear all
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_380px] gap-4 md:gap-6">
-          {/* Cart Items */}
-          <div className="space-y-3 md:space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
+
+          {/* ── Cart items ─────────────────────────────────────────────────── */}
+          <div className="space-y-3">
             {cart.map((item, index) => {
-              const itemKey = item.id || item._id || `cart-item-${index}`;
+              const id = item.id || item._id || `item-${index}`;
+              const imageUrl = getImageUrl(item);
+              const isRemoving = removingId === id;
+              const isSaving = savingId === id;
+              const itemTotal = (item.price || 0) * item.quantity;
+
               return (
-                <div
-                  key={itemKey}
-                  className="bg-white rounded-lg p-3 md:p-5 border-[0.5px] border-[var(--color-border-tertiary)]"
+                <div key={id}
+                  className={`bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden transition-all duration-300 ${
+                    isRemoving ? 'opacity-0 -translate-x-4 scale-95' : 'opacity-100 translate-x-0 scale-100'
+                  }`}
                 >
-                <div className="flex gap-3 md:gap-4">
-                  {/* Product Icon */}
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[28px] md:text-[32px] flex-shrink-0">
-                    {getItemIcon(item.name)}
-                  </div>
+                  <div className="flex gap-0">
+                    {/* Image panel */}
+                    <div className="w-28 md:w-36 flex-shrink-0 bg-[#F9FAFB] flex items-center justify-center border-r border-[#E5E7EB] p-3">
+                      {imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={imageUrl}
+                          alt={item.name}
+                          className="w-full h-24 md:h-28 object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement.innerHTML = '<div style="font-size:40px;display:flex;align-items:center;justify-content:center;height:100%">📦</div>';
+                          }}
+                        />
+                      ) : (
+                        <div className="text-[44px] flex items-center justify-center h-24 md:h-28">📦</div>
+                      )}
+                    </div>
 
-                  {/* Product Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-[13px] md:text-[14px] font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)] line-clamp-2">
-                      {item.name}
-                    </h3>
-                    <p className="text-[10px] md:text-[11px] text-[var(--color-text-secondary)] mb-2">
-                      {typeof item.brand === 'object' ? item.brand?.name : item.brand}
-                    </p>
-                    {item.sku && (
-                      <p className="text-[9px] md:text-[10px] text-[var(--color-text-tertiary)]">
-                        SKU: {item.sku}
-                      </p>
-                    )}
-                    
-                    {/* Mobile: Price and Quantity inline */}
-                    <div className="md:hidden mt-2 flex items-center justify-between">
-                      <div>
-                        <div className="text-[15px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-                          ৳{(item.price * item.quantity).toLocaleString()}
+                    {/* Content */}
+                    <div className="flex-1 p-4 md:p-5 min-w-0">
+                      <div className="flex items-start justify-between gap-3">
+                        {/* Product details */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-[14px] md:text-[15px] font-bold text-[#0B2545] leading-snug line-clamp-2 mb-1">
+                            {item.name}
+                          </h3>
+                          <div className="flex flex-wrap gap-x-3 gap-y-0.5 mb-2">
+                            {item.brand && (
+                              <span className="text-[11px] text-[#6B7280]">
+                                {typeof item.brand === 'object' ? item.brand?.name : item.brand}
+                              </span>
+                            )}
+                            {item.sku && (
+                              <span className="text-[10px] text-[#9CA3AF] font-mono">SKU: {item.sku}</span>
+                            )}
+                          </div>
+
+                          {/* Stock badge */}
+                          {item.stock !== undefined && (
+                            <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full font-medium mb-3 ${
+                              item.stock === 0
+                                ? 'bg-[#FEE2E2] text-[#991B1B]'
+                                : item.stock <= 10
+                                ? 'bg-[#FEF3C7] text-[#92400E]'
+                                : 'bg-[#D1FAE5] text-[#065F46]'
+                            }`}>
+                              {item.stock === 0 ? '✕ Out of stock' : item.stock <= 10 ? `⚠ Only ${item.stock} left` : '✓ In stock'}
+                            </span>
+                          )}
                         </div>
-                        <div className="text-[10px] text-[var(--color-text-secondary)]">
-                          ৳{item.price.toLocaleString()} each
+
+                        {/* Price (desktop) */}
+                        <div className="hidden md:block text-right flex-shrink-0">
+                          <div className="text-[18px] font-bold text-[#0B2545]">
+                            ৳{itemTotal.toLocaleString()}
+                          </div>
+                          <div className="text-[11px] text-[#9CA3AF] mt-0.5">
+                            ৳{(item.price || 0).toLocaleString()} each
+                          </div>
                         </div>
                       </div>
-                      
-                      {/* Mobile Quantity Controls */}
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(item.id || item._id, item.quantity - 1)}
-                          className="w-8 h-8 border-[0.5px] border-[var(--color-border-secondary)] rounded bg-white hover:bg-[var(--color-background-tertiary)] flex items-center justify-center text-[14px]"
-                        >
-                          −
-                        </button>
-                        <span className="w-8 text-center text-[13px] font-medium">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => updateQuantity(item.id || item._id, item.quantity + 1)}
-                          className="w-8 h-8 border-[0.5px] border-[var(--color-border-secondary)] rounded bg-white hover:bg-[var(--color-background-tertiary)] flex items-center justify-center text-[14px]"
-                        >
-                          +
-                        </button>
+
+                      {/* Price (mobile) */}
+                      <div className="md:hidden mb-3">
+                        <span className="text-[16px] font-bold text-[#0B2545]">৳{itemTotal.toLocaleString()}</span>
+                        <span className="text-[11px] text-[#9CA3AF] ml-2">৳{(item.price || 0).toLocaleString()} each</span>
+                      </div>
+
+                      {/* Bottom row: qty + actions */}
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        {/* Quantity stepper */}
+                        <div className="flex items-center border border-[#E5E7EB] rounded-lg overflow-hidden">
+                          <button
+                            onClick={() => updateQuantity(id, item.quantity - 1)}
+                            disabled={item.quantity <= 1}
+                            className="w-9 h-9 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          >−</button>
+                          <span className="w-10 text-center text-[14px] font-bold text-[#0B2545] border-x border-[#E5E7EB]">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(id, item.quantity + 1)}
+                            disabled={item.stock !== undefined && item.quantity >= item.stock}
+                            className="w-9 h-9 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          >+</button>
+                        </div>
+
+                        {/* Action links */}
+                        <div className="flex items-center gap-3 text-[11px] font-medium">
+                          <button
+                            onClick={() => handleSaveForLater(item)}
+                            disabled={isSaving}
+                            className="flex items-center gap-1 text-[#0E8A6E] hover:underline disabled:opacity-50"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                            </svg>
+                            {isSaving ? 'Saving…' : 'Save for later'}
+                          </button>
+                          <span className="text-[#D1D5DB]">·</span>
+                          <button
+                            onClick={() => handleRemove(id)}
+                            disabled={isRemoving}
+                            className="flex items-center gap-1 text-[#E24B4A] hover:underline disabled:opacity-50"
+                          >
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                            {isRemoving ? 'Removing…' : 'Remove'}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    
-                    {/* Mobile Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item.id || item._id)}
-                      className="md:hidden mt-2 text-[11px] text-[#E24B4A] hover:underline"
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  {/* Desktop: Price & Actions */}
-                  <div className="hidden md:block text-right">
-                    <div className="text-[16px] font-bold text-[#0B2545] mb-3 font-[family-name:var(--font-plus-jakarta)]">
-                      ৳{(item.price * item.quantity).toLocaleString()}
-                    </div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)] mb-3">
-                      ৳{item.price.toLocaleString()} each
-                    </div>
-
-                    {/* Desktop Quantity Controls */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <button
-                        onClick={() => updateQuantity(item.id || item._id, item.quantity - 1)}
-                        className="w-8 h-8 border-[0.5px] border-[var(--color-border-secondary)] rounded bg-white hover:bg-[var(--color-background-tertiary)] flex items-center justify-center"
-                      >
-                        −
-                      </button>
-                      <span className="w-10 text-center text-[13px] font-medium">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.id || item._id, item.quantity + 1)}
-                        className="w-8 h-8 border-[0.5px] border-[var(--color-border-secondary)] rounded bg-white hover:bg-[var(--color-background-tertiary)] flex items-center justify-center"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    {/* Desktop Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item.id || item._id)}
-                      className="text-[11px] text-[#E24B4A] hover:underline"
-                    >
-                      Remove
-                    </button>
                   </div>
                 </div>
-              </div>
-            );
+              );
             })}
           </div>
 
-          {/* Order Summary */}
-          <div className="md:sticky md:top-6">
-            <div className="bg-white rounded-lg p-4 md:p-6 border-[0.5px] border-[var(--color-border-tertiary)]">
-              <h3 className="text-[15px] md:text-[16px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
-                Order Summary
-              </h3>
+          {/* ── Order summary ──────────────────────────────────────────────── */}
+          <div className="lg:sticky lg:top-6">
+            <div className="bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden shadow-sm">
 
-              <div className="space-y-2 md:space-y-3 mb-4 pb-4 border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                <div className="flex justify-between text-[12px] md:text-[13px]">
-                  <span className="text-[var(--color-text-secondary)]">Subtotal</span>
-                  <span className="font-medium">৳{subtotal.toLocaleString()}</span>
+              {/* Free delivery progress bar */}
+              <div className="px-5 pt-5 pb-4 border-b border-[#E5E7EB]">
+                {amountToFreeDelivery === 0 ? (
+                  <div className="flex items-center gap-2 text-[#0E8A6E]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                    <span className="text-[13px] font-bold">You qualify for free delivery! 🎉</span>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex justify-between text-[12px] mb-2">
+                      <span className="text-[#6B7280]">
+                        Add <span className="font-bold text-[#0B2545]">৳{amountToFreeDelivery.toLocaleString()}</span> more for free delivery
+                      </span>
+                      <span className="text-[#0E8A6E] font-semibold">🚚 Free</span>
+                    </div>
+                    <div className="h-2 bg-[#E5E7EB] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#0E8A6E] to-[#10B981] rounded-full transition-all duration-500"
+                        style={{ width: `${freeDeliveryProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Summary rows */}
+              <div className="px-5 py-4 space-y-3 border-b border-[#E5E7EB]">
+                <h3 className="text-[15px] font-bold text-[#0B2545] mb-3">Order Summary</h3>
+
+                <div className="flex justify-between text-[13px]">
+                  <span className="text-[#6B7280]">Subtotal ({getCartCount()} {getCartCount() === 1 ? 'item' : 'items'})</span>
+                  <span className="font-semibold text-[#0B2545]">৳{subtotal.toLocaleString()}</span>
                 </div>
 
-                {discount > 0 && (
-                  <div className="flex justify-between text-[12px] md:text-[13px]">
-                    <span className="text-[#0E8A6E]">B2B Discount (8%)</span>
-                    <span className="text-[#0E8A6E] font-medium">
-                      −৳{discount.toLocaleString()}
+                {b2bDiscount > 0 && (
+                  <div className="flex justify-between text-[13px]">
+                    <span className="text-[#0E8A6E] flex items-center gap-1">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                      </svg>
+                      B2B Discount (8%)
                     </span>
+                    <span className="text-[#0E8A6E] font-semibold">−৳{b2bDiscount.toLocaleString()}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between text-[12px] md:text-[13px]">
-                  <span className="text-[var(--color-text-secondary)]">Delivery Fee</span>
-                  <span className="font-medium">৳{deliveryFee}</span>
+                <div className="flex justify-between text-[13px]">
+                  <span className="text-[#6B7280]">Delivery</span>
+                  {deliveryFee === 0
+                    ? <span className="text-[#0E8A6E] font-bold">FREE</span>
+                    : <span className="font-semibold text-[#0B2545]">৳{deliveryFee}</span>
+                  }
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mb-4 md:mb-6">
-                <span className="text-[15px] md:text-[16px] font-semibold">Total</span>
-                <span className="text-[18px] md:text-[20px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-                  ৳{total.toLocaleString()}
-                </span>
-              </div>
-
-              <Button
-                variant="primary"
-                fullWidth
-                onClick={handleCheckout}
-                className="mb-3 min-h-[48px]"
-              >
-                Proceed to Checkout
-              </Button>
-
-              <Button 
-                variant="outline" 
-                fullWidth
-                onClick={handleContinueShopping}
-                className="min-h-[48px]"
-              >
-                Continue Shopping
-              </Button>
-
-              {/* Info */}
-              {isB2BCustomer() && (
-                <div className="mt-4 p-3 bg-[#E1F5EE] rounded-lg">
-                  <div className="text-[10px] md:text-[11px] text-[#085041]">
-                    <div className="font-medium mb-1">🏢 B2B Benefits Applied</div>
-                    <div>You're saving ৳{discount.toLocaleString()} with your B2B discount!</div>
+              {/* Total */}
+              <div className="px-5 py-4 border-b border-[#E5E7EB]">
+                <div className="flex justify-between items-center">
+                  <span className="text-[15px] font-bold text-[#0B2545]">Total</span>
+                  <span className="text-[22px] font-bold text-[#0B2545]">৳{total.toLocaleString()}</span>
+                </div>
+                {(b2bDiscount > 0 || deliveryFee === 0) && (
+                  <div className="mt-2 text-[11px] text-[#0E8A6E] font-medium">
+                    You saved ৳{(b2bDiscount + (deliveryFee === 0 && subtotal > 0 ? 150 : 0)).toLocaleString()} on this order
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              <div className="mt-4 p-3 bg-[#E6F1FB] rounded-lg">
-                <div className="text-[10px] md:text-[11px] text-[#0C447C]">
-                  <div className="font-medium mb-1">🚚 Free Delivery</div>
-                  <div>For orders above ৳50,000 in Dhaka metro area</div>
-                </div>
+              {/* CTA buttons */}
+              <div className="px-5 py-4 space-y-3">
+                <button
+                  onClick={handleCheckout}
+                  className="w-full h-12 bg-[#0B2545] hover:bg-[#0d2e56] text-white rounded-xl text-[14px] font-bold transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                  </svg>
+                  Proceed to Checkout
+                </button>
+                <button
+                  onClick={handleContinueShopping}
+                  className="w-full h-11 border border-[#E5E7EB] hover:bg-[#F9FAFB] text-[#374151] rounded-xl text-[13px] font-semibold transition-colors"
+                >
+                  ← Continue Shopping
+                </button>
+              </div>
+
+              {/* Trust badges */}
+              <div className="px-5 pb-5 grid grid-cols-3 gap-2">
+                {[
+                  { icon: '🔒', label: 'Secure\nCheckout' },
+                  { icon: '↩', label: '30-Day\nReturns' },
+                  { icon: '📞', label: '24/7\nSupport' },
+                ].map(({ icon, label }) => (
+                  <div key={label} className="flex flex-col items-center gap-1 p-2 bg-[#F9FAFB] rounded-xl">
+                    <span className="text-[20px]">{icon}</span>
+                    <span className="text-[9px] text-[#6B7280] font-medium text-center leading-tight whitespace-pre-line">{label}</span>
+                  </div>
+                ))}
               </div>
             </div>
+
+            {/* B2B upsell */}
+            {!isB2BCustomer() && (
+              <div className="mt-3 p-4 bg-[#0B2545] rounded-2xl text-white">
+                <div className="text-[12px] font-bold mb-1">🏢 Are you a B2B customer?</div>
+                <div className="text-[11px] text-[#94A3B8] mb-3">
+                  Get 8–30% off, credit terms up to 90 days, and a dedicated account manager.
+                </div>
+                <button
+                  onClick={() => router.push('/b2b')}
+                  className="text-[11px] font-bold text-[#0E8A6E] hover:underline"
+                >
+                  Apply for B2B account →
+                </button>
+              </div>
+            )}
           </div>
+
         </div>
       </div>
     </div>
