@@ -304,6 +304,15 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     const { status, trackingNumber, courier } = req.body;
 
+    // Validate status
+    const validStatuses = ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'pending'];
+    if (!status) {
+      return res.status(400).json({ success: false, message: 'Status is required' });
+    }
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+
     const order = await Order.findById(req.params.id);
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });
@@ -357,8 +366,23 @@ exports.updateOrderStatus = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Order status updated successfully', order });
   } catch (error) {
-    logger.error(`[updateOrderStatus] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    logger.error(`[updateOrderStatus] ${error.message}`, { stack: error.stack });
+    
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ success: false, message: messages.join(', ') });
+    }
+    
+    // Handle cast errors (invalid ObjectId)
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'Invalid order ID format' });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Failed to update order status. Please try again.' 
+    });
   }
 };
 

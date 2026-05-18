@@ -29,7 +29,8 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
       const token = localStorage.getItem('medcore_token');
       if (!token) throw new Error('Not authenticated. Please log in again.');
 
-      // Try admin endpoint first, fall back to regular orders endpoint
+      console.log('Updating order status:', { orderId: order._id, status, trackingNumber, courier });
+
       const res = await fetch(`${API}/orders/${order._id}/status`, {
         method: 'PUT',
         headers: {
@@ -43,10 +44,14 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
         }),
       });
 
+      console.log('Response status:', res.status);
+
       let data;
       try {
         data = await res.json();
-      } catch {
+        console.log('Response data:', data);
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
         throw new Error(`Server returned ${res.status} — invalid response`);
       }
 
@@ -57,6 +62,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
       if (onUpdate) onUpdate(data.order || data.data || data);
       onClose();
     } catch (err) {
+      console.error('Order status update error:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

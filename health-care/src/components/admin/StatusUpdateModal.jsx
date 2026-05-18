@@ -33,6 +33,8 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
       const token = localStorage.getItem('medcore_token');
       if (!token) throw new Error('Not authenticated. Please log in again.');
 
+      console.log('Updating order status:', { orderId: order._id, status: selectedStatus, note, notifyCustomer });
+
       const res = await fetch(`${API}/orders/${order._id}/status`, {
         method: 'PUT',
         headers: {
@@ -42,10 +44,14 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
         body: JSON.stringify({ status: selectedStatus, note, notifyCustomer }),
       });
 
+      console.log('Response status:', res.status);
+
       let data;
       try {
         data = await res.json();
-      } catch {
+        console.log('Response data:', data);
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
         throw new Error(`Server returned ${res.status} — invalid response`);
       }
 
@@ -56,6 +62,7 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
       onUpdate(data.order || data.data || data);
       onClose();
     } catch (err) {
+      console.error('Order status update error:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
