@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { API } from '@/constants/api';
 
 const STATUS_OPTIONS = [
-  { value: 'placed', label: 'Placed', color: 'bg-[#FEF3C7] text-[#92400E]', icon: '📝' },
-  { value: 'confirmed', label: 'Confirmed', color: 'bg-[#DBEAFE] text-[#1E40AF]', icon: '✅' },
-  { value: 'processing', label: 'Processing', color: 'bg-[#E0E7FF] text-[#3730A3]', icon: '⚙️' },
-  { value: 'shipped', label: 'Shipped', color: 'bg-[#E0E7FF] text-[#3730A3]', icon: '🚚' },
-  { value: 'delivered', label: 'Delivered', color: 'bg-[#D1FAE5] text-[#065F46]', icon: '✓' },
-  { value: 'cancelled', label: 'Cancelled', color: 'bg-[#FEE2E2] text-[#991B1B]', icon: '✗' }
+  { value: 'placed',           label: 'Placed',           color: 'bg-[#FEF3C7] text-[#92400E]',  icon: '📝' },
+  { value: 'confirmed',        label: 'Confirmed',        color: 'bg-[#DBEAFE] text-[#1E40AF]',  icon: '✅' },
+  { value: 'processing',       label: 'Processing',       color: 'bg-[#E0E7FF] text-[#3730A3]',  icon: '⚙️' },
+  { value: 'shipped',          label: 'Shipped',          color: 'bg-[#E0E7FF] text-[#3730A3]',  icon: '🚚' },
+  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-[#FEF3C7] text-[#92400E]',  icon: '🛵' },
+  { value: 'delivered',        label: 'Delivered',        color: 'bg-[#D1FAE5] text-[#065F46]',  icon: '✓'  },
+  { value: 'cancelled',        label: 'Cancelled',        color: 'bg-[#FEE2E2] text-[#991B1B]',  icon: '✗'  },
 ];
 
 export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
@@ -26,35 +27,37 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
 
     try {
       const token = localStorage.getItem('medcore_token');
+      if (!token) throw new Error('Not authenticated. Please log in again.');
+
+      // Try admin endpoint first, fall back to regular orders endpoint
       const res = await fetch(`${API}/orders/${order._id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           status,
           trackingNumber: trackingNumber || undefined,
-          courier: courier || undefined
-        })
+          courier: courier || undefined,
+        }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Server returned ${res.status} — invalid response`);
+      }
 
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to update status');
+        throw new Error(data.message || data.error || `Failed to update status (${res.status})`);
       }
 
-      // Call parent update handler
-      if (onUpdate) {
-        onUpdate(data.order || data.data);
-      }
-
-      // Show success message
-      alert('Order status updated successfully!');
+      if (onUpdate) onUpdate(data.order || data.data || data);
       onClose();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

@@ -1,3 +1,5 @@
+'use client';
+
 export default function ReagentToolbar({ searchQuery, setSearchQuery, sortBy, setSortBy, totalCount }) {
   return (
     <div className="flex items-center gap-3 mb-4">
