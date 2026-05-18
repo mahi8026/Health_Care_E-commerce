@@ -95,64 +95,90 @@ function Skeleton({ w = '100%', h = 20, r = 8 }) {
 }
 
 const ProductCard = memo(function ProductCard({ product, onClick }) {
-  const img = product.images?.[0]?.url || product.images?.[0];
+  const { addToCart } = useCart();
+  const imgRaw = product.images?.[0];
+  const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const ratingVal = typeof product.rating === 'object' ? product.rating?.average : (product.rating || 0);
   const reviewCount = product.reviewCount || product.rating?.count || 0;
-  const discount = product.discountPct || (product.oldPrice && product.price < product.oldPrice 
-    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) 
-    : 0);
-  
-  // Calculate savings amount
   const price = product.price || 0;
   const oldPrice = product.oldPrice || 0;
-  const savings = oldPrice > price ? oldPrice - price : 0;
-  const hasDiscount = savings > 0 && discount > 0;
+  const discount = product.discountPct || (oldPrice > price && oldPrice > 0
+    ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0);
+  const hasDiscount = discount > 0 && oldPrice > price;
+  const inStock = product.stock === undefined || product.stock > 0;
 
   return (
-    <div className="product-card-hover" onClick={onClick}
-      style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid #E5E7EB', cursor: 'pointer' }}>
-      <div style={{ position: 'relative', height: 180, background: '#F9FAFB' }}>
+    <div onClick={onClick} className="group"
+      style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
+        border: '1px solid #E5E7EB', cursor: 'pointer',
+        transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+
+      {/* Image */}
+      <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
         {img ? (
           <img src={img} alt={product.name} loading="lazy"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          />
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52 }}>🏥</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>
         )}
-        {hasDiscount && (
-          <div style={{ position: 'absolute', top: 10, left: 10, background: '#7C3AED',
-            color: '#fff', fontSize: 11, fontWeight: 700, padding: '6px 12px', borderRadius: 6, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-            Save: {savings.toLocaleString()}৳ (-{discount}%)
-          </div>
-        )}
+        {/* Badges */}
+        <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {hasDiscount && (
+            <span style={{ background: '#EF4444', color: '#fff', fontSize: 10, fontWeight: 700,
+              padding: '3px 8px', borderRadius: 6 }}>-{discount}%</span>
+          )}
+          {!inStock && (
+            <span style={{ background: '#6B7280', color: '#fff', fontSize: 10, fontWeight: 700,
+              padding: '3px 8px', borderRadius: 6 }}>Out of stock</span>
+          )}
+        </div>
+        {/* Quick add button on hover */}
+        <button
+          onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
+          style={{ position: 'absolute', bottom: 10, right: 10, background: '#0E8A6E',
+            color: '#fff', border: 'none', borderRadius: 8, padding: '7px 12px',
+            fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#0B7558'; }}
+          onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}
+          className="quick-add-btn">
+          + Cart
+        </button>
       </div>
-      <div style={{ padding: 14 }}>
+
+      {/* Content */}
+      <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {brandName && (
-          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', marginBottom: 4 }}>
+          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
             {brandName}
           </div>
         )}
-        <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4, marginBottom: 8,
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.45, marginBottom: 6, flex: 1,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          color: '#1F2937' }}>
           {product.name}
         </div>
         {ratingVal > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
-            <div style={{ display: 'flex', gap: 1 }}>
-              {[1, 2, 3, 4, 5].map(s => (
-                <span key={s} style={{ color: s <= Math.round(ratingVal) ? '#F59E0B' : '#E5E7EB', fontSize: 14 }}>★</span>
-              ))}
-            </div>
-            <span style={{ fontSize: 10, color: '#6B7280' }}>({reviewCount})</span>
+            {[1,2,3,4,5].map(s => (
+              <span key={s} style={{ color: s <= Math.round(ratingVal) ? '#F59E0B' : '#E5E7EB', fontSize: 13 }}>★</span>
+            ))}
+            <span style={{ fontSize: 10, color: '#9CA3AF' }}>({reviewCount})</span>
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <span style={{ fontSize: 18, fontWeight: 800, color: '#0B2545' }}>
-            ৳{product.price?.toLocaleString()}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
+            {price > 0 ? `৳${price.toLocaleString()}` : 'Contact for Price'}
           </span>
-          {product.oldPrice > product.price && (
-            <span style={{ fontSize: 12, color: '#9CA3AF', textDecoration: 'line-through' }}>
-              ৳{product.oldPrice?.toLocaleString()}
+          {hasDiscount && (
+            <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
+              ৳{oldPrice.toLocaleString()}
             </span>
           )}
         </div>
@@ -525,6 +551,7 @@ export default function HomePage() {
         .marquee-track:hover { animation-play-state: paused; }
         .product-card-hover { transition: box-shadow 0.2s, transform 0.2s; will-change: transform; }
         .product-card-hover:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.12); transform: translateY(-3px); }
+        div:hover .quick-add-btn { opacity: 1 !important; }
         .cat-tile { transition: all 0.2s; }
         .cat-tile:hover { border-color: #0E8A6E !important; }
         .cat-tile:hover .cat-tile-arrow { opacity: 1 !important; transform: translateX(3px) !important; }
@@ -579,11 +606,103 @@ export default function HomePage() {
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* HERO SECTION WITH SLIDER (LEFT) + 3 BANNERS (RIGHT) */}
+      {/* HERO SECTION — dark gradient with search + stats */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 60%, #0E8A6E 100%)', position: 'relative', overflow: 'hidden', padding: '56px 0 48px' }}>
+        {/* Background orbs */}
+        <div style={{ position: 'absolute', top: '-10%', right: '5%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(14,138,110,0.25), transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-20%', left: '0%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(77,219,184,0.12), transparent 70%)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
+          {/* Badge */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: '#4DDBB8', fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ width: 7, height: 7, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
+            Bangladesh&apos;s #1 Medical Equipment Platform
+          </div>
+
+          {/* Headline */}
+          <h1 className="hero-content" style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 16, maxWidth: 700 }}>
+            Medical Equipment &amp;<br />
+            <span style={{ color: '#4DDBB8' }}>
+              <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
+            </span>
+          </h1>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', marginBottom: 32, maxWidth: 560, lineHeight: 1.7 }}>
+            10,000+ DGDA-registered products from 50+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals &amp; clinics.
+          </p>
+
+          {/* Search bar */}
+          <div style={{ display: 'flex', gap: 0, maxWidth: 620, marginBottom: 32, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+            <input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+              placeholder={searchPlaceholder}
+              style={{ flex: 1, padding: '16px 20px', border: 'none', outline: 'none', fontSize: 14, color: '#1F2937', background: 'transparent' }}
+            />
+            <button onClick={handleSearch}
+              style={{ padding: '16px 28px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#0B7558'}
+              onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
+              🔍 Search
+            </button>
+          </div>
+
+          {/* Quick category pills */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 40 }}>
+            {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (
+              <button key={q} onClick={() => router.push(`/search?q=${encodeURIComponent(q)}`)}
+                style={{ padding: '7px 16px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
+                {q}
+              </button>
+            ))}
+          </div>
+
+          {/* Mini stats row */}
+          <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+            {[
+              { val: '10,000+', label: 'Products' },
+              { val: '50+', label: 'Global Brands' },
+              { val: '500+', label: 'B2B Clients' },
+              { val: 'DGDA', label: 'Registered' },
+            ].map(({ val, label }) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#4DDBB8' }}>{val}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TRUST BAR */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '14px 0' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+          {[
+            { icon: '🚚', text: 'Free delivery over ৳50,000' },
+            { icon: '❄️', text: 'Cold chain for reagents' },
+            { icon: '🔧', text: 'Free installation in Dhaka' },
+            { icon: '📞', text: '24/7 technical support' },
+            { icon: '↩', text: '30-day returns' },
+          ].map(({ icon, text }) => (
+            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#374151', fontWeight: 500 }}>
+              <span style={{ fontSize: 16 }}>{icon}</span>
+              {text}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* HERO SLIDER (image banner) — kept for admin-configured banners */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section style={{
         background: '#F8FAFC',
-        position: 'relative', overflow: 'hidden', padding: '24px 0'
+        position: 'relative', overflow: 'hidden', padding: '24px 0', display: heroSlides.length > 0 || promoBanner ? 'block' : 'none'
       }}>
         <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '0 24px',
           position: 'relative', display: 'grid', gridTemplateColumns: '60% 40%', gap: 20,
@@ -1366,9 +1485,32 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 12: WHY MEDCORE BD - REMOVED */}
-      {/* This section has been deleted as per requirements */}
+      {/* WHY MEDCORE BD */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#fff', padding: '56px 24px', borderTop: '1px solid #E5E7EB' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Why Choose Us</p>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#0B2545' }}>
+              The MedCore BD Difference
+            </h2>
+          </div>
+          <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+            {WHY_US.map(({ icon, title, desc }) => (
+              <div key={title} className="trust-item"
+                style={{ padding: '24px', borderRadius: 16, border: '1px solid #E5E7EB', background: '#F9FAFB', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.boxShadow = 'none'; }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 22, marginBottom: 16 }}>
+                  {icon}
+                </div>
+                <h4 style={{ fontSize: 15, fontWeight: 700, color: '#0B2545', marginBottom: 8 }}>{title}</h4>
+                <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, margin: 0 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 13: ANIMATED STATS COUNTER */}
@@ -1557,6 +1699,44 @@ export default function HomePage() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* NEWSLETTER */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: 'linear-gradient(135deg, #0B2545, #0d3162)', padding: '56px 24px' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 10 }}>
+            Stay Updated
+          </h2>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginBottom: 28, lineHeight: 1.7 }}>
+            Get the latest product launches, exclusive B2B offers, and medical equipment news delivered to your inbox.
+          </p>
+          <div style={{ display: 'flex', gap: 0, borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
+              placeholder="Enter your email address"
+              style={{ flex: 1, padding: '15px 20px', border: 'none', outline: 'none', fontSize: 14, background: '#fff', color: '#1F2937' }}
+            />
+            <button onClick={handleSubscribe} disabled={subscribeStatus === 'loading'}
+              style={{ padding: '15px 24px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', opacity: subscribeStatus === 'loading' ? 0.7 : 1 }}>
+              {subscribeStatus === 'loading' ? 'Subscribing…' : subscribeStatus === 'success' ? '✓ Subscribed!' : 'Subscribe'}
+            </button>
+          </div>
+          {subscribeStatus === 'error' && (
+            <p style={{ color: '#FCA5A5', fontSize: 12, marginTop: 8 }}>Please enter a valid email address.</p>
+          )}
+          {subscribeStatus === 'success' && (
+            <p style={{ color: '#4DDBB8', fontSize: 12, marginTop: 8 }}>Thank you for subscribing!</p>
+          )}
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 12 }}>
+            No spam. Unsubscribe anytime.
+          </p>
         </div>
       </section>
 
