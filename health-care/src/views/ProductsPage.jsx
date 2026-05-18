@@ -145,19 +145,22 @@ export default function ProductsPage({ onProductClick }) {
         <div className="bg-[#0B2545] border-b border-[#0d2d52]">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
             <div className="flex flex-wrap items-center gap-2">
-              {/* Category quick-filter pills */}
+              {/* Category quick-filter pills — from API */}
               <div className="flex items-center gap-2 flex-wrap">
-                {['Diagnostic Equipment', 'Lab Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'].map(cat => (
-                  <button key={cat}
-                    onClick={() => { setSearchCategory(searchCategory === cat ? '' : cat); resetPagination(); }}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
-                      searchCategory === cat
-                        ? 'bg-[#0E8A6E] text-white'
-                        : 'bg-white/10 text-white/80 hover:bg-white/20'
-                    }`}>
-                    {cat}
-                  </button>
-                ))}
+                {categories.slice(0, 8).map(cat => {
+                  const name = typeof cat === 'string' ? cat : cat.name;
+                  return (
+                    <button key={name}
+                      onClick={() => { setSearchCategory(searchCategory === name ? '' : name); resetPagination(); }}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
+                        searchCategory === name
+                          ? 'bg-[#0E8A6E] text-white'
+                          : 'bg-white/10 text-white/80 hover:bg-white/20'
+                      }`}>
+                      {name}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Active filter chips */}

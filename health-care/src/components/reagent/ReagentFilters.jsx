@@ -1,46 +1,59 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { API } from '@/constants/api';
+
+// These are enum-style values that don't change — kept as constants
+const TEMPERATURES = ['Cold (2–8°C)', 'Frozen (−20°C)', 'Room temperature'];
+const HAZARDS = ['Biohazard', 'Chemical hazard', 'Safe to handle'];
+
 export default function ReagentFilters({ filters, setFilters }) {
-  const brands = [
-    'Roche Diagnostics',
-    'Abbott Laboratories',
-    'Siemens Healthineers',
-    'Beckman Coulter',
-    'bioMérieux',
-    'BD Diagnostics',
-    'Thermo Fisher',
-    'Danaher (Beckman)'
-  ];
+  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = [
-    'Haematology',
-    'Clinical chemistry',
-    'Immunoassay',
-    'Microbiology',
-    'Molecular diagnostics',
-    'Coagulation',
-    'Urinalysis'
-  ];
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      try {
+        const [brandsRes, catsRes] = await Promise.all([
+          fetch(`${API}/manufacturers`),
+          fetch(`${API}/categories`),
+        ]);
 
-  const temperatures = [
-    'Cold (2–8°C)',
-    'Frozen (−20°C)',
-    'Room temperature'
-  ];
+        if (brandsRes.ok) {
+          const data = await brandsRes.json();
+          const list = data.data?.manufacturers || data.manufacturers || [];
+          setBrands(list.map((m) => (typeof m === 'string' ? m : m.name)).filter(Boolean));
+        }
 
-  const hazards = [
-    'Biohazard',
-    'Chemical hazard',
-    'Safe to handle'
-  ];
+        if (catsRes.ok) {
+          const data = await catsRes.json();
+          const list = data.data?.categories || data.categories || [];
+          // Show all categories — the reagent store will filter by product category separately
+          setCategories(list.map((c) => (typeof c === 'string' ? c : c.name)).filter(Boolean));
+        }
+      } catch {
+        // silently fall back to empty — filters still work without them
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const toggleFilter = (category, value) => {
-    setFilters(prev => {
-      const current = prev[category] || [];
+    fetchFilterData();
+  }, []);
+
+  const toggleFilter = (key, value) => {
+    setFilters((prev) => {
+      const current = prev[key] || [];
       const updated = current.includes(value)
-        ? current.filter(item => item !== value)
+        ? current.filter((item) => item !== value)
         : [...current, value];
-      return { ...prev, [category]: updated };
+      return { ...prev, [key]: updated };
     });
   };
+
+  const clearAll = () =>
+    setFilters({ brands: [], categories: [], temperature: [], hazards: [], priceRange: 50000 });
 
   return (
     <div className="bg-white border-r-[0.5px] border-[var(--color-border-tertiary)] p-4 overflow-y-auto">
@@ -49,8 +62,8 @@ export default function ReagentFilters({ filters, setFilters }) {
           Filters
         </h3>
         <button
-          onClick={() => setFilters({ brands: [], categories: [], temperature: [], priceRange: 50000 })}
-          className="text-[11px] text-[#0E8A6E] font-medium"
+          onClick={clearAll}
+          className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
         >
           Clear all
         </button>
@@ -61,21 +74,31 @@ export default function ReagentFilters({ filters, setFilters }) {
         <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Brand
         </div>
-        <div className="space-y-2">
-          {brands.map(brand => (
-            <label key={brand} className="flex items-center gap-2 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={filters.brands?.includes(brand)}
-                onChange={() => toggleFilter('brands', brand)}
-                className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
-              />
-              <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
-                {brand}
-              </span>
-            </label>
-          ))}
-        </div>
+        {loading ? (
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-4 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : brands.length === 0 ? (
+          <p className="text-[11px] text-[#9CA3AF]">No brands available</p>
+        ) : (
+          <div className="space-y-2">
+            {brands.map((brand) => (
+              <label key={brand} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={filters.brands?.includes(brand)}
+                  onChange={() => toggleFilter('brands', brand)}
+                  className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                />
+                <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
+                  {brand}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Category Filter */}
@@ -83,21 +106,31 @@ export default function ReagentFilters({ filters, setFilters }) {
         <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Category
         </div>
-        <div className="space-y-2">
-          {categories.map(category => (
-            <label key={category} className="flex items-center gap-2 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={filters.categories?.includes(category)}
-                onChange={() => toggleFilter('categories', category)}
-                className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
-              />
-              <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
-                {category}
-              </span>
-            </label>
-          ))}
-        </div>
+        {loading ? (
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-4 bg-gray-100 rounded animate-pulse" />
+            ))}
+          </div>
+        ) : categories.length === 0 ? (
+          <p className="text-[11px] text-[#9CA3AF]">No categories available</p>
+        ) : (
+          <div className="space-y-2">
+            {categories.map((category) => (
+              <label key={category} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={filters.categories?.includes(category)}
+                  onChange={() => toggleFilter('categories', category)}
+                  className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                />
+                <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
+                  {category}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Price Range */}
@@ -111,7 +144,9 @@ export default function ReagentFilters({ filters, setFilters }) {
           max="100000"
           step="5000"
           value={filters.priceRange}
-          onChange={(e) => setFilters({ ...filters, priceRange: parseInt(e.target.value) })}
+          onChange={(e) =>
+            setFilters({ ...filters, priceRange: parseInt(e.target.value) })
+          }
           className="w-full h-1 bg-[var(--color-border-tertiary)] rounded-lg appearance-none cursor-pointer accent-[#0E8A6E]"
         />
         <div className="flex justify-between mt-2">
@@ -128,7 +163,7 @@ export default function ReagentFilters({ filters, setFilters }) {
           Temperature storage
         </div>
         <div className="space-y-2">
-          {temperatures.map(temp => (
+          {TEMPERATURES.map((temp) => (
             <label key={temp} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"
@@ -150,7 +185,7 @@ export default function ReagentFilters({ filters, setFilters }) {
           Hazard classification
         </div>
         <div className="space-y-2">
-          {hazards.map(hazard => (
+          {HAZARDS.map((hazard) => (
             <label key={hazard} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"

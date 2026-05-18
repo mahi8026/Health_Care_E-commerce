@@ -22,6 +22,7 @@ import {
   FaSearch,
 } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
+import { API } from '@/constants/api';
 
 const MAIN_LINKS = [
   { label: 'Home', path: '/', icon: null },
@@ -31,16 +32,17 @@ const MAIN_LINKS = [
   { label: 'Track Order', path: '/track', icon: null },
 ];
 
-const CATEGORIES = [
-  { label: 'Diagnostic Equipment', path: '/products?category=Diagnostic+Equipment', icon: <FaStethoscope size={13} /> },
-  { label: 'Surgical Instruments', path: '/products?category=Surgical+Instruments', icon: <FaSyringe size={13} /> },
-  { label: 'Laboratory Reagents', path: '/reagent-store', icon: <FaFlask size={13} /> },
-  { label: 'Hospital Machines', path: '/products?category=Hospital+Machines', icon: <FaHospital size={13} /> },
-  { label: 'Lab Equipment', path: '/products?category=Lab+Equipment', icon: <FaMicroscope size={13} /> },
-  { label: 'PPE & Safety', path: '/products?category=PPE+%26+Safety', icon: <FaShieldAlt size={13} /> },
-  { label: 'Dental Equipment', path: '/products?category=Dental+Equipment', icon: <FaTooth size={13} /> },
-  { label: 'Implants & Ortho', path: '/products?category=Implants+%26+Ortho', icon: <FaBone size={13} /> },
-];
+// Icon map for known category names
+const CATEGORY_ICON_MAP = {
+  'Diagnostic Equipment': <FaStethoscope size={13} />,
+  'Surgical Instruments': <FaSyringe size={13} />,
+  'Laboratory Reagents': <FaFlask size={13} />,
+  'Hospital Machines':   <FaHospital size={13} />,
+  'Lab Equipment':       <FaMicroscope size={13} />,
+  'PPE & Safety':        <FaShieldAlt size={13} />,
+  'Dental Equipment':    <FaTooth size={13} />,
+  'Implants & Ortho':    <FaBone size={13} />,
+};
 
 export default function MobileMenu({ isOpen, onClose }) {
   const router = useRouter();
@@ -48,6 +50,18 @@ export default function MobileMenu({ isOpen, onClose }) {
   const [mounted, setMounted] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState([]);
+
+  // Fetch real categories from API
+  useEffect(() => {
+    fetch(`${API}/categories`)
+      .then((r) => r.json())
+      .then((data) => {
+        const list = data.data?.categories || data.categories || [];
+        setCategories(list);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -271,28 +285,35 @@ export default function MobileMenu({ isOpen, onClose }) {
 
           {categoriesExpanded && (
             <div>
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.path}
-                  onClick={() => handleNavigate(cat.path)}
-                  style={{
-                    width: '100%',
-                    padding: '9px 16px 9px 28px',
-                    background: 'none',
-                    border: 'none',
-                    textAlign: 'left',
-                    fontSize: 13,
-                    color: '#374151',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
-                >
-                  <span style={{ color: '#0E8A6E', flexShrink: 0 }}>{cat.icon}</span>
-                  {cat.label}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const name = typeof cat === 'string' ? cat : cat.name;
+                const path = name === 'Laboratory Reagents'
+                  ? '/reagent-store'
+                  : `/products?category=${encodeURIComponent(name)}`;
+                const icon = CATEGORY_ICON_MAP[name] || <FaStethoscope size={13} />;
+                return (
+                  <button
+                    key={name}
+                    onClick={() => handleNavigate(path)}
+                    style={{
+                      width: '100%',
+                      padding: '9px 16px 9px 28px',
+                      background: 'none',
+                      border: 'none',
+                      textAlign: 'left',
+                      fontSize: 13,
+                      color: '#374151',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                    }}
+                  >
+                    <span style={{ color: '#0E8A6E', flexShrink: 0 }}>{icon}</span>
+                    {name}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
