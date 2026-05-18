@@ -60,7 +60,7 @@ export default function ReagentCard({ reagent, onProductClick }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="text-[10px] text-[var(--color-text-tertiary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-            {reagent.brand}
+            {typeof reagent.brand === 'object' ? reagent.brand?.name : reagent.brand}
           </div>
           <h3 className="text-[13px] font-medium leading-tight mb-2 font-[family-name:var(--font-plus-jakarta)]">
             {reagent.name}
@@ -115,7 +115,7 @@ export default function ReagentCard({ reagent, onProductClick }) {
             Lot number
           </div>
           <div className="text-[10px] font-medium font-[family-name:var(--font-plus-jakarta)]">
-            {reagent.lotNumber}
+            {reagent.lotNumber || reagent.sku || '—'}
           </div>
         </div>
         <div className="flex-1">
@@ -123,7 +123,9 @@ export default function ReagentCard({ reagent, onProductClick }) {
             Expiry
           </div>
           <div className="text-[10px] font-medium font-[family-name:var(--font-plus-jakarta)]">
-            {reagent.expiry}
+            {reagent.expiryDate
+              ? new Date(reagent.expiryDate).toLocaleDateString('en-BD', { month: 'short', year: 'numeric' })
+              : reagent.expiry || '—'}
           </div>
         </div>
       </div>
@@ -142,7 +144,7 @@ export default function ReagentCard({ reagent, onProductClick }) {
       <div className="flex items-end justify-between">
         <div>
           <div className="text-[16px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-            ৳{reagent.price.toLocaleString()}
+            {(reagent.price ?? 0) > 0 ? `৳${(reagent.price).toLocaleString()}` : 'Contact for price'}
           </div>
           {reagent.oldPrice && (
             <div className="text-[11px] text-[var(--color-text-tertiary)] line-through">
@@ -159,18 +161,20 @@ export default function ReagentCard({ reagent, onProductClick }) {
       </div>
 
       {/* Stock Status */}
-      {reagent.lowStock ? (
-        <div className="mt-2 text-[10px] text-[#F59E0B] flex items-center gap-1">
-          ⚠ Low stock
-        </div>
-      ) : reagent.inStock ? (
-        <div className="mt-2 text-[10px] text-[#0E8A6E] flex items-center gap-1">
-          ✓ In stock
-        </div>
+      {reagent.stock !== undefined ? (
+        reagent.stock === 0 ? (
+          <div className="mt-2 text-[10px] text-[var(--color-text-tertiary)] flex items-center gap-1">Out of stock</div>
+        ) : reagent.stock <= 5 ? (
+          <div className="mt-2 text-[10px] text-[#F59E0B] flex items-center gap-1">⚠ Low stock ({reagent.stock} left)</div>
+        ) : (
+          <div className="mt-2 text-[10px] text-[#0E8A6E] flex items-center gap-1">✓ In stock</div>
+        )
+      ) : reagent.lowStock ? (
+        <div className="mt-2 text-[10px] text-[#F59E0B] flex items-center gap-1">⚠ Low stock</div>
+      ) : reagent.inStock === false ? (
+        <div className="mt-2 text-[10px] text-[var(--color-text-tertiary)] flex items-center gap-1">Out of stock</div>
       ) : (
-        <div className="mt-2 text-[10px] text-[var(--color-text-tertiary)] flex items-center gap-1">
-          Out of stock
-        </div>
+        <div className="mt-2 text-[10px] text-[#0E8A6E] flex items-center gap-1">✓ In stock</div>
       )}
 
       {/* Toast Notification */}

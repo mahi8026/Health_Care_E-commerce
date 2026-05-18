@@ -51,7 +51,7 @@ export default function LotSearch() {
           disabled={loading || !query.trim()}
           className="px-4 py-[10px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold disabled:opacity-50 hover:bg-[#0d2d52] transition-colors"
         >
-          {loading ? <Spinner size="small" color="white" /> : 'Search'}
+          {loading ? <Spinner size="sm" /> : 'Search'}
         </button>
         {searched && (
           <button

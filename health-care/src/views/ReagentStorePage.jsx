@@ -16,7 +16,8 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
     brands: [],
     categories: [],
     temperature: [],
-    priceRange: 0,
+    hazards: [],
+    priceRange: 50000,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
