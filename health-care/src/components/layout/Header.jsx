@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import AccountMenu from './AccountMenu';
@@ -9,152 +9,112 @@ import WishlistButton from '../wishlist/WishlistButton';
 import MobileMenu from './MobileMenu';
 import { FaSearch, FaShoppingCart, FaBars } from 'react-icons/fa';
 
-const FALLBACK_CATEGORIES = [
-  { name: 'Diagnostic Equipment' },
-  { name: 'Surgical Instruments' },
-  { name: 'Laboratory Reagents' },
-  { name: 'Hospital Machines' },
-  { name: 'Lab Equipment' },
-  { name: 'PPE & Safety' },
-  { name: 'Dental Equipment' },
-  { name: 'Implants & Ortho' },
+const NAV_LINKS = [
+  { label: 'Products',      href: '/products' },
+  { label: 'Reagent Store', href: '/reagent-store' },
+  { label: 'B2B Portal',    href: '/b2b' },
+  { label: 'Track Order',   href: '/track' },
 ];
 
-export default function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate, onSearchClick }) {
-  const router = useRouter();
+export default function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate }) {
+  const router   = useRouter();
+  const pathname = usePathname();
   const { getCartCount } = useCart();
   const { user, isAuthenticated } = useAuth();
   const cartCount = getCartCount();
-  
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      const categoryParam = selectedCategory !== 'All Categories' 
-        ? `&category=${encodeURIComponent(selectedCategory)}`
-        : '';
-      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}${categoryParam}`);
-      setMobileSearchOpen(false);
-    }
-  };
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isActive = (href) => pathname === href || pathname?.startsWith(href + '/');
 
   return (
     <>
-      {/* Main Navbar with Search */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-3 flex items-center gap-2 md:gap-4">
-          {/* Logo */}
-          <div 
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center gap-4 md:gap-6">
+
+          {/* ── Logo ── */}
+          <button
             onClick={() => router.push('/')}
-            className="font-[family-name:var(--font-lora)] text-[18px] md:text-[20px] font-bold text-[#0B2545] flex-shrink-0 cursor-pointer"
+            className="font-[family-name:var(--font-lora)] text-[20px] font-bold text-[#0B2545] flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
           >
             MedCore<span className="text-[#0E8A6E]">BD</span>
-          </div>
-          
-          {/* Desktop Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-[680px]">
-            <div className="flex w-full border-2 border-gray-300 rounded-lg overflow-hidden bg-white hover:border-[#0E8A6E] transition-colors focus-within:border-[#0E8A6E] focus-within:shadow-md">
-              <select 
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="border-none bg-gray-50 px-4 py-3 text-[13px] text-gray-700 cursor-pointer outline-none min-w-[150px] font-medium"
-              >
-                <option value="All Categories">All Categories</option>
-                {FALLBACK_CATEGORIES.map(cat => (
-                  <option key={cat.name} value={cat.name}>{cat.name}</option>
-                ))}
-              </select>
-              <div className="w-px bg-gray-300"></div>
-              <div className="flex-1 relative">
-                <input 
-                  placeholder="Search products, brands, catalogue numbers..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-full border-none px-4 py-3 text-[14px] outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
-                    aria-label="Clear search"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-1 1L8 9l-2.5 2.5-1-1L7 8 4.5 5.5l1-1L8 7l2.5-2.5 1 1L9 8l2.5 2.5z"/>
-                    </svg>
-                  </button>
-                )}
-              </div>
-              <button 
-                onClick={handleSearch}
-                className="bg-[#0E8A6E] text-white border-none px-6 py-3 text-[14px] font-semibold cursor-pointer hover:bg-[#0c7a61] transition-colors flex items-center gap-2"
-              >
-                <FaSearch size={14} /> 
-                <span className="hidden lg:inline">Search</span>
-              </button>
-            </div>
-          </div>
-          
-          {/* Mobile Search Icon */}
-          <button
-            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className="md:hidden w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer"
-          >
-            <FaSearch size={16} className="text-gray-700" />
           </button>
-          
-          {/* Right Side Icons */}
-          <div className="flex gap-2 items-center ml-auto">
-            {/* Wishlist - Hidden on mobile */}
+
+          {/* ── Desktop Nav Links ── */}
+          <div className="hidden md:flex items-center gap-1 flex-1">
+            {NAV_LINKS.map(({ label, href }) => (
+              <button
+                key={href}
+                onClick={() => router.push(href)}
+                className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors whitespace-nowrap ${
+                  isActive(href)
+                    ? 'bg-[#0B2545]/8 text-[#0B2545] font-semibold'
+                    : 'text-gray-600 hover:text-[#0B2545] hover:bg-gray-100'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* ── Right side actions ── */}
+          <div className="flex items-center gap-2 ml-auto">
+
+            {/* Search icon — navigates to /products */}
+            <button
+              onClick={() => router.push('/products')}
+              aria-label="Search products"
+              className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-50 hover:border-[#0E8A6E] transition-colors"
+            >
+              <FaSearch size={14} className="text-gray-600" />
+            </button>
+
+            {/* Wishlist */}
             <div className="hidden md:block">
               <WishlistButton />
             </div>
-            
+
             {/* Cart */}
             <button
               onClick={onCartClick}
-              aria-label={cartCount > 0 ? `Shopping cart, ${cartCount} items` : 'Shopping cart'}
-              className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer relative hover:bg-gray-50 transition-colors"
-              title={cartCount > 0 ? `${cartCount} items in cart` : 'Shopping cart'}
+              aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : 'Cart'}
+              className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center relative hover:bg-gray-50 hover:border-[#0E8A6E] transition-colors"
             >
-              <FaShoppingCart size={16} className="text-gray-700" />
+              <FaShoppingCart size={15} className="text-gray-600" />
               {cartCount > 0 && (
-                <div className="absolute -top-[5px] -right-[5px] bg-[#E24B4A] text-white text-[8px] w-[16px] h-[16px] rounded-full flex items-center justify-center border-[1.5px] border-white font-bold">
+                <span className="absolute -top-1.5 -right-1.5 bg-[#E24B4A] text-white text-[9px] min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center border-2 border-white font-bold">
                   {cartCount > 9 ? '9+' : cartCount}
-                </div>
+                </span>
               )}
             </button>
-            
-            {/* Desktop Account Menu */}
+
+            {/* Account menu (desktop) */}
             <div className="hidden md:block">
-              <AccountMenu 
+              <AccountMenu
                 onNavigate={onNavigate}
                 onLoginClick={onLoginClick}
                 onLogout={onLogout}
               />
             </div>
-            
-            {/* Desktop Auth Buttons */}
+
+            {/* Auth buttons (desktop) */}
             <div className="hidden lg:flex items-center gap-2">
               {isAuthenticated() ? (
                 <>
-                  <span className="text-[11px] text-gray-600">
-                    {user?.name}
-                  </span>
+                  {user?.name && (
+                    <span className="text-[12px] text-gray-600 max-w-[100px] truncate">{user.name}</span>
+                  )}
                   {user?.role === 'admin' && (
                     <button
                       onClick={() => router.push('/admin')}
-                      className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-[11px] font-medium cursor-pointer hover:bg-purple-700 transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-semibold transition-colors"
                     >
                       Admin
                     </button>
                   )}
                   <button
                     onClick={onLogout}
-                    className="px-3 py-1.5 rounded-lg border border-gray-300 bg-transparent text-gray-700 text-[12px] cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 text-[12px] hover:bg-gray-50 transition-colors"
                   >
                     Logout
                   </button>
@@ -163,61 +123,39 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 <>
                   <button
                     onClick={onLoginClick}
-                    className="px-3 py-1.5 rounded-lg border border-gray-300 bg-transparent text-gray-700 text-[12px] cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-700 text-[12px] hover:bg-gray-50 transition-colors"
                   >
                     Log in
                   </button>
                   <button
                     onClick={onRegisterClick}
-                    className="px-3 py-1.5 rounded-lg border-none bg-[#0B2545] text-white text-[12px] font-medium cursor-pointer hover:bg-[#0d2d52] transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-[#0B2545] hover:bg-[#0d2d52] text-white text-[12px] font-semibold transition-colors"
                   >
                     Register
                   </button>
                 </>
               )}
-              
+
               <button
                 onClick={() => router.push('/b2b')}
-                className="px-4 py-1.5 bg-[#0E8A6E] text-white border-none rounded-lg text-[12px] font-semibold cursor-pointer hover:bg-[#0c7a61] transition-colors"
+                className="px-4 py-1.5 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-[12px] font-semibold transition-colors"
               >
                 B2B Portal
               </button>
             </div>
-            
-            {/* Mobile Hamburger Menu */}
+
+            {/* Mobile hamburger */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center cursor-pointer"
+              className="md:hidden w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center"
+              aria-label="Open menu"
             >
-              <FaBars size={18} className="text-gray-700" />
+              <FaBars size={16} className="text-gray-700" />
             </button>
           </div>
         </div>
-        
-        {/* Mobile Search Bar (Expandable) */}
-        {mobileSearchOpen && (
-          <div className="md:hidden px-4 pb-3 border-t border-gray-100 pt-3 animate-slide-in">
-            <div className="flex border-2 border-[#0B2545] rounded-lg overflow-hidden">
-              <input 
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="flex-1 border-none px-3 py-2 text-[14px] outline-none"
-                autoFocus
-              />
-              <button 
-                onClick={handleSearch}
-                className="bg-[#0B2545] text-white border-none px-4 text-[13px] font-semibold cursor-pointer"
-              >
-                <FaSearch size={14} />
-              </button>
-            </div>
-          </div>
-        )}
       </nav>
-      
-      {/* Mobile Menu */}
+
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
     </>
   );
