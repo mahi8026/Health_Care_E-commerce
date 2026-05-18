@@ -45,12 +45,54 @@ function StatusBadge({ status }) {
 
 // ── Marketing landing page (unauthenticated) ──────────────────────────────────
 
+// Default tiers used as fallback if settings don't override
+const DEFAULT_TIERS = [
+  { name: 'Standard', min: '৳0',     discount: 8,  credit: 0,  color: '#6B7280', bg: '#F9FAFB' },
+  { name: 'Silver',   min: '৳5L/yr', discount: 15, credit: 30, color: '#6B7280', bg: '#F3F4F6' },
+  { name: 'Gold',     min: '৳15L/yr',discount: 22, credit: 60, color: '#D97706', bg: '#FFFBEB' },
+  { name: 'Platinum', min: '৳30L/yr',discount: 30, credit: 90, color: '#7C3AED', bg: '#F5F3FF' },
+];
+
 function B2BLanding() {
   const router = useRouter();
   const [form, setForm] = useState({ name: '', company: '', email: '', phone: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+
+  // Real data from API
+  const [settings, setSettings] = useState(null);
+  const [siteStats, setSiteStats] = useState(null);
+  const [b2bClients, setB2bClients] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    const safe = async (url) => {
+      try {
+        const r = await fetch(url);
+        return r.ok ? r.json() : null;
+      } catch { return null; }
+    };
+
+    Promise.all([
+      safe(`${API}/settings`),
+      safe(`${API}/stats`),
+      // Fetch approved B2B reviews to use as "trusted by" client names
+      safe(`${API}/reviews?isApproved=true&limit=12`),
+    ]).then(([settingsData, statsData, reviewsData]) => {
+      if (settingsData?.data) setSettings(settingsData.data);
+      if (statsData?.data) setSiteStats(statsData.data);
+
+      // Extract unique company names from B2B reviews
+      const reviews = reviewsData?.data?.reviews || reviewsData?.reviews || [];
+      const companies = [...new Set(
+        reviews
+          .map((r) => r.user?.companyName || r.companyName)
+          .filter(Boolean)
+      )].slice(0, 8);
+      setB2bClients(companies);
+    }).finally(() => setLoadingData(false));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,23 +121,48 @@ function B2BLanding() {
     }
   };
 
+  // Derive real values from settings, fall back to sensible defaults
+  const maxDiscount = settings?.b2bMaxDiscount ?? 30;
+  const creditDays  = settings?.b2bCreditDays  ?? 90;
+  const deliveryThreshold = settings?.freeDeliveryThreshold
+    ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
+    : '৳50K';
+  const supportHours = settings?.supportHours ?? '24/7';
+  const contactPhone = settings?.contactPhone ?? '+880 1800-MEDCORE';
+  const contactEmail = settings?.contactEmail ?? 'b2b@medcorebd.com';
+  const totalProducts = siteStats?.totalProducts
+    ? `${(siteStats.totalProducts / 1000).toFixed(0)}K+`
+    : '10,000+';
+  const totalB2BClients = siteStats?.totalB2BClients
+    ? `${siteStats.totalB2BClients}+`
+    : '500+';
+
   const benefits = [
-    { icon: '💰', title: '8–30% Bulk Discounts', desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
-    { icon: '🏦', title: 'Credit Terms up to 90 Days', desc: 'Net-30, Net-60, or Net-90 payment terms for approved accounts.' },
-    { icon: '👤', title: 'Dedicated Account Manager', desc: '24/7 support from a dedicated B2B executive who knows your needs.' },
-    { icon: '🚚', title: 'Free Priority Delivery', desc: 'Free delivery on all B2B orders within Dhaka metro area.' },
+    { icon: '💰', title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
+    { icon: '🏦', title: `Credit Terms up to ${creditDays} Days`, desc: `Net-30, Net-60, or Net-${creditDays} payment terms for approved accounts.` },
+    { icon: '👤', title: 'Dedicated Account Manager', desc: `${supportHours} support from a dedicated B2B executive who knows your needs.` },
+    { icon: '🚚', title: 'Free Priority Delivery', desc: `Free delivery on all B2B orders over ${deliveryThreshold} within Dhaka metro area.` },
     { icon: '🔧', title: 'Free Installation & Training', desc: 'Professional installation and staff training for all diagnostic equipment.' },
     { icon: '📋', title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
   ];
 
-  const tiers = [
-    { name: 'Standard', min: '৳0', discount: '8%', credit: 'None', color: '#6B7280', bg: '#F9FAFB' },
-    { name: 'Silver', min: '৳5L/yr', discount: '15%', credit: '30 days', color: '#6B7280', bg: '#F3F4F6' },
-    { name: 'Gold', min: '৳15L/yr', discount: '22%', credit: '60 days', color: '#D97706', bg: '#FFFBEB' },
-    { name: 'Platinum', min: '৳30L/yr', discount: '30%', credit: '90 days', color: '#7C3AED', bg: '#F5F3FF' },
-  ];
+  // Build tiers from settings — scale discounts proportionally from maxDiscount
+  const tiers = DEFAULT_TIERS.map((t) => ({
+    ...t,
+    discount: t.name === 'Platinum' ? maxDiscount
+      : t.name === 'Gold' ? Math.round(maxDiscount * 0.73)
+      : t.name === 'Silver' ? Math.round(maxDiscount * 0.5)
+      : Math.round(maxDiscount * 0.27),
+    credit: t.name === 'Platinum' ? creditDays
+      : t.name === 'Gold' ? Math.round(creditDays * 0.67)
+      : t.name === 'Silver' ? Math.round(creditDays * 0.33)
+      : 0,
+  }));
 
-  const clients = ['Dhaka Medical College', 'Square Hospital', 'Popular Diagnostic', 'Ibn Sina Hospital', 'Labaid Group', 'Delta Hospital'];
+  // Fallback client list if no reviews yet
+  const clients = b2bClients.length > 0
+    ? b2bClients
+    : ['Dhaka Medical College', 'Square Hospital', 'Popular Diagnostic', 'Ibn Sina Hospital', 'Labaid Group', 'Delta Hospital'];
 
   return (
     <div className="bg-white">
@@ -113,7 +180,7 @@ function B2BLanding() {
                 <span className="text-[#0E8A6E]">for Healthcare Professionals</span>
               </h1>
               <p className="text-[15px] text-[#94A3B8] leading-relaxed mb-8">
-                Join 500+ hospitals, clinics, and diagnostic centers across Bangladesh. Get exclusive B2B pricing, credit terms, and a dedicated account manager.
+                Join {totalB2BClients} hospitals, clinics, and diagnostic centers across Bangladesh. Get exclusive B2B pricing, credit terms, and a dedicated account manager.
               </p>
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => document.getElementById('b2b-form')?.scrollIntoView({ behavior: 'smooth' })}
@@ -134,10 +201,10 @@ function B2BLanding() {
             {/* Stats */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { n: '500+', l: 'B2B Clients' },
-                { n: '10,000+', l: 'Products' },
-                { n: '30%', l: 'Max Discount' },
-                { n: '24/7', l: 'Support' },
+                { n: totalB2BClients, l: 'B2B Clients' },
+                { n: totalProducts,   l: 'Products' },
+                { n: `${maxDiscount}%`, l: 'Max Discount' },
+                { n: supportHours,    l: 'Support' },
               ].map(({ n, l }) => (
                 <div key={l} className="bg-[#0E1E35] rounded-2xl p-6 text-center border border-[#1E3A5F]">
                   <div className="text-[28px] font-bold text-[#0E8A6E] mb-1">{n}</div>
@@ -191,10 +258,10 @@ function B2BLanding() {
                 style={{ background: bg, borderColor: color + '40' }}>
                 <div className="text-[13px] font-bold mb-1" style={{ color }}>{name}</div>
                 <div className="text-[11px] text-[#9CA3AF] mb-3">From {min}/yr</div>
-                <div className="text-[28px] font-bold text-[#0B2545] mb-1">{discount}</div>
+                <div className="text-[28px] font-bold text-[#0B2545] mb-1">{discount}%</div>
                 <div className="text-[11px] text-[#6B7280] mb-2">discount</div>
                 <div className="text-[11px] font-medium" style={{ color }}>
-                  {credit === 'None' ? 'No credit' : `${credit} credit`}
+                  {credit === 0 ? 'No credit' : `${credit} days credit`}
                 </div>
               </div>
             ))}
@@ -223,9 +290,9 @@ function B2BLanding() {
             <div className="mt-8 p-5 bg-[#0B2545] rounded-2xl text-white">
               <div className="text-[13px] font-bold mb-1">Need immediate assistance?</div>
               <div className="text-[12px] text-[#94A3B8] mb-3">Our B2B team is available Mon–Sat, 9am–6pm</div>
-              <a href="tel:+8801800000000" className="text-[#0E8A6E] font-bold text-[14px]">+880 1800-MEDCORE</a>
+              <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="text-[#0E8A6E] font-bold text-[14px]">{contactPhone}</a>
               <div className="mt-1">
-                <a href="mailto:b2b@medcorebd.com" className="text-[12px] text-[#64748B] hover:text-[#94A3B8]">b2b@medcorebd.com</a>
+                <a href={`mailto:${contactEmail}`} className="text-[12px] text-[#64748B] hover:text-[#94A3B8]">{contactEmail}</a>
               </div>
             </div>
           </div>

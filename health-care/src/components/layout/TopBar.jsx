@@ -3,38 +3,65 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaTruck, FaSnowflake, FaTag, FaPhone, FaHeadset, FaShieldAlt } from 'react-icons/fa';
+import { API } from '@/constants/api';
 
-const ANNOUNCEMENTS = [
-  {
-    icon: <FaTruck size={11} />,
-    text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet',
-  },
-  {
-    icon: <FaSnowflake size={11} />,
-    text: 'Cold chain delivery for temperature-sensitive reagents — door to door',
-  },
-  {
-    icon: <FaTag size={11} />,
-    text: 'B2B institutions get up to 30% bulk discount — Register today',
-  },
+// Fallback announcements used before settings load
+const DEFAULT_ANNOUNCEMENTS = [
+  { icon: <FaTruck size={11} />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
+  { icon: <FaSnowflake size={11} />, text: 'Cold chain delivery for temperature-sensitive reagents — door to door' },
+  { icon: <FaTag size={11} />, text: 'B2B institutions get up to 30% bulk discount — Register today' },
 ];
+
+function buildAnnouncements(settings) {
+  if (!settings) return DEFAULT_ANNOUNCEMENTS;
+  const threshold = settings.freeDeliveryThreshold
+    ? `৳${settings.freeDeliveryThreshold.toLocaleString()}`
+    : '৳50,000';
+  const maxDiscount = settings.b2bMaxDiscount ?? 30;
+  return [
+    { icon: <FaTruck size={11} />, text: `Free delivery on orders over ${threshold} — Dhaka, Chittagong & Sylhet` },
+    { icon: <FaSnowflake size={11} />, text: 'Cold chain delivery for temperature-sensitive reagents — door to door' },
+    { icon: <FaTag size={11} />, text: `B2B institutions get up to ${maxDiscount}% bulk discount — Register today` },
+  ];
+}
 
 export default function TopBar() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [settings, setSettings] = useState(null);
+  const [contactPhone, setContactPhone] = useState('+880 1800-MED');
+
+  // Fetch settings once on mount
+  useEffect(() => {
+    fetch(`${API}/settings`)
+      .then((r) => r.json())
+      .then((data) => {
+        const s = data.data || {};
+        setSettings(s);
+        if (s.contactPhone) setContactPhone(s.contactPhone);
+      })
+      .catch(() => {});
+  }, []);
+
+  const announcements = buildAnnouncements(settings);
+
+  // Reset index if it's out of bounds after settings load
+  useEffect(() => {
+    setIndex((i) => i % announcements.length);
+  }, [announcements.length]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setVisible(false);
       setTimeout(() => {
-        setIndex((i) => (i + 1) % ANNOUNCEMENTS.length);
+        setIndex((i) => (i + 1) % announcements.length);
         setVisible(true);
       }, 300);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [announcements.length]);
 
-  const { icon, text } = ANNOUNCEMENTS[index];
+  const { icon, text } = announcements[index] || announcements[0];
 
   return (
     <div className="bg-[#0B2545] h-9 flex items-center justify-between px-4 md:px-6 text-[11px] select-none">
@@ -82,11 +109,11 @@ export default function TopBar() {
         <span className="text-white/20">|</span>
 
         <a
-          href="tel:+8801800000000"
+          href={`tel:${contactPhone.replace(/[\s\-]/g, '')}`}
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5 font-medium"
         >
           <FaPhone size={10} />
-          +880 1800-MED
+          {contactPhone}
         </a>
       </div>
     </div>

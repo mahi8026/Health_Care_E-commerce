@@ -50,15 +50,19 @@ const ANNOUNCEMENTS = [
   { icon: <FaTag />, text: 'B2B institutions get up to 30% bulk discount — Register today' },
 ];
 
-const WHY_US = [
-  { icon: <FaCheckCircle />, title: 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
-  { icon: <FaTruck />, title: 'Fast Delivery', desc: 'Same-day dispatch for orders before 12 PM. Free delivery in Dhaka metro.' },
-  { icon: <FaTools />, title: 'Free Installation', desc: 'Professional installation and staff training included for all equipment.' },
-  { icon: <FaPhoneAlt />, title: '24/7 Support', desc: 'Dedicated technical support team available round the clock.' },
-  { icon: <FaCreditCard />, title: 'Flexible Payment', desc: 'Bank transfer, bKash, Nagad, and B2B credit terms available.' },
-  { icon: <FaUndo />, title: '30-Day Returns', desc: 'Hassle-free returns and replacement policy on all products.' },
-];
+function buildAnnouncements(settings) {
+  const threshold = settings?.freeDeliveryThreshold
+    ? `৳${settings.freeDeliveryThreshold.toLocaleString()}`
+    : '৳50,000';
+  const maxDiscount = settings?.b2bMaxDiscount ?? 30;
+  return [
+    { icon: <FaTruck />, text: `Free delivery on orders over ${threshold} — Dhaka, Chittagong & Sylhet` },
+    { icon: <FaSnowflake />, text: 'Cold chain delivery available for temperature-sensitive reagents' },
+    { icon: <FaTag />, text: `B2B institutions get up to ${maxDiscount}% bulk discount — Register today` },
+  ];
+}
 
+// WHY_US is built dynamically from settings — see buildWhyUs() below
 const HOW_IT_WORKS = [
   { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 50+ global brands' },
   { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
@@ -66,23 +70,22 @@ const HOW_IT_WORKS = [
   { step: 4, icon: <FaTruck />, title: 'Fast Delivery', desc: 'Free installation & training included' },
 ];
 
-const PLACEHOLDER_TESTIMONIALS = [
-  {
-    comment: "MedCore BD has been our trusted supplier for lab reagents. Fast delivery, genuine products, and excellent after-sales support.",
-    rating: 5,
-    user: { name: "Dr. Rahman", companyName: "Dhaka Medical College Hospital" }
-  },
-  {
-    comment: "The B2B credit terms and bulk pricing have significantly reduced our procurement costs. Highly recommend for any hospital.",
-    rating: 5,
-    user: { name: "Dr. Fatema", companyName: "Popular Diagnostic Centre" }
-  },
-  {
-    comment: "Finecare reagents always arrive on time with complete documentation. Never had a quality issue.",
-    rating: 5,
-    user: { name: "Mr. Karim", companyName: "Lab Director, Medinova" }
-  }
-];
+function buildWhyUs(settings) {
+  const threshold = settings?.freeDeliveryThreshold
+    ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
+    : '৳50K';
+  const returnDays = settings?.returnPolicyDays ?? 30;
+  const supportHours = settings?.supportHours ?? '24/7';
+  const certifications = settings?.certifications?.join(', ') || 'DGDA Registered';
+  return [
+    { icon: <FaCheckCircle />, title: certifications.split(',')[0]?.trim() || 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
+    { icon: <FaTruck />, title: 'Fast Delivery', desc: `Same-day dispatch for orders before 12 PM. Free delivery in Dhaka metro over ${threshold}.` },
+    { icon: <FaTools />, title: 'Free Installation', desc: 'Professional installation and staff training included for all equipment.' },
+    { icon: <FaPhoneAlt />, title: `${supportHours} Support`, desc: 'Dedicated technical support team available round the clock.' },
+    { icon: <FaCreditCard />, title: 'Flexible Payment', desc: 'Bank transfer, bKash, Nagad, and B2B credit terms available.' },
+    { icon: <FaUndo />, title: `${returnDays}-Day Returns`, desc: `Hassle-free returns and replacement policy on all products within ${returnDays} days.` },
+  ];
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // HELPER COMPONENTS
@@ -214,7 +217,6 @@ export default function HomePage() {
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = useState('');
-  const [announcementIdx, setAnnouncementIdx] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [typewriterText, setTypewriterText] = useState('Diagnostic Equipment');
   const [categories, setCategories] = useState([]);
@@ -230,6 +232,7 @@ export default function HomePage() {
   const [statsStarted, setStatsStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
   const [testimonials, setTestimonials] = useState([]);
+  const [siteSettings, setSiteSettings] = useState(null);
   const [email, setEmail] = useState('');
   const [subscribeStatus, setSubscribeStatus] = useState('idle');
   const [user, setUser] = useState(null);
@@ -259,12 +262,6 @@ export default function HomePage() {
   const clientsCount = useCountUp(stats.totalB2BClients, 1500, statsStarted);
 
   // ── Effects ────────────────────────────────────────────────────────────────
-
-  // Announcement rotation
-  useEffect(() => {
-    const t = setInterval(() => setAnnouncementIdx(i => (i + 1) % ANNOUNCEMENTS.length), 4000);
-    return () => clearInterval(t);
-  }, []);
 
   // Sticky navbar - throttled for better performance
   useEffect(() => {
@@ -316,6 +313,8 @@ export default function HomePage() {
         if (s.promoBanner?.imageUrl) {
           setPromoBanner(s.promoBanner);
         }
+        // Store full settings for WHY_US and dynamic announcements
+        setSiteSettings(s);
       } catch {
         // silently fall back to default images
       } finally {
@@ -651,7 +650,12 @@ export default function HomePage() {
               ))}
             </div>
             <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
-              {[{ val: '10,000+', label: 'Products' }, { val: '50+', label: 'Global Brands' }, { val: '500+', label: 'B2B Clients' }, { val: 'DGDA', label: 'Registered' }].map(({ val, label }) => (
+              {[
+                { val: stats.totalProducts > 0 ? `${(stats.totalProducts / 1000).toFixed(0)}K+` : '10,000+', label: 'Products' },
+                { val: stats.totalBrands > 0 ? `${stats.totalBrands}+` : '50+', label: 'Global Brands' },
+                { val: stats.totalB2BClients > 0 ? `${stats.totalB2BClients}+` : '500+', label: 'B2B Clients' },
+                { val: 'DGDA', label: 'Registered' },
+              ].map(({ val, label }) => (
                 <div key={label}>
                   <div style={{ fontSize: 20, fontWeight: 800, color: '#4DDBB8' }}>{val}</div>
                   <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{label}</div>
@@ -1392,7 +1396,7 @@ export default function HomePage() {
             </h2>
           </div>
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {WHY_US.map(({ icon, title, desc }) => (
+            {buildWhyUs(siteSettings).map(({ icon, title, desc }) => (
               <div key={title} className="trust-item"
                 style={{ padding: '24px', borderRadius: 16, border: '1px solid #E5E7EB', background: '#F9FAFB', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
@@ -1556,7 +1560,8 @@ export default function HomePage() {
           </h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-          {(testimonials.length > 0 ? testimonials : PLACEHOLDER_TESTIMONIALS).slice(0, 3).map((review, i) => {
+          {testimonials.length > 0
+            ? testimonials.slice(0, 3).map((review, i) => {
             const userName = review.user?.name || review.userName || 'Anonymous';
             const companyName = review.user?.companyName || review.companyName || '';
             const rating = review.rating || 5;
@@ -1594,7 +1599,27 @@ export default function HomePage() {
                 </div>
               </div>
             );
-          })}
+          })
+          : (
+            // No reviews yet — show placeholder skeletons
+            [1, 2, 3].map((i) => (
+              <div key={i} style={{ background: '#fff', borderRadius: 16, border: '1px solid #E5E7EB', padding: '28px 24px' }}>
+                <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+                  {[1,2,3,4,5].map(s => <span key={s} style={{ color: '#F59E0B', fontSize: 18 }}>★</span>)}
+                </div>
+                <div style={{ height: 14, background: '#F3F4F6', borderRadius: 6, marginBottom: 8 }} />
+                <div style={{ height: 14, background: '#F3F4F6', borderRadius: 6, marginBottom: 8, width: '80%' }} />
+                <div style={{ height: 14, background: '#F3F4F6', borderRadius: 6, marginBottom: 20, width: '60%' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#E5E7EB' }} />
+                  <div>
+                    <div style={{ height: 13, width: 100, background: '#E5E7EB', borderRadius: 6, marginBottom: 6 }} />
+                    <div style={{ height: 11, width: 140, background: '#F3F4F6', borderRadius: 6 }} />
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
