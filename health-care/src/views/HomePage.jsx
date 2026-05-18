@@ -233,8 +233,6 @@ export default function HomePage() {
   const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
   const [testimonials, setTestimonials] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
-  const [email, setEmail] = useState('');
-  const [subscribeStatus, setSubscribeStatus] = useState('idle');
   const [user, setUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -503,29 +501,6 @@ export default function HomePage() {
       setFeaturedLoading(false);
     }).catch(() => setFeaturedLoading(false));
   }, []);
-
-  const handleSubscribe = useCallback(async () => {
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setSubscribeStatus('error');
-      return;
-    }
-    setSubscribeStatus('loading');
-    try {
-      const response = await fetch(`${API}/newsletter/subscribe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      if (response.ok) {
-        setSubscribeStatus('success');
-        setEmail('');
-      } else {
-        setSubscribeStatus('error');
-      }
-    } catch {
-      setSubscribeStatus('error');
-    }
-  }, [email]);
 
   // ══════════════════════════════════════════════════════════════════════════════
   // RENDER
@@ -1620,44 +1595,6 @@ export default function HomePage() {
               </div>
             ))
           )}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* NEWSLETTER */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: 'linear-gradient(135deg, #0B2545, #0d3162)', padding: '56px 24px' }}>
-        <div style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 10 }}>
-            Stay Updated
-          </h2>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginBottom: 28, lineHeight: 1.7 }}>
-            Get the latest product launches, exclusive B2B offers, and medical equipment news delivered to your inbox.
-          </p>
-          <div style={{ display: 'flex', gap: 0, borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
-              placeholder="Enter your email address"
-              style={{ flex: 1, padding: '15px 20px', border: 'none', outline: 'none', fontSize: 14, background: '#fff', color: '#1F2937' }}
-            />
-            <button onClick={handleSubscribe} disabled={subscribeStatus === 'loading'}
-              style={{ padding: '15px 24px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', opacity: subscribeStatus === 'loading' ? 0.7 : 1 }}>
-              {subscribeStatus === 'loading' ? 'Subscribing…' : subscribeStatus === 'success' ? '✓ Subscribed!' : 'Subscribe'}
-            </button>
-          </div>
-          {subscribeStatus === 'error' && (
-            <p style={{ color: '#FCA5A5', fontSize: 12, marginTop: 8 }}>Please enter a valid email address.</p>
-          )}
-          {subscribeStatus === 'success' && (
-            <p style={{ color: '#4DDBB8', fontSize: 12, marginTop: 8 }}>Thank you for subscribing!</p>
-          )}
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 12 }}>
-            No spam. Unsubscribe anytime.
-          </p>
         </div>
       </section>
 
