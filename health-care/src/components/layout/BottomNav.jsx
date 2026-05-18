@@ -3,41 +3,52 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import {
+  FaHome,
+  FaThLarge,
+  FaShoppingCart,
+  FaHeart,
+  FaUser,
+} from 'react-icons/fa';
 
 const NAV_ITEMS = [
-  { 
-    icon: '🏠', 
-    label: 'Home', 
+  {
+    icon: FaHome,
+    label: 'Home',
     path: '/',
-    exactMatch: true
+    exactMatch: true,
   },
-  { 
-    icon: '📦', 
-    label: 'Products', 
+  {
+    icon: FaThLarge,
+    label: 'Products',
     path: '/products',
-    exactMatch: false
+    exactMatch: false,
   },
-  { 
-    icon: '🛒', 
-    label: 'Cart', 
-    path: '/cart', 
-    showBadge: true,
-    exactMatch: false
+  {
+    icon: FaShoppingCart,
+    label: 'Cart',
+    path: '/cart',
+    showCartBadge: true,
+    exactMatch: false,
   },
-  { 
-    icon: '📋', 
-    label: 'Orders', 
+  {
+    icon: FaHeart,
+    label: 'Wishlist',
+    path: '/wishlist',
+    exactMatch: false,
+  },
+  {
+    icon: FaUser,
+    label: 'Account',
     path: '/account',
-    exactMatch: false
-  },
-  { 
-    icon: '👤', 
-    label: 'Account', 
-    path: '/login',
     requiresAuth: true,
-    exactMatch: false
+    authFallback: '/login',
+    exactMatch: false,
   },
 ];
+
+const ACTIVE_COLOR = '#0E8A6E';
+const INACTIVE_COLOR = '#9CA3AF';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -46,34 +57,28 @@ export default function BottomNav() {
   const { isAuthenticated } = useAuth();
   const cartCount = getCartCount();
 
-  // Hide on admin pages and B2B pages
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/b2b')) {
+  // Hide on admin, B2B, and auth pages
+  if (
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/b2b') ||
+    pathname?.startsWith('/login') ||
+    pathname?.startsWith('/register')
+  ) {
     return null;
   }
 
   const handleNavClick = (item) => {
-    // If requires auth and not authenticated, go to login
     if (item.requiresAuth && !isAuthenticated()) {
-      router.push('/login');
+      router.push(item.authFallback || '/login');
       return;
     }
-    
-    // For orders, go to account page if authenticated
-    if (item.label === 'Orders') {
-      if (isAuthenticated()) {
-        router.push('/account');
-      } else {
-        router.push('/login');
-      }
-      return;
-    }
-    
     router.push(item.path);
   };
 
   return (
-    <nav 
+    <nav
       className="bottom-nav-mobile"
+      aria-label="Mobile navigation"
       style={{
         position: 'fixed',
         bottom: 0,
@@ -84,54 +89,77 @@ export default function BottomNav() {
         borderTop: '1px solid #E5E7EB',
         zIndex: 1000,
         paddingBottom: 'env(safe-area-inset-bottom)',
-        boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
+        boxShadow: '0 -2px 12px rgba(0,0,0,0.06)',
         width: '100%',
+        display: 'flex',
       }}
     >
-      {NAV_ITEMS.map(item => {
-        const isActive = item.exactMatch 
+      {NAV_ITEMS.map((item) => {
+        const isActive = item.exactMatch
           ? pathname === item.path
           : pathname?.startsWith(item.path);
+
+        const Icon = item.icon;
+        const color = isActive ? ACTIVE_COLOR : INACTIVE_COLOR;
 
         return (
           <button
             key={item.path}
             onClick={() => handleNavClick(item)}
+            aria-label={item.label}
+            aria-current={isActive ? 'page' : undefined}
             style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 2,
+              gap: 3,
               background: 'none',
               border: 'none',
               cursor: 'pointer',
               position: 'relative',
-              color: isActive ? '#0E8A6E' : '#6B7280',
-              transition: 'all 0.2s',
-              padding: '8px 4px',
+              color,
+              transition: 'color 0.2s',
+              padding: '6px 4px',
             }}
-            aria-label={item.label}
           >
-            <span style={{ fontSize: 20 }}>{item.icon}</span>
-            <span 
-              style={{ 
-                fontSize: 9, 
-                fontWeight: isActive ? 600 : 400,
-                letterSpacing: '0.02em'
+            {/* Active indicator dot */}
+            {isActive && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 20,
+                  height: 2.5,
+                  background: ACTIVE_COLOR,
+                  borderRadius: '0 0 3px 3px',
+                }}
+              />
+            )}
+
+            <Icon size={18} />
+
+            <span
+              style={{
+                fontSize: 9.5,
+                fontWeight: isActive ? 700 : 400,
+                letterSpacing: '0.01em',
               }}
             >
               {item.label}
             </span>
-            
+
             {/* Cart Badge */}
-            {item.showBadge && cartCount > 0 && (
+            {item.showCartBadge && cartCount > 0 && (
               <span
+                aria-label={`${cartCount} items in cart`}
                 style={{
                   position: 'absolute',
-                  top: 6,
-                  right: '22%',
+                  top: 5,
+                  right: '18%',
                   background: '#E24B4A',
                   color: '#fff',
                   borderRadius: '50%',
@@ -143,6 +171,7 @@ export default function BottomNav() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   border: '1.5px solid #fff',
+                  lineHeight: 1,
                 }}
               >
                 {cartCount > 9 ? '9+' : cartCount}
