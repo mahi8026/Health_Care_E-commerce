@@ -140,90 +140,58 @@ export default function ProductsPage({ onProductClick }) {
   return (
     <div className="min-h-screen bg-[#F1F5F9]">
 
-      {/* ── Page Header / Search Bar ─────────────────────────────────────── */}
-      <div className="bg-[#0B2545] border-b border-[#0d2d52]">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-5">
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-            {/* Search input */}
-            <form onSubmit={handleSearch} className="flex flex-1 gap-2">
-              <div className="flex-1 flex items-center bg-white rounded-xl px-4 h-11 gap-2 shadow-sm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                </svg>
-                <input
-                  type="text"
-                  value={searchInput}
-                  onChange={e => setSearchInput(e.target.value)}
-                  placeholder="Search products, brands, catalogue numbers..."
-                  className="flex-1 border-none outline-none bg-transparent text-[13px] text-gray-800 font-[family-name:var(--font-plus-jakarta)] min-w-0"
-                />
-                {searchInput && (
-                  <button type="button" onClick={() => { setSearchInput(''); setSearchQuery(''); resetPagination(); }}
-                    className="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 6 6 18M6 6l12 12"/>
-                    </svg>
+      {/* ── Active filters + category pills bar ─────────────────────────── */}
+      {(hasActiveFilters || true) && (
+        <div className="bg-[#0B2545] border-b border-[#0d2d52]">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Category quick-filter pills */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {['Diagnostic Equipment', 'Lab Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'].map(cat => (
+                  <button key={cat}
+                    onClick={() => { setSearchCategory(searchCategory === cat ? '' : cat); resetPagination(); }}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
+                      searchCategory === cat
+                        ? 'bg-[#0E8A6E] text-white'
+                        : 'bg-white/10 text-white/80 hover:bg-white/20'
+                    }`}>
+                    {cat}
                   </button>
-                )}
+                ))}
               </div>
-              <button type="submit"
-                className="bg-[#0E8A6E] hover:bg-[#0c7a61] text-white px-6 h-11 rounded-xl text-[13px] font-semibold transition-colors whitespace-nowrap shadow-sm">
-                Search
-              </button>
-            </form>
 
-            {/* Category quick-filter pills — desktop */}
-            <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
-              {['Diagnostic Equipment', 'Lab Equipment', 'Surgical Instruments'].map(cat => (
-                <button key={cat}
-                  onClick={() => { setSearchCategory(searchCategory === cat ? '' : cat); resetPagination(); }}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
-                    searchCategory === cat
-                      ? 'bg-[#0E8A6E] text-white'
-                      : 'bg-white/10 text-white/80 hover:bg-white/20'
-                  }`}>
-                  {cat}
-                </button>
-              ))}
+              {/* Active filter chips */}
+              {hasActiveFilters && (
+                <>
+                  <span className="text-white/30 hidden sm:block">|</span>
+                  {searchQuery && (
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
+                      &ldquo;{searchQuery}&rdquo;
+                      <button onClick={() => { setSearchQuery(''); setSearchInput(''); resetPagination(); }} className="hover:text-red-300 ml-0.5">×</button>
+                    </span>
+                  )}
+                  {filters.inStock && (
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
+                      In Stock
+                      <button onClick={() => handleFilterChange({ ...filters, inStock: false })} className="hover:text-red-300 ml-0.5">×</button>
+                    </span>
+                  )}
+                  {(filters.minPrice || filters.maxPrice) && (
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
+                      ৳{filters.minPrice || 0}–{filters.maxPrice ? `৳${filters.maxPrice}` : '∞'}
+                      <button onClick={() => handleFilterChange({ ...filters, minPrice: undefined, maxPrice: undefined })} className="hover:text-red-300 ml-0.5">×</button>
+                    </span>
+                  )}
+                  <button onClick={clearAllFilters}
+                    className="text-red-300 hover:text-red-200 text-[11px] font-medium underline ml-1">
+                    Clear all
+                  </button>
+                </>
+              )}
             </div>
           </div>
-
-          {/* Active filter chips */}
-          {hasActiveFilters && (
-            <div className="flex flex-wrap items-center gap-2 mt-3">
-              <span className="text-white/50 text-[11px]">Active filters:</span>
-              {searchQuery && (
-                <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
-                  &ldquo;{searchQuery}&rdquo;
-                  <button onClick={() => { setSearchQuery(''); setSearchInput(''); resetPagination(); }} className="hover:text-red-300">×</button>
-                </span>
-              )}
-              {searchCategory && (
-                <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
-                  {searchCategory}
-                  <button onClick={() => { setSearchCategory(''); resetPagination(); }} className="hover:text-red-300">×</button>
-                </span>
-              )}
-              {filters.inStock && (
-                <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
-                  In Stock
-                  <button onClick={() => handleFilterChange({ ...filters, inStock: false })} className="hover:text-red-300">×</button>
-                </span>
-              )}
-              {(filters.minPrice || filters.maxPrice) && (
-                <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
-                  ৳{filters.minPrice || 0} – ৳{filters.maxPrice || '∞'}
-                  <button onClick={() => handleFilterChange({ ...filters, minPrice: undefined, maxPrice: undefined })} className="hover:text-red-300">×</button>
-                </span>
-              )}
-              <button onClick={clearAllFilters}
-                className="text-red-300 hover:text-red-200 text-[11px] font-medium underline ml-1">
-                Clear all
-              </button>
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-5">

@@ -36,7 +36,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       const categoryParam = selectedCategory !== 'All Categories' 
         ? `&category=${encodeURIComponent(selectedCategory)}`
         : '';
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}${categoryParam}`);
+      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}${categoryParam}`);
       setMobileSearchOpen(false);
     }
   };
