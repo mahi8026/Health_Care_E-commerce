@@ -224,6 +224,109 @@ exports.getProduct = async (req, res) => {
   }
 };
 
+// ── SKU category code map ─────────────────────────────────────────────────────
+const CATEGORY_CODES = {
+  'diagnostic':        'DX',
+  'diagnostics':       'DX',
+  'diagnostic equipment': 'DX',
+  'surgical':          'SG',
+  'surgical instruments': 'SG',
+  'laboratory':        'LB',
+  'lab equipment':     'LB',
+  'lab':               'LB',
+  'reagent':           'RG',
+  'reagents':          'RG',
+  'laboratory reagents': 'RG',
+  'hospital':          'HM',
+  'hospital machines': 'HM',
+  'ppe':               'PP',
+  'ppe & safety':      'PP',
+  'safety':            'PP',
+  'dental':            'DN',
+  'dental equipment':  'DN',
+  'implants':          'IM',
+  'implants & ortho':  'IM',
+  'ortho':             'IM',
+  'orthopedic':        'IM',
+};
+
+/**
+ * Derive a 2-letter category code from a category name.
+ * Falls back to the first 2 uppercase letters of the name.
+ */
+function getCategoryCode(categoryName = '') {
+  const lower = categoryName.toLowerCase().trim();
+  if (CATEGORY_CODES[lower]) return CATEGORY_CODES[lower];
+  // Try partial match
+  for (const [key, code] of Object.entries(CATEGORY_CODES)) {
+    if (lower.includes(key) || key.includes(lower)) return code;
+  }
+  // Fallback: first 2 letters
+  return categoryName.replace(/[^A-Za-z]/g, '').substring(0, 2).toUpperCase() || 'XX';
+}
+
+/**
+ * Derive a 3-letter brand code from a manufacturer name.
+ * Uses first 3 consonants/letters, skipping common words.
+ */
+function getBrandCode(brandName = '') {
+  const clean = brandName.replace(/[^A-Za-z\s]/g, '').trim();
+  // Remove common filler words
+  const words = clean.split(/\s+/).filter(w => !['the','and','of','co','ltd','inc','corp','group'].includes(w.toLowerCase()));
+  const joined = words.join('');
+  return joined.substring(0, 3).toUpperCase() || 'GEN';
+}
+
+// @desc    Generate next available SKU for a category + brand combination
+// @route   GET /api/products/generate-sku
+// @access  Private/Admin
+exports.generateSku = async (req, res) => {
+  try {
+    const { categoryId, brandId } = req.query;
+
+    if (!categoryId || !brandId) {
+      return res.status(400).json({ success: false, message: 'categoryId and brandId are required' });
+    }
+
+    // Fetch category and brand names
+    const [category, brand] = await Promise.all([
+      Category.findById(categoryId).select('name').lean(),
+      Manufacturer.findById(brandId).select('name').lean(),
+    ]);
+
+    if (!category) return res.status(404).json({ success: false, message: 'Category not found' });
+    if (!brand)    return res.status(404).json({ success: false, message: 'Brand not found' });
+
+    const catCode   = getCategoryCode(category.name);
+    const brandCode = getBrandCode(brand.name);
+    const prefix    = `MC-${catCode}-${brandCode}-`;
+
+    // Find the highest existing sequence number for this prefix
+    const existing = await Product.find(
+      { sku: { $regex: `^${prefix}\\d+$` } },
+      { sku: 1 }
+    ).lean();
+
+    let maxSeq = 0;
+    for (const p of existing) {
+      const seq = parseInt(p.sku.replace(prefix, ''), 10);
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    }
+
+    const nextSeq = maxSeq + 1;
+    const sku = `${prefix}${String(nextSeq).padStart(4, '0')}`;
+
+    res.status(200).json({ success: true, sku, prefix, sequence: nextSeq });
+  } catch (error) {
+    logger.error(`[generateSku] ${error.message}`);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 // @desc    Create product
 // @route   POST /api/products
 // @access  Private/Admin
