@@ -26,6 +26,8 @@ export default function ManufacturersPage() {
   const [itemsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [countries, setCountries] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({});
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -105,6 +107,29 @@ export default function ManufacturersPage() {
       fetchManufacturers();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete manufacturer');
+    }
+  };
+
+  const handleEdit = (manufacturer) => {
+    setEditingId(manufacturer._id);
+    setEditForm({
+      name: manufacturer.name,
+      slug: manufacturer.slug,
+      country: manufacturer.country,
+      website: manufacturer.website || '',
+      description: manufacturer.description || '',
+      isActive: manufacturer.isActive
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await api.patch(`/manufacturers/${editingId}`, editForm);
+      alert('Manufacturer updated successfully');
+      setEditingId(null);
+      fetchManufacturers();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update manufacturer');
     }
   };
 
@@ -431,7 +456,7 @@ export default function ManufacturersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                         <button
-                          onClick={() => router.push(`/admin/manufacturers/${manufacturer._id}/edit`)}
+                          onClick={() => handleEdit(manufacturer)}
                           className="text-blue-600 hover:text-blue-900 hover:underline transition"
                         >
                           Edit
@@ -490,6 +515,108 @@ export default function ManufacturersPage() {
             </div>
           )}
         </div>
+
+        {/* Edit Modal */}
+        {editingId && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between border-b">
+                <h2 className="text-xl font-bold text-white">Edit Manufacturer</h2>
+                <button
+                  onClick={() => setEditingId(null)}
+                  className="text-white hover:opacity-80 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <input
+                    type="text"
+                    value={editForm.name || ''}
+                    onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Manufacturer name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Slug *</label>
+                  <input
+                    type="text"
+                    value={editForm.slug || ''}
+                    onChange={(e) => setEditForm({...editForm, slug: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="manufacturer-slug"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <input
+                      type="text"
+                      value={editForm.country || ''}
+                      onChange={(e) => setEditForm({...editForm, country: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Country"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={editForm.isActive ? 'active' : 'inactive'}
+                      onChange={(e) => setEditForm({...editForm, isActive: e.target.value === 'active'})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                  <input
+                    type="url"
+                    value={editForm.website || ''}
+                    onChange={(e) => setEditForm({...editForm, website: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <textarea
+                    value={editForm.description || ''}
+                    onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                    rows="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Manufacturer description"
+                  />
+                </div>
+              </div>
+
+              <div className="sticky bottom-0 bg-gray-50 px-6 py-4 border-t flex gap-3 justify-end">
+                <button
+                  onClick={() => setEditingId(null)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
