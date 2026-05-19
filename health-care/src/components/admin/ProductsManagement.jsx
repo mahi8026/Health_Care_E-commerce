@@ -774,9 +774,40 @@ export default function ProductsManagement({ openCreateRef }) {
                               )}
                             </div>
                           ))}
-                        {(manufacturers || []).filter(m => m.name.toLowerCase().includes(brandSearch.toLowerCase())).length === 0 && (
-                          <div className="px-3 py-2 text-[13px] text-[var(--color-text-secondary)]">
-                            No manufacturers found
+                        {/* "+ Add as new brand" option when no exact match exists */}
+                        {brandSearch.trim() && !(manufacturers || []).some(m => m.name.toLowerCase() === brandSearch.trim().toLowerCase()) && (
+                          <div
+                            onMouseDown={e => e.preventDefault()}
+                            onClick={async () => {
+                              const name = brandSearch.trim();
+                              try {
+                                const token = localStorage.getItem('medcore_token');
+                                const res = await fetch(`${API}/manufacturers`, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                                  body: JSON.stringify({ name }),
+                                });
+                                const data = await res.json();
+                                if (data.success && data.manufacturer) {
+                                  // Add to local state so it appears immediately
+                                  setManufacturers(prev => [...prev, data.manufacturer].sort((a, b) => a.name.localeCompare(b.name)));
+                                  setCreateForm(f => ({ ...f, brand: data.manufacturer._id }));
+                                  setBrandSearch(data.manufacturer.name);
+                                  setShowBrandDropdown(false);
+                                  showMessage(`Brand "${data.manufacturer.name}" created`, 'success');
+                                } else {
+                                  showMessage(data.message || 'Failed to create brand', 'error');
+                                }
+                              } catch (_e) {
+                                showMessage('Failed to create brand', 'error');
+                              }
+                            }}
+                            className="px-3 py-2 hover:bg-[#F0FDF9] cursor-pointer text-[13px] flex items-center gap-2 text-[#0E8A6E] font-medium border-t border-[var(--color-border-tertiary)]"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            Add &ldquo;{brandSearch.trim()}&rdquo; as new brand
                           </div>
                         )}
                       </div>
