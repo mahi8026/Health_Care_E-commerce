@@ -352,7 +352,17 @@ exports.broadcast = async (req, res) => {
       });
     }
 
-    // Process in batches of 50 to avoid rate limits
+    // Respond immediately — emails will be sent in the background
+    res.json({
+      success: true,
+      message: `Broadcast started for ${subscribers.length} subscriber(s). Emails are being sent in the background.`,
+      data: {
+        total: subscribers.length,
+        status: 'processing'
+      }
+    });
+
+    // Process email sending in the background (after response is sent)
     const BATCH_SIZE = 50;
     let sent = 0;
     let failed = 0;
@@ -378,28 +388,23 @@ exports.broadcast = async (req, res) => {
         })
       );
 
-      // Small delay between batches
+      // Small delay between batches to avoid rate limits
       if (i + BATCH_SIZE < subscribers.length) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
-    res.json({
-      success: true,
-      message: 'Broadcast completed',
-      data: {
-        sent,
-        failed,
-        total: subscribers.length
-      }
-    });
+    logger.info(`Broadcast completed: ${sent} sent, ${failed} failed out of ${subscribers.length} total`);
   } catch (error) {
     logger.error('Broadcast error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to send broadcast',
-      error: error.message
-    });
+    // Only send error response if headers haven't been sent yet
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send broadcast',
+        error: error.message
+      });
+    }
   }
 };
 
