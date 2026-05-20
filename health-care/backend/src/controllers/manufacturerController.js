@@ -2,6 +2,7 @@ const Manufacturer = require('../models/Manufacturer');
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
+const { invalidateCache } = require('../middleware/cache');
 
 // @desc    Get all manufacturers
 // @route   GET /api/manufacturers
@@ -13,8 +14,10 @@ exports.getManufacturers = async (req, res) => {
     // Build query
     let query = {};
     
-    // Admin can see inactive manufacturers
-    if (includeInactive !== 'true' || req.user?.role !== 'admin') {
+    // Only filter active if not explicitly requesting inactive
+    // Note: GET /manufacturers is a public route with no auth middleware,
+    // so req.user is always undefined here. Allow includeInactive param directly.
+    if (includeInactive !== 'true') {
       query.isActive = true;
     }
     
@@ -86,6 +89,9 @@ exports.createManufacturer = async (req, res) => {
   try {
     const manufacturer = await Manufacturer.create(req.body);
     
+    // Invalidate cache so new manufacturer appears in lists
+    await invalidateCache('manufacturers:*');
+    
     // Log manufacturer creation activity
     logActivityAsync({
       user: req.user,
@@ -141,6 +147,9 @@ exports.updateManufacturer = async (req, res) => {
     // Save triggers pre('save') middleware for slug regeneration
     await manufacturer.save();
     
+    // Invalidate cache so GET requests return fresh data
+    await invalidateCache('manufacturers:*');
+    
     // Log manufacturer update activity
     logActivityAsync({
       user: req.user,
@@ -185,6 +194,9 @@ exports.deleteManufacturer = async (req, res) => {
     // Soft delete - just deactivate (allow even if products exist)
     manufacturer.isActive = false;
     await manufacturer.save();
+    
+    // Invalidate cache so GET requests return fresh data
+    await invalidateCache('manufacturers:*');
     
     // Log manufacturer deletion activity
     logActivityAsync({
