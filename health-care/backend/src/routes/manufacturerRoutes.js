@@ -45,6 +45,7 @@ router.get('/:slug', redisCacheMiddleware({ ttl: 600, keyPrefix: 'manufacturers:
 // Admin routes
 router.post('/', protect, authorize('admin'), createManufacturer);
 router.put('/:id', protect, authorize('admin'), updateManufacturer);
+router.patch('/:id', protect, authorize('admin'), updateManufacturer);
 router.delete('/:id', protect, authorize('admin'), deleteManufacturer);
 router.post('/:id/logo', protect, authorize('admin'), upload.single('image'), uploadManufacturerLogo);
 

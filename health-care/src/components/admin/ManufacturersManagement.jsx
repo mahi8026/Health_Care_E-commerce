@@ -73,7 +73,7 @@ export default function ManufacturersManagement() {
       alert('Manufacturer deactivated successfully');
       fetchManufacturers();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete manufacturer');
+      alert(err.message || err.data?.message || 'Failed to delete manufacturer');
     }
   };
 
@@ -96,7 +96,7 @@ export default function ManufacturersManagement() {
       setEditingId(null);
       fetchManufacturers();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update manufacturer');
+      alert(err.message || err.data?.message || 'Failed to update manufacturer');
     }
   };
 

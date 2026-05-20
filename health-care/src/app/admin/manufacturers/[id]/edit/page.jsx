@@ -37,8 +37,8 @@ export default function EditManufacturerPage() {
     try {
       setLoading(true);
       // Get by ID since we have the ID in the URL
-      const response = await api.get(`/manufacturers`);
-      const mfr = response.data.manufacturers.find(m => m._id === manufacturerId);
+      const response = await api.get(`/manufacturers?includeInactive=true`);
+      const mfr = (response.manufacturers || []).find(m => m._id === manufacturerId);
       
       if (!mfr) {
         alert('Manufacturer not found');
@@ -136,7 +136,7 @@ export default function EditManufacturerPage() {
       alert('Manufacturer updated successfully!');
       router.push('/admin/manufacturers');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update manufacturer');
+      alert(err.message || err.data?.message || 'Failed to update manufacturer');
     } finally {
       setSaving(false);
     }

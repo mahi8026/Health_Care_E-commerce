@@ -122,15 +122,24 @@ exports.createManufacturer = async (req, res) => {
 // @access  Private/Admin
 exports.updateManufacturer = async (req, res) => {
   try {
-    const manufacturer = await Manufacturer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const manufacturer = await Manufacturer.findById(req.params.id);
     
     if (!manufacturer) {
       return res.status(404).json({ success: false, message: 'Manufacturer not found' });
     }
+    
+    // Allowed fields to update
+    const allowedFields = ['name', 'description', 'country', 'website', 'contactEmail', 'isActive', 'seo', 'slug'];
+    
+    // Update only allowed fields
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        manufacturer[field] = req.body[field];
+      }
+    });
+    
+    // Save triggers pre('save') middleware for slug regeneration
+    await manufacturer.save();
     
     // Log manufacturer update activity
     logActivityAsync({
@@ -173,16 +182,7 @@ exports.deleteManufacturer = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Manufacturer not found' });
     }
     
-    // Check if manufacturer has products
-    const productCount = await Product.countDocuments({ brand: manufacturer._id });
-    if (productCount > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Cannot delete manufacturer with ${productCount} products. Please reassign products first.` 
-      });
-    }
-    
-    // Soft delete - just deactivate
+    // Soft delete - just deactivate (allow even if products exist)
     manufacturer.isActive = false;
     await manufacturer.save();
     
