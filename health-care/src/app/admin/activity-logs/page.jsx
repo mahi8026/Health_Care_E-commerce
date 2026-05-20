@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
+import AdminShell from '@/components/admin/AdminShell';
 
 const ACTION_CATEGORIES = {
   AUTH: { label: 'Authentication', color: 'bg-blue-100 text-blue-800' },
@@ -164,6 +165,7 @@ export default function ActivityLogsPage() {
   }
 
   return (
+    <AdminShell title="Activity Logs">
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
@@ -515,5 +517,6 @@ export default function ActivityLogsPage() {
         </div>
       )}
     </div>
+    </AdminShell>
   );
 }

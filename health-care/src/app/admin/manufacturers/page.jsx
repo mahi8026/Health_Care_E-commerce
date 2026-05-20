@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
-
+import AdminShell from '@/components/admin/AdminShell';
 // Check if user is authenticated
 const isAuthenticated = () => {
   if (typeof window !== 'undefined') {
@@ -230,6 +230,7 @@ export default function ManufacturersPage() {
   }
 
   return (
+    <AdminShell title="Manufacturers">
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -619,5 +620,6 @@ export default function ManufacturersPage() {
         )}
       </div>
     </div>
+    </AdminShell>
   );
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { API } from '@/constants/api';
+import AdminShell from '@/components/admin/AdminShell';
 
 export default function CouponsPage() {
   const router = useRouter();
@@ -130,6 +131,7 @@ export default function CouponsPage() {
   const totalPages = Math.ceil(total / 20);
 
   return (
+    <AdminShell title="Coupons & Discounts">
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
@@ -339,5 +341,6 @@ export default function CouponsPage() {
         )}
       </div>
     </div>
+    </AdminShell>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
-
+import AdminShell from '@/components/admin/AdminShell';
 // Check if user is authenticated
 const isAuthenticated = () => {
   if (typeof window !== 'undefined') {
@@ -103,6 +103,7 @@ export default function CategoriesPage() {
   }
 
   return (
+    <AdminShell title="Categories">
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -280,5 +281,6 @@ export default function CategoriesPage() {
         </div>
       </div>
     </div>
+    </AdminShell>
   );
 }

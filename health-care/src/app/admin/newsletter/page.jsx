@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import NewsletterManagement from '@/components/admin/NewsletterManagement';
+import AdminShell from '@/components/admin/AdminShell';
 
 export default function NewsletterPage() {
   return (
+    <AdminShell title="Newsletter Management">
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)] mb-2 font-[family-name:var(--font-lora)]">
@@ -17,5 +19,6 @@ export default function NewsletterPage() {
 
       <NewsletterManagement />
     </div>
+    </AdminShell>
   );
 }
