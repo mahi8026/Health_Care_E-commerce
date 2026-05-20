@@ -15,9 +15,20 @@ const CLOUDINARY_CONFIGURED =
 
 // File filter — only images
 const fileFilter = (_req, file, cb) => {
-  const allowed = /jpeg|jpg|png|webp/;
-  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mime = allowed.test(file.mimetype);
+  // Validate file extension
+  const extAllowed = /\.(jpeg|jpg|png|webp)$/i;
+  const ext = extAllowed.test(path.extname(file.originalname));
+  
+  // Validate MIME type — check against known image MIME types
+  const mimeAllowed = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/x-png', // Some older systems send this
+    'image/webp'
+  ];
+  const mime = mimeAllowed.includes(file.mimetype);
+  
   if (ext && mime) return cb(null, true);
   cb(new Error('Only JPEG, PNG, and WebP images are allowed'));
 };

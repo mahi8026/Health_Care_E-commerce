@@ -6,6 +6,7 @@
  * PATCH /api/upload/reorder — reorder product images
  */
 
+const path = require('path');
 const { CLOUDINARY_CONFIGURED } = require('../services/uploadService');
 const logger = require('../utils/logger');
 const Product = require('../models/Product');
@@ -25,12 +26,39 @@ if (CLOUDINARY_CONFIGURED) {
 function uploadBufferToCloudinary(buffer, originalname) {
   return new Promise((resolve, reject) => {
     const publicId = `product-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const fileExt = path.extname(originalname).toLowerCase();
+    
+    // For PNG files, preserve the format and alpha channel
+    // For other formats, apply standard transformations
+    const transformationOptions = {
+      folder: 'medcorebd/products',
+      public_id: publicId,
+      resource_type: 'auto',
+      overwrite: false,
+    };
+    
+    // Only apply transformations for non-PNG files or use format-safe settings
+    if (fileExt === '.png') {
+      // For PNG: preserve transparency, use auto format with quality optimization
+      transformationOptions.transformation = [{ 
+        width: 1200, 
+        height: 1200, 
+        crop: 'limit',
+        format: 'png',
+        quality: 'auto:good'
+      }];
+    } else {
+      // For JPEG/WebP: apply standard transformations
+      transformationOptions.transformation = [{ 
+        width: 1200, 
+        height: 1200, 
+        crop: 'limit',
+        quality: 'auto'
+      }];
+    }
+    
     const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'medcorebd/products',
-        public_id: publicId,
-        transformation: [{ width: 1200, height: 1200, crop: 'limit', quality: 'auto' }],
-      },
+      transformationOptions,
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
