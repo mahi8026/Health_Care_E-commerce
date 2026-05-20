@@ -63,7 +63,7 @@ export default function ActivityLogsPage() {
 
   const fetchLogs = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('medcore_token');
       const queryParams = new URLSearchParams();
       
       Object.entries(filters).forEach(([key, value]) => {
@@ -91,7 +91,7 @@ export default function ActivityLogsPage() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('medcore_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/activity-logs/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -110,7 +110,7 @@ export default function ActivityLogsPage() {
 
   const handleExport = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('medcore_token');
       const queryParams = new URLSearchParams();
       
       if (filters.startDate) queryParams.append('startDate', filters.startDate);

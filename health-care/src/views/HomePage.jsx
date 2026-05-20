@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -451,7 +451,7 @@ export default function HomePage() {
     });
 
     // Check user auth
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('medcore_token');
     if (token) {
       fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
