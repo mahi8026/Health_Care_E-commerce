@@ -30,10 +30,10 @@ export default function AdminTopBar({ title, action, onAction }) {
   const isExportAction = EXPORT_ACTIONS.has(action);
 
   return (
-    <div className="bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-6 py-4">
+    <div className="bg-gradient-to-r from-white via-blue-50 to-cyan-50 border-b-[0.5px] border-blue-100 px-6 py-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[18px] font-semibold mb-1 font-[family-name:var(--font-lora)]">
+          <h1 className="text-[18px] font-semibold mb-1 font-[family-name:var(--font-lora)] bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
             {title}
           </h1>
           <div className="text-[11px] text-[var(--color-text-secondary)]">
@@ -74,14 +74,14 @@ export default function AdminTopBar({ title, action, onAction }) {
 
           {/* Profile */}
           <button className="flex items-center gap-2 p-2 hover:bg-[var(--color-background-tertiary)] rounded-lg">
-            <div className="w-8 h-8 bg-[#0E8A6E] rounded-full flex items-center justify-center text-white font-bold text-[11px]">
+            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-[11px] shadow-lg">
               SA
             </div>
           </button>
 
           {/* Action Button */}
           <button
-            className="px-4 py-[8px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52]"
+            className="px-4 py-[8px] bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:shadow-lg hover:shadow-blue-500/50 transition-all transform hover:scale-105"
             onClick={isExportAction ? () => handleExportClick(action) : () => onAction?.(action)}
           >
             {action}

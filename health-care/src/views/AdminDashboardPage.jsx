@@ -14,6 +14,8 @@ import QuotationsManagement from '@/components/admin/QuotationsManagement';
 import ReturnsManagement from '@/components/admin/ReturnsManagement';
 import AnalyticsReports from '@/components/admin/AnalyticsReports';
 import SystemMonitoring from '@/components/admin/SystemMonitoring';
+import ManufacturersManagement from '@/components/admin/ManufacturersManagement';
+import CategoriesManagement from '@/components/admin/CategoriesManagement';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -22,14 +24,10 @@ export default function AdminDashboardPage() {
   // Ref to trigger the create modal inside ProductsManagement from the top bar
   const openCreateProductRef = useRef(null);
 
-  // Handle navigation to separate pages
+  // Handle navigation to coupons page (which is separate)
   useEffect(() => {
     if (activeTab === 'coupons') {
       router.push('/admin/coupons');
-    } else if (activeTab === 'categories') {
-      router.push('/admin/categories');
-    } else if (activeTab === 'manufacturers') {
-      router.push('/admin/manufacturers');
     }
   }, [activeTab, router]);
 
@@ -45,6 +43,8 @@ export default function AdminDashboardPage() {
     orders: { title: 'Orders Management', action: 'Export orders' },
     products: { title: 'Product Catalogue', action: '+ Add product' },
     customers: { title: 'B2B Customers', action: '+ Add B2B account' },
+    manufacturers: { title: 'Manufacturers', action: '+ Add Manufacturer' },
+    categories: { title: 'Categories', action: '+ Add Category' },
     coupons: { title: 'Coupons & Discounts', action: '+ Create coupon' },
     quotes: { title: 'Quotation Requests', action: '+ New quotation' },
     returns: { title: 'Returns Management', action: 'Export returns' },
@@ -105,6 +105,8 @@ export default function AdminDashboardPage() {
             <ProductsManagement openCreateRef={openCreateProductRef} />
           )}
           {activeTab === 'customers' && <CustomersManagement />}
+          {activeTab === 'manufacturers' && <ManufacturersManagement />}
+          {activeTab === 'categories' && <CategoriesManagement />}
           {activeTab === 'quotes' && <QuotationsManagement />}
           {activeTab === 'returns' && <ReturnsManagement />}
           {activeTab === 'analytics' && <AnalyticsReports />}
