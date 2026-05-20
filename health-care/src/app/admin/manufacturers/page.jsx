@@ -331,7 +331,7 @@ export default function ManufacturersPage() {
 
         {/* Error */}
         {error && (
-          <div className=\"bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur border-2 border-red-400/50 text-red-300 px-6 py-4 rounded-lg mb-6 flex items-start gap-3\">
+          <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur border-2 border-red-400/50 text-red-300 px-6 py-4 rounded-lg mb-6 flex items-start gap-3">
             <span className="text-xl">⚠️</span>
             <div>
               <div className="font-medium">Error</div>
@@ -343,10 +343,10 @@ export default function ManufacturersPage() {
         {/* Manufacturers Table */}
         <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur border border-white/30 rounded-lg shadow-xl overflow-hidden">
           {selectedIds.size > 0 && (
-            <div className=\"bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur border-b border-blue-400/50 px-6 py-3 flex items-center justify-between\">
-              <span className=\"text-sm font-medium text-blue-200\">{selectedIds.size} item(s) selected</span>
+            <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur border-b border-blue-400/50 px-6 py-3 flex items-center justify-between">
+              <span className="text-sm font-medium text-blue-200">{selectedIds.size} item(s) selected</span>
               <button
-                className=\"text-xs bg-gradient-to-r from-red-600 to-pink-600 text-white px-3 py-1 rounded hover:shadow-lg transition font-medium\"
+                className="text-xs bg-gradient-to-r from-red-600 to-pink-600 text-white px-3 py-1 rounded hover:shadow-lg transition font-medium"
                 onClick={() => alert('Bulk delete feature coming soon')}
               >
                 Bulk Delete
