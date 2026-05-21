@@ -13,6 +13,26 @@ export default function ProductsPage({ onProductClick }) {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
   const [searchCategory, setSearchCategory] = useState(searchParams.get('category') || '');
+
+  // Sync URL search params back to state when URL changes (e.g. Header search navigation)
+  useEffect(() => {
+    const urlQuery = searchParams.get('q') || '';
+    const urlCategory = searchParams.get('category') || '';
+    if (urlQuery !== searchQuery) {
+      setSearchQuery(urlQuery);
+      setSearchInput(urlQuery);
+      setPage(1);
+      setAllProducts([]);
+      setHasMore(true);
+    }
+    if (urlCategory !== searchCategory) {
+      setSearchCategory(urlCategory);
+      setPage(1);
+      setAllProducts([]);
+      setHasMore(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   const [filters, setFilters] = useState(() => ({
     minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
     maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
@@ -86,7 +106,10 @@ export default function ProductsPage({ onProductClick }) {
       }
       setLoadingMore(false);
       setHasMore(pagination.page < pagination.pages);
-    } else if (products && products.length === 0 && page > 1) {
+    } else if (products && products.length === 0) {
+      if (page === 1) {
+        setAllProducts([]);
+      }
       setHasMore(false);
       setLoadingMore(false);
     }
