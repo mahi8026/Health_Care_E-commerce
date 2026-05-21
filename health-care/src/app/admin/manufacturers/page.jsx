@@ -231,8 +231,8 @@ export default function ManufacturersPage() {
 
   return (
     <AdminShell title="Manufacturers">
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-4 md:p-8 overflow-x-hidden">
+      <div className="w-full max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
           <div>
@@ -355,7 +355,7 @@ export default function ManufacturersPage() {
             </div>
           )}
           
-          <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <div className="w-full overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '900px'}}>
               <thead className="bg-gray-100 border-b border-gray-200">
                 <tr>

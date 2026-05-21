@@ -132,8 +132,8 @@ export default function CouponsPage() {
 
   return (
     <AdminShell title="Coupons & Discounts">
-    <div className="p-6">
-      {/* Header */}
+    <div className="w-full min-h-screen bg-white p-6 overflow-x-hidden">
+      <div className="w-full">
       <div className="mb-6">
         <h1 className="text-[24px] font-bold font-[family-name:var(--font-lora)] mb-2">
           Coupons & Discounts
@@ -211,7 +211,7 @@ export default function CouponsPage() {
             No coupons found
           </div>
         ) : (
-          <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <div className="w-full overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '900px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
@@ -339,6 +339,7 @@ export default function CouponsPage() {
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
     </AdminShell>
