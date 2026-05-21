@@ -30,7 +30,7 @@ export default function AdminLayout({ children }) {
   // Show loading while checking auth
   if (loading || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-background-tertiary)]">
+      <div className="min-h-screen flex items-center justify-center bg-page-muted">
         <div className="text-center">
           <div className="text-[14px] text-[var(--color-text-secondary)]">
             Loading admin panel...
@@ -46,7 +46,7 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="min-h-screen bg-page-muted">
       {children}
     </div>
   );

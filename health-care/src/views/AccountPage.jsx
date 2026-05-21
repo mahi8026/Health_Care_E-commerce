@@ -141,7 +141,7 @@ export default function AccountPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)]">
+    <div className="min-h-screen bg-page">
       {/* Header */}
       <div className="bg-white border-b border-[var(--color-border-tertiary)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">

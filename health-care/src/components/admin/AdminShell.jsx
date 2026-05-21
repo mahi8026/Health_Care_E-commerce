@@ -93,7 +93,7 @@ export default function AdminShell({ children, title, action, onAction }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="flex min-h-screen bg-page-muted">
       {/* Mobile Backdrop */}
       {mobileMenuOpen && (
         <div 

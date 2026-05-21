@@ -217,7 +217,7 @@ function B2BLanding() {
       </div>
 
       {/* Trusted by */}
-      <div className="bg-[#F8FAFC] border-y border-[#E5E7EB] py-6">
+      <div className="bg-page border-y border-[#E5E7EB] py-6">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <p className="text-[11px] text-[#9CA3AF] text-center uppercase tracking-widest mb-4">Trusted by leading healthcare institutions</p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
@@ -246,7 +246,7 @@ function B2BLanding() {
       </div>
 
       {/* Pricing tiers */}
-      <div className="bg-[#F8FAFC] py-16">
+      <div className="bg-page py-16">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
             <h2 className="text-[28px] md:text-[32px] font-bold text-[#0B2545] mb-3">B2B Pricing Tiers</h2>
@@ -390,7 +390,7 @@ function B2BDashboard({ data, onRefresh }) {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-page">
       {/* Top bar */}
       <div className="bg-[#0B2545] text-white px-4 md:px-8 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -469,7 +469,7 @@ function B2BDashboard({ data, onRefresh }) {
                     const itemCount = order.items?.length || order.itemCount || 0;
                     const total = order.totalAmount || order.total || 0;
                     return (
-                      <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[#E5E7EB] hover:bg-[#F9FAFB] transition-colors">
+                      <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[#E5E7EB] hover:bg-surface-subtle transition-colors">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 bg-[#EFF6FF] rounded-lg flex items-center justify-center text-[16px]">📦</div>
                           <div>
@@ -681,7 +681,7 @@ export default function B2BDashboardPage() {
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-[#0E8A6E] border-t-transparent rounded-full animate-spin mx-auto mb-3"/>
           <p className="text-[13px] text-[#6B7280]">Loading your dashboard…</p>
@@ -693,7 +693,7 @@ export default function B2BDashboardPage() {
   // Error
   if (fetchError) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
           <div className="text-[48px] mb-4">⚠️</div>
           <h2 className="text-[18px] font-bold text-[#0B2545] mb-2">Failed to load dashboard</h2>

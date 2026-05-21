@@ -144,7 +144,7 @@ export default function EditManufacturerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-page-muted p-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -156,7 +156,7 @@ export default function EditManufacturerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-page-muted p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">

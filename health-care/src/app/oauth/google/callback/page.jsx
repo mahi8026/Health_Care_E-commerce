@@ -59,7 +59,7 @@ export default function GoogleCallbackPage() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center">
+    <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="text-center">
         <Spinner size="large" />
         {status === 'processing' && (

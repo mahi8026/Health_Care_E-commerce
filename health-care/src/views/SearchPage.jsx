@@ -93,7 +93,7 @@ export default function SearchPage({ onProductClick }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)]">
+    <div className="min-h-screen bg-page">
       {/* Mobile Sticky Search Bar */}
       <div className="md:static md:bg-transparent sticky top-0 z-10 bg-white border-b md:border-b-0 border-[var(--color-border-tertiary)]">
         <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />

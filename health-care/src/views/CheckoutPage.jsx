@@ -138,7 +138,7 @@ export default function CheckoutPage({ onBackToCart }) {
 
   if (cart.length === 0 && !isConfirmed) {
     return (
-      <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-page flex items-center justify-center p-6">
         <div className="text-center max-w-md">
           <div className="text-[64px] mb-4">🛒</div>
           <h2 className="text-[20px] font-semibold mb-2 font-[family-name:var(--font-lora)]">
@@ -165,7 +165,7 @@ export default function CheckoutPage({ onBackToCart }) {
   }));
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="min-h-screen bg-page">
       <Breadcrumb items={breadcrumbs} />
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-0">

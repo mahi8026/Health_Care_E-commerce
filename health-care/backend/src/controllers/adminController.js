@@ -2,7 +2,15 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Quote = require('../models/Quote');
+const Cart = require('../models/Cart');
 const logger = require('../utils/logger');
+
+function calcMonthGrowth(current, previous) {
+  if (previous === 0 && current === 0) return { pct: 0, trend: 'neutral' };
+  if (previous === 0) return { pct: null, trend: 'up' };
+  const pct = Math.round(((current - previous) / previous) * 100);
+  return { pct, trend: pct >= 0 ? 'up' : 'down' };
+}
 
 // GET /api/admin/dashboard
 exports.getDashboard = async (req, res) => {
@@ -31,23 +39,35 @@ exports.getDashboard = async (req, res) => {
     ]);
     const lastMonthRevenue = lastMonthAgg[0]?.total || 0;
     const thisMonthRevenue = thisMonthAgg[0]?.total || 0;
-    const revenueGrowth = lastMonthRevenue > 0
-      ? Math.round(((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
-      : 0;
+    const revenueGrowthMeta = calcMonthGrowth(thisMonthRevenue, lastMonthRevenue);
 
-    // Order counts
-    const totalOrders = await Order.countDocuments();
-    const ordersThisMonth = await Order.countDocuments({ createdAt: { $gte: startOfMonth } });
-    const ordersLastMonth = await Order.countDocuments({ createdAt: { $gte: lastMonth, $lte: endOfLastMonth } });
-    const ordersGrowth = ordersLastMonth > 0
-      ? Math.round(((ordersThisMonth - ordersLastMonth) / ordersLastMonth) * 100)
-      : 0;
+    // Order counts (exclude cancelled from totals for overview)
+    const orderMatch = { status: { $nin: ['cancelled'] } };
+    const totalOrders = await Order.countDocuments(orderMatch);
+    const ordersThisMonth = await Order.countDocuments({
+      ...orderMatch,
+      createdAt: { $gte: startOfMonth },
+    });
+    const ordersLastMonth = await Order.countDocuments({
+      ...orderMatch,
+      createdAt: { $gte: lastMonth, $lte: endOfLastMonth },
+    });
+    const ordersGrowthMeta = calcMonthGrowth(ordersThisMonth, ordersLastMonth);
 
     // Active B2B clients
     const activeB2B = await User.countDocuments({ role: 'b2b_customer', isActive: true });
 
     // Pending quotes
     const pendingQuotes = await Quote.countDocuments({ status: 'pending' });
+
+    // Abandoned carts (real DB counts)
+    const totalAbandoned = await Cart.countDocuments({ isAbandoned: true });
+    const abandonedCarts = await Cart.find({ isAbandoned: true }).select('subtotal').lean();
+    const abandonedCartValue = abandonedCarts.reduce((sum, c) => sum + (c.subtotal || 0), 0);
+    const emailsSent = await Cart.countDocuments({ recoveryEmailSent: true });
+    const totalRecovered = await Cart.countDocuments({ recoveredAt: { $exists: true, $ne: null } });
+    const recoveryRate =
+      totalAbandoned > 0 ? Math.round((totalRecovered / totalAbandoned) * 100) : 0;
 
     // Monthly revenue breakdown (last 6 months)
     const sixMonthsAgo = new Date();
@@ -119,11 +139,19 @@ exports.getDashboard = async (req, res) => {
       data: {
         kpis: {
           totalRevenue,
-          revenueGrowth,
+          thisMonthRevenue,
+          revenueGrowth: revenueGrowthMeta.pct,
+          revenueGrowthTrend: revenueGrowthMeta.trend,
           totalOrders,
-          ordersGrowth,
+          ordersThisMonth,
+          ordersGrowth: ordersGrowthMeta.pct,
+          ordersGrowthTrend: ordersGrowthMeta.trend,
           activeB2B,
-          pendingQuotes
+          pendingQuotes,
+          abandonedCarts: totalAbandoned,
+          abandonedCartValue,
+          cartRecoveryRate: recoveryRate,
+          cartEmailsSent: emailsSent,
         },
         monthlyRevenue,
         salesByCategory,

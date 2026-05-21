@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { API } from '@/constants/api';
+import { getPopulatedLabel } from '@/utils/helpers';
 
 // These are enum-style values that don't change — kept as constants
 const TEMPERATURES = ['Cold (2–8°C)', 'Frozen (−20°C)', 'Room temperature'];
@@ -23,14 +24,14 @@ export default function ReagentFilters({ filters, setFilters }) {
         if (brandsRes.ok) {
           const data = await brandsRes.json();
           const list = data.data?.manufacturers || data.manufacturers || [];
-          setBrands(list.map((m) => (typeof m === 'string' ? m : m.name)).filter(Boolean));
+          setBrands(list.map((m) => getPopulatedLabel(m)).filter(Boolean));
         }
 
         if (catsRes.ok) {
           const data = await catsRes.json();
           const list = data.data?.categories || data.categories || [];
           // Show all categories — the reagent store will filter by product category separately
-          setCategories(list.map((c) => (typeof c === 'string' ? c : c.name)).filter(Boolean));
+          setCategories(list.map((c) => getPopulatedLabel(c)).filter(Boolean));
         }
       } catch {
         // silently fall back to empty — filters still work without them
@@ -56,9 +57,9 @@ export default function ReagentFilters({ filters, setFilters }) {
     setFilters({ brands: [], categories: [], temperature: [], hazards: [], priceRange: 50000 });
 
   return (
-    <div className="bg-white border-r-[0.5px] border-[var(--color-border-tertiary)] p-4 overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+    <div className="p-5">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-[14px] font-semibold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
           Filters
         </h3>
         <button
@@ -101,8 +102,8 @@ export default function ReagentFilters({ filters, setFilters }) {
         )}
       </div>
 
-      {/* Category Filter */}
-      <div className="mb-5 pb-5 border-b-[0.5px] border-[var(--color-border-tertiary)]">
+      {/* Category Filter — optional on reagent-only page */}
+      <div className="mb-5 pb-5 border-b border-gray-100 hidden">
         <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Category
         </div>

@@ -1,5 +1,25 @@
 // Utility helper functions
 
+/**
+ * Display label for a string or populated Mongoose ref ({ _id, name, slug, ... }).
+ */
+export function getPopulatedLabel(value, fallback = '') {
+  if (value == null || value === '') return fallback;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    return value.name || value.slug || value.label || fallback;
+  }
+  return String(value);
+}
+
+export function getProductBrandName(product) {
+  return getPopulatedLabel(product?.brand);
+}
+
+export function getProductCategoryName(product) {
+  return getPopulatedLabel(product?.category);
+}
+
 export function formatCurrency(amount, currency = '৳') {
   return `${currency}${amount.toLocaleString()}`;
 }

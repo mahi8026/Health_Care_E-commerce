@@ -72,7 +72,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
   // ── Empty state ──────────────────────────────────────────────────────────────
   if (cart.length === 0) {
     return (
-      <div className="min-h-[70vh] bg-[#F8FAFC] flex items-center justify-center px-4">
+      <div className="min-h-[70vh] bg-page flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="w-28 h-28 mx-auto mb-6 bg-[#E1F5EE] rounded-full flex items-center justify-center">
             <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#0E8A6E" strokeWidth="1.5">
@@ -101,7 +101,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
   // ── Main cart ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-6 md:py-8">
+    <div className="min-h-screen bg-page py-6 md:py-8">
 
       {/* Toast */}
       {toast && (
@@ -132,7 +132,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
             </p>
             <div className="flex gap-3">
               <button onClick={() => setShowClearConfirm(false)}
-                className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-[13px] font-semibold hover:bg-[#F9FAFB] transition-colors">
+                className="flex-1 py-2.5 border border-[#E5E7EB] rounded-xl text-[13px] font-semibold hover:bg-surface-subtle transition-colors">
                 Cancel
               </button>
               <button onClick={handleClearCart}
@@ -179,7 +179,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 >
                   <div className="flex gap-0">
                     {/* Image panel */}
-                    <div className="w-28 md:w-36 flex-shrink-0 bg-[#F9FAFB] flex items-center justify-center border-r border-[#E5E7EB] p-3">
+                    <div className="w-28 md:w-36 flex-shrink-0 bg-surface-subtle flex items-center justify-center border-r border-[#E5E7EB] p-3">
                       {imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -386,7 +386,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 </button>
                 <button
                   onClick={handleContinueShopping}
-                  className="w-full h-11 border border-[#E5E7EB] hover:bg-[#F9FAFB] text-[#374151] rounded-xl text-[13px] font-semibold transition-colors"
+                  className="w-full h-11 border border-[#E5E7EB] hover:bg-surface-subtle text-[#374151] rounded-xl text-[13px] font-semibold transition-colors"
                 >
                   ← Continue Shopping
                 </button>
@@ -399,7 +399,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                   { icon: '↩', label: '30-Day\nReturns' },
                   { icon: '📞', label: '24/7\nSupport' },
                 ].map(({ icon, label }) => (
-                  <div key={label} className="flex flex-col items-center gap-1 p-2 bg-[#F9FAFB] rounded-xl">
+                  <div key={label} className="flex flex-col items-center gap-1 p-2 bg-surface-subtle rounded-xl">
                     <span className="text-[20px]">{icon}</span>
                     <span className="text-[9px] text-[#6B7280] font-medium text-center leading-tight whitespace-pre-line">{label}</span>
                   </div>

@@ -9,6 +9,21 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        page: 'var(--color-background-page)',
+        'page-top': 'var(--color-background-page-top)',
+        surface: {
+          DEFAULT: 'var(--color-background-primary)',
+          subtle: 'var(--color-background-secondary)',
+          muted: 'var(--color-background-muted)',
+          inset: 'var(--color-background-inset)',
+        },
+        brand: {
+          DEFAULT: 'var(--color-brand-navy)',
+          teal: 'var(--color-brand-teal)',
+          'teal-light': 'var(--color-brand-teal-light)',
+        },
+      },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         'gradient-secondary': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',

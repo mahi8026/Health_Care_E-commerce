@@ -7,11 +7,13 @@ import Header from './Header';
 export default function HeaderWrapper() {
   const router = useRouter();
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, isAuthenticated, isB2BCustomer } = useAuth();
 
-  // Don't show header on these pages
-  const hideHeaderPaths = ['/admin', '/b2b', '/mobile-app'];
-  if (hideHeaderPaths.some(path => pathname?.startsWith(path))) {
+  // Admin & app shell only — keep header on /b2b for guests & retail users
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/mobile-app')) {
+    return null;
+  }
+  if (pathname?.startsWith('/b2b') && isAuthenticated() && isB2BCustomer()) {
     return null;
   }
 
@@ -46,7 +48,7 @@ export default function HeaderWrapper() {
   const handleNavigate = (view, category) => {
     const routes = {
       'home': '/',
-      'search': '/search',
+      'search': '/products',
       'cart': '/cart',
       'product': '/products',
       'diagnostics': '/products?category=Diagnostic Equipment',
@@ -70,7 +72,7 @@ export default function HeaderWrapper() {
   };
 
   const handleSearchClick = () => {
-    router.push('/search');
+    router.push('/products');
   };
 
   return (

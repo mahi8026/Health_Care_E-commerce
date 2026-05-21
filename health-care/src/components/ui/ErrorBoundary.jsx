@@ -47,7 +47,7 @@ class ErrorBoundary extends Component {
 
       // Default fallback UI
       return (
-        <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-6">
+        <div className="min-h-screen bg-page flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-xl shadow-sm p-8 text-center">
             <div className="text-[64px] mb-4">⚠️</div>
             <h2 className="text-[20px] font-semibold mb-2 text-[#0B2545] font-[family-name:var(--font-lora)]">

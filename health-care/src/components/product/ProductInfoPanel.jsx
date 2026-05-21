@@ -99,16 +99,16 @@ export default function ProductInfoPanel({
       <div className="flex gap-2 items-center mb-3 flex-wrap">
         {brandName && (
           <button 
-            onClick={() => router.push(`/search?brand=${product.brandId || brandName}`)}
-            className="text-[11px] font-medium bg-[#F9FAFB] text-[#6B7280] px-3 py-[5px] rounded-full hover:bg-[#E5E7EB] transition-colors"
+            onClick={() => router.push(`/products?brand=${encodeURIComponent(product.brandId || brandName)}`)}
+            className="text-[11px] font-medium bg-surface-subtle text-[#6B7280] px-3 py-[5px] rounded-full hover:bg-[#E5E7EB] transition-colors"
           >
             {brandName}
           </button>
         )}
         {categoryName && (
           <button 
-            onClick={() => router.push(`/search?category=${product.categoryId || categoryName}`)}
-            className="text-[11px] font-medium bg-[#F9FAFB] text-[#6B7280] px-3 py-[5px] rounded-full hover:bg-[#E5E7EB] transition-colors"
+            onClick={() => router.push(`/products?category=${encodeURIComponent(product.categoryId || categoryName)}`)}
+            className="text-[11px] font-medium bg-surface-subtle text-[#6B7280] px-3 py-[5px] rounded-full hover:bg-[#E5E7EB] transition-colors"
           >
             {categoryName}
           </button>
@@ -152,7 +152,7 @@ export default function ProductInfoPanel({
       </div>
 
       {/* Price Section */}
-      <div className="mb-5 p-4 bg-[#F8FAFC] rounded-2xl border border-gray-100">
+      <div className="mb-5 p-4 bg-surface-subtle rounded-2xl border border-gray-100">
         <div className="flex items-baseline gap-3 flex-wrap mb-1">
           <span className="text-[34px] font-extrabold text-[#0B2545] leading-none">
             {price > 0 ? `৳${price.toLocaleString()}` : (
@@ -330,7 +330,7 @@ export default function ProductInfoPanel({
           { icon: '🔧', text: 'Free installation', subtext: 'Dhaka metro' },
           { icon: '🔄', text: '30-day return', subtext: 'Hassle-free policy' }
         ].map((item, idx) => (
-          <div key={idx} className="bg-[#F8FAFC] rounded-xl p-3 flex items-start gap-2.5 border border-gray-100">
+          <div key={idx} className="bg-surface-subtle rounded-xl p-3 flex items-start gap-2.5 border border-gray-100">
             <span className="text-[20px] flex-shrink-0 leading-none mt-0.5">{item.icon}</span>
             <div>
               <div className="text-[11px] font-bold text-[#0B2545]">{item.text}</div>

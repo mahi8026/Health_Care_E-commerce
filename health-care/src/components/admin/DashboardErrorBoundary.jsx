@@ -47,7 +47,7 @@ class DashboardErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[var(--color-background-tertiary)] flex items-center justify-center p-6">
+        <div className="min-h-screen bg-page-muted flex items-center justify-center p-6">
           <div className="bg-[var(--color-background-primary)] rounded-lg border border-[var(--color-border-tertiary)] p-8 max-w-md w-full shadow-lg">
             {/* Error Icon */}
             <div className="flex justify-center mb-4">

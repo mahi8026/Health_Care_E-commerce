@@ -249,10 +249,13 @@ function resetMetrics() {
 }
 
 /**
- * Get health status
+ * Get health status (uses RSS vs system RAM — Node heap % alone is misleading)
  */
-function getHealthStatus() {
+function getHealthStatus(serviceChecks = {}) {
+  const os = require('os');
   const memory = process.memoryUsage();
+  const totalMem = os.totalmem() || 1;
+  const rssPercent = (memory.rss / totalMem) * 100;
   const heapUsedPercent = (memory.heapUsed / memory.heapTotal) * 100;
   const errorRate = metrics.requests.total > 0
     ? (metrics.requests.errors / metrics.requests.total * 100)
@@ -262,43 +265,55 @@ function getHealthStatus() {
     ? metrics.performance.responseTimes.reduce((sum, r) => sum + r.duration, 0) / metrics.performance.responseTimes.length
     : 0;
 
-  // Determine health status
   let status = 'healthy';
   const issues = [];
 
-  if (heapUsedPercent > 90) {
+  if (serviceChecks.database === 'down') {
     status = 'critical';
-    issues.push('High memory usage (>90%)');
-  } else if (heapUsedPercent > 75) {
+    issues.push('Database disconnected');
+  }
+
+  if (rssPercent > 92) {
+    status = 'critical';
+    issues.push(`High process memory (${rssPercent.toFixed(1)}% of system RAM)`);
+  } else if (rssPercent > 80) {
+    if (status !== 'critical') status = 'warning';
+    issues.push(`Elevated process memory (${rssPercent.toFixed(1)}% of system RAM)`);
+  }
+
+  if (metrics.requests.total >= 10 && errorRate > 10) {
+    status = 'critical';
+    issues.push(`High error rate (${errorRate.toFixed(1)}%)`);
+  } else if (metrics.requests.total >= 10 && errorRate > 5) {
+    if (status !== 'critical') status = 'warning';
+    issues.push(`Elevated error rate (${errorRate.toFixed(1)}%)`);
+  }
+
+  if (metrics.requests.total >= 5 && avgResponseTime > THRESHOLDS.VERY_SLOW_REQUEST) {
+    status = 'critical';
+    issues.push(`Very slow responses (avg ${Math.round(avgResponseTime)}ms)`);
+  } else if (metrics.requests.total >= 5 && avgResponseTime > THRESHOLDS.SLOW_REQUEST) {
+    if (status !== 'critical') status = 'warning';
+    issues.push(`Slow responses (avg ${Math.round(avgResponseTime)}ms)`);
+  }
+
+  if (serviceChecks.redis === 'degraded' && status === 'healthy') {
     status = 'warning';
-    issues.push('Elevated memory usage (>75%)');
-  }
-
-  if (errorRate > 10) {
-    status = 'critical';
-    issues.push(`High error rate (${errorRate.toFixed(2)}%)`);
-  } else if (errorRate > 5) {
-    status = status === 'critical' ? 'critical' : 'warning';
-    issues.push(`Elevated error rate (${errorRate.toFixed(2)}%)`);
-  }
-
-  if (avgResponseTime > THRESHOLDS.VERY_SLOW_REQUEST) {
-    status = 'critical';
-    issues.push(`Very slow average response time (${Math.round(avgResponseTime)}ms)`);
-  } else if (avgResponseTime > THRESHOLDS.SLOW_REQUEST) {
-    status = status === 'critical' ? 'critical' : 'warning';
-    issues.push(`Slow average response time (${Math.round(avgResponseTime)}ms)`);
+    issues.push('Redis cache unavailable (using memory fallback)');
   }
 
   return {
     status,
     issues,
     metrics: {
-      memoryUsage: `${heapUsedPercent.toFixed(2)}%`,
-      errorRate: `${errorRate.toFixed(2)}%`,
+      memoryRss: `${rssPercent.toFixed(1)}%`,
+      memoryHeap: `${heapUsedPercent.toFixed(1)}%`,
+      heapUsedMB: Math.round(memory.heapUsed / 1024 / 1024),
+      heapTotalMB: Math.round(memory.heapTotal / 1024 / 1024),
+      errorRate: `${errorRate.toFixed(1)}%`,
       avgResponseTime: `${Math.round(avgResponseTime)}ms`,
-      totalRequests: metrics.requests.total
-    }
+      totalRequests: metrics.requests.total,
+    },
   };
 }
 

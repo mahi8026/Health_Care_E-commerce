@@ -111,7 +111,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F3F6] py-8 px-4">
+    <div className="min-h-screen bg-page py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

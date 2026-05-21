@@ -476,7 +476,7 @@ export default function HomePage() {
   // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleSearch = useCallback(() => {
-    if (searchQuery.trim()) router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    if (searchQuery.trim()) router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
   }, [searchQuery, router]);
 
   const handleTabChange = useCallback((tab) => {
@@ -507,7 +507,7 @@ export default function HomePage() {
   // ══════════════════════════════════════════════════════════════════════════════
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff' }}>
+    <div className="min-h-screen home-page-root">
       {/* Global Styles */}
       <style>{`
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -548,14 +548,23 @@ export default function HomePage() {
         .orb-drift { animation: drift 20s ease-in-out infinite; will-change: transform; }
         .slide-active { animation: scaleIn 0.6s ease forwards; will-change: transform, opacity; }
         .typewriter-text { animation: fadeSlide 0.5s ease forwards; will-change: transform, opacity; }
-        .hero-grid-container { width: 100%; }
+        .hero-grid-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(480px, 52%); gap: 32px; align-items: center; }
+        .hero-right-panel { position: relative; height: 460px; border-radius: 16px; overflow: hidden; background: #1a3a5c; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        @media (min-width: 1280px) {
+          .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 36px; }
+          .hero-right-panel { height: 500px; }
+        }
+        @media (min-width: 1536px) {
+          .hero-grid-container { grid-template-columns: minmax(0, 1fr) 640px; }
+          .hero-right-panel { height: 520px; }
+        }
         /* Custom scrollbar for category navigation */
         *::-webkit-scrollbar { height: 6px; }
-        *::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 10px; }
-        *::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
-        *::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+        *::-webkit-scrollbar-track { background: var(--color-background-muted); border-radius: 10px; }
+        *::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 10px; }
+        *::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         /* Category section styles */
-        .category-section { padding: 40px 0; border-bottom: 1px solid #F3F4F6; }
+        .category-section { padding: 40px 0; border-bottom: 1px solid var(--color-border-primary); }
         .category-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 24px; }
         .category-title-accent { display: flex; align-items: center; gap: 12px; }
         .category-title-accent::before { content: ''; width: 4px; height: 24px; background: #0E8A6E; border-radius: 2px; }
@@ -582,12 +591,8 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* HERO — left: text+search  |  right: image slider */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 60%, #0E8A6E 100%)', position: 'relative', overflow: 'hidden', padding: '48px 0' }}>
-        <div style={{ position: 'absolute', top: '-10%', right: '5%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(14,138,110,0.25), transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-20%', left: '0%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(77,219,184,0.12), transparent 70%)', pointerEvents: 'none' }} />
-
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2, display: 'grid', gridTemplateColumns: '1fr 480px', gap: 40, alignItems: 'center' }}
-          className="hero-grid-container">
+      <section className="home-hero" style={{ padding: '56px 0' }}>
+        <div className="hero-grid-container">
 
           {/* LEFT: Text + Search */}
           <div>
@@ -614,9 +619,9 @@ export default function HomePage() {
                 🔍 Search
               </button>
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (
-                <button key={q} onClick={() => router.push(`/search?q=${encodeURIComponent(q)}`)}
+                <button key={q} onClick={() => router.push(`/products?q=${encodeURIComponent(q)}`)}
                   style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
@@ -624,26 +629,14 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
-            <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
-              {[
-                { val: stats.totalProducts > 0 ? `${(stats.totalProducts / 1000).toFixed(0)}K+` : '10,000+', label: 'Products' },
-                { val: stats.totalBrands > 0 ? `${stats.totalBrands}+` : '50+', label: 'Global Brands' },
-                { val: stats.totalB2BClients > 0 ? `${stats.totalB2BClients}+` : '500+', label: 'B2B Clients' },
-                { val: 'DGDA', label: 'Registered' },
-              ].map(({ val, label }) => (
-                <div key={label}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: '#4DDBB8' }}>{val}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{label}</div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* RIGHT: Image Slider */}
-          <div className="hero-right-panel"
-            style={{ position: 'relative', height: 420, borderRadius: 16, overflow: 'hidden', background: '#1a3a5c', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
+          <div
+            className="hero-right-panel"
             onMouseEnter={() => setIsSliderHovered(true)}
-            onMouseLeave={() => setIsSliderHovered(false)}>
+            onMouseLeave={() => setIsSliderHovered(false)}
+          >
             {heroSlides.length > 0 ? (
               heroSlides.map((slide, i) => currentSlide === i && (
                 <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
@@ -695,7 +688,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* TRUST BAR */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '14px 0' }}>
+      <section className="home-trust-bar" style={{ padding: '14px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
           {[{ icon: '🚚', text: 'Free delivery over ৳50,000' }, { icon: '❄️', text: 'Cold chain for reagents' }, { icon: '🔧', text: 'Free installation in Dhaka' }, { icon: '📞', text: '24/7 technical support' }, { icon: '↩', text: '30-day returns' }].map(({ icon, text }) => (
             <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#374151', fontWeight: 500 }}>
@@ -710,7 +703,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '32px 0', borderBottom: '1px solid #E5E7EB' }}>
+      <section className="home-section" style={{ padding: '32px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
@@ -864,7 +857,7 @@ export default function HomePage() {
       {/* SECTION 7.5: TOP SELLING PRODUCTS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {topSellingProducts.length > 0 && (
-        <section style={{ background: '#F8FAFC', padding: '56px 0', borderBottom: '1px solid #E5E7EB' }}>
+        <section className="home-section" style={{ padding: '56px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
 
             {/* Header */}
@@ -1040,7 +1033,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#F8FAFC', padding: '48px 0' }}>
+      <section className="home-section" style={{ padding: '48px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
@@ -1095,7 +1088,7 @@ export default function HomePage() {
       {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {newArrivals.length > 0 && (
-        <section style={{ padding: '40px 0', background: '#fff' }}>
+        <section className="home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '0 24px', marginBottom: 20 }}>
@@ -1154,7 +1147,7 @@ export default function HomePage() {
       
       {/* Category Section: Diagnostic Equipment */}
       {categoryProducts.diagnostic.length > 0 && (
-        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+        <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
@@ -1182,7 +1175,7 @@ export default function HomePage() {
 
       {/* Category Section: Laboratory Reagents */}
       {categoryProducts.reagents.length > 0 && (
-        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+        <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
@@ -1210,7 +1203,7 @@ export default function HomePage() {
 
       {/* Category Section: Hospital Machines */}
       {categoryProducts.machines.length > 0 && (
-        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+        <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
@@ -1238,7 +1231,7 @@ export default function HomePage() {
 
       {/* Category Section: PPE & Safety */}
       {categoryProducts.ppe.length > 0 && (
-        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+        <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
@@ -1266,7 +1259,7 @@ export default function HomePage() {
 
       {/* Category Section: Lab Equipment */}
       {categoryProducts.labEquipment.length > 0 && (
-        <section className="category-section" style={{ padding: '40px 0', borderBottom: '1px solid #F3F4F6', background: '#fff' }}>
+        <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'center', marginBottom: 20, padding: '0 24px' }}>
@@ -1295,7 +1288,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 11: OUR BRANDS (Grid + Marquee) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#F8FAFC', padding: '48px 0', borderTop: '1px solid #E5E7EB' }}>
+      <section className="home-section" style={{ padding: '48px 0', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           {/* Section Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
@@ -1362,7 +1355,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* WHY MEDCORE BD */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '56px 24px', borderTop: '1px solid #E5E7EB' }}>
+      <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Why Choose Us</p>
@@ -1416,7 +1409,8 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 14: B2B PROGRAM BANNER */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>
+      <section className="home-section" style={{ padding: '56px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 100%)',
           borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
           {/* Background decoration */}
@@ -1483,12 +1477,13 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 15: HOW IT WORKS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#F8FAFC', padding: '56px 24px' }}>
+      <section className="home-section" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
@@ -1526,11 +1521,12 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 16: CUSTOMER TESTIMONIALS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px' }}>
+      <section className="bg-hero-gradient" style={{ padding: '56px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+          <p style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Testimonials</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#fff' }}>
             What Our Clients Say
           </h2>
         </div>
@@ -1595,6 +1591,7 @@ export default function HomePage() {
               </div>
             ))
           )}
+        </div>
         </div>
       </section>
 

@@ -9,6 +9,7 @@ const {
   manualStockCheck,
   getBadges
 } = require('../controllers/adminController');
+const { getMonitoringDashboard } = require('../controllers/monitoringController');
 const {
   getAllQuotes,
   updateQuote,
@@ -21,6 +22,7 @@ const Manufacturer = require('../models/Manufacturer');
 router.use(protect, authorize('admin'), adminApiLimiter);
 
 router.get('/dashboard', getDashboard);
+router.get('/monitoring', getMonitoringDashboard);
 router.get('/analytics', getAnalytics);
 router.get('/badges', getBadges);
 router.get('/customers', getCustomers);

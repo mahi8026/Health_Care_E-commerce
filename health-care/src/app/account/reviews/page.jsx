@@ -122,7 +122,7 @@ export default function UserReviewsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-tertiary)] py-8">
+    <div className="min-h-screen bg-page py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Message Toast */}
         {message.text && (

@@ -80,7 +80,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
               }`}
             >
               {/* Image */}
-              <div className="w-full h-24 rounded-lg bg-[#F8FAFC] flex items-center justify-center overflow-hidden">
+              <div className="w-full h-24 rounded-lg bg-surface-subtle flex items-center justify-center overflow-hidden">
                 {imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img 

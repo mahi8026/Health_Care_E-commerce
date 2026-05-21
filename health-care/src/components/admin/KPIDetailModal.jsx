@@ -1,8 +1,10 @@
 'use client';
 
 import { ExportService } from '@/utils/exportService';
+import { formatBdt } from '@/utils/formatBdt';
 
 export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
+  const k = kpi.detailStats?.stats || {};
   const handleExport = () => {
     try {
       const data = {
@@ -26,16 +28,19 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
 
   const getDetailContent = () => {
     switch (kpi.label) {
+      case 'Revenue (YTD)':
       case 'Total Revenue':
         return {
           title: 'Revenue Analytics',
           icon: '💰',
           stats: [
-            { label: 'This Month', value: kpi.value, trend: kpi.change },
-            { label: 'Last Month', value: '৳28.5M', trend: '+35%' },
-            { label: 'Average Order Value', value: '৳145,000', trend: '+12%' },
-            { label: 'B2B Revenue', value: '৳22.1M', trend: '+48%' },
-            { label: 'Retail Revenue', value: '৳7.1M', trend: '+32%' },
+            { label: 'Year to date', value: formatBdt(k.totalRevenue), trend: kpi.change },
+            { label: 'This month', value: formatBdt(k.thisMonthRevenue), trend: '' },
+            {
+              label: 'Month-over-month',
+              value: k.revenueGrowth != null ? `${k.revenueGrowth > 0 ? '+' : ''}${k.revenueGrowth}%` : 'New activity',
+              trend: kpi.change,
+            },
           ],
           actions: [
             { label: 'View Analytics', action: () => { onClose(); onNavigate('analytics'); } },
@@ -48,11 +53,13 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
           title: 'Orders Overview',
           icon: '📦',
           stats: [
-            { label: 'Total Orders', value: kpi.value, trend: kpi.change },
-            { label: 'Pending', value: '3', color: 'text-[#92400E]' },
-            { label: 'Processing', value: '5', color: 'text-[#1E40AF]' },
-            { label: 'Shipped', value: '8', color: 'text-[#3730A3]' },
-            { label: 'Delivered', value: '4', color: 'text-[#065F46]' },
+            { label: 'All time (excl. cancelled)', value: String(k.totalOrders ?? 0), trend: '' },
+            { label: 'This month', value: String(k.ordersThisMonth ?? 0), trend: kpi.change },
+            {
+              label: 'Month-over-month',
+              value: k.ordersGrowth != null ? `${k.ordersGrowth > 0 ? '+' : ''}${k.ordersGrowth}%` : 'New activity',
+              trend: kpi.change,
+            },
           ],
           actions: [
             { label: 'View All Orders', action: () => { onClose(); onNavigate('orders'); } },
@@ -65,16 +72,32 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
           title: 'B2B Clients',
           icon: '👥',
           stats: [
-            { label: 'Active Clients', value: kpi.value, trend: '+8 this month' },
-            { label: 'Platinum Tier', value: '1', color: 'text-[#3C3489]' },
-            { label: 'Gold Tier', value: '2', color: 'text-[#633806]' },
-            { label: 'Silver Tier', value: '2', color: 'text-[#0C447C]' },
-            { label: 'Pending Quotes', value: kpi.change.split(' ')[0], color: 'text-[#92400E]' },
+            { label: 'Active B2B accounts', value: String(k.activeB2B ?? 0), trend: '' },
+            {
+              label: 'Pending quotations',
+              value: String(k.pendingQuotes ?? 0),
+              color: (k.pendingQuotes ?? 0) > 0 ? 'text-[#92400E]' : 'text-[#065F46]',
+            },
           ],
           actions: [
             { label: 'View Customers', action: () => { onClose(); onNavigate('customers'); } },
-            { label: 'Review Quotes', action: () => { onClose(); onNavigate('quotations'); } }
-          ]
+            { label: 'Review Quotes', action: () => { onClose(); onNavigate('quotes'); } },
+          ],
+        };
+
+      case 'Abandoned Carts':
+        return {
+          title: 'Abandoned Carts',
+          icon: '🛒',
+          stats: [
+            { label: 'Currently abandoned', value: String(k.abandonedCarts ?? 0), trend: '' },
+            { label: 'Value at risk', value: formatBdt(k.abandonedCartValue), trend: '' },
+            { label: 'Recovery rate', value: `${k.cartRecoveryRate ?? 0}%`, trend: '' },
+            { label: 'Recovery emails sent', value: String(k.cartEmailsSent ?? 0), trend: '' },
+          ],
+          actions: [
+            { label: 'View Orders', action: () => { onClose(); onNavigate('orders'); } },
+          ],
         };
       
       case 'Low Stock Items':

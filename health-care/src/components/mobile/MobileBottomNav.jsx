@@ -10,7 +10,7 @@ export default function MobileBottomNav() {
     { id: 'home', icon: '🏠', label: 'Home', path: '/' },
     { id: 'products', icon: '📦', label: 'Products', path: '/products' },
     { id: 'cart', icon: '🛒', label: 'Cart', path: '/cart' },
-    { id: 'orders', icon: '📋', label: 'Orders', path: '/account/orders' },
+    { id: 'orders', icon: '📋', label: 'Orders', path: '/orders' },
     { id: 'account', icon: '👤', label: 'Account', path: '/account' }
   ];
 

@@ -3,6 +3,7 @@ import "./globals.css";
 import Footer from "@/components/layout/Footer";
 import TopBar from "@/components/layout/TopBar";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
+import NavScrollEffect from "@/components/layout/NavScrollEffect";
 import BottomNav from "@/components/layout/BottomNav";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
@@ -38,7 +39,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: '#0E8A6E',
+  themeColor: '#F6F9FC',
 };
 
 export const metadata = {
@@ -117,7 +118,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
-      <body className="min-h-screen">
+      <body className="min-h-screen antialiased text-[var(--color-text-primary)]">
         {/* Site-wide structured data */}
         <StructuredData schema={generateOrganizationSchema()} />
         <StructuredData schema={generateWebSiteSchema()} />
@@ -126,9 +127,13 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <TopBar />
-              <HeaderWrapper />
-              <main>{children}</main>
+              <NavScrollEffect />
+              <div className="site-nav-backdrop" aria-hidden="true" />
+              <div className="site-nav-shell">
+                <TopBar />
+                <HeaderWrapper />
+              </div>
+              <main className="site-main">{children}</main>
               <Footer />
               <BottomNav />
             </WishlistProvider>

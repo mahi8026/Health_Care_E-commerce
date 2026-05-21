@@ -71,7 +71,7 @@ export default function MyReturnsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] py-8">
+    <div className="min-h-screen bg-page py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">

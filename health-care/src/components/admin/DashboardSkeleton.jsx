@@ -4,7 +4,7 @@
  */
 export default function DashboardSkeleton() {
   return (
-    <div className="grid grid-cols-[220px_1fr] min-h-screen bg-[var(--color-background-tertiary)] animate-pulse">
+    <div className="grid grid-cols-[220px_1fr] min-h-screen bg-page-muted animate-pulse">
       {/* Sidebar Skeleton */}
       <div className="bg-[var(--color-background-primary)] border-r border-[var(--color-border-tertiary)] p-4">
         {/* User Profile Skeleton */}

@@ -6,6 +6,11 @@ import GA4Tracker from '@/services/GA4Tracker';
 
 const AuthContext = createContext();
 
+function normalizeUser(u) {
+  if (!u) return null;
+  return { ...u, id: u.id || u._id };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // Start with true to properly check auth on mount
@@ -27,9 +32,10 @@ export function AuthProvider({ children }) {
         const response = await api.getMe();
         clearTimeout(timeoutId);
         
-        setUser(response.user);
-        if (response.user?._id) {
-          GA4Tracker.setUserId(response.user._id);
+        const normalized = normalizeUser(response.user);
+        setUser(normalized);
+        if (normalized?.id) {
+          GA4Tracker.setUserId(normalized.id);
         }
       } catch (error) {
         // Only clear tokens on auth errors, not network errors
@@ -50,9 +56,10 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const response = await api.login(email, password);
-      setUser(response.user);
-      if (response.user?._id) {
-        GA4Tracker.setUserId(response.user._id);
+      const normalized = normalizeUser(response.user);
+      setUser(normalized);
+      if (normalized?.id) {
+        GA4Tracker.setUserId(normalized.id);
       }
       
       // Trigger cart sync after successful login
@@ -76,9 +83,10 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const response = await api.register(userData);
-      setUser(response.user);
-      if (response.user?._id) {
-        GA4Tracker.setUserId(response.user._id);
+      const normalized = normalizeUser(response.user);
+      setUser(normalized);
+      if (normalized?.id) {
+        GA4Tracker.setUserId(normalized.id);
       }
       
       // Trigger cart sync after successful registration
@@ -113,7 +121,7 @@ export function AuthProvider({ children }) {
   const updateProfile = useCallback(async (updates) => {
     try {
       const response = await api.updateProfile(updates);
-      setUser(response.user);
+      setUser(normalizeUser(response.user));
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };

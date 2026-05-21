@@ -64,7 +64,7 @@ export default function TopBar() {
   const { icon, text } = announcements[index] || announcements[0];
 
   return (
-    <div className="bg-[#0B2545] h-9 flex items-center justify-between px-4 md:px-6 text-[11px] select-none">
+    <div className="site-topbar flex items-center justify-between px-4 md:px-6 text-[11px] select-none">
       {/* Rotating announcement */}
       <div
         className="flex items-center gap-2 min-w-0 flex-1"

@@ -48,7 +48,7 @@ function ProductCard({ product, onProductClick }) {
       className="group bg-white rounded-2xl border border-gray-100 hover:border-[#0E8A6E]/40 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col overflow-hidden"
     >
       {/* Image */}
-      <div className="relative bg-[#F8FAFC] w-full aspect-[4/3] overflow-hidden flex-shrink-0">
+      <div className="relative bg-surface-subtle w-full aspect-[4/3] overflow-hidden flex-shrink-0">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

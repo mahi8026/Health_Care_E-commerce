@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="flex flex-col md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] min-h-screen bg-[var(--color-background-tertiary)]">
+    <div className="flex flex-col md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] min-h-screen bg-page-muted">
       <h2 className="absolute w-px h-px overflow-hidden clip-[rect(0,0,0,0)]">
         MedCore BD Admin Panel — full dashboard with orders, products, customers and analytics
       </h2>

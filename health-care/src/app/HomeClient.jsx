@@ -9,7 +9,7 @@ export default function HomeClient({ initialFeaturedProducts = [] }) {
   const handleNavigate = (view, category) => {
     const routes = {
       'home': '/',
-      'search': '/search',
+      'search': '/products',
       'product': '/products',
       'diagnostics': '/products?category=Diagnostic Equipment',
       'surgical': '/products?category=Surgical Instruments',

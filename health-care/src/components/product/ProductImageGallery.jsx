@@ -58,7 +58,7 @@ export default function ProductImageGallery({
       {/* Mobile: Full width image */}
       <div className="md:hidden">
         <div
-          className="bg-[#F8FAFC] rounded-[16px] flex items-center justify-center h-[300px] relative overflow-hidden transition-transform duration-200 hover:scale-[1.02]"
+          className="bg-surface-subtle rounded-[16px] flex items-center justify-center h-[300px] relative overflow-hidden transition-transform duration-200 hover:scale-[1.02]"
           data-hero-priority={heroPriority ? 'true' : undefined}
         >
           {activeImage ? (
@@ -153,7 +153,7 @@ export default function ProductImageGallery({
       <div className="hidden md:block">
         {/* Main Image */}
         <div
-          className="bg-[#F8FAFC] rounded-[16px] flex items-center justify-center h-[420px] relative overflow-hidden mb-4 group cursor-zoom-in"
+          className="bg-surface-subtle rounded-[16px] flex items-center justify-center h-[420px] relative overflow-hidden mb-4 group cursor-zoom-in"
           data-hero-priority={heroPriority ? 'true' : undefined}
           onClick={handleZoomClick}
         >
@@ -249,7 +249,7 @@ export default function ProductImageGallery({
               <img
                 src={img.url}
                 alt={img.alt || `${product.name} view ${idx + 1}`}
-                className="w-full h-full object-cover bg-[#F8FAFC]"
+                className="w-full h-full object-cover bg-surface-subtle"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -259,7 +259,7 @@ export default function ProductImageGallery({
             [0, 1, 2, 3].map(i => (
               <div
                 key={i}
-                className={`w-16 h-16 rounded-lg flex-shrink-0 bg-[#F8FAFC] flex items-center justify-center text-[20px] cursor-pointer transition-all ${
+                className={`w-16 h-16 rounded-lg flex-shrink-0 bg-surface-subtle flex items-center justify-center text-[20px] cursor-pointer transition-all ${
                   i === 0 ? 'ring-2 ring-[#0E8A6E] ring-offset-2' : 'ring-1 ring-[#E5E7EB]'
                 }`}
               >

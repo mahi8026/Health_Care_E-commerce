@@ -10,10 +10,8 @@ export const metadata = {
 
 export default function MonitoringPage() {
   return (
-    <AdminShell title="System Monitoring" action="Refresh metrics">
-      <div className="p-5 px-6">
-        <SystemMonitoring />
-      </div>
+    <AdminShell title="System Monitoring">
+      <SystemMonitoring />
     </AdminShell>
   );
 }

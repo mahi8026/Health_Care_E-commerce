@@ -73,7 +73,7 @@ export default function ProductTabsRedesigned({ product }) {
                     <div 
                       key={key} 
                       className={`flex border-b border-[#E5E7EB] last:border-b-0 ${
-                        idx % 2 === 0 ? 'bg-[#F9FAFB]' : 'bg-white'
+                        idx % 2 === 0 ? 'bg-surface-subtle' : 'bg-white'
                       }`}
                     >
                       <div className="text-[13px] text-[#6B7280] w-40 flex-shrink-0 p-4 font-medium">
@@ -87,7 +87,7 @@ export default function ProductTabsRedesigned({ product }) {
                 </div>
               </div>
             ) : (
-              <div className="bg-[#F9FAFB] rounded-xl p-8 text-center">
+              <div className="bg-surface-subtle rounded-xl p-8 text-center">
                 <div className="text-[40px] mb-2">📋</div>
                 <p className="text-[13px] text-[#6B7280]">
                   No specifications available for this product
@@ -146,7 +146,7 @@ export default function ProductTabsRedesigned({ product }) {
             </h3>
             
             {/* Rating Summary */}
-            <div className="bg-[#F9FAFB] rounded-xl p-6 mb-6">
+            <div className="bg-surface-subtle rounded-xl p-6 mb-6">
               <div className="flex items-center gap-6">
                 <div className="text-center">
                   <div className="text-[48px] font-extrabold text-[#0B2545] mb-2">
@@ -208,7 +208,7 @@ export default function ProductTabsRedesigned({ product }) {
                   <p className="text-[13px] text-[#DC2626]">{reviewsError}</p>
                 </div>
               ) : reviews.length === 0 ? (
-                <div className="bg-[#F9FAFB] rounded-xl p-8 text-center">
+                <div className="bg-surface-subtle rounded-xl p-8 text-center">
                   <div className="text-[40px] mb-2">💬</div>
                   <p className="text-[13px] text-[#6B7280] mb-4">
                     No reviews yet. Be the first to review this product!

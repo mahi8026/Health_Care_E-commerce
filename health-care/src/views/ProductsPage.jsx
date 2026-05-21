@@ -18,6 +18,7 @@ export default function ProductsPage({ onProductClick }) {
   useEffect(() => {
     const urlQuery = searchParams.get('q') || '';
     const urlCategory = searchParams.get('category') || '';
+    const urlBrand = searchParams.get('brand') || '';
     if (urlQuery !== searchQuery) {
       setSearchQuery(urlQuery);
       setSearchInput(urlQuery);
@@ -31,14 +32,24 @@ export default function ProductsPage({ onProductClick }) {
       setAllProducts([]);
       setHasMore(true);
     }
+    const currentBrand = filters.brands?.[0] || '';
+    if (urlBrand !== currentBrand) {
+      setFilters((f) => ({ ...f, brands: urlBrand ? [urlBrand] : [] }));
+      setPage(1);
+      setAllProducts([]);
+      setHasMore(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-  const [filters, setFilters] = useState(() => ({
-    minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
-    maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
-    inStock: searchParams.get('inStock') === 'true',
-    brands: [],
-  }));
+  const [filters, setFilters] = useState(() => {
+    const brand = searchParams.get('brand');
+    return {
+      minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
+      maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
+      inStock: searchParams.get('inStock') === 'true',
+      brands: brand ? [brand] : [],
+    };
+  });
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
   const [page, setPage] = useState(1);
   const [allProducts, setAllProducts] = useState([]);
@@ -75,8 +86,10 @@ export default function ProductsPage({ onProductClick }) {
     if (filters.minPrice) params.set('minPrice', filters.minPrice);
     if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
     if (filters.inStock) params.set('inStock', 'true');
+    if (filters.brands?.[0]) params.set('brand', filters.brands[0]);
     if (sortBy !== 'name') params.set('sort', sortBy);
-    router.replace(`/products?${params.toString()}`, { scroll: false });
+    const qs = params.toString();
+    router.replace(qs ? `/products?${qs}` : '/products', { scroll: false });
   }, [searchQuery, searchCategory, filters, sortBy, router]);
 
   const productFilters = useMemo(() => ({
@@ -161,7 +174,7 @@ export default function ProductsPage({ onProductClick }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9]">
+    <div className="min-h-screen bg-page">
 
       {/* ── Active filters + category pills bar ─────────────────────────── */}
       {(hasActiveFilters || true) && (

@@ -87,7 +87,7 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-page-muted p-8">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
@@ -104,7 +104,7 @@ export default function CategoriesPage() {
 
   return (
     <AdminShell title="Categories">
-    <div className="min-h-screen bg-gray-50 p-8 overflow-x-auto flex flex-col">
+    <div className="min-h-screen bg-page-muted p-8 overflow-x-auto flex flex-col">
       <div className="flex-1">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

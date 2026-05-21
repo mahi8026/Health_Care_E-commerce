@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { FaChevronDown } from 'react-icons/fa';
 
-export default function AccountMenu({ onNavigate, onLoginClick, onLogout }) {
+export default function AccountMenu({ onNavigate, onLoginClick, onLogout, variant = 'default' }) {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, isB2BCustomer } = useAuth();
   const menuRef = useRef(null);
@@ -34,7 +35,21 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout }) {
     </svg>
   );
 
+  const isGlass = variant === 'glass';
+
   if (!isAuthenticated()) {
+    if (isGlass) {
+      return (
+        <button
+          onClick={onLoginClick}
+          aria-label="Account"
+          className="nav-glass-control nav-glass-control--stack"
+        >
+          <span className="nav-glass-control__icon"><UserIcon /></span>
+          <span className="nav-glass-control__label">Account</span>
+        </button>
+      );
+    }
     return (
       <button
         onClick={onLoginClick}
@@ -50,37 +65,57 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout }) {
     ? user.name.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
     : '?';
 
+  const firstName = user?.name?.split(' ')[0] || 'Account';
+
   return (
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Account menu"
         aria-expanded={isOpen}
-        className={`w-8 h-8 rounded-[7px] border flex items-center justify-center cursor-pointer transition-colors font-bold text-[11px] ${
-          isOpen
-            ? 'border-[#0E8A6E] bg-[#F0FBF8] text-[#0E8A6E]'
-            : 'border-gray-200 bg-white text-[#0B2545] hover:bg-[#F3F4F6] hover:border-gray-300'
-        }`}
+        className={
+          isGlass
+            ? `nav-glass-control nav-glass-control--pill ${isOpen ? 'is-open' : ''}`
+            : `w-10 h-10 rounded-lg border flex items-center justify-center cursor-pointer transition-colors font-bold text-[11px] ${
+                isOpen
+                  ? 'border-[#0E8A6E] bg-[#F0FBF8] text-[#0E8A6E]'
+                  : 'border-gray-200 bg-white text-[#0B2545] hover:bg-gray-50 hover:border-gray-300'
+              }`
+        }
       >
-        {initials}
+        {isGlass ? (
+          <>
+            <span className="glass-avatar">{initials}</span>
+            <span className="nav-glass-control__label">{firstName}</span>
+            <FaChevronDown
+              size={10}
+              className={`text-white/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+            />
+          </>
+        ) : (
+          initials
+        )}
       </button>
 
       {isOpen && (
         <div
-          className="absolute right-0 top-[calc(100%+8px)] w-[248px] bg-white rounded-xl border border-gray-100 shadow-xl py-2 z-50"
+          className={`absolute right-0 top-[calc(100%+10px)] w-[260px] rounded-2xl py-2 z-50 nav-dropdown-enter ${
+            isGlass ? 'glass-panel-dark' : 'bg-white border border-gray-100 shadow-xl'
+          }`}
           role="menu"
         >
-          {/* User Info */}
-          <div className="px-4 py-3 border-b border-gray-100">
+          <div className={`px-4 py-3 border-b ${isGlass ? 'border-white/10' : 'border-gray-100'}`}>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#0E8A6E] text-white flex items-center justify-center text-[13px] font-bold flex-shrink-0">
+              <div className="glass-avatar glass-avatar--no-status w-9 h-9 text-[13px]">
                 {initials}
               </div>
               <div className="min-w-0">
-                <div className="text-[13px] font-semibold text-[#111827] truncate">
+                <div className={`text-[13px] font-semibold truncate ${isGlass ? 'text-white' : 'text-[#111827]'}`}>
                   {user?.name || 'User'}
                 </div>
-                <div className="text-[11px] text-[#6B7280] truncate">{user?.email}</div>
+                <div className={`text-[11px] truncate ${isGlass ? 'text-white/55' : 'text-[#6B7280]'}`}>
+                  {user?.email}
+                </div>
               </div>
             </div>
             {isB2BCustomer() && user?.b2bTier && (
@@ -103,49 +138,26 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout }) {
             )}
           </div>
 
-          {/* Menu Items */}
           <div className="py-1" role="none">
             {isB2BCustomer() && (
-              <MenuItem
-                icon={<GridIcon />}
-                label="B2B Dashboard"
-                onClick={() => handleMenuClick(() => onNavigate('b2b'))}
-              />
+              <MenuItem glass={isGlass} icon={<GridIcon />} label="B2B Dashboard" onClick={() => handleMenuClick(() => onNavigate('b2b'))} />
             )}
-            <MenuItem
-              icon={<OrderIcon />}
-              label="Order History"
-              onClick={() => handleMenuClick(() => onNavigate('orders'))}
-            />
-            <MenuItem
-              icon={<HeartIcon />}
-              label="My Wishlist"
-              onClick={() => handleMenuClick(() => onNavigate('wishlist'))}
-            />
-            <MenuItem
-              icon={<StarIcon />}
-              label="My Reviews"
-              onClick={() => handleMenuClick(() => onNavigate('reviews'))}
-            />
-            <MenuItem
-              icon={<SettingsIcon />}
-              label="Account Settings"
-              onClick={() => handleMenuClick(() => router.push('/account'))}
-            />
+            <MenuItem glass={isGlass} icon={<OrderIcon />} label="Order History" onClick={() => handleMenuClick(() => onNavigate('orders'))} />
+            <MenuItem glass={isGlass} icon={<HeartIcon />} label="My Wishlist" onClick={() => handleMenuClick(() => onNavigate('wishlist'))} />
+            <MenuItem glass={isGlass} icon={<StarIcon />} label="My Reviews" onClick={() => handleMenuClick(() => onNavigate('reviews'))} />
+            <MenuItem glass={isGlass} icon={<SettingsIcon />} label="Account Settings" onClick={() => handleMenuClick(() => router.push('/account'))} />
+            <MenuItem glass={isGlass} icon={<UserIcon />} label="Edit Profile" onClick={() => handleMenuClick(() => router.push('/account/profile'))} />
             {user?.role === 'admin' && (
-              <MenuItem
-                icon={<AdminIcon />}
-                label="Admin Panel"
-                onClick={() => handleMenuClick(() => onNavigate('admin'))}
-              />
+              <MenuItem glass={isGlass} icon={<AdminIcon />} label="Admin Panel" onClick={() => handleMenuClick(() => onNavigate('admin'))} />
             )}
           </div>
 
-          {/* Logout */}
-          <div className="border-t border-gray-100 pt-1 mt-1">
+          <div className={`border-t pt-1 mt-1 ${isGlass ? 'border-white/10' : 'border-gray-100'}`}>
             <button
               onClick={() => handleMenuClick(onLogout)}
-              className="w-full px-4 py-2 text-left text-[12px] text-[#E24B4A] hover:bg-[#FEF2F2] flex items-center gap-3 transition-colors"
+              className={`w-full px-4 py-2 text-left text-[12px] text-[#E24B4A] flex items-center gap-3 transition-colors ${
+                isGlass ? 'hover:bg-white/5' : 'hover:bg-[#FEF2F2]'
+              }`}
               role="menuitem"
             >
               <LogoutIcon />
@@ -158,20 +170,23 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout }) {
   );
 }
 
-function MenuItem({ icon, label, onClick }) {
+function MenuItem({ icon, label, onClick, glass }) {
   return (
     <button
       onClick={onClick}
-      className="w-full px-4 py-2 text-left text-[12px] text-[#374151] hover:bg-[#F9FAFB] flex items-center gap-3 transition-colors"
+      className={`w-full px-4 py-2 text-left text-[12px] flex items-center gap-3 transition-colors ${
+        glass
+          ? 'text-white/85 hover:bg-white/8'
+          : 'text-[#374151] hover:bg-surface-subtle'
+      }`}
       role="menuitem"
     >
-      <span className="text-[#6B7280]">{icon}</span>
+      <span className={glass ? 'text-white/50' : 'text-[#6B7280]'}>{icon}</span>
       <span>{label}</span>
     </button>
   );
 }
 
-// Icon components
 const GridIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
@@ -198,6 +213,12 @@ const SettingsIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <circle cx="12" cy="12" r="3" />
     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+  </svg>
+);
+const UserIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
   </svg>
 );
 const AdminIcon = () => (

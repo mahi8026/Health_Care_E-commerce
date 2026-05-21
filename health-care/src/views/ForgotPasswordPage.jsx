@@ -41,7 +41,7 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-page flex items-center justify-center p-4 sm:p-6">
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">

@@ -108,7 +108,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   const categoryName = product.categoryName || (typeof product.category === 'object' ? product.category?.name : product.category);
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen pb-24 md:pb-8">
+    <div className="bg-page min-h-screen pb-24 md:pb-8">
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-100">

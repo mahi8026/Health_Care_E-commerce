@@ -147,7 +147,7 @@ export default function BannersManagement() {
         <div>
           <h2 className="text-[15px] font-semibold text-[var(--color-text-primary)]">Hero Slider Banners</h2>
           <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
-            Upload images for the homepage slider. Recommended size: 800×380px.
+            Upload images for the homepage slider. Recommended size: 1280×720px (16:9).
           </p>
         </div>
         <div className="flex gap-2">
