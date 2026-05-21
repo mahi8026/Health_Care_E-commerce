@@ -182,7 +182,9 @@ export default function MobileMenu({ isOpen, onClose }) {
         {/* Search */}
         <div style={{ padding: '12px 16px', borderBottom: '1px solid #F3F4F6' }}>
           <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F9FAFB', borderRadius: 10, padding: '8px 12px', border: '1px solid #E5E7EB' }}>
-            <FaSearch size={13} color="#9CA3AF" />
+            <button type="submit" aria-label="Search" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
+              <FaSearch size={13} color="#9CA3AF" />
+            </button>
             <input
               type="search"
               value={searchQuery}
@@ -191,6 +193,16 @@ export default function MobileMenu({ isOpen, onClose }) {
               style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 13, color: '#111827' }}
               aria-label="Search products"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: '#9CA3AF' }}
+                aria-label="Clear search"
+              >
+                <FaTimes size={13} />
+              </button>
+            )}
           </form>
         </div>
 

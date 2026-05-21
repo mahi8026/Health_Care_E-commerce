@@ -204,7 +204,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 <form
                   onSubmit={handleSearch}
                   className="flex items-center gap-1 bg-[#F3F4F6] rounded-xl px-3 py-1.5 border border-gray-200 focus-within:border-[#0E8A6E] transition-colors"
-                  style={{ width: 220 }}
+                  style={{ width: 260 }}
                 >
                   <FaSearch size={13} className="text-[#9CA3AF] flex-shrink-0" />
                   <input
@@ -216,14 +216,35 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                     className="flex-1 bg-transparent text-[13px] text-[#111827] placeholder-[#9CA3AF] outline-none min-w-0"
                     aria-label="Search products"
                   />
-                  <button
-                    type="button"
-                    onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
-                    className="text-[#9CA3AF] hover:text-[#374151] transition-colors"
-                    aria-label="Close search"
-                  >
-                    <FaTimes size={11} />
-                  </button>
+                  {searchQuery ? (
+                    <>
+                      <button
+                        type="submit"
+                        className="text-[#0E8A6E] hover:text-[#0c7a61] transition-colors font-medium text-[11px] flex-shrink-0"
+                        aria-label="Search"
+                        title="Press Enter or click to search"
+                      >
+                        <FaSearch size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="text-[#9CA3AF] hover:text-[#374151] transition-colors flex-shrink-0"
+                        aria-label="Clear search"
+                      >
+                        <FaTimes size={13} />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                      className="text-[#9CA3AF] hover:text-[#374151] transition-colors flex-shrink-0"
+                      aria-label="Close search"
+                    >
+                      <FaTimes size={13} />
+                    </button>
+                  )}
                 </form>
               ) : (
                 <button
