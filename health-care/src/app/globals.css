@@ -75,9 +75,13 @@ img, video {
 }
 
 /* ── Touch & Interaction ────────────────────────────────────────────────────── */
-button, a, input[type="checkbox"], input[type="radio"] {
+button, a {
   min-height: 44px;
   min-width: 44px;
+  touch-action: manipulation;
+}
+
+input[type="checkbox"], input[type="radio"] {
   touch-action: manipulation;
 }
 
