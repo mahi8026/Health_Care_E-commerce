@@ -104,8 +104,8 @@ export default function CategoriesPage() {
 
   return (
     <AdminShell title="Categories">
-    <div className="w-full min-h-screen bg-gray-50 p-8 overflow-x-hidden">
-      <div className="w-full max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-8 overflow-x-auto flex flex-col">
+      <div className="flex-1">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -151,9 +151,9 @@ export default function CategoriesPage() {
         )}
 
         {/* Categories Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="w-full overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-            <table className="w-full" style={{minWidth: '800px'}}>
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '900px'}}>
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

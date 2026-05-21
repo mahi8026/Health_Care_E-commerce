@@ -132,8 +132,8 @@ export default function CouponsPage() {
 
   return (
     <AdminShell title="Coupons & Discounts">
-    <div className="w-full min-h-screen bg-white p-6 overflow-x-hidden">
-      <div className="w-full">
+    <div className="min-h-screen bg-white p-6 overflow-x-auto flex flex-col">
+      <div className="flex-1">
       <div className="mb-6">
         <h1 className="text-[24px] font-bold font-[family-name:var(--font-lora)] mb-2">
           Coupons & Discounts
@@ -201,7 +201,7 @@ export default function CouponsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
+      <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden flex flex-col">
         {loading ? (
           <div className="p-8 text-center text-[13px] text-[var(--color-text-secondary)]">
             Loading coupons...
@@ -211,8 +211,8 @@ export default function CouponsPage() {
             No coupons found
           </div>
         ) : (
-          <div className="w-full overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-            <table className="w-full" style={{minWidth: '900px'}}>
+          <div className="flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '1000px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
                   <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">

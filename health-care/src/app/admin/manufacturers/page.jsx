@@ -231,8 +231,8 @@ export default function ManufacturersPage() {
 
   return (
     <AdminShell title="Manufacturers">
-    <div className="w-full min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-4 md:p-8 overflow-x-hidden">
-      <div className="w-full max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-4 md:p-8 overflow-x-auto flex flex-col">
+      <div className="flex-1">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
           <div>
@@ -342,7 +342,7 @@ export default function ManufacturersPage() {
         )}
 
         {/* Manufacturers Table */}
-        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur border border-white/30 rounded-lg shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur border border-white/30 rounded-lg shadow-xl overflow-hidden flex flex-col">
           {selectedIds.size > 0 && (
             <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur border-b border-blue-400/50 px-6 py-3 flex items-center justify-between">
               <span className="text-sm font-medium text-blue-200">{selectedIds.size} item(s) selected</span>
@@ -355,8 +355,8 @@ export default function ManufacturersPage() {
             </div>
           )}
           
-          <div className="w-full overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-            <table className="w-full" style={{minWidth: '900px'}}>
+          <div className="flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '1000px'}}>
               <thead className="bg-gray-100 border-b border-gray-200">
                 <tr>
                   <th className="px-6 py-3 text-left">
