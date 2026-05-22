@@ -1,64 +1,59 @@
+'use client';
+
+const METHODS = [
+  { id: 'bkash', label: 'bKash', color: '#E2136E', bg: '#FDF2F8' },
+  { id: 'nagad', label: 'Nagad', color: '#0E8A6E', bg: '#ECFDF5' },
+  { id: 'bank_transfer', label: 'Bank', color: '#185FA5', bg: '#EFF6FF' },
+  { id: 'npsb', label: 'NPSB', color: '#B45309', bg: '#FFFBEB' },
+  { id: 'b2b_credit', label: 'B2B Credit', color: '#0E8A6E', bg: '#ECFDF5' },
+  { id: 'cheque', label: 'Cheque', color: '#6D28D9', bg: '#F5F3FF' },
+];
+
 export default function PaymentMethods({ selected, onSelect }) {
-  const methods = [
-    { id: 'bkash', label: 'bKash', color: '#FBEAF0', textColor: '#E2136E' },
-    { id: 'nagad', label: 'Nagad', color: '#E1F5EE', textColor: '#0E8A6E' },
-    { id: 'bank', label: 'Bank Transfer (BEFTN)', color: '#E6F1FB', textColor: '#185FA5' },
-    { id: 'npsb', label: 'NPSB', color: '#FAEEDA', textColor: '#854F0B' },
-    { id: 'credit', label: 'B2B Credit Line', color: '#E1F5EE', textColor: '#0E8A6E' },
-    { id: 'cheque', label: 'Cheque', color: '#EEEDFE', textColor: '#534AB7' }
-  ];
-
   return (
-    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] px-4 md:px-[18px] py-4 md:py-[18px] mb-[14px]">
-      <div className="text-[13px] md:text-[13px] font-semibold mb-[14px]">Payment method</div>
-      
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-        {methods.map((method) => (
-          <div
-            key={method.id}
-            onClick={() => onSelect(method.id)}
-            className={`border-[0.5px] rounded-lg px-[10px] py-3 md:py-[10px] cursor-pointer text-center flex flex-col items-center gap-[5px] min-h-[64px] md:min-h-0 ${
-              selected === method.id
-                ? 'border-[#0B2545] bg-[#E6F1FB] border-[1.5px]'
-                : 'border-[var(--color-border-secondary)]'
-            }`}
-          >
-            <div
-              className="w-8 h-[22px] rounded flex items-center justify-center"
-              style={{ background: method.color }}
-            >
-              <svg width="18" height="13" viewBox="0 0 32 20" fill="none">
-                {method.id === 'bank' && (
-                  <>
-                    <rect x="1" y="1" width="22" height="14" rx="3" stroke={method.textColor} strokeWidth="1.2" />
-                    <line x1="1" y1="5.5" x2="23" y2="5.5" stroke={method.textColor} strokeWidth="1.2" />
-                    <rect x="3" y="8" width="6" height="2" rx="1" fill={method.textColor} />
-                  </>
-                )}
-                {(method.id === 'bkash' || method.id === 'nagad' || method.id === 'npsb' || method.id === 'cheque' || method.id === 'credit') && (
-                  <>
-                    <rect width="32" height="20" rx="4" fill={method.textColor} opacity="0.15" />
-                    <text x="16" y="14" fontSize="7" textAnchor="middle" fill={method.textColor} fontWeight="bold">
-                      {method.label.split(' ')[0]}
-                    </text>
-                  </>
-                )}
-              </svg>
-            </div>
-            <div className="text-[10px] md:text-[10px] font-medium text-[var(--color-text-primary)]">
-              {method.label}
-            </div>
-          </div>
-        ))}
+    <section className="bg-white rounded-2xl border border-[#E5E7EB] p-4 sm:p-5">
+      <div className="mb-4 pb-3 border-b border-[#F3F4F6]">
+        <h2 className="text-[15px] font-bold text-[#0B2545] m-0">Payment method</h2>
+        <p className="text-[12px] text-[#6B7280] m-0 mt-0.5">How would you like to pay?</p>
       </div>
 
-      <div className="bg-[var(--color-background-secondary)] rounded-lg px-3 py-3 text-[11px] text-[var(--color-text-secondary)] leading-[1.7]">
-        Bank: <strong className="text-[var(--color-text-primary)]">Dutch-Bangla Bank Ltd</strong> &nbsp;·&nbsp; 
-        Account: <strong className="text-[var(--color-text-primary)]">1721 2030 5678</strong> &nbsp;·&nbsp; 
-        Name: MedCore Bangladesh Ltd
-        <br />
-        Reference your order number in the transfer. Payment verification takes 2–4 hours on business days.
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+        {METHODS.map((method) => {
+          const isSelected = selected === method.id;
+          return (
+            <button
+              key={method.id}
+              type="button"
+              onClick={() => onSelect(method.id)}
+              className={`rounded-xl p-3 border-2 text-center transition-all ${
+                isSelected
+                  ? 'border-[#0B2545] bg-[#F8FAFC] ring-1 ring-[#0B2545]/10'
+                  : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'
+              }`}
+            >
+              <span
+                className="inline-flex w-9 h-9 rounded-lg items-center justify-center text-[11px] font-bold mb-1.5"
+                style={{ background: method.bg, color: method.color }}
+              >
+                {method.label.slice(0, 2)}
+              </span>
+              <span className={`block text-[11px] font-semibold ${isSelected ? 'text-[#0B2545]' : 'text-[#6B7280]'}`}>
+                {method.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
-    </div>
+
+      {selected === 'bank_transfer' && (
+        <div className="rounded-xl bg-[#F8FAFC] border border-[#E5E7EB] px-3.5 py-3 text-[12px] text-[#6B7280] leading-relaxed">
+          <strong className="text-[#0B2545]">Dutch-Bangla Bank</strong>
+          {' · '}
+          <span className="font-mono text-[#0B2545]">1721 2030 5678</span>
+          <br />
+          <span className="text-[#9CA3AF]">MedCore Bangladesh Ltd — use order # as reference</span>
+        </div>
+      )}
+    </section>
   );
 }

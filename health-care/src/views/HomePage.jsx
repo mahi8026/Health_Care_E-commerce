@@ -24,8 +24,6 @@ import {
   FaUndo,
   FaSearch,
   FaShoppingCart,
-  FaBox,
-  FaIndustry
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
 
@@ -190,23 +188,6 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
   );
 });
 
-function useCountUp(target, duration = 1500, started = false) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!started || !target) return;
-    let start = 0;
-    const steps = 60;
-    const step = target / steps;
-    const timer = setInterval(() => {
-      start = Math.min(start + step, target);
-      setCount(Math.floor(start));
-      if (start >= target) clearInterval(timer);
-    }, duration / steps);
-    return () => clearInterval(timer);
-  }, [target, started, duration]);
-  return count;
-}
-
 // ══════════════════════════════════════════════════════════════════════════════
 // MAIN HOMEPAGE COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
@@ -226,10 +207,8 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('all');
   const [dealProducts, setDealProducts] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [promo, setPromo] = useState(null);
   const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
-  const [statsStarted, setStatsStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
   const [testimonials, setTestimonials] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
@@ -251,14 +230,6 @@ export default function HomePage() {
     labEquipment: [],
   });
   
-  const statsRef = useRef(null);
-
-  // Animated counters
-  const productsCount = useCountUp(stats.totalProducts, 1500, statsStarted);
-  const brandsCount = useCountUp(stats.totalBrands, 1500, statsStarted);
-  const ordersCount = useCountUp(stats.totalOrders, 1500, statsStarted);
-  const clientsCount = useCountUp(stats.totalB2BClients, 1500, statsStarted);
-
   // ── Effects ────────────────────────────────────────────────────────────────
 
   // Sticky navbar - throttled for better performance
@@ -356,19 +327,6 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  // Stats counter trigger
-  useEffect(() => {
-    if (!statsRef.current) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setStatsStarted(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.3 });
-    observer.observe(statsRef.current);
-    return () => observer.disconnect();
-  }, []);
-
   // Fetch data
   useEffect(() => {
     const safe = async (p) => {
@@ -389,7 +347,6 @@ export default function HomePage() {
       safe(fetch(`${API}/stats`)),
       safe(fetch(`${API}/coupons/active-promo`)),
       safe(fetch(`${API}/products?sortBy=newest&limit=10`)),
-      safe(fetch(`${API}/manufacturers`)),
       safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
       safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
       safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)), // Lab equipment products
@@ -399,7 +356,7 @@ export default function HomePage() {
       safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)), // Category: Machines
       safe(fetch(`${API}/products?category=PPE&limit=10`)), // Category: PPE
       safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)), // Category: Lab Equipment
-    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, mfrs, deals, reviews, labEquip, topSelling, diagnostic, reagents, machines, ppe, labEquipCat]) => {
+    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, deals, reviews, labEquip, topSelling, diagnostic, reagents, machines, ppe, labEquipCat]) => {
       const fp = featured.data?.products || featured.products || [];
       const ap = allProducts.data?.products || allProducts.products || [];
       // Use featured products if available, otherwise use all products
@@ -416,9 +373,6 @@ export default function HomePage() {
 
       const na = newest.data?.products || newest.products || [];
       setNewArrivals(na);
-
-      const mfrList = mfrs.data?.manufacturers || mfrs.manufacturers || [];
-      setBrands(mfrList);
 
       const dealList = deals.data?.products || deals.products || [];
       setDealProducts(dealList);
@@ -1286,73 +1240,6 @@ export default function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 11: OUR BRANDS (Grid + Marquee) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '48px 0', borderTop: '1px solid var(--color-border-primary)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          {/* Section Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
-            <div>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0, marginBottom: 8 }}>
-                Our Brands
-              </h2>
-              <div style={{ width: 60, height: 3, background: '#F97316', borderRadius: 2 }} />
-            </div>
-            <button onClick={() => router.push('/products')}
-              style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
-                border: 'none', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              SEE ALL →
-            </button>
-          </div>
-
-          {/* 4-column grid of brand cards */}
-          <div className="cat-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-            {brands.slice(0, 8).map((brand, i) => {
-              const brandName = typeof brand === 'object' ? (brand?.name || 'Brand') : brand;
-              const brandLogo = typeof brand === 'object' ? brand.logo?.url : null;
-              
-              return (
-                <div key={i} onClick={() => router.push('/products')}
-                  style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8,
-                    padding: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    minHeight: 100, cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
-                  {brandLogo ? (
-                    <img src={brandLogo} alt={brandName} style={{ maxWidth: '100%', maxHeight: 50, objectFit: 'contain' }} />
-                  ) : (
-                    <div style={{ fontSize: 16, fontWeight: 600, color: '#374151', textAlign: 'center' }}>
-                      {brandName}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Secondary marquee below grid */}
-          <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', fontWeight: 500,
-            textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
-            Authorised distributor of world-leading brands
-          </p>
-          <div className="marquee-wrap">
-            <div className="marquee-track">
-              {[...brands, ...brands].map((brand, i) => (
-                <div key={i} style={{ padding: '0 40px', fontSize: 13, fontWeight: 500,
-                  color: '#6B7280', whiteSpace: 'nowrap', borderRight: '1px solid #E5E7EB',
-                  display: 'flex', alignItems: 'center', height: 32 }}>
-                  {typeof brand === 'object' && brand.logo?.url
-                    ? <img src={brand.logo.url} alt={brand?.name || 'Brand'} style={{ height: 20, objectFit: 'contain' }} />
-                    : (typeof brand === 'string' ? brand : (brand?.name || 'Brand'))
-                  }
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* WHY MEDCORE BD */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
@@ -1381,33 +1268,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 13: ANIMATED STATS COUNTER */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section ref={statsRef} style={{ background: '#0B2545', padding: '56px 24px' }}>
-        <div className="stats-grid-4" style={{ maxWidth: 1200, margin: '0 auto',
-          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
-          {[
-            { count: productsCount, suffix: '+', label: 'Products Available', icon: <FaBox size={28} /> },
-            { count: brandsCount, suffix: '+', label: 'Global Brands', icon: <FaIndustry size={28} /> },
-            { count: clientsCount, suffix: '+', label: 'B2B Clients', icon: <FaHospital size={28} /> },
-            { count: ordersCount, suffix: '+', label: 'Orders Fulfilled', icon: <FaTruck size={28} /> },
-          ].map(s => (
-            <div key={s.label} style={{ textAlign: 'center', padding: '28px 16px',
-              background: 'rgba(255,255,255,0.05)', borderRadius: 16,
-              border: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ fontSize: 32, marginBottom: 12, color: '#4DDBB8' }}>{s.icon}</div>
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: 44, fontWeight: 700,
-                color: '#4DDBB8', lineHeight: 1 }}>
-                {s.count > 0 ? `${s.count.toLocaleString()}${s.suffix}` : '—'}
-              </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginTop: 10 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 14: B2B PROGRAM BANNER */}
+      {/* B2B PROGRAM BANNER */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>

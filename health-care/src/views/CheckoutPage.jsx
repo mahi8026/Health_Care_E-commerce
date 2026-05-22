@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/utils/api';
@@ -10,15 +11,15 @@ import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 import DeliveryAddress from '@/components/checkout/DeliveryAddress';
 import DeliveryOptions from '@/components/checkout/DeliveryOptions';
 import PaymentMethods from '@/components/checkout/PaymentMethods';
-import OrderSummary from '@/components/checkout/OrderSummary';
+import OrderSummary, { getDeliveryFee } from '@/components/checkout/OrderSummary';
 import OrderConfirmation from '@/components/checkout/OrderConfirmation';
 import PaymentModal from '@/components/payment/PaymentModal';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(2);
   const [selectedDelivery, setSelectedDelivery] = useState('standard');
   const [selectedPayment, setSelectedPayment] = useState('bank_transfer');
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -27,7 +28,6 @@ export default function CheckoutPage({ onBackToCart }) {
   const [error, setError] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
-  // FIX 1: hold the delivery address form data from the controlled DeliveryAddress component
   const [deliveryAddress, setDeliveryAddress] = useState({
     fullName: '',
     phone: '',
@@ -37,14 +37,11 @@ export default function CheckoutPage({ onBackToCart }) {
     postcode: '',
     instructions: '',
   });
-  
-  // Coupon state
   const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const { cart, clearCart, getCartTotal } = useCart();
   const { user, isAuthenticated } = useAuth();
 
-  // Track begin_checkout when page loads with items
   useEffect(() => {
     if (cart.length > 0) {
       GA4Tracker.trackBeginCheckout(cart, getCartTotal());
@@ -52,15 +49,18 @@ export default function CheckoutPage({ onBackToCart }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const breadcrumbs = [
-    { label: 'Home', href: '/' },
-    { label: 'Cart', href: '/cart' },
-    { label: 'Checkout', href: '#' }
-  ];
+  const deliveryFee = useMemo(() => getDeliveryFee(selectedDelivery), [selectedDelivery]);
+
+  const orderTotal = useMemo(() => {
+    const sub = getCartTotal();
+    const discount = appliedCoupon?.discountAmount || 0;
+    return Math.round((sub - discount + deliveryFee) * 100) / 100;
+  }, [getCartTotal, appliedCoupon, deliveryFee]);
 
   const handlePlaceOrder = useCallback(async () => {
     if (!isAuthenticated()) {
-      setError('Please login to place an order');
+      setError('Please sign in to place your order.');
+      router.push('/login?redirect=/checkout');
       return;
     }
 
@@ -69,16 +69,15 @@ export default function CheckoutPage({ onBackToCart }) {
 
     try {
       const orderData = {
-        items: cart.map(item => ({
+        items: cart.map((item) => ({
           product: item.id || item._id,
           qty: item.quantity,
           quantity: item.quantity,
-          price: item.price || 0
+          price: item.price || 0,
         })),
         deliveryType: selectedDelivery,
         deliveryMethod: selectedDelivery,
         paymentMethod: selectedPayment,
-        // FIX 1: use the form data the user actually filled in
         deliveryAddress: {
           name: deliveryAddress.fullName,
           phone: deliveryAddress.phone,
@@ -88,14 +87,14 @@ export default function CheckoutPage({ onBackToCart }) {
           postcode: deliveryAddress.postcode,
           instructions: deliveryAddress.instructions,
         },
-        // Include coupon code if applied
-        ...(appliedCoupon && { promoCode: appliedCoupon.code })
+        ...(appliedCoupon && { promoCode: appliedCoupon.code }),
       };
 
       const response = await api.createOrder(orderData);
-      const orderNumber = response.order.orderNumber || response.order.orderId || `ORD-${response.order._id}`;
+      const orderNumber =
+        response.order.orderNumber || response.order.orderId || `ORD-${response.order._id}`;
       const mongoId = response.order._id || response.order.id;
-      
+
       setCreatedOrderId(mongoId);
       setOrderId(orderNumber);
 
@@ -104,78 +103,116 @@ export default function CheckoutPage({ onBackToCart }) {
       } else {
         GA4Tracker.trackPurchase({
           orderId: orderNumber,
-          total: getCartTotal(),
-          deliveryFee: selectedDelivery === 'express' ? 300 : 150,
-          items: cart.map(item => ({ product: item.id, name: item.name, price: item.price || 0, quantity: item.quantity })),
-          paymentMethod: selectedPayment
+          total: orderTotal,
+          deliveryFee,
+          items: cart.map((item) => ({
+            product: item.id,
+            name: item.name,
+            price: item.price || 0,
+            quantity: item.quantity,
+          })),
+          paymentMethod: selectedPayment,
         });
         setIsConfirmed(true);
         clearCart();
       }
     } catch (err) {
-      setError(err.message || 'Failed to place order. Please try again.');
+      setError(err.message || 'Could not place order. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [cart, clearCart, getCartTotal, isAuthenticated, selectedDelivery, selectedPayment, deliveryAddress, appliedCoupon]);
+  }, [
+    cart,
+    clearCart,
+    orderTotal,
+    deliveryFee,
+    isAuthenticated,
+    router,
+    selectedDelivery,
+    selectedPayment,
+    deliveryAddress,
+    appliedCoupon,
+  ]);
 
   const handlePaymentSuccess = useCallback(() => {
     GA4Tracker.trackPurchase({
-      orderId: orderId,
-      total: getCartTotal(),
-      deliveryFee: selectedDelivery === 'express' ? 300 : 150,
-      items: cart.map(item => ({ product: item.id, name: item.name, price: item.price || 0, quantity: item.quantity })),
-      paymentMethod: selectedPayment
+      orderId,
+      total: orderTotal,
+      deliveryFee,
+      items: cart.map((item) => ({
+        product: item.id,
+        name: item.name,
+        price: item.price || 0,
+        quantity: item.quantity,
+      })),
+      paymentMethod: selectedPayment,
     });
     setIsConfirmed(true);
     clearCart();
     setShowPaymentModal(false);
-  }, [cart, clearCart, orderId, getCartTotal, selectedDelivery, selectedPayment]);
-
-  const handlePaymentError = useCallback((err) => {
-    setError(err?.message || 'Payment failed. Please try again.');
-  }, []);
+  }, [cart, clearCart, orderId, orderTotal, deliveryFee, selectedPayment]);
 
   if (cart.length === 0 && !isConfirmed) {
     return (
-      <div className="min-h-screen bg-page flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
-          <div className="text-[64px] mb-4">🛒</div>
-          <h2 className="text-[20px] font-semibold mb-2 font-[family-name:var(--font-lora)]">
-            Your cart is empty
-          </h2>
-          <p className="text-[13px] text-[var(--color-text-secondary)] mb-6">
-            Add some products to your cart before checking out
-          </p>
+      <div className="min-h-[60vh] bg-[#F6F9FC] flex items-center justify-center px-4 py-16">
+        <div className="text-center max-w-sm bg-white rounded-2xl border border-[#E5E7EB] p-8">
+          <div className="text-5xl mb-4">🛒</div>
+          <h2 className="text-lg font-bold text-[#0B2545] mb-2">Your cart is empty</h2>
+          <p className="text-sm text-[#6B7280] mb-6">Add products before checking out.</p>
+          <Link
+            href="/products"
+            className="inline-block w-full py-3 rounded-xl bg-[#0E8A6E] text-white text-sm font-bold hover:bg-[#0a7560]"
+          >
+            Browse products
+          </Link>
         </div>
       </div>
     );
   }
 
-  const cartItems = cart.map(item => ({
-    id: item.id,
-    name: item.name,
-    brand: item.brand,
-    variant: item.variant || '',
-    warranty: item.warranty || '',
-    note: item.note || '',
-    quantity: item.quantity,
-    price: item.price || 0,
-    icon: item.icon || 'product'
-  }));
+  const cartItems = cart.map((item) => {
+    const img = item.images?.[0];
+    const imageUrl = typeof img === 'string' ? img : img?.url;
+    return {
+      id: item.id,
+      name: item.name,
+      brand: item.brand,
+      quantity: item.quantity,
+      price: item.price || 0,
+      images: item.images,
+      imageUrl: imageUrl?.startsWith('http') ? imageUrl : null,
+      categoryId: item.categoryId,
+    };
+  });
 
   return (
-    <div className="min-h-screen bg-page">
-      <Breadcrumb items={breadcrumbs} />
+    <div className="min-h-screen bg-[#F6F9FC] pb-24 lg:pb-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
+        <div className="flex items-center justify-between gap-4 mb-5">
+          <div>
+            <Link
+              href="/cart"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#0E8A6E] mb-2"
+            >
+              <FaArrowLeft size={11} />
+              Back to cart
+            </Link>
+            <h1 className="text-[22px] sm:text-[26px] font-bold text-[#0B2545] m-0 font-[family-name:var(--font-lora)]">
+              Checkout
+            </h1>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_360px] gap-0">
-        <div className="p-4 md:p-6 order-2 md:order-1">
-          <CheckoutSteps currentStep={currentStep} />
+        {!isConfirmed ? (
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 lg:gap-6 items-start">
+            <div className="space-y-4 min-w-0">
+              <CheckoutSteps currentStep={currentStep} itemCount={cart.length} />
 
-          {!isConfirmed ? (
-            <>
               {error && (
-                <div role="alert" className="mb-4 p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px]">
+                <div
+                  role="alert"
+                  className="px-4 py-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] text-sm"
+                >
                   {error}
                 </div>
               )}
@@ -203,76 +240,77 @@ export default function CheckoutPage({ onBackToCart }) {
                 }}
               />
 
-              {/* Desktop Buttons */}
-              <div className="hidden md:flex gap-[10px]">
+              <div className="hidden lg:flex gap-3 pt-1">
                 <button
-                  onClick={() => onBackToCart ? onBackToCart() : router.push('/cart')}
-                  className="flex-1 px-[14px] py-3 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent text-[var(--color-text-primary)] text-[13px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)]"
+                  type="button"
+                  onClick={() => (onBackToCart ? onBackToCart() : router.push('/cart'))}
+                  className="px-5 py-3 rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#0B2545] hover:bg-[#F9FAFB]"
                 >
-                  ← Back to cart
-                </button>
-                <button
-                  onClick={handlePlaceOrder}
-                  disabled={loading}
-                  className="flex-[2] bg-[#0B2545] text-white border-none px-3 py-3 rounded-[9px] text-[13px] font-semibold cursor-pointer font-[family-name:var(--font-plus-jakarta)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <Spinner size="small" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Continue to payment →'
-                  )}
+                  Back to cart
                 </button>
               </div>
+            </div>
 
-              {/* Mobile Fixed Bottom Button */}
-              <div className="md:hidden fixed bottom-[60px] left-0 right-0 p-4 bg-white border-t border-gray-200 z-[500]" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}>
-                <button
-                  onClick={handlePlaceOrder}
-                  disabled={loading}
-                  className="w-full bg-[#0B2545] text-white border-none px-4 py-4 rounded-lg text-[14px] font-semibold cursor-pointer font-[family-name:var(--font-plus-jakarta)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[56px]"
-                >
-                  {loading ? (
-                    <>
-                      <Spinner size="small" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Place Order'
-                  )}
-                </button>
-              </div>
-            </>
-          ) : (
+            <aside>
+              <OrderSummary
+                items={cartItems}
+                deliveryMethod={selectedDelivery}
+                appliedCoupon={appliedCoupon}
+                onCouponApply={setAppliedCoupon}
+                userId={user?.id}
+                total={orderTotal}
+                onPlaceOrder={handlePlaceOrder}
+                loading={loading}
+                showPlaceOrder
+              />
+            </aside>
+          </div>
+        ) : (
+          <div className="max-w-lg mx-auto bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-8">
             <OrderConfirmation
               orderId={orderId || 'ORD-XXXX'}
               mongoId={createdOrderId}
               estimatedDelivery="2–5 business days"
             />
-          )}
-        </div>
-
-        <div className="p-4 md:p-6 bg-[var(--color-background-primary)] md:border-l-[0.5px] border-[var(--color-border-tertiary)] order-1 md:order-2">
-          <OrderSummary 
-            items={cartItems} 
-            deliveryMethod={selectedDelivery}
-            appliedCoupon={appliedCoupon}
-            onCouponApply={setAppliedCoupon}
-            userId={user?.id}
-          />
-        </div>
+          </div>
+        )}
       </div>
+
+      {!isConfirmed && (
+        <div
+          className="lg:hidden fixed bottom-0 left-0 right-0 z-[500] bg-white border-t border-[#E5E7EB] px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+          style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+        >
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-[12px] text-[#6B7280]">Total</span>
+            <span className="text-lg font-bold text-[#0B2545]">৳{orderTotal.toLocaleString()}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handlePlaceOrder}
+            disabled={loading}
+            className="w-full py-3.5 rounded-xl bg-[#0E8A6E] hover:bg-[#0a7560] text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Spinner size="small" />
+                Processing…
+              </>
+            ) : (
+              `Place order · ৳${orderTotal.toLocaleString()}`
+            )}
+          </button>
+        </div>
+      )}
 
       <PaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        amount={getCartTotal()}
+        amount={orderTotal}
         orderId={createdOrderId}
         selectedMethod={selectedPayment}
         onSuccess={handlePaymentSuccess}
-        onError={handlePaymentError}
+        onError={(err) => setError(err?.message || 'Payment failed')}
       />
     </div>
   );

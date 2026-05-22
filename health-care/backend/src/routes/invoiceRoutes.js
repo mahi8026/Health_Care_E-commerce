@@ -10,7 +10,23 @@ const logger = require('../utils/logger');
 router.get('/:orderId', protect, async (req, res) => {
   try {
     const order = await Order.findById(req.params.orderId)
-      .populate('items.product', 'name sku brand');
+      .populate('items.product', 'name sku brand')
+      .lean();
+
+    // Normalize items for PDF (names from populated product)
+    if (order?.items) {
+      order.items = order.items.map((item) => {
+        let brand = item.brand || item.product?.brand;
+        if (brand && typeof brand === 'object') brand = brand.name;
+        if (brand && /^[a-f0-9]{24}$/i.test(String(brand))) brand = null;
+        return {
+          ...item,
+          name: item.name || item.product?.name,
+          sku: item.sku || item.product?.sku,
+          brand,
+        };
+      });
+    }
 
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' });

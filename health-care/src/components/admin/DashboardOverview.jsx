@@ -185,22 +185,21 @@ export default function DashboardOverview() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <p className="text-[12px] text-[#6B7280]">
-            Live metrics from orders, customers, and carts
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <p className="text-[11px] text-[#6B7280]">
+          Live metrics
           {lastUpdated && (
-            <p className="text-[11px] text-[#9CA3AF] mt-0.5">
+            <span className="text-[#9CA3AF]">
+              {' · '}
               Updated {lastUpdated.toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit' })}
-            </p>
+            </span>
           )}
-        </div>
+        </p>
         <button
           type="button"
           onClick={fetchDashboard}
           disabled={loading}
-          className="px-3.5 py-2 text-[12px] font-semibold text-[#0B2545] border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+          className="px-3 py-1.5 text-[11px] font-semibold text-[#0B2545] border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
         >
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>

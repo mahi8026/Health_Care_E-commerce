@@ -1,10 +1,6 @@
 import { Plus_Jakarta_Sans, Lora } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/layout/Footer";
-import TopBar from "@/components/layout/TopBar";
-import HeaderWrapper from "@/components/layout/HeaderWrapper";
-import NavScrollEffect from "@/components/layout/NavScrollEffect";
-import BottomNav from "@/components/layout/BottomNav";
+import SiteChrome from "@/components/layout/SiteChrome";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
@@ -127,15 +123,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <NavScrollEffect />
-              <div className="site-nav-backdrop" aria-hidden="true" />
-              <div className="site-nav-shell">
-                <TopBar />
-                <HeaderWrapper />
-              </div>
-              <main className="site-main">{children}</main>
-              <Footer />
-              <BottomNav />
+              <SiteChrome>{children}</SiteChrome>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

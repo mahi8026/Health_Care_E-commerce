@@ -1,87 +1,70 @@
-export default function DeliveryOptions({ selected, onSelect }) {
-  const options = [
-    {
-      id: 'standard',
-      name: 'Standard delivery — Dhaka metro',
-      description: 'Estimated: Tomorrow, 11 Apr 2025 · Includes free installation',
-      price: 0,
-      isFree: true
-    },
-    {
-      id: 'express',
-      name: 'Express same-day (order before 12 PM)',
-      description: 'Today by 6 PM · Dhaka only · No installation today',
-      price: 500
-    },
-    {
-      id: 'nationwide',
-      name: 'Outside Dhaka — nationwide courier',
-      description: '3–5 business days · Sundarban / SA Paribahan',
-      price: 1200
-    },
-    {
-      id: 'coldchain',
-      name: 'Cold chain delivery — reagents',
-      description: '2–8°C maintained door-to-door · Certificate included',
-      price: 1800,
-      highlight: true
-    }
-  ];
+'use client';
 
+const OPTIONS = [
+  {
+    id: 'standard',
+    name: 'Standard — Dhaka metro',
+    description: '1–2 days · Installation included',
+    fee: 150,
+  },
+  {
+    id: 'express',
+    name: 'Express same-day',
+    description: 'Order before 12 PM · Dhaka only',
+    fee: 500,
+  },
+  {
+    id: 'nationwide',
+    name: 'Nationwide courier',
+    description: '3–5 business days',
+    fee: 1200,
+  },
+  {
+    id: 'coldchain',
+    name: 'Cold chain — reagents',
+    description: '2–8°C · Certificate included',
+    fee: 1800,
+  },
+];
+
+export default function DeliveryOptions({ selected, onSelect }) {
   return (
-    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] px-3 sm:px-[18px] py-3 sm:py-[18px] mb-3 sm:mb-[14px]">
-      <div className="text-[12px] sm:text-[13px] font-semibold mb-3 sm:mb-[14px]">Delivery method</div>
-      
-      <div className="flex flex-col gap-2">
-        {options.map((option) => (
-          <div
-            key={option.id}
-            onClick={() => onSelect(option.id)}
-            className={`border-[0.5px] rounded-lg px-3 sm:px-[14px] py-2.5 sm:py-3 cursor-pointer flex items-start sm:items-center gap-2 sm:gap-3 ${
-              selected === option.id
-                ? option.highlight
-                  ? 'border-[#185FA5] bg-[#E6F1FB]'
-                  : 'border-[#0B2545] bg-[#E6F1FB]'
-                : 'border-[var(--color-border-secondary)]'
-            }`}
-          >
-            <div
-              className={`w-4 h-4 rounded-full border-[1.5px] flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0 ${
-                selected === option.id
-                  ? option.highlight
-                    ? 'border-[#185FA5] bg-[#185FA5]'
-                    : 'border-[#0B2545] bg-[#0B2545]'
-                  : 'border-[var(--color-border-secondary)]'
-              }`}
-            >
-              {selected === option.id && <div className="w-2 h-2 rounded-full bg-white" />}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div
-                className={`text-[11px] sm:text-[12px] font-medium ${
-                  option.highlight && selected === option.id ? 'text-[#0C447C]' : ''
-                }`}
-              >
-                {option.name}
-              </div>
-              <div className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)] mt-[1px]">
-                {option.description}
-              </div>
-            </div>
-            <div
-              className={`ml-auto text-[11px] sm:text-[12px] font-medium flex-shrink-0 ${
-                option.isFree
-                  ? 'text-[#0E8A6E]'
-                  : option.highlight && selected === option.id
-                  ? 'text-[#0C447C]'
-                  : 'text-[#0B2545]'
-              }`}
-            >
-              {option.isFree ? 'Free' : `৳ ${option.price.toLocaleString()}`}
-            </div>
-          </div>
-        ))}
+    <section className="bg-white rounded-2xl border border-[#E5E7EB] p-4 sm:p-5">
+      <div className="mb-4 pb-3 border-b border-[#F3F4F6]">
+        <h2 className="text-[15px] font-bold text-[#0B2545] m-0">Delivery method</h2>
+        <p className="text-[12px] text-[#6B7280] m-0 mt-0.5">Select shipping speed</p>
       </div>
-    </div>
+
+      <div className="space-y-2">
+        {OPTIONS.map((option) => {
+          const isSelected = selected === option.id;
+          return (
+            <label
+              key={option.id}
+              className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
+                isSelected
+                  ? 'border-[#0E8A6E] bg-[#F0FDF9]'
+                  : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'
+              }`}
+            >
+              <input
+                type="radio"
+                name="delivery"
+                checked={isSelected}
+                onChange={() => onSelect(option.id)}
+                className="w-4 h-4 accent-[#0E8A6E] shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-semibold text-[#0B2545]">{option.name}</div>
+                <div className="text-[11px] text-[#6B7280] mt-0.5">{option.description}</div>
+              </div>
+              <span className={`text-[13px] font-bold shrink-0 ${isSelected ? 'text-[#0E8A6E]' : 'text-[#0B2545]'}`}>
+                ৳{option.fee.toLocaleString()}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </section>
   );
 }

@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 
 const DISTRICTS = [
   'Dhaka', 'Chittagong', 'Sylhet', 'Rajshahi',
-  'Khulna', 'Barishal', 'Rangpur', 'Mymensingh'
+  'Khulna', 'Barishal', 'Rangpur', 'Mymensingh',
 ];
 
 const PHONE_REGEX = /^(\+880|880|0)?1[3-9]\d{8}$/;
@@ -19,12 +19,13 @@ const EMPTY_FORM = {
   instructions: '',
 };
 
+const inputBase =
+  'w-full px-3 py-2.5 min-h-[44px] text-sm text-[#0B2545] bg-white border border-[#E5E7EB] rounded-xl font-[family-name:var(--font-plus-jakarta)] placeholder:text-[#9CA3AF] transition-colors focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15';
+
 export default function DeliveryAddress({ value, onChange, savedAddress }) {
   const { user } = useAuth();
-  // Use controlled value from parent; fall back to empty form for uncontrolled usage
   const formData = value || EMPTY_FORM;
   const [errors, setErrors] = useState({});
-  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const validate = (name, val) => {
     switch (name) {
@@ -48,15 +49,14 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
   const handleChange = (e) => {
     const { name, val: rawVal } = e.target;
     const val = rawVal !== undefined ? rawVal : e.target.value;
-    const error = validate(name, val);
-    setErrors(prev => ({ ...prev, [name]: error }));
+    setErrors((prev) => ({ ...prev, [name]: validate(name, val) }));
     if (onChange) onChange({ ...formData, [name]: val });
   };
 
   const handleUseSaved = () => {
     const saved = savedAddress || user?.addresses?.[0];
     if (!saved) return;
-    const prefilled = {
+    onChange?.({
       fullName: saved.name || user?.name || '',
       phone: saved.phone || user?.phone || '',
       street: saved.street || saved.address || '',
@@ -64,40 +64,34 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
       thana: saved.thana || saved.area || '',
       postcode: saved.postcode || saved.postalCode || '',
       instructions: saved.instructions || '',
-    };
-    if (onChange) onChange(prefilled);
+    });
     setErrors({});
   };
 
-  const fieldClass = (name) =>
-    `w-full px-3 py-[9px] md:py-[9px] min-h-[48px] border-[0.5px] rounded-lg text-[16px] md:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none ${
-      errors[name]
-        ? 'border-[#E24B4A] focus:border-[#E24B4A]'
-        : 'border-[var(--color-border-secondary)] focus:border-[#0E8A6E]'
-    }`;
+  const field = (name) => (errors[name] ? `${inputBase} border-[#E24B4A] focus:border-[#E24B4A] focus:ring-[#E24B4A]/15` : inputBase);
 
   return (
-    <div className="bg-white rounded-lg p-4 md:p-5 mb-4 border-[0.5px] border-[var(--color-border-tertiary)]">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[14px] md:text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-          Delivery address
-        </h3>
+    <section className="bg-white rounded-2xl border border-[#E5E7EB] p-4 sm:p-5">
+      <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-[#F3F4F6]">
+        <div>
+          <h2 className="text-[15px] font-bold text-[#0B2545] m-0">Delivery address</h2>
+          <p className="text-[12px] text-[#6B7280] m-0 mt-0.5">Where should we deliver your order?</p>
+        </div>
         {(savedAddress || user?.addresses?.[0]) && (
           <button
             type="button"
             onClick={handleUseSaved}
-            className="text-[12px] text-[#0E8A6E] font-medium hover:underline min-h-[44px] flex items-center"
+            className="text-[12px] font-semibold text-[#0E8A6E] hover:underline shrink-0"
           >
-            Use saved address
+            Use saved
           </button>
         )}
       </div>
 
-      {/* Full name */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <div>
-          <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-            Full name / facility name *
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="sm:col-span-2">
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Full name / facility <span className="text-[#E24B4A]">*</span>
           </label>
           <input
             type="text"
@@ -105,17 +99,14 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             value={formData.fullName}
             onChange={handleChange}
             placeholder="Dr. Shahid Hasan"
-            className={fieldClass('fullName')}
+            className={field('fullName')}
           />
-          {errors.fullName && (
-            <p className="text-[10px] text-[#E24B4A] mt-1">{errors.fullName}</p>
-          )}
+          {errors.fullName && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.fullName}</p>}
         </div>
 
-        {/* Phone */}
         <div>
-          <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-            Contact phone number *
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Phone <span className="text-[#E24B4A]">*</span>
           </label>
           <input
             type="tel"
@@ -123,70 +114,55 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             value={formData.phone}
             onChange={handleChange}
             placeholder="01XXXXXXXXX"
-            className={fieldClass('phone')}
+            className={field('phone')}
           />
-          {errors.phone && (
-            <p className="text-[10px] text-[#E24B4A] mt-1">{errors.phone}</p>
-          )}
+          {errors.phone && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.phone}</p>}
         </div>
-      </div>
 
-      {/* Street address */}
-      <div className="mb-3">
-        <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-          Street address *
-        </label>
-        <input
-          type="text"
-          name="street"
-          value={formData.street}
-          onChange={handleChange}
-          placeholder="House no., road, area"
-          className={fieldClass('street')}
-        />
-        {errors.street && (
-          <p className="text-[10px] text-[#E24B4A] mt-1">{errors.street}</p>
-        )}
-      </div>
-
-      {/* District / Thana / Postcode */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
         <div>
-          <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-            District *
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            District <span className="text-[#E24B4A]">*</span>
           </label>
-          <select
-            name="district"
-            value={formData.district}
-            onChange={handleChange}
-            className="w-full px-3 py-[9px] min-h-[48px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[16px] md:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] bg-white"
-          >
-            {DISTRICTS.map(d => (
+          <select name="district" value={formData.district} onChange={handleChange} className={inputBase}>
+            {DISTRICTS.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
         </div>
 
+        <div className="sm:col-span-2">
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Street address <span className="text-[#E24B4A]">*</span>
+          </label>
+          <input
+            type="text"
+            name="street"
+            value={formData.street}
+            onChange={handleChange}
+            placeholder="House no., road, area"
+            className={field('street')}
+          />
+          {errors.street && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.street}</p>}
+        </div>
+
         <div>
-          <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-            Thana / Upazila *
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Thana / Upazila <span className="text-[#E24B4A]">*</span>
           </label>
           <input
             type="text"
             name="thana"
             value={formData.thana}
             onChange={handleChange}
-            placeholder="e.g. Dhanmondi"
-            className={fieldClass('thana')}
+            placeholder="Dhanmondi"
+            className={field('thana')}
           />
-          {errors.thana && (
-            <p className="text-[10px] text-[#E24B4A] mt-1">{errors.thana}</p>
-          )}
+          {errors.thana && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.thana}</p>}
         </div>
 
         <div>
-          <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-            Postcode *
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Postcode <span className="text-[#E24B4A]">*</span>
           </label>
           <input
             type="text"
@@ -195,28 +171,25 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             onChange={handleChange}
             placeholder="1209"
             maxLength={4}
-            className={fieldClass('postcode')}
+            className={field('postcode')}
           />
-          {errors.postcode && (
-            <p className="text-[10px] text-[#E24B4A] mt-1">{errors.postcode}</p>
-          )}
+          {errors.postcode && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.postcode}</p>}
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Instructions <span className="font-normal text-[#9CA3AF]">(optional)</span>
+          </label>
+          <textarea
+            name="instructions"
+            value={formData.instructions}
+            onChange={handleChange}
+            rows={2}
+            placeholder="Call before delivery…"
+            className={`${inputBase} resize-none min-h-[72px]`}
+          />
         </div>
       </div>
-
-      {/* Delivery instructions */}
-      <div>
-        <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 font-[family-name:var(--font-plus-jakarta)]">
-          Delivery instructions (optional)
-        </label>
-        <textarea
-          name="instructions"
-          value={formData.instructions}
-          onChange={handleChange}
-          rows={2}
-          placeholder="e.g. Call before delivery, leave at reception"
-          className="w-full px-3 py-[9px] min-h-[48px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[16px] md:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E] resize-none"
-        />
-      </div>
-    </div>
+    </section>
   );
 }

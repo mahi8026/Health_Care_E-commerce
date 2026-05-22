@@ -61,12 +61,15 @@
   --site-nav-height: calc(var(--site-topbar-height) + var(--site-header-height));
 
   /* Glassmorphism tokens */
-  --glass-blur: 28px;
-  --glass-saturate: 180%;
+  --glass-blur: 40px;
+  --glass-saturate: 200%;
   --glass-navy: 11, 37, 69;
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-border-strong: rgba(255, 255, 255, 0.28);
-  --glass-highlight: rgba(255, 255, 255, 0.22);
+  --glass-nav-alpha: 0.38;
+  --glass-nav-alpha-hero: 0.22;
+  --glass-nav-alpha-scrolled: 0.48;
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-border-strong: rgba(255, 255, 255, 0.38);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
   --glass-teal: #4ddbb8;
   --glass-teal-dim: rgba(77, 219, 184, 0.35);
 }
@@ -83,18 +86,6 @@
   --color-brand-teal: var(--color-brand-teal);
 }
 
-/* Fixed navy slab under nav — page bg cannot show above header */
-.site-nav-backdrop {
-  position: fixed;
-  top: -3px;
-  left: 0;
-  right: 0;
-  height: calc(var(--site-nav-height) + 3px);
-  background: #0b2545;
-  z-index: calc(var(--z-header) - 1);
-  pointer-events: none;
-}
-
 .site-nav-shell {
   position: fixed;
   top: 0;
@@ -102,11 +93,10 @@
   right: 0;
   z-index: var(--z-header);
   pointer-events: none;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
-  background-color: #0b2545;
-  overflow: hidden;
+  background: transparent;
+  overflow: visible;
   isolation: isolate;
 }
 
@@ -118,22 +108,12 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #0b2545;
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha));
   z-index: 3;
   pointer-events: none;
 }
 
-/* Solid navy behind nav children (blocks white page bleed-through) */
-.site-nav-shell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #0b2545;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Solid announcement bar (original style) */
+/* Announcement bar — matches header glass */
 .site-topbar {
   position: relative;
   z-index: 1;
@@ -141,9 +121,12 @@
   height: var(--site-topbar-height);
   min-height: var(--site-topbar-height);
   overflow: hidden;
-  background: #0b2545 !important;
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
   transition:
     transform 0.28s ease,
     opacity 0.22s ease,
@@ -153,6 +136,9 @@
 .glass-nav {
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
+  height: var(--site-header-height);
+  min-height: var(--site-header-height);
 }
 
 /* Collapse announcement bar — main header moves up, no empty gap */
@@ -180,6 +166,11 @@ html.topbar-hidden .site-topbar {
   padding-top: var(--site-nav-height);
   background: transparent;
   min-height: calc(100vh - var(--site-nav-height));
+}
+
+.site-main--bare {
+  padding-top: 0;
+  min-height: 100vh;
 }
 
 /* Nav must not inherit global 44×44 touch targets (causes wrap / vertical stack) */
@@ -245,48 +236,61 @@ html.topbar-hidden .site-topbar {
   }
 }
 
-/* ── Main header — solid navy by default (glass only over home hero) ───────── */
+/* ── Main header — clear glass (content scrolls beneath fixed nav) ─────────── */
 .glass-nav {
   flex-shrink: 0;
-  background: #0b2545;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-top: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
   transition:
     background 0.35s ease,
     box-shadow 0.35s ease,
-    border-color 0.35s ease;
+    border-color 0.35s ease,
+    -webkit-backdrop-filter 0.35s ease,
+    backdrop-filter 0.35s ease;
 }
 
-/* Home: hero sits behind nav — lighter glass over dark gradient */
-html.nav-over-hero .glass-nav {
-  background: rgba(11, 37, 69, 0.52);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  backdrop-filter: blur(24px) saturate(200%);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
-  /* subtle bottom edge only — no white line at top */
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+/* Home hero: ultra-clear glass over dark gradient */
+html.nav-over-hero .glass-nav,
+html.nav-over-hero .site-topbar {
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha-hero)) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
-html.nav-scrolled .glass-nav {
-  background: #0b2545;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+html.nav-over-hero .site-nav-shell::after {
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha-hero));
 }
 
-/* Solid header over light page sections (stops white bleeding through glass) */
-html:not(.nav-over-hero) .glass-nav {
-  background: #0b2545;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+/* Scrolled: a touch more tint for legibility — still clearly glassy */
+html.nav-scrolled .glass-nav,
+html.nav-scrolled .site-topbar {
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha-scrolled)) !important;
+  -webkit-backdrop-filter: blur(44px) saturate(210%);
+  backdrop-filter: blur(44px) saturate(210%);
+  border-bottom-color: var(--glass-border-strong);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html.nav-scrolled .site-nav-shell::after {
+  background: rgba(var(--glass-navy), var(--glass-nav-alpha-scrolled));
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass-nav {
-    background: #0b2545;
+  .glass-nav,
+  .site-topbar {
+    background: #0b2545 !important;
   }
 }
 
@@ -336,11 +340,13 @@ html:not(.nav-over-hero) .glass-nav {
   justify-content: center;
   height: 2.5rem;
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  backdrop-filter: blur(12px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.06);
   color: rgba(255, 255, 255, 0.95);
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -349,7 +355,10 @@ html:not(.nav-over-hero) .glass-nav {
 
 .nav-glass-control:hover {
   background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .nav-glass-control:focus-visible {
@@ -1300,4 +1309,108 @@ html.home-page {
   .main-content {
     padding-bottom: 64px;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHECKOUT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.checkout-page {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 138, 110, 0.08), transparent),
+    var(--color-background-page);
+}
+
+.checkout-card {
+  background: #fff;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border-tertiary);
+  box-shadow: 0 1px 3px rgba(11, 37, 69, 0.04), 0 8px 24px rgba(11, 37, 69, 0.04);
+}
+
+.checkout-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+
+.checkout-card-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(14, 138, 110, 0.12), rgba(77, 219, 184, 0.15));
+  color: #0e8a6e;
+  flex-shrink: 0;
+}
+
+.checkout-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  min-height: 2.75rem;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+  background: #fafbfc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.checkout-input:hover {
+  background: #fff;
+}
+
+.checkout-input:focus {
+  outline: none;
+  border-color: #0e8a6e;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(14, 138, 110, 0.12);
+}
+
+.checkout-input--error {
+  border-color: #e24b4a;
+  box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.1);
+}
+
+.checkout-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.375rem;
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+}
+
+.checkout-btn-primary {
+  background: linear-gradient(135deg, #0b2545 0%, #0d3162 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.875rem 1.5rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 14px rgba(11, 37, 69, 0.25);
+}
+
+.checkout-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11, 37, 69, 0.3);
+}
+
+.checkout-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.checkout-summary-sticky {
+  position: sticky;
+  top: calc(var(--site-nav-height) + 1rem);
 }

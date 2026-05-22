@@ -10,7 +10,7 @@ export const metadata = generatePageMetadata(pageMetadata.admin);
 export default function AdminDashboard() {
   return (
     <AdminShell title="Dashboard">
-      <div className="p-5 px-6">
+      <div className="p-4 md:px-5">
         <DashboardOverview />
       </div>
     </AdminShell>

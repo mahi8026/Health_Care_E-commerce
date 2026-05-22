@@ -1,392 +1,303 @@
 /**
- * Professional Invoice Generator
- * Generates PDF invoices for orders
+ * Browser invoice (print / preview) — matches MedCore BD PDF branding
  */
 
+function formatBdt(n) {
+  return `৳${(Number(n) || 0).toLocaleString('en-BD')}`;
+}
+
+function formatDate(d) {
+  return new Date(d || Date.now()).toLocaleDateString('en-BD', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function paymentLabel(method) {
+  const map = {
+    bkash: 'bKash',
+    nagad: 'Nagad',
+    bank_transfer: 'Bank Transfer',
+    b2b_credit: 'B2B Credit',
+    npsb: 'NPSB',
+    cheque: 'Cheque',
+  };
+  return map[method] || (method || 'N/A').replace(/_/g, ' ');
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 export class InvoiceGenerator {
-  /**
-   * Generate and download invoice PDF
-   * @param {Object} order - Order object with all details
-   */
-  static async generateInvoice(order) {
-    try {
-      // Create invoice HTML
-      const invoiceHTML = this.createInvoiceHTML(order);
-      
-      // Open in new window for printing
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        throw new Error('Please allow popups to generate invoice');
-      }
-
-      printWindow.document.write(invoiceHTML);
-      printWindow.document.close();
-      
-      // Wait for content to load then print
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-      };
-
-      return true;
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Invoice generation error:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create professional invoice HTML
-   * @param {Object} order - Order details
-   * @returns {string} HTML string
-   */
   static createInvoiceHTML(order) {
-    const currentDate = new Date().toLocaleDateString('en-BD', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const invoiceNo = escapeHtml(order.orderNumber || order._id);
+    const orderDate = formatDate(order.createdAt);
+    const addr = order.deliveryAddress || order.shippingAddress || {};
+    const items = order.items || [];
+    const subtotal = Number(order.subtotal || 0);
+    const b2bDiscount = Number(order.b2bDiscount || order.discount || 0);
+    const couponDiscount = Number(
+      order.couponDiscount || order.promoDiscount || order.appliedCoupon?.discountAmount || 0
+    );
+    const deliveryFee = Number(order.deliveryFee || order.shippingCost || 0);
+    const total = Number(order.totalAmount || order.total || 0);
+    const customerName = escapeHtml(order.user?.name || order.customer || addr.name || 'Customer');
+    const customerEmail = order.user?.email ? escapeHtml(order.user.email) : '';
 
-    const orderDate = order.createdAt 
-      ? new Date(order.createdAt).toLocaleDateString('en-BD', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })
-      : currentDate;
+    const rows = items
+      .map((item) => {
+        const qty = item.qty || item.quantity || 1;
+        const price = item.price || 0;
+        const name = escapeHtml(item.name || item.product?.name || 'Product');
+        const sku = escapeHtml(item.sku || item.product?.sku || '');
+        const brand = item.brand || item.product?.brand;
+        const brandStr = brand ? escapeHtml(typeof brand === 'object' ? brand.name : brand) : '';
+        return `
+        <tr>
+          <td>
+            <div class="item-name">${name}</div>
+            ${brandStr ? `<div class="item-meta">${brandStr}</div>` : ''}
+            ${sku ? `<div class="item-meta">SKU: ${sku}</div>` : ''}
+          </td>
+          <td class="num">${qty}</td>
+          <td class="num">${formatBdt(price)}</td>
+          <td class="num strong">${formatBdt(price * qty)}</td>
+        </tr>`;
+      })
+      .join('');
 
-    return `
-<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice - ${order.orderNumber || order._id}</title>
+  <meta charset="UTF-8" />
+  <title>Invoice ${invoiceNo}</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 12px;
-      line-height: 1.6;
-      color: #333;
-      padding: 40px;
-      background: #fff;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      color: #1e293b;
+      background: #f1f5f9;
+      padding: 24px;
     }
-    
-    .invoice-container {
-      max-width: 800px;
+    .sheet {
+      max-width: 210mm;
       margin: 0 auto;
-      background: white;
-      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(11, 37, 69, 0.08);
     }
-    
-    .invoice-header {
-      background: linear-gradient(135deg, #0B2545 0%, #0d2d52 100%);
-      color: white;
-      padding: 30px;
+    .head {
+      background: linear-gradient(135deg, #0b2545 0%, #0d3162 100%);
+      color: #fff;
+      padding: 28px 32px;
       display: flex;
       justify-content: space-between;
-      align-items: start;
+      align-items: flex-start;
+      border-bottom: 4px solid #0e8a6e;
     }
-    
-    .company-info h1 {
-      font-size: 28px;
-      margin-bottom: 5px;
-      font-weight: 700;
-    }
-    
-    .company-info p {
-      font-size: 11px;
-      opacity: 0.9;
-      margin: 2px 0;
-    }
-    
-    .invoice-title {
-      text-align: right;
-    }
-    
-    .invoice-title h2 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    
-    .invoice-title p {
-      font-size: 11px;
-      opacity: 0.9;
-    }
-    
-    .invoice-details {
-      padding: 30px;
+    .logo { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+    .logo span { color: #4ddbb8; }
+    .tagline { font-size: 10px; color: #94a3b8; margin-top: 6px; line-height: 1.5; }
+    .inv-title { text-align: right; }
+    .inv-title h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.04em; }
+    .inv-title .no { font-size: 12px; color: #4ddbb8; margin-top: 4px; font-weight: 600; }
+    .inv-title .date { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+    .body { padding: 28px 32px 32px; }
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      border-bottom: 2px solid #f0f0f0;
+      gap: 24px;
+      margin-bottom: 24px;
     }
-    
-    .detail-section h3 {
-      font-size: 11px;
+    .block h3 {
+      font-size: 9px;
       text-transform: uppercase;
-      color: #666;
-      margin-bottom: 10px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 8px;
+      font-weight: 700;
     }
-    
-    .detail-section p {
-      margin: 5px 0;
-      font-size: 12px;
+    .block p { font-size: 11px; line-height: 1.55; color: #334155; }
+    .block strong { color: #0b2545; }
+    .ship-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
     }
-    
-    .detail-section strong {
-      font-weight: 600;
-      color: #0B2545;
-    }
-    
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-top: 5px;
-    }
-    
-    .status-delivered { background: #D1FAE5; color: #065F46; }
-    .status-shipped { background: #E0E7FF; color: #3730A3; }
-    .status-processing { background: #E0E7FF; color: #3730A3; }
-    .status-confirmed { background: #DBEAFE; color: #1E40AF; }
-    .status-placed { background: #FEF3C7; color: #92400E; }
-    .status-cancelled { background: #FEE2E2; color: #991B1B; }
-    
-    .items-table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      margin: 30px 0;
+      margin-bottom: 20px;
     }
-    
-    .items-table thead {
-      background: #f8f9fa;
-    }
-    
-    .items-table th {
-      padding: 12px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 600;
+    thead th {
+      background: #0b2545;
+      color: #fff;
+      font-size: 9px;
       text-transform: uppercase;
-      color: #666;
-      border-bottom: 2px solid #dee2e6;
-    }
-    
-    .items-table td {
-      padding: 15px 12px;
-      border-bottom: 1px solid #f0f0f0;
-      font-size: 12px;
-    }
-    
-    .items-table tbody tr:hover {
-      background: #f8f9fa;
-    }
-    
-    .item-name {
+      letter-spacing: 0.06em;
+      padding: 10px 12px;
+      text-align: left;
       font-weight: 600;
-      color: #0B2545;
-      margin-bottom: 3px;
     }
-    
-    .item-sku {
-      font-size: 10px;
-      color: #666;
+    thead th.num { text-align: right; }
+    tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
     }
-    
-    .text-right {
-      text-align: right;
-    }
-    
-    .summary-section {
-      padding: 0 30px 30px;
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    .item-name { font-weight: 600; color: #0b2545; font-size: 11px; }
+    .item-meta { font-size: 9px; color: #64748b; margin-top: 2px; }
+    .num { text-align: right; white-space: nowrap; }
+    .strong { font-weight: 700; color: #0b2545; }
+    .totals {
       display: flex;
       justify-content: flex-end;
+      margin-bottom: 24px;
     }
-    
-    .summary-table {
-      width: 300px;
-    }
-    
-    .summary-row {
+    .totals-inner { width: 260px; }
+    .t-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
-      font-size: 12px;
-    }
-    
-    .summary-row.total {
-      border-top: 2px solid #0B2545;
-      margin-top: 10px;
-      padding-top: 15px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #0B2545;
-    }
-    
-    .summary-row.discount {
-      color: #0E8A6E;
-    }
-    
-    .invoice-footer {
-      background: #f8f9fa;
-      padding: 20px 30px;
-      border-top: 2px solid #dee2e6;
-      text-align: center;
-    }
-    
-    .invoice-footer p {
+      padding: 6px 0;
       font-size: 11px;
-      color: #666;
-      margin: 5px 0;
+      color: #64748b;
     }
-    
-    .invoice-footer strong {
-      color: #0B2545;
+    .t-row span:last-child { color: #1e293b; font-weight: 500; }
+    .t-row.discount span:last-child { color: #0e8a6e; }
+    .t-grand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0b2545;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 700;
     }
-    
+    .t-grand .amt { font-size: 16px; color: #4ddbb8; }
+    .pay-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      font-size: 10px;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .pay-box strong { color: #0b2545; }
+    .foot {
+      text-align: center;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 9px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
     @media print {
-      body {
-        padding: 0;
-      }
-      
-      .invoice-container {
-        border: none;
-        box-shadow: none;
-      }
+      body { background: #fff; padding: 0; }
+      .sheet { box-shadow: none; border-radius: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="invoice-container">
-    <!-- Header -->
-    <div class="invoice-header">
-      <div class="company-info">
-        <h1>MedCore<sup style="font-size: 14px;">BD</sup></h1>
-        <p>Medical Equipment & Supplies</p>
-        <p>Dhaka, Bangladesh</p>
-        <p>Phone: +880 1800-MED (633)</p>
-        <p>Email: orders@medcorebd.com</p>
+  <div class="sheet">
+    <header class="head">
+      <div>
+        <div class="logo">MedCore<span>BD</span></div>
+        <p class="tagline">Medical Equipment & Laboratory Supplies<br />Dhaka, Bangladesh · support@medcorebd.com</p>
       </div>
-      <div class="invoice-title">
-        <h2>INVOICE</h2>
-        <p>Date: ${currentDate}</p>
+      <div class="inv-title">
+        <h1>INVOICE</h1>
+        <div class="no">#${invoiceNo}</div>
+        <div class="date">${orderDate}</div>
       </div>
-    </div>
-    
-    <!-- Invoice Details -->
-    <div class="invoice-details">
-      <div class="detail-section">
-        <h3>Invoice To</h3>
-        <p><strong>${order.user?.name || order.customer || 'Customer'}</strong></p>
-        ${order.user?.email ? `<p>${order.user.email}</p>` : ''}
-        ${order.shippingAddress?.phone ? `<p>Phone: ${order.shippingAddress.phone}</p>` : ''}
-        ${order.user?.role === 'b2b' ? `<p style="color: #0E8A6E; font-weight: 600;">B2B Customer</p>` : ''}
+    </header>
+    <div class="body">
+      <div class="grid-2">
+        <div class="block">
+          <h3>Bill to</h3>
+          <p><strong>${customerName}</strong></p>
+          ${customerEmail ? `<p>${customerEmail}</p>` : ''}
+        </div>
+        <div class="block">
+          <h3>Invoice details</h3>
+          <p><strong>Payment:</strong> ${escapeHtml(paymentLabel(order.paymentMethod))}</p>
+          <p><strong>Status:</strong> ${escapeHtml(order.paymentStatus || order.status || '—')}</p>
+        </div>
       </div>
-      
-      <div class="detail-section">
-        <h3>Invoice Details</h3>
-        <p><strong>Invoice #:</strong> ${order.orderNumber || order._id}</p>
-        <p><strong>Order Date:</strong> ${orderDate}</p>
-        <p><strong>Payment Method:</strong> ${order.paymentMethod || 'N/A'}</p>
-        <p><strong>Status:</strong></p>
-        <span class="status-badge status-${order.status}">${order.status}</span>
+      <div class="ship-box">
+        <h3 style="margin-bottom:6px">Deliver to</h3>
+        <p><strong>${escapeHtml(addr.name || customerName)}</strong></p>
+        ${addr.street ? `<p>${escapeHtml(addr.street)}</p>` : ''}
+        <p>${escapeHtml([addr.thana, addr.district, addr.postcode].filter(Boolean).join(', '))}</p>
+        ${addr.phone ? `<p>Tel: ${escapeHtml(addr.phone)}</p>` : ''}
       </div>
-    </div>
-    
-    ${order.shippingAddress ? `
-    <div style="padding: 0 30px 20px;">
-      <div class="detail-section">
-        <h3>Shipping Address</h3>
-        <p>${order.shippingAddress.street || ''}</p>
-        <p>${order.shippingAddress.city || ''} ${order.shippingAddress.postalCode || ''}</p>
-        <p>${order.shippingAddress.country || 'Bangladesh'}</p>
-      </div>
-    </div>
-    ` : ''}
-    
-    <!-- Items Table -->
-    <table class="items-table">
-      <thead>
-        <tr>
-          <th style="width: 50%;">Item</th>
-          <th class="text-right">Quantity</th>
-          <th class="text-right">Unit Price</th>
-          <th class="text-right">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${(order.items || []).map(item => `
+      <table>
+        <thead>
           <tr>
-            <td>
-              <div class="item-name">${item.product?.name || item.name || 'Product'}</div>
-              ${item.sku ? `<div class="item-sku">SKU: ${item.sku}</div>` : ''}
-              ${item.brand ? `<div class="item-sku">${item.brand}</div>` : ''}
-            </td>
-            <td class="text-right">${item.quantity || item.qty || 1}</td>
-            <td class="text-right">৳${(item.price || 0).toLocaleString()}</td>
-            <td class="text-right"><strong>৳${((item.quantity || item.qty || 1) * (item.price || 0)).toLocaleString()}</strong></td>
+            <th style="width:50%">Description</th>
+            <th class="num">Qty</th>
+            <th class="num">Unit</th>
+            <th class="num">Amount</th>
           </tr>
-        `).join('')}
-      </tbody>
-    </table>
-    
-    <!-- Summary -->
-    <div class="summary-section">
-      <div class="summary-table">
-        <div class="summary-row">
-          <span>Subtotal:</span>
-          <span>৳${(order.subtotal || 0).toLocaleString()}</span>
-        </div>
-        ${order.discount > 0 ? `
-        <div class="summary-row discount">
-          <span>Discount:</span>
-          <span>−৳${order.discount.toLocaleString()}</span>
-        </div>
-        ` : ''}
-        <div class="summary-row">
-          <span>Shipping:</span>
-          <span>৳${(order.shippingCost || 0).toLocaleString()}</span>
-        </div>
-        <div class="summary-row total">
-          <span>Total Amount:</span>
-          <span>৳${(order.totalAmount || order.total || 0).toLocaleString()}</span>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="4">No items</td></tr>'}</tbody>
+      </table>
+      <div class="totals">
+        <div class="totals-inner">
+          <div class="t-row"><span>Subtotal</span><span>${formatBdt(subtotal)}</span></div>
+          ${b2bDiscount > 0 ? `<div class="t-row discount"><span>B2B discount</span><span>−${formatBdt(b2bDiscount)}</span></div>` : ''}
+          ${couponDiscount > 0 ? `<div class="t-row discount"><span>Coupon</span><span>−${formatBdt(couponDiscount)}</span></div>` : ''}
+          <div class="t-row"><span>Delivery</span><span>${formatBdt(deliveryFee)}</span></div>
+          <div class="t-grand"><span>Total due</span><span class="amt">${formatBdt(total)}</span></div>
         </div>
       </div>
-    </div>
-    
-    <!-- Footer -->
-    <div class="invoice-footer">
-      <p><strong>Thank you for your business!</strong></p>
-      <p>For any queries, please contact us at support@medcorebd.com or call +880 1800-MED (633)</p>
-      <p style="margin-top: 15px; font-size: 10px;">This is a computer-generated invoice and does not require a signature.</p>
+      <div class="pay-box">
+        <strong>Payment instructions</strong><br />
+        Dutch-Bangla Bank Ltd · MedCore Bangladesh Ltd · A/C 1721 2030 5678<br />
+        Reference: ${invoiceNo} · ${escapeHtml(paymentLabel(order.paymentMethod))}
+      </div>
+      <footer class="foot">
+        <p><strong>MedCore Bangladesh Ltd</strong> · DGDA Reg. DA-2024-0891 · www.medcorebd.com</p>
+        <p>Computer-generated invoice — no signature required.</p>
+      </footer>
     </div>
   </div>
 </body>
-</html>
-    `;
+</html>`;
   }
 
-  /**
-   * Download invoice as PDF (browser print dialog)
-   * @param {Object} order - Order object
-   */
+  static async generateInvoice(order) {
+    const html = this.createInvoiceHTML(order);
+    const win = window.open('', '_blank');
+    if (!win) throw new Error('Please allow popups to open the invoice');
+    win.document.write(html);
+    win.document.close();
+    win.onload = () => {
+      win.focus();
+      win.print();
+    };
+    return true;
+  }
+
   static async downloadInvoice(order) {
     return this.generateInvoice(order);
   }
 }
 
 export default InvoiceGenerator;
-

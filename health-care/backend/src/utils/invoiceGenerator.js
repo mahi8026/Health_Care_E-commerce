@@ -2,188 +2,474 @@ const PDFDocument = require('pdfkit');
 
 const NAVY = '#0B2545';
 const TEAL = '#0E8A6E';
-const LIGHT_TEAL = '#4DDBB8';
-const BG = '#F1F3F6';
+const MINT = '#4DDBB8';
+const SLATE = '#64748B';
+const TEXT = '#1E293B';
+const BORDER = '#E2E8F0';
+const ROW_ALT = '#F8FAFC';
 const WHITE = '#FFFFFF';
 
+const MARGIN = 48;
+const PAGE_W = 595.28;
+const PAGE_H = 841.89;
+const CONTENT_W = PAGE_W - MARGIN * 2;
+const FOOTER_RESERVE = 52;
+
 /**
- * Generate a branded PDF invoice for an order.
- * Returns a Buffer containing the PDF bytes.
- *
- * @param {Object} order  - Mongoose Order document (populated)
- * @param {Object} user   - Mongoose User document
- * @returns {Promise<Buffer>}
+ * Draw text at fixed coordinates. PDFKit ignores fillColor/font in text() options —
+ * must set doc.fillColor / doc.font first.
  */
+function textAt(doc, str, x, y, opts = {}) {
+  const { fillColor, font, fontSize, ...textOpts } = opts;
+  if (font) doc.font(font);
+  if (fontSize != null) doc.fontSize(fontSize);
+  if (fillColor) doc.fillColor(fillColor);
+  doc.text(String(str ?? ''), x, y, { lineBreak: false, ...textOpts });
+}
+
+function formatBdt(amount) {
+  const n = Number(amount) || 0;
+  return `BDT ${n.toLocaleString('en-BD', { maximumFractionDigits: 0 })}`;
+}
+
+function formatDate(d) {
+  return new Date(d || Date.now()).toLocaleDateString('en-BD', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function paymentLabel(method) {
+  const labels = {
+    bkash: 'bKash',
+    nagad: 'Nagad',
+    bank_transfer: 'Bank Transfer',
+    beftn: 'BEFTN',
+    npsb: 'NPSB',
+    b2b_credit: 'B2B Credit',
+    cheque: 'Cheque',
+    credit_terms: 'Credit Terms',
+    card: 'Card',
+    cash: 'Cash',
+  };
+  return labels[method] || (method || 'N/A').replace(/_/g, ' ');
+}
+
+function itemLine(item) {
+  const unit = Number(item.price || 0);
+  const qty = Number(item.qty || item.quantity || 1);
+  const disc = Number(item.discount || 0);
+  return unit * qty * (1 - disc / 100);
+}
+
+function resolveItemName(item) {
+  if (item.name) return item.name;
+  if (item.product && typeof item.product === 'object') return item.product.name || 'Product';
+  return 'Product';
+}
+
+function resolveItemSku(item) {
+  if (item.sku) return item.sku;
+  if (item.product && typeof item.product === 'object') return item.product.sku || '—';
+  return '—';
+}
+
+function resolveBrand(item) {
+  const brand = item.brand || item.product?.brand;
+  if (!brand) return null;
+  if (typeof brand === 'object') return brand.name || null;
+  const s = String(brand).trim();
+  if (/^[a-f0-9]{24}$/i.test(s)) return null;
+  return s;
+}
+
+/** Build delivery lines for the ship-to box */
+function formatShipLines(addr, user) {
+  const lines = [];
+  const name = addr.name || user?.name;
+  if (name) lines.push(name);
+
+  if (addr.street) lines.push(addr.street);
+
+  const cityParts = [
+    addr.thana || addr.area,
+    addr.district || addr.city,
+    addr.postcode || addr.postalCode,
+  ].filter(Boolean);
+  if (cityParts.length) lines.push(cityParts.join(', '));
+
+  if (addr.phone) lines.push(`Tel: ${addr.phone}`);
+
+  if (lines.length === 0) {
+    lines.push(user?.name || 'Customer');
+    lines.push('Address on file — contact customer for details');
+  }
+
+  return lines;
+}
+
 function generateInvoice(order, user) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 50, size: 'A4' });
+    const doc = new PDFDocument({ size: 'A4', margin: 0, bufferPages: true });
     const chunks = [];
 
-    doc.on('data', chunk => chunks.push(chunk));
+    doc.on('data', (chunk) => chunks.push(chunk));
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    const pageWidth = doc.page.width - 100; // accounting for margins
+    const invoiceNo = order.invoiceNumber || order.orderNumber || order.orderId || '—';
+    const orderDate = formatDate(order.createdAt);
 
-    // ── Header ──────────────────────────────────────────────────────────────
-    doc.rect(50, 50, doc.page.width - 100, 80).fill(NAVY);
+    const drawPageHeader = () => {
+      const headerH = 82;
+      doc.rect(0, 0, PAGE_W, headerH).fill(NAVY);
+      doc.rect(0, headerH - 3, PAGE_W, 3).fill(TEAL);
 
-    doc.fillColor(WHITE)
-      .font('Helvetica-Bold')
-      .fontSize(22)
-      .text('MedCore BD', 70, 65);
+      textAt(doc, 'MedCoreBD', MARGIN, 26, {
+        font: 'Helvetica-Bold',
+        fontSize: 18,
+        fillColor: WHITE,
+      });
+      textAt(doc, 'Medical Equipment & Laboratory Supplies', MARGIN, 48, {
+        font: 'Helvetica',
+        fontSize: 8,
+        fillColor: MINT,
+      });
+      textAt(doc, 'Dhaka, Bangladesh  ·  +880 1646-886795  ·  support@medcorebd.com', MARGIN, 60, {
+        fontSize: 7,
+        fillColor: '#CBD5E1',
+      });
 
-    doc.fillColor(LIGHT_TEAL)
-      .font('Helvetica')
-      .fontSize(10)
-      .text('Medical Equipment & Supplies — Bangladesh', 70, 92);
+      textAt(doc, 'INVOICE', MARGIN, 28, {
+        width: CONTENT_W,
+        align: 'right',
+        font: 'Helvetica-Bold',
+        fontSize: 20,
+        fillColor: WHITE,
+      });
+      textAt(doc, `#${invoiceNo}`, MARGIN, 52, {
+        width: CONTENT_W,
+        align: 'right',
+        font: 'Helvetica-Bold',
+        fontSize: 10,
+        fillColor: MINT,
+      });
+      textAt(doc, orderDate, MARGIN, 66, {
+        width: CONTENT_W,
+        align: 'right',
+        fontSize: 8,
+        fillColor: '#CBD5E1',
+      });
 
-    doc.fillColor(WHITE)
-      .font('Helvetica-Bold')
-      .fontSize(18)
-      .text('INVOICE', doc.page.width - 150, 65, { align: 'right', width: 100 });
+      return headerH + 20;
+    };
 
-    doc.fillColor(LIGHT_TEAL)
-      .font('Helvetica')
-      .fontSize(10)
-      .text(`#${order.invoiceNumber || order.orderNumber || order.orderId}`, doc.page.width - 150, 92, { align: 'right', width: 100 });
+    let y = drawPageHeader();
 
-    doc.moveDown(4);
+    const ensureSpace = (needed) => {
+      if (y + needed > PAGE_H - FOOTER_RESERVE) {
+        doc.addPage();
+        y = drawPageHeader();
+      }
+    };
 
-    // ── Invoice Meta ─────────────────────────────────────────────────────────
-    const metaY = 150;
-    doc.fillColor('#333')
-      .font('Helvetica')
-      .fontSize(10);
+    const colW = CONTENT_W / 2 - 10;
 
-    const metaLeft = [
-      ['Invoice Date:', new Date().toLocaleDateString('en-BD')],
-      ['Due Date:', order.paymentTerms ? `Net ${order.paymentTerms} days` : 'Immediate'],
-      ['Payment Method:', (order.paymentMethod || '').toUpperCase()],
-      ['Payment Status:', (order.paymentStatus || 'pending').toUpperCase()]
+    textAt(doc, 'INVOICE DETAILS', MARGIN, y, {
+      font: 'Helvetica-Bold',
+      fontSize: 8,
+      fillColor: SLATE,
+    });
+    textAt(doc, 'CUSTOMER', MARGIN + colW + 20, y, {
+      font: 'Helvetica-Bold',
+      fontSize: 8,
+      fillColor: SLATE,
+    });
+    y += 12;
+
+    let metaY = y;
+    const meta = [
+      ['Order date', orderDate],
+      ['Payment', paymentLabel(order.paymentMethod)],
+      ['Status', (order.paymentStatus || 'pending').replace(/^\w/, (c) => c.toUpperCase())],
     ];
-
-    metaLeft.forEach(([label, value], i) => {
-      doc.fillColor('#666').text(label, 50, metaY + i * 18, { continued: true });
-      doc.fillColor('#111').font('Helvetica-Bold').text(` ${value}`).font('Helvetica');
+    meta.forEach(([label, val]) => {
+      textAt(doc, label, MARGIN, metaY, { fontSize: 8, fillColor: SLATE });
+      textAt(doc, val, MARGIN + 68, metaY, { fontSize: 9, fillColor: TEXT });
+      metaY += 13;
     });
 
-    if (order.poNumber) {
-      doc.fillColor('#666').text('PO Number:', 50, metaY + 4 * 18, { continued: true });
-      doc.fillColor('#111').font('Helvetica-Bold').text(` ${order.poNumber}`).font('Helvetica');
+    let custY = y;
+    textAt(doc, user.name || 'Customer', MARGIN + colW + 20, custY, {
+      font: 'Helvetica-Bold',
+      fontSize: 10,
+      fillColor: TEXT,
+    });
+    custY += 13;
+    if (user.companyName || user.company) {
+      textAt(doc, user.companyName || user.company, MARGIN + colW + 20, custY, {
+        fontSize: 9,
+        fillColor: '#475569',
+      });
+      custY += 12;
+    }
+    if (user.email) {
+      textAt(doc, user.email, MARGIN + colW + 20, custY, { fontSize: 8, fillColor: '#475569' });
+      custY += 11;
+    }
+    if (user.phone) {
+      textAt(doc, user.phone, MARGIN + colW + 20, custY, { fontSize: 8, fillColor: '#475569' });
+      custY += 11;
     }
 
-    // B2B badge
-    if (user.b2bAccount || user.accountType === 'B2B') {
-      doc.rect(doc.page.width - 150, metaY, 100, 22).fill(TEAL);
-      doc.fillColor(WHITE).font('Helvetica-Bold').fontSize(10)
-        .text('B2B ACCOUNT', doc.page.width - 148, metaY + 6, { width: 96, align: 'center' });
+    const isB2B = user.b2bAccount || user.accountType === 'B2B' || user.role === 'b2b';
+    if (isB2B) {
+      doc.roundedRect(MARGIN + colW + 20, custY, 36, 14, 3).fill(TEAL);
+      textAt(doc, 'B2B', MARGIN + colW + 28, custY + 3, {
+        font: 'Helvetica-Bold',
+        fontSize: 7,
+        fillColor: WHITE,
+      });
+      custY += 18;
     }
 
-    // ── Bill To / Ship To ────────────────────────────────────────────────────
-    const addrY = metaY + 110;
-    doc.rect(50, addrY, pageWidth / 2 - 10, 80).fill(BG);
-    doc.rect(50 + pageWidth / 2 + 10, addrY, pageWidth / 2 - 10, 80).fill(BG);
+    y = Math.max(metaY, custY) + 14;
 
-    doc.fillColor(NAVY).font('Helvetica-Bold').fontSize(10)
-      .text('BILL TO', 60, addrY + 8);
-    doc.fillColor('#333').font('Helvetica').fontSize(10)
-      .text(user.name, 60, addrY + 22)
-      .text(user.companyName || user.company || '', 60, addrY + 36)
-      .text(user.email, 60, addrY + 50)
-      .text(user.phone || '', 60, addrY + 64);
-
-    const shipX = 60 + pageWidth / 2 + 10;
-    doc.fillColor(NAVY).font('Helvetica-Bold').fontSize(10)
-      .text('SHIP TO', shipX, addrY + 8);
+    // ── Deliver to (dynamic height) ───────────────────────────────────────────
     const addr = order.deliveryAddress || {};
-    doc.fillColor('#333').font('Helvetica').fontSize(10)
-      .text(addr.name || user.name, shipX, addrY + 22)
-      .text(addr.street || '', shipX, addrY + 36)
-      .text(`${addr.thana || addr.area || ''}, ${addr.district || addr.city || ''}`, shipX, addrY + 50)
-      .text(addr.postcode || addr.postalCode || '', shipX, addrY + 64);
+    const shipLines = formatShipLines(addr, user);
 
-    // ── Items Table ──────────────────────────────────────────────────────────
-    const tableY = addrY + 100;
-    const cols = { name: 50, sku: 230, qty: 310, unitPrice: 370, disc: 430, total: 490 };
+    textAt(doc, 'DELIVER TO', MARGIN, y, {
+      font: 'Helvetica-Bold',
+      fontSize: 8,
+      fillColor: SLATE,
+    });
+    y += 12;
 
-    // Table header
-    doc.rect(50, tableY, pageWidth, 24).fill(NAVY);
-    doc.fillColor(WHITE).font('Helvetica-Bold').fontSize(9);
-    doc.text('Product / Brand', cols.name + 4, tableY + 8);
-    doc.text('SKU', cols.sku, tableY + 8);
-    doc.text('Qty', cols.qty, tableY + 8);
-    doc.text('Unit Price', cols.unitPrice, tableY + 8);
-    doc.text('Disc%', cols.disc, tableY + 8);
-    doc.text('Line Total', cols.total, tableY + 8);
+    const shipPad = 10;
+    const shipLineH = 12;
+    const shipH = shipPad * 2 + shipLines.length * shipLineH;
 
-    let rowY = tableY + 24;
-    doc.font('Helvetica').fontSize(9);
+    ensureSpace(shipH + 12);
+    doc.roundedRect(MARGIN, y, CONTENT_W, shipH, 5).fill(ROW_ALT);
+    doc.strokeColor(BORDER).lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, shipH, 5).stroke();
 
-    (order.items || []).forEach((item, idx) => {
-      const bg = idx % 2 === 0 ? WHITE : BG;
-      doc.rect(50, rowY, pageWidth, 22).fill(bg);
-      
-      const unitPrice = Number(item.price || 0);
-      const quantity = Number(item.qty || item.quantity || 1);
-      const discountPct = Number(item.discount || 0);
-      const lineTotal = unitPrice * quantity * (1 - discountPct / 100);
-      
-      doc.fillColor('#111')
-        .text(item.name || 'Product', cols.name + 4, rowY + 7, { width: 175, ellipsis: true })
-        .text(item.sku || '-', cols.sku, rowY + 7)
-        .text(String(quantity), cols.qty, rowY + 7)
-        .text('Tk ' + unitPrice.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), cols.unitPrice, rowY + 7)
-        .text(`${discountPct}%`, cols.disc, rowY + 7)
-        .text('Tk ' + lineTotal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), cols.total, rowY + 7);
-      rowY += 22;
+    shipLines.forEach((line, i) => {
+      textAt(doc, line, MARGIN + 12, y + shipPad + i * shipLineH, {
+        font: i === 0 ? 'Helvetica-Bold' : 'Helvetica',
+        fontSize: i === 0 ? 9 : 8,
+        fillColor: i === 0 ? TEXT : '#475569',
+      });
+    });
+    y += shipH + 12;
+
+    // ── Table ─────────────────────────────────────────────────────────────────
+    const col = {
+      desc: { x: MARGIN + 8, w: 200 },
+      sku: { x: MARGIN + 212, w: 88 },
+      qty: { x: MARGIN + 308, w: 32 },
+      unit: { x: MARGIN + 348, w: 68 },
+      amt: { x: MARGIN + 424, w: CONTENT_W - 424 - 8 },
+    };
+
+    const drawTableHeader = (startY) => {
+      const h = 20;
+      doc.rect(MARGIN, startY, CONTENT_W, h).fill(NAVY);
+      textAt(doc, 'Description', col.desc.x, startY + 6, {
+        font: 'Helvetica-Bold',
+        fontSize: 8,
+        fillColor: WHITE,
+      });
+      textAt(doc, 'SKU', col.sku.x, startY + 6, {
+        font: 'Helvetica-Bold',
+        fontSize: 8,
+        fillColor: WHITE,
+      });
+      textAt(doc, 'Qty', col.qty.x, startY + 6, {
+        width: col.qty.w,
+        align: 'center',
+        font: 'Helvetica-Bold',
+        fontSize: 8,
+        fillColor: WHITE,
+      });
+      textAt(doc, 'Unit', col.unit.x, startY + 6, {
+        width: col.unit.w,
+        align: 'right',
+        font: 'Helvetica-Bold',
+        fontSize: 8,
+        fillColor: WHITE,
+      });
+      textAt(doc, 'Amount', col.amt.x, startY + 6, {
+        width: col.amt.w,
+        align: 'right',
+        font: 'Helvetica-Bold',
+        fontSize: 8,
+        fillColor: WHITE,
+      });
+      return startY + h;
+    };
+
+    y = drawTableHeader(y);
+
+    const items = order.items || [];
+    const rowH = 24;
+
+    items.forEach((item, idx) => {
+      if (y + rowH > PAGE_H - FOOTER_RESERVE) {
+        doc.addPage();
+        y = drawPageHeader();
+        y = drawTableHeader(y);
+      }
+
+      if (idx % 2 === 1) doc.rect(MARGIN, y, CONTENT_W, rowH).fill(ROW_ALT);
+      doc.strokeColor(BORDER).lineWidth(0.5);
+      doc.moveTo(MARGIN, y + rowH).lineTo(MARGIN + CONTENT_W, y + rowH).stroke();
+
+      const name = resolveItemName(item);
+      const sku = resolveItemSku(item);
+      const brandStr = resolveBrand(item);
+      const qty = Number(item.qty || item.quantity || 1);
+      const unit = Number(item.price || 0);
+      const line = itemLine(item);
+
+      textAt(doc, name, col.desc.x, y + 5, {
+        width: col.desc.w,
+        ellipsis: true,
+        fontSize: 9,
+        fillColor: TEXT,
+      });
+      if (brandStr) {
+        textAt(doc, brandStr, col.desc.x, y + 15, {
+          width: col.desc.w,
+          ellipsis: true,
+          fontSize: 7,
+          fillColor: SLATE,
+        });
+      }
+      textAt(doc, sku, col.sku.x, y + 8, {
+        width: col.sku.w,
+        ellipsis: true,
+        fontSize: 8,
+        fillColor: '#475569',
+      });
+      textAt(doc, String(qty), col.qty.x, y + 8, {
+        width: col.qty.w,
+        align: 'center',
+        fontSize: 9,
+        fillColor: TEXT,
+      });
+      textAt(doc, formatBdt(unit), col.unit.x, y + 8, {
+        width: col.unit.w,
+        align: 'right',
+        fontSize: 8,
+        fillColor: TEXT,
+      });
+      textAt(doc, formatBdt(line), col.amt.x, y + 8, {
+        width: col.amt.w,
+        align: 'right',
+        font: 'Helvetica-Bold',
+        fontSize: 9,
+        fillColor: TEXT,
+      });
+
+      y += rowH;
     });
 
-    // ── Totals ───────────────────────────────────────────────────────────────
-    rowY += 10;
-    
+    y += 10;
+
     const subtotal = Number(order.subtotal || 0);
-    const b2bDiscount = Number(order.b2bDiscount || 0);
+    const b2bDiscount = Number(order.b2bDiscount || order.discount || 0);
+    const couponDiscount = Number(
+      order.couponDiscount || order.promoDiscount || order.appliedCoupon?.discountAmount || 0
+    );
     const deliveryFee = Number(order.deliveryFee || 0);
     const totalAmount = Number(order.totalAmount || order.total || 0);
-    
-    const totals = [
-      ['Subtotal', 'Tk ' + subtotal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')],
-      ...(b2bDiscount > 0 ? [['B2B Discount', '-Tk ' + b2bDiscount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')]] : []),
-      ['Delivery Fee', 'Tk ' + deliveryFee.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')]
-    ];
 
-    totals.forEach(([label, value]) => {
-      doc.fillColor('#333').font('Helvetica').fontSize(10)
-        .text(label, 380, rowY, { width: 100, align: 'right' })
-        .text(value, 490, rowY, { width: 60, align: 'right' });
-      rowY += 18;
+    ensureSpace(110);
+    const totalsX = MARGIN + 300;
+    const labelW = 90;
+    const valueW = 85;
+
+    const addTotalRow = (label, value, accent = false) => {
+      const color = accent ? TEAL : SLATE;
+      const valColor = accent ? TEAL : TEXT;
+      textAt(doc, label, totalsX, y, {
+        width: labelW,
+        align: 'right',
+        fontSize: 9,
+        fillColor: color,
+      });
+      textAt(doc, value, totalsX + labelW + 8, y, {
+        width: valueW,
+        align: 'right',
+        font: 'Helvetica-Bold',
+        fontSize: 9,
+        fillColor: valColor,
+      });
+      y += 15;
+    };
+
+    addTotalRow('Subtotal', formatBdt(subtotal));
+    if (b2bDiscount > 0) addTotalRow('B2B discount', `− ${formatBdt(b2bDiscount)}`, true);
+    if (couponDiscount > 0) addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
+    addTotalRow('Delivery', formatBdt(deliveryFee));
+
+    y += 2;
+    doc.rect(totalsX - 6, y, labelW + valueW + 14, 28).fill(NAVY);
+    textAt(doc, 'TOTAL DUE', totalsX, y + 8, {
+      width: labelW,
+      align: 'right',
+      font: 'Helvetica-Bold',
+      fontSize: 10,
+      fillColor: WHITE,
+    });
+    textAt(doc, formatBdt(totalAmount), totalsX + labelW + 8, y + 6, {
+      width: valueW,
+      align: 'right',
+      font: 'Helvetica-Bold',
+      fontSize: 12,
+      fillColor: MINT,
+    });
+    y += 36;
+
+    ensureSpace(58);
+    doc.roundedRect(MARGIN, y, CONTENT_W, 48, 5).fill('#EFF6FF');
+    doc.strokeColor('#BFDBFE').lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, 48, 5).stroke();
+    textAt(doc, 'Payment instructions', MARGIN + 12, y + 8, {
+      font: 'Helvetica-Bold',
+      fontSize: 8,
+      fillColor: NAVY,
+    });
+    textAt(doc, 'Dutch-Bangla Bank Ltd  ·  MedCore Bangladesh Ltd  ·  A/C 1721 2030 5678', MARGIN + 12, y + 22, {
+      fontSize: 8,
+      fillColor: '#475569',
+    });
+    textAt(doc, `Ref: ${invoiceNo}  ·  ${paymentLabel(order.paymentMethod)}`, MARGIN + 12, y + 34, {
+      fontSize: 8,
+      fillColor: '#475569',
     });
 
-    // Total payable block
-    rowY += 4;
-    doc.rect(350, rowY, 200, 30).fill(NAVY);
-    doc.fillColor(WHITE).font('Helvetica-Bold').fontSize(12)
-      .text('TOTAL PAYABLE', 355, rowY + 9, { width: 100 })
-      .text('Tk ' + totalAmount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), 355, rowY + 9, { width: 190, align: 'right' });
-
-    // ── Bank Transfer Details ────────────────────────────────────────────────
-    rowY += 50;
-    doc.rect(50, rowY, pageWidth, 60).fill(BG);
-    doc.fillColor(NAVY).font('Helvetica-Bold').fontSize(10)
-      .text('Bank Transfer Details', 60, rowY + 8);
-    doc.fillColor('#333').font('Helvetica').fontSize(9)
-      .text('Bank: Dutch-Bangla Bank Limited  |  Account Name: MedCore BD Ltd.', 60, rowY + 22)
-      .text('Account No: 1234567890  |  Routing: 090261539  |  Branch: Gulshan', 60, rowY + 36)
-      .text('Reference: ' + (order.orderNumber || order.orderId), 60, rowY + 50);
-
-    // ── Footer ───────────────────────────────────────────────────────────────
-    const footerY = doc.page.height - 80;
-    doc.rect(50, footerY, pageWidth, 1).fill('#ddd');
-    doc.fillColor('#666').font('Helvetica').fontSize(8)
-      .text('MedCore BD Ltd. | DGDA Reg. No. DA-2024-0891 | BIN: 003456789-0101', 50, footerY + 8, { align: 'center', width: pageWidth })
-      .text('Dhaka, Bangladesh | +880 1646-886795 | support@medcorebd.com | www.medcorebd.com', 50, footerY + 20, { align: 'center', width: pageWidth })
-      .text('This is a computer-generated invoice and does not require a signature.', 50, footerY + 32, { align: 'center', width: pageWidth });
+    const range = doc.bufferedPageRange();
+    const pageCount = range.count;
+    for (let i = range.start; i < range.start + pageCount; i++) {
+      doc.switchToPage(i);
+      const footerY = PAGE_H - 36;
+      doc.strokeColor(BORDER).lineWidth(0.5);
+      doc.moveTo(MARGIN, footerY).lineTo(MARGIN + CONTENT_W, footerY).stroke();
+      textAt(doc, 'MedCore Bangladesh Ltd  ·  DGDA Reg. DA-2024-0891  ·  www.medcorebd.com', MARGIN, footerY + 6, {
+        width: CONTENT_W,
+        align: 'center',
+        fontSize: 7,
+        fillColor: SLATE,
+      });
+      textAt(doc, 'Computer-generated invoice — no signature required.', MARGIN, footerY + 16, {
+        width: CONTENT_W,
+        align: 'center',
+        fontSize: 7,
+        fillColor: SLATE,
+      });
+    }
 
     doc.end();
   });

@@ -1,53 +1,76 @@
-export default function CheckoutSteps({ currentStep = 2 }) {
-  const steps = [
-    { num: 1, label: 'Cart review', sublabel: '3 items' },
-    { num: 2, label: 'Delivery details', sublabel: 'Address & options' },
-    { num: 3, label: 'Payment', sublabel: 'Choose method' },
-    { num: 4, label: 'Confirmation', sublabel: 'Order placed' }
-  ];
+'use client';
 
+import Link from 'next/link';
+import { FaCheck } from 'react-icons/fa';
+
+const STEPS = [
+  { num: 1, label: 'Cart', href: '/cart' },
+  { num: 2, label: 'Delivery' },
+  { num: 3, label: 'Payment' },
+  { num: 4, label: 'Confirm' },
+];
+
+export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6 bg-[var(--color-background-primary)] rounded-[10px] px-3 sm:px-5 py-3 sm:py-4 border-[0.5px] border-[var(--color-border-tertiary)] overflow-x-auto">
-      {steps.map((step, idx) => (
-        <div key={step.num} className="flex items-center flex-1 w-full sm:w-auto min-w-0">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div
-              className={`w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-semibold flex-shrink-0 ${
-                step.num < currentStep
-                  ? 'bg-[#0E8A6E] text-white'
-                  : step.num === currentStep
-                  ? 'bg-[#0B2545] text-white'
-                  : 'bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] border-[0.5px] border-[var(--color-border-secondary)]'
-              }`}
+    <nav
+      aria-label="Checkout progress"
+      className="bg-white rounded-2xl border border-[#E5E7EB] px-4 py-4 sm:px-6 mb-4"
+    >
+      <ol className="flex items-center m-0 p-0 list-none">
+        {STEPS.map((step, idx) => {
+          const done = step.num < currentStep;
+          const active = step.num === currentStep;
+
+          return (
+            <li
+              key={step.num}
+              className={`flex items-center ${idx < STEPS.length - 1 ? 'flex-1' : ''}`}
             >
-              {step.num < currentStep ? (
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" className="sm:w-[11px] sm:h-[11px]">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              ) : (
-                step.num
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div
-                className={`text-[10px] sm:text-[11px] font-medium truncate ${
-                  step.num === currentStep ? 'text-[#0B2545]' : 'text-[var(--color-text-primary)]'
-                }`}
-              >
-                {step.label}
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                    done
+                      ? 'bg-[#0E8A6E] text-white'
+                      : active
+                      ? 'bg-[#0B2545] text-white'
+                      : 'bg-[#F3F4F6] text-[#9CA3AF]'
+                  }`}
+                >
+                  {done ? <FaCheck size={12} /> : step.num}
+                </span>
+                <span
+                  className={`text-xs font-semibold whitespace-nowrap ${
+                    active ? 'text-[#0B2545]' : done ? 'text-[#0E8A6E]' : 'text-[#9CA3AF]'
+                  }`}
+                >
+                  {step.label}
+                  {step.num === 1 && itemCount > 0 && (
+                    <span className="font-normal text-[#9CA3AF] hidden sm:inline">
+                      {' '}
+                      ({itemCount})
+                    </span>
+                  )}
+                </span>
               </div>
-              <div className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)] truncate hidden sm:block">{step.sublabel}</div>
-            </div>
-          </div>
-          {idx < steps.length - 1 && (
-            <div
-              className={`hidden sm:block flex-1 h-[0.5px] mx-2 ${
-                step.num < currentStep ? 'bg-[#0E8A6E]' : 'bg-[var(--color-border-secondary)]'
-              }`}
-            />
-          )}
-        </div>
-      ))}
-    </div>
+              {idx < STEPS.length - 1 && (
+                <div
+                  className={`flex-1 h-px mx-2 sm:mx-4 min-w-[12px] ${
+                    step.num < currentStep ? 'bg-[#0E8A6E]' : 'bg-[#E5E7EB]'
+                  }`}
+                  aria-hidden
+                />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {STEPS[0].href && currentStep > 1 && (
+        <p className="text-[11px] text-[#6B7280] mt-3 mb-0 sm:hidden">
+          <Link href="/cart" className="text-[#0E8A6E] font-medium hover:underline">
+            ← Edit cart
+          </Link>
+        </p>
+      )}
+    </nav>
   );
 }

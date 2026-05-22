@@ -194,11 +194,11 @@ export default function AdminShell({ children, title, action, onAction }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col md:ml-[220px]">
         {/* Top Bar */}
-        <div className="bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-4 md:px-6 py-4 flex items-center justify-between">
+        <div className="bg-white border-b border-[var(--color-border-tertiary)] px-4 md:px-5 py-2.5 flex items-center justify-between gap-3 min-h-[52px]">
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-8 h-8 flex items-center justify-center text-[#0B2545]"
+            className="md:hidden w-8 h-8 flex-shrink-0 flex items-center justify-center text-[#0B2545]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12"/>
@@ -207,11 +207,11 @@ export default function AdminShell({ children, title, action, onAction }) {
             </svg>
           </button>
 
-          <div className="flex-1 md:flex-initial">
-            <h1 className="text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+          <div className="flex-1 min-w-0 md:flex-initial">
+            <h1 className="text-[15px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
               {title || 'Admin Panel'}
             </h1>
-            <div className="text-[11px] text-[var(--color-text-secondary)] mt-1">
+            <div className="text-[10px] text-[var(--color-text-secondary)] truncate hidden sm:block">
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
