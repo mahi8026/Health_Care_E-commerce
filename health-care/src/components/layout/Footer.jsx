@@ -45,7 +45,7 @@ export default function Footer() {
     {
       heading: 'Company',
       items: [
-        { label: 'About Us', href: '/about' },
+        { label: 'About Us', href: '/dgda-info' },
         { label: 'Careers', href: '/careers' },
         { label: 'News', href: '/news' },
         { label: 'Contact', href: '/contact' },
