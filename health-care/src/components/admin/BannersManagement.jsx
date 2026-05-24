@@ -143,7 +143,7 @@ export default function BannersManagement() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-[15px] font-semibold text-[var(--color-text-primary)]">Hero Slider Banners</h2>
           <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
@@ -153,14 +153,14 @@ export default function BannersManagement() {
         <div className="flex gap-2">
           <button
             onClick={addSlide}
-            className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-medium hover:bg-[var(--color-background-secondary)] transition-colors"
+            className="flex-1 sm:flex-none min-h-[44px] px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-medium hover:bg-[var(--color-background-secondary)] transition-colors"
           >
             + Add Slide
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors disabled:opacity-60"
+            className="flex-1 sm:flex-none min-h-[44px] px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors disabled:opacity-60"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -346,7 +346,7 @@ export default function BannersManagement() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-6 py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2e56] transition-colors disabled:opacity-60"
+          className="w-full sm:w-auto min-h-[48px] px-6 py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2e56] transition-colors disabled:opacity-60"
         >
           {saving ? 'Saving...' : 'Save All Changes'}
         </button>

@@ -141,23 +141,23 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl my-8">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-2xl shadow-2xl sm:my-8 max-h-[95vh] sm:max-h-none overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-tertiary)]">
-          <h3 className="text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
+          <h3 className="text-[16px] sm:text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
             Write a Review
           </h3>
           <button
             onClick={onClose}
-            className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-2xl leading-none"
+            className="w-10 h-10 flex items-center justify-center rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] text-2xl leading-none transition-colors"
           >
             ×
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
+        <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-5 space-y-5">
           {/* Error Message */}
           {error && (
             <div className="bg-[#FEE2E2] text-[#991B1B] px-4 py-3 rounded-lg text-[13px]">
@@ -193,7 +193,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
               onChange={e => setTitle(e.target.value)}
               placeholder="Summarize your experience (min 10 characters)"
               maxLength={100}
-              className="w-full px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] focus:outline-none focus:border-[#0E8A6E]"
+              className="w-full px-4 py-3 min-h-[48px] text-[16px] sm:text-[14px] border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E]"
             />
             <div className="text-[11px] text-[var(--color-text-secondary)] mt-1 text-right">
               {title.length}/100
@@ -211,7 +211,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
               placeholder="Share your experience with this product (min 50 characters)"
               maxLength={1000}
               rows={6}
-              className="w-full px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] focus:outline-none focus:border-[#0E8A6E] resize-none"
+              className="w-full px-4 py-3 text-[16px] sm:text-[14px] border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
             />
             <div className="text-[11px] text-[var(--color-text-secondary)] mt-1 text-right">
               {comment.length}/1000
@@ -299,18 +299,18 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 pb-safe">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors"
+              className="flex-1 min-h-[48px] px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || rating === 0 || title.trim().length < 10 || comment.trim().length < 50}
-              className="flex-1 px-4 py-3 bg-[#0B2545] text-white rounded-lg text-[14px] font-semibold hover:bg-[#0d2e56] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 min-h-[48px] px-4 py-3 bg-[#0B2545] text-white rounded-lg text-[14px] font-semibold hover:bg-[#0d2e56] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Submitting...' : 'Submit Review'}
             </button>

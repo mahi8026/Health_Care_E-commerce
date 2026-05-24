@@ -248,29 +248,29 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
                       {/* Bottom row: qty + actions */}
                       <div className="flex items-center justify-between gap-3 flex-wrap">
-                        {/* Quantity stepper */}
+                        {/* Quantity stepper - 44x44px touch targets */}
                         <div className="flex items-center border border-[#E5E7EB] rounded-lg overflow-hidden">
                           <button
                             onClick={() => updateQuantity(id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
-                            className="w-9 h-9 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="w-11 h-11 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >−</button>
-                          <span className="w-10 text-center text-[14px] font-bold text-[#0B2545] border-x border-[#E5E7EB]">
+                          <span className="w-12 text-center text-[14px] font-bold text-[#0B2545] border-x border-[#E5E7EB]">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(id, item.quantity + 1)}
                             disabled={item.stock !== undefined && item.quantity >= item.stock}
-                            className="w-9 h-9 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="w-11 h-11 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >+</button>
                         </div>
 
-                        {/* Action links */}
+                        {/* Action links - 44px touch targets */}
                         <div className="flex items-center gap-3 text-[11px] font-medium">
                           <button
                             onClick={() => handleSaveForLater(item)}
                             disabled={isSaving}
-                            className="flex items-center gap-1 text-[#0E8A6E] hover:underline disabled:opacity-50"
+                            className="flex items-center gap-1 text-[#0E8A6E] hover:underline disabled:opacity-50 min-h-[44px] py-2"
                           >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
@@ -281,7 +281,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                           <button
                             onClick={() => handleRemove(id)}
                             disabled={isRemoving}
-                            className="flex items-center gap-1 text-[#E24B4A] hover:underline disabled:opacity-50"
+                            className="flex items-center gap-1 text-[#E24B4A] hover:underline disabled:opacity-50 min-h-[44px] py-2"
                           >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <polyline points="3 6 5 6 21 6"/>

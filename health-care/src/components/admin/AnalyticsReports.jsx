@@ -9,7 +9,7 @@ const AnalyticsCharts = dynamic(
   () => import('./AnalyticsCharts'),
   {
     loading: () => (
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <ChartSkeleton />
         <ChartSkeleton />
       </div>
@@ -111,17 +111,17 @@ export default function AnalyticsReports() {
   if (loading) {
     return (
       <div>
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           {PERIODS.map(p => (
-            <div key={p.value} className="h-8 w-24 bg-[var(--color-background-tertiary)] rounded-lg animate-pulse" />
+            <div key={p.value} className="h-11 w-24 bg-[var(--color-background-tertiary)] rounded-lg animate-pulse" />
           ))}
         </div>
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {[1,2,3,4].map(i => (
             <div key={i} className="h-24 bg-[var(--color-background-tertiary)] rounded-lg animate-pulse" />
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <ChartSkeleton />
           <ChartSkeleton />
         </div>
@@ -173,12 +173,12 @@ export default function AnalyticsReports() {
   return (
     <div>
       {/* Period Selector */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         {PERIODS.map(p => (
           <button
             key={p.value}
             onClick={() => setPeriod(p.value)}
-            className={`px-4 py-[7px] rounded-lg text-[12px] font-medium transition-colors ${
+            className={`min-h-[44px] px-4 py-2 rounded-lg text-[12px] font-medium transition-colors ${
               period === p.value
                 ? 'bg-[#0B2545] text-white'
                 : 'bg-white border-[0.5px] border-[var(--color-border-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]'
@@ -190,7 +190,7 @@ export default function AnalyticsReports() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {metrics.map((metric, index) => (
           <div key={index} className="bg-white rounded-lg p-4 border-[0.5px] border-[var(--color-border-tertiary)]">
             <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">
@@ -218,7 +218,7 @@ export default function AnalyticsReports() {
       {/* Charts */}
       <AnalyticsCharts />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Top Products */}
         <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
           <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">

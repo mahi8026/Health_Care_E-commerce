@@ -36,6 +36,13 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         const res = await fetch(`${API_BASE}/products/${id}`);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
+        
+        // If accessed by _id, redirect to slug URL (for SEO)
+        if (data.shouldRedirect && data.slugUrl) {
+          router.replace(`/products/${data.slugUrl}`);
+          return;
+        }
+        
         const p = data.data || data.product || data;
 
         if (p.rating && typeof p.rating === 'object') {
@@ -169,17 +176,17 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
 
         {/* Tabs: Specs, Description, Shipping */}
-        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
           <ProductTabsRedesigned product={product} />
         </div>
 
         {/* Reviews */}
-        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
           <ProductReviews productId={product._id || product.id} />
         </div>
 
         {/* SEO Content */}
-        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
           <h2 className="text-[15px] font-semibold text-[#0B2545] mb-3">About {product.name}</h2>
           {product.description && (
             <p className="text-[13px] text-gray-500 leading-relaxed mb-5">{product.description}</p>

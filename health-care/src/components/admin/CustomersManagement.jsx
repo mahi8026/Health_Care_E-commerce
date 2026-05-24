@@ -165,7 +165,7 @@ export default function CustomersManagement() {
   const totalPages = Math.ceil(total / 10);
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 md:p-6">
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)]">
       {/* Toast */}
       {message.text && (
@@ -177,158 +177,244 @@ export default function CustomersManagement() {
       )}
 
       {/* Filters */}
-      <div className="p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex gap-3 flex-wrap">
-        <select
-          value={roleFilter}
-          onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
-          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
-        >
-          {ROLE_FILTERS.map(r => (
-            <option key={r.value} value={r.value}>{r.label}</option>
-          ))}
-        </select>
-        <select
-          value={tierFilter}
-          onChange={e => { setTierFilter(e.target.value); setPage(1); }}
-          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
-        >
-          {TIERS.map(t => (
-            <option key={t} value={t}>{t === 'all' ? 'All tiers' : t}</option>
-          ))}
-        </select>
+      <div className="p-3 sm:p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
+        <div className="flex gap-2">
+          <select
+            value={roleFilter}
+            onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
+            className="flex-1 sm:flex-none px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
+          >
+            {ROLE_FILTERS.map(r => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
+          <select
+            value={tierFilter}
+            onChange={e => { setTierFilter(e.target.value); setPage(1); }}
+            className="flex-1 sm:flex-none px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
+          >
+            {TIERS.map(t => (
+              <option key={t} value={t}>{t === 'all' ? 'All tiers' : t}</option>
+            ))}
+          </select>
+        </div>
         <form onSubmit={handleSearch} className="flex gap-2 flex-1">
           <input
             type="text"
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="Search by name or email..."
-            className="flex-1 px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)]"
+            className="flex-1 px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] min-h-[48px]"
           />
           <button
             type="submit"
-            className="px-3 py-[8px] bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold"
+            className="px-3 sm:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold min-h-[48px] min-w-[44px]"
           >
-            Search
+            <span className="hidden sm:inline">Search</span>
+            <span className="sm:hidden">🔍</span>
           </button>
           {search && (
             <button
               type="button"
               onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
-              className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px]"
+              className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] min-h-[48px] min-w-[44px]"
             >
-              Clear
+              ✕
             </button>
           )}
         </form>
-        <div className="self-center text-[12px] text-[var(--color-text-secondary)]">
+        <div className="self-center text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] text-center sm:text-left">
           {total} customers
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-        {loading ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading customers…</div>
-        ) : customers.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">
-            {search ? `No customers found for "${search}"` : 'No B2B customers yet'}
-          </div>
-        ) : (
-          <table className="w-full" style={{minWidth: '900px'}}>
-            <thead>
-              <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {customers.map((customer, index) => {
-                const customerId = customer._id || customer.id;
-                if (!customerId) {
-                  process.env.NODE_ENV !== "production" && console.error('Customer missing ID:', customer);
-                }
-                return (
-                <tr key={customerId || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
-                  <td className="px-4 py-3">
-                    <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                      {customer.companyName || customer.name}
-                    </div>
-                    {customer.companyName && (
-                      <div className="text-[10px] text-[var(--color-text-secondary)]">{customer.name}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{customer.email}</td>
-                  <td className="px-4 py-3 text-[11px]">{customer.phone || '—'}</td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={customer.role || 'customer'}
-                      onChange={e => handleUpdateRole(customerId, e.target.value)}
-                      disabled={!customerId}
-                      className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getRoleColor(customer.role)} ${!customerId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {ROLES.map(role => (
-                        <option key={role.value} value={role.value}>
-                          {role.label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={customer.b2bTier || 'Silver'}
-                      onChange={e => handleUpdateTier(customerId, e.target.value)}
-                      disabled={!customerId}
-                      className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getTierColor(customer.b2bTier)} ${!customerId ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      <option value="Silver">Silver</option>
-                      <option value="Gold">Gold</option>
-                      <option value="Platinum">Platinum</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    ৳{(customer.creditLimit || 0).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    ৳{(customer.creditUsed || 0).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(customer.isActive)}`}>
-                      {customer.isActive !== false ? 'active' : 'inactive'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button className="text-[11px] text-[#0E8A6E] font-medium hover:underline">
-                      View profile
-                    </button>
-                  </td>
+      {/* Loading / Empty */}
+      {loading ? (
+        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading customers…</div>
+      ) : customers.length === 0 ? (
+        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">
+          {search ? `No customers found for "${search}"` : 'No B2B customers yet'}
+        </div>
+      ) : (
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '900px'}}>
+              <thead>
+                <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
+                  {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
+                      {h}
+                    </th>
+                  ))}
                 </tr>
+              </thead>
+              <tbody>
+                {customers.map((customer, index) => {
+                  const customerId = customer._id || customer.id;
+                  return (
+                  <tr key={customerId || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+                    <td className="px-4 py-3">
+                      <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                        {customer.companyName || customer.name}
+                      </div>
+                      {customer.companyName && (
+                        <div className="text-[10px] text-[var(--color-text-secondary)]">{customer.name}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{customer.email}</td>
+                    <td className="px-4 py-3 text-[11px]">{customer.phone || '—'}</td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={customer.role || 'customer'}
+                        onChange={e => handleUpdateRole(customerId, e.target.value)}
+                        disabled={!customerId}
+                        className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getRoleColor(customer.role)}`}
+                      >
+                        {ROLES.map(role => (
+                          <option key={role.value} value={role.value}>{role.label}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={customer.b2bTier || 'Silver'}
+                        onChange={e => handleUpdateTier(customerId, e.target.value)}
+                        disabled={!customerId}
+                        className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getTierColor(customer.b2bTier)}`}
+                      >
+                        <option value="Silver">Silver</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Platinum">Platinum</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      ৳{(customer.creditLimit || 0).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      ৳{(customer.creditUsed || 0).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(customer.isActive)}`}>
+                        {customer.isActive !== false ? 'active' : 'inactive'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <button className="text-[11px] text-[#0E8A6E] font-medium hover:underline">
+                        View profile
+                      </button>
+                    </td>
+                  </tr>
+                );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3 p-3">
+            {customers.map((customer, index) => {
+              const customerId = customer._id || customer.id;
+              return (
+                <div key={customerId || `customer-${index}`} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)] truncate">
+                        {customer.companyName || customer.name}
+                      </div>
+                      {customer.companyName && (
+                        <div className="text-[11px] text-[var(--color-text-secondary)]">{customer.name}</div>
+                      )}
+                      <div className="text-[11px] text-[var(--color-text-secondary)] mt-0.5 truncate">{customer.email}</div>
+                    </div>
+                    <span className={`text-[10px] px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(customer.isActive)}`}>
+                      {customer.isActive !== false ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+
+                  {/* Phone */}
+                  {customer.phone && (
+                    <div className="text-[12px] text-[var(--color-text-secondary)]">
+                      📞 {customer.phone}
+                    </div>
+                  )}
+
+                  {/* Credit info */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-white rounded-lg p-2.5 border border-[var(--color-border-tertiary)]">
+                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Credit Limit</div>
+                      <div className="text-[13px] font-bold text-[#0B2545] mt-0.5">৳{(customer.creditLimit || 0).toLocaleString()}</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-2.5 border border-[var(--color-border-tertiary)]">
+                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Credit Used</div>
+                      <div className="text-[13px] font-bold text-[#0B2545] mt-0.5">৳{(customer.creditUsed || 0).toLocaleString()}</div>
+                    </div>
+                  </div>
+
+                  {/* Role & Tier selectors */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold block mb-1">Role</label>
+                      <select
+                        value={customer.role || 'customer'}
+                        onChange={e => handleUpdateRole(customerId, e.target.value)}
+                        disabled={!customerId}
+                        className={`w-full text-[12px] px-2 py-2 rounded-lg font-medium border cursor-pointer min-h-[44px] ${getRoleColor(customer.role)}`}
+                      >
+                        {ROLES.map(role => (
+                          <option key={role.value} value={role.value}>{role.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold block mb-1">Tier</label>
+                      <select
+                        value={customer.b2bTier || 'Silver'}
+                        onChange={e => handleUpdateTier(customerId, e.target.value)}
+                        disabled={!customerId}
+                        className={`w-full text-[12px] px-2 py-2 rounded-lg font-medium border cursor-pointer min-h-[44px] ${getTierColor(customer.b2bTier)}`}
+                      >
+                        <option value="Silver">Silver</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Platinum">Platinum</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Action */}
+                  <button className="w-full min-h-[48px] px-4 py-2 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg text-[13px] font-semibold hover:bg-[#F0FBF8] transition-colors">
+                    View Profile
+                  </button>
+                </div>
               );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+            })}
+          </div>
+        </>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="p-4 flex items-center justify-between border-t-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="p-3 sm:p-4 flex items-center justify-between gap-2 border-t-[0.5px] border-[var(--color-border-tertiary)]">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="text-[12px] px-3 py-1 border-[0.5px] border-[var(--color-border-secondary)] rounded disabled:opacity-40"
+            className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            ← Prev
+            <span className="hidden sm:inline">← Prev</span>
+            <span className="sm:hidden">←</span>
           </button>
-          <span className="text-[12px] text-[var(--color-text-secondary)]">Page {page} of {totalPages}</span>
+          <span className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)]">
+            <span className="hidden sm:inline">Page {page} of {totalPages}</span>
+            <span className="sm:hidden">{page}/{totalPages}</span>
+          </span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="text-[12px] px-3 py-1 border-[0.5px] border-[var(--color-border-secondary)] rounded disabled:opacity-40"
+            className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            Next →
+            <span className="hidden sm:inline">Next →</span>
+            <span className="sm:hidden">→</span>
           </button>
         </div>
       )}

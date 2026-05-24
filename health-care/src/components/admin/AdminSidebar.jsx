@@ -43,18 +43,18 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-3 px-3 py-[10px] rounded-lg mb-1 transition-all ${
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg mb-1 transition-all min-h-[48px] ${
               activeTab === item.id
                 ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                 : 'text-white/70 hover:bg-white/10 hover:text-white hover:shadow-md'
             }`}
           >
-            <span className="text-[18px]">{item.icon}</span>
+            <span className="text-[18px] flex-shrink-0">{item.icon}</span>
             <span className="flex-1 text-left text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
               {item.label}
             </span>
             {item.badge && (
-              <span className="bg-[#E24B4A] text-white text-[10px] font-bold px-2 py-[2px] rounded-full min-w-[20px] text-center">
+              <span className="bg-[#E24B4A] text-white text-[10px] font-bold px-2 py-[2px] rounded-full min-w-[20px] text-center flex-shrink-0">
                 {item.badge}
               </span>
             )}
@@ -64,7 +64,7 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
 
       {/* Logout */}
       <div className="p-4 border-t border-white/10">
-        <button className="w-full flex items-center gap-3 px-3 py-[10px] rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-colors">
+        <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-colors min-h-[48px]">
           <span className="text-[18px]">🚪</span>
           <span className="text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
             Logout

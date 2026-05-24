@@ -101,99 +101,116 @@ export default function QuotationsManagement() {
       )}
 
       {/* Filters */}
-      <div className="p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex gap-3">
+      <div className="p-3 sm:p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex flex-col sm:flex-row gap-2 sm:gap-3">
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
-          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
+          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
         >
           {STATUS_OPTIONS.map(s => (
             <option key={s} value={s}>{s === 'all' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
           ))}
         </select>
-        <div className="ml-auto self-center text-[12px] text-[var(--color-text-secondary)]">
+        <div className="sm:ml-auto self-center text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] text-center sm:text-left">
           {quotes.length} quotations
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-        {loading ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading quotations…</div>
-        ) : quotes.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No quotations found</div>
-        ) : (
-          <table className="w-full" style={{minWidth: '900px'}}>
-            <thead>
-              <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                {['Quote ID', 'Customer', 'Items', 'Amount', 'Status', 'Created', 'Valid Until', 'Actions'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {quotes.map(quote => (
-                <tr key={quote._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
-                  <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    {quote.quoteNumber || quote._id?.slice(-8).toUpperCase()}
-                  </td>
-                  <td className="px-4 py-3 text-[12px]">
-                    {quote.user?.companyName || quote.user?.name || '—'}
-                  </td>
-                  <td className="px-4 py-3 text-[12px]">{quote.items?.length || 0} items</td>
-                  <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    ৳{(quote.totalAmount || quote.total || 0).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(quote.status)}`}>
-                      {quote.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">
-                    {formatDate(quote.createdAt)}
-                  </td>
-                  <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">
-                    {formatDate(quote.validUntil)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2 flex-wrap">
-                      {quote.status === 'pending' && (
-                        <button
-                          onClick={() => handleUpdateStatus(quote._id, 'approved')}
-                          disabled={actionLoading[`status-${quote._id}`]}
-                          className="text-[11px] text-[#065F46] font-medium hover:underline disabled:opacity-50"
-                        >
-                          Approve
-                        </button>
-                      )}
-                      {quote.status === 'approved' && (
-                        <button
-                          onClick={() => handleConvert(quote._id)}
-                          disabled={actionLoading[`convert-${quote._id}`]}
-                          className="text-[11px] text-[#0B2545] font-medium hover:underline disabled:opacity-50"
-                        >
-                          {actionLoading[`convert-${quote._id}`] ? 'Converting…' : 'Convert →'}
-                        </button>
-                      )}
-                      {['pending', 'sent'].includes(quote.status) && (
-                        <button
-                          onClick={() => handleUpdateStatus(quote._id, 'rejected')}
-                          disabled={actionLoading[`status-${quote._id}`]}
-                          className="text-[11px] text-[#991B1B] font-medium hover:underline disabled:opacity-50"
-                        >
-                          Reject
-                        </button>
-                      )}
-                    </div>
-                  </td>
+      {/* Loading / Empty */}
+      {loading ? (
+        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading quotations…</div>
+      ) : quotes.length === 0 ? (
+        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No quotations found</div>
+      ) : (
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '900px'}}>
+              <thead>
+                <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
+                  {['Quote ID', 'Customer', 'Items', 'Amount', 'Status', 'Created', 'Valid Until', 'Actions'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {quotes.map(quote => (
+                  <tr key={quote._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      {quote.quoteNumber || quote._id?.slice(-8).toUpperCase()}
+                    </td>
+                    <td className="px-4 py-3 text-[12px]">{quote.user?.companyName || quote.user?.name || '—'}</td>
+                    <td className="px-4 py-3 text-[12px]">{quote.items?.length || 0} items</td>
+                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      ৳{(quote.totalAmount || quote.total || 0).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(quote.status)}`}>
+                        {quote.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{formatDate(quote.createdAt)}</td>
+                    <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{formatDate(quote.validUntil)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2 flex-wrap">
+                        {quote.status === 'pending' && (
+                          <button onClick={() => handleUpdateStatus(quote._id, 'approved')} disabled={actionLoading[`status-${quote._id}`]} className="text-[11px] text-[#065F46] font-medium hover:underline disabled:opacity-50">Approve</button>
+                        )}
+                        {quote.status === 'approved' && (
+                          <button onClick={() => handleConvert(quote._id)} disabled={actionLoading[`convert-${quote._id}`]} className="text-[11px] text-[#0B2545] font-medium hover:underline disabled:opacity-50">{actionLoading[`convert-${quote._id}`] ? 'Converting…' : 'Convert →'}</button>
+                        )}
+                        {['pending', 'sent'].includes(quote.status) && (
+                          <button onClick={() => handleUpdateStatus(quote._id, 'rejected')} disabled={actionLoading[`status-${quote._id}`]} className="text-[11px] text-[#991B1B] font-medium hover:underline disabled:opacity-50">Reject</button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3 p-3">
+            {quotes.map(quote => (
+              <div key={quote._id} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="text-[13px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
+                      {quote.quoteNumber || quote._id?.slice(-8).toUpperCase()}
+                    </div>
+                    <div className="text-[11px] text-[var(--color-text-secondary)] mt-0.5">
+                      {quote.user?.companyName || quote.user?.name || '—'}
+                    </div>
+                  </div>
+                  <span className={`text-[10px] px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(quote.status)}`}>
+                    {quote.status}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[12px]">
+                  <div><span className="text-[var(--color-text-secondary)]">Amount:</span> <span className="font-bold">৳{(quote.totalAmount || 0).toLocaleString()}</span></div>
+                  <div><span className="text-[var(--color-text-secondary)]">Items:</span> {quote.items?.length || 0}</div>
+                  <div><span className="text-[var(--color-text-secondary)]">Created:</span> {formatDate(quote.createdAt)}</div>
+                  <div><span className="text-[var(--color-text-secondary)]">Valid:</span> {formatDate(quote.validUntil)}</div>
+                </div>
+                <div className="flex gap-2 pt-2 border-t border-[var(--color-border-tertiary)]">
+                  {quote.status === 'pending' && (
+                    <button onClick={() => handleUpdateStatus(quote._id, 'approved')} disabled={actionLoading[`status-${quote._id}`]} className="flex-1 min-h-[48px] px-3 py-2 bg-[#D1FAE5] text-[#065F46] rounded-lg text-[12px] font-semibold disabled:opacity-50">Approve</button>
+                  )}
+                  {quote.status === 'approved' && (
+                    <button onClick={() => handleConvert(quote._id)} disabled={actionLoading[`convert-${quote._id}`]} className="flex-1 min-h-[48px] px-3 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold disabled:opacity-50">{actionLoading[`convert-${quote._id}`] ? 'Converting…' : 'Convert to Order'}</button>
+                  )}
+                  {['pending', 'sent'].includes(quote.status) && (
+                    <button onClick={() => handleUpdateStatus(quote._id, 'rejected')} disabled={actionLoading[`status-${quote._id}`]} className="flex-1 min-h-[48px] px-3 py-2 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px] font-semibold disabled:opacity-50">Reject</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

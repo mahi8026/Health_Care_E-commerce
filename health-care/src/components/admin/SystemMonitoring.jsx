@@ -293,7 +293,7 @@ export default function SystemMonitoring() {
           <button
             type="button"
             onClick={() => setAutoRefresh((v) => !v)}
-            className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold border transition-colors ${
+            className={`px-3 py-2 md:py-1.5 rounded-lg text-[12px] font-semibold border transition-colors min-h-[44px] md:min-h-0 ${
               autoRefresh
                 ? 'bg-[#0E8A6E] text-white border-[#0E8A6E]'
                 : 'bg-white text-gray-700 border-gray-200'
@@ -305,14 +305,14 @@ export default function SystemMonitoring() {
             type="button"
             onClick={() => fetchDashboard(true)}
             disabled={refreshing}
-            className="px-3 py-1.5 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0a1f3a] disabled:opacity-60"
+            className="px-3 py-2 md:py-1.5 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0a1f3a] disabled:opacity-60 min-h-[44px] md:min-h-0"
           >
             Refresh
           </button>
           <button
             type="button"
             onClick={handleResetMetrics}
-            className="px-3 py-1.5 bg-white text-red-700 border border-red-200 rounded-lg text-[12px] font-semibold hover:bg-red-50"
+            className="px-3 py-2 md:py-1.5 bg-white text-red-700 border border-red-200 rounded-lg text-[12px] font-semibold hover:bg-red-50 min-h-[44px] md:min-h-0"
           >
             Reset counters
           </button>
@@ -360,7 +360,7 @@ export default function SystemMonitoring() {
       )}
 
       {/* Services */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {Object.entries(services).map(([name, status]) => (
           <ServiceCard key={name} name={name} status={status} />
         ))}
@@ -368,13 +368,13 @@ export default function SystemMonitoring() {
 
       {/* Tabs */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <div className="flex border-b border-gray-100 overflow-x-auto">
+        <div className="flex border-b border-gray-100 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-3 text-[12px] font-semibold whitespace-nowrap border-b-2 transition-colors ${
+              className={`px-4 md:px-5 py-4 md:py-3 text-[12px] font-semibold whitespace-nowrap border-b-2 transition-colors min-h-[44px] ${
                 activeTab === tab.id
                   ? 'text-[#0E8A6E] border-[#0E8A6E]'
                   : 'text-gray-500 border-transparent hover:text-gray-800'
@@ -390,7 +390,7 @@ export default function SystemMonitoring() {
             <div className="space-y-6">
               <div>
                 <h3 className="text-[13px] font-semibold text-[#0B2545] mb-3">Server uptime</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                   <StatCard label="Uptime" value={formatUptime(metrics.uptime)} />
                   <StatCard label="Total requests" value={metrics.requests.total} tone="blue" />
                   <StatCard label="Successful" value={metrics.requests.success} tone="green" />
@@ -415,7 +415,7 @@ export default function SystemMonitoring() {
 
           {activeTab === 'performance' && metrics && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 <StatCard label="Average" value={`${metrics.performance.avgResponseTime}ms`} />
                 <StatCard label="P50" value={`${metrics.performance.p50}ms`} />
                 <StatCard label="P95" value={`${metrics.performance.p95}ms`} tone="amber" />
@@ -527,7 +527,7 @@ export default function SystemMonitoring() {
 
           {activeTab === 'system' && system && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 <StatCard
                   label="Heap used"
                   value={`${system.memory.heapUsedMB} MB`}
@@ -549,7 +549,7 @@ export default function SystemMonitoring() {
                   })}
                 />
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <StatCard label="Node version" value={system.node.version} />
                 <StatCard
                   label="Platform"

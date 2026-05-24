@@ -172,7 +172,7 @@ function ProductCard({ product, onProductClick }) {
 }
 
 /* ─── Search Results Container ────────────────────────────────────────────── */
-export default function SearchResults({ products, loading, query, onProductClick, hasMore, onLoadMore, loadingMore }) {
+export default function SearchResults({ products, loading, query, onProductClick, hasMore, onLoadMore, loadingMore, totalResults }) {
 
   if (loading && products.length === 0) {
     return (
@@ -199,6 +199,22 @@ export default function SearchResults({ products, loading, query, onProductClick
 
   return (
     <div>
+      {/* Result count */}
+      <div className="text-[12px] text-gray-500 mb-4">
+        {loading ? (
+          'Searching...'
+        ) : (
+          <>
+            <strong className="text-gray-700">{totalResults || products.length}</strong> result{(totalResults || products.length) !== 1 ? 's' : ''}
+            {query && (
+              <>
+                {' '}for <strong className="text-gray-700">"{query}"</strong>
+              </>
+            )}
+          </>
+        )}
+      </div>
+
       {/* Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
         {products.map(product => (

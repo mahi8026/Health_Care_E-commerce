@@ -120,7 +120,8 @@ export default function CategoriesManagement() {
 
       {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -136,77 +137,73 @@ export default function CategoriesManagement() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {categories.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="px-6 py-8 text-center text-gray-500">
-                    <div>📦 No categories found.</div>
-                  </td>
-                </tr>
+                <tr><td colSpan="8" className="px-6 py-8 text-center text-gray-500">📦 No categories found.</td></tr>
               ) : (
                 categories.map((category) => (
                   <tr key={category._id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3 whitespace-nowrap">
                       {category.image?.url ? (
-                        <img
-                          src={category.image.url}
-                          alt={category.name}
-                          className="w-10 h-10 object-cover rounded border border-gray-200"
-                        />
+                        <img src={category.image.url} alt={category.name} className="w-10 h-10 object-cover rounded border border-gray-200" />
                       ) : (
-                        <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">
-                          —
-                        </div>
+                        <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">—</div>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-900">{category.name}</div>
-                      {category.description && (
-                        <div className="text-xs text-gray-600 mt-1">{category.description.substring(0, 50)}...</div>
-                      )}
+                      {category.description && <div className="text-xs text-gray-600 mt-1">{category.description.substring(0, 50)}...</div>}
                     </td>
+                    <td className="px-4 py-3 whitespace-nowrap"><code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 font-mono">{category.slug}</code></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 text-xs">{category.parent ? category.parent.name || '—' : '—'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-center"><span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{category.productCount || 0}</span></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-center text-gray-700">{category.order || '0'}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 font-mono">
-                        {category.slug}
-                      </code>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-700 text-xs">
-                      {category.parent ? category.parent.name || '—' : '—'}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-center">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {category.productCount || 0}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-center text-gray-700">
-                      {category.order || '0'}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                        category.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span className={`text-xs px-2 py-1 rounded-full font-semibold ${category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                         {category.isActive ? '● Active' : '● Inactive'}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-2">
-                      <button
-                        onClick={() => handleEdit(category)}
-                        className="text-blue-600 hover:text-blue-900 hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(category._id, category.name)}
-                        className="text-red-600 hover:text-red-900 hover:underline"
-                      >
-                        Delete
-                      </button>
+                      <button onClick={() => handleEdit(category)} className="text-blue-600 hover:text-blue-900 hover:underline">Edit</button>
+                      <button onClick={() => handleDelete(category._id, category.name)} className="text-red-600 hover:text-red-900 hover:underline">Delete</button>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3 p-3">
+          {categories.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 text-sm">📦 No categories found.</div>
+          ) : (
+            categories.map((category) => (
+              <div key={category._id} className="bg-gray-50 rounded-lg border p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  {category.image?.url ? (
+                    <img src={category.image.url} alt={category.name} className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0" />
+                  ) : (
+                    <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300 flex-shrink-0">—</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-gray-900 text-[14px]">{category.name}</div>
+                    {category.parent && <div className="text-[11px] text-gray-500">Parent: {category.parent.name}</div>}
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 ${category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {category.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[12px]">
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 font-mono">{category.slug}</code>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{category.productCount || 0} products</span>
+                </div>
+                <div className="flex gap-2 pt-2 border-t border-gray-200">
+                  <button onClick={() => handleEdit(category)} className="flex-1 min-h-[48px] px-3 py-2 bg-blue-600 text-white rounded-lg text-[13px] font-semibold hover:bg-blue-700">Edit</button>
+                  <button onClick={() => handleDelete(category._id, category.name)} className="flex-1 min-h-[48px] px-3 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[13px] font-semibold hover:bg-red-100">Delete</button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

@@ -165,8 +165,8 @@ export default function MobileMenu({ isOpen, onClose }) {
             style={{
               background: 'rgba(255,255,255,0.1)',
               border: 'none',
-              width: 34,
-              height: 34,
+              width: 44,
+              height: 44,
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
@@ -418,7 +418,8 @@ function NavButton({ item, onClick }) {
       onClick={onClick}
       style={{
         width: '100%',
-        padding: '10px 16px',
+        padding: '12px 16px',
+        minHeight: '48px',
         background: 'none',
         border: 'none',
         textAlign: 'left',
@@ -446,7 +447,8 @@ function AccountButton({ icon, label, onClick, danger }) {
       onClick={onClick}
       style={{
         width: '100%',
-        padding: '10px 16px',
+        padding: '12px 16px',
+        minHeight: '48px',
         background: 'none',
         border: 'none',
         textAlign: 'left',

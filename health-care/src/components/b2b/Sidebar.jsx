@@ -10,21 +10,21 @@ export default function Sidebar() {
         <div className="text-[11px] text-[var(--color-text-secondary)] mt-1">B2B Portal</div>
       </div>
       <nav className="flex-1 p-3 md:p-4 overflow-y-auto">
-        <div className="text-[11px] md:text-[12px] font-semibold text-[#0B2545] px-2 md:px-3 py-2 bg-[var(--color-background-secondary)] rounded-lg mb-1">
+        <button className="w-full text-left min-h-[44px] text-[11px] md:text-[12px] font-semibold text-[#0B2545] px-2 md:px-3 py-2.5 bg-[var(--color-background-secondary)] rounded-lg mb-1">
           Dashboard
-        </div>
-        <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer">
+        </button>
+        <button className="w-full text-left min-h-[44px] text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2.5 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer transition-colors">
           Orders
-        </div>
-        <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer">
+        </button>
+        <button className="w-full text-left min-h-[44px] text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2.5 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer transition-colors">
           Quotations
-        </div>
-        <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer">
+        </button>
+        <button className="w-full text-left min-h-[44px] text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2.5 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer transition-colors">
           Products
-        </div>
-        <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer">
+        </button>
+        <button className="w-full text-left min-h-[44px] text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2 md:px-3 py-2.5 hover:bg-[var(--color-background-secondary)] rounded-lg cursor-pointer transition-colors">
           Account
-        </div>
+        </button>
       </nav>
     </div>
   );

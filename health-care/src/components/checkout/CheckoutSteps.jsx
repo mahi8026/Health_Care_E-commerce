@@ -28,7 +28,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                  className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                     done
                       ? 'bg-[#0E8A6E] text-white'
                       : active

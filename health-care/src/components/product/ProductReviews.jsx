@@ -218,7 +218,7 @@ export default function ProductReviews({ productId }) {
             {canReview && (
               <button
                 onClick={() => setShowWriteModal(true)}
-                className="mt-4 w-full px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2e56] transition-colors"
+                className="mt-4 w-full min-h-[44px] px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2e56] transition-colors"
               >
                 Write a Review
               </button>
@@ -255,13 +255,13 @@ export default function ProductReviews({ productId }) {
 
       {/* Filters & Sort */}
       {stats && stats.totalReviews > 0 && (
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--color-border-tertiary)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[var(--color-border-tertiary)]">
           <div className="flex items-center gap-3">
             <span className="text-[13px] text-[var(--color-text-secondary)]">Sort by:</span>
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
-              className="px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white"
+              className="flex-1 sm:flex-none px-3 min-h-[44px] py-2 border border-[var(--color-border-secondary)] rounded-lg text-[16px] sm:text-[13px] bg-white"
             >
               <option value="helpful">Most Helpful</option>
               <option value="recent">Most Recent</option>
@@ -273,7 +273,7 @@ export default function ProductReviews({ productId }) {
           {ratingFilter && (
             <button
               onClick={() => setRatingFilter('')}
-              className="text-[12px] text-[#0E8A6E] font-medium hover:underline"
+              className="min-h-[44px] px-4 text-[12px] text-[#0E8A6E] font-medium hover:underline"
             >
               Clear filter
             </button>
@@ -398,7 +398,7 @@ export default function ProductReviews({ productId }) {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
+            className="min-h-[44px] px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
           >
             ← Previous
           </button>
@@ -408,7 +408,7 @@ export default function ProductReviews({ productId }) {
           <button
             onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
             disabled={page === pagination.pages}
-            className="px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
+            className="min-h-[44px] px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
           >
             Next →
           </button>

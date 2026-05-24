@@ -224,16 +224,16 @@ export default function ProductInfo({
         <div className="flex items-center border-[0.5px] border-[var(--color-border-secondary)] rounded-[7px] overflow-hidden">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-8 h-8 bg-[var(--color-background-secondary)] border-none cursor-pointer text-base flex items-center justify-center text-[var(--color-text-primary)]"
+            className="w-11 h-11 bg-[var(--color-background-secondary)] border-none cursor-pointer text-base flex items-center justify-center text-[var(--color-text-primary)]"
           >
             −
           </button>
-          <div className="w-10 text-center text-[13px] font-medium border-l-[0.5px] border-r-[0.5px] border-[var(--color-border-tertiary)] h-8 leading-8">
+          <div className="w-14 text-center text-[13px] font-medium border-l-[0.5px] border-r-[0.5px] border-[var(--color-border-tertiary)] h-11 leading-[44px]">
             {quantity}
           </div>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="w-8 h-8 bg-[var(--color-background-secondary)] border-none cursor-pointer text-base flex items-center justify-center text-[var(--color-text-primary)]"
+            className="w-11 h-11 bg-[var(--color-background-secondary)] border-none cursor-pointer text-base flex items-center justify-center text-[var(--color-text-primary)]"
           >
             +
           </button>

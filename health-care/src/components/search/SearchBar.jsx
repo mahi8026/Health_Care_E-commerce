@@ -36,7 +36,7 @@ export default function SearchBar({ onSearch, placeholder = "Search products..."
             onChange={handleChange}
             placeholder={placeholder}
             aria-label="Search products"
-            className="flex-1 border-none outline-none bg-transparent text-[12px] sm:text-[13px] text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)] min-w-0"
+            className="flex-1 border-none outline-none bg-transparent text-[16px] sm:text-[13px] text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)] min-w-0"
           />
           <div className="w-[0.5px] h-4 sm:h-5 bg-[var(--color-border-secondary)] hidden sm:block"></div>
           <select

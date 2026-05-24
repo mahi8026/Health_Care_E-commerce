@@ -54,7 +54,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
       <button
         onClick={onLoginClick}
         aria-label="Account"
-        className="w-8 h-8 rounded-[7px] border border-gray-200 bg-white flex items-center justify-center cursor-pointer hover:bg-[#F3F4F6] hover:border-gray-300 transition-colors text-[#6B7280] hover:text-[#0B2545]"
+        className="w-11 h-11 rounded-[7px] border border-gray-200 bg-white flex items-center justify-center cursor-pointer hover:bg-[#F3F4F6] hover:border-gray-300 transition-colors text-[#6B7280] hover:text-[#0B2545]"
       >
         <UserIcon />
       </button>

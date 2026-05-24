@@ -78,23 +78,38 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
   const selectedStatusIndex = STATUS_OPTIONS.findIndex(s => s.value === selectedStatus);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-0 sm:p-4" onClick={onClose}>
       <div 
-        className="bg-white rounded-lg max-w-md w-full"
+        className="bg-white rounded-none sm:rounded-lg max-w-md w-full h-full sm:h-auto overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b-[0.5px] border-[var(--color-border-tertiary)]">
-          <h3 className="text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-            Update Order Status
-          </h3>
-          <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">
-            {order.orderNumber}
-          </p>
+        <div className="px-4 sm:px-6 py-4 border-b-[0.5px] border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                Update Order Status
+              </h3>
+              <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">
+                {order.orderNumber}
+              </p>
+            </div>
+            {/* Mobile close button */}
+            <button
+              onClick={onClose}
+              className="sm:hidden w-11 h-11 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors -mr-2"
+              aria-label="Close"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 md:p-6 space-y-4">
           {/* Current Status */}
           <div className="bg-[var(--color-background-tertiary)] rounded-lg p-3">
             <div className="text-[11px] text-[var(--color-text-secondary)] mb-1">Current Status</div>
@@ -123,7 +138,7 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
                     key={status.value}
                     onClick={() => !isDisabled && setSelectedStatus(status.value)}
                     disabled={isDisabled}
-                    className={`w-full flex items-center gap-3 p-3 rounded-lg border-[0.5px] transition-all ${
+                    className={`w-full flex items-center gap-3 p-4 md:p-3 rounded-lg border-[0.5px] transition-all min-h-[44px] ${
                       isSelected
                         ? 'border-[#0B2545] bg-[#E6F1FB]'
                         : isDisabled
@@ -160,7 +175,8 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Add a note about this status change..."
-              className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] resize-none focus:outline-none focus:border-[#0B2545]"
+              className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg resize-none focus:outline-none focus:border-[#0B2545] min-h-[48px]"
+              style={{ fontSize: '16px' }}
               rows="3"
             />
           </div>
@@ -187,18 +203,18 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t-[0.5px] border-[var(--color-border-tertiary)] flex gap-3">
+        <div className="px-4 md:px-6 py-4 border-t-[0.5px] border-[var(--color-border-tertiary)] flex gap-3 sticky bottom-0 bg-white">
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-3 md:py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors disabled:opacity-50 min-h-[44px]"
           >
             Cancel
           </button>
           <button
             onClick={handleUpdate}
             disabled={loading || selectedStatus === order.status}
-            className="flex-1 px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2d52] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-3 md:py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2d52] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-h-[44px]"
           >
             {loading ? (
               <>

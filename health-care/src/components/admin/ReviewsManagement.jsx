@@ -181,180 +181,139 @@ export default function ReviewsManagement() {
       </div>
 
       {/* Filters */}
-      <div className="p-4 border-b border-[var(--color-border-tertiary)] flex gap-3">
+      <div className="p-3 sm:p-4 border-b border-[var(--color-border-tertiary)] flex flex-col sm:flex-row gap-2 sm:gap-3">
         <select
           value={statusFilter}
           onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
+          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
         >
           {STATUS_OPTIONS.map(s => (
-            <option key={s} value={s}>
-              {s === 'all' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1)}
-            </option>
+            <option key={s} value={s}>{s === 'all' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
           ))}
         </select>
-
         <select
           value={ratingFilter}
           onChange={e => { setRatingFilter(e.target.value); setPage(1); }}
-          className="px-3 py-[8px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white"
+          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
         >
           {RATING_OPTIONS.map(r => (
-            <option key={r} value={r}>
-              {r === 'all' ? 'All ratings' : `${r} stars`}
-            </option>
+            <option key={r} value={r}>{r === 'all' ? 'All ratings' : `${r} stars`}</option>
           ))}
         </select>
-
-        <div className="ml-auto text-[12px] text-[var(--color-text-secondary)] self-center">
+        <div className="sm:ml-auto text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] self-center text-center sm:text-left">
           {pagination?.total || 0} reviews total
         </div>
       </div>
 
-      {/* Reviews Table */}
-      <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-        {loading ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">
-            Loading reviews…
-          </div>
-        ) : reviews.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">
-            No reviews found
-          </div>
-        ) : (
-          <table className="w-full" style={{minWidth: '900px'}}>
-            <thead>
-              <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                {['Product', 'Customer', 'Rating', 'Review', 'Status', 'Date', 'Actions'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {reviews.map(review => (
-                <tr key={review._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={review.product?.images?.[0]?.url || '/placeholder.png'}
-                        alt={review.product?.name}
-                        className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]"
-                      />
-                      <div>
-                        <div className="text-[12px] font-semibold line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">
-                          {review.product?.name}
-                        </div>
-                        <div className="text-[10px] text-[var(--color-text-secondary)]">
-                          {review.product?.sku}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-[12px]">{review.user?.name}</div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">
-                      {review.user?.email}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {renderStars(review.rating)}
-                  </td>
-                  <td className="px-4 py-3 max-w-xs">
-                    <div className="text-[12px] font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)]">
-                      {review.title}
-                    </div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)] line-clamp-2">
-                      {review.comment}
-                    </div>
-                    {review.images?.length > 0 && (
-                      <div className="text-[10px] text-[#0E8A6E] mt-1">
-                        📷 {review.images.length} {review.images.length === 1 ? 'image' : 'images'}
-                      </div>
-                    )}
-                    {review.reported && (
-                      <div className="text-[10px] text-[#E24B4A] mt-1">
-                        🚩 Reported ({review.reportedBy?.length || 0} reports)
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(review.status)}`}>
-                      {review.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      {review.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => handleOpenModal(review, 'approve')}
-                            className="text-[11px] px-2 py-1 bg-[#D1FAE5] text-[#065F46] rounded hover:bg-[#A7F3D0] transition-colors"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleOpenModal(review, 'reject')}
-                            className="text-[11px] px-2 py-1 bg-[#FEE2E2] text-[#991B1B] rounded hover:bg-[#FECACA] transition-colors"
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
-                      {review.status === 'approved' && (
-                        <button
-                          onClick={() => handleOpenModal(review, 'reject')}
-                          className="text-[11px] px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)] transition-colors"
-                        >
-                          Reject
-                        </button>
-                      )}
-                      {review.status === 'rejected' && (
-                        <button
-                          onClick={() => handleOpenModal(review, 'approve')}
-                          className="text-[11px] px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)] transition-colors"
-                        >
-                          Approve
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleOpenModal(review, 'view')}
-                        className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
-                      >
-                        View
-                      </button>
-                    </div>
-                  </td>
+      {/* Reviews Table/Cards */}
+      {loading ? (
+        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading reviews…</div>
+      ) : reviews.length === 0 ? (
+        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No reviews found</div>
+      ) : (
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '900px'}}>
+              <thead>
+                <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
+                  {['Product', 'Customer', 'Rating', 'Review', 'Status', 'Date', 'Actions'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {reviews.map(review => (
+                  <tr key={review._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]" />
+                        <div>
+                          <div className="text-[12px] font-semibold line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
+                          <div className="text-[10px] text-[var(--color-text-secondary)]">{review.product?.sku}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-[12px]">{review.user?.name}</div>
+                      <div className="text-[10px] text-[var(--color-text-secondary)]">{review.user?.email}</div>
+                    </td>
+                    <td className="px-4 py-3">{renderStars(review.rating)}</td>
+                    <td className="px-4 py-3 max-w-xs">
+                      <div className="text-[12px] font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)]">{review.title}</div>
+                      <div className="text-[11px] text-[var(--color-text-secondary)] line-clamp-2">{review.comment}</div>
+                      {review.images?.length > 0 && <div className="text-[10px] text-[#0E8A6E] mt-1">📷 {review.images.length} image{review.images.length > 1 ? 's' : ''}</div>}
+                      {review.reported && <div className="text-[10px] text-[#E24B4A] mt-1">🚩 Reported ({review.reportedBy?.length || 0})</div>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(review.status)}`}>{review.status}</span>
+                    </td>
+                    <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{new Date(review.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        {review.status === 'pending' && (
+                          <>
+                            <button onClick={() => handleOpenModal(review, 'approve')} className="text-[11px] px-2 py-1 bg-[#D1FAE5] text-[#065F46] rounded hover:bg-[#A7F3D0]">Approve</button>
+                            <button onClick={() => handleOpenModal(review, 'reject')} className="text-[11px] px-2 py-1 bg-[#FEE2E2] text-[#991B1B] rounded hover:bg-[#FECACA]">Reject</button>
+                          </>
+                        )}
+                        {review.status === 'approved' && <button onClick={() => handleOpenModal(review, 'reject')} className="text-[11px] px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)]">Reject</button>}
+                        {review.status === 'rejected' && <button onClick={() => handleOpenModal(review, 'approve')} className="text-[11px] px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)]">Approve</button>}
+                        <button onClick={() => handleOpenModal(review, 'view')} className="text-[11px] text-[#0E8A6E] font-medium hover:underline">View</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3 p-3">
+            {reviews.map(review => (
+              <div key={review._id} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-12 h-12 object-cover rounded border border-[var(--color-border-secondary)] flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-bold text-[#0B2545] line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
+                    <div className="text-[11px] text-[var(--color-text-secondary)]">{review.user?.name}</div>
+                    <div className="mt-1">{renderStars(review.rating)}</div>
+                  </div>
+                  <span className={`text-[10px] px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(review.status)}`}>{review.status}</span>
+                </div>
+                <div>
+                  <div className="text-[12px] font-semibold text-[#0B2545]">{review.title}</div>
+                  <div className="text-[11px] text-[var(--color-text-secondary)] mt-0.5 line-clamp-2">{review.comment}</div>
+                </div>
+                <div className="text-[11px] text-[var(--color-text-secondary)]">{new Date(review.createdAt).toLocaleDateString()}</div>
+                <div className="flex gap-2 pt-2 border-t border-[var(--color-border-tertiary)]">
+                  {review.status === 'pending' && (
+                    <>
+                      <button onClick={() => handleOpenModal(review, 'approve')} className="flex-1 min-h-[48px] px-3 py-2 bg-[#D1FAE5] text-[#065F46] rounded-lg text-[12px] font-semibold">Approve</button>
+                      <button onClick={() => handleOpenModal(review, 'reject')} className="flex-1 min-h-[48px] px-3 py-2 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px] font-semibold">Reject</button>
+                    </>
+                  )}
+                  {review.status === 'approved' && <button onClick={() => handleOpenModal(review, 'reject')} className="flex-1 min-h-[48px] px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold">Reject</button>}
+                  {review.status === 'rejected' && <button onClick={() => handleOpenModal(review, 'approve')} className="flex-1 min-h-[48px] px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold">Approve</button>}
+                  <button onClick={() => handleOpenModal(review, 'view')} className="flex-1 min-h-[48px] px-3 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold">View</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="p-4 flex items-center justify-between border-t-[0.5px] border-[var(--color-border-tertiary)]">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="text-[12px] px-3 py-1 border-[0.5px] border-[var(--color-border-secondary)] rounded disabled:opacity-40"
-          >
-            ← Prev
+        <div className="p-3 sm:p-4 flex items-center justify-between gap-2 border-t-[0.5px] border-[var(--color-border-tertiary)]">
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <span className="hidden sm:inline">← Prev</span><span className="sm:hidden">←</span>
           </button>
-          <span className="text-[12px] text-[var(--color-text-secondary)]">
-            Page {page} of {totalPages}
+          <span className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)]">
+            <span className="hidden sm:inline">Page {page} of {totalPages}</span><span className="sm:hidden">{page}/{totalPages}</span>
           </span>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="text-[12px] px-3 py-1 border-[0.5px] border-[var(--color-border-secondary)] rounded disabled:opacity-40"
-          >
-            Next →
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <span className="hidden sm:inline">Next →</span><span className="sm:hidden">→</span>
           </button>
         </div>
       )}

@@ -38,13 +38,13 @@ export default function ProductTabs({ product }) {
 
   return (
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
-      {/* Tab Headers */}
-      <div className="flex border-b-[0.5px] border-[var(--color-border-tertiary)] overflow-x-auto">
+      {/* Tab Headers - horizontal scroll on mobile with 44px touch targets */}
+      <div className="flex border-b-[0.5px] border-[var(--color-border-tertiary)] overflow-x-auto scrollbar-hide">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 min-w-[100px] px-4 py-3 text-[13px] font-medium transition-colors whitespace-nowrap ${
+            className={`flex-1 min-w-[90px] sm:min-w-[100px] px-3 sm:px-4 py-3 text-[12px] sm:text-[13px] font-medium transition-colors whitespace-nowrap min-h-[48px] ${
               activeTab === tab.id
                 ? 'text-[#0B2545] border-b-2 border-[#0B2545] -mb-[0.5px]'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -56,7 +56,7 @@ export default function ProductTabs({ product }) {
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {activeTab === 'specifications' && (
           <div>
             <h3 className="text-[16px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">

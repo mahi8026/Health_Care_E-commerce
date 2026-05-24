@@ -5,6 +5,98 @@ import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 import { CONTACT } from '@/constants/api';
 
+const TRACKING_STEPS = [
+  { key: 'placed', icon: '📋', label: 'Order Placed', desc: 'Your order has been received' },
+  { key: 'confirmed', icon: '✅', label: 'Confirmed', desc: 'Payment verified, processing started' },
+  { key: 'processing', icon: '⚙️', label: 'Processing', desc: 'Items being packed in our warehouse' },
+  { key: 'shipped', icon: '📦', label: 'Shipped', desc: 'Order dispatched from warehouse' },
+  { key: 'out_for_delivery', icon: '🚚', label: 'Out for Delivery', desc: 'Your order is on the way' },
+  { key: 'delivered', icon: '🎉', label: 'Delivered', desc: 'Order successfully delivered' },
+];
+
+const ORDER_STATUS_INDEX = {
+  placed: 0,
+  confirmed: 1,
+  processing: 2,
+  shipped: 3,
+  out_for_delivery: 4,
+  delivered: 5,
+  cancelled: -1,
+};
+
+// Improved Timeline Component
+function TrackingTimeline({ status, timeline }) {
+  const currentIdx = ORDER_STATUS_INDEX[status] ?? 0;
+
+  return (
+    <div style={{ padding: '24px 0' }}>
+      {TRACKING_STEPS.map((step, idx) => {
+        const isDone = idx < currentIdx;
+        const isCurrent = idx === currentIdx;
+        const isPending = idx > currentIdx;
+        const timeEntry = timeline?.find(t => t.status === step.key || t.key === step.key);
+
+        return (
+          <div key={step.key} style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
+            {/* Icon + connector line */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+              <div style={{
+                width: 44,
+                height: 44,
+                borderRadius: '50%',
+                background: isDone ? '#0E8A6E' : isCurrent ? '#0B2545' : '#F3F4F6',
+                border: isCurrent ? '3px solid #0E8A6E' : '2px solid transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: isPending ? 16 : 20,
+                boxShadow: isCurrent ? '0 0 0 4px rgba(14,138,110,0.15)' : 'none',
+                transition: 'all 0.3s',
+                color: isPending ? '#D1D5DB' : 'inherit',
+                filter: isPending ? 'grayscale(100%)' : 'none',
+                animation: isCurrent ? 'pulse 2s ease-in-out infinite' : 'none',
+              }}>
+                {isDone ? '✓' : step.icon}
+              </div>
+              {idx < TRACKING_STEPS.length - 1 && (
+                <div style={{
+                  width: 2,
+                  height: 32,
+                  background: isDone ? '#0E8A6E' : '#E5E7EB',
+                  transition: 'background 0.5s',
+                }} />
+              )}
+            </div>
+
+            {/* Content */}
+            <div style={{ paddingTop: 8, paddingBottom: idx < TRACKING_STEPS.length - 1 ? 24 : 0 }}>
+              <div style={{
+                fontSize: 14,
+                fontWeight: isCurrent ? 700 : isDone ? 600 : 400,
+                color: isPending ? '#9CA3AF' : '#0B2545',
+                marginBottom: 2,
+              }}>
+                {step.label}
+              </div>
+              <div style={{ fontSize: 12, color: '#6B7280' }}>{step.desc}</div>
+              {timeEntry?.timestamp && (
+                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>
+                  {new Date(timeEntry.timestamp).toLocaleString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
   const router = useRouter();
   const [orderNumber, setOrderNumber] = useState(initialOrderNumber || '');
@@ -12,6 +104,22 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState(null);
+  const [shareToast, setShareToast] = useState(false);
+
+  const handleShare = () => {
+    const url = `${window.location.origin}/track/${order.orderNumber}`;
+    if (navigator.share) {
+      navigator.share({
+        title: `Track Order ${order.orderNumber}`,
+        text: `Track my MedCore BD order`,
+        url,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url);
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 2000);
+    }
+  };
 
   useEffect(() => {
     if (initialOrderNumber) {
@@ -112,6 +220,23 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
   return (
     <div className="min-h-screen bg-page py-8 px-4">
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+      `}</style>
+
+      {/* Share Toast */}
+      {shareToast && (
+        <div className="fixed top-4 right-4 z-50 px-4 py-3 bg-[#D1FAE5] text-[#065F46] rounded-xl shadow-lg text-[13px] font-semibold flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Tracking link copied!
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -160,15 +285,23 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                     Placed on {formatDate(order.createdAt)}
                   </p>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm text-gray-600 mb-1">Status</div>
-                  <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
-                    order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                    order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                    'bg-blue-100 text-blue-700'
-                  }`}>
-                    {order.status.replace(/_/g, ' ').toUpperCase()}
-                  </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleShare}
+                    className="px-3 py-2 bg-[#F3F4F6] text-[#374151] rounded-lg text-[12px] font-medium hover:bg-[#E5E7EB] transition-colors flex items-center gap-2"
+                  >
+                    🔗 Share
+                  </button>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600 mb-1">Status</div>
+                    <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
+                      order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                      order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                      'bg-blue-100 text-blue-700'
+                    }`}>
+                      {order.status.replace(/_/g, ' ').toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -188,34 +321,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
               {/* Timeline */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-[#0B2545] mb-4">Order Timeline</h3>
-                {order.timeline && order.timeline.map((step, index) => (
-                  <div key={step.key} className="flex gap-4">
-                    {/* Icon */}
-                    <div className="flex flex-col items-center">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${getStatusBgColor(step.status)}`}>
-                        {step.icon}
-                      </div>
-                      {index < order.timeline.length - 1 && (
-                        <div className={`w-0.5 h-12 ${step.status === 'completed' ? 'bg-teal-300' : 'bg-gray-200'}`} />
-                      )}
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 pb-8">
-                      <div className={`font-semibold ${getStatusColor(step.status)}`}>
-                        {step.label}
-                      </div>
-                      {step.timestamp && (
-                        <div className="text-sm text-gray-600 mt-1">
-                          {formatDate(step.timestamp)}
-                        </div>
-                      )}
-                      {step.status === 'active' && !step.timestamp && (
-                        <div className="text-sm text-gray-600 mt-1">In progress...</div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                <TrackingTimeline status={order.status} timeline={order.timeline} />
               </div>
             </div>
 

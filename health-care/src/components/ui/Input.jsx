@@ -30,7 +30,7 @@ export default function Input({
         placeholder={placeholder}
         disabled={disabled}
         required={required}
-        className={`w-full px-2.5 sm:px-3 py-2 sm:py-[9px] border-[0.5px] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none transition-colors ${
+        className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg text-[16px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none transition-colors min-h-[48px] ${
           error
             ? 'border-[#E24B4A] focus:border-[#E24B4A] focus:ring-1 focus:ring-[#E24B4A]'
             : 'border-[var(--color-border-secondary)] focus:border-[#0E8A6E] focus:ring-1 focus:ring-[#0E8A6E]'

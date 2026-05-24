@@ -146,7 +146,7 @@ function FAQItem({ q, a }) {
     <div className="border-b border-gray-100 last:border-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-4 text-left gap-4 min-h-0"
+        className="w-full flex items-center justify-between py-4 text-left gap-4 min-h-[48px]"
         aria-expanded={open}
       >
         <span className="text-sm font-medium text-gray-800">{q}</span>

@@ -178,7 +178,7 @@ export default function PhoneVerification({ onVerified }) {
           <button
             onClick={handleSendOTP}
             disabled={sending}
-            className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+            className="min-h-[44px] px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors flex-shrink-0"
           >
             {sending ? 'Sending...' : 'Verify Now'}
           </button>
@@ -199,8 +199,8 @@ export default function PhoneVerification({ onVerified }) {
 
       {/* OTP Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+          <div className="bg-white rounded-t-2xl sm:rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Verify Phone Number</h2>
@@ -210,9 +210,9 @@ export default function PhoneVerification({ onVerified }) {
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -231,7 +231,7 @@ export default function PhoneVerification({ onVerified }) {
                   onChange={(e) => handleOTPChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={index === 0 ? handlePaste : undefined}
-                  className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  className="w-11 h-14 sm:w-12 sm:h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
                   autoFocus={index === 0}
                 />
               ))}
@@ -257,7 +257,7 @@ export default function PhoneVerification({ onVerified }) {
             <button
               onClick={handleVerifyOTP}
               disabled={loading || otp.join('').length !== 6}
-              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="w-full min-h-[48px] px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
@@ -266,7 +266,7 @@ export default function PhoneVerification({ onVerified }) {
               <button
                 onClick={handleSendOTP}
                 disabled={!canResend || sending}
-                className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+                className="min-h-[44px] px-4 text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
               >
                 {!canResend ? `Resend OTP in ${resendCountdown}s` : sending ? 'Sending...' : 'Resend OTP'}
               </button>

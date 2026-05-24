@@ -75,26 +75,72 @@ const productSchema = new mongoose.Schema({
 
 // ── Indexes ──────────────────────────────────────────────────────────────────
 productSchema.index({ slug: 1 }, { unique: true, sparse: true });
-productSchema.index({ category: 1, isActive: 1 });
-productSchema.index({ brand: 1 });
-productSchema.index({ name: 'text', brand: 'text', description: 'text' });
 productSchema.index({ sku: 1 }, { unique: true });
-productSchema.index({ stock: 1 });
-productSchema.index({ isFeatured: 1, isActive: 1 });
+productSchema.index({ name: 'text', description: 'text', tags: 'text' }, {
+  weights: { name: 10, tags: 3, description: 1 },
+  name: 'product_text_search'
+});
 // Compound indexes for common query patterns
+productSchema.index({ category: 1, isActive: 1, price: 1 });  // category + price filter
+productSchema.index({ brand: 1, isActive: 1 });                // brand filter
+productSchema.index({ isFeatured: 1, isActive: 1 });           // featured products
+productSchema.index({ stock: 1, isActive: 1 });                // stock filter
+productSchema.index({ createdAt: -1, isActive: 1 });           // newest products
+productSchema.index({ price: 1, isActive: 1 });                // price range filter
 productSchema.index({ category: 1, brand: 1, isActive: 1 });
 productSchema.index({ category: 1, isActive: 1, isFeatured: 1 });
 productSchema.index({ isActive: 1, price: 1 });
-productSchema.index({ createdAt: -1, isActive: 1 });
+
+// ── Helper: Generate slug from name, brand, and SKU ──────────────────────────
+const generateSlug = (name, brand, sku) => {
+  const base = `${name}-${brand || ''}`
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')      // remove special chars
+    .replace(/\s+/g, '-')          // spaces to hyphens
+    .replace(/-+/g, '-')           // collapse multiple hyphens
+    .replace(/^-|-$/g, '')         // trim hyphens
+    .trim();
+  // Append last 6 chars of SKU for uniqueness
+  const suffix = sku ? `-${sku.slice(-6).toLowerCase()}` : '';
+  return base + suffix;
+};
 
 // ── Pre-save hook: auto-generate slug + sync legacy aliases ──────────────────
-productSchema.pre('save', function (next) {
-  if (!this.slug && this.name) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '') + '-' + this.sku.toLowerCase();
+productSchema.pre('save', async function (next) {
+  // Generate slug if not set OR if name changed
+  if (!this.slug || this.isModified('name')) {
+    // Get brand name if it's an ObjectId reference
+    let brandName = '';
+    if (this.brand) {
+      if (typeof this.brand === 'object' && this.brand.name) {
+        brandName = this.brand.name;
+      } else {
+        // Populate brand to get name
+        const populated = await this.populate('brand');
+        brandName = populated.brand?.name || '';
+      }
+    }
+    
+    let slug = generateSlug(this.name, brandName, this.sku || '');
+    
+    // Ensure uniqueness — check if slug exists
+    let exists = await mongoose.model('Product').findOne({
+      slug,
+      _id: { $ne: this._id }
+    });
+    let counter = 1;
+    while (exists) {
+      slug = `${generateSlug(this.name, brandName, this.sku || '')}-${counter}`;
+      exists = await mongoose.model('Product').findOne({
+        slug,
+        _id: { $ne: this._id }
+      });
+      counter++;
+    }
+    this.slug = slug;
   }
+  
+  // Sync legacy aliases
   if (!this.lowStockThreshold && this.minStock) this.lowStockThreshold = this.minStock;
   if (!this.minStock && this.lowStockThreshold) this.minStock = this.lowStockThreshold;
   if (!this.minOrderQty && this.minOrder) this.minOrderQty = this.minOrder;

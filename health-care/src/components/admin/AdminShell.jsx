@@ -198,7 +198,7 @@ export default function AdminShell({ children, title, action, onAction }) {
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-8 h-8 flex-shrink-0 flex items-center justify-center text-[#0B2545]"
+            className="md:hidden w-11 h-11 flex-shrink-0 flex items-center justify-center text-[#0B2545] rounded-lg hover:bg-[var(--color-background-secondary)]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12"/>

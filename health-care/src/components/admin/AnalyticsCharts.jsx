@@ -70,7 +70,7 @@ function OrdersTooltip({ active, payload, label }) {
  */
 export default function AnalyticsCharts() {
   return (
-    <div className="grid grid-cols-2 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       {/* Monthly Revenue Bar Chart */}
       <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
         <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">

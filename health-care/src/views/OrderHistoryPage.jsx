@@ -223,20 +223,20 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleTrack(order.orderNumber)}
-                    className="flex-1 py-2 text-[11px] text-[#0E8A6E] font-medium border-[0.5px] border-[#0E8A6E] rounded-lg hover:bg-[#E1F5EE]"
+                    className="flex-1 min-h-[44px] py-2 text-[12px] text-[#0E8A6E] font-medium border-[0.5px] border-[#0E8A6E] rounded-lg hover:bg-[#E1F5EE] transition-colors"
                   >
                     Track
                   </button>
                   <button
                     onClick={() => handleInvoice(order)}
-                    className="flex-1 py-2 text-[11px] text-[#0B2545] font-medium border-[0.5px] border-[#0B2545] rounded-lg hover:bg-[#E6F1FB]"
+                    className="flex-1 min-h-[44px] py-2 text-[12px] text-[#0B2545] font-medium border-[0.5px] border-[#0B2545] rounded-lg hover:bg-[#E6F1FB] transition-colors"
                   >
                     Invoice
                   </button>
                   {canRequestReturn(order) && (
                     <button
                       onClick={() => handleRequestReturn(order._id)}
-                      className="flex-1 py-2 text-[11px] text-[#E24B4A] font-medium border-[0.5px] border-[#E24B4A] rounded-lg hover:bg-[#FEE2E2]"
+                      className="flex-1 min-h-[44px] py-2 text-[12px] text-[#E24B4A] font-medium border-[0.5px] border-[#E24B4A] rounded-lg hover:bg-[#FEE2E2] transition-colors"
                     >
                       Return
                     </button>
@@ -252,7 +252,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)]"
+                className="min-h-[44px] text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 ← Previous
               </button>
@@ -262,7 +262,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)]"
+                className="min-h-[44px] text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 Next →
               </button>

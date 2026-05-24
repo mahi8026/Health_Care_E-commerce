@@ -50,13 +50,25 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [cartBounce, setCartBounce] = useState(false);
 
   const megaMenuRef = useRef(null);
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
+  const prevCartCount = useRef(cartCount);
 
   const isActive = (href) => pathname === href || pathname?.startsWith(href + '/');
   const authed = isAuthenticated();
+
+  // Cart bounce animation on count change
+  useEffect(() => {
+    if (cartCount > prevCartCount.current && cartCount > 0) {
+      setCartBounce(true);
+      const timer = setTimeout(() => setCartBounce(false), 600);
+      return () => clearTimeout(timer);
+    }
+    prevCartCount.current = cartCount;
+  }, [cartCount]);
 
   useEffect(() => {
     const handleClick = (e) => {
@@ -100,6 +112,16 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
 
   return (
     <>
+      <style jsx>{`
+        @keyframes cartBounce {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.4); }
+          100% { transform: scale(1); }
+        }
+        .cart-bounce {
+          animation: cartBounce 0.4s ease;
+        }
+      `}</style>
       <header className="glass-nav">
         <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[62px] nav-header-row gap-3 md:gap-4">
 
@@ -245,7 +267,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                     <FaShoppingCart size={15} />
                   </span>
                   {cartCount > 0 && (
-                    <span className="glass-chip-badge glass-chip-badge--pulse">
+                    <span className={`glass-chip-badge glass-chip-badge--pulse ${cartBounce ? 'cart-bounce' : ''}`}>
                       {cartCount > 9 ? '9+' : cartCount}
                     </span>
                   )}
@@ -266,7 +288,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
               >
                 <FaShoppingCart size={15} />
                 {cartCount > 0 && (
-                  <span className="glass-chip-badge glass-chip-badge--pulse">
+                  <span className={`glass-chip-badge glass-chip-badge--pulse ${cartBounce ? 'cart-bounce' : ''}`}>
                     {cartCount > 9 ? '9+' : cartCount}
                   </span>
                 )}

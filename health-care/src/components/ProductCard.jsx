@@ -127,7 +127,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
             {[...Array(5)].map((_, i) => (
               <div 
                 key={i} 
-                className={`w-[9px] h-[9px] sm:w-[10px] sm:h-[10px] ${i < product.rating ? 'bg-[#F59E0B]' : 'bg-[var(--color-border-secondary)]'}`} 
+                className={`w-[11px] h-[11px] sm:w-[12px] sm:h-[12px] ${i < product.rating ? 'bg-[#F59E0B]' : 'bg-[var(--color-border-secondary)]'}`} 
                 style={{ clipPath: 'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' }}
               ></div>
             ))}

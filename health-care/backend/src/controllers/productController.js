@@ -134,11 +134,16 @@ exports.getProducts = async (req, res) => {
 
     // ── Search filter ────────────────────────────────────────────────────────
     if (search && search.trim() && search !== 'undefined') {
-      const escaped = escapeRegex(search.trim());
+      const searchTerm = search.trim();
+      const escaped = escapeRegex(searchTerm);
+      const searchRegex = new RegExp(escaped, 'i');
+      
+      // Priority order: exact SKU match → name match → brand match → description match
       query.$or = [
-        { name: { $regex: escaped, $options: 'i' } },
-        { description: { $regex: escaped, $options: 'i' } },
-        { sku: { $regex: escaped, $options: 'i' } }
+        { sku: searchTerm.toUpperCase() },                    // exact SKU (highest priority)
+        { name: { $regex: searchRegex } },                    // name contains search
+        { tags: { $in: [searchRegex] } },                     // tags match
+        { description: { $regex: searchRegex } },             // description (lower priority)
       ];
     }
 
@@ -199,9 +204,13 @@ exports.getProducts = async (req, res) => {
 exports.getProduct = async (req, res) => {
   try {
     const idOrSlug = req.params.id;
+    
+    // Check if it's a MongoDB ObjectId
+    const isObjectId = mongoose.isValidObjectId(idOrSlug) && /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+    
     const product = await Product.findOne({
       $or: [
-        ...(mongoose.isValidObjectId(idOrSlug) ? [{ _id: idOrSlug }] : []),
+        ...(isObjectId ? [{ _id: idOrSlug }] : []),
         { slug: idOrSlug }
       ]
     })
@@ -211,6 +220,17 @@ exports.getProduct = async (req, res) => {
 
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    // If accessed by _id, return slug for frontend to redirect (SEO)
+    if (isObjectId && product.slug) {
+      return res.json({
+        success: true,
+        data: product,
+        product,
+        shouldRedirect: true,
+        slugUrl: product.slug
+      });
     }
 
     res.status(200).json({ success: true, data: product, product });

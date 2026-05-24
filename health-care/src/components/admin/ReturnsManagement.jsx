@@ -157,154 +157,143 @@ export default function ReturnsManagement() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 md:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-[#0B2545] mb-2">Return Requests Management</h2>
-        <p className="text-gray-600">Review and manage customer return requests</p>
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#0B2545] mb-1 sm:mb-2">Return Requests Management</h2>
+        <p className="text-sm text-gray-600">Review and manage customer return requests</p>
       </div>
 
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-lg border p-4">
-            <p className="text-sm text-gray-600 mb-1">Total Returns</p>
-            <p className="text-2xl font-bold text-[#0B2545]">{stats.total}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="bg-white rounded-lg border p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-gray-600 mb-1">Total</p>
+            <p className="text-xl sm:text-2xl font-bold text-[#0B2545]">{stats.total}</p>
           </div>
-          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-4">
-            <p className="text-sm text-yellow-800 mb-1">Pending</p>
-            <p className="text-2xl font-bold text-yellow-900">{stats.pending}</p>
+          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-yellow-800 mb-1">Pending</p>
+            <p className="text-xl sm:text-2xl font-bold text-yellow-900">{stats.pending}</p>
           </div>
-          <div className="bg-green-50 rounded-lg border border-green-200 p-4">
-            <p className="text-sm text-green-800 mb-1">Approved</p>
-            <p className="text-2xl font-bold text-green-900">{stats.approved}</p>
+          <div className="bg-green-50 rounded-lg border border-green-200 p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-green-800 mb-1">Approved</p>
+            <p className="text-xl sm:text-2xl font-bold text-green-900">{stats.approved}</p>
           </div>
-          <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
-            <p className="text-sm text-blue-800 mb-1">Refunded</p>
-            <p className="text-2xl font-bold text-blue-900">{stats.refunded}</p>
+          <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-blue-800 mb-1">Refunded</p>
+            <p className="text-xl sm:text-2xl font-bold text-blue-900">{stats.refunded}</p>
           </div>
-          <div className="bg-red-50 rounded-lg border border-red-200 p-4">
-            <p className="text-sm text-red-800 mb-1">Rejected</p>
-            <p className="text-2xl font-bold text-red-900">{stats.rejected}</p>
+          <div className="bg-red-50 rounded-lg border border-red-200 p-3 sm:p-4 col-span-2 sm:col-span-1">
+            <p className="text-xs sm:text-sm text-red-800 mb-1">Rejected</p>
+            <p className="text-xl sm:text-2xl font-bold text-red-900">{stats.rejected}</p>
           </div>
         </div>
       )}
 
-      {/* Filter Tabs */}
-      <div className="bg-white rounded-lg border p-2 mb-6 flex gap-2 overflow-x-auto">
+      {/* Filter Tabs - horizontal scroll on mobile */}
+      <div className="bg-white rounded-lg border p-2 mb-4 sm:mb-6 flex gap-2 overflow-x-auto scrollbar-hide">
         {['all', 'pending', 'approved', 'rejected', 'refunded'].map(status => (
           <button
             key={status}
-            onClick={() => {
-              setFilter(status);
-              setPage(1);
-            }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              filter === status
-                ? 'bg-[#0E8A6E] text-white'
-                : 'text-gray-700 hover:bg-gray-100'
+            onClick={() => { setFilter(status); setPage(1); }}
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors min-h-[44px] ${
+              filter === status ? 'bg-[#0E8A6E] text-white' : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
             {status !== 'all' && stats && (
-              <span className="ml-2 text-xs">({stats[status] || 0})</span>
+              <span className="ml-1.5 text-xs opacity-80">({stats[status] || 0})</span>
             )}
           </button>
         ))}
       </div>
 
-      {/* Returns Table */}
+      {/* Returns Table/Cards */}
       <div className="bg-white rounded-lg border overflow-hidden">
-        <div className="overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-          <table className="w-full" style={{minWidth: '900px'}}>
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Return ID</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Order</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Customer</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Reason</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Amount</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {returns.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="px-4 py-8 text-center text-gray-500">
-                    No return requests found
-                  </td>
-                </tr>
-              ) : (
-                returns.map(returnRequest => (
-                  <tr key={returnRequest._id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-mono">
-                      {returnRequest._id.slice(-8).toUpperCase()}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <div className="font-medium">#{returnRequest.order?.orderNumber}</div>
-                      <div className="text-xs text-gray-500">
-                        ৳{returnRequest.order?.totalAmount?.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <div className="font-medium">{returnRequest.user?.name}</div>
-                      <div className="text-xs text-gray-500">{returnRequest.user?.email}</div>
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {returnRequest.reason.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </td>
-                    <td className="px-4 py-3 text-sm font-semibold text-[#0E8A6E]">
-                      ৳{returnRequest.refundAmount?.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[returnRequest.status]}`}>
-                        {returnRequest.status.charAt(0).toUpperCase() + returnRequest.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {new Date(returnRequest.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => openModal(returnRequest)}
-                        className="text-sm text-[#0E8A6E] font-medium hover:underline"
-                      >
-                        Review
-                      </button>
-                    </td>
+        {returns.length === 0 ? (
+          <div className="p-8 text-center text-gray-500 text-sm">No return requests found</div>
+        ) : (
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+              <table className="w-full" style={{minWidth: '900px'}}>
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    {['Return ID', 'Order', 'Customer', 'Reason', 'Amount', 'Status', 'Date', 'Actions'].map(h => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">{h}</th>
+                    ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  {returns.map(returnRequest => (
+                    <tr key={returnRequest._id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-mono">{returnRequest._id.slice(-8).toUpperCase()}</td>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="font-medium">#{returnRequest.order?.orderNumber}</div>
+                        <div className="text-xs text-gray-500">৳{returnRequest.order?.totalAmount?.toLocaleString()}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="font-medium">{returnRequest.user?.name}</div>
+                        <div className="text-xs text-gray-500">{returnRequest.user?.email}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm">{returnRequest.reason.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-[#0E8A6E]">৳{returnRequest.refundAmount?.toLocaleString()}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[returnRequest.status]}`}>
+                          {returnRequest.status.charAt(0).toUpperCase() + returnRequest.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{new Date(returnRequest.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3">
+                        <button onClick={() => openModal(returnRequest)} className="text-sm text-[#0E8A6E] font-medium hover:underline">Review</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3 p-3">
+              {returns.map(returnRequest => (
+                <div key={returnRequest._id} className="bg-gray-50 rounded-lg border p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-[13px] font-bold text-[#0B2545] font-mono">{returnRequest._id.slice(-8).toUpperCase()}</div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Order #{returnRequest.order?.orderNumber}</div>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium border flex-shrink-0 ${STATUS_COLORS[returnRequest.status]}`}>
+                      {returnRequest.status.charAt(0).toUpperCase() + returnRequest.status.slice(1)}
+                    </span>
+                  </div>
+                  <div className="text-[12px] space-y-1">
+                    <div><span className="text-gray-500">Customer:</span> <span className="font-medium">{returnRequest.user?.name}</span></div>
+                    <div><span className="text-gray-500">Reason:</span> {returnRequest.reason.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+                    <div><span className="text-gray-500">Refund:</span> <span className="font-bold text-[#0E8A6E]">৳{returnRequest.refundAmount?.toLocaleString()}</span></div>
+                    <div><span className="text-gray-500">Date:</span> {new Date(returnRequest.createdAt).toLocaleDateString()}</div>
+                  </div>
+                  <button
+                    onClick={() => openModal(returnRequest)}
+                    className="w-full min-h-[48px] px-4 py-2 bg-[#0E8A6E] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0c7359] transition-colors"
+                  >
+                    Review Return
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Pagination */}
         {pagination && pagination.pages > 1 && (
-          <div className="px-4 py-3 border-t flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Showing {((page - 1) * pagination.limit) + 1} to {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} returns
+          <div className="px-3 sm:px-4 py-3 border-t flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
+              Showing {((page - 1) * pagination.limit) + 1}–{Math.min(page * pagination.limit, pagination.total)} of {pagination.total}
             </div>
             <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Previous
-              </button>
-              <span className="px-3 py-1 text-sm">
-                Page {page} of {pagination.pages}
-              </span>
-              <button
-                onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
-                disabled={page === pagination.pages}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Next
-              </button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-2 border rounded-lg text-sm disabled:opacity-50 hover:bg-gray-50 min-h-[44px] min-w-[44px]">←</button>
+              <span className="px-3 py-2 text-sm flex items-center">{page}/{pagination.pages}</span>
+              <button onClick={() => setPage(p => Math.min(pagination.pages, p + 1))} disabled={page === pagination.pages} className="px-3 py-2 border rounded-lg text-sm disabled:opacity-50 hover:bg-gray-50 min-h-[44px] min-w-[44px]">→</button>
             </div>
           </div>
         )}

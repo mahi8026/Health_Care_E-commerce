@@ -560,23 +560,23 @@ export default function ProductsManagement({ openCreateRef }) {
 
       {/* ── Create Product Modal ─────────────────────────────────────────── */}
       {showCreate && (
-        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto py-8 px-4">
-          <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-start justify-center z-50 overflow-y-auto sm:py-8 sm:px-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-2xl shadow-2xl max-h-[95vh] sm:max-h-none overflow-y-auto">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b-[0.5px] border-[var(--color-border-tertiary)]">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b-[0.5px] border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
               <h3 className="text-[15px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                 {modalMode === 'edit' ? `Edit — ${modalProduct?.name}` : 'Add New Product'}
               </h3>
               <button
                 onClick={closeModal}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-xl leading-none"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] text-xl leading-none transition-colors"
                 aria-label="Close"
               >
                 ×
               </button>
             </div>
 
-            <div className="px-6 py-5 space-y-5">
+            <div className="px-4 sm:px-6 py-5 space-y-5">
               {/* Image Upload */}
               <div>
                 <label className="block text-[12px] font-semibold text-[var(--color-text-primary)] mb-2">
@@ -662,7 +662,7 @@ export default function ProductsManagement({ openCreateRef }) {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 flex items-center gap-1.5">
                     SKU <span className="text-red-500">*</span>
@@ -842,7 +842,7 @@ export default function ProductsManagement({ openCreateRef }) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Category <span className="text-red-500">*</span></label>
                   <select
@@ -977,7 +977,7 @@ export default function ProductsManagement({ openCreateRef }) {
               </div>
 
               {/* Storage Temperature + Hazard Class */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Storage Temperature</label>
                   <div className="space-y-2">
@@ -1215,17 +1215,17 @@ export default function ProductsManagement({ openCreateRef }) {
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 px-6 py-4 border-t-[0.5px] border-[var(--color-border-tertiary)]">
+            <div className="flex gap-3 px-4 sm:px-6 py-4 border-t-[0.5px] border-[var(--color-border-tertiary)] sticky bottom-0 bg-white">
               <button
                 onClick={handleCreateProduct}
                 disabled={creating}
-                className="flex-1 py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2e56] transition-colors"
+                className="flex-1 min-h-[48px] py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2e56] transition-colors"
               >
                 {creating ? 'Saving…' : modalMode === 'edit' ? 'Save Changes' : 'Create Product'}
               </button>
               <button
                 onClick={closeModal}
-                className="flex-1 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] hover:bg-[var(--color-background-tertiary)] transition-colors"
+                className="flex-1 min-h-[48px] py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 Cancel
               </button>
@@ -1244,7 +1244,7 @@ export default function ProductsManagement({ openCreateRef }) {
               placeholder="Search by product name, SKU, or description..."
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); setPage(1); }}
-              className="w-full px-4 py-2.5 pl-10 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all"
+              className="w-full px-4 py-2.5 pl-10 min-h-[48px] text-[16px] sm:text-[13px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all"
             />
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1269,7 +1269,7 @@ export default function ProductsManagement({ openCreateRef }) {
             <select
               value={categoryFilter}
               onChange={e => { setCategoryFilter(e.target.value); setPage(1); }}
-              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+              className={`pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                 categoryFilter 
                   ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
                   : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
@@ -1390,8 +1390,74 @@ export default function ProductsManagement({ openCreateRef }) {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      {/* ── Mobile Card View (< md) ─────────────────────────────────────── */}
+      <div className="md:hidden">
+        {loading ? (
+          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading products…</div>
+        ) : products.length === 0 ? (
+          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No products found</div>
+        ) : (
+          <div className="divide-y divide-[var(--color-border-tertiary)]">
+            {products.map(product => {
+              const stockStatus = getStockStatus(product);
+              const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+              const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+              const imgRaw = product.images?.[0];
+              const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
+
+              return (
+                <div key={product._id} className="p-4 flex gap-3">
+                  {/* Product image */}
+                  <div className="w-14 h-14 rounded-lg overflow-hidden bg-[var(--color-background-secondary)] flex-shrink-0 border-[0.5px] border-[var(--color-border-tertiary)]">
+                    {img ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={img} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl">🏥</div>
+                    )}
+                  </div>
+
+                  {/* Product info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <p className="text-[13px] font-semibold text-[var(--color-text-primary)] leading-tight line-clamp-2">{product.name}</p>
+                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium flex-shrink-0 ${stockStatus.color}`}>
+                        {stockStatus.label}
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-mono text-[var(--color-text-secondary)] mb-1">{product.sku}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
+                      {brandName && <span className="text-[11px] text-[#0E8A6E] font-medium">{brandName}</span>}
+                      {categoryName && <span className="text-[11px] text-[var(--color-text-secondary)]">{categoryName}</span>}
+                      <span className="text-[11px] text-[var(--color-text-secondary)]">Stock: <span className="font-semibold text-[var(--color-text-primary)]">{product.stock}</span></span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[14px] font-bold text-[#0B2545]">৳{(product.price || 0).toLocaleString()}</span>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleEditOpen(product)}
+                          className="min-h-[36px] px-3 text-[12px] text-[#0E8A6E] font-semibold border border-[#0E8A6E] rounded-lg hover:bg-[#F0FDF9] transition-colors"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product._id)}
+                          className="min-h-[36px] px-3 text-[12px] text-[#E24B4A] font-semibold border border-[#E24B4A] rounded-lg hover:bg-[#FEF2F2] transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Desktop Table View (≥ md) ────────────────────────────────────── */}
+      <div className="hidden md:block overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading products…</div>
         ) : products.length === 0 ? (
@@ -1410,7 +1476,6 @@ export default function ProductsManagement({ openCreateRef }) {
             <tbody>
               {products.map(product => {
                 const stockStatus = getStockStatus(product);
-                // Handle both populated objects and string values for backward compatibility
                 const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
                 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
                 
@@ -1456,7 +1521,7 @@ export default function ProductsManagement({ openCreateRef }) {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="text-[12px] px-3 py-1 border-[0.5px] border-[var(--color-border-secondary)] rounded disabled:opacity-40"
+            className="min-h-[44px] text-[12px] px-4 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors"
           >
             ← Prev
           </button>
@@ -1464,7 +1529,7 @@ export default function ProductsManagement({ openCreateRef }) {
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="text-[12px] px-3 py-1 border-[0.5px] border-[var(--color-border-secondary)] rounded disabled:opacity-40"
+            className="min-h-[44px] text-[12px] px-4 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors"
           >
             Next →
           </button>

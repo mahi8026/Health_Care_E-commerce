@@ -4,10 +4,26 @@ import { useState } from 'react';
 import { submitBankTransfer } from '@/utils/payment';
 import Spinner from '@/components/ui/Spinner';
 
+const BANK_DETAILS = {
+  bankName: 'Dutch-Bangla Bank Ltd',
+  accountName: 'MedCore Bangladesh Ltd',
+  accountNo: '1721-2030-5678',
+  branch: 'Gulshan Branch, Dhaka',
+  routing: '090260123',
+};
+
 export default function BankTransferForm({ amount, orderId, onSuccess, onError }) {
   const [loading, setLoading] = useState(false);
   const [transactionRef, setTransactionRef] = useState('');
   const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +32,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
 
     try {
       const response = await submitBankTransfer(orderId, transactionRef);
+      setSubmitted(true);
       onSuccess && onSuccess(response);
     } catch (err) {
       setError(err.message || 'Failed to submit bank transfer details');
@@ -24,6 +41,55 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
       setLoading(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-[#E1F5EE] border border-[#9FE1CB] rounded-xl p-5">
+          <div className="text-[14px] font-bold text-[#065F46] mb-3 flex items-center gap-2">
+            <span className="text-[20px]">✓</span>
+            Reference number submitted!
+          </div>
+          <div className="text-[12px] text-[#374151] mb-4 leading-relaxed">
+            Please transfer <strong>৳{amount?.toLocaleString()}</strong> to:
+          </div>
+          
+          {/* Bank details table */}
+          <div className="bg-white rounded-lg overflow-hidden mb-4">
+            {Object.entries(BANK_DETAILS).map(([key, val]) => (
+              <div key={key} className="flex justify-between items-center px-4 py-3 border-b border-[#F3F4F6] last:border-b-0 text-[12px]">
+                <span className="text-[#6B7280] capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                <span className="font-semibold text-[#111827]">{val}</span>
+              </div>
+            ))}
+            
+            {/* Order reference with copy button */}
+            <div className="flex justify-between items-center px-4 py-3 bg-[#F9FAFB]">
+              <span className="text-[#0E8A6E] font-semibold text-[13px]">Transfer Reference</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#0B2545] font-mono text-[13px]">
+                  {orderId}
+                </span>
+                <button
+                  onClick={() => handleCopy(orderId)}
+                  className="text-[10px] px-3 py-1.5 rounded-md border border-[#0E8A6E] bg-transparent text-[#0E8A6E] hover:bg-[#E1F5EE] transition-colors font-medium"
+                >
+                  {copied ? '✓ Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-[11px] text-[#6B7280] flex items-start gap-2">
+            <span className="flex-shrink-0">⏱</span>
+            <span>Your order will be confirmed within 2–4 business hours after transfer verification.</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">

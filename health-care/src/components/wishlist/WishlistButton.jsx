@@ -38,8 +38,8 @@ export default function WishlistButton({ productId, className = '', size = 'defa
 
     const headerClass =
       variant === 'header'
-        ? 'w-10 h-10 rounded-lg flex items-center justify-center relative text-[#6B7280] hover:text-[#0B2545] hover:bg-gray-50 transition-colors'
-        : 'w-8 h-8 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)] transition-colors';
+        ? 'w-11 h-11 rounded-lg flex items-center justify-center relative text-[#6B7280] hover:text-[#0B2545] hover:bg-gray-50 transition-colors'
+        : 'w-11 h-11 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)] transition-colors';
 
     return (
       <button

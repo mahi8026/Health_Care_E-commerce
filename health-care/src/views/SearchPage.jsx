@@ -61,7 +61,7 @@ export default function SearchPage({ onProductClick }) {
     page
   }), [debouncedQuery, searchCategory, filters, sortBy, page]);
 
-  const { products, loading } = useProducts(productFilters);
+  const { products, loading, pagination } = useProducts(productFilters);
 
   const handleSearch = useCallback(({ query, category }) => {
     setSearchQuery(query);
@@ -169,6 +169,7 @@ export default function SearchPage({ onProductClick }) {
               loading={loading}
               query={debouncedQuery}
               onProductClick={onProductClick}
+              totalResults={pagination?.total}
             />
           </div>
         </div>

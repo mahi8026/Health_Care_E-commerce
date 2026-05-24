@@ -89,7 +89,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
           </h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-[var(--color-background-tertiary)] flex items-center justify-center transition-colors"
+            className="w-11 h-11 rounded-full hover:bg-[var(--color-background-tertiary)] flex items-center justify-center transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18"/>

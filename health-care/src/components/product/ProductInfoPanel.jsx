@@ -268,16 +268,16 @@ export default function ProductInfoPanel({
           <div className="flex items-center border border-[#E5E7EB] rounded-lg overflow-hidden">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-9 h-9 bg-white hover:bg-[#0E8A6E] hover:text-white transition-colors flex items-center justify-center text-[18px] font-bold"
+              className="w-11 h-11 bg-white hover:bg-[#0E8A6E] hover:text-white transition-colors flex items-center justify-center text-[18px] font-bold"
             >
               −
             </button>
-            <div className="w-12 text-center text-[16px] font-bold border-l border-r border-[#E5E7EB] h-9 leading-9">
+            <div className="w-14 text-center text-[16px] font-bold border-l border-r border-[#E5E7EB] h-11 leading-[44px]">
               {quantity}
             </div>
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="w-9 h-9 bg-white hover:bg-[#0E8A6E] hover:text-white transition-colors flex items-center justify-center text-[18px] font-bold"
+              className="w-11 h-11 bg-white hover:bg-[#0E8A6E] hover:text-white transition-colors flex items-center justify-center text-[18px] font-bold"
             >
               +
             </button>

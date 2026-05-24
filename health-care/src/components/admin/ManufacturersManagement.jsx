@@ -277,28 +277,19 @@ export default function ManufacturersManagement() {
       {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {selectedIds.size > 0 && (
-          <div className="bg-blue-50 border-b border-blue-200 px-6 py-3 flex items-center justify-between">
+          <div className="bg-blue-50 border-b border-blue-200 px-4 sm:px-6 py-3 flex items-center justify-between">
             <span className="text-xs font-medium text-blue-900">{selectedIds.size} item(s) selected</span>
-            <button
-              className="text-xs bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
-              onClick={() => alert('Bulk delete coming soon')}
-            >
-              Bulk Delete
-            </button>
+            <button className="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition min-h-[44px]" onClick={() => alert('Bulk delete coming soon')}>Bulk Delete</button>
           </div>
         )}
         
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-4 py-3 text-left">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.size === paginatedData.length && paginatedData.length > 0}
-                    onChange={toggleSelectAll}
-                    className="w-4 h-4 text-blue-600 rounded"
-                  />
+                  <input type="checkbox" checked={selectedIds.size === paginatedData.length && paginatedData.length > 0} onChange={toggleSelectAll} className="w-4 h-4 text-blue-600 rounded" />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Logo</th>
                 <SortHeader field="name" label="Name" />
@@ -311,83 +302,39 @@ export default function ManufacturersManagement() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {paginatedData.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="px-6 py-8 text-center text-gray-500">
-                    <div>📦 {searchTerm || countryFilter ? 'No manufacturers found.' : 'No manufacturers found.'}</div>
-                  </td>
-                </tr>
+                <tr><td colSpan="8" className="px-6 py-8 text-center text-gray-500">📦 No manufacturers found.</td></tr>
               ) : (
                 paginatedData.map((manufacturer) => (
                   <tr key={manufacturer._id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(manufacturer._id)}
-                        onChange={() => toggleSelect(manufacturer._id)}
-                        className="w-4 h-4 text-blue-600 rounded"
-                      />
+                      <input type="checkbox" checked={selectedIds.has(manufacturer._id)} onChange={() => toggleSelect(manufacturer._id)} className="w-4 h-4 text-blue-600 rounded" />
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       {manufacturer.logo?.url ? (
-                        <img
-                          src={manufacturer.logo.url}
-                          alt={manufacturer.name}
-                          className="w-10 h-10 object-contain rounded border border-gray-200"
-                        />
+                        <img src={manufacturer.logo.url} alt={manufacturer.name} className="w-10 h-10 object-contain rounded border border-gray-200" />
                       ) : (
-                        <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">
-                          —
-                        </div>
+                        <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">—</div>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-medium text-gray-900">{manufacturer.name}</div>
                       {manufacturer.website && (
-                        <a
-                          href={manufacturer.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:underline"
-                        >
-                          {new URL(manufacturer.website).hostname}
+                        <a href={manufacturer.website} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
+                          {(() => { try { return new URL(manufacturer.website).hostname; } catch { return manufacturer.website; } })()}
                         </a>
                       )}
                     </td>
+                    <td className="px-4 py-3 whitespace-nowrap"><code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 font-mono">{manufacturer.slug}</code></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-700">{manufacturer.country || '—'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap"><span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{manufacturer.productCount || 0}</span></td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 font-mono">
-                        {manufacturer.slug}
-                      </code>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                      {manufacturer.country || '—'}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {manufacturer.productCount || 0}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                        manufacturer.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span className={`text-xs px-2 py-1 rounded-full font-semibold ${manufacturer.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                         {manufacturer.isActive ? '● Active' : '● Inactive'}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-2">
-                      <button
-                        onClick={() => handleEdit(manufacturer)}
-                        className="text-blue-600 hover:text-blue-900 hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(manufacturer._id, manufacturer.name)}
-                        className="text-red-600 hover:text-red-900 hover:underline"
-                      >
-                        Delete
-                      </button>
+                      <button onClick={() => handleEdit(manufacturer)} className="text-blue-600 hover:text-blue-900 hover:underline">Edit</button>
+                      <button onClick={() => handleDelete(manufacturer._id, manufacturer.name)} className="text-red-600 hover:text-red-900 hover:underline">Delete</button>
                     </td>
                   </tr>
                 ))
@@ -396,40 +343,50 @@ export default function ManufacturersManagement() {
           </table>
         </div>
 
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3 p-3">
+          {paginatedData.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 text-sm">📦 No manufacturers found.</div>
+          ) : (
+            paginatedData.map((manufacturer) => (
+              <div key={manufacturer._id} className="bg-gray-50 rounded-lg border p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  {manufacturer.logo?.url ? (
+                    <img src={manufacturer.logo.url} alt={manufacturer.name} className="w-12 h-12 object-contain rounded border border-gray-200 flex-shrink-0" />
+                  ) : (
+                    <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300 flex-shrink-0">—</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-gray-900 text-[14px]">{manufacturer.name}</div>
+                    <div className="text-[11px] text-gray-500">{manufacturer.country || '—'}</div>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 ${manufacturer.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                    {manufacturer.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[12px]">
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 font-mono">{manufacturer.slug}</code>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{manufacturer.productCount || 0} products</span>
+                </div>
+                <div className="flex gap-2 pt-2 border-t border-gray-200">
+                  <button onClick={() => handleEdit(manufacturer)} className="flex-1 min-h-[48px] px-3 py-2 bg-blue-600 text-white rounded-lg text-[13px] font-semibold hover:bg-blue-700">Edit</button>
+                  <button onClick={() => handleDelete(manufacturer._id, manufacturer.name)} className="flex-1 min-h-[48px] px-3 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[13px] font-semibold hover:bg-red-100">Delete</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 border-t border-gray-200 flex items-center justify-between text-sm">
-            <div className="text-gray-600">
-              Showing {startIdx + 1}–{Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}
-            </div>
+          <div className="bg-white px-3 sm:px-4 py-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm">
+            <div className="text-gray-600 text-xs sm:text-sm">Showing {startIdx + 1}–{Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}</div>
             <div className="flex gap-1">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 text-xs"
-              >
-                ← Prev
-              </button>
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 text-xs min-h-[44px] min-w-[44px]">←</button>
               {Array.from({length: Math.min(totalPages, 5)}, (_, i) => i + 1).map(page => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-2 py-1 rounded text-xs ${
-                    currentPage === page
-                      ? 'bg-blue-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {page}
-                </button>
+                <button key={page} onClick={() => setCurrentPage(page)} className={`px-2 py-1 rounded text-xs min-h-[44px] min-w-[44px] ${currentPage === page ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-50'}`}>{page}</button>
               ))}
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 text-xs"
-              >
-                Next →
-              </button>
+              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 text-xs min-h-[44px] min-w-[44px]">→</button>
             </div>
           </div>
         )}

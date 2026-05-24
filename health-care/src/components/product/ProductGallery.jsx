@@ -32,7 +32,8 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
       {/* Mobile: Full width image with dots */}
       <div className="md:hidden">
         <div
-          className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center h-[300px] relative overflow-hidden"
+          className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center relative overflow-hidden"
+          style={{ aspectRatio: '4/3' }}
           data-hero-priority={heroPriority ? 'true' : undefined}
         >
           {activeImage ? (
@@ -69,17 +70,20 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
           </div>
         </div>
 
-        {/* Dots indicator */}
+        {/* Dots indicator - 44px touch targets */}
         {images.length > 1 && (
           <div className="flex justify-center gap-2 mt-3">
             {images.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveIndex(idx)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  activeIndex === idx ? 'bg-[#0B2545] w-6' : 'bg-[var(--color-border-secondary)]'
-                }`}
-              />
+                aria-label={`View image ${idx + 1}`}
+                className={`h-2 rounded-full transition-all min-w-[44px] min-h-[44px] flex items-center justify-center`}
+              >
+                <span className={`block h-2 rounded-full transition-all ${
+                  activeIndex === idx ? 'bg-[#0B2545] w-6' : 'bg-[var(--color-border-secondary)] w-2'
+                }`} />
+              </button>
             ))}
           </div>
         )}
@@ -90,9 +94,10 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
         {/* Thumbnails column */}
         <div className="flex flex-col gap-2">
           {images.length > 0 ? images.map((img, idx) => (
-            <div
+            <button
               key={img.publicId || idx}
               onClick={() => setActiveIndex(idx)}
+              aria-label={`View image ${idx + 1}`}
               className={`w-16 h-16 rounded-lg border-[0.5px] ${
                 activeIndex === idx
                   ? 'border-[#0B2545] border-[1.5px]'
@@ -104,11 +109,9 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
                 src={img.url}
                 alt={img.alt || `${product.name} view ${idx + 1}`}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
-            </div>
+            </button>
           )) : (
             [0, 1, 2, 3].map(i => (
               <div
@@ -123,9 +126,10 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
           )}
         </div>
 
-        {/* Main Image */}
+        {/* Main Image - aspect ratio instead of fixed height */}
         <div
-          className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center h-[320px] relative overflow-hidden"
+          className="bg-[var(--color-background-secondary)] rounded-[10px] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center relative overflow-hidden"
+          style={{ aspectRatio: '4/3', minHeight: '280px', maxHeight: '400px' }}
           data-hero-priority={heroPriority ? 'true' : undefined}
         >
           {activeImage ? (
@@ -161,8 +165,11 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
             ))}
           </div>
 
-          {/* Zoom Button */}
-          <button className="absolute top-3 right-3 w-[30px] h-[30px] rounded-[7px] bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center cursor-pointer">
+          {/* Zoom Button - 44x44px */}
+          <button
+            aria-label="Zoom image"
+            className="absolute top-3 right-3 w-11 h-11 rounded-[7px] bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-secondary)] transition-colors"
+          >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="11" cy="11" r="8"/>
               <path d="m21 21-4.35-4.35"/>
