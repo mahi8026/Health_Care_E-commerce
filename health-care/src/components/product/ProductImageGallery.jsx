@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -63,16 +64,18 @@ export default function ProductImageGallery({
         >
           {activeImage ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={activeImage.url}
                 alt={activeImage.alt || product.name}
-                className="w-full h-full object-contain p-4 cursor-zoom-in"
+                fill
+                sizes="(max-width: 768px) 100vw, 420px"
+                className="object-contain p-4"
                 onClick={handleZoomClick}
+                priority={heroPriority}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
-                  if (e.currentTarget.nextElementSibling) {
-                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                  if (e.currentTarget.parentElement?.nextElementSibling) {
+                    e.currentTarget.parentElement.nextElementSibling.style.display = 'flex';
                   }
                 }}
               />
@@ -159,15 +162,17 @@ export default function ProductImageGallery({
         >
           {activeImage ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={activeImage.url}
                 alt={activeImage.alt || product.name}
-                className="w-full h-full object-contain p-6 transition-transform duration-200 group-hover:scale-105"
+                fill
+                sizes="(max-width: 768px) 100vw, 420px"
+                className="object-contain p-6"
+                priority={heroPriority}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
-                  if (e.currentTarget.nextElementSibling) {
-                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                  if (e.currentTarget.parentElement?.nextElementSibling) {
+                    e.currentTarget.parentElement.nextElementSibling.style.display = 'flex';
                   }
                 }}
               />
@@ -239,20 +244,18 @@ export default function ProductImageGallery({
             <button
               key={img.publicId || idx}
               onClick={() => setActiveIndex(idx)}
-              className={`w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden transition-all ${
+              className={`relative w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden transition-all ${
                 activeIndex === idx
                   ? 'ring-2 ring-[#0E8A6E] ring-offset-2'
                   : 'ring-1 ring-[#E5E7EB] hover:ring-[#0B2545]'
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={img.url}
                 alt={img.alt || `${product.name} view ${idx + 1}`}
-                className="w-full h-full object-cover bg-surface-subtle"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
+                fill
+                sizes="64px"
+                className="object-cover bg-surface-subtle"
               />
             </button>
           )) : (
@@ -286,13 +289,15 @@ export default function ProductImageGallery({
               <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={activeImage.url}
-            alt={activeImage.alt || product.name}
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div className="relative w-full h-full max-w-4xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <Image
+              src={activeImage.url}
+              alt={activeImage.alt || product.name}
+              fill
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
         </div>
       )}
     </div>

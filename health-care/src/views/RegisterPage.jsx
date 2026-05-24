@@ -130,7 +130,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <Input
                 label="Full Name"
                 type="text"
@@ -154,7 +154,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <Input
                 label="Password"
                 type="password"
@@ -178,7 +178,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <Input
                 label="Phone Number"
                 type="tel"

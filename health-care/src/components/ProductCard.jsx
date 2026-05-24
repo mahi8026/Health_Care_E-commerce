@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import WishlistButton from './wishlist/WishlistButton';
 
@@ -65,18 +66,12 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
       <div className="h-[140px] sm:h-[160px] md:h-[130px] bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {primaryImage ? (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={primaryImage.url}
               alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
-              loading="lazy"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                if (e.currentTarget.nextElementSibling) {
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
-                }
-              }}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
+              className="object-cover"
             />
             {/* Fallback shown when image fails to load */}
             <div className="hidden absolute inset-0 items-center justify-center text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">

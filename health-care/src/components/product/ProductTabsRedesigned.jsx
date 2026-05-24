@@ -43,12 +43,12 @@ export default function ProductTabsRedesigned({ product }) {
   return (
     <div className="mt-6">
       {/* Tab Headers */}
-      <div className="flex border-b-2 border-[#E5E7EB] overflow-x-auto mb-6">
+      <div className="flex border-b-2 border-[#E5E7EB] overflow-x-auto mb-6 -mx-4 px-4 md:mx-0 md:px-0">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 min-w-[120px] px-4 py-3 text-[14px] font-semibold transition-all whitespace-nowrap ${
+            className={`flex-shrink-0 px-4 py-3 text-[14px] font-semibold transition-all whitespace-nowrap ${
               activeTab === tab.id
                 ? 'text-[#0E8A6E] border-b-2 border-[#0E8A6E] -mb-[2px]'
                 : 'text-[#6B7280] hover:text-[#0B2545]'
@@ -147,12 +147,12 @@ export default function ProductTabsRedesigned({ product }) {
             
             {/* Rating Summary */}
             <div className="bg-surface-subtle rounded-xl p-6 mb-6">
-              <div className="flex items-center gap-6">
-                <div className="text-center">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="text-center flex-shrink-0">
                   <div className="text-[48px] font-extrabold text-[#0B2545] mb-2">
                     {product.rating || 0}
                   </div>
-                  <div className="flex gap-1 mb-2">
+                  <div className="flex gap-1 mb-2 justify-center">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
@@ -171,7 +171,7 @@ export default function ProductTabsRedesigned({ product }) {
                 </div>
 
                 {/* Distribution Bars */}
-                <div className="flex-1 space-y-2">
+                <div className="flex-1 space-y-2 w-full">
                   {[5, 4, 3, 2, 1].map(star => {
                     const percentage = star === 5 ? 60 : star === 4 ? 25 : star === 3 ? 10 : 5;
                     return (

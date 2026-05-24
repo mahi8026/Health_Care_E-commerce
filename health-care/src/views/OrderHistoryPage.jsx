@@ -100,7 +100,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8">
+    <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
       <h1 className="text-[20px] font-semibold mb-6 font-[family-name:var(--font-lora)]">
         Order History
       </h1>
@@ -128,7 +128,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
+          <div className="hidden md:block overflow-x-auto bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)]">
             <table className="w-full">
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-tertiary)]">

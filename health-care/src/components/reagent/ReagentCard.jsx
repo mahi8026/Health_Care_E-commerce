@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import Toast from '@/components/ui/Toast';
 import { getProductBrandName, getProductCategoryName } from '@/utils/helpers';
@@ -87,12 +88,12 @@ export default function ReagentCard({ reagent, onProductClick }) {
       {/* Image */}
       <div className="relative aspect-[5/4] bg-gradient-to-br from-[#F0FBF8] via-white to-[#E6F1FB] flex items-center justify-center overflow-hidden">
         {primaryImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={primaryImage}
-            alt=""
-            loading="lazy"
-            className="w-full h-full object-contain p-4 group-hover:scale-[1.02] transition-transform duration-300"
+            alt={`${reagent.name}${brandName ? ` — ${brandName}` : ''} — Bangladesh`}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
+            className="object-contain p-4 group-hover:scale-[1.02] transition-transform duration-300"
           />
         ) : (
           <span className="text-4xl opacity-40" aria-hidden>🧪</span>

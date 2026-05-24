@@ -121,7 +121,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
         {/* Search Box */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <form onSubmit={handleSubmit} className="flex gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={orderNumber}
@@ -133,7 +133,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-3 bg-[#0E8A6E] text-white rounded-lg font-semibold hover:bg-[#0c7a5f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full sm:w-auto px-8 py-3 bg-[#0E8A6E] text-white rounded-lg font-semibold hover:bg-[#0c7a5f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Tracking...' : 'Track Order'}
             </button>
@@ -316,17 +316,17 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
             )}
 
             {/* Actions */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
               <button
                 onClick={handleDownloadInvoice}
                 disabled={downloading}
-                className="px-6 py-3 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg font-semibold hover:bg-[#E1F5EE] transition-colors disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-3 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg font-semibold hover:bg-[#E1F5EE] transition-colors disabled:opacity-50"
               >
                 {downloading ? 'Downloading...' : '📄 Download Invoice'}
               </button>
               <button
                 onClick={() => router.push('/')}
-                className="px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                className="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
               >
                 Continue Shopping
               </button>
@@ -334,7 +334,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 href={`https://wa.me/${CONTACT.whatsapp}?text=I need help with order ${order.orderNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
               >
                 <span>💬</span>
                 WhatsApp Support

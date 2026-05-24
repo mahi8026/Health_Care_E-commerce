@@ -82,7 +82,7 @@ export default function ProductInfoPanel({
   }, [product, price, quantity]);
 
   return (
-    <div className="sticky top-20 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
+    <div className="lg:sticky lg:top-24 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6">
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed top-4 right-4 z-50 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3">

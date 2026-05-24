@@ -252,7 +252,7 @@ function B2BLanding() {
             <h2 className="text-[28px] md:text-[32px] font-bold text-[#0B2545] mb-3">B2B Pricing Tiers</h2>
             <p className="text-[14px] text-[#6B7280]">Unlock better pricing as your business grows with us.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {tiers.map(({ name, min, discount, credit, color, bg }) => (
               <div key={name} className="rounded-2xl p-5 border-2 text-center"
                 style={{ background: bg, borderColor: color + '40' }}>
@@ -312,7 +312,7 @@ function B2BLanding() {
                 {error && (
                   <div className="p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px]">{error}</div>
                 )}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-[#374151] mb-1">Full Name <span className="text-red-500">*</span></label>
                     <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}

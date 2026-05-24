@@ -57,7 +57,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-[#0B2545] text-white py-16 px-4">
+      <section className="bg-[#0B2545] text-white py-12 md:py-16 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaShieldAlt className="text-[#1DB954]" />

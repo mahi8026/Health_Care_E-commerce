@@ -204,7 +204,7 @@ export default function ProductReviews({ productId }) {
 
       {/* Rating Summary */}
       {stats && stats.totalReviews > 0 ? (
-        <div className="grid grid-cols-[300px_1fr] gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8 mb-8">
           {/* Left: Overall Rating */}
           <div className="bg-[var(--color-background-tertiary)] rounded-lg p-6 text-center">
             <div className="text-[48px] font-bold mb-2 font-[family-name:var(--font-plus-jakarta)]">

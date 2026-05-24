@@ -65,6 +65,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
   const [total, setTotal] = useState(0);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const debouncedSearch = useDebounce(searchQuery, 400);
 
@@ -144,13 +145,50 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         </div>
 
         <div className="max-w-[1400px] mx-auto flex">
+          {/* Desktop sidebar */}
           <aside className="hidden lg:block w-[240px] flex-shrink-0">
-            <div className="sticky top-[72px] max-h-[calc(100vh-88px)] overflow-y-auto bg-white border-r border-gray-100">
+            <div className="sticky top-[62px] max-h-[calc(100vh-78px)] overflow-y-auto bg-white border-r border-gray-100">
               <ReagentFilters filters={filters} setFilters={setFilters} />
             </div>
           </aside>
 
+          {/* Mobile filter drawer */}
+          {mobileFiltersOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
+              <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white overflow-y-auto shadow-xl">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 sticky top-0 bg-white z-10">
+                  <span className="text-[15px] font-semibold text-[#0B2545]">Filters</span>
+                  <button onClick={() => setMobileFiltersOpen(false)} className="p-1 text-[#6B7280]">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+                <ReagentFilters filters={filters} setFilters={(f) => { setFilters(f); setMobileFiltersOpen(false); }} />
+              </div>
+            </div>
+          )}
+
           <main className="flex-1 min-w-0 px-4 md:px-6 py-6">
+            {/* Mobile filter toggle */}
+            <div className="flex items-center gap-3 mb-4 lg:hidden">
+              <button
+                onClick={() => setMobileFiltersOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-[13px] font-medium bg-white"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+                </svg>
+                Filters
+                {(filters.brands?.length > 0 || filters.temperature?.length > 0 || filters.hazards?.length > 0 || filters.priceRange < 50000) && (
+                  <span className="w-5 h-5 bg-[#0E8A6E] text-white rounded-full text-[10px] flex items-center justify-center font-bold">
+                    {[filters.brands?.length, filters.temperature?.length, filters.hazards?.length, filters.priceRange < 50000 ? 1 : 0].reduce((a, b) => a + (b || 0), 0)}
+                  </span>
+                )}
+              </button>
+            </div>
+
             <ReagentToolbar
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}

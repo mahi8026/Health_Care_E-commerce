@@ -160,7 +160,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(320px,380px)] gap-6 items-start">
 
           {/* ── Cart items ─────────────────────────────────────────────────── */}
           <div className="space-y-3">

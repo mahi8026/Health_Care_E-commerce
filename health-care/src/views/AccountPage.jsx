@@ -265,7 +265,7 @@ export default function AccountPage() {
       </div>
 
       {/* Mobile Bottom Spacing */}
-      <div className="h-20 sm:h-0"></div>
+      <div className="h-24 md:h-0"></div>
     </div>
   );
 }

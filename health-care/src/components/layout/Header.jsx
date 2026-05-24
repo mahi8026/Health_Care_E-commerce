@@ -137,7 +137,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
 
               {megaMenuOpen && (
                 <div
-                  className="absolute top-[calc(100%+10px)] left-0 w-[560px] glass-mega-panel rounded-2xl z-50 p-4 nav-dropdown-enter"
+                  className="absolute top-[calc(100%+10px)] left-0 w-[560px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-50 p-4 nav-dropdown-enter"
                   onMouseLeave={() => setMegaMenuOpen(false)}
                   role="menu"
                 >

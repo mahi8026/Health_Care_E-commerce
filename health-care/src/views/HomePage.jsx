@@ -533,19 +533,28 @@ export default function HomePage() {
           .hero-right-panel { display: none !important; }
           .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .cat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .testimonials-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 640px) {
           .prod-grid-4 { grid-template-columns: 1fr !important; }
           .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-          .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .trust-grid { grid-template-columns: 1fr !important; }
           .b2b-cols { grid-template-columns: 1fr !important; }
+          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .testimonials-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 1024px) {
+          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .testimonials-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* HERO — left: text+search  |  right: image slider */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-hero" style={{ padding: '56px 0' }}>
+      <section className="home-hero" style={{ padding: 'clamp(32px, 5vw, 56px) 0' }}>
         <div className="hero-grid-container">
 
           {/* LEFT: Text + Search */}
@@ -563,11 +572,11 @@ export default function HomePage() {
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 28, maxWidth: 480, lineHeight: 1.7 }}>
               10,000+ DGDA-registered products from 50+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals &amp; clinics.
             </p>
-            <div style={{ display: 'flex', gap: 0, maxWidth: 520, marginBottom: 24, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+            <div style={{ display: 'flex', gap: 0, maxWidth: 520, marginBottom: 24, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)', width: '100%' }}>
               <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder={searchPlaceholder}
-                style={{ flex: 1, padding: '15px 18px', border: 'none', outline: 'none', fontSize: 14, color: '#1F2937', background: 'transparent' }} />
+                style={{ flex: 1, padding: '15px 18px', border: 'none', outline: 'none', fontSize: 14, color: '#1F2937', background: 'transparent', minWidth: 0 }} />
               <button onClick={handleSearch}
-                style={{ padding: '15px 24px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                style={{ padding: '15px 20px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                 onMouseEnter={e => e.currentTarget.style.background = '#0B7558'}
                 onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
                 🔍 Search
@@ -1353,7 +1362,8 @@ export default function HomePage() {
               How It Works
             </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}
+            className="how-it-works-grid">
             {HOW_IT_WORKS.map((step, i) => (
               <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
                 {i < HOW_IT_WORKS.length - 1 && (
@@ -1391,7 +1401,8 @@ export default function HomePage() {
             What Our Clients Say
           </h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}
+          className="testimonials-grid">
           {testimonials.length > 0
             ? testimonials.slice(0, 3).map((review, i) => {
             const userName = review.user?.name || review.userName || 'Anonymous';

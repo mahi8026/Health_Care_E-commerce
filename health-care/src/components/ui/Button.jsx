@@ -21,9 +21,9 @@ export default function Button({
   };
   
   const sizes = {
-    sm: 'px-3 py-[6px] text-[11px]',
-    md: 'px-4 py-[8px] text-[12px]',
-    lg: 'px-6 py-3 text-[13px]'
+    sm: 'px-3 py-[6px] text-[11px] min-h-[36px]',
+    md: 'px-4 py-[8px] text-[12px] min-h-[44px]',
+    lg: 'px-6 py-3 text-[13px] min-h-[48px]'
   };
   
   const widthClass = fullWidth ? 'w-full' : '';

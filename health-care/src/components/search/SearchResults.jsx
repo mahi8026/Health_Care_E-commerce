@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import Spinner from '@/components/ui/Spinner';
 import WishlistButton from '@/components/wishlist/WishlistButton';
@@ -50,16 +51,12 @@ function ProductCard({ product, onProductClick }) {
       {/* Image */}
       <div className="relative bg-surface-subtle w-full aspect-[4/3] overflow-hidden flex-shrink-0">
         {imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={imageUrl}
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Bangladesh`}
-            loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={e => {
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling?.classList.remove('hidden');
-            }}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : null}
         {/* Fallback */}
