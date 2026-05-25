@@ -320,35 +320,38 @@ export default function ReviewsManagement() {
 
       {/* Review Detail Modal */}
       {showModal && selectedReview && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl w-full max-w-3xl shadow-2xl my-8">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-3xl shadow-2xl sm:my-8">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-tertiary)]">
-              <h3 className="text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white rounded-t-2xl sm:rounded-t-xl">
+              <h3 className="text-[16px] sm:text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                 Review Details
               </h3>
               <button
                 onClick={handleCloseModal}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-2xl leading-none"
+                className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-[var(--color-text-secondary)]"
+                aria-label="Close"
               >
-                ×
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
               </button>
             </div>
 
             {/* Content */}
-            <div className="px-6 py-5 space-y-5 max-h-[70vh] overflow-y-auto">
+            <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 max-h-[70vh] overflow-y-auto">
               {/* Product & Customer */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Product</div>
                   <div className="flex items-center gap-3">
                     <img
                       src={selectedReview.product?.images?.[0]?.url || '/placeholder.png'}
                       alt={selectedReview.product?.name}
-                      className="w-16 h-16 object-cover rounded border border-[var(--color-border-secondary)]"
+                      className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border border-[var(--color-border-secondary)] flex-shrink-0"
                     />
-                    <div>
-                      <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
                         {selectedReview.product?.name}
                       </div>
                       <div className="text-[11px] text-[var(--color-text-secondary)]">
@@ -360,9 +363,7 @@ export default function ReviewsManagement() {
                 <div>
                   <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Customer</div>
                   <div className="text-[13px] font-semibold">{selectedReview.user?.name}</div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)]">
-                    {selectedReview.user?.email}
-                  </div>
+                  <div className="text-[11px] text-[var(--color-text-secondary)]">{selectedReview.user?.email}</div>
                   {selectedReview.verifiedPurchase && (
                     <div className="text-[10px] px-2 py-[2px] bg-[#D1FAE5] text-[#065F46] rounded font-medium inline-block mt-1">
                       ✓ Verified Purchase
@@ -387,13 +388,13 @@ export default function ReviewsManagement() {
               {selectedReview.images?.length > 0 && (
                 <div>
                   <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Images</div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     {selectedReview.images.map((img, idx) => (
                       <img
                         key={idx}
                         src={img.url}
                         alt={img.alt}
-                        className="w-24 h-24 object-cover rounded border border-[var(--color-border-secondary)] cursor-pointer hover:opacity-75 transition-opacity"
+                        className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded border border-[var(--color-border-secondary)] cursor-pointer hover:opacity-75 transition-opacity"
                         onClick={() => window.open(img.url, '_blank')}
                       />
                     ))}
@@ -432,7 +433,8 @@ export default function ReviewsManagement() {
                     placeholder="Add a response to the customer..."
                     maxLength={500}
                     rows={3}
-                    className="w-full px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] resize-none"
+                    className="w-full px-3 py-3 border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
+                    style={{ fontSize: '16px' }}
                   />
                   <div className="text-[10px] text-[var(--color-text-secondary)] mt-1 text-right">
                     {adminResponse.length}/500
@@ -451,7 +453,8 @@ export default function ReviewsManagement() {
                     onChange={e => setRejectionReason(e.target.value)}
                     placeholder="Explain why this review is being rejected..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] resize-none"
+                    className="w-full px-3 py-3 border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
+                    style={{ fontSize: '16px' }}
                   />
                 </div>
               )}
@@ -471,17 +474,17 @@ export default function ReviewsManagement() {
 
             {/* Actions */}
             {modalAction !== 'view' && (
-              <div className="px-6 py-4 border-t border-[var(--color-border-tertiary)] flex gap-3">
+              <div className="px-4 sm:px-6 py-4 border-t border-[var(--color-border-tertiary)] flex gap-3 sticky bottom-0 bg-white">
                 <button
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[14px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors"
+                  className="flex-1 px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors min-h-[48px]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpdateStatus}
                   disabled={actionLoading || (modalAction === 'reject' && !rejectionReason.trim())}
-                  className={`flex-1 px-4 py-2 rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`flex-1 px-4 py-3 rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] ${
                     modalAction === 'approve'
                       ? 'bg-[#0E8A6E] text-white hover:bg-[#0c7359]'
                       : 'bg-[#E24B4A] text-white hover:bg-[#dc2626]'

@@ -187,22 +187,22 @@ export default function ManufacturersManagement() {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-gradient-primary text-white rounded-lg shadow-lg p-4 border-l-4 border-white/30">
-          <div className="text-xs text-white/80 font-medium uppercase">Total Manufacturers</div>
-          <div className="text-3xl font-bold mt-2">{manufacturers.length}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <div className="bg-gradient-primary text-white rounded-lg shadow-lg p-3 md:p-4 border-l-4 border-white/30">
+          <div className="text-xs text-white/80 font-medium uppercase">Total</div>
+          <div className="text-2xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.length}</div>
         </div>
-        <div className="bg-gradient-success text-white rounded-lg shadow-lg p-4 border-l-4 border-white/30">
+        <div className="bg-gradient-success text-white rounded-lg shadow-lg p-3 md:p-4 border-l-4 border-white/30">
           <div className="text-xs text-white/80 font-medium uppercase">Active</div>
-          <div className="text-3xl font-bold mt-2">{manufacturers.filter(m => m.isActive).length}</div>
+          <div className="text-2xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.filter(m => m.isActive).length}</div>
         </div>
-        <div className="bg-gradient-danger text-white rounded-lg shadow-lg p-4 border-l-4 border-white/30">
+        <div className="bg-gradient-danger text-white rounded-lg shadow-lg p-3 md:p-4 border-l-4 border-white/30">
           <div className="text-xs text-white/80 font-medium uppercase">Inactive</div>
-          <div className="text-3xl font-bold mt-2">{manufacturers.filter(m => !m.isActive).length}</div>
+          <div className="text-2xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.filter(m => !m.isActive).length}</div>
         </div>
-        <div className="bg-gradient-warning text-white rounded-lg shadow-lg p-4 border-l-4 border-white/30">
-          <div className="text-xs text-white/80 font-medium uppercase">Total Products</div>
-          <div className="text-3xl font-bold mt-2">
+        <div className="bg-gradient-warning text-white rounded-lg shadow-lg p-3 md:p-4 border-l-4 border-white/30">
+          <div className="text-xs text-white/80 font-medium uppercase">Products</div>
+          <div className="text-2xl md:text-3xl font-bold mt-1 md:mt-2">
             {manufacturers.reduce((sum, m) => sum + (m.productCount || 0), 0)}
           </div>
         </div>
@@ -210,29 +210,25 @@ export default function ManufacturersManagement() {
 
       {/* Filters */}
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg shadow p-4 border border-blue-100">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-2">Search</label>
             <input
               type="text"
               placeholder="Search by name, slug..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition"
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition min-h-[48px]"
+              style={{ fontSize: '16px' }}
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-2">Country</label>
             <select
               value={countryFilter}
-              onChange={(e) => {
-                setCountryFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition"
+              onChange={(e) => { setCountryFilter(e.target.value); setCurrentPage(1); }}
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition min-h-[48px]"
+              style={{ fontSize: '16px' }}
             >
               <option value="">All Countries</option>
               {countries.map(country => (
@@ -240,26 +236,20 @@ export default function ManufacturersManagement() {
               ))}
             </select>
           </div>
-          <div className="flex items-end">
-            <label className="flex items-center gap-2 cursor-pointer mb-2">
+          <div className="flex items-center">
+            <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
               <input
                 type="checkbox"
                 checked={includeInactive}
-                onChange={(e) => {
-                  setIncludeInactive(e.target.checked);
-                  setCurrentPage(1);
-                }}
-                className="w-4 h-4 text-blue-600 rounded border-gray-300 accent-blue-600"
+                onChange={(e) => { setIncludeInactive(e.target.checked); setCurrentPage(1); }}
+                className="w-5 h-5 text-blue-600 rounded border-gray-300 accent-blue-600"
               />
-              <span className="text-xs font-medium text-gray-700">Include Inactive</span>
+              <span className="text-sm font-medium text-gray-700">Include Inactive</span>
             </label>
           </div>
           <button
-            onClick={() => {
-              setCurrentPage(1);
-              fetchManufacturers();
-            }}
-            className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-2 rounded-lg hover:shadow-lg transition text-sm font-medium h-9"
+            onClick={() => { setCurrentPage(1); fetchManufacturers(); }}
+            className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-3 rounded-lg hover:shadow-lg transition text-sm font-medium min-h-[48px]"
           >
             ⟳ Refresh
           </button>
@@ -394,15 +384,18 @@ export default function ManufacturersManagement() {
 
       {/* Edit Modal */}
       {editingId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full">
-            <div className="bg-gradient-primary text-white px-6 py-4 flex items-center justify-between border-b">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-lg shadow-2xl max-w-md w-full">
+            <div className="bg-gradient-primary text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b rounded-t-2xl sm:rounded-t-lg">
               <h2 className="text-lg font-bold">Edit Manufacturer</h2>
               <button
                 onClick={() => setEditingId(null)}
-                className="text-white hover:opacity-80 text-2xl transition"
+                className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-white/20 transition text-white"
+                aria-label="Close"
               >
-                ✕
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
               </button>
             </div>
 
@@ -413,7 +406,8 @@ export default function ManufacturersManagement() {
                   type="text"
                   value={editForm.name || ''}
                   onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
 
@@ -423,7 +417,8 @@ export default function ManufacturersManagement() {
                   type="text"
                   value={editForm.slug || ''}
                   onChange={(e) => setEditForm({...editForm, slug: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
 
@@ -434,7 +429,8 @@ export default function ManufacturersManagement() {
                     type="text"
                     value={editForm.country || ''}
                     onChange={(e) => setEditForm({...editForm, country: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                    style={{ fontSize: '16px' }}
                   />
                 </div>
                 <div>
@@ -442,7 +438,8 @@ export default function ManufacturersManagement() {
                   <select
                     value={editForm.isActive ? 'active' : 'inactive'}
                     onChange={(e) => setEditForm({...editForm, isActive: e.target.value === 'active'})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                    style={{ fontSize: '16px' }}
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -456,7 +453,8 @@ export default function ManufacturersManagement() {
                   type="url"
                   value={editForm.website || ''}
                   onChange={(e) => setEditForm({...editForm, website: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
 
@@ -466,23 +464,24 @@ export default function ManufacturersManagement() {
                   value={editForm.description || ''}
                   onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                   rows="2"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
             </div>
 
-            <div className="bg-gray-50 px-6 py-3 border-t flex gap-2 justify-end">
+            <div className="bg-gray-50 px-4 sm:px-6 py-4 border-t flex gap-3">
               <button
                 onClick={() => setEditingId(null)}
-                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium transition"
+                className="flex-1 px-3 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium transition min-h-[48px]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="px-3 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:shadow-lg transition text-sm font-medium"
+                className="flex-1 px-3 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:shadow-lg transition text-sm font-semibold min-h-[48px]"
               >
-                Save
+                Save Changes
               </button>
             </div>
           </div>

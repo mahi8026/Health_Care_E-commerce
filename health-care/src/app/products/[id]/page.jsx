@@ -36,6 +36,7 @@ export async function generateMetadata({ params }) {
   const name      = product.name || 'Product';
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const catName   = typeof product.category === 'object' ? product.category?.name : product.category;
+  // Always use slug for canonical — fall back to id only if slug missing
   const slug      = product.slug || id;
 
   const title = `${name} — Price in Bangladesh | MedCore BD`;
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }) {
       description,
       url:    canonicalUrl,
       type:   'website',
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: name }],
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: `${name} — MedCore BD Bangladesh` }],
     },
     twitter: {
       card:        'summary_large_image',
@@ -75,17 +76,18 @@ export default async function ProductPage({ params }) {
   const { id } = await params;
   const product = await fetchProduct(id);
 
-  const catName = typeof product?.category === 'object'
+  const slug      = product?.slug || id;
+  const catName   = typeof product?.category === 'object'
     ? product.category?.name
     : product?.category || 'Products';
 
   const breadcrumbs = [
-    { name: 'Home',    url: SITE_CONFIG.url },
-    { name: catName,   url: `${SITE_CONFIG.url}/products` },
-    { name: product?.name ?? 'Product', url: `${SITE_CONFIG.url}/products/${id}` },
+    { name: 'Home',     url: SITE_CONFIG.url },
+    { name: catName,    url: `${SITE_CONFIG.url}/products?category=${encodeURIComponent(catName)}` },
+    { name: product?.name ?? 'Product', url: `${SITE_CONFIG.url}/products/${slug}` },
   ];
 
-  const productSchema   = product ? generateProductSchema(product) : null;
+  const productSchema    = product ? generateProductSchema(product) : null;
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs);
 
   return (

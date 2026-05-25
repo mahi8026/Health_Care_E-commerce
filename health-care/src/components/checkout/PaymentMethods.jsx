@@ -25,7 +25,7 @@ export default function PaymentMethods({ selected, onSelect }) {
               key={method.id}
               type="button"
               onClick={() => onSelect(method.id)}
-              className={`rounded-xl p-3 border-2 text-center transition-all ${
+              className={`rounded-xl p-3 border-2 text-center transition-all min-h-[72px] ${
                 isSelected
                   ? 'border-[#0B2545] bg-[#F8FAFC] ring-1 ring-[#0B2545]/10'
                   : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'

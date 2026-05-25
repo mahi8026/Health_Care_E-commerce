@@ -20,7 +20,7 @@ const EMPTY_FORM = {
 };
 
 const inputBase =
-  'w-full px-3 py-2.5 min-h-[44px] text-sm text-[#0B2545] bg-white border border-[#E5E7EB] rounded-xl font-[family-name:var(--font-plus-jakarta)] placeholder:text-[#9CA3AF] transition-colors focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15';
+  'w-full px-3 py-2.5 min-h-[48px] text-[16px] sm:text-sm text-[#0B2545] bg-white border border-[#E5E7EB] rounded-xl font-[family-name:var(--font-plus-jakarta)] placeholder:text-[#9CA3AF] transition-colors focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15';
 
 export default function DeliveryAddress({ value, onChange, savedAddress }) {
   const { user } = useAuth();
@@ -186,7 +186,7 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             onChange={handleChange}
             rows={2}
             placeholder="Call before delivery…"
-            className={`${inputBase} resize-none min-h-[72px]`}
+            className={`${inputBase} resize-none min-h-[80px]`}
           />
         </div>
       </div>

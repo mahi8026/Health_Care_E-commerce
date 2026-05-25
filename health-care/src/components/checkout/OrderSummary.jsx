@@ -167,13 +167,13 @@ export default function OrderSummary({
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                 placeholder="CODE"
-                className="flex-1 px-3 py-2 text-xs font-mono uppercase border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15"
+                className="flex-1 px-3 py-2 min-h-[48px] text-[16px] sm:text-xs font-mono uppercase border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15"
               />
               <button
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={couponLoading}
-                className="px-3 py-2 text-xs font-semibold bg-[#0E8A6E] text-white rounded-lg hover:bg-[#0a7560] disabled:opacity-50"
+                className="px-4 py-2 min-h-[48px] text-xs font-semibold bg-[#0E8A6E] text-white rounded-lg hover:bg-[#0a7560] disabled:opacity-50"
               >
                 Apply
               </button>

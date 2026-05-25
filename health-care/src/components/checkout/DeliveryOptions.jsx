@@ -41,7 +41,7 @@ export default function DeliveryOptions({ selected, onSelect }) {
           return (
             <label
               key={option.id}
-              className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
+              className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all min-h-[60px] ${
                 isSelected
                   ? 'border-[#0E8A6E] bg-[#F0FDF9]'
                   : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'
@@ -52,7 +52,7 @@ export default function DeliveryOptions({ selected, onSelect }) {
                 name="delivery"
                 checked={isSelected}
                 onChange={() => onSelect(option.id)}
-                className="w-4 h-4 accent-[#0E8A6E] shrink-0"
+                className="w-5 h-5 accent-[#0E8A6E] shrink-0"
               />
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-semibold text-[#0B2545]">{option.name}</div>

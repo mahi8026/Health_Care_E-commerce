@@ -36,24 +36,24 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
     }
   }, [addToCart, product]);
 
-  // Handle view details
+  // Handle view details — always navigate to slug for canonical SEO URLs
   const handleViewDetails = useCallback((e) => {
     e.stopPropagation();
-    const productId = product._id || product.id;
+    const productSlug = product.slug || product._id || product.id;
     if (onProductClick) {
-      onProductClick(productId);
+      onProductClick(productSlug);
     } else {
-      router.push(`/products/${productId}`);
+      router.push(`/products/${productSlug}`);
     }
   }, [product, onProductClick, router]);
 
   // Handle card click
   const handleCardClick = useCallback(() => {
-    const productId = product._id || product.id;
+    const productSlug = product.slug || product._id || product.id;
     if (onProductClick) {
-      onProductClick(productId);
+      onProductClick(productSlug);
     } else {
-      router.push(`/products/${productId}`);
+      router.push(`/products/${productSlug}`);
     }
   }, [product, onProductClick, router]);
 
@@ -68,7 +68,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
           <>
             <Image
               src={primaryImage.url}
-              alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
+              alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
               className="object-cover"

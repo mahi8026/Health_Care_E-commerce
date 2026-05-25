@@ -1,4 +1,11 @@
 /** @type {import('next').NextConfig} */
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+  openAnalyzer: false, // writes files without opening browser (CI-friendly)
+});
+
 const nextConfig = {
   // Proxy /api/* to the backend in development to avoid CORS issues
   async rewrites() {
@@ -89,4 +96,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

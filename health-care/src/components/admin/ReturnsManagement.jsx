@@ -301,33 +301,31 @@ export default function ReturnsManagement() {
 
       {/* Review Modal */}
       {showModal && selectedReturn && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+            <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-bold text-[#0B2545]">Review Return Request</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="text-lg sm:text-xl font-bold text-[#0B2545]">Review Return Request</h3>
+                <p className="text-xs sm:text-sm text-gray-600">
                   Return ID: {selectedReturn._id.slice(-8).toUpperCase()}
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  resetModal();
-                }}
-                className="text-gray-500 hover:text-gray-700"
+                onClick={() => { setShowModal(false); resetModal(); }}
+                className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
+                aria-label="Close"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12"/>
                 </svg>
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Customer & Order Info */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-1">Customer</p>
                   <p className="text-sm">{selectedReturn.user?.name}</p>
@@ -357,22 +355,22 @@ export default function ReturnsManagement() {
                       <img 
                         src={item.product?.images?.[0]?.url || '/placeholder.png'} 
                         alt={item.product?.name}
-                        className="w-16 h-16 object-cover rounded border"
+                        className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border flex-shrink-0"
                       />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{item.product?.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{item.product?.name}</p>
                         <p className="text-xs text-gray-600">SKU: {item.product?.sku}</p>
-                        <p className="text-xs text-gray-600">Quantity: {item.quantity}</p>
+                        <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">৳{(item.quantity * item.price).toLocaleString()}</p>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-semibold text-sm">৳{(item.quantity * item.price).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="mt-2 text-right">
                   <p className="text-sm font-medium">
-                    Total Refund Amount: <span className="text-lg text-[#0E8A6E]">৳{selectedReturn.refundAmount?.toLocaleString()}</span>
+                    Total Refund: <span className="text-base sm:text-lg text-[#0E8A6E]">৳{selectedReturn.refundAmount?.toLocaleString()}</span>
                   </p>
                 </div>
               </div>
@@ -396,19 +394,13 @@ export default function ReturnsManagement() {
               {selectedReturn.images && selectedReturn.images.length > 0 && (
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-2">Uploaded Images</p>
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                     {selectedReturn.images.map((img, idx) => (
-                      <a
-                        key={idx}
-                        href={img.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
+                      <a key={idx} href={img.url} target="_blank" rel="noopener noreferrer" className="block">
                         <img
                           src={img.url}
                           alt={img.alt || `Return image ${idx + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border hover:opacity-75 transition-opacity cursor-pointer"
+                          className="w-full h-20 sm:h-24 object-cover rounded-lg border hover:opacity-75 transition-opacity cursor-pointer"
                         />
                       </a>
                     ))}
@@ -417,9 +409,8 @@ export default function ReturnsManagement() {
               )}
 
               {/* Status Update Form */}
-              <div className="border-t pt-6">
+              <div className="border-t pt-4 sm:pt-6">
                 <p className="text-sm font-medium text-gray-700 mb-4">Update Return Status</p>
-                
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -428,7 +419,8 @@ export default function ReturnsManagement() {
                     <select
                       value={newStatus}
                       onChange={(e) => setNewStatus(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]"
+                      className="w-full border rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] min-h-[48px]"
+                      style={{ fontSize: '16px' }}
                     >
                       <option value="">Select status</option>
                       {STATUS_OPTIONS.map(status => (
@@ -441,18 +433,15 @@ export default function ReturnsManagement() {
 
                   {(newStatus === 'approved' || newStatus === 'refunded') && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Refund Method
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Refund Method</label>
                       <select
                         value={refundMethod}
                         onChange={(e) => setRefundMethod(e.target.value)}
-                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]"
+                        className="w-full border rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] min-h-[48px]"
+                        style={{ fontSize: '16px' }}
                       >
                         {REFUND_METHODS.map(method => (
-                          <option key={method.value} value={method.value}>
-                            {method.label}
-                          </option>
+                          <option key={method.value} value={method.value}>{method.label}</option>
                         ))}
                       </select>
                     </div>
@@ -460,15 +449,14 @@ export default function ReturnsManagement() {
 
                   {newStatus === 'refunded' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Transaction ID (Optional)
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Transaction ID (Optional)</label>
                       <input
                         type="text"
                         value={refundTransactionId}
                         onChange={(e) => setRefundTransactionId(e.target.value)}
                         placeholder="Enter transaction/reference ID"
-                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]"
+                        className="w-full border rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] min-h-[48px]"
+                        style={{ fontSize: '16px' }}
                       />
                     </div>
                   )}
@@ -481,7 +469,8 @@ export default function ReturnsManagement() {
                       value={adminNotes}
                       onChange={(e) => setAdminNotes(e.target.value)}
                       placeholder={newStatus === 'rejected' ? 'Please provide a reason for rejection' : 'Add notes for the customer (optional)'}
-                      className="w-full border rounded-lg px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] resize-none"
+                      className="w-full border rounded-lg px-3 py-3 h-24 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] resize-none"
+                      style={{ fontSize: '16px' }}
                       maxLength={1000}
                     />
                     <p className="text-xs text-gray-500 mt-1">{adminNotes.length}/1000</p>
@@ -491,20 +480,17 @@ export default function ReturnsManagement() {
             </div>
 
             {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-gray-50 border-t px-6 py-4 flex justify-end gap-3">
+            <div className="sticky bottom-0 bg-gray-50 border-t px-4 sm:px-6 py-4 flex gap-3">
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  resetModal();
-                }}
-                className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100"
+                onClick={() => { setShowModal(false); resetModal(); }}
+                className="flex-1 px-4 py-3 border rounded-lg text-gray-700 hover:bg-gray-100 font-medium min-h-[48px]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateStatus}
                 disabled={updating || !newStatus}
-                className="px-4 py-2 bg-[#0E8A6E] text-white rounded-lg hover:bg-[#0c7359] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-[#0E8A6E] text-white rounded-lg hover:bg-[#0c7359] disabled:opacity-50 disabled:cursor-not-allowed font-semibold min-h-[48px]"
               >
                 {updating ? 'Updating...' : 'Update Status'}
               </button>

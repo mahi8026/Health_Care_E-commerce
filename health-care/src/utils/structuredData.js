@@ -100,48 +100,86 @@ export function generateProductSchema(product) {
     name,
     description,
     image,
+    images,
     brand,
     sku,
     price,
     priceCurrency = 'BDT',
     inStock = true,
     url,
+    slug,
     _id,
+    rating,
+    reviewCount,
+    certifications,
   } = product;
 
+  // Prefer slug over _id for canonical URLs
   const productUrl =
     url ||
-    (_id ? `${siteConfig.url}/products/${_id}` : siteConfig.url);
+    (slug ? `${siteConfig.url}/products/${slug}` : _id ? `${siteConfig.url}/products/${_id}` : siteConfig.url);
 
   const availability = inStock
     ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
 
+  // Resolve brand name whether it's a string or populated object
+  const brandName = typeof brand === 'object' ? brand?.name : brand;
+
+  // Collect all product images for the schema
+  const imageUrls = images?.length
+    ? images.map(img => (typeof img === 'string' ? img : img?.url)).filter(Boolean)
+    : image
+    ? [image]
+    : [];
+
+  // Build the schema
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: name || '',
     description: description || '',
-    ...(image && { image }),
-    ...(brand && {
+    ...(imageUrls.length > 0 && { image: imageUrls.length === 1 ? imageUrls[0] : imageUrls }),
+    ...(brandName && {
       brand: {
         '@type': 'Brand',
-        name: brand,
+        name: brandName,
       },
     }),
     ...(sku && { sku }),
+    // AggregateRating — enables star ratings in Google search results
+    ...(rating && Number(rating) > 0 && reviewCount && Number(reviewCount) > 0 && {
+      aggregateRating: {
+        '@type':       'AggregateRating',
+        ratingValue:   Number(rating).toFixed(1),
+        reviewCount:   Number(reviewCount),
+        bestRating:    '5',
+        worstRating:   '1',
+      },
+    }),
     offers: {
-      '@type': 'Offer',
-      url: productUrl,
+      '@type':        'Offer',
+      url:            productUrl,
       priceCurrency,
-      price: price !== undefined ? Number(price).toFixed(2) : '0.00',
+      price:          price !== undefined ? Number(price).toFixed(2) : '0.00',
       availability,
+      itemCondition:  'https://schema.org/NewCondition',
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       seller: {
         '@type': 'Organization',
-        name: siteConfig.name,
+        name:    siteConfig.name,
+        url:     siteConfig.url,
       },
     },
     url: productUrl,
+    // Certifications as additionalProperty for DGDA/CE/ISO
+    ...(certifications?.length > 0 && {
+      additionalProperty: certifications.map(cert => ({
+        '@type': 'PropertyValue',
+        name:    'Certification',
+        value:   cert,
+      })),
+    }),
   };
 
   return schema;

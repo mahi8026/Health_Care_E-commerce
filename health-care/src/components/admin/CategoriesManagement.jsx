@@ -91,19 +91,19 @@ export default function CategoriesManagement() {
     <div className="space-y-6">
       {/* Filters */}
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg shadow p-4 border border-green-100">
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-3 cursor-pointer">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <label className="flex items-center gap-3 cursor-pointer min-h-[44px]">
             <input
               type="checkbox"
               checked={includeInactive}
               onChange={(e) => setIncludeInactive(e.target.checked)}
-              className="w-4 h-4 text-green-600 rounded border-gray-300 accent-green-600"
+              className="w-5 h-5 text-green-600 rounded border-gray-300 accent-green-600"
             />
             <span className="text-sm font-medium text-gray-700">Show inactive categories</span>
           </label>
           <button
             onClick={() => fetchCategories()}
-            className="text-sm bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition font-medium"
+            className="text-sm bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-3 rounded-lg hover:shadow-lg transition font-medium min-h-[48px]"
           >
             ⟳ Refresh
           </button>
@@ -209,15 +209,18 @@ export default function CategoriesManagement() {
 
       {/* Edit Modal */}
       {editingId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-4 flex items-center justify-between border-b">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-lg shadow-xl max-w-md w-full">
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b rounded-t-2xl sm:rounded-t-lg">
               <h2 className="text-lg font-bold">Edit Category</h2>
               <button
                 onClick={() => setEditingId(null)}
-                className="text-white hover:opacity-80 text-2xl transition"
+                className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-white/20 transition text-white"
+                aria-label="Close"
               >
-                ✕
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
               </button>
             </div>
 
@@ -228,7 +231,8 @@ export default function CategoriesManagement() {
                   type="text"
                   value={editForm.name || ''}
                   onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
 
@@ -238,7 +242,8 @@ export default function CategoriesManagement() {
                   type="text"
                   value={editForm.slug || ''}
                   onChange={(e) => setEditForm({...editForm, slug: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
 
@@ -248,7 +253,8 @@ export default function CategoriesManagement() {
                   value={editForm.description || ''}
                   onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{ fontSize: '16px' }}
                 />
               </div>
 
@@ -257,7 +263,8 @@ export default function CategoriesManagement() {
                 <select
                   value={editForm.isActive ? 'active' : 'inactive'}
                   onChange={(e) => setEditForm({...editForm, isActive: e.target.value === 'active'})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[48px]"
+                  style={{ fontSize: '16px' }}
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -265,18 +272,18 @@ export default function CategoriesManagement() {
               </div>
             </div>
 
-            <div className="bg-gray-50 px-6 py-3 border-t flex gap-2 justify-end">
+            <div className="bg-gray-50 px-4 sm:px-6 py-4 border-t flex gap-3">
               <button
                 onClick={() => setEditingId(null)}
-                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium transition"
+                className="flex-1 px-3 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm font-medium transition min-h-[48px]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg transition text-sm font-medium"
+                className="flex-1 px-3 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:shadow-lg transition text-sm font-semibold min-h-[48px]"
               >
-                Save
+                Save Changes
               </button>
             </div>
           </div>

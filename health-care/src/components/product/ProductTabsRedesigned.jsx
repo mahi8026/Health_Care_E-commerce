@@ -43,12 +43,12 @@ export default function ProductTabsRedesigned({ product }) {
   return (
     <div className="mt-6">
       {/* Tab Headers */}
-      <div className="flex border-b-2 border-[#E5E7EB] overflow-x-auto mb-6 -mx-4 px-4 md:mx-0 md:px-0">
+      <div className="flex border-b-2 border-[#E5E7EB] overflow-x-auto scrollbar-hide mb-6 -mx-4 px-4 md:mx-0 md:px-0" style={{WebkitOverflowScrolling: 'touch'}}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-shrink-0 px-4 py-3 text-[14px] font-semibold transition-all whitespace-nowrap ${
+            className={`flex-shrink-0 px-4 sm:px-5 py-3 text-[13px] sm:text-[14px] font-semibold transition-all whitespace-nowrap min-h-[48px] ${
               activeTab === tab.id
                 ? 'text-[#0E8A6E] border-b-2 border-[#0E8A6E] -mb-[2px]'
                 : 'text-[#6B7280] hover:text-[#0B2545]'
@@ -76,10 +76,10 @@ export default function ProductTabsRedesigned({ product }) {
                         idx % 2 === 0 ? 'bg-surface-subtle' : 'bg-white'
                       }`}
                     >
-                      <div className="text-[13px] text-[#6B7280] w-40 flex-shrink-0 p-4 font-medium">
+                      <div className="text-[12px] sm:text-[13px] text-[#6B7280] w-28 sm:w-40 flex-shrink-0 p-3 sm:p-4 font-medium">
                         {key}
                       </div>
-                      <div className="text-[13px] font-semibold text-[#0B2545] p-4 flex-1">
+                      <div className="text-[12px] sm:text-[13px] font-semibold text-[#0B2545] p-3 sm:p-4 flex-1 break-words">
                         {value}
                       </div>
                     </div>

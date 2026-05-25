@@ -120,7 +120,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       {/* Image */}
       <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
         {img ? (
-          <img src={img} alt={product.name} loading="lazy"
+          <img src={img} alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`} loading="lazy"
             style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
             onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
@@ -608,10 +608,10 @@ export default function HomePage() {
               ))
             ) : (
               <>
-                {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" alt="Medical Equipment" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" alt="Laboratory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" alt="Hospital" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" alt="Surgical" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" alt="Diagnostic medical equipment Bangladesh — ECG machines and patient monitors — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" alt="Laboratory reagents Bangladesh — HbA1c CBC diagnostic kits — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" alt="Hospital equipment Bangladesh — ICU ventilators and infusion pumps — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" alt="Surgical instruments Bangladesh — scissors forceps trocar sets — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
               </>
             )}
             {/* Bottom gradient */}
@@ -809,7 +809,7 @@ export default function HomePage() {
             {/* 4 deal product cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
               {dealProducts.slice(0, 4).map(product => (
-                <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
               ))}
             </div>
           </div>
@@ -858,7 +858,7 @@ export default function HomePage() {
 
                 return (
                   <div key={product._id}
-                    onClick={() => router.push(`/products/${product._id}`)}
+                    onClick={() => router.push(`/products/${product.slug || product._id}`)}
                     style={{
                       display: 'flex', gap: 0, background: '#fff',
                       border: '1px solid #E5E7EB', borderRadius: 16,
@@ -879,7 +879,7 @@ export default function HomePage() {
                     <div style={{ width: 140, minHeight: 160, flexShrink: 0, position: 'relative',
                       background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {imgUrl ? (
-                        <img src={imgUrl} alt={product.name}
+                        <img src={imgUrl} alt={`${product.name}${typeof product.brand === 'object' ? ` — ${product.brand?.name}` : product.brand ? ` — ${product.brand}` : ''} — MedCore BD Bangladesh`}
                           style={{ width: '100%', height: '100%', objectFit: 'cover',
                             position: 'absolute', inset: 0 }}
                           onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
@@ -973,7 +973,7 @@ export default function HomePage() {
                           Add to Cart
                         </button>
                         <button
-                          onClick={e => { e.stopPropagation(); router.push(`/products/${product._id}`); }}
+                          onClick={e => { e.stopPropagation(); router.push(`/products/${product.slug || product._id}`); }}
                           style={{
                             flex: 1, padding: '9px 10px', background: '#0E8A6E', color: '#fff',
                             border: 'none', borderRadius: 8, fontSize: 12,
@@ -1040,7 +1040,7 @@ export default function HomePage() {
               </div>
             : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
                 {featuredProducts.map(p => (
-                  <ProductCard key={p._id} product={p} onClick={() => router.push(`/products/${p._id}`)} />
+                  <ProductCard key={p._id} product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
                 ))}
               </div>
           }
@@ -1072,12 +1072,12 @@ export default function HomePage() {
                 const img = p.images?.[0]?.url || p.images?.[0];
                 return (
                   <div key={p._id} className="product-card-hover"
-                    onClick={() => router.push(`/products/${p._id}`)}
+                    onClick={() => router.push(`/products/${p.slug || p._id}`)}
                     style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12,
                       border: '1px solid #E5E7EB', overflow: 'hidden', flexShrink: 0 }}>
                     <div style={{ height: 160, background: '#F9FAFB', position: 'relative', overflow: 'hidden' }}>
                       {img
-                        ? <img src={img} alt={p.name} loading="lazy"
+                        ? <img src={img} alt={`${p.name}${typeof p.brand === 'object' ? ` — ${p.brand?.name}` : p.brand ? ` — ${p.brand}` : ''} — new arrival Bangladesh`} loading="lazy"
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
                             height: '100%', fontSize: 40 }}>🏥</div>
@@ -1128,7 +1128,7 @@ export default function HomePage() {
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {categoryProducts.diagnostic.map(product => (
                 <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
                 </div>
               ))}
             </div>
@@ -1156,7 +1156,7 @@ export default function HomePage() {
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {categoryProducts.reagents.map(product => (
                 <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
                 </div>
               ))}
             </div>
@@ -1184,7 +1184,7 @@ export default function HomePage() {
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {categoryProducts.machines.map(product => (
                 <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
                 </div>
               ))}
             </div>
@@ -1212,7 +1212,7 @@ export default function HomePage() {
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {categoryProducts.ppe.map(product => (
                 <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
                 </div>
               ))}
             </div>
@@ -1240,7 +1240,7 @@ export default function HomePage() {
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {categoryProducts.labEquipment.map(product => (
                 <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product._id}`)} />
+                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
                 </div>
               ))}
             </div>
