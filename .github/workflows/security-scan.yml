@@ -75,6 +75,7 @@ jobs:
 
   code-security:
     name: Code Security Analysis
+    if: ${{ secrets.SNYK_TOKEN != '' }}
     runs-on: ubuntu-latest
     
     steps:

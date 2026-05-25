@@ -11,6 +11,7 @@ on:
 jobs:
   sonarcloud:
     name: SonarCloud Scan
+    if: ${{ secrets.SONAR_TOKEN != '' }}
     runs-on: ubuntu-latest
     
     steps:
