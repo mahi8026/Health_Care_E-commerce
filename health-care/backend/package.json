@@ -52,7 +52,7 @@
     "multer-storage-cloudinary": "^2.2.1",
     "node-cache": "^5.1.2",
     "node-cron": "^4.2.1",
-    "nodemailer": "^8.0.5",
+    "nodemailer": "^8.0.8",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.18.0",
