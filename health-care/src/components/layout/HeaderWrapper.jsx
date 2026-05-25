@@ -4,7 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Header from './Header';
 
-export default function HeaderWrapper() {
+export default function HeaderWrapper({ onCartClick }) {
   const router = useRouter();
   const pathname = usePathname();
   const { logout, isAuthenticated, isB2BCustomer } = useAuth();
@@ -42,7 +42,12 @@ export default function HeaderWrapper() {
   };
 
   const handleCartClick = () => {
-    router.push('/cart');
+    // Use the passed onCartClick if available (for sidebar), otherwise navigate to cart page
+    if (onCartClick) {
+      onCartClick();
+    } else {
+      router.push('/cart');
+    }
   };
 
   const handleNavigate = (view, category) => {
