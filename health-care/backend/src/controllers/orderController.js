@@ -211,6 +211,14 @@ exports.createOrder = async (req, res) => {
       );
     }
 
+    // Send WhatsApp order confirmation asynchronously (non-blocking)
+    if (user.phone) {
+      const whatsappBot = require('../services/whatsappBot');
+      whatsappBot.sendOrderConfirmation(order[0], user).catch(err =>
+        logger.error(`[createOrder] WhatsApp failed: ${err.message}`)
+      );
+    }
+
     // Log order placement activity
     logActivityAsync({
       user: req.user,
@@ -345,6 +353,22 @@ exports.updateOrderStatus = async (req, res) => {
         const { sendOrderStatusSMS } = require('../services/smsService');
         sendOrderStatusSMS(order.user.phone, order.orderNumber, status).catch(err =>
           logger.error(`[updateOrderStatus] SMS failed: ${err.message}`)
+        );
+      }
+    }
+
+    // Send WhatsApp notification for status changes (non-blocking)
+    const whatsappStatuses = ['confirmed', 'shipped', 'delivered', 'cancelled'];
+    if (whatsappStatuses.includes(status)) {
+      // Ensure user is populated
+      if (!order.user || !order.user.phone) {
+        await order.populate('user', 'name email phone');
+      }
+      
+      if (order.user && order.user.phone) {
+        const whatsappBot = require('../services/whatsappBot');
+        whatsappBot.sendOrderStatusUpdate(order, order.user, status).catch(err =>
+          logger.error(`[updateOrderStatus] WhatsApp failed: ${err.message}`)
         );
       }
     }

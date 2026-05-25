@@ -119,11 +119,19 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery 
           Need help with your order?
         </div>
         <div className="flex items-center justify-center gap-4 text-[12px]">
-          <a href="#" className="text-[#0E8A6E] font-medium hover:underline">
+          <a 
+            href="tel:+8801646886795" 
+            className="text-[#0E8A6E] font-medium hover:underline"
+          >
             📞 Call support
           </a>
           <span className="text-[var(--color-border-secondary)]">|</span>
-          <a href="#" className="text-[#0E8A6E] font-medium hover:underline">
+          <a 
+            href="https://wa.me/8801646886795?text=Hi%2C%20I%20need%20help%20with%20my%20order%20%23{orderId}" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#0E8A6E] font-medium hover:underline"
+          >
             💬 Live chat
           </a>
         </div>

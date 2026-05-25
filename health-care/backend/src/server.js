@@ -175,6 +175,7 @@ app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site s
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
 app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
+app.use('/api/whatsapp', require('./routes/whatsappRoutes')); // WhatsApp automation (webhook is public, others protected)
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

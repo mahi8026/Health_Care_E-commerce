@@ -153,6 +153,14 @@ exports.updateQuote = async (req, res) => {
       } catch (emailErr) {
         logger.error('Failed to send quotation email:', emailErr.message);
       }
+
+      // Send WhatsApp notification when quote is ready (non-blocking)
+      if (quote.user && quote.user.phone) {
+        const whatsappBot = require('../services/whatsappBot');
+        whatsappBot.sendQuoteReady(quote, quote.user).catch(err =>
+          logger.error(`[updateQuote] WhatsApp failed: ${err.message}`)
+        );
+      }
     }
 
     res.status(200).json({ success: true, message: 'Quote updated', quote });
