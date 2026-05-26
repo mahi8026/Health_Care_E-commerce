@@ -64,7 +64,6 @@ export default function LiveChatWidget() {
           isOpen || showContactOptions ? 'scale-0 pointer-events-none' : 'scale-100'
         }`}
         style={{
-        style={{
           width: 52, height: 52, borderRadius: '1rem',
           background: 'rgba(11,37,69,0.72)',
           backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
@@ -91,7 +90,6 @@ export default function LiveChatWidget() {
       {showContactOptions && (
         <div
           className="fixed right-4 md:right-6 bottom-[76px] md:bottom-6 z-[1051] w-[90vw] max-w-[380px]"
-          style={{ ...glassPanel, borderRadius: '1.25rem', transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
           style={{ ...glassPanel, borderRadius: '1.25rem', transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
         >
           <style>{`
