@@ -1,9 +1,9 @@
 /**
- * Category landing page — /products/[category]
+ * Category landing page — /products/category/[slug]
  *
  * Slug-based category URLs for SEO.
- * e.g. /products/diagnostic-equipment
- *      /products/laboratory-reagents
+ * e.g. /products/category/diagnostic-equipment
+ *      /products/category/laboratory-reagents
  *
  * Each page gets its own title, description, canonical URL, and OG tags
  * from CATEGORY_SEO config — making them fully indexable by Google.
@@ -12,38 +12,22 @@
 import { notFound } from 'next/navigation';
 import ProductsPage from '@/views/ProductsPage';
 import { CATEGORY_SEO, SITE_CONFIG } from '@/config/seo';
-
-// ── Slug ↔ Category name mapping ─────────────────────────────────────────────
-export const CATEGORY_SLUG_MAP = {
-  'diagnostic-equipment':  'Diagnostic Equipment',
-  'surgical-instruments':  'Surgical Instruments',
-  'laboratory-reagents':   'Laboratory Reagents',
-  'hospital-machines':     'Hospital Machines',
-  'lab-equipment':         'Lab Equipment',
-  'ppe-safety':            'PPE & Safety',
-  'dental-equipment':      'Dental Equipment',
-  'implants-ortho':        'Implants & Ortho',
-};
-
-// Reverse map: category name → slug
-export const CATEGORY_NAME_TO_SLUG = Object.fromEntries(
-  Object.entries(CATEGORY_SLUG_MAP).map(([slug, name]) => [name, slug])
-);
+import { CATEGORY_SLUG_MAP, CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 // Tell Next.js which slugs to pre-render at build time
 export function generateStaticParams() {
-  return Object.keys(CATEGORY_SLUG_MAP).map(slug => ({ category: slug }));
+  return Object.keys(CATEGORY_SLUG_MAP).map(slug => ({ slug }));
 }
 
 // Per-category metadata — full title, description, canonical, OG
 export function generateMetadata({ params }) {
-  const categoryName = CATEGORY_SLUG_MAP[params.category];
+  const categoryName = CATEGORY_SLUG_MAP[params.slug];
   if (!categoryName) return {};
 
   const seo = CATEGORY_SEO[categoryName];
   if (!seo) return {};
 
-  const canonicalUrl = `${SITE_CONFIG.url}/products/${params.category}`;
+  const canonicalUrl = `${SITE_CONFIG.url}/products/category/${params.slug}`;
 
   return {
     title:       seo.title,
@@ -65,7 +49,7 @@ export function generateMetadata({ params }) {
 }
 
 export default function CategoryPage({ params }) {
-  const categoryName = CATEGORY_SLUG_MAP[params.category];
+  const categoryName = CATEGORY_SLUG_MAP[params.slug];
 
   // Unknown slug → 404
   if (!categoryName) notFound();

@@ -12,7 +12,7 @@ import FrequentlyBoughtRedesigned from '@/components/product/FrequentlyBoughtRed
 import Spinner from '@/components/ui/Spinner';
 import GA4Tracker from '@/services/GA4Tracker';
 import { API as API_BASE } from '@/constants/api';
-import { CATEGORY_NAME_TO_SLUG } from '@/app/products/[category]/page';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 export default function ProductDetailPage({ productId, heroPriority = false }) {
   const router = useRouter();
@@ -143,7 +143,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
               <>
                 <span className="text-gray-300" aria-hidden="true">/</span>
                 <Link
-                  href={`/products/${categorySlug}`}
+                  href={`/products/category/${categorySlug}`}
                   className="hover:text-[#0E8A6E] transition-colors"
                 >
                   {categoryName}

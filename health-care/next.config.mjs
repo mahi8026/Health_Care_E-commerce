@@ -40,7 +40,7 @@ const nextConfig = {
     return categoryRedirects.map(({ name, slug }) => ({
       source: '/products',
       has: [{ type: 'query', key: 'category', value: name }],
-      destination: `/products/${slug}`,
+      destination: `/products/category/${slug}`,
       permanent: true, // 301 redirect — passes SEO link equity
     }));
   },

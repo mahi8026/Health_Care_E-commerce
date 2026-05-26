@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
 import SearchResults from '@/components/search/SearchResults';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
-import { CATEGORY_NAME_TO_SLUG } from '@/app/products/[category]/page';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 export default function ProductsPage({ onProductClick, initialCategory }) {
   const router = useRouter();
@@ -195,7 +195,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                       onClick={() => {
                         if (slug) {
                           // Navigate to slug-based category URL for SEO
-                          router.push(`/products/${slug}`);
+                          router.push(`/products/category/${slug}`);
                         } else {
                           setSearchCategory(searchCategory === name ? '' : name);
                           resetPagination();
@@ -281,7 +281,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                       const name = e.target.value;
                       const slug = CATEGORY_NAME_TO_SLUG[name];
                       if (slug) {
-                        router.push(`/products/${slug}`);
+                        router.push(`/products/category/${slug}`);
                       } else {
                         setSearchCategory(name);
                         resetPagination();
@@ -464,7 +464,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                     const name = e.target.value;
                     const slug = CATEGORY_NAME_TO_SLUG[name];
                     if (slug) {
-                      router.push(`/products/${slug}`);
+                      router.push(`/products/category/${slug}`);
                       setSidebarOpen(false);
                     } else {
                       setSearchCategory(name);

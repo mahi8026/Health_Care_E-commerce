@@ -92,7 +92,7 @@ export default async function sitemap() {
   // Use slug-based URLs — Google indexes these as distinct pages with
   // their own title, description, and canonical URL.
   const categoryPages = CATEGORY_SLUGS.map(cat => ({
-    url:             `${SITE_URL}/products/${cat.slug}`,
+    url:             `${SITE_URL}/products/category/${cat.slug}`,
     lastModified:    now,
     changeFrequency: 'daily',
     priority:        0.85,
