@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import ProductInfoPanel from '@/components/product/ProductInfoPanel';
@@ -36,12 +37,6 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         const res = await fetch(`${API_BASE}/products/${id}`);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
-        
-        // If accessed by _id, redirect to slug URL (for SEO)
-        if (data.shouldRedirect && data.slugUrl) {
-          router.replace(`/products/${data.slugUrl}`);
-          return;
-        }
         
         const p = data.data || data.product || data;
 
@@ -82,6 +77,22 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
     fetchProduct();
   }, [id]);
 
+  // Redirect from MongoDB ID to slug-based URL for SEO
+  useEffect(() => {
+    if (!product || !id) return;
+
+    // Check if current param looks like a MongoDB ObjectId (24 hex characters)
+    const isMongoId = /^[a-f0-9]{24}$/i.test(id);
+    
+    // Only redirect if:
+    // 1. Current param is a MongoDB ID
+    // 2. Product has a slug
+    // 3. Slug is different from current param (prevent infinite loop)
+    if (isMongoId && product.slug && product.slug !== id) {
+      router.replace(`/products/${product.slug}`);
+    }
+  }, [product, id, router]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -120,23 +131,25 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
-          <nav className="flex items-center gap-1.5 text-[12px] text-gray-500 flex-wrap">
-            <button onClick={() => router.push('/')} className="hover:text-[#0E8A6E] transition-colors">Home</button>
-            <span className="text-gray-300">/</span>
-            <button onClick={() => router.push('/products')} className="hover:text-[#0E8A6E] transition-colors">Products</button>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] text-gray-500 flex-wrap">
+            <Link href="/" className="hover:text-[#0E8A6E] transition-colors">Home</Link>
+            <span className="text-gray-300" aria-hidden="true">/</span>
+            <Link href="/products" className="hover:text-[#0E8A6E] transition-colors">Products</Link>
             {categoryName && (
               <>
-                <span className="text-gray-300">/</span>
-                <button
-                  onClick={() => router.push(`/products?category=${encodeURIComponent(categoryName)}`)}
+                <span className="text-gray-300" aria-hidden="true">/</span>
+                <Link
+                  href={`/products?category=${encodeURIComponent(categoryName)}`}
                   className="hover:text-[#0E8A6E] transition-colors"
                 >
                   {categoryName}
-                </button>
+                </Link>
               </>
             )}
-            <span className="text-gray-300">/</span>
-            <span className="text-gray-700 font-medium line-clamp-1 max-w-[200px]">{product.name}</span>
+            <span className="text-gray-300" aria-hidden="true">/</span>
+            <span className="text-gray-700 font-medium line-clamp-1 max-w-[200px]" aria-current="page">
+              {product.name}
+            </span>
           </nav>
         </div>
       </div>
@@ -196,17 +209,17 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           </h3>
           <p className="text-[13px] text-gray-500 leading-relaxed mb-5">
             The retail price of {product.name} in Bangladesh is{' '}
-            {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'available on request'}.
-            B2B institutions (hospitals, clinics, diagnostic centres) receive up to 22% bulk discount.
+            {product.price && product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Contact for Price'}.
+            {' '}B2B institutions (hospitals, clinics, diagnostic centres) receive 8–30% bulk discount depending on order volume.
             Contact MedCore BD for institutional pricing and credit terms.
           </p>
           <h3 className="text-[14px] font-semibold text-[#0B2545] mb-2">
             Buy {product.name} in Bangladesh
           </h3>
           <p className="text-[13px] text-gray-500 leading-relaxed">
-            MedCore BD is an authorised distributor of{brandName ? ` ${brandName}` : ''} products in Bangladesh.
-            Order online with free delivery to Dhaka, Chittagong and Sylhet.
-            All products are DGDA registered and come with full manufacturer warranty.
+            MedCore BD is an authorised distributor{brandName ? ` of ${brandName}` : ''} in Bangladesh.
+            {' '}All products are DGDA registered and come with full manufacturer warranty.
+            {' '}Enjoy free delivery in Dhaka for orders over ৳50,000 and nationwide shipping to all major cities.
           </p>
         </div>
       </div>

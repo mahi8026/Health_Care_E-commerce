@@ -33,14 +33,23 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      // Redirect based on role
+      const redirect = searchParams?.get('redirect');
       if (user.role === 'admin') {
         router.push('/admin');
+      } else if (redirect) {
+        router.push(redirect);
       } else {
         router.push('/');
       }
     }
-  }, [user, router]);
+  }, [user, router, searchParams]);
+
+  const getRedirectPath = (userData) => {
+    const redirect = searchParams?.get('redirect');
+    if (userData?.role === 'admin') return '/admin';
+    if (redirect) return redirect;
+    return '/';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,17 +60,10 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');
     } else {
-      // Call onSuccess if provided (for modal usage)
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect based on user role
-        const userData = result.user || result.data?.user;
-        if (userData?.role === 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
+        router.push(getRedirectPath(result.user || result.data?.user));
       }
     }
   };
@@ -78,12 +80,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
       if (onSuccess) {
         onSuccess();
       } else {
-        const userData = result.user || result.data?.user;
-        if (userData?.role === 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
+        router.push(getRedirectPath(result.user || result.data?.user));
       }
     }
   };

@@ -3,55 +3,62 @@ import { SITE_CONFIG } from '@/config/seo';
 /**
  * FAQSchema — FAQPage JSON-LD for product detail pages.
  *
- * Generates context-aware FAQ entries based on the product's category,
- * price, certifications and delivery info. Eligible for Google FAQ rich results.
+ * Generates four specific FAQ entries for SEO optimization:
+ * 1. Price in Bangladesh
+ * 2. DGDA registration status
+ * 3. Warranty terms
+ * 4. Where to buy in Bangladesh
+ *
+ * Eligible for Google FAQ rich results.
  *
  * @param {{ product: Object }} props
  */
 export default function FAQSchema({ product }) {
   if (!product) return null;
 
-  const brandName  = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-  const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+  // Determine price display
+  const priceDisplay = product.price && product.price > 0
+    ? `৳${product.price.toLocaleString()}`
+    : 'Contact for Price';
+
+  // Determine warranty information
+  let warrantyInfo = '1 year manufacturer warranty';
+  if (product.variants?.warranty && Array.isArray(product.variants.warranty) && product.variants.warranty.length > 0) {
+    warrantyInfo = product.variants.warranty.join(', ');
+  } else if (product.variants?.warranty && typeof product.variants.warranty === 'string') {
+    warrantyInfo = product.variants.warranty;
+  }
 
   const faqs = [
     {
       question: `What is the price of ${product.name} in Bangladesh?`,
-      answer:   `The retail price of ${product.name} in Bangladesh is ৳${product.price?.toLocaleString()}. B2B customers get up to 30% discount. Contact MedCore BD for bulk pricing at ${SITE_CONFIG.phone}.`,
+      answer: product.price && product.price > 0
+        ? `The price of ${product.name} in Bangladesh is ${priceDisplay}. B2B customers receive discounts up to 30%. Contact MedCore BD at ${SITE_CONFIG.phone} for bulk pricing.`
+        : `Please contact MedCore BD at ${SITE_CONFIG.phone} or email ${SITE_CONFIG.email} for pricing information on ${product.name}.`,
     },
     {
-      question: `Is ${product.name} DGDA approved in Bangladesh?`,
-      answer:   `Yes, ${product.name} sold by MedCore BD is DGDA registered and certified for use in Bangladesh.${product.certifications?.includes('CE') ? ' It is also CE certified.' : ''}${product.certifications?.includes('ISO 13485') ? ' ISO 13485 quality management standards are maintained.' : ''}`,
+      question: `Is ${product.name} DGDA registered?`,
+      answer: `Yes, ${product.name} sold by MedCore BD is DGDA registered and certified for use in Bangladesh. All products meet regulatory requirements for medical equipment in Bangladesh.${product.certifications?.includes('CE') ? ' This product is also CE certified.' : ''}${product.certifications?.includes('ISO 13485') ? ' ISO 13485 quality management standards are maintained.' : ''}`,
     },
     {
-      question: `Does MedCore BD deliver ${product.name} across Bangladesh?`,
-      answer:   `Yes, MedCore BD delivers ${product.name} across Bangladesh including Dhaka, Chittagong, Sylhet, Rajshahi, Khulna and other cities. Free delivery on orders over ৳50,000 in Dhaka metro area.`,
+      question: `What is the warranty for ${product.name}?`,
+      answer: `${product.name} comes with ${warrantyInfo}. MedCore BD provides full after-sales support and service for all products. Contact us at ${SITE_CONFIG.phone} for warranty details.`,
     },
-    ...(categoryName === 'Diagnostic Equipment' ? [{
-      question: `Is free installation included with ${product.name}?`,
-      answer:   `Yes, MedCore BD provides free installation and staff training for ${product.name} in Dhaka. For other cities, installation charges apply. Contact us at ${SITE_CONFIG.phone}.`,
-    }] : []),
-    ...(categoryName === 'Laboratory Reagents' ? [{
-      question: `What analysers is ${product.name} compatible with?`,
-      answer:   product.compatibleWith?.length > 0
-        ? `${product.name} is compatible with: ${product.compatibleWith.join(', ')}.`
-        : `Please contact MedCore BD at ${SITE_CONFIG.phone} to confirm analyser compatibility for ${product.name}.`,
-    }] : []),
-    ...(brandName ? [{
-      question: `Is MedCore BD an authorised distributor of ${brandName} in Bangladesh?`,
-      answer:   `Yes, MedCore BD is an authorised distributor of ${brandName} products in Bangladesh. All ${brandName} products sold by MedCore BD come with full manufacturer warranty and after-sales support.`,
-    }] : []),
+    {
+      question: `Where can I buy ${product.name} in Bangladesh?`,
+      answer: `You can buy ${product.name} from MedCore BD, an authorized medical equipment supplier in Bangladesh. We offer free delivery in Dhaka metro area on orders over ৳50,000 and nationwide shipping to Chittagong, Sylhet, Rajshahi, Khulna and other cities. Order online at ${SITE_CONFIG.url} or call ${SITE_CONFIG.phone}.`,
+    },
   ];
 
   const schema = {
     '@context': 'https://schema.org',
-    '@type':    'FAQPage',
+    '@type': 'FAQPage',
     mainEntity: faqs.map(faq => ({
       '@type': 'Question',
-      name:    faq.question,
+      name: faq.question,
       acceptedAnswer: {
         '@type': 'Answer',
-        text:    faq.answer,
+        text: faq.answer,
       },
     })),
   };

@@ -36,18 +36,18 @@ function validateSchema(schema) {
   }
 
   if (!schema || typeof schema !== 'object') {
-    process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('[StructuredData] Schema must be a non-null object');
+    console.error('[StructuredData] Schema must be a non-null object');
     return false;
   }
 
   if (!schema['@context']) {
-    process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('[StructuredData] Missing required field "@context" in schema');
+    console.error('[StructuredData] Missing required field "@context" in schema');
     return false;
   }
 
   const type = schema['@type'];
   if (!type) {
-    process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('[StructuredData] Missing required field "@type" in schema');
+    console.error('[StructuredData] Missing required field "@type" in schema');
     return false;
   }
 
@@ -56,7 +56,7 @@ function validateSchema(schema) {
 
   for (const field of required) {
     if (schema[field] === undefined || schema[field] === null) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error(
+      console.error(
         `[StructuredData] Missing required field "${field}" in ${type} schema`
       );
       valid = false;
@@ -77,21 +77,27 @@ function validateSchema(schema) {
  * @param {string} product.name - Product name
  * @param {string} product.description - Product description
  * @param {string} [product.image] - Product image URL
- * @param {string} [product.brand] - Brand name
+ * @param {Array} [product.images] - Array of product image objects or URLs
+ * @param {string|Object} [product.brand] - Brand name or brand object with name property
  * @param {string} [product.sku] - Stock-keeping unit identifier
  * @param {number|string} [product.price] - Product price
  * @param {string} [product.priceCurrency='BDT'] - ISO 4217 currency code
  * @param {boolean} [product.inStock=true] - Whether the product is in stock
  * @param {string} [product.url] - Canonical product URL
- * @param {string} [product._id] - Product ID (used to build URL if url not provided)
- * @returns {Object} Product JSON-LD object
+ * @param {string} [product.slug] - Product slug for URL generation
+ * @param {string} [product._id] - Product ID (used to build URL if url and slug not provided)
+ * @param {number|Object} [product.rating] - Product rating (number or {average, count} object)
+ * @param {number} [product.reviewCount] - Number of reviews
+ * @param {Array<string>} [product.certifications] - Array of certifications (DGDA, CE, ISO)
+ * @returns {Object|null} Product JSON-LD object or null if product is invalid
  *
- * Validates: Requirements 6.1
+ * Validates: Requirements 3, 4, 7, 10
  */
 export function generateProductSchema(product) {
+  // Handle null/undefined inputs gracefully
   if (!product) {
     if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('[StructuredData] generateProductSchema: product data is required');
+      console.error('[StructuredData] generateProductSchema: product data is required');
     }
     return null;
   }
@@ -119,6 +125,7 @@ export function generateProductSchema(product) {
     url ||
     (slug ? `${siteConfig.url}/products/${slug}` : _id ? `${siteConfig.url}/products/${_id}` : siteConfig.url);
 
+  // Availability: InStock or OutOfStock based on product.inStock
   const availability = inStock
     ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
@@ -126,12 +133,32 @@ export function generateProductSchema(product) {
   // Resolve brand name whether it's a string or populated object
   const brandName = typeof brand === 'object' ? brand?.name : brand;
 
-  // Collect all product images for the schema
+  // Collect all product images for the schema (as array of all image URLs)
   const imageUrls = images?.length
     ? images.map(img => (typeof img === 'string' ? img : img?.url)).filter(Boolean)
     : image
     ? [image]
     : [];
+
+  // Handle rating - can be a number or { average, count } object
+  let ratingValue = null;
+  let ratingCount = reviewCount;
+
+  if (rating) {
+    if (typeof rating === 'object' && rating.average !== undefined) {
+      // Rating is an object with { average, count }
+      ratingValue = rating.average;
+      ratingCount = rating.count || ratingCount;
+    } else if (typeof rating === 'number') {
+      // Rating is a simple number
+      ratingValue = rating;
+    }
+  }
+
+  // priceValidUntil: 1 year from now in ISO format
+  const oneYearFromNow = new Date();
+  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+  const priceValidUntil = oneYearFromNow.toISOString().split('T')[0];
 
   // Build the schema
   const schema = {
@@ -139,7 +166,9 @@ export function generateProductSchema(product) {
     '@type': 'Product',
     name: name || '',
     description: description || '',
-    ...(imageUrls.length > 0 && { image: imageUrls.length === 1 ? imageUrls[0] : imageUrls }),
+    // Include all images as array
+    ...(imageUrls.length > 0 && { image: imageUrls }),
+    // Brand as { "@type": "Brand", "name": brandName }
     ...(brandName && {
       brand: {
         '@type': 'Brand',
@@ -147,37 +176,38 @@ export function generateProductSchema(product) {
       },
     }),
     ...(sku && { sku }),
-    // AggregateRating — enables star ratings in Google search results
-    ...(rating && Number(rating) > 0 && reviewCount && Number(reviewCount) > 0 && {
+    url: productUrl,
+    // AggregateRating — only when product.rating exists and is valid
+    ...(ratingValue && Number(ratingValue) > 0 && ratingCount && Number(ratingCount) > 0 && {
       aggregateRating: {
-        '@type':       'AggregateRating',
-        ratingValue:   Number(rating).toFixed(1),
-        reviewCount:   Number(reviewCount),
-        bestRating:    '5',
-        worstRating:   '1',
+        '@type': 'AggregateRating',
+        ratingValue: Number(ratingValue).toFixed(1),
+        reviewCount: Number(ratingCount),
+        bestRating: '5',
+        worstRating: '1',
       },
     }),
+    // Offers object with all required fields
     offers: {
-      '@type':        'Offer',
-      url:            productUrl,
+      '@type': 'Offer',
+      url: productUrl,
       priceCurrency,
-      price:          price !== undefined ? Number(price).toFixed(2) : '0.00',
+      price: price !== undefined ? Number(price).toFixed(2) : '0.00',
       availability,
-      itemCondition:  'https://schema.org/NewCondition',
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      priceValidUntil,
+      itemCondition: 'https://schema.org/NewCondition',
       seller: {
         '@type': 'Organization',
-        name:    siteConfig.name,
-        url:     siteConfig.url,
+        name: 'MedCore BD',
+        url: siteConfig.url,
       },
     },
-    url: productUrl,
-    // Certifications as additionalProperty for DGDA/CE/ISO
+    // additionalProperty array for certifications (DGDA, CE, ISO)
     ...(certifications?.length > 0 && {
       additionalProperty: certifications.map(cert => ({
         '@type': 'PropertyValue',
-        name:    'Certification',
-        value:   cert,
+        name: cert,
+        value: 'Certified',
       })),
     }),
   };
@@ -220,16 +250,19 @@ export function generateOrganizationSchema() {
 
 /**
  * Generate a BreadcrumbList JSON-LD schema block.
+ * Accepts array of { name, url } items and generates BreadcrumbList with ListItem entries
+ * at positions 1 (Home), 2 (Category), 3 (Product), using slug in product URL with ID fallback.
  *
  * @param {Array<{name: string, url: string}>} breadcrumbs - Ordered list of breadcrumb items
  * @returns {Object|null} BreadcrumbList JSON-LD object, or null if input is invalid
  *
- * Validates: Requirements 6.3
+ * Validates: Requirements 3, 4, 7, 10
  */
 export function generateBreadcrumbSchema(breadcrumbs) {
+  // Handle null/undefined inputs gracefully (return null, log error in dev)
   if (!Array.isArray(breadcrumbs) || breadcrumbs.length === 0) {
     if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error(
+      console.error(
         '[StructuredData] generateBreadcrumbSchema: breadcrumbs must be a non-empty array'
       );
     }

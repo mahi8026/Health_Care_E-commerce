@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -18,6 +19,8 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   });
   const [errors, setErrors] = useState({});
   const { register, loading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,6 +61,9 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
       setErrors({ submit: result.error || 'Registration failed. Please try again.' });
     } else if (onSuccess) {
       onSuccess();
+    } else {
+      const redirect = searchParams?.get('redirect');
+      router.push(redirect || '/');
     }
   };
 

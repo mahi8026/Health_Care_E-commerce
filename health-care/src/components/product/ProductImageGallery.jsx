@@ -7,6 +7,55 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 /**
+ * Generates SEO-optimized alt text for product images.
+ *
+ * Primary image (index 0):
+ *   "{Product_Name} — {Brand} — Price ৳{Price} Bangladesh"
+ *   - Brand segment omitted when brand is missing
+ *   - "Contact for Price" used when price is 0, null, or undefined
+ *
+ * Secondary images (index > 0):
+ *   "{Product_Name} view {index} — MedCore BD"
+ *   - Truncated to 125 characters maximum
+ *
+ * @param {Object} product - Product object with name, brand, price
+ * @param {number} index - Image index (0 = primary)
+ * @returns {string} SEO-optimized alt text ≤125 characters
+ */
+export function generateAltText(product, index) {
+  const name = (product && product.name) ? product.name : 'Product';
+
+  if (index === 0) {
+    // Resolve brand: may be a populated object { _id, name } or a plain string
+    let brandName = '';
+    if (product && product.brand) {
+      brandName = typeof product.brand === 'object' ? (product.brand.name || '') : product.brand;
+    }
+
+    // Resolve price
+    const price = product && product.price;
+    const priceText = (!price || price === 0)
+      ? 'Contact for Price'
+      : `Price ৳${Number(price).toLocaleString('en-BD')} Bangladesh`;
+
+    // Build alt text, omitting brand segment when brand is missing
+    let alt;
+    if (brandName) {
+      alt = `${name} — ${brandName} — ${priceText}`;
+    } else {
+      alt = `${name} — ${priceText}`;
+    }
+
+    // Enforce 125-character limit
+    return alt.length > 125 ? alt.slice(0, 125) : alt;
+  }
+
+  // Secondary images
+  const alt = `${name} view ${index} — MedCore BD`;
+  return alt.length > 125 ? alt.slice(0, 125) : alt;
+}
+
+/**
  * Redesigned Product Image Gallery Component
  * Features: Main image with zoom, thumbnail strip, certification badges, wishlist button
  */
@@ -66,7 +115,7 @@ export default function ProductImageGallery({
             <>
               <Image
                 src={activeImage.url}
-                alt={activeImage.alt || product.name}
+                alt={generateAltText(product, activeIndex)}
                 fill
                 sizes="(max-width: 768px) 100vw, 420px"
                 className="object-contain p-4"
@@ -164,7 +213,7 @@ export default function ProductImageGallery({
             <>
               <Image
                 src={activeImage.url}
-                alt={activeImage.alt || product.name}
+                alt={generateAltText(product, activeIndex)}
                 fill
                 sizes="(max-width: 768px) 100vw, 420px"
                 className="object-contain p-6"
@@ -252,7 +301,7 @@ export default function ProductImageGallery({
             >
               <Image
                 src={img.url}
-                alt={img.alt || `${product.name} view ${idx + 1}`}
+                alt={generateAltText(product, idx)}
                 fill
                 sizes="64px"
                 className="object-cover bg-surface-subtle"
@@ -292,7 +341,7 @@ export default function ProductImageGallery({
           <div className="relative w-full h-full max-w-4xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
             <Image
               src={activeImage.url}
-              alt={activeImage.alt || product.name}
+              alt={generateAltText(product, activeIndex)}
               fill
               sizes="100vw"
               className="object-contain"

@@ -1,31 +1,13 @@
-"use client";
+import { SITE_CONFIG } from '@/config/seo';
+import OrdersClient from './OrdersClient';
 
-import OrderHistoryPage from '@/views/OrderHistoryPage';
-import { useRouter } from 'next/navigation';
+export const metadata = {
+  title: 'My Orders | MedCore BD',
+  description: 'View and manage your medical equipment orders on MedCore BD.',
+  robots: { index: false, follow: false },
+  alternates: { canonical: `${SITE_CONFIG.url}/orders` },
+};
 
 export default function OrdersPage() {
-  const router = useRouter();
-
-  const handleNavigate = (view, params) => {
-    const routes = {
-      'track': `/track${params?.orderNumber ? `?order=${params.orderNumber}` : ''}`,
-      'return-request': `/returns/request/${params?.orderId || ''}`,
-      'reagent': '/reagent-store',
-      'home': '/',
-    };
-    
-    const route = routes[view] || '/';
-    router.push(route);
-  };
-
-  const handleLoginClick = () => {
-    router.push('/login');
-  };
-
-  return (
-    <OrderHistoryPage 
-      onNavigate={handleNavigate}
-      onLoginClick={handleLoginClick}
-    />
-  );
+  return <OrdersClient />;
 }

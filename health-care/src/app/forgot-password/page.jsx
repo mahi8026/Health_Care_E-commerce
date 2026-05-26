@@ -1,14 +1,13 @@
-"use client";
+import { SITE_CONFIG } from '@/config/seo';
+import ForgotPasswordClient from './ForgotPasswordClient';
 
-import { useRouter } from 'next/navigation';
-import ForgotPasswordPage from '@/views/ForgotPasswordPage';
+export const metadata = {
+  title: 'Forgot Password | MedCore BD',
+  description: 'Reset your MedCore BD account password.',
+  robots: { index: false, follow: false },
+  alternates: { canonical: `${SITE_CONFIG.url}/forgot-password` },
+};
 
-export default function ForgotPassword() {
-  const router = useRouter();
-
-  const handleNavigateToLogin = () => {
-    router.push('/login');
-  };
-
-  return <ForgotPasswordPage onNavigateToLogin={handleNavigateToLogin} />;
+export default function ForgotPasswordPage() {
+  return <ForgotPasswordClient />;
 }

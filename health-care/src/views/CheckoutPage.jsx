@@ -16,6 +16,7 @@ import OrderConfirmation from '@/components/checkout/OrderConfirmation';
 import PaymentModal from '@/components/payment/PaymentModal';
 import Spinner from '@/components/ui/Spinner';
 import { FaArrowLeft } from 'react-icons/fa';
+import CheckoutAuthGate from '@/components/checkout/CheckoutAuthGate';
 
 export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function CheckoutPage({ onBackToCart }) {
   const [error, setError] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
+  const [showAuthGate, setShowAuthGate] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState({
     fullName: '',
     phone: '',
@@ -40,7 +42,37 @@ export default function CheckoutPage({ onBackToCart }) {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   const { cart, clearCart, getCartTotal } = useCart();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  // Restore saved delivery address from sessionStorage (survives auth redirect)
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('medcore_checkout_address');
+      if (saved) {
+        setDeliveryAddress(JSON.parse(saved));
+        sessionStorage.removeItem('medcore_checkout_address');
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Pre-fill delivery address from user profile
+  useEffect(() => {
+    if (user) {
+      setDeliveryAddress(prev => ({
+        ...prev,
+        fullName: prev.fullName || user.name || '',
+        phone: prev.phone || user.phone || '',
+        ...(user.addresses?.[0] && {
+          street: prev.street || user.addresses[0].street || '',
+          district: prev.district !== 'Dhaka' ? prev.district : (user.addresses[0].district || 'Dhaka'),
+          thana: prev.thana || user.addresses[0].thana || '',
+          postcode: prev.postcode || user.addresses[0].postcode || '',
+        }),
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -59,8 +91,13 @@ export default function CheckoutPage({ onBackToCart }) {
 
   const handlePlaceOrder = useCallback(async () => {
     if (!isAuthenticated()) {
-      setError('Please sign in to place your order.');
-      router.push('/login?redirect=/checkout');
+      // Save address so it survives the auth flow
+      try {
+        sessionStorage.setItem('medcore_checkout_address', JSON.stringify(deliveryAddress));
+      } catch {
+        // ignore
+      }
+      setShowAuthGate(true);
       return;
     }
 
@@ -151,6 +188,16 @@ export default function CheckoutPage({ onBackToCart }) {
     clearCart();
     setShowPaymentModal(false);
   }, [cart, clearCart, orderId, orderTotal, deliveryFee, selectedPayment]);
+
+  // Show auth gate overlay when user tries to place order without being logged in
+  if (showAuthGate && !isAuthenticated()) {
+    return (
+      <CheckoutAuthGate
+        onSuccess={() => setShowAuthGate(false)}
+        onBack={() => setShowAuthGate(false)}
+      />
+    );
+  }
 
   if (cart.length === 0 && !isConfirmed) {
     return (

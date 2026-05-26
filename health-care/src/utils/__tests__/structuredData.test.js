@@ -57,7 +57,8 @@ describe('generateProductSchema', () => {
 
   it('includes the product image', () => {
     const schema = generateProductSchema(validProduct)
-    expect(schema.image).toBe(validProduct.image)
+    expect(Array.isArray(schema.image)).toBe(true)
+    expect(schema.image[0]).toBe(validProduct.image)
   })
 
   it('includes the brand as a Brand object', () => {
@@ -166,6 +167,205 @@ describe('generateProductSchema', () => {
     const product = { ...validProduct, price: undefined }
     const schema = generateProductSchema(product)
     expect(schema.offers.price).toBe('0.00')
+  })
+
+  // --- Enhanced features: Images array ---
+
+  it('includes all images as an array when images array is provided', () => {
+    const product = {
+      ...validProduct,
+      images: [
+        { url: 'https://example.com/img1.jpg' },
+        { url: 'https://example.com/img2.jpg' },
+        { url: 'https://example.com/img3.jpg' },
+      ],
+    }
+    const schema = generateProductSchema(product)
+    expect(Array.isArray(schema.image)).toBe(true)
+    expect(schema.image).toHaveLength(3)
+    expect(schema.image[0]).toBe('https://example.com/img1.jpg')
+    expect(schema.image[1]).toBe('https://example.com/img2.jpg')
+    expect(schema.image[2]).toBe('https://example.com/img3.jpg')
+  })
+
+  it('handles images array with string URLs', () => {
+    const product = {
+      ...validProduct,
+      images: ['https://example.com/img1.jpg', 'https://example.com/img2.jpg'],
+    }
+    const schema = generateProductSchema(product)
+    expect(Array.isArray(schema.image)).toBe(true)
+    expect(schema.image).toHaveLength(2)
+  })
+
+  it('filters out invalid image entries', () => {
+    const product = {
+      ...validProduct,
+      images: [
+        { url: 'https://example.com/img1.jpg' },
+        null,
+        { url: undefined },
+        { url: 'https://example.com/img2.jpg' },
+      ],
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.image).toHaveLength(2)
+  })
+
+  // --- Enhanced features: Brand as object ---
+
+  it('extracts brand name from populated brand object', () => {
+    const product = {
+      ...validProduct,
+      brand: { _id: 'brand-123', name: 'Siemens' },
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.brand).toEqual({ '@type': 'Brand', name: 'Siemens' })
+  })
+
+  // --- Enhanced features: Rating as object ---
+
+  it('handles rating as a number', () => {
+    const product = {
+      ...validProduct,
+      rating: 4.5,
+      reviewCount: 10,
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.aggregateRating).toBeDefined()
+    expect(schema.aggregateRating.ratingValue).toBe('4.5')
+    expect(schema.aggregateRating.reviewCount).toBe(10)
+  })
+
+  it('handles rating as an object with average and count', () => {
+    const product = {
+      ...validProduct,
+      rating: { average: 4.7, count: 25 },
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.aggregateRating).toBeDefined()
+    expect(schema.aggregateRating.ratingValue).toBe('4.7')
+    expect(schema.aggregateRating.reviewCount).toBe(25)
+  })
+
+  it('uses rating.count over reviewCount when rating is object', () => {
+    const product = {
+      ...validProduct,
+      rating: { average: 4.8, count: 30 },
+      reviewCount: 10,
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.aggregateRating.reviewCount).toBe(30)
+  })
+
+  it('omits aggregateRating when rating is zero', () => {
+    const product = {
+      ...validProduct,
+      rating: 0,
+      reviewCount: 5,
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.aggregateRating).toBeUndefined()
+  })
+
+  it('omits aggregateRating when reviewCount is zero', () => {
+    const product = {
+      ...validProduct,
+      rating: 4.5,
+      reviewCount: 0,
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.aggregateRating).toBeUndefined()
+  })
+
+  // --- Enhanced features: Certifications ---
+
+  it('includes certifications as additionalProperty array', () => {
+    const product = {
+      ...validProduct,
+      certifications: ['DGDA', 'CE', 'ISO 13485'],
+    }
+    const schema = generateProductSchema(product)
+    expect(Array.isArray(schema.additionalProperty)).toBe(true)
+    expect(schema.additionalProperty).toHaveLength(3)
+    expect(schema.additionalProperty[0]).toEqual({
+      '@type': 'PropertyValue',
+      name: 'DGDA',
+      value: 'Certified',
+    })
+    expect(schema.additionalProperty[1]).toEqual({
+      '@type': 'PropertyValue',
+      name: 'CE',
+      value: 'Certified',
+    })
+    expect(schema.additionalProperty[2]).toEqual({
+      '@type': 'PropertyValue',
+      name: 'ISO 13485',
+      value: 'Certified',
+    })
+  })
+
+  it('omits additionalProperty when certifications array is empty', () => {
+    const product = {
+      ...validProduct,
+      certifications: [],
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.additionalProperty).toBeUndefined()
+  })
+
+  // --- Enhanced features: priceValidUntil (1 year from now) ---
+
+  it('sets priceValidUntil to 1 year from now', () => {
+    const schema = generateProductSchema(validProduct)
+    const priceValidUntil = new Date(schema.offers.priceValidUntil)
+    const now = new Date()
+    const oneYearFromNow = new Date()
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1)
+    
+    // Check that priceValidUntil is approximately 1 year from now (within 1 day tolerance)
+    const diffInDays = Math.abs((priceValidUntil - oneYearFromNow) / (1000 * 60 * 60 * 24))
+    expect(diffInDays).toBeLessThan(1)
+  })
+
+  it('formats priceValidUntil as ISO date string (YYYY-MM-DD)', () => {
+    const schema = generateProductSchema(validProduct)
+    expect(schema.offers.priceValidUntil).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+
+  // --- Enhanced features: Seller organization ---
+
+  it('sets seller name to "MedCore BD"', () => {
+    const schema = generateProductSchema(validProduct)
+    expect(schema.offers.seller.name).toBe('MedCore BD')
+  })
+
+  it('includes seller url from siteConfig', () => {
+    const schema = generateProductSchema(validProduct)
+    expect(schema.offers.seller.url).toMatch(/^https?:\/\//)
+  })
+
+  // --- Enhanced features: Slug-based URL ---
+
+  it('prefers slug over _id for product URL', () => {
+    const product = {
+      ...validProduct,
+      slug: 'digital-bp-monitor',
+      _id: 'prod-001',
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.url).toContain('digital-bp-monitor')
+    expect(schema.url).not.toContain('prod-001')
+  })
+
+  it('falls back to _id when slug is not available', () => {
+    const product = {
+      ...validProduct,
+      _id: 'prod-001',
+      slug: undefined,
+    }
+    const schema = generateProductSchema(product)
+    expect(schema.url).toContain('prod-001')
   })
 
   // --- Null / missing product ---

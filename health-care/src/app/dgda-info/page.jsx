@@ -1,17 +1,20 @@
 import AboutPage from '@/views/AboutPage';
+import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
-  title: 'DGDA Compliance & Regulatory Information — MedCore BD',
+  title: 'DGDA Compliance & Regulatory Information | MedCore BD',
   description:
     'MedCore BD operates in full compliance with the Directorate General of Drug Administration (DGDA) of Bangladesh. All products are DGDA-registered, CE certified, and ISO 13485 compliant.',
+  keywords: 'DGDA registered medical equipment Bangladesh, CE certified medical devices, ISO 13485 Bangladesh, MedCore BD compliance',
   alternates: {
-    canonical: 'https://medcorebd.com/dgda-info',
+    canonical: `${SITE_CONFIG.url}/dgda-info`,
   },
   openGraph: {
-    title: 'DGDA Compliance & Regulatory Information — MedCore BD',
+    title: 'DGDA Compliance & Regulatory Information | MedCore BD',
     description:
       'Every product on MedCore BD meets DGDA regulatory standards for medical equipment and supplies in Bangladesh.',
-    url: 'https://medcorebd.com/dgda-info',
+    url: `${SITE_CONFIG.url}/dgda-info`,
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
 };
 
