@@ -18,15 +18,21 @@ function initRedis() {
   }
 
   try {
+    const redisHost = process.env.REDIS_HOST || 'localhost';
+    const redisPort = parseInt(process.env.REDIS_PORT) || 6379;
+    
+    // Auto-detect if TLS is needed (Redis Cloud uses non-standard ports and requires TLS)
+    const needsTLS = process.env.REDIS_TLS === 'true' || 
+                     (redisHost.includes('redislabs.com') || redisHost.includes('redis.cloud')) ||
+                     (redisPort !== 6379 && redisHost !== 'localhost');
+    
     const redisConfig = {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT) || 6379,
+      host: redisHost,
+      port: redisPort,
       password: process.env.REDIS_PASSWORD || undefined,
       db: parseInt(process.env.REDIS_DB) || 0,
       // Redis Cloud requires TLS on non-local connections
-      tls: process.env.REDIS_TLS === 'true'
-        ? { rejectUnauthorized: false }
-        : undefined,
+      tls: needsTLS ? { rejectUnauthorized: false } : undefined,
       retryStrategy: (times) => {
         // Stop retrying after 3 attempts
         if (times > 3) {
