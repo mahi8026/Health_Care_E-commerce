@@ -54,7 +54,7 @@ export default function FrequentlyBought({ productId, category }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={imageUrl} 
-                    alt={typeof imageData === 'object' ? imageData.alt : product.name}
+                    alt={`${product.name}${typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price > 0 ? product.price.toLocaleString() : 'Contact for Price'} Bangladesh`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';

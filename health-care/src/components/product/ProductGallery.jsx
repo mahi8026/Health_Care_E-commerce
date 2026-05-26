@@ -41,7 +41,7 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={activeImage.url}
-                alt={activeImage.alt || product.name}
+                alt={activeImage.alt || `${product.name}${product.brand ? ` — ${typeof product.brand === 'object' ? product.brand.name : product.brand}` : ''} — MedCore BD Bangladesh`}
                 className="w-full h-full object-contain p-2"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -107,7 +107,7 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={img.url}
-                alt={img.alt || `${product.name} view ${idx + 1}`}
+                alt={img.alt || `${product.name} view ${idx + 1} — MedCore BD`}
                 className="w-full h-full object-cover"
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
@@ -137,7 +137,7 @@ export default function ProductGallery({ images = [], product = {}, badges = [],
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={activeImage.url}
-                alt={activeImage.alt || product.name}
+                alt={activeImage.alt || `${product.name}${product.brand ? ` — ${typeof product.brand === 'object' ? product.brand.name : product.brand}` : ''} — MedCore BD Bangladesh`}
                 className="w-full h-full object-contain p-2"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
