@@ -1,10 +1,15 @@
 /** @type {import('next').NextConfig} */
-import bundleAnalyzer from '@next/bundle-analyzer';
 
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-  openAnalyzer: false, // writes files without opening browser (CI-friendly)
-});
+// Conditionally load bundle analyzer — only available as a devDependency
+// Vercel production builds skip devDependencies, so guard the import
+let withBundleAnalyzer = (config) => config;
+if (process.env.ANALYZE === 'true') {
+  const bundleAnalyzer = (await import('@next/bundle-analyzer')).default;
+  withBundleAnalyzer = bundleAnalyzer({
+    enabled: true,
+    openAnalyzer: false,
+  });
+}
 
 const nextConfig = {
   // Proxy /api/* to the backend in development to avoid CORS issues
