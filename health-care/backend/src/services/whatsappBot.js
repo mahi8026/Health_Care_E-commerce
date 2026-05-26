@@ -374,6 +374,29 @@ Please describe your issue, and I'll connect you with our support team.
     conversation.status = 'pending';
     await conversation.save();
 
+    // Notify admin about support request
+    try {
+      const { sendWhatsAppConversationAlert } = require('../utils/emailService');
+      
+      // Try to find user by phone number
+      let user = null;
+      const cleanPhone = from.replace(/\D/g, '');
+      user = await User.findOne({
+        $or: [
+          { phone: from },
+          { phone: cleanPhone },
+          { phone: `+${cleanPhone}` },
+          { phone: `+880${cleanPhone.slice(-10)}` }
+        ]
+      });
+
+      await sendWhatsAppConversationAlert(conversation, user);
+      logger.info(`[WhatsAppBot] Admin notification sent for support request ${conversation.conversationId}`);
+    } catch (notifyError) {
+      logger.error(`[WhatsAppBot] Failed to send admin notification: ${notifyError.message}`);
+      // Don't fail the support request if notification fails
+    }
+
     return message;
   }
 
@@ -400,7 +423,28 @@ Please wait...`;
     conversation.status = 'escalated';
     await conversation.save();
 
-    // TODO: Notify admin/agent about new conversation
+    // Notify admin/agent about new conversation
+    try {
+      const { sendWhatsAppConversationAlert } = require('../utils/emailService');
+      
+      // Try to find user by phone number
+      let user = null;
+      const cleanPhone = from.replace(/\D/g, '');
+      user = await User.findOne({
+        $or: [
+          { phone: from },
+          { phone: cleanPhone },
+          { phone: `+${cleanPhone}` },
+          { phone: `+880${cleanPhone.slice(-10)}` }
+        ]
+      });
+
+      await sendWhatsAppConversationAlert(conversation, user);
+      logger.info(`[WhatsAppBot] Admin notification sent for conversation ${conversation.conversationId}`);
+    } catch (notifyError) {
+      logger.error(`[WhatsAppBot] Failed to send admin notification: ${notifyError.message}`);
+      // Don't fail the handoff if notification fails
+    }
 
     return message;
   }

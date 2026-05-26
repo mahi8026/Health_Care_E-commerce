@@ -574,6 +574,116 @@ async function sendNewsletterBroadcast(email, name, subject, htmlContent, unsubs
   return info;
 }
 
+// ─── 11. WhatsApp Conversation Alert (Admin) ─────────────────────────────────
+async function sendWhatsAppConversationAlert(conversation, user) {
+  const t = await getTransporter();
+  
+  const categoryBadge = {
+    order_status: { color: '#0d6efd', label: 'Order Status' },
+    product_inquiry: { color: '#0E8A6E', label: 'Product Inquiry' },
+    quote_request: { color: '#6f42c1', label: 'Quote Request' },
+    support: { color: '#dc3545', label: 'Support' },
+    general: { color: '#6c757d', label: 'General' }
+  };
+
+  const badge = categoryBadge[conversation.category] || categoryBadge.general;
+  
+  // Get recent messages (last 5)
+  const recentMessages = conversation.messages.slice(-5).map(msg => `
+    <div style="margin:8px 0;padding:10px;background:${msg.direction === 'inbound' ? '#f8f9fa' : '#e7f3ff'};border-radius:8px;border-left:3px solid ${msg.direction === 'inbound' ? '#6c757d' : '#0d6efd'};">
+      <div style="font-size:11px;color:#6c757d;margin-bottom:4px;">
+        <strong>${msg.direction === 'inbound' ? '👤 Customer' : '🤖 Bot'}</strong> • ${new Date(msg.timestamp).toLocaleString('en-BD', { hour: '2-digit', minute: '2-digit' })}
+      </div>
+      <div style="font-size:13px;color:#212529;">${msg.text}</div>
+    </div>
+  `).join('');
+
+  const html = wrapHtml(`
+    <div style="background:#fff3cd;padding:16px;border-radius:8px;border-left:4px solid #ffc107;margin-bottom:20px;">
+      <h2 style="color:#856404;margin:0 0 8px;font-size:18px;">🔔 New WhatsApp Conversation Escalated</h2>
+      <p style="margin:0;font-size:14px;color:#856404;">A customer has requested to speak with a human agent.</p>
+    </div>
+    
+    <div class="info-row">
+      <div class="info-box">
+        <h4>Customer Name</h4>
+        <p>${user?.name || 'Unknown'}</p>
+      </div>
+      <div class="info-box">
+        <h4>Phone Number</h4>
+        <p style="font-family:monospace;font-size:14px;">${conversation.phoneNumber}</p>
+      </div>
+      <div class="info-box">
+        <h4>Category</h4>
+        <p><span class="badge" style="background:${badge.color}20;color:${badge.color};">${badge.label}</span></p>
+      </div>
+    </div>
+
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">💬 Conversation Details</h3>
+    <div style="background:#f8f9fa;padding:18px;border-radius:12px;border-left:4px solid #0E8A6E;">
+      <p style="margin:0 0 8px;"><strong>Conversation ID:</strong> <span style="font-family:monospace;font-size:13px;">${conversation.conversationId}</span></p>
+      <p style="margin:0 0 8px;"><strong>Started:</strong> ${new Date(conversation.createdAt).toLocaleString('en-BD', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+      <p style="margin:0 0 8px;"><strong>Status:</strong> <span class="badge" style="background:#dc354520;color:#dc3545;">${conversation.status.toUpperCase()}</span></p>
+      <p style="margin:0;"><strong>Bot Stage:</strong> ${conversation.botStage || 'N/A'}</p>
+    </div>
+
+    ${conversation.relatedOrder ? `
+    <div style="background:#e7f3ff;padding:16px;border-radius:8px;margin:16px 0;border-left:4px solid #0d6efd;">
+      <p style="margin:0;font-weight:600;color:#084298;">📦 Related Order</p>
+      <p style="margin:4px 0;color:#084298;font-size:13px;">Order ID: <span style="font-family:monospace;">${conversation.relatedOrder}</span></p>
+    </div>
+    ` : ''}
+
+    ${conversation.relatedProducts && conversation.relatedProducts.length > 0 ? `
+    <div style="background:#d4edda;padding:16px;border-radius:8px;margin:16px 0;border-left:4px solid #28a745;">
+      <p style="margin:0;font-weight:600;color:#155724;">🔍 Related Products</p>
+      <p style="margin:4px 0;color:#155724;font-size:13px;">${conversation.relatedProducts.length} product(s) discussed</p>
+    </div>
+    ` : ''}
+
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">📝 Recent Messages</h3>
+    <div style="background:#fff;padding:16px;border-radius:12px;border:1px solid #e9ecef;">
+      ${recentMessages || '<p style="color:#6c757d;font-size:13px;margin:0;">No messages yet</p>'}
+    </div>
+
+    ${user?.email ? `
+    <h3 style="color:#0B2545;margin:28px 0 16px;font-size:18px;">👤 Customer Information</h3>
+    <div style="background:#f8f9fa;padding:18px;border-radius:12px;border-left:4px solid #0E8A6E;">
+      <p style="margin:0 0 8px;"><strong>Name:</strong> ${user.name}</p>
+      <p style="margin:0 0 8px;"><strong>Email:</strong> <a href="mailto:${user.email}" style="color:#0E8A6E;text-decoration:none;">${user.email}</a></p>
+      <p style="margin:0 0 8px;"><strong>Phone:</strong> ${user.phone || conversation.phoneNumber}</p>
+      ${user.role === 'b2b' ? '<p style="margin:0;"><span class="badge" style="background:#6f42c120;color:#6f42c1;">B2B Customer</span></p>' : ''}
+    </div>
+    ` : ''}
+
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${process.env.ADMIN_URL || FRONTEND_URL + '/admin'}?tab=whatsapp&conversation=${conversation.conversationId}" class="btn">View Conversation →</a>
+    </div>
+
+    <div class="highlight">
+      <p style="margin:0 0 8px;font-weight:600;color:#856404;">⚡ Action Required</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Respond to the customer via WhatsApp as soon as possible</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Review the conversation history before responding</p>
+      <p style="margin:4px 0;font-size:13px;color:#856404;">• Update the conversation status after resolution</p>
+    </div>
+
+    <p style="margin-top:24px;color:#6c757d;font-size:13px;text-align:center;">
+      💡 Tip: Quick response improves customer satisfaction!
+    </p>
+  `);
+
+  const info = await t.sendMail({
+    from: `"MedCore BD WhatsApp Bot" <${FROM}>`,
+    to: ADMIN_EMAIL,
+    subject: `🔔 WhatsApp Escalation — ${user?.name || conversation.phoneNumber}`,
+    html,
+    priority: 'high' // Mark as high priority
+  });
+  
+  logger.info(`WhatsApp conversation alert sent to admin: ${conversation.conversationId}`);
+  return info;
+}
+
 module.exports = {
   sendOrderConfirmation,
   sendPaymentReceipt,
@@ -584,5 +694,6 @@ module.exports = {
   sendPasswordResetEmail,
   sendAbandonedCartEmail,
   sendNewsletterWelcomeEmail,
-  sendNewsletterBroadcast
+  sendNewsletterBroadcast,
+  sendWhatsAppConversationAlert
 };
