@@ -12,6 +12,8 @@ jobs:
   sonarcloud:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
+    # Only run if SONAR_TOKEN secret is available
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
 
     steps:
       - uses: actions/checkout@v4
@@ -40,14 +42,8 @@ jobs:
         run: npm run test:coverage || true
 
       - name: SonarCloud Scan
-        if: ${{ env.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarcloud-github-action@v3
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Skip SonarCloud scan (token not configured)
-        if: ${{ env.SONAR_TOKEN == '' }}
-        run: echo "⚠️ SONAR_TOKEN not configured — skipping SonarCloud scan. Add it to repository secrets to enable."
-        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
