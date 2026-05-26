@@ -7,12 +7,6 @@
     "NODE_ENV": "production",
     "HUSKY": "0"
   },
-  "crons": [
-    {
-      "path": "/api/cron/keep-alive",
-      "schedule": "*/10 * * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
