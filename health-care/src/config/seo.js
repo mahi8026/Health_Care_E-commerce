@@ -19,7 +19,7 @@ export const SITE_CONFIG = {
   url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com',
   description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered, ISO 13485 certified. B2B & retail. Dhaka, Chittagong, Sylhet.",
   keywords:     'medical equipment Bangladesh, diagnostic equipment Dhaka, surgical instruments BD, laboratory reagents Bangladesh, hospital equipment supplier, DGDA registered medical devices, ECG machine price Bangladesh, reagent supplier Dhaka, B2B medical supplier Bangladesh',
-  ogImage:      '/images/og-default.jpg',
+  ogImage:      '/og-default.png',
   twitterHandle: '@medcorebd',
   locale:       'en_BD',
   phone:        '+8801800000000',

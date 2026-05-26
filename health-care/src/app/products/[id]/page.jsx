@@ -44,7 +44,7 @@ export async function generateMetadata({ params }) {
   const description = `Buy ${name} in Bangladesh. ${descChunk}${descChunk ? ' ' : ''}Brand: ${brandName || 'N/A'}. Price: ৳${product.price?.toLocaleString()}. DGDA certified. Free delivery Dhaka.`;
 
   const primaryImg = product.images?.find(i => i?.isPrimary) || product.images?.[0];
-  const imageUrl   = (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) || '/images/og-default.jpg';
+  const imageUrl   = (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) || '/og-default.png';
 
   const canonicalUrl = `${SITE_CONFIG.url}/products/${slug}`;
 

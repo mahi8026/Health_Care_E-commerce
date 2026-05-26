@@ -59,7 +59,7 @@ export const metadata = {
     title:       SITE_CONFIG.fullName,
     description: SITE_CONFIG.description,
     images: [{
-      url:    '/images/og-default.jpg',
+      url:    '/og-default.png',
       width:  1200,
       height: 630,
       alt:    'MedCore BD — Medical Equipment Supplier Bangladesh',
@@ -71,7 +71,7 @@ export const metadata = {
     site:        SITE_CONFIG.twitterHandle,
     title:       SITE_CONFIG.fullName,
     description: SITE_CONFIG.description,
-    images:      ['/images/og-default.jpg'],
+    images:      ['/og-default.png'],
   },
 
   robots: {

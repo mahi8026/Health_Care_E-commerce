@@ -16,7 +16,7 @@ export const metadata = {
     title:       PAGE_SEO.b2b.title,
     description: PAGE_SEO.b2b.description,
     url:         `${SITE_CONFIG.url}/b2b`,
-    images: [{ url: '/images/og-b2b.jpg', width: 1200, height: 630 }],
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
 };
 

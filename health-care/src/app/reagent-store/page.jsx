@@ -10,7 +10,7 @@ export const metadata = {
     title:       PAGE_SEO.reagentStore.title,
     description: PAGE_SEO.reagentStore.description,
     url:         `${SITE_CONFIG.url}/reagent-store`,
-    images: [{ url: '/images/og-reagents.jpg', width: 1200, height: 630 }],
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
 };
 

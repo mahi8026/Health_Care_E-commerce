@@ -14,13 +14,13 @@ export const metadata = {
     title:       PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
     url:         SITE_CONFIG.url,
-    images: [{ url: '/images/og-home.jpg', width: 1200, height: 630, alt: 'MedCore BD — Bangladesh Medical Equipment Supplier' }],
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'MedCore BD — Bangladesh Medical Equipment Supplier' }],
   },
   twitter: {
     card:        'summary_large_image',
     title:       PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
-    images:      ['/images/og-home.jpg'],
+    images:      ['/og-default.png'],
   },
 };
 
