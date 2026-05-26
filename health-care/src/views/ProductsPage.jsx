@@ -5,14 +5,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
 import SearchResults from '@/components/search/SearchResults';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
+import { CATEGORY_NAME_TO_SLUG } from '@/app/products/[category]/page';
 
-export default function ProductsPage({ onProductClick }) {
+export default function ProductsPage({ onProductClick, initialCategory }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
-  const [searchCategory, setSearchCategory] = useState(searchParams.get('category') || '');
+  // initialCategory (from slug route) takes priority over query param
+  const [searchCategory, setSearchCategory] = useState(
+    initialCategory || searchParams.get('category') || ''
+  );
 
   // Sync URL search params back to state when URL changes (e.g. Header search navigation)
   useEffect(() => {
@@ -185,9 +189,18 @@ export default function ProductsPage({ onProductClick }) {
               <div className="flex items-center gap-2 flex-wrap">
                 {categories.slice(0, 8).map(cat => {
                   const name = typeof cat === 'string' ? cat : cat.name;
+                  const slug = CATEGORY_NAME_TO_SLUG[name];
                   return (
                     <button key={name}
-                      onClick={() => { setSearchCategory(searchCategory === name ? '' : name); resetPagination(); }}
+                      onClick={() => {
+                        if (slug) {
+                          // Navigate to slug-based category URL for SEO
+                          router.push(`/products/${slug}`);
+                        } else {
+                          setSearchCategory(searchCategory === name ? '' : name);
+                          resetPagination();
+                        }
+                      }}
                       className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
                         searchCategory === name
                           ? 'bg-[#0E8A6E] text-white'
@@ -264,7 +277,16 @@ export default function ProductsPage({ onProductClick }) {
                     <span>📂</span> Category
                   </label>
                   <select value={searchCategory}
-                    onChange={e => { setSearchCategory(e.target.value); resetPagination(); }}
+                    onChange={e => {
+                      const name = e.target.value;
+                      const slug = CATEGORY_NAME_TO_SLUG[name];
+                      if (slug) {
+                        router.push(`/products/${slug}`);
+                      } else {
+                        setSearchCategory(name);
+                        resetPagination();
+                      }
+                    }}
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700">
                     <option value="">All categories</option>
                     {categories.map(cat => (
@@ -438,7 +460,18 @@ export default function ProductsPage({ onProductClick }) {
               <div>
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Category</label>
                 <select value={searchCategory}
-                  onChange={e => { setSearchCategory(e.target.value); resetPagination(); setSidebarOpen(false); }}
+                  onChange={e => {
+                    const name = e.target.value;
+                    const slug = CATEGORY_NAME_TO_SLUG[name];
+                    if (slug) {
+                      router.push(`/products/${slug}`);
+                      setSidebarOpen(false);
+                    } else {
+                      setSearchCategory(name);
+                      resetPagination();
+                      setSidebarOpen(false);
+                    }
+                  }}
                   className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]">
                   <option value="">All categories</option>
                   {categories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}

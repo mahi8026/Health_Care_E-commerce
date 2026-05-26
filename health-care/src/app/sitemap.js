@@ -89,10 +89,10 @@ export default async function sitemap() {
   ];
 
   // ── Category landing pages ────────────────────────────────────────────────
-  // Use the full category name in the query param (matches what the products
-  // page actually filters on). Google will crawl these as distinct pages.
+  // Use slug-based URLs — Google indexes these as distinct pages with
+  // their own title, description, and canonical URL.
   const categoryPages = CATEGORY_SLUGS.map(cat => ({
-    url:             `${SITE_URL}/products?category=${encodeURIComponent(cat.name)}`,
+    url:             `${SITE_URL}/products/${cat.slug}`,
     lastModified:    now,
     changeFrequency: 'daily',
     priority:        0.85,

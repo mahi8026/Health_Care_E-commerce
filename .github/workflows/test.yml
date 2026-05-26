@@ -31,11 +31,11 @@ jobs:
       
       - name: Run linter
         working-directory: health-care
-        run: npm run lint || true
+        run: npm run lint
       
       - name: Run tests
         working-directory: health-care
-        run: npm test || true
+        run: npm test
       
       - name: Build
         working-directory: health-care
@@ -78,7 +78,7 @@ jobs:
       
       - name: Run tests
         working-directory: health-care/backend
-        run: npm test || true
+        run: npm test
         env:
           MONGODB_URI: mongodb://localhost:27017/medcore-test
           JWT_SECRET: test_jwt_secret_for_ci_cd_pipeline

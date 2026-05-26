@@ -35,7 +35,7 @@ jobs:
 
       - name: Run frontend linter
         working-directory: health-care
-        run: npm run lint || true
+        run: npm run lint
 
       - name: Build frontend
         working-directory: health-care
@@ -78,7 +78,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: health-care/backend
-        run: npm test || true
+        run: npm test
         env:
           NODE_ENV: test
           JWT_SECRET: ci_test_secret

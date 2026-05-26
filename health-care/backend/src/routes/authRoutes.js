@@ -19,7 +19,8 @@ const {
   verify2FA,
   get2FAStatus,
   googleAuthSuccess,
-  googleAuthFailure
+  googleAuthFailure,
+  updateNotificationPreferences
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { noStore } = require('../middleware/cache');
@@ -79,6 +80,7 @@ router.post('/logout', protect, noStore, logout);
 router.get('/me', protect, noStore, getMe);
 router.put('/profile', protect, noStore, updateProfile);
 router.patch('/profile', protect, noStore, updateProfile);
+router.patch('/notification-preferences', protect, noStore, updateNotificationPreferences);
 
 // Phone verification routes (with OTP rate limiting)
 router.post('/send-phone-otp', protect, otpLimiter, noStore, sendPhoneOTP);

@@ -12,6 +12,7 @@ import FrequentlyBoughtRedesigned from '@/components/product/FrequentlyBoughtRed
 import Spinner from '@/components/ui/Spinner';
 import GA4Tracker from '@/services/GA4Tracker';
 import { API as API_BASE } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/app/products/[category]/page';
 
 export default function ProductDetailPage({ productId, heroPriority = false }) {
   const router = useRouter();
@@ -124,6 +125,9 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const categoryName = product.categoryName || (typeof product.category === 'object' ? product.category?.name : product.category);
+  
+  // Get category slug for SEO-friendly URL
+  const categorySlug = categoryName ? CATEGORY_NAME_TO_SLUG[categoryName] : null;
 
   return (
     <div className="bg-page min-h-screen pb-24 md:pb-8">
@@ -135,11 +139,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
             <Link href="/" className="hover:text-[#0E8A6E] transition-colors">Home</Link>
             <span className="text-gray-300" aria-hidden="true">/</span>
             <Link href="/products" className="hover:text-[#0E8A6E] transition-colors">Products</Link>
-            {categoryName && (
+            {categoryName && categorySlug && (
               <>
                 <span className="text-gray-300" aria-hidden="true">/</span>
                 <Link
-                  href={`/products?category=${encodeURIComponent(categoryName)}`}
+                  href={`/products/${categorySlug}`}
                   className="hover:text-[#0E8A6E] transition-colors"
                 >
                   {categoryName}

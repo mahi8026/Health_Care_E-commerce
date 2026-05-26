@@ -223,7 +223,9 @@ exports.getMe = async (req, res) => {
         loyaltyPoints: user.loyaltyPoints,
         creditLimit: user.creditLimit,
         creditUsed: user.creditUsed,
-        availableCredit: user.getAvailableCredit()
+        availableCredit: user.getAvailableCredit(),
+        notificationPreferences: user.notificationPreferences,
+        bkashPhone: user.bkashPhone
       }
     });
   } catch (error) {
@@ -236,13 +238,14 @@ exports.getMe = async (req, res) => {
 // PATCH /api/auth/profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, phone, address, addresses, companyName } = req.body;
+    const { name, phone, address, addresses, companyName, bkashPhone } = req.body;
     const updates = {};
     if (name) updates.name = name.trim();
     if (phone) updates.phone = phone.trim();
     if (address) updates.address = address;
     if (addresses) updates.addresses = addresses;
     if (companyName) { updates.companyName = companyName.trim(); updates.company = companyName.trim(); }
+    if (typeof bkashPhone === 'string') updates.bkashPhone = bkashPhone.trim();
 
     const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true });
     if (!user) {
@@ -718,4 +721,43 @@ exports.googleAuthSuccess = async (req, res) => {
 exports.googleAuthFailure = (req, res) => {
   logger.error('[googleAuthFailure] Google authentication failed');
   res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`);
+};
+
+// ── Update Notification Preferences ──────────────────────────────────────────
+// PATCH /api/auth/notification-preferences
+exports.updateNotificationPreferences = async (req, res) => {
+  try {
+    const allowed = [
+      'orderUpdates', 'deliveryAlerts', 'promotions',
+      'stockAlerts', 'newsletter', 'smsOrderUpdates', 'smsDeliveryAlerts'
+    ];
+
+    const prefs = {};
+    for (const key of allowed) {
+      if (typeof req.body[key] === 'boolean') {
+        prefs[`notificationPreferences.${key}`] = req.body[key];
+      }
+    }
+
+    if (Object.keys(prefs).length === 0) {
+      return res.status(400).json({ success: false, message: 'No valid preferences provided' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: prefs },
+      { new: true, runValidators: false }
+    );
+
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification preferences updated',
+      notificationPreferences: user.notificationPreferences
+    });
+  } catch (error) {
+    logger.error(`[updateNotificationPreferences] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 };

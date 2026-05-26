@@ -82,6 +82,10 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       if (filters.priceRange < 50000) params.set('maxPrice', String(filters.priceRange));
       if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
 
+      // Wire temperature and hazard filters to API
+      if (filters.temperature?.length) params.set('temperature', filters.temperature.join(','));
+      if (filters.hazards?.length) params.set('hazards', filters.hazards.join(','));
+
       if (sortBy === 'price-low') params.set('sortBy', 'price-low');
       else if (sortBy === 'price-high') params.set('sortBy', 'price-high');
       else if (sortBy === 'brand') params.set('sortBy', 'name');

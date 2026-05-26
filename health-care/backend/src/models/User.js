@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema({
       return !this.googleId;
     }
   },
+  bkashPhone: { type: String },
   // OAuth fields
   googleId: {
     type: String
@@ -104,6 +105,16 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   phoneVerified: { type: Boolean, default: false },
   phoneVerifiedAt: { type: Date },
+  // Notification preferences
+  notificationPreferences: {
+    orderUpdates: { type: Boolean, default: true },
+    deliveryAlerts: { type: Boolean, default: true },
+    promotions: { type: Boolean, default: false },
+    stockAlerts: { type: Boolean, default: true },
+    newsletter: { type: Boolean, default: false },
+    smsOrderUpdates: { type: Boolean, default: true },
+    smsDeliveryAlerts: { type: Boolean, default: true },
+  },
   createdAt: { type: Date, default: Date.now }
 }, {
   timestamps: true

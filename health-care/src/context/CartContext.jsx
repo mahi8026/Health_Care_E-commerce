@@ -12,7 +12,6 @@ const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [syncPending, setSyncPending] = useState(false);
 
@@ -96,7 +95,6 @@ export function CartProvider({ children }) {
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('medcore_cart');
-      const savedWishlist = localStorage.getItem('medcore_wishlist');
       if (savedCart) {
         const parsed = JSON.parse(savedCart);
         // Sanitize stale items that may have populated objects stored
@@ -107,7 +105,6 @@ export function CartProvider({ children }) {
         }));
         setCart(sanitized);
       }
-      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
     } catch {
       // Ignore parse errors — start with empty cart
     }
@@ -117,11 +114,6 @@ export function CartProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('medcore_cart', JSON.stringify(cart));
   }, [cart]);
-
-  // Persist wishlist to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('medcore_wishlist', JSON.stringify(wishlist));
-  }, [wishlist]);
 
   // Update cart in backend if logged in
   const updateBackendCart = useCallback(async (action, productId, quantity) => {
@@ -238,21 +230,6 @@ export function CartProvider({ children }) {
     updateBackendCart('clear');
   }, [updateBackendCart]);
 
-  const addToWishlist = useCallback((product) => {
-    setWishlist(prevWishlist => {
-      if (prevWishlist.find(item => item.id === product.id)) return prevWishlist;
-      return [...prevWishlist, product];
-    });
-  }, []);
-
-  const removeFromWishlist = useCallback((productId) => {
-    setWishlist(prevWishlist => prevWishlist.filter(item => item.id !== productId));
-  }, []);
-
-  const isInWishlist = useCallback((productId) => {
-    return wishlist.some(item => item.id === productId);
-  }, [wishlist]);
-
   // Memoized cart total — recalculates whenever cart changes
   const getCartTotal = useCallback(() => {
     return cart.reduce((total, item) => total + ((item.price || 0) * item.quantity), 0);
@@ -268,16 +245,12 @@ export function CartProvider({ children }) {
 
   const value = {
     cart,
-    wishlist,
     cartTotal,
     cartCount,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
-    addToWishlist,
-    removeFromWishlist,
-    isInWishlist,
     getCartTotal,
     getCartCount,
     syncCartToBackend

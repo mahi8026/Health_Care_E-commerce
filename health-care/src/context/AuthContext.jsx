@@ -25,12 +25,7 @@ export function AuthProvider({ children }) {
       }
       
       try {
-        // Increase timeout to 8s to handle slow networks (FIX 11)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
-        
         const response = await api.getMe();
-        clearTimeout(timeoutId);
         
         const normalized = normalizeUser(response.user);
         setUser(normalized);

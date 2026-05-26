@@ -1,4 +1,4 @@
-import AccountPlaceholderPage from '@/views/account/AccountPlaceholderPage';
+import PaymentMethodsPage from '@/views/account/PaymentMethodsPage';
 
 export const metadata = {
   title: 'Payment Methods - My Account',
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function AccountPaymentMethodsRoute() {
-  return <AccountPlaceholderPage slug="payment-methods" />;
+  return <PaymentMethodsPage />;
 }

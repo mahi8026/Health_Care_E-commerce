@@ -24,6 +24,27 @@ const nextConfig = {
     ];
   },
 
+  // Redirect old query-param category URLs to slug-based URLs
+  async redirects() {
+    const categoryRedirects = [
+      { name: 'Diagnostic Equipment',  slug: 'diagnostic-equipment' },
+      { name: 'Surgical Instruments',  slug: 'surgical-instruments' },
+      { name: 'Laboratory Reagents',   slug: 'laboratory-reagents' },
+      { name: 'Hospital Machines',     slug: 'hospital-machines' },
+      { name: 'Lab Equipment',         slug: 'lab-equipment' },
+      { name: 'PPE & Safety',          slug: 'ppe-safety' },
+      { name: 'Dental Equipment',      slug: 'dental-equipment' },
+      { name: 'Implants & Ortho',      slug: 'implants-ortho' },
+    ];
+
+    return categoryRedirects.map(({ name, slug }) => ({
+      source: '/products',
+      has: [{ type: 'query', key: 'category', value: name }],
+      destination: `/products/${slug}`,
+      permanent: true, // 301 redirect — passes SEO link equity
+    }));
+  },
+
   // Security headers
   async headers() {
     return [

@@ -1,10 +1,10 @@
-import AccountPlaceholderPage from '@/views/account/AccountPlaceholderPage';
+import NotificationsPage from '@/views/account/NotificationsPage';
 
 export const metadata = {
-  title: 'Notifications - My Account',
+  title: 'Notification Preferences - My Account',
   robots: { index: false, follow: false },
 };
 
 export default function AccountNotificationsRoute() {
-  return <AccountPlaceholderPage slug="notifications" />;
+  return <NotificationsPage />;
 }
