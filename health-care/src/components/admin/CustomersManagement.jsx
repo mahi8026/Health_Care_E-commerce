@@ -165,11 +165,11 @@ export default function CustomersManagement() {
   const totalPages = Math.ceil(total / 10);
 
   return (
-    <div className="p-3 sm:p-4 md:p-6">
-    <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)]">
+    <div className="p-3 sm:p-4 md:p-6 max-w-full">
+    <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Toast */}
       {message.text && (
-        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
+        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 max-w-[calc(100vw-2rem)] ${
           message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
         }`}>
           {message.text}
@@ -177,12 +177,13 @@ export default function CustomersManagement() {
       )}
 
       {/* Filters */}
-      <div className="p-3 sm:p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] flex flex-col sm:flex-row gap-2 sm:gap-3 flex-wrap">
-        <div className="flex gap-2">
+      <div className="p-3 sm:p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] space-y-2">
+        {/* Row 1: Role and Tier filters */}
+        <div className="grid grid-cols-2 gap-2">
           <select
             value={roleFilter}
             onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
-            className="flex-1 sm:flex-none px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
+            className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[44px]"
           >
             {ROLE_FILTERS.map(r => (
               <option key={r.value} value={r.value}>{r.label}</option>
@@ -191,24 +192,26 @@ export default function CustomersManagement() {
           <select
             value={tierFilter}
             onChange={e => { setTierFilter(e.target.value); setPage(1); }}
-            className="flex-1 sm:flex-none px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
+            className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[44px]"
           >
             {TIERS.map(t => (
               <option key={t} value={t}>{t === 'all' ? 'All tiers' : t}</option>
             ))}
           </select>
         </div>
-        <form onSubmit={handleSearch} className="flex gap-2 flex-1">
+        
+        {/* Row 2: Search */}
+        <form onSubmit={handleSearch} className="flex gap-2">
           <input
             type="text"
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="Search by name or email..."
-            className="flex-1 px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] min-h-[48px]"
+            className="flex-1 px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] min-h-[44px]"
           />
           <button
             type="submit"
-            className="px-3 sm:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold min-h-[48px] min-w-[44px]"
+            className="px-3 sm:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <span className="hidden sm:inline">Search</span>
             <span className="sm:hidden">🔍</span>
@@ -217,14 +220,16 @@ export default function CustomersManagement() {
             <button
               type="button"
               onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
-              className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] min-h-[48px] min-w-[44px]"
+              className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               ✕
             </button>
           )}
         </form>
-        <div className="self-center text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] text-center sm:text-left">
-          {total} customers
+        
+        {/* Row 3: Count */}
+        <div className="text-center text-[12px] text-[var(--color-text-secondary)] py-1">
+          {total} customer{total !== 1 ? 's' : ''}
         </div>
       </div>
 

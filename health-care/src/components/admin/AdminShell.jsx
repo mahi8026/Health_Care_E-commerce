@@ -93,7 +93,7 @@ export default function AdminShell({ children, title, action, onAction }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-page-muted">
+    <div className="flex min-h-screen bg-page-muted overflow-x-hidden">
       {/* Mobile Backdrop */}
       {mobileMenuOpen && (
         <div 
@@ -192,13 +192,13 @@ export default function AdminShell({ children, title, action, onAction }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col md:ml-[220px]">
+      <div className="flex-1 flex flex-col md:ml-[220px] min-w-0 overflow-x-hidden">
         {/* Top Bar */}
-        <div className="bg-white border-b border-[var(--color-border-tertiary)] px-4 md:px-5 py-2.5 flex items-center justify-between gap-3 min-h-[52px]">
+        <div className="bg-white border-b border-[var(--color-border-tertiary)] px-4 md:px-5 py-2.5 flex items-center justify-between gap-2 min-h-[52px]">
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-11 h-11 flex-shrink-0 flex items-center justify-center text-[#0B2545] rounded-lg hover:bg-[var(--color-background-secondary)]"
+            className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-[#0B2545] rounded-lg hover:bg-[var(--color-background-secondary)]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12"/>
@@ -207,8 +207,8 @@ export default function AdminShell({ children, title, action, onAction }) {
             </svg>
           </button>
 
-          <div className="flex-1 min-w-0 md:flex-initial">
-            <h1 className="text-[15px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[15px] md:text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
               {title || 'Admin Panel'}
             </h1>
             <div className="text-[10px] text-[var(--color-text-secondary)] truncate hidden sm:block">
@@ -221,7 +221,7 @@ export default function AdminShell({ children, title, action, onAction }) {
             </div>
           </div>
           
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
             <button className="hidden md:flex w-8 h-8 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] items-center justify-center hover:bg-[var(--color-background-secondary)]">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="11" cy="11" r="8"/>
@@ -241,16 +241,17 @@ export default function AdminShell({ children, title, action, onAction }) {
               )}
             </button>
 
-            <div className="w-8 h-8 bg-[#0B2545] rounded-lg flex items-center justify-center text-white text-[11px] font-bold">
+            <div className="w-8 h-8 md:w-9 md:h-9 bg-[#0B2545] rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">
               {adminUser.initials}
             </div>
 
             {action && onAction && (
               <button
                 onClick={onAction}
-                className="px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors"
+                className="px-3 md:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[11px] md:text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors whitespace-nowrap"
               >
-                {action}
+                <span className="hidden sm:inline">{action}</span>
+                <span className="sm:hidden">+</span>
               </button>
             )}
           </div>

@@ -157,55 +157,57 @@ export default function ReturnsManagement() {
   }
 
   return (
-    <div className="p-3 sm:p-4 md:p-6">
+    <div className="p-3 sm:p-4 md:p-6 w-full max-w-full overflow-x-hidden">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-[#0B2545] mb-1 sm:mb-2">Return Requests Management</h2>
-        <p className="text-sm text-gray-600">Review and manage customer return requests</p>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#0B2545] mb-1 sm:mb-2">Returns Management</h2>
+        <p className="text-xs sm:text-sm text-gray-600">Review and manage customer return requests</p>
       </div>
 
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className="bg-white rounded-lg border p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-gray-600 mb-1">Total</p>
-            <p className="text-xl sm:text-2xl font-bold text-[#0B2545]">{stats.total}</p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3 mb-4 sm:mb-6">
+          <div className="bg-white rounded-lg border p-3 min-w-0">
+            <p className="text-[10px] text-gray-500 mb-1 uppercase font-semibold tracking-wide">Total</p>
+            <p className="text-2xl font-bold text-[#0B2545]">{stats.total}</p>
           </div>
-          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-yellow-800 mb-1">Pending</p>
-            <p className="text-xl sm:text-2xl font-bold text-yellow-900">{stats.pending}</p>
+          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-3 min-w-0">
+            <p className="text-[10px] text-yellow-700 mb-1 uppercase font-semibold tracking-wide">Pending</p>
+            <p className="text-2xl font-bold text-yellow-900">{stats.pending}</p>
           </div>
-          <div className="bg-green-50 rounded-lg border border-green-200 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-green-800 mb-1">Approved</p>
-            <p className="text-xl sm:text-2xl font-bold text-green-900">{stats.approved}</p>
+          <div className="bg-green-50 rounded-lg border border-green-200 p-3 min-w-0">
+            <p className="text-[10px] text-green-700 mb-1 uppercase font-semibold tracking-wide">Approved</p>
+            <p className="text-2xl font-bold text-green-900">{stats.approved}</p>
           </div>
-          <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-blue-800 mb-1">Refunded</p>
-            <p className="text-xl sm:text-2xl font-bold text-blue-900">{stats.refunded}</p>
+          <div className="bg-blue-50 rounded-lg border border-blue-200 p-3 min-w-0">
+            <p className="text-[10px] text-blue-700 mb-1 uppercase font-semibold tracking-wide">Refunded</p>
+            <p className="text-2xl font-bold text-blue-900">{stats.refunded}</p>
           </div>
-          <div className="bg-red-50 rounded-lg border border-red-200 p-3 sm:p-4 col-span-2 sm:col-span-1">
-            <p className="text-xs sm:text-sm text-red-800 mb-1">Rejected</p>
-            <p className="text-xl sm:text-2xl font-bold text-red-900">{stats.rejected}</p>
+          <div className="bg-red-50 rounded-lg border border-red-200 p-3 min-w-0 col-span-2 md:col-span-1">
+            <p className="text-[10px] text-red-700 mb-1 uppercase font-semibold tracking-wide">Rejected</p>
+            <p className="text-2xl font-bold text-red-900">{stats.rejected}</p>
           </div>
         </div>
       )}
 
       {/* Filter Tabs - horizontal scroll on mobile */}
-      <div className="bg-white rounded-lg border p-2 mb-4 sm:mb-6 flex gap-2 overflow-x-auto scrollbar-hide">
-        {['all', 'pending', 'approved', 'rejected', 'refunded'].map(status => (
-          <button
-            key={status}
-            onClick={() => { setFilter(status); setPage(1); }}
-            className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors min-h-[44px] ${
-              filter === status ? 'bg-[#0E8A6E] text-white' : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-            {status !== 'all' && stats && (
-              <span className="ml-1.5 text-xs opacity-80">({stats[status] || 0})</span>
-            )}
-          </button>
-        ))}
+      <div className="bg-white rounded-lg border p-2 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-2 min-w-max">
+          {['all', 'pending', 'approved', 'rejected', 'refunded'].map(status => (
+            <button
+              key={status}
+              onClick={() => { setFilter(status); setPage(1); }}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors min-h-[44px] ${
+                filter === status ? 'bg-[#0E8A6E] text-white' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {status !== 'all' && stats && (
+                <span className="ml-1.5 text-xs opacity-80">({stats[status] || 0})</span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Returns Table/Cards */}

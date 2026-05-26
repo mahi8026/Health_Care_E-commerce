@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 import AdminShell from '@/components/admin/AdminShell';
+
 // Check if user is authenticated
 const isAuthenticated = () => {
   if (typeof window !== 'undefined') {
@@ -25,8 +26,6 @@ export default function CategoriesPage() {
       process.env.NODE_ENV !== "production" && console.warn('[Categories] No authentication token found');
       setError('Please log in to access the admin panel');
       setLoading(false);
-      // Optionally redirect to login
-      // router.push('/login');
     }
   }, [router]);
 
@@ -49,11 +48,6 @@ export default function CategoriesPage() {
       setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (err) {
       process.env.NODE_ENV !== "production" && console.error('[Categories] Fetch error:', err);
-      process.env.NODE_ENV !== "production" && console.error('[Categories] Error details:', {
-        message: err.message,
-        status: err.status,
-        data: err.data
-      });
       
       // Provide more specific error messages
       let errorMessage = 'Failed to load categories';
@@ -87,196 +81,273 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-page-muted p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
+      <AdminShell title="Categories">
+        <div className="p-3 sm:p-4 md:p-6 max-w-full">
+          <div className="animate-pulse space-y-4">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-20 bg-gray-200 rounded"></div>
-              ))}
-            </div>
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-20 bg-gray-200 rounded"></div>
+            ))}
           </div>
         </div>
-      </div>
+      </AdminShell>
     );
   }
 
   return (
     <AdminShell title="Categories">
-    <div className="min-h-screen bg-page-muted p-8 overflow-x-auto flex flex-col">
-      <div className="flex-1">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-            <p className="text-gray-600 mt-1">Manage product categories and subcategories</p>
-          </div>
+    <div className="p-3 sm:p-4 md:p-6 max-w-full overflow-hidden">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 md:mb-6">
+        <div>
+          <h1 className="text-[20px] md:text-[24px] font-bold font-[family-name:var(--font-lora)]">Categories</h1>
+          <p className="text-[12px] md:text-[13px] text-[var(--color-text-secondary)] mt-1">
+            Manage product categories and subcategories
+          </p>
+        </div>
+        <button
+          onClick={() => router.push('/admin/categories/new')}
+          className="px-3 md:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] md:text-[13px] font-semibold hover:bg-[#0d2e56] transition-colors min-h-[44px] whitespace-nowrap"
+        >
+          <span className="hidden sm:inline">+ Add Category</span>
+          <span className="sm:hidden">+ Add</span>
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] p-3 md:p-4 mb-4 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeInactive}
+              onChange={(e) => setIncludeInactive(e.target.checked)}
+              className="w-4 h-4 accent-[#0E8A6E] rounded"
+            />
+            <span className="text-[13px] text-[var(--color-text-primary)]">Show inactive categories</span>
+          </label>
           <button
-            onClick={() => router.push('/admin/categories/new')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+            onClick={fetchCategories}
+            className="text-[12px] md:text-[13px] text-[#0E8A6E] hover:text-[#0a6b55] font-medium underline"
           >
-            + Add Category
+            Refresh
           </button>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={includeInactive}
-                onChange={(e) => setIncludeInactive(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded"
-              />
-              <span className="text-sm text-gray-700">Show inactive categories</span>
-            </label>
-            <button
-              onClick={() => {
-                fetchCategories();
-              }}
-              className="text-sm text-blue-600 hover:text-blue-800 underline"
-            >
-              Refresh
-            </button>
-          </div>
+      {/* Error */}
+      {error && (
+        <div className="bg-[#FEE2E2] border border-[#FCA5A5] text-[#991B1B] px-4 py-3 rounded-lg mb-4 text-[13px]">
+          {error}
         </div>
+      )}
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-            {error}
+      {/* Categories Table/Cards */}
+      <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden mb-4">
+        {categories.length === 0 ? (
+          <div className="p-8 text-center text-[13px] text-[var(--color-text-secondary)]">
+            No categories found. Create your first category to get started.
           </div>
-        )}
+        ) : (
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+              <table className="w-full" style={{minWidth: '900px'}}>
+                <thead className="bg-[var(--color-background-secondary)] border-b border-[var(--color-border-tertiary)]">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Image
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Name
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Slug
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Parent
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Products
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Order
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--color-border-tertiary)]">
+                  {categories.map((category) => (
+                    <tr key={category._id} className="hover:bg-[var(--color-background-tertiary)]">
+                      <td className="px-4 py-3">
+                        {category.image?.url ? (
+                          <img
+                            src={category.image.url}
+                            alt={category.name}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-[var(--color-background-secondary)] rounded flex items-center justify-center text-[var(--color-text-secondary)] text-[10px]">
+                            No image
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-[13px] font-semibold text-[var(--color-text-primary)]">{category.name}</div>
+                        {category.description && (
+                          <div className="text-[11px] text-[var(--color-text-secondary)] mt-1 max-w-xs truncate">
+                            {category.description}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <code className="text-[11px] bg-[var(--color-background-secondary)] px-2 py-1 rounded text-[var(--color-text-secondary)] font-mono">
+                          {category.slug}
+                        </code>
+                      </td>
+                      <td className="px-4 py-3 text-[12px] text-[var(--color-text-secondary)]">
+                        {category.parentCategory?.name || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-[12px] font-semibold text-[var(--color-text-primary)]">
+                        {category.productCount || 0}
+                      </td>
+                      <td className="px-4 py-3 text-[12px] text-[var(--color-text-secondary)]">
+                        {category.displayOrder}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded ${
+                            category.isActive
+                              ? 'bg-[#D1FAE5] text-[#065F46]'
+                              : 'bg-[#F3F4F6] text-[#6B7280]'
+                          }`}
+                        >
+                          {category.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => router.push(`/admin/categories/${category._id}/edit`)}
+                          className="text-[11px] text-[#0E8A6E] font-medium hover:underline mr-3"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category._id, category.name)}
+                          className="text-[11px] text-[#E24B4A] font-medium hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-        {/* Categories Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col">
-          <div className="flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-            <table className="w-full" style={{minWidth: '900px'}}>
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Image
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Parent
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Products
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {categories.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
-                    No categories found. Create your first category to get started.
-                  </td>
-                </tr>
-              ) : (
-                categories.map((category) => (
-                  <tr key={category._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {category.image?.url ? (
-                        <img
-                          src={category.image.url}
-                          alt={category.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">
-                          No image
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{category.name}</div>
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3 p-3">
+              {categories.map((category) => (
+                <div key={category._id} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
+                  {/* Header with Image and Name */}
+                  <div className="flex items-start gap-3">
+                    {category.image?.url ? (
+                      <img
+                        src={category.image.url}
+                        alt={category.name}
+                        className="w-16 h-16 object-cover rounded flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-white rounded flex items-center justify-center text-[var(--color-text-secondary)] text-[10px] flex-shrink-0 border border-[var(--color-border-tertiary)]">
+                        No image
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-bold text-[#0B2545] truncate">{category.name}</div>
                       {category.description && (
-                        <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
+                        <div className="text-[11px] text-[var(--color-text-secondary)] mt-1 line-clamp-2">
                           {category.description}
                         </div>
                       )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700">
+                      <div className="flex items-center gap-2 mt-2">
+                        <span
+                          className={`px-2 py-1 text-[10px] font-semibold rounded ${
+                            category.isActive
+                              ? 'bg-[#D1FAE5] text-[#065F46]'
+                              : 'bg-[#F3F4F6] text-[#6B7280]'
+                          }`}
+                        >
+                          {category.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-2 gap-2 text-[12px]">
+                    <div>
+                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Slug</div>
+                      <code className="text-[11px] font-mono text-[var(--color-text-primary)] mt-0.5 block truncate">
                         {category.slug}
                       </code>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {category.parentCategory?.name || '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {category.productCount || 0}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {category.displayOrder}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          category.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {category.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => router.push(`/admin/categories/${category._id}/edit`)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(category._id, category.name)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Products</div>
+                      <div className="mt-0.5 font-semibold">{category.productCount || 0}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Parent</div>
+                      <div className="mt-0.5 truncate">{category.parentCategory?.name || '—'}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Order</div>
+                      <div className="mt-0.5">{category.displayOrder}</div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--color-border-tertiary)]">
+                    <button
+                      onClick={() => router.push(`/admin/categories/${category._id}/edit`)}
+                      className="min-h-[40px] px-2 text-[11px] text-[#0E8A6E] font-semibold border border-[#0E8A6E] rounded-lg hover:bg-[#F0FDF9] transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category._id, category.name)}
+                      className="min-h-[40px] px-2 text-[11px] text-[#E24B4A] font-semibold border border-[#E24B4A] rounded-lg hover:bg-[#FEF2F2] transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+        <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] p-3 md:p-4">
+          <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)]">Total Categories</div>
+          <div className="text-[20px] md:text-[24px] font-bold text-[var(--color-text-primary)] mt-1">{categories.length}</div>
+        </div>
+        <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] p-3 md:p-4">
+          <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)]">Active</div>
+          <div className="text-[20px] md:text-[24px] font-bold text-[#0E8A6E] mt-1">
+            {categories.filter(c => c.isActive).length}
           </div>
         </div>
-
-        {/* Stats */}
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="text-sm text-gray-500">Total Categories</div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">{categories.length}</div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="text-sm text-gray-500">Active</div>
-            <div className="text-2xl font-bold text-green-600 mt-1">
-              {categories.filter(c => c.isActive).length}
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <div className="text-sm text-gray-500">Total Products</div>
-            <div className="text-2xl font-bold text-blue-600 mt-1">
-              {categories.reduce((sum, c) => sum + (c.productCount || 0), 0)}
-            </div>
+        <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] p-3 md:p-4 col-span-2 md:col-span-1">
+          <div className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)]">Total Products</div>
+          <div className="text-[20px] md:text-[24px] font-bold text-[#0B2545] mt-1">
+            {categories.reduce((sum, c) => sum + (c.productCount || 0), 0)}
           </div>
         </div>
       </div>

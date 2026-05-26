@@ -9,6 +9,8 @@ import {
   FaShoppingCart,
   FaHeart,
   FaUser,
+  FaUserShield,
+  FaBuilding,
 } from 'react-icons/fa';
 
 const NAV_ITEMS = [
@@ -19,15 +21,19 @@ const NAV_ITEMS = [
   { icon: FaUser,         label: 'Account',  path: '/account',  requiresAuth: true, authFallback: '/login', exactMatch: false },
 ];
 
-const ACTIVE_COLOR  = '#0E8A6E';
+const ACTIVE_COLOR   = '#0E8A6E';
 const INACTIVE_COLOR = '#9CA3AF';
+const ADMIN_COLOR    = '#7C3AED';
+const B2B_COLOR      = '#0E8A6E';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router   = useRouter();
-  const { getCartCount }  = useCart();
-  const { isAuthenticated } = useAuth();
-  const cartCount = getCartCount();
+  const { getCartCount }                                = useCart();
+  const { isAuthenticated, isAdmin, isB2BCustomer }     = useAuth();
+  const cartCount  = getCartCount();
+  const adminUser  = isAdmin();
+  const b2bUser    = isB2BCustomer();
 
   // Hide on admin, B2B, and auth pages
   if (
@@ -36,6 +42,19 @@ export default function BottomNav() {
     pathname?.startsWith('/login') ||
     pathname?.startsWith('/register')
   ) return null;
+
+  // Build nav items — swap Account → Admin for admin users, Account → B2B for B2B customers
+  const items = adminUser
+    ? [
+        ...NAV_ITEMS.slice(0, 4),
+        { icon: FaUserShield, label: 'Admin', path: '/admin', exactMatch: false, isAdmin: true },
+      ]
+    : b2bUser
+    ? [
+        ...NAV_ITEMS.slice(0, 4),
+        { icon: FaBuilding, label: 'B2B', path: '/b2b', exactMatch: false, isB2B: true },
+      ]
+    : NAV_ITEMS;
 
   const handleNavClick = (item) => {
     if (item.requiresAuth && !isAuthenticated()) {
@@ -47,7 +66,6 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* Scoped style — hides the bar on screens ≥ 1024 px no matter what */}
       <style>{`
         @media (min-width: 1024px) {
           .bottom-nav-bar { display: none !important; }
@@ -72,12 +90,13 @@ export default function BottomNav() {
           display: 'flex',
         }}
       >
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const isActive = item.exactMatch
             ? pathname === item.path
             : pathname?.startsWith(item.path);
-          const Icon  = item.icon;
-          const color = isActive ? ACTIVE_COLOR : INACTIVE_COLOR;
+          const Icon        = item.icon;
+          const activeColor = item.isAdmin ? ADMIN_COLOR : item.isB2B ? B2B_COLOR : ACTIVE_COLOR;
+          const color       = isActive ? activeColor : INACTIVE_COLOR;
 
           return (
             <button
@@ -101,7 +120,7 @@ export default function BottomNav() {
                 padding: '6px 4px',
               }}
             >
-              {/* Active indicator bar */}
+              {/* Active indicator */}
               {isActive && (
                 <span style={{
                   position: 'absolute',
@@ -110,14 +129,46 @@ export default function BottomNav() {
                   transform: 'translateX(-50%)',
                   width: 20,
                   height: 2.5,
-                  background: ACTIVE_COLOR,
+                  background: activeColor,
                   borderRadius: '0 0 3px 3px',
+                }} />
+              )}
+
+              {/* Admin badge dot */}
+              {item.isAdmin && !isActive && (
+                <span style={{
+                  position: 'absolute',
+                  top: 7,
+                  right: '22%',
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: ADMIN_COLOR,
+                  border: '1.5px solid #fff',
+                }} />
+              )}
+
+              {/* B2B badge dot */}
+              {item.isB2B && !isActive && (
+                <span style={{
+                  position: 'absolute',
+                  top: 7,
+                  right: '22%',
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: B2B_COLOR,
+                  border: '1.5px solid #fff',
                 }} />
               )}
 
               <Icon size={18} />
 
-              <span style={{ fontSize: 9.5, fontWeight: isActive ? 700 : 400, letterSpacing: '0.01em' }}>
+              <span style={{
+                fontSize: 9.5,
+                fontWeight: isActive ? 700 : 400,
+                letterSpacing: '0.01em',
+              }}>
                 {item.label}
               </span>
 
@@ -153,3 +204,4 @@ export default function BottomNav() {
     </>
   );
 }
+

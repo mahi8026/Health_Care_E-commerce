@@ -548,7 +548,7 @@ export default function ProductsManagement({ openCreateRef }) {
   const totalPages = Math.ceil(total / 20);
 
   return (
-    <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)]">
+    <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Message Toast */}
       {message.text && (
         <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
@@ -1262,14 +1262,14 @@ export default function ProductsManagement({ openCreateRef }) {
           </div>
         </div>
 
-        {/* Filter Pills Row */}
-        <div className="flex flex-wrap gap-2 items-center">
-          {/* Category Filter */}
+        {/* Filter Pills - Stacked on mobile, horizontal on desktop */}
+        <div className="space-y-2">
+          {/* Row 1: Category (full width on mobile) */}
           <div className="relative">
             <select
               value={categoryFilter}
               onChange={e => { setCategoryFilter(e.target.value); setPage(1); }}
-              className={`pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+              className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                 categoryFilter 
                   ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
                   : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
@@ -1287,56 +1287,57 @@ export default function ProductsManagement({ openCreateRef }) {
             </svg>
           </div>
 
-          {/* Brand Filter */}
-          <div className="relative">
-            <select
-              value={brandFilter}
-              onChange={e => { setBrandFilter(e.target.value); setPage(1); }}
-              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
-                brandFilter 
-                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
-                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
-              }`}
-            >
-              <option value="">🏭 All brands</option>
-              {(manufacturers || []).map(m => (
-                <option key={m._id} value={m._id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${brandFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+          {/* Row 2: Brand & Status (2 columns on mobile) */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="relative">
+              <select
+                value={brandFilter}
+                onChange={e => { setBrandFilter(e.target.value); setPage(1); }}
+                className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                  brandFilter 
+                    ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
+                    : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+                }`}
+              >
+                <option value="">🏭 All brands</option>
+                {(manufacturers || []).map(m => (
+                  <option key={m._id} value={m._id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+              <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${brandFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+                className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                  statusFilter 
+                    ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
+                    : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+                }`}
+              >
+                <option value="">⚡ All status</option>
+                <option value="active">✓ Active</option>
+                <option value="inactive">✗ Inactive</option>
+                <option value="featured">⭐ Featured</option>
+              </select>
+              <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${statusFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
 
-          {/* Status Filter */}
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
-                statusFilter 
-                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
-                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
-              }`}
-            >
-              <option value="">⚡ All status</option>
-              <option value="active">✓ Active</option>
-              <option value="inactive">✗ Inactive</option>
-              <option value="featured">⭐ Featured</option>
-            </select>
-            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${statusFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-
-          {/* Stock Filter */}
+          {/* Row 3: Stock Level (full width on mobile) */}
           <div className="relative">
             <select
               value={stockFilter}
               onChange={e => { setStockFilter(e.target.value); setPage(1); }}
-              className={`pl-3 pr-8 py-2 border-[0.5px] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+              className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                 stockFilter 
                   ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
                   : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
@@ -1352,40 +1353,43 @@ export default function ProductsManagement({ openCreateRef }) {
             </svg>
           </div>
 
-          {/* Clear Filters Button */}
-          {(categoryFilter || brandFilter || statusFilter || stockFilter || searchQuery) && (
-            <button
-              onClick={() => {
-                setCategoryFilter('');
-                setBrandFilter('');
-                setStatusFilter('');
-                setStockFilter('');
-                setSearchQuery('');
-                setPage(1);
-              }}
-              className="px-3 py-2 border-[0.5px] border-[#E24B4A] bg-[#FEF2F2] text-[#E24B4A] rounded-lg text-[12px] font-medium hover:bg-[#E24B4A] hover:text-white transition-all flex items-center gap-1.5 shadow-sm"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          {/* Row 4: Clear button & Results count */}
+          <div className="flex gap-2">
+            {/* Clear Filters Button */}
+            {(categoryFilter || brandFilter || statusFilter || stockFilter || searchQuery) && (
+              <button
+                onClick={() => {
+                  setCategoryFilter('');
+                  setBrandFilter('');
+                  setStatusFilter('');
+                  setStockFilter('');
+                  setSearchQuery('');
+                  setPage(1);
+                }}
+                className="flex-1 min-h-[44px] px-3 py-2 border-[0.5px] border-[#E24B4A] bg-[#FEF2F2] text-[#E24B4A] rounded-lg text-[12px] font-medium hover:bg-[#E24B4A] hover:text-white transition-all flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span className="hidden sm:inline">Clear all</span>
+                <span className="sm:hidden">Clear</span>
+              </button>
+            )}
+
+            {/* Results Count */}
+            <div className={`flex items-center justify-center gap-2 px-3 py-2 min-h-[44px] bg-white border-[0.5px] border-[var(--color-border-secondary)] rounded-lg ${
+              (categoryFilter || brandFilter || statusFilter || stockFilter || searchQuery) ? 'flex-1' : 'w-full'
+            }`}>
+              <svg className="w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
-              Clear all
-            </button>
-          )}
-
-          {/* Spacer */}
-          <div className="flex-1"></div>
-
-          {/* Results Count */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-white border-[0.5px] border-[var(--color-border-secondary)] rounded-lg">
-            <svg className="w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            <span className="text-[12px] font-semibold text-[var(--color-text-primary)]">
-              {total}
-            </span>
-            <span className="text-[12px] text-[var(--color-text-secondary)]">
-              product{total !== 1 ? 's' : ''}
-            </span>
+              <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">
+                {total}
+              </span>
+              <span className="text-[13px] text-[var(--color-text-secondary)]">
+                product{total !== 1 ? 's' : ''}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -1433,16 +1437,16 @@ export default function ProductsManagement({ openCreateRef }) {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[14px] font-bold text-[#0B2545]">৳{(product.price || 0).toLocaleString()}</span>
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <button
                           onClick={() => handleEditOpen(product)}
-                          className="min-h-[36px] px-3 text-[12px] text-[#0E8A6E] font-semibold border border-[#0E8A6E] rounded-lg hover:bg-[#F0FDF9] transition-colors"
+                          className="min-h-[36px] px-3 text-[11px] text-[#0E8A6E] font-semibold border border-[#0E8A6E] rounded-lg hover:bg-[#F0FDF9] transition-colors"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(product._id)}
-                          className="min-h-[36px] px-3 text-[12px] text-[#E24B4A] font-semibold border border-[#E24B4A] rounded-lg hover:bg-[#FEF2F2] transition-colors"
+                          className="min-h-[36px] px-3 text-[11px] text-[#E24B4A] font-semibold border border-[#E24B4A] rounded-lg hover:bg-[#FEF2F2] transition-colors"
                         >
                           Delete
                         </button>

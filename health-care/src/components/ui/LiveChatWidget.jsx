@@ -1,272 +1,285 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaComments, FaTimes, FaPaperPlane, FaFacebookMessenger, FaWhatsapp } from 'react-icons/fa';
+
+const glassPanel = {
+  background: 'rgba(11,37,69,0.78)',
+  backdropFilter: 'blur(40px) saturate(200%) brightness(1.06)',
+  WebkitBackdropFilter: 'blur(40px) saturate(200%) brightness(1.06)',
+  border: '1px solid rgba(255,255,255,0.14)',
+  boxShadow: '0 24px 64px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.18)',
+};
 
 export default function LiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [showContactOptions, setShowContactOptions] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'bot',
-      text: 'আসসালামু আলাইকুম, MedCore BD তে স্বাগতম!',
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    },
-    {
-      id: 2,
-      type: 'bot',
-      text: 'আপনাকে কিভাবে সাহায্য করতে পারি?',
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    }
+    { id: 1, type: 'bot', text: 'আসসালামু আলাইকুম, MedCore BD তে স্বাগতম!', time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) },
+    { id: 2, type: 'bot', text: 'আপনাকে কিভাবে সাহায্য করতে পারি?', time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) },
   ]);
+  const messagesEndRef = useRef(null);
 
-  // WhatsApp number (format: country code + number without + or spaces)
-  const whatsappNumber = '8801800000000'; // Replace with actual MedCore BD WhatsApp number
-  const facebookPageId = 'medcorebd'; // Replace with actual Facebook page username
+  const whatsappNumber = '8801646886795';
+  const facebookPageId = '61590311825607';
 
-  // Lock body scroll when chat is open
   useEffect(() => {
-    if (isOpen || showContactOptions) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    document.body.style.overflow = (isOpen || showContactOptions) ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen, showContactOptions]);
 
-  const handleOpenLiveChat = () => {
-    setShowContactOptions(false);
-    setIsOpen(true);
-  };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
+  const handleOpenLiveChat = () => { setShowContactOptions(false); setIsOpen(true); };
   const handleOpenWhatsApp = () => {
-    const message = encodeURIComponent('Hello, I need help with medical equipment.');
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello, I need help with medical equipment.')}`, '_blank');
     setShowContactOptions(false);
   };
-
-  const handleOpenMessenger = () => {
-    window.open(`https://m.me/${facebookPageId}`, '_blank');
-    setShowContactOptions(false);
-  };
+  const handleOpenMessenger = () => { window.open(`https://m.me/${facebookPageId}`, '_blank'); setShowContactOptions(false); };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!message.trim()) return;
-
-    const newMessage = {
-      id: messages.length + 1,
-      type: 'user',
-      text: message,
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages([...messages, newMessage]);
+    const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    setMessages(prev => [...prev, { id: prev.length + 1, type: 'user', text: message, time: now }]);
     setMessage('');
-
-    // Simulate bot response
     setTimeout(() => {
-      const botResponse = {
-        id: messages.length + 2,
-        type: 'bot',
-        text: 'ধন্যবাদ আপনার বার্তার জন্য। আমাদের মেডিকেল ইকুইপমেন্ট বিশেষজ্ঞ শীঘ্রই আপনার সাথে যোগাযোগ করবেন।',
-        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, botResponse]);
+      setMessages(prev => [...prev, {
+        id: prev.length + 1, type: 'bot',
+        text: 'ধন্যবাদ আপনার বার্তার জন্য। আমাদের বিশেষজ্ঞ শীঘ্রই আপনার সাথে যোগাযোগ করবেন।',
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      }]);
     }, 1000);
   };
 
   return (
     <>
-      {/* Main Chat Button */}
+      {/* FAB trigger */}
       <button
         onClick={() => setShowContactOptions(!showContactOptions)}
-        className={`fixed bottom-6 right-6 z-[950] bg-gradient-to-br from-[#FF6B35] to-[#FF8C42] hover:from-[#FF5722] hover:to-[#FF7B2E] text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
-          isOpen || showContactOptions ? 'scale-0' : 'scale-100'
+        className={`fixed bottom-6 right-6 z-[950] transition-all duration-300 hover:scale-105 active:scale-95 ${
+          isOpen || showContactOptions ? 'scale-0 pointer-events-none' : 'scale-100'
         }`}
+        style={{
+          width: 56, height: 56, borderRadius: '1rem',
+          background: 'rgba(11,37,69,0.72)',
+          backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
+          WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
+          border: '1px solid rgba(255,255,255,0.22)',
+          boxShadow: '0 8px 32px rgba(11,37,69,0.35), inset 0 1px 0 rgba(255,255,255,0.28)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#4ddbb8',
+        }}
         aria-label="Open contact options"
       >
-        <div className="w-16 h-16 flex items-center justify-center relative">
-          <FaComments size={28} />
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 border-2 border-white rounded-full animate-pulse" />
-        </div>
+        <FaComments size={22} />
+        <span style={{
+          position: 'absolute', top: 10, right: 10,
+          width: 8, height: 8, borderRadius: '50%',
+          background: '#4ade80',
+          border: '2px solid rgba(11,37,69,0.9)',
+          boxShadow: '0 0 6px rgba(74,222,128,0.7)',
+          animation: 'pulse 2s ease-in-out infinite',
+        }} />
       </button>
 
-      {/* Contact Options Modal */}
+      {/* Contact options panel */}
       {showContactOptions && (
         <div
-          className="fixed bottom-6 right-6 z-[1001] w-[90vw] max-w-[420px] bg-white rounded-3xl shadow-2xl transition-all duration-300 animate-scale-in"
-          style={{ transformOrigin: 'bottom right' }}
+          className="fixed bottom-6 right-6 z-[1001] w-[90vw] max-w-[380px]"
+          style={{ ...glassPanel, borderRadius: '1.25rem', transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
         >
-          <style jsx>{`
-            @keyframes scale-in {
-              from {
-                transform: scale(0);
-                opacity: 0;
-              }
-              to {
-                transform: scale(1);
-                opacity: 1;
-              }
-            }
-            .animate-scale-in {
-              animation: scale-in 0.3s ease-out;
-            }
+          <style>{`
+            @keyframes glassPopIn { from { opacity:0; transform:scale(0.88) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+            @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
           `}</style>
 
           {/* Header */}
-          <div className="px-6 py-5 border-b border-gray-100">
-            <div className="flex items-start justify-between">
+          <div style={{ padding: '18px 20px 14px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div>
-                <h3 className="text-[20px] font-bold text-gray-900 mb-1 flex items-center gap-2">
-                  Hi there! 👋
-                </h3>
-                <p className="text-[14px] text-gray-600 leading-relaxed">
-                  Let us know if we can help you with anything at all.
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Hi there! 👋</h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                  Let us know if we can help you with anything.
                 </p>
               </div>
-              <button
-                onClick={() => setShowContactOptions(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
-                aria-label="Close"
-              >
-                <FaTimes size={16} className="text-gray-500" />
+              <button onClick={() => setShowContactOptions(false)}
+                style={{
+                  width: 30, height: 30, borderRadius: 8, cursor: 'pointer', flexShrink: 0,
+                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)',
+                }}
+                aria-label="Close">
+                <FaTimes size={13} />
               </button>
             </div>
           </div>
 
-          {/* Contact Options */}
-          <div className="p-4 space-y-3">
-            {/* LiveChat Button */}
-            <button
-              onClick={handleOpenLiveChat}
-              className="w-full flex items-center gap-4 px-5 py-4 bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] hover:from-[#FF5722] hover:to-[#FF7B2E] text-white rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-md hover:shadow-lg"
+          {/* Options */}
+          <div style={{ padding: '12px 14px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* LiveChat */}
+            <button onClick={handleOpenLiveChat}
+              style={{
+                width: '100%', padding: '13px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 14,
+                background: 'rgba(77,219,184,0.15)',
+                border: '1px solid rgba(77,219,184,0.25)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10)',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(77,219,184,0.22)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(77,219,184,0.15)'}
             >
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <FaComments size={20} />
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(77,219,184,0.2)', border: '1px solid rgba(77,219,184,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FaComments size={18} color="#4ddbb8" />
               </div>
-              <span className="text-[16px] font-semibold">LiveChat</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>LiveChat</span>
             </button>
 
-            {/* Messenger Button */}
-            <button
-              onClick={handleOpenMessenger}
-              className="w-full flex items-center gap-4 px-5 py-4 bg-white hover:bg-gray-50 border-2 border-gray-200 rounded-2xl transition-all duration-200 hover:scale-[1.02] hover:border-[#0084FF]"
+            {/* Messenger */}
+            <button onClick={handleOpenMessenger}
+              style={{
+                width: '100%', padding: '13px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 14,
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.10)',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,132,255,0.12)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-[#0084FF] to-[#00C6FF] rounded-full flex items-center justify-center flex-shrink-0">
-                <FaFacebookMessenger size={20} className="text-white" />
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg,#0084FF,#00C6FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FaFacebookMessenger size={18} color="#fff" />
               </div>
-              <span className="text-[16px] font-semibold text-gray-900">Messenger</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>Messenger</span>
             </button>
 
-            {/* WhatsApp Button */}
-            <button
-              onClick={handleOpenWhatsApp}
-              className="w-full flex items-center gap-4 px-5 py-4 bg-white hover:bg-gray-50 border-2 border-gray-200 rounded-2xl transition-all duration-200 hover:scale-[1.02] hover:border-[#25D366]"
+            {/* WhatsApp */}
+            <button onClick={handleOpenWhatsApp}
+              style={{
+                width: '100%', padding: '13px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 14,
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.10)',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,211,102,0.12)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
             >
-              <div className="w-10 h-10 bg-[#25D366] rounded-full flex items-center justify-center flex-shrink-0">
-                <FaWhatsapp size={22} className="text-white" />
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FaWhatsapp size={20} color="#fff" />
               </div>
-              <span className="text-[16px] font-semibold text-gray-900">WhatsApp</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>WhatsApp</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Chat Window */}
+      {/* Chat window */}
       {isOpen && (
         <div
-          className="fixed bottom-6 right-6 z-[1001] w-[90vw] max-w-[380px] h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col transition-all duration-300 animate-scale-in"
-          style={{ transformOrigin: 'bottom right' }}
+          className="fixed bottom-6 right-6 z-[1001] w-[90vw] max-w-[360px] flex flex-col"
+          style={{ ...glassPanel, borderRadius: '1.25rem', height: 480, transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] text-white rounded-t-2xl">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <FaComments size={18} />
+          {/* Chat header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '14px 16px', flexShrink: 0,
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(14,138,110,0.18)',
+            borderRadius: '1.25rem 1.25rem 0 0',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ position: 'relative' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(77,219,184,0.2)', border: '1px solid rgba(77,219,184,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FaComments size={16} color="#4ddbb8" />
                 </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />
+                <span style={{ position: 'absolute', bottom: 0, right: 0, width: 9, height: 9, borderRadius: '50%', background: '#4ade80', border: '2px solid rgba(11,37,69,0.9)' }} />
               </div>
               <div>
-                <h3 className="text-[15px] font-bold">মেসেজ করুন</h3>
-                <p className="text-[11px] opacity-90">Typically replies in 5 minutes</p>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 1 }}>মেসেজ করুন</h3>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)' }}>Typically replies in 5 minutes</p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
-              aria-label="Close chat"
-            >
-              <FaTimes size={16} />
+            <button onClick={() => setIsOpen(false)}
+              style={{ width: 30, height: 30, borderRadius: 8, cursor: 'pointer', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)' }}
+              aria-label="Close chat">
+              <FaTimes size={13} />
             </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-                    msg.type === 'user'
-                      ? 'bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] text-white rounded-br-sm'
-                      : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'
-                  }`}
-                >
-                  <p className="text-[13px] leading-relaxed">{msg.text}</p>
-                  <span
-                    className={`text-[10px] mt-1 block ${
-                      msg.type === 'user' ? 'text-white/70' : 'text-gray-500'
-                    }`}
-                  >
-                    {msg.time}
-                  </span>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {messages.map(msg => (
+              <div key={msg.id} style={{ display: 'flex', justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start' }}>
+                <div style={{
+                  maxWidth: '78%', padding: '9px 13px', borderRadius: msg.type === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                  background: msg.type === 'user'
+                    ? 'rgba(14,138,110,0.35)'
+                    : 'rgba(255,255,255,0.10)',
+                  border: msg.type === 'user'
+                    ? '1px solid rgba(77,219,184,0.25)'
+                    : '1px solid rgba(255,255,255,0.12)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                }}>
+                  <p style={{ fontSize: 13, lineHeight: 1.5, color: msg.type === 'user' ? '#fff' : 'rgba(255,255,255,0.85)', margin: 0 }}>{msg.text}</p>
+                  <span style={{ fontSize: 10, marginTop: 4, display: 'block', color: 'rgba(255,255,255,0.35)' }}>{msg.time}</span>
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-white rounded-b-2xl">
-            <div className="flex items-center gap-2">
+          <form onSubmit={handleSendMessage} style={{
+            padding: '12px 14px', flexShrink: 0,
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.04)',
+            borderRadius: '0 0 1.25rem 1.25rem',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input
                 type="text"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={e => setMessage(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2.5 bg-gray-100 rounded-xl text-[13px] outline-none focus:ring-2 focus:ring-[#FF6B35] transition-all"
+                style={{
+                  flex: 1, padding: '9px 13px', borderRadius: 10, fontSize: 13, outline: 'none',
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  color: '#fff',
+                }}
               />
-              <button
-                type="submit"
-                disabled={!message.trim()}
-                className="w-10 h-10 bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] hover:from-[#FF5722] hover:to-[#FF7B2E] text-white rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                aria-label="Send message"
-              >
-                <FaPaperPlane size={14} />
+              <button type="submit" disabled={!message.trim()}
+                style={{
+                  width: 36, height: 36, borderRadius: 10, border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: message.trim() ? 'rgba(14,138,110,0.5)' : 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(77,219,184,0.25)',
+                  color: message.trim() ? '#4ddbb8' : 'rgba(255,255,255,0.25)',
+                  transition: 'all 0.2s',
+                }}
+                aria-label="Send message">
+                <FaPaperPlane size={13} />
               </button>
             </div>
-            <p className="text-[10px] text-gray-500 mt-2 text-center">
-              Powered by <span className="font-semibold">REVE Chat</span>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 8, textAlign: 'center' }}>
+              Powered by <span style={{ fontWeight: 600 }}>REVE Chat</span>
             </p>
           </form>
         </div>
       )}
 
-      {/* Backdrop for mobile */}
+      {/* Mobile backdrop */}
       {(isOpen || showContactOptions) && (
         <div
-          className="fixed inset-0 bg-black/30 z-[1000] md:hidden"
-          onClick={() => {
-            setIsOpen(false);
-            setShowContactOptions(false);
-          }}
+          className="fixed inset-0 z-[1000] md:hidden"
+          style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
+          onClick={() => { setIsOpen(false); setShowContactOptions(false); }}
           aria-hidden="true"
         />
       )}

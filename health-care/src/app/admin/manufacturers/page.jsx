@@ -231,49 +231,51 @@ export default function ManufacturersPage() {
 
   return (
     <AdminShell title="Manufacturers">
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-4 md:p-8 overflow-x-auto flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-gray-950 p-3 sm:p-4 md:p-8 max-w-full overflow-hidden flex flex-col">
       <div className="flex-1">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-4 md:mb-8 gap-3">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">Manufacturers</h1>
-            <p className="text-gray-300 mt-2">Manage product manufacturers and brands</p>
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">Manufacturers</h1>
+            <p className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Manage product manufacturers and brands</p>
           </div>
           <button
             onClick={() => router.push('/admin/manufacturers/new')}
-            className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition shadow-lg font-medium transform hover:scale-105"
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 md:px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition shadow-lg font-medium transform hover:scale-105 text-sm md:text-base min-h-[44px] whitespace-nowrap"
           >
-            + Add Manufacturer
+            <span className="hidden sm:inline">+ Add Manufacturer</span>
+            <span className="sm:hidden">+ Add</span>
           </button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-primary text-white rounded-lg shadow-lg p-6 border border-blue-400/30 hover:shadow-xl hover:shadow-blue-500/20 transition">
-            <div className="text-xs text-blue-100 font-semibold uppercase">Total Manufacturers</div>
-            <div className="text-3xl font-bold mt-2">{manufacturers.length}</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-8">
+          <div className="bg-gradient-primary text-white rounded-lg shadow-lg p-4 md:p-6 border border-blue-400/30 hover:shadow-xl hover:shadow-blue-500/20 transition">
+            <div className="text-[10px] md:text-xs text-blue-100 font-semibold uppercase">Total</div>
+            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.length}</div>
           </div>
-          <div className="bg-gradient-success text-white rounded-lg shadow-lg p-6 border border-green-400/30 hover:shadow-xl hover:shadow-green-500/20 transition">
-            <div className="text-xs text-green-100 font-semibold uppercase">Active</div>
-            <div className="text-3xl font-bold mt-2">{manufacturers.filter(m => m.isActive).length}</div>
+          <div className="bg-gradient-success text-white rounded-lg shadow-lg p-4 md:p-6 border border-green-400/30 hover:shadow-xl hover:shadow-green-500/20 transition">
+            <div className="text-[10px] md:text-xs text-green-100 font-semibold uppercase">Active</div>
+            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.filter(m => m.isActive).length}</div>
           </div>
-          <div className="bg-gradient-danger text-white rounded-lg shadow-lg p-6 border border-red-400/30 hover:shadow-xl hover:shadow-red-500/20 transition">
-            <div className="text-xs text-red-100 font-semibold uppercase">Inactive</div>
-            <div className="text-3xl font-bold mt-2">{manufacturers.filter(m => !m.isActive).length}</div>
+          <div className="bg-gradient-danger text-white rounded-lg shadow-lg p-4 md:p-6 border border-red-400/30 hover:shadow-xl hover:shadow-red-500/20 transition">
+            <div className="text-[10px] md:text-xs text-red-100 font-semibold uppercase">Inactive</div>
+            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.filter(m => !m.isActive).length}</div>
           </div>
-          <div className="bg-gradient-warning text-white rounded-lg shadow-lg p-6 border border-yellow-400/30 hover:shadow-xl hover:shadow-yellow-500/20 transition">
-            <div className="text-xs text-yellow-100 font-semibold uppercase">Total Products</div>
-            <div className="text-3xl font-bold mt-2">
+          <div className="bg-gradient-warning text-white rounded-lg shadow-lg p-4 md:p-6 border border-yellow-400/30 hover:shadow-xl hover:shadow-yellow-500/20 transition col-span-2 md:col-span-1">
+            <div className="text-[10px] md:text-xs text-yellow-100 font-semibold uppercase">Total Products</div>
+            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">
               {manufacturers.reduce((sum, m) => sum + (m.productCount || 0), 0)}
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-lg shadow-lg p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-lg shadow-lg p-3 md:p-6 mb-4 md:mb-6">
+          <div className="space-y-3">
+            {/* Row 1: Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <label className="block text-xs md:text-sm font-medium text-gray-300 mb-2">Search</label>
               <input
                 type="text"
                 placeholder="Search by name, slug..."
@@ -282,47 +284,56 @@ export default function ManufacturersPage() {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-4 py-2 bg-white/80 backdrop-blur border border-white/30 text-gray-900 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition"
+                className="w-full px-3 md:px-4 py-2 md:py-3 bg-white/80 backdrop-blur border border-white/30 text-gray-900 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition text-sm md:text-base min-h-[44px]"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-              <select
-                value={countryFilter}
-                onChange={(e) => {
-                  setCountryFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-4 py-2 bg-white/80 backdrop-blur border border-white/30 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition"
-              >
-                <option value="">All Countries</option>
-                {countries.map(country => (
-                  <option key={country} value={country}>{country}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <label className="flex items-center gap-3 mt-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeInactive}
+
+            {/* Row 2: Country and Status */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs md:text-sm font-medium text-gray-300 mb-2">Country</label>
+                <select
+                  value={countryFilter}
                   onChange={(e) => {
-                    setIncludeInactive(e.target.checked);
+                    setCountryFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-4 h-4 text-blue-600 rounded border-gray-300"
-                />
-                <span className="text-sm text-gray-700">Include Inactive</span>
-              </label>
+                  className="w-full px-3 md:px-4 py-2 md:py-3 bg-white/80 backdrop-blur border border-white/30 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition text-sm md:text-base min-h-[44px]"
+                >
+                  <option value="">All Countries</option>
+                  {countries.map(country => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs md:text-sm font-medium text-gray-300 mb-2">Status</label>
+                <label className="flex items-center gap-2 mt-2 cursor-pointer bg-white/10 px-3 py-2 rounded-lg min-h-[44px]">
+                  <input
+                    type="checkbox"
+                    checked={includeInactive}
+                    onChange={(e) => {
+                      setIncludeInactive(e.target.checked);
+                      setCurrentPage(1);
+                    }}
+                    className="w-4 h-4 text-blue-600 rounded border-gray-300"
+                  />
+                  <span className="text-xs md:text-sm text-gray-200">Include Inactive</span>
+                </label>
+              </div>
             </div>
-            <div className="flex items-end">
+
+            {/* Row 3: Count and Refresh */}
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs md:text-sm text-gray-300">
+                {sortedData.length} manufacturer{sortedData.length !== 1 ? 's' : ''} found
+              </span>
               <button
                 onClick={() => {
                   setCurrentPage(1);
                   fetchManufacturers();
                 }}
-                className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition font-medium"
+                className="bg-gray-600 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-gray-700 transition font-medium text-xs md:text-sm min-h-[44px] whitespace-nowrap"
               >
                 ⟳ Refresh
               </button>
@@ -332,11 +343,11 @@ export default function ManufacturersPage() {
 
         {/* Error */}
         {error && (
-          <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur border-2 border-red-400/50 text-red-300 px-6 py-4 rounded-lg mb-6 flex items-start gap-3">
-            <span className="text-xl">⚠️</span>
-            <div>
-              <div className="font-medium">Error</div>
-              <div className="text-sm mt-1">{error}</div>
+          <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur border-2 border-red-400/50 text-red-300 px-4 md:px-6 py-3 md:py-4 rounded-lg mb-4 md:mb-6 flex items-start gap-2 md:gap-3 max-w-[calc(100vw-2rem)]">
+            <span className="text-lg md:text-xl flex-shrink-0">⚠️</span>
+            <div className="min-w-0">
+              <div className="font-medium text-sm md:text-base">Error</div>
+              <div className="text-xs md:text-sm mt-1">{error}</div>
             </div>
           </div>
         )}
@@ -344,10 +355,10 @@ export default function ManufacturersPage() {
         {/* Manufacturers Table */}
         <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur border border-white/30 rounded-lg shadow-xl overflow-hidden flex flex-col">
           {selectedIds.size > 0 && (
-            <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur border-b border-blue-400/50 px-6 py-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-blue-200">{selectedIds.size} item(s) selected</span>
+            <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur border-b border-blue-400/50 px-3 md:px-6 py-2 md:py-3 flex items-center justify-between">
+              <span className="text-xs md:text-sm font-medium text-blue-200">{selectedIds.size} selected</span>
               <button
-                className="text-xs bg-gradient-to-r from-red-600 to-pink-600 text-white px-3 py-1 rounded hover:shadow-lg transition font-medium"
+                className="text-[10px] md:text-xs bg-gradient-to-r from-red-600 to-pink-600 text-white px-2 md:px-3 py-1 rounded hover:shadow-lg transition font-medium min-h-[36px]"
                 onClick={() => alert('Bulk delete feature coming soon')}
               >
                 Bulk Delete
@@ -355,7 +366,8 @@ export default function ManufacturersPage() {
             </div>
           )}
           
-          <div className="flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          {/* Desktop Table */}
+          <div className="hidden md:block flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '1000px'}}>
               <thead className="bg-gray-100 border-b border-gray-200">
                 <tr>
@@ -476,41 +488,127 @@ export default function ManufacturersPage() {
             </table>
           </div>
 
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3 p-3">
+            {paginatedData.length === 0 ? (
+              <div className="py-12 text-center text-gray-400">
+                <div className="text-3xl mb-2">📦</div>
+                <div className="text-sm">
+                  {searchTerm || countryFilter
+                    ? 'No manufacturers found matching your filters.'
+                    : 'No manufacturers found.'}
+                </div>
+              </div>
+            ) : (
+              paginatedData.map((manufacturer) => (
+                <div key={manufacturer._id} className="bg-white/80 backdrop-blur rounded-lg border border-white/40 p-4 space-y-3">
+                  {/* Header with logo and checkbox */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(manufacturer._id)}
+                      onChange={() => toggleSelect(manufacturer._id)}
+                      className="w-4 h-4 text-blue-600 rounded mt-1 flex-shrink-0"
+                    />
+                    {manufacturer.logo?.url ? (
+                      <img
+                        src={manufacturer.logo.url}
+                        alt={manufacturer.name}
+                        className="w-16 h-16 object-contain rounded border border-gray-200 flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-[10px] border border-gray-300 flex-shrink-0">
+                        No logo
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold text-gray-900 truncate">{manufacturer.name}</div>
+                      {manufacturer.website && (
+                        <a
+                          href={manufacturer.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-blue-600 hover:underline truncate block"
+                        >
+                          {new URL(manufacturer.website).hostname}
+                        </a>
+                      )}
+                      <span
+                        className={`inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full ${
+                          manufacturer.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {manufacturer.isActive ? '● Active' : '● Inactive'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div>
+                      <div className="text-gray-500 uppercase font-semibold">Slug</div>
+                      <code className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-700 font-mono block truncate">
+                        {manufacturer.slug}
+                      </code>
+                    </div>
+                    <div>
+                      <div className="text-gray-500 uppercase font-semibold">Country</div>
+                      <div className="text-gray-900 truncate">{manufacturer.country || '—'}</div>
+                    </div>
+                    <div className="col-span-2">
+                      <div className="text-gray-500 uppercase font-semibold">Products</div>
+                      <div className="text-gray-900 font-semibold">{manufacturer.productCount || 0} products</div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200">
+                    <button
+                      onClick={() => handleEdit(manufacturer)}
+                      className="min-h-[40px] px-3 text-[11px] text-blue-600 font-semibold border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(manufacturer._id, manufacturer.name)}
+                      className="min-h-[40px] px-3 text-[11px] text-red-600 font-semibold border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                Showing {startIdx + 1} to {Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}
+            <div className="bg-white px-3 md:px-6 py-3 md:py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="text-xs md:text-sm text-gray-600 text-center sm:text-left">
+                <span className="hidden sm:inline">Showing {startIdx + 1} to {Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}</span>
+                <span className="sm:hidden">{startIdx + 1}-{Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}</span>
               </div>
               <div className="flex gap-2">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(currentPage - 1)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-xs md:text-sm min-h-[44px] min-w-[44px]"
                 >
-                  ← Previous
+                  <span className="hidden sm:inline">← Prev</span>
+                  <span className="sm:hidden">←</span>
                 </button>
                 <div className="flex items-center gap-1">
-                  {Array.from({length: totalPages}, (_, i) => i + 1).map(page => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 rounded-lg transition ${
-                        currentPage === page
-                          ? 'bg-blue-600 text-white'
-                          : 'border border-gray-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                  <span className="px-2 py-2 text-xs md:text-sm">{currentPage}/{totalPages}</span>
                 </div>
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage(currentPage + 1)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-xs md:text-sm min-h-[44px] min-w-[44px]"
                 >
-                  Next →
+                  <span className="hidden sm:inline">Next →</span>
+                  <span className="sm:hidden">→</span>
                 </button>
               </div>
             </div>

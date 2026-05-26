@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '475px', // Extra small breakpoint for better mobile control
+      },
       colors: {
         page: 'var(--color-background-page)',
         'page-top': 'var(--color-background-page-top)',

@@ -17,7 +17,7 @@ export default function ProductsPage() {
       action="+ Add product"
       onAction={handleAddProduct}
     >
-      <div className="p-5 px-6">
+      <div className="p-4 md:p-5 md:px-6 max-w-full overflow-hidden">
         <ProductsManagement openCreateRef={openCreateProductRef} />
       </div>
     </AdminShell>

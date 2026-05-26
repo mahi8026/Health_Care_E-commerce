@@ -11,7 +11,7 @@ export const metadata = {
 export default function ReturnsPage() {
   return (
     <AdminShell title="Returns Management" action="Export returns">
-      <div className="p-5 px-6">
+      <div className="w-full max-w-full overflow-hidden">
         <ReturnsManagement />
       </div>
     </AdminShell>

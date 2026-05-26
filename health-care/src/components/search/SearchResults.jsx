@@ -125,11 +125,11 @@ function ProductCard({ product, onProductClick }) {
         </div>
 
         {/* Buttons */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
           <button
             onClick={handleAddToCart}
             disabled={!inStock}
-            className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-semibold transition-all ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all ${
               added
                 ? 'bg-emerald-500 text-white'
                 : inStock
@@ -138,32 +138,34 @@ function ProductCard({ product, onProductClick }) {
             }`}
           >
             {addingToCart && !added ? (
-              <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
               </svg>
             ) : added ? (
               <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="sm:w-3 sm:h-3">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
-                Added
+                <span className="hidden xs:inline">Added</span>
               </>
             ) : (
               <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-3 sm:h-3">
                   <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
                 </svg>
-                Add to Cart
+                <span className="hidden xs:inline">Add</span>
+                <span className="xs:hidden">+</span>
               </>
             )}
           </button>
           <button
             onClick={e => { e.stopPropagation(); handleClick(); }}
-            className="py-2 rounded-xl text-[11px] font-semibold border border-[#0B2545]/20 text-[#0B2545] hover:bg-[#0B2545] hover:text-white transition-all"
+            className="py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-[11px] font-semibold border border-[#0B2545]/20 text-[#0B2545] hover:bg-[#0B2545] hover:text-white transition-all"
           >
-            View Details
+            <span className="hidden xs:inline">View Details</span>
+            <span className="xs:hidden">View</span>
           </button>
         </div>
       </div>

@@ -11,7 +11,9 @@ export const metadata = {
 export default function CustomersPage() {
   return (
     <AdminShell title="Customer Management" action="+ Add Customer">
-      <CustomersManagement />
+      <div className="max-w-full overflow-hidden">
+        <CustomersManagement />
+      </div>
     </AdminShell>
   );
 }

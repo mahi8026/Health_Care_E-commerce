@@ -183,10 +183,10 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       {/* ── Active filters + category pills bar ─────────────────────────── */}
       {(hasActiveFilters || true) && (
         <div className="bg-[#0B2545] border-b border-[#0d2d52]">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 w-full max-w-full overflow-hidden">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 md:pb-0 md:flex-wrap">
               {/* Category quick-filter pills — from API */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {categories.slice(0, 8).map(cat => {
                   const name = typeof cat === 'string' ? cat : cat.name;
                   const slug = CATEGORY_NAME_TO_SLUG[name];
@@ -201,7 +201,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                           resetPagination();
                         }
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
                         searchCategory === name
                           ? 'bg-[#0E8A6E] text-white'
                           : 'bg-white/10 text-white/80 hover:bg-white/20'
@@ -215,27 +215,27 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
               {/* Active filter chips */}
               {hasActiveFilters && (
                 <>
-                  <span className="text-white/30 hidden sm:block">|</span>
+                  <span className="text-white/30 hidden sm:block flex-shrink-0">|</span>
                   {searchQuery && (
-                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       &ldquo;{searchQuery}&rdquo;
                       <button onClick={() => { setSearchQuery(''); setSearchInput(''); resetPagination(); }} className="hover:text-red-300 ml-0.5">×</button>
                     </span>
                   )}
                   {filters.inStock && (
-                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       In Stock
                       <button onClick={() => handleFilterChange({ ...filters, inStock: false })} className="hover:text-red-300 ml-0.5">×</button>
                     </span>
                   )}
                   {(filters.minPrice || filters.maxPrice) && (
-                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full">
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       ৳{filters.minPrice || 0}–{filters.maxPrice ? `৳${filters.maxPrice}` : '∞'}
                       <button onClick={() => handleFilterChange({ ...filters, minPrice: undefined, maxPrice: undefined })} className="hover:text-red-300 ml-0.5">×</button>
                     </span>
                   )}
                   <button onClick={clearAllFilters}
-                    className="text-red-300 hover:text-red-200 text-[11px] font-medium underline ml-1">
+                    className="text-red-300 hover:text-red-200 text-[11px] font-medium underline ml-1 flex-shrink-0">
                     Clear all
                   </button>
                 </>
@@ -246,8 +246,8 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-5">
-        <div className="flex gap-5">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 w-full max-w-full overflow-hidden">
+        <div className="flex gap-5 min-w-0">
 
           {/* ── Sidebar ─────────────────────────────────────────────────── */}
           <aside className="hidden lg:block w-60 flex-shrink-0">
@@ -377,39 +377,40 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
             </h1>
 
             {/* Top bar */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3 mb-4 flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-3">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-3 sm:px-4 py-2.5 sm:py-3 mb-4 flex items-center justify-between gap-2 sm:gap-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                 {/* Mobile filter toggle */}
                 <button onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg text-[12px] font-medium text-gray-600 hover:border-[#0E8A6E] hover:text-[#0E8A6E] transition-colors">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  className="lg:hidden flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 border border-gray-200 rounded-lg text-[11px] sm:text-[12px] font-medium text-gray-600 hover:border-[#0E8A6E] hover:text-[#0E8A6E] transition-colors flex-shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-[14px] sm:h-[14px]">
                     <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
                   </svg>
-                  Filters
+                  <span className="hidden xs:inline">Filters</span>
                   {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-[#0E8A6E]" />}
                 </button>
 
-                <div className="text-[13px] text-gray-500">
+                <div className="text-[11px] sm:text-[13px] text-gray-500 truncate min-w-0">
                   {loading && allProducts.length === 0 ? (
                     <span className="text-gray-400">Loading...</span>
                   ) : (
                     <>
                       {searchCategory
-                        ? <span className="font-semibold text-[#0B2545]">{searchCategory}</span>
+                        ? <span className="font-semibold text-[#0B2545] truncate">{searchCategory}</span>
                         : <span className="text-gray-600">All Products</span>}
-                      <span className="text-gray-400 mx-1.5">·</span>
+                      <span className="text-gray-400 mx-1 sm:mx-1.5">·</span>
                       <span className="font-medium text-gray-700">{allProducts.length}</span>
-                      <span className="text-gray-400"> of </span>
+                      <span className="text-gray-400 hidden xs:inline"> of </span>
+                      <span className="text-gray-400 xs:hidden">/</span>
                       <span className="font-medium text-gray-700">{pagination.total || 0}</span>
                     </>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-[12px] text-gray-500 hidden sm:block">Sort:</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <span className="text-[11px] sm:text-[12px] text-gray-500 hidden sm:block">Sort:</span>
                 <select value={sortBy} onChange={e => handleSortChange(e.target.value)}
-                  className="px-3 py-1.5 border border-gray-200 rounded-xl text-[12px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700 font-medium">
+                  className="px-2 sm:px-3 py-1.5 border border-gray-200 rounded-xl text-[11px] sm:text-[12px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700 font-medium min-w-0 max-w-[140px] sm:max-w-none">
                   {SORT_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}

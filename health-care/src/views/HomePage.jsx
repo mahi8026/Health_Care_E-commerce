@@ -503,7 +503,8 @@ export default function HomePage() {
         .slide-active { animation: scaleIn 0.6s ease forwards; will-change: transform, opacity; }
         .typewriter-text { animation: fadeSlide 0.5s ease forwards; will-change: transform, opacity; }
         .hero-grid-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(480px, 52%); gap: 32px; align-items: center; }
-        .hero-right-panel { position: relative; height: 460px; border-radius: 16px; overflow: hidden; background: #1a3a5c; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .hero-left-content { order: 1; }
+        .hero-right-panel { order: 2; position: relative; height: 460px; border-radius: 16px; overflow: hidden; background: #1a3a5c; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
         @media (min-width: 1280px) {
           .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 36px; }
           .hero-right-panel { height: 500px; }
@@ -529,8 +530,9 @@ export default function HomePage() {
         .top-selling-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .best-selling-badge { position: absolute; top: -1px; right: -1px; background: #F97316; color: #fff; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 0 12px 0 8px; }
         @media (max-width: 1024px) {
-          .hero-grid-container { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .hero-right-panel { display: none !important; }
+          .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .hero-left-content { order: 2; }
+          .hero-right-panel { order: 1; display: block !important; height: 260px !important; border-radius: 14px !important; }
           .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .cat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -538,6 +540,8 @@ export default function HomePage() {
           .testimonials-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 640px) {
+          .hero-right-panel { height: 220px !important; border-radius: 12px !important; }
+          .hero-slider-arrows { display: none !important; }
           .prod-grid-4 { grid-template-columns: 1fr !important; }
           .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .trust-grid { grid-template-columns: 1fr !important; }
@@ -554,11 +558,11 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* HERO — left: text+search  |  right: image slider */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-hero" style={{ padding: 'clamp(32px, 5vw, 56px) 0' }}>
+      <section className="home-hero home-hero--padded">
         <div className="hero-grid-container">
 
           {/* LEFT: Text + Search */}
-          <div>
+          <div className="hero-left-content">
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: '#4DDBB8', fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               <span style={{ width: 7, height: 7, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
               Bangladesh&apos;s #1 Medical Equipment Platform
@@ -638,9 +642,11 @@ export default function HomePage() {
               return (
                 <>
                   <button onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
-                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}>‹</button>
+                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
+                    className="hero-slider-arrows">‹</button>
                   <button onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}>›</button>
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
+                    className="hero-slider-arrows">›</button>
                 </>
               );
             })()}
@@ -649,9 +655,9 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* TRUST BAR */}
+      {/* TRUST BAR — desktop only */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-trust-bar" style={{ padding: '14px 0' }}>
+      <section className="home-trust-bar hidden md:block" style={{ padding: '14px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
           {[{ icon: '🚚', text: 'Free delivery over ৳50,000' }, { icon: '❄️', text: 'Cold chain for reagents' }, { icon: '🔧', text: 'Free installation in Dhaka' }, { icon: '📞', text: '24/7 technical support' }, { icon: '↩', text: '30-day returns' }].map(({ icon, text }) => (
             <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#374151', fontWeight: 500 }}>

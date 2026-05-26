@@ -123,7 +123,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
         }
       `}</style>
       <header className="glass-nav">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[62px] nav-header-row gap-3 md:gap-4">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[58px] nav-header-row gap-2 md:gap-3">
 
           {/* Logo */}
           <button
