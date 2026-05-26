@@ -60,11 +60,12 @@ export default function LiveChatWidget() {
       {/* FAB trigger */}
       <button
         onClick={() => setShowContactOptions(!showContactOptions)}
-        className={`fixed bottom-6 right-6 z-[950] transition-all duration-300 hover:scale-105 active:scale-95 ${
+        className={`fixed right-4 md:right-6 bottom-[76px] md:bottom-6 z-[1050] transition-all duration-300 hover:scale-105 active:scale-95 ${
           isOpen || showContactOptions ? 'scale-0 pointer-events-none' : 'scale-100'
         }`}
         style={{
-          width: 56, height: 56, borderRadius: '1rem',
+        style={{
+          width: 52, height: 52, borderRadius: '1rem',
           background: 'rgba(11,37,69,0.72)',
           backdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
           WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.1)',
@@ -89,7 +90,8 @@ export default function LiveChatWidget() {
       {/* Contact options panel */}
       {showContactOptions && (
         <div
-          className="fixed bottom-6 right-6 z-[1001] w-[90vw] max-w-[380px]"
+          className="fixed right-4 md:right-6 bottom-[76px] md:bottom-6 z-[1051] w-[90vw] max-w-[380px]"
+          style={{ ...glassPanel, borderRadius: '1.25rem', transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
           style={{ ...glassPanel, borderRadius: '1.25rem', transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
         >
           <style>{`
@@ -181,8 +183,8 @@ export default function LiveChatWidget() {
       {/* Chat window */}
       {isOpen && (
         <div
-          className="fixed bottom-6 right-6 z-[1001] w-[90vw] max-w-[360px] flex flex-col"
-          style={{ ...glassPanel, borderRadius: '1.25rem', height: 480, transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
+          className="fixed right-4 md:right-6 bottom-[76px] md:bottom-6 z-[1051] w-[90vw] max-w-[360px] flex flex-col h-[480px] max-h-[calc(100vh-160px)]"
+          style={{ ...glassPanel, borderRadius: '1.25rem', transformOrigin: 'bottom right', animation: 'glassPopIn 0.25s cubic-bezier(0.34,1.4,0.64,1)' }}
         >
           {/* Chat header */}
           <div style={{
@@ -277,7 +279,7 @@ export default function LiveChatWidget() {
       {/* Mobile backdrop */}
       {(isOpen || showContactOptions) && (
         <div
-          className="fixed inset-0 z-[1000] md:hidden"
+          className="fixed inset-0 z-[1049] md:hidden"
           style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
           onClick={() => { setIsOpen(false); setShowContactOptions(false); }}
           aria-hidden="true"
