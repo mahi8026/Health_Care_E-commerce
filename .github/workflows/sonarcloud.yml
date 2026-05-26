@@ -11,37 +11,43 @@ on:
 jobs:
   sonarcloud:
     name: SonarCloud Scan
-    if: ${{ secrets.SONAR_TOKEN != '' }}
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
-      
+          fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      
+
       - name: Install frontend dependencies
         working-directory: health-care
         run: npm install --legacy-peer-deps
-      
+
       - name: Install backend dependencies
         working-directory: health-care/backend
         run: npm install
-      
+
       - name: Run frontend tests with coverage
         working-directory: health-care
         run: npm run test:coverage || true
-      
+
       - name: Run backend tests with coverage
         working-directory: health-care/backend
         run: npm run test:coverage || true
-      
+
       - name: SonarCloud Scan
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarcloud-github-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Skip SonarCloud scan (token not configured)
+        if: ${{ env.SONAR_TOKEN == '' }}
+        run: echo "⚠️ SONAR_TOKEN not configured — skipping SonarCloud scan. Add it to repository secrets to enable."
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
