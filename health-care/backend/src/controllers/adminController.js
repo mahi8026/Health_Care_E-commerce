@@ -12,6 +12,24 @@ function calcMonthGrowth(current, previous) {
   return { pct, trend: pct >= 0 ? 'up' : 'down' };
 }
 
+// Correct revenue field expression:
+// Orders may store amount in totalAmount OR total (legacy alias).
+// $ifNull with 2 args is the correct MongoDB syntax.
+// We use $add with $ifNull to always get a number (never null).
+const revenueExpr = {
+  $add: [
+    { $ifNull: ['$totalAmount', 0] },
+    // If totalAmount is missing/zero but total exists, use total instead
+    {
+      $cond: [
+        { $gt: [{ $ifNull: ['$totalAmount', 0] }, 0] },
+        0,
+        { $ifNull: ['$total', 0] }
+      ]
+    }
+  ]
+};
+
 // GET /api/admin/dashboard
 exports.getDashboard = async (req, res) => {
   try {
@@ -24,18 +42,18 @@ exports.getDashboard = async (req, res) => {
     // Revenue this year
     const revenueAgg = await Order.aggregate([
       { $match: { createdAt: { $gte: startOfYear }, status: { $nin: ['cancelled'] } } },
-      { $group: { _id: null, total: { $sum: { $ifNull: ['$totalAmount', '$total'] } } } }
+      { $group: { _id: null, total: { $sum: revenueExpr } } }
     ]);
     const totalRevenue = revenueAgg[0]?.total || 0;
 
     // Revenue last month for growth calc
     const lastMonthAgg = await Order.aggregate([
       { $match: { createdAt: { $gte: lastMonth, $lte: endOfLastMonth }, status: { $nin: ['cancelled'] } } },
-      { $group: { _id: null, total: { $sum: { $ifNull: ['$totalAmount', '$total'] } } } }
+      { $group: { _id: null, total: { $sum: revenueExpr } } }
     ]);
     const thisMonthAgg = await Order.aggregate([
       { $match: { createdAt: { $gte: startOfMonth }, status: { $nin: ['cancelled'] } } },
-      { $group: { _id: null, total: { $sum: { $ifNull: ['$totalAmount', '$total'] } } } }
+      { $group: { _id: null, total: { $sum: revenueExpr } } }
     ]);
     const lastMonthRevenue = lastMonthAgg[0]?.total || 0;
     const thisMonthRevenue = thisMonthAgg[0]?.total || 0;
@@ -88,7 +106,7 @@ exports.getDashboard = async (req, res) => {
               ]
             }
           },
-          revenue: { $sum: { $ifNull: ['$totalAmount', '$total'] } }
+          revenue: { $sum: revenueExpr }
         }
       },
       { $sort: { '_id.year': 1, '_id.month': 1 } }
@@ -184,7 +202,7 @@ exports.getAnalytics = async (req, res) => {
           $group: {
             _id: null,
             totalOrders: { $sum: 1 },
-            totalRevenue: { $sum: { $ifNull: ['$totalAmount', '$total'] } },
+            totalRevenue: { $sum: revenueExpr },
             b2bOrders: {
               $sum: { $cond: [{ $in: ['$paymentMethod', ['b2b_credit', 'beftn', 'cheque', 'npsb']] }, 1, 0] }
             }
@@ -198,8 +216,8 @@ exports.getAnalytics = async (req, res) => {
           $group: {
             _id: '$items.product',
             name: { $first: '$items.name' },
-            revenue: { $sum: { $multiply: ['$items.price', { $ifNull: ['$items.qty', '$items.quantity', 1] }] } },
-            qty: { $sum: { $ifNull: ['$items.qty', '$items.quantity', 1] } }
+            revenue: { $sum: { $multiply: ['$items.price', { $ifNull: ['$items.qty', 1] }] } },
+            qty: { $sum: { $ifNull: ['$items.qty', 1] } }
           }
         },
         { $sort: { revenue: -1 } },
@@ -210,7 +228,7 @@ exports.getAnalytics = async (req, res) => {
         {
           $group: {
             _id: '$user',
-            totalSpend: { $sum: { $ifNull: ['$totalAmount', '$total'] } },
+            totalSpend: { $sum: revenueExpr },
             orderCount: { $sum: 1 }
           }
         },
@@ -296,7 +314,7 @@ exports.getCustomers = async (req, res) => {
         {
           $group: {
             _id: null,
-            totalSpend: { $sum: { $ifNull: ['$totalAmount', '$total'] } },
+            totalSpend: { $sum: revenueExpr },
             orderCount: { $sum: 1 },
             lastOrder: { $max: '$createdAt' }
           }
