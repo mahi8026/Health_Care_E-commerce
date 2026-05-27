@@ -1480,3 +1480,20 @@ html.home-page {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* ── Flash Deals Grid ───────────────────────────────────────────────────────── */
+.deal-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
+@media (min-width: 640px) {
+  .deal-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .deal-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}

@@ -742,29 +742,53 @@ export default function HomePage() {
       {/* SECTION 6: PROMO BANNER (conditional) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {promo && (
-        <div style={{ background: 'linear-gradient(90deg, #085041, #0E8A6E, #085041)',
-          padding: '14px 24px', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', gap: 20, flexWrap: 'wrap', position: 'relative' }}>
-          <span style={{ fontSize: 20 }}>🏷️</span>
-          <div style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>
-            Limited time: Use code{' '}
-            <span style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 10px',
-              borderRadius: 5, fontWeight: 800, fontSize: 16, letterSpacing: '0.05em' }}>
-              {promo.code}
-            </span>
-            {' '}for {promo.type === 'percentage' ? `${promo.value}% off` : `৳${promo.value} off`}
-            {promo.description ? ` — ${promo.description}` : ''}
+        <div style={{
+          background: 'linear-gradient(90deg, #085041, #0E8A6E, #085041)',
+          padding: '12px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 10,
+          position: 'relative',
+          textAlign: 'center',
+        }}>
+          {/* Top row: icon + text */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 18 }}>🏷️</span>
+            <div style={{ color: '#fff', fontSize: 13, fontWeight: 500, lineHeight: 1.4 }}>
+              Limited time: Use code{' '}
+              <span style={{
+                background: 'rgba(255,255,255,0.2)', padding: '2px 8px',
+                borderRadius: 5, fontWeight: 800, fontSize: 14, letterSpacing: '0.05em',
+                display: 'inline-block',
+              }}>
+                {promo.code}
+              </span>
+              {' '}for {promo.type === 'percentage' ? `${promo.value}% off` : `৳${promo.value} off`}
+              {promo.description ? ` — ${promo.description}` : ''}
+            </div>
           </div>
-          <button onClick={() => { navigator.clipboard.writeText(promo.code); alert('Code copied!'); }}
-            style={{ background: '#fff', color: '#0E8A6E', border: 'none', padding: '6px 14px',
-              borderRadius: 16, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-            Copy code
-          </button>
-          <button onClick={() => router.push('/products')}
-            style={{ background: 'transparent', color: '#fff', border: '1.5px solid rgba(255,255,255,0.6)',
-              padding: '6px 14px', borderRadius: 16, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-            Shop now →
-          </button>
+          {/* Bottom row: buttons */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              onClick={() => { navigator.clipboard.writeText(promo.code); alert('Code copied!'); }}
+              style={{
+                background: '#fff', color: '#0E8A6E', border: 'none',
+                padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              }}>
+              Copy code
+            </button>
+            <button
+              onClick={() => router.push('/products')}
+              style={{
+                background: 'transparent', color: '#fff',
+                border: '1.5px solid rgba(255,255,255,0.6)',
+                padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              }}>
+              Shop now →
+            </button>
+          </div>
         </div>
       )}
 
@@ -772,31 +796,43 @@ export default function HomePage() {
       {/* SECTION 7: DEAL OF THE DAY */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {dealProducts.length > 0 && (
-        <section style={{ background: '#0B2545', padding: '32px 24px' }}>
+        <section style={{ background: '#0B2545', padding: '24px 16px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             {/* Header row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24, flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
-                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
-                  🔥 Flash Deals
+            <div style={{ marginBottom: 20 }}>
+              {/* Title + countdown stacked on mobile */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
+                    textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+                    🔥 Flash Deals
+                  </div>
+                  <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700,
+                    color: '#fff', margin: 0 }}>Deal of the Day</h2>
                 </div>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700,
-                  color: '#fff', margin: 0 }}>Deal of the Day</h2>
+                <button onClick={() => router.push('/products?sortBy=discount')}
+                  style={{ background: 'rgba(255,255,255,0.1)', color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.2)', padding: '7px 16px', borderRadius: 8,
+                    fontSize: 12, cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  See all deals →
+                </button>
               </div>
-              {/* Countdown */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>Ends in:</span>
+
+              {/* Countdown timer */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>Ends in:</span>
                 {[
                   { val: timeLeft.h, label: 'hrs' },
                   { val: timeLeft.m, label: 'min' },
                   { val: timeLeft.s, label: 'sec' },
                 ].map((t, i) => (
-                  <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 6 : 0 }}>
-                    {i > 0 && <span style={{ color: '#4DDBB8', fontWeight: 700, fontSize: 18 }}>:</span>}
-                    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 8,
-                      padding: '8px 12px', textAlign: 'center', minWidth: 52 }}>
-                      <div style={{ fontSize: 22, fontWeight: 700, color: '#4DDBB8', lineHeight: 1 }}>
+                  <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
+                    {i > 0 && <span style={{ color: '#4DDBB8', fontWeight: 700, fontSize: 16 }}>:</span>}
+                    <div style={{
+                      background: 'rgba(255,255,255,0.1)', borderRadius: 8,
+                      padding: '6px 10px', textAlign: 'center', minWidth: 46,
+                    }}>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: '#4DDBB8', lineHeight: 1 }}>
                         {String(t.val).padStart(2, '0')}
                       </div>
                       <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
@@ -804,16 +840,16 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => router.push('/products?sortBy=discount')}
-                style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.2)', padding: '8px 20px', borderRadius: 8,
-                  fontSize: 13, cursor: 'pointer', fontWeight: 500 }}>
-                See all deals →
-              </button>
             </div>
 
-            {/* 4 deal product cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+            {/* Deal product cards — 2 cols on mobile, 4 on desktop */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 12,
+            }}
+              className="deal-grid"
+            >
               {dealProducts.slice(0, 4).map(product => (
                 <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
               ))}
