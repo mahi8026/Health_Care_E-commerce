@@ -1590,3 +1590,57 @@ html.home-page {
     height: 480px;
   }
 }
+
+/* ── Scroll To Top Button ───────────────────────────────────────────────────── */
+.scroll-top-btn {
+  position: fixed;
+  /* Mobile: left side, above bottom nav */
+  left: 1rem;
+  right: auto;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  z-index: 1050;
+  width: 44px;
+  height: 44px;
+  min-height: unset !important;
+  min-width: unset !important;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B35, #FF8C42);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-top-btn--visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.scroll-top-btn:hover {
+  background: linear-gradient(135deg, #FF5722, #FF7B2E);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.55);
+  transform: translateY(-2px) !important;
+}
+
+.scroll-top-btn:active {
+  transform: scale(0.94) !important;
+}
+
+/* Desktop: move to right side, above chat FAB */
+@media (min-width: 768px) {
+  .scroll-top-btn {
+    left: auto;
+    right: 1.5rem;
+    bottom: calc(1.5rem + 52px + 12px + 52px + 8px);
+    width: 48px;
+    height: 48px;
+  }
+}
