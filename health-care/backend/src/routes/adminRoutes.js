@@ -7,7 +7,8 @@ const {
   getCustomers,
   updateCustomer,
   manualStockCheck,
-  getBadges
+  getBadges,
+  getAdminUsers
 } = require('../controllers/adminController');
 const { getMonitoringDashboard } = require('../controllers/monitoringController');
 const {
@@ -25,6 +26,7 @@ router.get('/dashboard', getDashboard);
 router.get('/monitoring', getMonitoringDashboard);
 router.get('/analytics', getAnalytics);
 router.get('/badges', getBadges);
+router.get('/users', getAdminUsers);
 router.get('/customers', getCustomers);
 router.patch('/customers/:id', updateCustomer);
 router.post('/stock-check', manualStockCheck);

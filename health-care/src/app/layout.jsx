@@ -4,6 +4,8 @@ import SiteChrome from "@/components/layout/SiteChrome";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { CompareProvider } from "@/context/CompareContext";
 import { SITE_CONFIG } from "@/config/seo";
 import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
 import StructuredData, {
@@ -120,13 +122,17 @@ export default function RootLayout({ children }) {
         <StructuredData schema={generateWebSiteSchema()} />
         <LocalBusinessSchema />
 
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <SiteChrome>{children}</SiteChrome>
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <CompareProvider>
+                  <SiteChrome>{children}</SiteChrome>
+                </CompareProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </LanguageProvider>
 
         {/* Google Analytics 4 — loaded after interactive to avoid blocking */}
         {gaId && (

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useT } from '@/hooks/useT';
 import { API } from '@/constants/api';
 import Spinner from '@/components/ui/Spinner';
+import LoyaltyPointsCard from '@/components/account/LoyaltyPointsCard';
 import { 
   FaUser, 
   FaShoppingBag, 
@@ -21,6 +23,7 @@ import {
 
 export default function AccountPage() {
   const router = useRouter();
+  const t = useT();
   const { user, isAuthenticated, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -118,24 +121,24 @@ export default function AccountPage() {
     {
       section: 'Orders & Shopping',
       items: [
-        { icon: <FaShoppingBag />, label: 'My Orders', description: `${stats.totalOrders} orders`, href: '/orders', badge: stats.pendingOrders > 0 ? stats.pendingOrders : null },
-        { icon: <FaHeart />, label: 'Wishlist', description: `${stats.wishlistItems} items`, href: '/wishlist' },
-        { icon: <FaStar />, label: 'My Reviews', description: `${stats.reviewsWritten} reviews`, href: '/account/reviews' },
+        { icon: <FaShoppingBag />, label: t('account.myOrders'), description: `${stats.totalOrders} orders`, href: '/orders', badge: stats.pendingOrders > 0 ? stats.pendingOrders : null },
+        { icon: <FaHeart />, label: t('account.wishlist'), description: `${stats.wishlistItems} items`, href: '/wishlist' },
+        { icon: <FaStar />, label: t('account.myReviews'), description: `${stats.reviewsWritten} reviews`, href: '/account/reviews' },
       ]
     },
     {
       section: 'Account Settings',
       items: [
-        { icon: <FaUser />, label: 'Profile Information', description: 'Edit your details', href: '/account/profile' },
-        { icon: <FaMapMarkerAlt />, label: 'Addresses', description: 'Manage delivery addresses', href: '/account/addresses' },
-        { icon: <FaCreditCard />, label: 'Payment Methods', description: 'Saved cards & methods', href: '/account/payment-methods' },
+        { icon: <FaUser />, label: t('account.profile'), description: 'Edit your details', href: '/account/profile' },
+        { icon: <FaMapMarkerAlt />, label: t('account.addresses'), description: 'Manage delivery addresses', href: '/account/addresses' },
+        { icon: <FaCreditCard />, label: t('account.paymentMethods'), description: 'Saved cards & methods', href: '/account/payment-methods' },
       ]
     },
     {
       section: 'Preferences',
       items: [
-        { icon: <FaBell />, label: 'Notifications', description: 'Email & SMS preferences', href: '/account/notifications' },
-        { icon: <FaShieldAlt />, label: 'Privacy & Security', description: 'Password & security', href: '/account/security' },
+        { icon: <FaBell />, label: t('account.notifications'), description: 'Email & SMS preferences', href: '/account/notifications' },
+        { icon: <FaShieldAlt />, label: t('account.security'), description: 'Password & security', href: '/account/security' },
       ]
     }
   ];
@@ -169,7 +172,7 @@ export default function AccountPage() {
               className="hidden sm:flex items-center gap-2 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] font-medium hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               <FaEdit size={14} />
-              Edit Profile
+              {t('account.editProfile')}
             </button>
           </div>
         </div>
@@ -177,13 +180,20 @@ export default function AccountPage() {
 
       {/* Stats Cards */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        {/* Loyalty Points Card - Full Width */}
+        {user?.loyaltyPoints > 0 && (
+          <div className="mb-4">
+            <LoyaltyPointsCard points={user.loyaltyPoints} />
+          </div>
+        )}
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
             <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#0B2545] mb-1">
               {stats.totalOrders}
             </div>
             <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
-              Total Orders
+              {t('account.totalOrders')}
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
@@ -191,7 +201,7 @@ export default function AccountPage() {
               {stats.pendingOrders}
             </div>
             <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
-              Pending
+              {t('account.pending')}
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
@@ -199,7 +209,7 @@ export default function AccountPage() {
               {stats.wishlistItems}
             </div>
             <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
-              Wishlist
+              {t('account.wishlist')}
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
@@ -207,7 +217,7 @@ export default function AccountPage() {
               {stats.reviewsWritten}
             </div>
             <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
-              Reviews
+              {t('account.reviews')}
             </div>
           </div>
         </div>
@@ -259,7 +269,7 @@ export default function AccountPage() {
             className="w-full bg-white border border-[var(--color-border-tertiary)] rounded-lg p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 text-[#E24B4A] hover:bg-[#FEE2E2] transition-colors font-medium text-[13px] sm:text-[14px]"
           >
             <FaSignOutAlt size={16} />
-            Logout
+            {t('account.logout')}
           </button>
         </div>
       </div>

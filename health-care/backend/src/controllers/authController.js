@@ -259,6 +259,55 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
+// ── Change Password ───────────────────────────────────────────────────────────
+// PATCH /api/auth/change-password
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: 'New password must be at least 8 characters long' });
+    }
+
+    // Get user with password field
+    const user = await User.findById(req.user.id).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Verify current password
+    const isPasswordMatch = await user.comparePassword(currentPassword);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    user.refreshToken = null; // Invalidate all sessions for security
+    await user.save();
+
+    // Log password change activity
+    logActivityAsync({
+      user,
+      action: ACTIONS.AUTH.PASSWORD_RESET,
+      targetModel: 'User',
+      targetId: user._id,
+      targetName: user.email,
+      req,
+      metadata: { method: 'in-page' }
+    });
+
+    res.status(200).json({ success: true, message: 'Password changed successfully. Please log in again.' });
+  } catch (error) {
+    logger.error(`[changePassword] ${error.message}`);
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+  }
+};
+
 // ── Logout ────────────────────────────────────────────────────────────────────
 // POST /api/auth/logout
 exports.logout = async (req, res) => {

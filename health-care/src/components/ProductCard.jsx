@@ -2,12 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
+import { useCompare } from '@/context/CompareContext';
+import { useT } from '@/hooks/useT';
 import WishlistButton from './wishlist/WishlistButton';
+import { useT } from '@/hooks/useT';
 
 const ProductCard = React.memo(function ProductCard({ product, onProductClick }) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { toggleCompare, isInCompare } = useCompare();
+  const t = useT();
   const [addingToCart, setAddingToCart] = useState(false);
+  const [isComparing, setIsComparing] = useState(false);
+  const t = useT();
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
   const primaryImage = imageData ? {
@@ -22,6 +29,9 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
   const discountPercent = oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0;
   const hasDiscount = savings > 0 && discountPercent > 0;
 
+  // Check if product is in compare list
+  const inCompareList = isInCompare(product._id || product.id);
+
   // Handle add to cart
   const handleAddToCart = useCallback(async (e) => {
     e.stopPropagation(); // Prevent card click
@@ -35,6 +45,19 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
       setAddingToCart(false);
     }
   }, [addToCart, product]);
+
+  // Handle compare toggle
+  const handleCompareToggle = useCallback((e) => {
+    e.stopPropagation(); // Prevent card click
+    setIsComparing(true);
+    try {
+      toggleCompare(product);
+      setTimeout(() => setIsComparing(false), 500);
+    } catch (error) {
+      process.env.NODE_ENV !== "production" && console.error('Error toggling compare:', error);
+      setIsComparing(false);
+    }
+  }, [toggleCompare, product]);
 
   // Handle view details — always navigate to slug for canonical SEO URLs
   const handleViewDetails = useCallback((e) => {
@@ -104,8 +127,23 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
         </div>
         
         {/* Wishlist Button - Top Right */}
-        <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+        <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1">
           <WishlistButton productId={product._id || product.id} size="small" />
+          {/* Compare Button */}
+          <button
+            onClick={handleCompareToggle}
+            disabled={isComparing}
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all shadow-md ${
+              inCompareList
+                ? 'bg-[#7C3AED] text-white'
+                : 'bg-white/90 text-gray-600 hover:bg-white'
+            }`}
+            title={inCompareList ? 'Remove from compare' : 'Add to compare'}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+            </svg>
+          </button>
         </div>
       </div>
       
@@ -171,7 +209,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                 </svg>
-                <span className="hidden sm:inline">Adding...</span>
+                <span className="hidden sm:inline">{t('common.loading')}</span>
               </>
             ) : (
               <>
@@ -180,7 +218,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
                   <circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
                 </svg>
-                Add to Cart
+                {t('products.addToCart')}
               </>
             )}
           </button>
@@ -188,7 +226,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
             onClick={handleViewDetails}
             className="bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-gray-50 transition-colors"
           >
-            View Details
+            {t('products.viewDetails')}
           </button>
         </div>
       </div>

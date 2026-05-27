@@ -24,6 +24,7 @@ router.post('/test', authorize('admin'), whatsappController.testConnection);
 // Conversations
 router.get('/conversations', authorize('admin', 'manager', 'support'), whatsappController.getConversations);
 router.get('/conversations/:id', authorize('admin', 'manager', 'support'), whatsappController.getConversation);
+router.put('/conversations/:id', authorize('admin', 'manager', 'support'), whatsappController.updateConversation);
 router.put('/conversations/:id/assign', authorize('admin', 'manager'), whatsappController.assignConversation);
 router.put('/conversations/:id/status', authorize('admin', 'manager', 'support'), whatsappController.updateConversationStatus);
 router.post('/conversations/:id/notes', authorize('admin', 'manager', 'support'), whatsappController.addNote);

@@ -457,3 +457,30 @@ exports.getBadges = async (req, res) => {
     });
   }
 };
+
+// GET /api/admin/users - Get admin users for assignment
+exports.getAdminUsers = async (req, res) => {
+  try {
+    // Get all users with admin role who are active
+    const adminUsers = await User.find({
+      role: 'admin',
+      isActive: true
+    })
+      .select('_id name email')
+      .sort('name')
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      count: adminUsers.length,
+      users: adminUsers
+    });
+  } catch (error) {
+    logger.error(`[adminController] getAdminUsers error: ${error.message}`);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  }
+};

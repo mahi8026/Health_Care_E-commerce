@@ -11,6 +11,7 @@ import FloatingCartButton from '@/components/ui/FloatingCartButton';
 import CartSidebar from '@/components/ui/CartSidebar';
 import LiveChatWidget from '@/components/ui/LiveChatWidget';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import CompareBar from '@/components/compare/CompareBar';
 
 /** Routes with their own layout — no store footer / bottom nav. */
 function isMinimalChromeRoute(pathname) {
@@ -54,6 +55,7 @@ export default function SiteChrome({ children }) {
           <CartSidebar isOpen={cartSidebarOpen} onClose={() => setCartSidebarOpen(false)} />
           <LiveChatWidget />
           <ScrollToTop />
+          <CompareBar />
         </>
       )}
     </>

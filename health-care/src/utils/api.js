@@ -442,6 +442,16 @@ export const api = {
     return handleResponse(response);
   },
 
+  async changePassword(currentPassword, newPassword) {
+    const response = await fetchWithAuth(`${API_BASE_URL}/auth/change-password`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ currentPassword, newPassword }),
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
   // Quotations (B2B)
   async getQuotations() {
     const response = await fetchWithAuth(`${API_BASE_URL}/quotes`, {

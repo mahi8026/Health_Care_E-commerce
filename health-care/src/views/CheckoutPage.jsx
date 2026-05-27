@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useT } from '@/hooks/useT';
 import api from '@/utils/api';
 import GA4Tracker from '@/services/GA4Tracker';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
@@ -40,9 +41,11 @@ export default function CheckoutPage({ onBackToCart }) {
     instructions: '',
   });
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [redeemedPoints, setRedeemedPoints] = useState(0);
 
   const { cart, clearCart, getCartTotal } = useCart();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const t = useT();
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -109,8 +112,9 @@ export default function CheckoutPage({ onBackToCart }) {
   const orderTotal = useMemo(() => {
     const sub = getCartTotal();
     const discount = appliedCoupon?.discountAmount || 0;
-    return Math.round((sub - discount + deliveryFee) * 100) / 100;
-  }, [getCartTotal, appliedCoupon, deliveryFee]);
+    const pointsDiscount = redeemedPoints || 0;
+    return Math.round((sub - discount - pointsDiscount + deliveryFee) * 100) / 100;
+  }, [getCartTotal, appliedCoupon, redeemedPoints, deliveryFee]);
 
   const handlePlaceOrder = useCallback(async () => {
     if (!isAuthenticated()) {
@@ -227,13 +231,13 @@ export default function CheckoutPage({ onBackToCart }) {
       <div className="min-h-[60vh] bg-[#F6F9FC] flex items-center justify-center px-4 py-16">
         <div className="text-center max-w-sm bg-white rounded-2xl border border-[#E5E7EB] p-8">
           <div className="text-5xl mb-4">🛒</div>
-          <h2 className="text-lg font-bold text-[#0B2545] mb-2">Your cart is empty</h2>
-          <p className="text-sm text-[#6B7280] mb-6">Add products before checking out.</p>
+          <h2 className="text-lg font-bold text-[#0B2545] mb-2">{t('cart.empty')}</h2>
+          <p className="text-sm text-[#6B7280] mb-6">{t('cart.emptyDesc')}</p>
           <Link
             href="/products"
             className="inline-block w-full py-3 rounded-xl bg-[#0E8A6E] text-white text-sm font-bold hover:bg-[#0a7560]"
           >
-            Browse products
+            {t('product.browseProducts')}
           </Link>
         </div>
       </div>
@@ -265,10 +269,10 @@ export default function CheckoutPage({ onBackToCart }) {
               className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#0E8A6E] mb-2"
             >
               <FaArrowLeft size={11} />
-              Back to cart
+              {t('checkout.backToCart')}
             </Link>
             <h1 className="text-[22px] sm:text-[26px] font-bold text-[#0B2545] m-0 font-[family-name:var(--font-lora)]">
-              Checkout
+              {t('checkout.title')}
             </h1>
           </div>
         </div>
@@ -316,7 +320,7 @@ export default function CheckoutPage({ onBackToCart }) {
                   onClick={() => (onBackToCart ? onBackToCart() : router.push('/cart'))}
                   className="px-5 py-3 rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#0B2545] hover:bg-[#F9FAFB]"
                 >
-                  Back to cart
+                  {t('checkout.backToCart')}
                 </button>
               </div>
             </div>
@@ -332,6 +336,9 @@ export default function CheckoutPage({ onBackToCart }) {
                 onPlaceOrder={handlePlaceOrder}
                 loading={loading}
                 showPlaceOrder
+                loyaltyPoints={user?.loyaltyPoints || 0}
+                redeemedPoints={redeemedPoints}
+                onRedeemPoints={setRedeemedPoints}
               />
             </aside>
           </div>
@@ -352,7 +359,7 @@ export default function CheckoutPage({ onBackToCart }) {
           style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
         >
           <div className="flex items-center justify-between gap-3 mb-2">
-            <span className="text-[12px] text-[#6B7280]">Total</span>
+            <span className="text-[12px] text-[#6B7280]">{t('checkout.total')}</span>
             <span className="text-lg font-bold text-[#0B2545]">৳{orderTotal.toLocaleString()}</span>
           </div>
           <button
@@ -364,10 +371,10 @@ export default function CheckoutPage({ onBackToCart }) {
             {loading ? (
               <>
                 <Spinner size="small" />
-                Processing…
+                {t('checkout.processing')}
               </>
             ) : (
-              `Place order · ৳${orderTotal.toLocaleString()}`
+              `${t('checkout.placeOrder')} · ৳${orderTotal.toLocaleString()}`
             )}
           </button>
         </div>

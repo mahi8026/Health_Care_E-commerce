@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useT } from '@/hooks/useT';
 import Spinner from '@/components/ui/Spinner';
+import WriteReviewModal from '@/components/product/WriteReviewModal';
 import { API } from '@/constants/api';
 const PAGE_SIZE = 10;
 
@@ -19,11 +21,14 @@ const STATUS_COLORS = {
 
 export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   const { user, isAuthenticated } = useAuth();
+  const t = useT();
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Review modal state
+  const [reviewModal, setReviewModal] = useState(null); // { productId, productName }
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -102,7 +107,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
       <h1 className="text-[20px] font-semibold mb-6 font-[family-name:var(--font-lora)]">
-        Order History
+        {t('orders.title')}
       </h1>
 
       {loading ? (
@@ -114,15 +119,15 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
       ) : orders.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-[48px] mb-4">📦</div>
-          <p className="text-[14px] font-medium mb-2">No orders yet</p>
+          <p className="text-[14px] font-medium mb-2">{t('orders.noOrders')}</p>
           <p className="text-[12px] text-[var(--color-text-secondary)] mb-6">
-            Your order history will appear here once you place an order.
+            {t('orders.noOrdersDesc')}
           </p>
           <button
             onClick={() => onNavigate && onNavigate('reagent')}
             className="px-6 py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2d52]"
           >
-            Browse catalog →
+            {t('orders.browseCatalog')}
           </button>
         </div>
       ) : (
@@ -132,7 +137,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
             <table className="w-full">
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-tertiary)]">
-                  {['Order ID', 'Date', 'Items', 'Total', 'Status', 'Actions'].map(h => (
+                  {[t('orders.orderId'), t('orders.date'), t('orders.items'), t('orders.total'), t('orders.status'), t('orders.actions')].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                       {h}
                     </th>
@@ -149,7 +154,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                       {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                     </td>
                     <td className="px-4 py-3 text-[12px]">
-                      {order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? 's' : ''}
+                      {order.items?.length || 0} {(order.items?.length || 0) !== 1 ? t('orders.items') : t('orders.items')}
                     </td>
                     <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(order.totalAmount || order.total || 0).toLocaleString()}
@@ -165,14 +170,14 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                           onClick={() => handleTrack(order.orderNumber)}
                           className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
                         >
-                          Track
+                          {t('orders.track')}
                         </button>
                         <span className="text-[var(--color-border-secondary)]">·</span>
                         <button
                           onClick={() => handleInvoice(order)}
                           className="text-[11px] text-[#0B2545] font-medium hover:underline"
                         >
-                          Invoice
+                          {t('orders.invoice')}
                         </button>
                         {canRequestReturn(order) && (
                           <>
@@ -181,10 +186,24 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                               onClick={() => handleRequestReturn(order._id)}
                               className="text-[11px] text-[#E24B4A] font-medium hover:underline"
                             >
-                              Return
+                              {t('orders.return')}
                             </button>
                           </>
                         )}
+                        {order.status === 'delivered' && order.items?.slice(0, 1).map(item => (
+                          <span key={item.product?._id || item.product} className="flex items-center gap-1">
+                            <span className="text-[var(--color-border-secondary)]">·</span>
+                            <button
+                              onClick={() => setReviewModal({
+                                productId: item.product?._id || item.product,
+                                productName: item.product?.name || item.name || 'Product'
+                              })}
+                              className="text-[11px] text-[#F59E0B] font-medium hover:underline flex items-center gap-0.5"
+                            >
+                              ★ {t('orders.writeReview')}
+                            </button>
+                          </span>
+                        ))}
                       </div>
                     </td>
                   </tr>
@@ -213,7 +232,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                 
                 <div className="flex items-center justify-between mb-3 pb-3 border-b-[0.5px] border-[var(--color-border-tertiary)]">
                   <div className="text-[11px] text-[var(--color-text-secondary)]">
-                    {order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? 's' : ''}
+                    {order.items?.length || 0} {t('orders.items')}
                   </div>
                   <div className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                     ৳{(order.totalAmount || order.total || 0).toLocaleString()}
@@ -225,20 +244,31 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                     onClick={() => handleTrack(order.orderNumber)}
                     className="flex-1 min-h-[44px] py-2 text-[12px] text-[#0E8A6E] font-medium border-[0.5px] border-[#0E8A6E] rounded-lg hover:bg-[#E1F5EE] transition-colors"
                   >
-                    Track
+                    {t('orders.track')}
                   </button>
                   <button
                     onClick={() => handleInvoice(order)}
                     className="flex-1 min-h-[44px] py-2 text-[12px] text-[#0B2545] font-medium border-[0.5px] border-[#0B2545] rounded-lg hover:bg-[#E6F1FB] transition-colors"
                   >
-                    Invoice
+                    {t('orders.invoice')}
                   </button>
                   {canRequestReturn(order) && (
                     <button
                       onClick={() => handleRequestReturn(order._id)}
                       className="flex-1 min-h-[44px] py-2 text-[12px] text-[#E24B4A] font-medium border-[0.5px] border-[#E24B4A] rounded-lg hover:bg-[#FEE2E2] transition-colors"
                     >
-                      Return
+                      {t('orders.return')}
+                    </button>
+                  )}
+                  {order.status === 'delivered' && order.items?.[0] && (
+                    <button
+                      onClick={() => setReviewModal({
+                        productId: order.items[0].product?._id || order.items[0].product,
+                        productName: order.items[0].product?.name || order.items[0].name || 'Product'
+                      })}
+                      className="flex-1 min-h-[44px] py-2 text-[12px] text-[#F59E0B] font-medium border-[0.5px] border-[#F59E0B] rounded-lg hover:bg-[#FFFBEB] transition-colors"
+                    >
+                      ★ {t('orders.writeReview')}
                     </button>
                   )}
                 </div>
@@ -254,21 +284,32 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                 disabled={page === 1}
                 className="min-h-[44px] text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
-                ← Previous
+                {t('orders.previous')}
               </button>
               <span className="text-[12px] text-[var(--color-text-secondary)]">
-                Page {page} of {totalPages} · {total} orders
+                {t('orders.page')} {page} {t('orders.of')} {totalPages} · {total} orders
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 className="min-h-[44px] text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
-                Next →
+                {t('orders.next')}
               </button>
             </div>
           )}
         </>
+      )}
+
+      {/* Write Review Modal */}
+      {reviewModal && (
+        <WriteReviewModal
+          productId={reviewModal.productId}
+          onClose={() => setReviewModal(null)}
+          onSuccess={() => {
+            setReviewModal(null);
+          }}
+        />
       )}
     </div>
   );

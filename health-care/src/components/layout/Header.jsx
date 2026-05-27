@@ -4,9 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useT } from '@/hooks/useT';
 import AccountMenu from './AccountMenu';
 import WishlistButton from '../wishlist/WishlistButton';
 import MobileMenu from './MobileMenu';
+import LanguageSwitcher from '../ui/LanguageSwitcher';
 import {
   FaSearch,
   FaShoppingCart,
@@ -35,13 +37,14 @@ const PRODUCT_CATEGORIES = [
 ];
 
 const NAV_LINKS = [
-  { label: 'Reagent Store', href: '/reagent-store' },
-  { label: 'Track Order', href: '/track' },
+  { label: 'reagentStore', href: '/reagent-store' },
+  { label: 'trackOrder', href: '/track' },
 ];
 
 export default function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate }) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useT();
   const { getCartCount } = useCart();
   const { user, isAuthenticated } = useAuth();
   const cartCount = getCartCount();
@@ -150,7 +153,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 aria-expanded={megaMenuOpen}
                 aria-haspopup="true"
               >
-                Products
+                {t('nav.products')}
                 <FaChevronDown
                   size={10}
                   className={`transition-transform duration-200 ${megaMenuOpen ? 'rotate-180' : ''}`}
@@ -201,7 +204,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 onClick={() => router.push(href)}
                 className={`nav-link ${isActive(href) ? 'nav-link-active' : ''}`}
               >
-                {label}
+                {t(`nav.${label}`)}
               </button>
             ))}
           </nav>
@@ -225,7 +228,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                       type="search"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search products…"
+                      placeholder={t('nav.search')}
                       className="flex-1 bg-transparent text-[13px] outline-none min-w-0"
                       aria-label="Search products"
                     />
@@ -256,6 +259,8 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 )}
               </div>
 
+              <LanguageSwitcher />
+
               <div className="nav-glass-controls-desktop">
                 <WishlistButton variant="glass-chip" />
                 <button
@@ -271,7 +276,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                       {cartCount > 9 ? '9+' : cartCount}
                     </span>
                   )}
-                  <span className="nav-glass-control__label">Cart</span>
+                  <span className="nav-glass-control__label">{t('nav.cart')}</span>
                 </button>
                 <AccountMenu
                   variant="glass"
@@ -298,10 +303,10 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
             {!authed && (
               <div className="hidden md:flex items-center gap-2">
                 <button onClick={onLoginClick} className="nav-cta-ghost">
-                  Log in
+                  {t('nav.login')}
                 </button>
                 <button onClick={onRegisterClick} className="nav-cta-solid">
-                  Register
+                  {t('nav.register')}
                 </button>
               </div>
             )}
@@ -311,7 +316,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 onClick={() => router.push('/admin')}
                 className="glass-chip-admin"
               >
-                Admin
+                {t('nav.admin')}
               </button>
             )}
 
@@ -323,7 +328,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
-              B2B Portal
+              {t('nav.b2bPortal')}
             </button>
 
             <button

@@ -8,6 +8,7 @@ const {
   refreshToken,
   getMe,
   updateProfile,
+  changePassword,
   logout,
   forgotPassword,
   resetPassword,
@@ -80,6 +81,7 @@ router.post('/logout', protect, noStore, logout);
 router.get('/me', protect, noStore, getMe);
 router.put('/profile', protect, noStore, updateProfile);
 router.patch('/profile', protect, noStore, updateProfile);
+router.patch('/change-password', protect, authLimiter, noStore, changePassword);
 router.patch('/notification-preferences', protect, noStore, updateNotificationPreferences);
 
 // Phone verification routes (with OTP rate limiting)

@@ -34,17 +34,25 @@ export default function OrderSummary({
   onPlaceOrder,
   loading,
   showPlaceOrder = false,
+  loyaltyPoints = 0,
+  redeemedPoints = 0,
+  onRedeemPoints,
 }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [couponCode, setCouponCode] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
   const [showCouponInput, setShowCouponInput] = useState(false);
+  const [pointsInput, setPointsInput] = useState('');
+  const [showPointsInput, setShowPointsInput] = useState(false);
+
+  const availablePoints = loyaltyPoints || user?.loyaltyPoints || 0;
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const deliveryFee = getDeliveryFee(deliveryMethod);
   const couponDiscount = appliedCoupon?.discountAmount || 0;
-  const computedTotal = Math.round((subtotal - couponDiscount + deliveryFee) * 100) / 100;
+  const pointsDiscount = redeemedPoints || 0;
+  const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount + deliveryFee) * 100) / 100;
   const displayTotal = total ?? computedTotal;
 
   useEffect(() => {
@@ -192,6 +200,73 @@ export default function OrderSummary({
               </button>
             </div>
           )}
+
+          {/* Loyalty Points Redemption */}
+          {availablePoints > 0 && onRedeemPoints && (
+            <div className="mt-3 pt-3 border-t border-[#F3F4F6]">
+              {pointsDiscount > 0 ? (
+                <div className="flex justify-between items-center p-2.5 rounded-lg bg-[#FFF7ED] border border-[#F59E0B]/30">
+                  <div>
+                    <span className="text-[12px] font-semibold text-[#92400E]">⭐ {pointsDiscount} pts redeemed</span>
+                    <p className="text-[10px] text-[#92400E] mt-0.5">−৳{pointsDiscount.toLocaleString()} discount</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { onRedeemPoints(0); setPointsInput(''); setShowPointsInput(false); }}
+                    className="text-[11px] text-[#F59E0B] font-semibold hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : !showPointsInput ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPointsInput(true)}
+                  className="flex items-center gap-1.5 text-[12px] font-semibold text-[#F59E0B] hover:underline"
+                >
+                  ⭐ Redeem loyalty points ({availablePoints} available)
+                </button>
+              ) : (
+                <div>
+                  <p className="text-[11px] text-[#6B7280] mb-1.5">
+                    You have <strong>{availablePoints}</strong> points (= ৳{availablePoints.toLocaleString()} discount)
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={pointsInput}
+                      onChange={(e) => setPointsInput(e.target.value)}
+                      placeholder={`Max ${Math.min(availablePoints, subtotal)}`}
+                      min="1"
+                      max={Math.min(availablePoints, subtotal)}
+                      className="flex-1 px-3 py-2 min-h-[44px] text-[13px] border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/15"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const pts = Math.min(
+                          parseInt(pointsInput) || 0,
+                          availablePoints,
+                          Math.floor(subtotal)
+                        );
+                        if (pts > 0) { onRedeemPoints(pts); setShowPointsInput(false); }
+                      }}
+                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-[#F59E0B] text-white rounded-lg hover:bg-[#D97706]"
+                    >
+                      Apply
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowPointsInput(false); setPointsInput(''); }}
+                      className="px-3 py-2 min-h-[44px] text-xs text-[#6B7280] border border-[#E5E7EB] rounded-lg hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="px-4 sm:px-5 py-3 border-t border-[#F3F4F6] space-y-2 text-[13px]">
@@ -203,6 +278,12 @@ export default function OrderSummary({
             <div className="flex justify-between text-[#0E8A6E]">
               <span>Discount</span>
               <span className="font-medium">−৳{couponDiscount.toLocaleString()}</span>
+            </div>
+          )}
+          {pointsDiscount > 0 && (
+            <div className="flex justify-between text-[#F59E0B]">
+              <span>⭐ Points discount</span>
+              <span className="font-medium">−৳{pointsDiscount.toLocaleString()}</span>
             </div>
           )}
           <div className="flex justify-between text-[#6B7280]">

@@ -5,6 +5,7 @@
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useT } from '@/hooks/useT';
 import { 
   FaStethoscope, 
   FaSyringe, 
@@ -97,6 +98,7 @@ function Skeleton({ w = '100%', h = 20, r = 8 }) {
 
 const ProductCard = memo(function ProductCard({ product, onClick }) {
   const { addToCart } = useCart();
+  const t = useT();
   const imgRaw = product.images?.[0];
   const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
@@ -136,7 +138,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
           )}
           {!inStock && (
             <span style={{ background: '#6B7280', color: '#fff', fontSize: 10, fontWeight: 700,
-              padding: '3px 8px', borderRadius: 6 }}>Out of stock</span>
+              padding: '3px 8px', borderRadius: 6 }}>{t('common.outOfStock')}</span>
           )}
         </div>
         {/* Quick add button on hover */}
@@ -148,7 +150,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
           onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#0B7558'; }}
           onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}
           className="quick-add-btn">
-          + Cart
+          + {t('nav.cart')}
         </button>
       </div>
 
@@ -175,7 +177,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         )}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
-            {price > 0 ? `৳${price.toLocaleString()}` : 'Contact for Price'}
+            {price > 0 ? `৳${price.toLocaleString()}` : t('common.contactForPrice')}
           </span>
           {hasDiscount && (
             <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
@@ -195,6 +197,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 export default function HomePage() {
   const router = useRouter();
   const { addToCart } = useCart();
+  const t = useT();
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = useState('');
@@ -565,16 +568,16 @@ export default function HomePage() {
           <div className="hero-left-content">
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: '#4DDBB8', fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               <span style={{ width: 7, height: 7, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
-              Bangladesh&apos;s #1 Medical Equipment Platform
+              {t('home.tagline')}
             </div>
             <h1 style={{ fontSize: 'clamp(26px, 3.5vw, 48px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>
-              Medical Equipment &amp;<br />
+              {t('home.heroTitle')}<br />
               <span style={{ color: '#4DDBB8' }}>
                 <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
               </span>
             </h1>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 28, maxWidth: 480, lineHeight: 1.7 }}>
-              10,000+ DGDA-registered products from 50+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals &amp; clinics.
+              {t('home.heroSubtitle')}
             </p>
             <div style={{ display: 'flex', gap: 0, maxWidth: 520, marginBottom: 24, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)', width: '100%' }}>
               <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder={searchPlaceholder}
@@ -583,7 +586,7 @@ export default function HomePage() {
                 style={{ padding: '15px 20px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                 onMouseEnter={e => e.currentTarget.style.background = '#0B7558'}
                 onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
-                🔍 Search
+                {t('home.searchBtn')}
               </button>
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -659,7 +662,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-trust-bar hidden md:block" style={{ padding: '14px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-          {[{ icon: '🚚', text: 'Free delivery over ৳50,000' }, { icon: '❄️', text: 'Cold chain for reagents' }, { icon: '🔧', text: 'Free installation in Dhaka' }, { icon: '📞', text: '24/7 technical support' }, { icon: '↩', text: '30-day returns' }].map(({ icon, text }) => (
+          {[{ icon: '🚚', text: t('home.freeDelivery') }, { icon: '❄️', text: t('home.coldChain') }, { icon: '🔧', text: t('home.freeInstall') }, { icon: '📞', text: t('home.support247') }, { icon: '↩', text: t('home.returns30') }].map(({ icon, text }) => (
             <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#374151', fontWeight: 500 }}>
               <span style={{ fontSize: 16 }}>{icon}</span>{text}
             </div>
@@ -677,9 +680,9 @@ export default function HomePage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
               <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
-                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Our Catalog</p>
+                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.ourCatalog')}</p>
               <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
-                Shop by Category
+                {t('home.shopByCategory')}
               </h2>
             </div>
           </div>
@@ -731,7 +734,7 @@ export default function HomePage() {
               </div>
               <span style={{ fontSize: 12, fontWeight: 600, color: '#0E8A6E',
                 textAlign: 'center' }}>
-                View All
+                {t('home.viewAll')}
               </span>
             </div>
           </div>
@@ -765,7 +768,7 @@ export default function HomePage() {
               }}>
                 {promo.code}
               </span>
-              {' '}for {promo.type === 'percentage' ? `${promo.value}% off` : `৳${promo.value} off`}
+              {' '}for {promo.type === 'percentage' ? `${promo.value}% ${t('home.off')}` : `৳${promo.value} ${t('home.off')}`}
               {promo.description ? ` — ${promo.description}` : ''}
             </div>
           </div>
@@ -777,7 +780,7 @@ export default function HomePage() {
                 background: '#fff', color: '#0E8A6E', border: 'none',
                 padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: 'pointer',
               }}>
-              Copy code
+              {t('home.copyCode')}
             </button>
             <button
               onClick={() => router.push('/products')}
@@ -786,7 +789,7 @@ export default function HomePage() {
                 border: '1.5px solid rgba(255,255,255,0.6)',
                 padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
               }}>
-              Shop now →
+              {t('home.shopNow')}
             </button>
           </div>
         </div>
@@ -805,22 +808,22 @@ export default function HomePage() {
                 <div>
                   <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
                     textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
-                    🔥 Flash Deals
+                    {t('home.flashDeals')}
                   </div>
                   <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700,
-                    color: '#fff', margin: 0 }}>Deal of the Day</h2>
+                    color: '#fff', margin: 0 }}>{t('home.dealOfDay')}</h2>
                 </div>
                 <button onClick={() => router.push('/products?sortBy=discount')}
                   style={{ background: 'rgba(255,255,255,0.1)', color: '#fff',
                     border: '1px solid rgba(255,255,255,0.2)', padding: '7px 16px', borderRadius: 8,
                     fontSize: 12, cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                  See all deals →
+                  {t('home.seeAllDeals')}
                 </button>
               </div>
 
               {/* Countdown timer */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>Ends in:</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>{t('home.endsIn')}</span>
                 {[
                   { val: timeLeft.h, label: 'hrs' },
                   { val: timeLeft.m, label: 'min' },
@@ -869,9 +872,9 @@ export default function HomePage() {
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32 }}>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#0E8A6E', textTransform: 'uppercase',
-                  letterSpacing: '0.08em', marginBottom: 6 }}>🏆 Most Popular</div>
+                  letterSpacing: '0.08em', marginBottom: 6 }}>{t('home.mostPopular')}</div>
                 <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0,
-                  color: '#0B2545', lineHeight: 1.2 }}>Top Selling Products</h2>
+                  color: '#0B2545', lineHeight: 1.2 }}>{t('home.topSelling')}</h2>
               </div>
               <button onClick={() => router.push('/products?sortBy=popular')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
@@ -880,7 +883,7 @@ export default function HomePage() {
                   transition: 'all 0.2s', whiteSpace: 'nowrap' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#0E8A6E'; e.currentTarget.style.color = '#fff'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#0E8A6E'; }}>
-                View All <span>→</span>
+                {t('home.viewAll')} <span>→</span>
               </button>
             </div>
 
@@ -996,7 +999,7 @@ export default function HomePage() {
                             background: product.stock > 0 ? '#10B981' : '#EF4444'
                           }} />
                           <span style={{ fontSize: 11, color: product.stock > 0 ? '#059669' : '#DC2626', fontWeight: 500 }}>
-                            {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                            {product.stock > 0 ? t('products.inStock') : t('products.outOfStock')}
                           </span>
                         </div>
                       </div>
@@ -1012,7 +1015,7 @@ export default function HomePage() {
                           }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#F0FDF4'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}>
-                          Add to Cart
+                          {t('products.addToCart')}
                         </button>
                         <button
                           onClick={e => { e.stopPropagation(); router.push(`/products/${product.slug || product._id}`); }}
@@ -1023,7 +1026,7 @@ export default function HomePage() {
                           }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#0c7a61'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#0E8A6E'; }}>
-                          Buy Now
+                          {t('products.viewDetails')}
                         </button>
                       </div>
                     </div>
@@ -1042,12 +1045,12 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
-              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Hand-picked</p>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>Featured Products</h2>
+              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>{t('home.featuredProducts')}</h2>
             </div>
             <button onClick={() => router.push('/products')}
               style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-              View all →
+              {t('home.viewAll')}
             </button>
           </div>
 
@@ -1099,14 +1102,14 @@ export default function HomePage() {
               padding: '0 24px', marginBottom: 20 }}>
               <div>
                 <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
-                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Just Arrived</p>
+                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.justArrived')}</p>
                 <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
-                  New Arrivals
+                  {t('home.newArrivals')}
                 </h2>
               </div>
               <button onClick={() => router.push('/products?sortBy=newest')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none',
-                  border: 'none', cursor: 'pointer' }}>View all →</button>
+                  border: 'none', cursor: 'pointer' }}>{t('home.viewAll')}</button>
             </div>
             <div style={{ display: 'flex', gap: 16, overflowX: 'auto', padding: '4px 24px 16px',
               scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -1163,7 +1166,7 @@ export default function HomePage() {
               <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
-                View All Items →
+                {t('home.viewAllItems')}
               </button>
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
@@ -1191,7 +1194,7 @@ export default function HomePage() {
               <button onClick={() => router.push('/products?category=Laboratory+Reagents')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
-                View All Items →
+                {t('home.viewAllItems')}
               </button>
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
@@ -1219,7 +1222,7 @@ export default function HomePage() {
               <button onClick={() => router.push('/products?category=Hospital+Machines')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
-                View All Items →
+                {t('home.viewAllItems')}
               </button>
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
@@ -1247,7 +1250,7 @@ export default function HomePage() {
               <button onClick={() => router.push('/products?category=PPE')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
-                View All Items →
+                {t('home.viewAllItems')}
               </button>
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
@@ -1275,7 +1278,7 @@ export default function HomePage() {
               <button onClick={() => router.push('/products?category=Lab+Equipment')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
-                View All Items →
+                {t('home.viewAllItems')}
               </button>
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
@@ -1296,9 +1299,9 @@ export default function HomePage() {
       <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Why Choose Us</p>
+            <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#0B2545' }}>
-              The MedCore BD Difference
+              {t('home.whyMedcore')}
             </h2>
           </div>
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
@@ -1334,14 +1337,13 @@ export default function HomePage() {
             <div>
               <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: '#4DDBB8',
                 padding: '4px 14px', borderRadius: 999, fontWeight: 700,
-                textTransform: 'uppercase', letterSpacing: '0.08em' }}>B2B Program</span>
+                textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
               <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700,
                 color: '#fff', margin: '14px 0 12px' }}>
-                Exclusive Benefits for<br />Hospitals & Clinics
+                {t('home.b2bTitle')}
               </h3>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.8 }}>
-                Join {stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+'} healthcare institutions saving with our B2B program.
-                Get bulk discounts, flexible credit terms, and a dedicated account manager.
+                {t('home.b2bDesc')}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 460, marginBottom: 28 }}>
                 {['8–22% bulk discounts', '30–90 day credit terms',
@@ -1358,7 +1360,7 @@ export default function HomePage() {
                   onClick={() => router.push('/register?type=b2b')}
                   style={{ padding: '13px 28px', background: '#0E8A6E', color: '#fff',
                     border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-                  Register for B2B →
+                  {t('home.registerB2B')}
                 </button>
                 <button onClick={() => router.push('/b2b')}
                   style={{ padding: '13px 24px', background: 'rgba(255,255,255,0.1)',
@@ -1366,7 +1368,7 @@ export default function HomePage() {
                     borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
-                  Learn more
+                  {t('home.learnMore')}
                 </button>
               </div>
             </div>
@@ -1399,9 +1401,9 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
-              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Simple Process</p>
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
-              How It Works
+              {t('home.howItWorks')}
             </h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}
@@ -1438,9 +1440,9 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
-            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Testimonials</p>
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.testimonials')}</p>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#fff' }}>
-            What Our Clients Say
+            {t('home.testimonials')}
           </h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}

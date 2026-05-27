@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
+import { useT } from '@/hooks/useT';
 import SearchResults from '@/components/search/SearchResults';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
@@ -10,6 +11,7 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 export default function ProductsPage({ onProductClick, initialCategory }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useT();
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
@@ -170,11 +172,11 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     filters.minPrice || filters.maxPrice || filters.inStock || searchQuery;
 
   const SORT_OPTIONS = [
-    { value: 'name',       label: 'Name: A to Z' },
-    { value: 'price-low',  label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'newest',     label: 'Newest First' },
-    { value: 'popular',    label: 'Most Popular' },
+    { value: 'name',       label: t('products.nameAZ') },
+    { value: 'price-low',  label: t('products.priceLow') },
+    { value: 'price-high', label: t('products.priceHigh') },
+    { value: 'newest',     label: t('products.newest') },
+    { value: 'popular',    label: t('products.popular') },
   ];
 
   return (
@@ -236,7 +238,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                   )}
                   <button onClick={clearAllFilters}
                     className="text-red-300 hover:text-red-200 text-[11px] font-medium underline ml-1 flex-shrink-0">
-                    Clear all
+                    {t('products.clearAll')}
                   </button>
                 </>
               )}
@@ -259,12 +261,12 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                     <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
                   </svg>
-                  <span className="text-white font-bold text-[14px]">Filters</span>
+                  <span className="text-white font-bold text-[14px]">{t('products.filters')}</span>
                 </div>
                 {hasActiveFilters && (
                   <button onClick={clearAllFilters}
                     className="text-[11px] text-red-300 hover:text-red-200 font-medium transition-colors">
-                    Clear all
+                    {t('products.clearAll')}
                   </button>
                 )}
               </div>
@@ -274,7 +276,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 {/* Category */}
                 <div>
                   <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>📂</span> Category
+                    <span>📂</span> {t('products.category')}
                   </label>
                   <select value={searchCategory}
                     onChange={e => {
@@ -288,7 +290,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                       }
                     }}
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700">
-                    <option value="">All categories</option>
+                    <option value="">{t('products.allCategories')}</option>
                     {categories.map(cat => (
                       <option key={cat._id} value={cat.name}>{cat.name}</option>
                     ))}
@@ -298,12 +300,12 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 {/* Brand */}
                 <div>
                   <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>🏭</span> Brand
+                    <span>🏭</span> {t('products.brand')}
                   </label>
                   <select value={filters.brands?.[0] || ''}
                     onChange={e => handleFilterChange({ ...filters, brands: e.target.value ? [e.target.value] : [] })}
                     className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700">
-                    <option value="">All brands</option>
+                    <option value="">{t('products.allBrands')}</option>
                     {brands.map(brand => (
                       <option key={brand._id} value={brand?.name || brand}>{brand?.name || brand}</option>
                     ))}
@@ -313,7 +315,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 {/* Price Range */}
                 <div>
                   <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>💰</span> Price Range (৳)
+                    <span>💰</span> {t('products.priceRange')}
                   </label>
                   <div className="flex gap-2 items-center">
                     <input type="number" placeholder="Min"
@@ -345,13 +347,13 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 {/* Availability */}
                 <div>
                   <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>📦</span> Availability
+                    <span>📦</span> {t('products.availability')}
                   </label>
                   <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:border-[#0E8A6E] hover:bg-[#0E8A6E]/5 transition-all cursor-pointer">
                     <input type="checkbox" checked={filters.inStock || false}
                       onChange={e => handleFilterChange({ ...filters, inStock: e.target.checked })}
                       className="w-4 h-4 text-[#0E8A6E] border-gray-300 rounded focus:ring-[#0E8A6E] cursor-pointer accent-[#0E8A6E]" />
-                    <span className="text-[13px] text-gray-700 font-medium">In stock only</span>
+                    <span className="text-[13px] text-gray-700 font-medium">{t('products.inStockOnly')}</span>
                   </label>
                 </div>
 
@@ -360,7 +362,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                   <div className="pt-4 border-t border-gray-100">
                     <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0E8A6E]/8 border border-[#0E8A6E]/20 rounded-xl">
                       <span className="text-[15px] font-bold text-[#0E8A6E]">{pagination.total.toLocaleString()}</span>
-                      <span className="text-[12px] text-gray-600">product{pagination.total !== 1 ? 's' : ''} found</span>
+                      <span className="text-[12px] text-gray-600">{t('products.productsFound')}</span>
                     </div>
                   </div>
                 )}
@@ -385,18 +387,18 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-[14px] sm:h-[14px]">
                     <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
                   </svg>
-                  <span className="hidden xs:inline">Filters</span>
+                  <span className="hidden xs:inline">{t('products.filters')}</span>
                   {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-[#0E8A6E]" />}
                 </button>
 
                 <div className="text-[11px] sm:text-[13px] text-gray-500 truncate min-w-0">
                   {loading && allProducts.length === 0 ? (
-                    <span className="text-gray-400">Loading...</span>
+                    <span className="text-gray-400">{t('products.loading')}</span>
                   ) : (
                     <>
                       {searchCategory
                         ? <span className="font-semibold text-[#0B2545] truncate">{searchCategory}</span>
-                        : <span className="text-gray-600">All Products</span>}
+                        : <span className="text-gray-600">{t('products.allProducts')}</span>}
                       <span className="text-gray-400 mx-1 sm:mx-1.5">·</span>
                       <span className="font-medium text-gray-700">{allProducts.length}</span>
                       <span className="text-gray-400 hidden xs:inline"> of </span>
@@ -408,7 +410,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                <span className="text-[11px] sm:text-[12px] text-gray-500 hidden sm:block">Sort:</span>
+                <span className="text-[11px] sm:text-[12px] text-gray-500 hidden sm:block">{t('products.sortBy')}</span>
                 <select value={sortBy} onChange={e => handleSortChange(e.target.value)}
                   className="px-2 sm:px-3 py-1.5 border border-gray-200 rounded-xl text-[11px] sm:text-[12px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700 font-medium min-w-0 max-w-[140px] sm:max-w-none">
                   {SORT_OPTIONS.map(opt => (
@@ -450,7 +452,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
           <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl overflow-y-auto">
             <div className="px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d3060] flex items-center justify-between">
-              <span className="text-white font-bold text-[14px]">Filters</span>
+              <span className="text-white font-bold text-[14px]">{t('products.filters')}</span>
               <button onClick={() => setSidebarOpen(false)} className="text-white/70 hover:text-white">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18M6 6l12 12"/>
@@ -459,7 +461,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
             </div>
             <div className="p-4 space-y-5">
               <div>
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Category</label>
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">{t('products.category')}</label>
                 <select value={searchCategory}
                   onChange={e => {
                     const name = e.target.value;
@@ -474,21 +476,21 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                     }
                   }}
                   className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]">
-                  <option value="">All categories</option>
+                  <option value="">{t('products.allCategories')}</option>
                   {categories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Brand</label>
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">{t('products.brand')}</label>
                 <select value={filters.brands?.[0] || ''}
                   onChange={e => { handleFilterChange({ ...filters, brands: e.target.value ? [e.target.value] : [] }); setSidebarOpen(false); }}
                   className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]">
-                  <option value="">All brands</option>
+                  <option value="">{t('products.allBrands')}</option>
                   {brands.map(brand => <option key={brand._id} value={brand?.name || brand}>{brand?.name || brand}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Price Range (৳)</label>
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">{t('products.priceRange')}</label>
                 <div className="flex gap-2 items-center">
                   <input type="number" placeholder="Min" value={filters.minPrice || ''}
                     onChange={e => handleFilterChange({ ...filters, minPrice: e.target.value ? Number(e.target.value) : undefined })}
@@ -503,15 +505,15 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 <input type="checkbox" checked={filters.inStock || false}
                   onChange={e => handleFilterChange({ ...filters, inStock: e.target.checked })}
                   className="w-4 h-4 accent-[#0E8A6E]" />
-                <span className="text-[13px] text-gray-700 font-medium">In stock only</span>
+                <span className="text-[13px] text-gray-700 font-medium">{t('products.inStockOnly')}</span>
               </label>
               <button onClick={() => { clearAllFilters(); setSidebarOpen(false); }}
                 className="w-full py-2.5 border border-red-200 text-red-600 rounded-xl text-[13px] font-medium hover:bg-red-50 transition-colors">
-                Clear All Filters
+                {t('products.clearAll')}
               </button>
               <button onClick={() => setSidebarOpen(false)}
                 className="w-full py-2.5 bg-[#0E8A6E] text-white rounded-xl text-[13px] font-semibold hover:bg-[#0c7a61] transition-colors">
-                Apply Filters
+                {t('products.filters')}
               </button>
             </div>
           </div>
