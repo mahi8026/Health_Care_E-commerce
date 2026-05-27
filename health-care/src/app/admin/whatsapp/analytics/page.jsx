@@ -1,3 +1,4 @@
+import AdminShell from '@/components/admin/AdminShell';
 import WhatsAppAnalytics from '@/components/admin/WhatsAppAnalytics';
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function WhatsAppAnalyticsPage() {
-  return <WhatsAppAnalytics />;
+  return (
+    <AdminShell title="WhatsApp Analytics">
+      <WhatsAppAnalytics />
+    </AdminShell>
+  );
 }

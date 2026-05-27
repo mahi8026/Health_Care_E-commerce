@@ -1,3 +1,4 @@
+import AdminShell from '@/components/admin/AdminShell';
 import WhatsAppConversationDetail from '@/components/admin/WhatsAppConversationDetail';
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function ConversationDetailPage({ params }) {
-  return <WhatsAppConversationDetail conversationId={params.id} />;
+  return (
+    <AdminShell title="WhatsApp Conversation">
+      <WhatsAppConversationDetail conversationId={params.id} />
+    </AdminShell>
+  );
 }

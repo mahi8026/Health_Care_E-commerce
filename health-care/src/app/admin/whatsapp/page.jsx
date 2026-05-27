@@ -1,4 +1,5 @@
-import WhatsAppManager from '@/components/admin/WhatsAppManager';
+import AdminShell from '@/components/admin/AdminShell';
+import WhatsAppManagerWrapper from '@/components/admin/WhatsAppManagerWrapper';
 
 export const metadata = {
   title: 'WhatsApp Conversations — Admin | MedCore BD',
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function WhatsAppPage() {
-  return <WhatsAppManager />;
+  return (
+    <AdminShell title="WhatsApp Conversations">
+      <WhatsAppManagerWrapper />
+    </AdminShell>
+  );
 }
