@@ -63,13 +63,41 @@ const chatConfigSchema = new mongoose.Schema({
       default: 'Asia/Dhaka'
     },
     schedule: {
-      monday: { start: '08:00', end: '22:00', enabled: true },
-      tuesday: { start: '08:00', end: '22:00', enabled: true },
-      wednesday: { start: '08:00', end: '22:00', enabled: true },
-      thursday: { start: '08:00', end: '22:00', enabled: true },
-      friday: { start: '08:00', end: '22:00', enabled: true },
-      saturday: { start: '08:00', end: '22:00', enabled: true },
-      sunday: { start: '08:00', end: '22:00', enabled: true }
+      monday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      },
+      tuesday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      },
+      wednesday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      },
+      thursday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      },
+      friday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      },
+      saturday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      },
+      sunday: {
+        start: { type: String, default: '08:00' },
+        end: { type: String, default: '22:00' },
+        enabled: { type: Boolean, default: true }
+      }
     }
   },
   
