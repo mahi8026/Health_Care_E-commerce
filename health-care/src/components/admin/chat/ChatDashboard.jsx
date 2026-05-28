@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { FaComments, FaClock, FaCheckCircle, FaCircle, FaUser, FaEnvelope, FaTimes, FaPaperPlane } from 'react-icons/fa';
-import { useAuth } from '@/context/AuthContext';
+import { FaComments, FaClock, FaCheckCircle, FaCircle, FaEnvelope, FaTimes, FaPaperPlane } from 'react-icons/fa';
 import { format } from 'date-fns';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
@@ -18,8 +17,21 @@ function formatTime(date) {
   try { return format(new Date(date), 'HH:mm'); } catch { return ''; }
 }
 
+function getAuthToken() {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('medcore_token');
+  }
+  return null;
+}
+
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${getAuthToken()}`
+  };
+}
+
 export default function ChatDashboard() {
-  const { token } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -31,39 +43,43 @@ export default function ChatDashboard() {
   const pollRef = useRef(null);
   const msgPollRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const selectedRef = useRef(null);
 
-  const authHeaders = { Authorization: `Bearer ${token}` };
+  // Keep selectedRef in sync so interval callbacks always have latest value
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
 
-  // Fetch all conversations
-  const fetchConversations = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_URL}/chat/conversations?limit=50`, { headers: authHeaders });
-      if (!res.ok) return;
-      const data = await res.json();
-      const convs = data.data || [];
-      setConversations(convs);
-      setStats({
-        active: convs.filter(c => c.status === 'active').length,
-        waiting: convs.filter(c => c.status === 'waiting').length,
-        closed: convs.filter(c => c.status === 'closed').length
-      });
-      setIsLoading(false);
-    } catch (e) {
-      setIsLoading(false);
-    }
-  }, [token]);
+  // Fetch all conversations - defined outside useEffect to avoid setState-in-effect warning
+  const fetchConversations = useCallback(() => {
+    fetch(`${API_URL}/chat/conversations?limit=50`, { headers: getHeaders() })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return;
+        const convs = data.data || [];
+        setConversations(convs);
+        setStats({
+          active: convs.filter(c => c.status === 'active').length,
+          waiting: convs.filter(c => c.status === 'waiting').length,
+          closed: convs.filter(c => c.status === 'closed').length
+        });
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
+  }, []);
 
-  // Fetch messages for selected conversation
-  const fetchMessages = useCallback(async (convId) => {
+  // Fetch messages for a conversation
+  const fetchMessages = useCallback((convId) => {
     if (!convId) return;
-    try {
-      const res = await fetch(`${API_URL}/chat/messages/${convId}`, { headers: authHeaders });
-      if (!res.ok) return;
-      const data = await res.json();
-      setMessages(data.data || []);
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-    } catch (e) {}
-  }, [token]);
+    fetch(`${API_URL}/chat/messages/${convId}`, { headers: getHeaders() })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return;
+        setMessages(data.data || []);
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+      })
+      .catch(() => {});
+  }, []);
 
   // Initial load + poll conversations every 5s
   useEffect(() => {
@@ -75,10 +91,13 @@ export default function ChatDashboard() {
   // Poll messages for selected conversation every 3s
   useEffect(() => {
     clearInterval(msgPollRef.current);
-    if (selected) {
-      fetchMessages(selected.conversationId);
-      msgPollRef.current = setInterval(() => fetchMessages(selected.conversationId), 3000);
-    }
+    if (!selected) return;
+    fetchMessages(selected.conversationId);
+    msgPollRef.current = setInterval(() => {
+      if (selectedRef.current) {
+        fetchMessages(selectedRef.current.conversationId);
+      }
+    }, 3000);
     return () => clearInterval(msgPollRef.current);
   }, [selected, fetchMessages]);
 
@@ -90,7 +109,7 @@ export default function ChatDashboard() {
     try {
       const res = await fetch(`${API_URL}/chat/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        headers: getHeaders(),
         body: JSON.stringify({
           conversationId: selected.conversationId,
           content: reply.trim(),
@@ -100,9 +119,9 @@ export default function ChatDashboard() {
       });
       if (res.ok) {
         setReply('');
-        await fetchMessages(selected.conversationId);
+        fetchMessages(selected.conversationId);
       }
-    } catch (e) {}
+    } catch (e) { /* silent */ }
     setSending(false);
   };
 
@@ -111,12 +130,12 @@ export default function ChatDashboard() {
     try {
       await fetch(`${API_URL}/chat/conversations/${convId}/close`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        headers: getHeaders(),
         body: JSON.stringify({ closingNotes: 'Closed by agent' })
       });
       fetchConversations();
       if (selected?.conversationId === convId) setSelected(null);
-    } catch (e) {}
+    } catch (e) { /* silent */ }
   };
 
   if (isLoading) {
@@ -182,7 +201,9 @@ export default function ChatDashboard() {
                 key={conv.conversationId}
                 onClick={() => setSelected(conv)}
                 className={`w-full p-4 text-left border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                  selected?.conversationId === conv.conversationId ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''
+                  selected?.conversationId === conv.conversationId
+                    ? 'bg-blue-50 border-l-4 border-l-blue-600'
+                    : ''
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -252,7 +273,7 @@ export default function ChatDashboard() {
                     const isAgent = msg.sender?.type === 'agent';
                     return (
                       <div key={msg.messageId || msg._id} className={`flex ${isAgent ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[70%]`}>
+                        <div className="max-w-[70%]">
                           {!isAgent && (
                             <p className="text-xs text-gray-500 mb-1 px-1">{msg.sender?.name || 'Customer'}</p>
                           )}
