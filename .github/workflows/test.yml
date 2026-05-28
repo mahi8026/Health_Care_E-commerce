@@ -1,13 +1,15 @@
 name: Test
 
 on:
+  # Disabled temporarily - runs on pull requests only
   pull_request:
     branches:
       - main
       - develop
-  push:
-    branches:
-      - develop
+  # Removed push trigger to reduce workflow runs
+  # push:
+  #   branches:
+  #     - develop
 
 jobs:
   test-frontend:
