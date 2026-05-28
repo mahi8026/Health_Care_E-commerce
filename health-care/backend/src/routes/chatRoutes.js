@@ -17,7 +17,7 @@ const {
 } = require('../controllers/chatController');
 const { protect, authorize } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/enhancedRateLimiter');
-const upload = require('../middleware/upload');
+const { upload } = require('../services/uploadService');
 
 /**
  * @swagger
