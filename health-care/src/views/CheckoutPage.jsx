@@ -191,7 +191,6 @@ export default function CheckoutPage({ onBackToCart }) {
     orderTotal,
     deliveryFee,
     isAuthenticated,
-    router,
     selectedDelivery,
     selectedPayment,
     deliveryAddress,
@@ -331,7 +330,7 @@ export default function CheckoutPage({ onBackToCart }) {
                 deliveryMethod={selectedDelivery}
                 appliedCoupon={appliedCoupon}
                 onCouponApply={setAppliedCoupon}
-                userId={user?.id}
+                userId={user?.id || user?._id}
                 total={orderTotal}
                 onPlaceOrder={handlePlaceOrder}
                 loading={loading}

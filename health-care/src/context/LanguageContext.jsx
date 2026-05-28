@@ -25,6 +25,9 @@ export function LanguageProvider({ children }) {
 
 export function useLang() {
   const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error('useLang must be used within LanguageProvider');
+  if (!ctx) {
+    console.warn('useLang: LanguageContext not available, using default language');
+    return { lang: 'en', switchLang: () => {} };
+  }
   return ctx;
 }

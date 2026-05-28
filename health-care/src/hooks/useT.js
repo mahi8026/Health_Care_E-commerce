@@ -8,7 +8,12 @@ import { getT } from '@/config/translations';
  *   t('nav.products') // → 'Products' or 'পণ্যসমূহ'
  */
 export function useT() {
-  const { lang } = useLang();
-  return getT(lang);
+  try {
+    const { lang } = useLang();
+    return getT(lang);
+  } catch (error) {
+    // Fallback to English if context is not available
+    console.warn('useT: LanguageContext not available, falling back to English');
+    return getT('en');
+  }
 }
-
