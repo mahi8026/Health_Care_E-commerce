@@ -360,29 +360,18 @@ exports.addInternalNote = async (req, res) => {
 };
 
 /**
- * @desc    Get conversation messages
- * @route   GET /api/chat/conversations/:id/messages
- * @access  Private
+ * @desc    Get conversation messages (public - by conversationId)
+ * @route   GET /api/chat/messages/:conversationId
+ * @access  Public
  */
 exports.getConversationMessages = async (req, res) => {
   try {
     const { limit = 50 } = req.query;
+    const conversationId = req.params.id || req.params.conversationId;
 
-    const conversation = await Conversation.findOne({
-      conversationId: req.params.id
-    });
-
-    if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
-    }
-
-    const messages = await Message.findByConversation(
-      conversation.conversationId,
-      parseInt(limit)
-    );
+    const messages = await Message.find({ conversationId })
+      .sort({ createdAt: 1 })
+      .limit(parseInt(limit));
 
     res.json({
       success: true,
@@ -393,6 +382,75 @@ exports.getConversationMessages = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch messages'
+    });
+  }
+};
+
+/**
+ * @desc    Send message publicly (no auth required for customers)
+ * @route   POST /api/chat/messages
+ * @access  Public
+ */
+exports.sendPublicMessage = async (req, res) => {
+  try {
+    const { conversationId, content, messageType = 'text', sender } = req.body;
+
+    if (!conversationId || !content) {
+      return res.status(400).json({
+        success: false,
+        message: 'conversationId and content are required'
+      });
+    }
+
+    const conversation = await Conversation.findOne({ conversationId });
+
+    if (!conversation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Conversation not found'
+      });
+    }
+
+    const message = await Message.create({
+      messageId: uuidv4(),
+      conversationId,
+      conversation: conversation._id,
+      sender: {
+        userId: sender?.userId || null,
+        name: sender?.name || conversation.customer.name || 'Guest',
+        type: sender?.type || 'customer'
+      },
+      messageType,
+      content,
+      status: 'sent',
+      deliveredAt: new Date()
+    });
+
+    // Update conversation
+    conversation.messageCount += 1;
+    conversation.lastMessageAt = new Date();
+    await conversation.save();
+
+    // Broadcast via WebSocket if available
+    try {
+      if (chatSocketService.io) {
+        chatSocketService.io.to(conversationId).emit('chat:message', {
+          message: message.toObject()
+        });
+      }
+    } catch (e) {
+      // Silent fail - WebSocket is optional
+    }
+
+    res.status(201).json({
+      success: true,
+      data: message
+    });
+  } catch (error) {
+    logger.error(`Error sending public message: ${error.message}`);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send message'
     });
   }
 };

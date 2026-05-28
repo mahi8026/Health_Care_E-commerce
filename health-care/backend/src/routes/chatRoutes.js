@@ -10,6 +10,7 @@ const {
   addInternalNote,
   getConversationMessages,
   sendMessage,
+  sendPublicMessage,
   uploadChatFile,
   getAnalytics,
   getChatConfig,
@@ -46,6 +47,10 @@ const { upload } = require('../services/uploadService');
  *         description: Conversation created successfully
  */
 router.post('/conversations', authLimiter, createConversation);
+
+// Public message routes (no auth required for customers)
+router.get('/messages/:conversationId', getConversationMessages);
+router.post('/messages', authLimiter, sendPublicMessage);
 
 /**
  * @swagger
