@@ -18,9 +18,27 @@ class ChatSocketService {
    * @param {Object} httpServer - HTTP server instance
    */
   initialize(httpServer) {
+    // CORS configuration for Socket.IO
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://health-care-e-commerce-murex.vercel.app'
+    ].filter(Boolean);
+
     this.io = new Server(httpServer, {
       cors: {
-        origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+        origin: (origin, callback) => {
+          // Allow Vercel preview URLs
+          if (origin && origin.includes('.vercel.app')) {
+            return callback(null, true);
+          }
+          // Allow configured origins
+          if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+          }
+          callback(new Error('Not allowed by CORS'));
+        },
         methods: ['GET', 'POST'],
         credentials: true
       },
