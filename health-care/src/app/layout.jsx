@@ -13,6 +13,7 @@ import StructuredData, {
   generateWebSiteSchema,
 } from "@/utils/structuredData";
 import Script from "next/script";
+import ChatContainer from "@/components/chat/ChatContainer";
 
 export const dynamic = 'force-dynamic';
 
@@ -128,6 +129,7 @@ export default function RootLayout({ children }) {
               <WishlistProvider>
                 <CompareProvider>
                   <SiteChrome>{children}</SiteChrome>
+                  <ChatContainer />
                 </CompareProvider>
               </WishlistProvider>
             </CartProvider>

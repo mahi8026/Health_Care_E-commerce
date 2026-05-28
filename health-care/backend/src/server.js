@@ -18,9 +18,15 @@ const redisCache = require('./services/redisCache');
 const { initSentry, sentryErrorHandler } = require('./config/sentry');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
+const http = require('http');
+const chatSocketService = require('./services/chatSocketService');
+const chatRoutingService = require('./services/chatRoutingService');
 
 // Initialize express app
 const app = express();
+
+// Create HTTP server (needed for Socket.IO)
+const httpServer = http.createServer(app);
 
 // Initialize Sentry (must be before other middleware)
 initSentry(app);
@@ -185,6 +191,7 @@ app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
 app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
 app.use('/api/whatsapp', require('./routes/whatsappRoutes')); // WhatsApp automation (webhook is public, others protected)
+app.use('/api/chat', require('./routes/chatRoutes')); // Live chat integration
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -287,21 +294,29 @@ app.use(errorHandler);
 // Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
-  const server = app.listen(PORT, () => {
+  httpServer.listen(PORT, () => {
     logger.info(`MedCore BD API v2.0 running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    
+    // Initialize Socket.IO
+    chatSocketService.initialize(httpServer);
+    
+    // Start chat queue processor
+    chatRoutingService.startQueueProcessor();
+    
+    // Start cron jobs
     startCronJobs();
   });
 
   // Handle unhandled promise rejections
   process.on('unhandledRejection', (err) => {
     logger.error(`Unhandled Rejection: ${err.message}`);
-    server.close(() => process.exit(1));
+    httpServer.close(() => process.exit(1));
   });
 
   // Graceful shutdown
   process.on('SIGTERM', async () => {
     logger.info('SIGTERM received. Shutting down gracefully...');
-    server.close(async () => {
+    httpServer.close(async () => {
       await redisCache.close();
       logger.info('Server closed. Process terminating...');
       process.exit(0);
