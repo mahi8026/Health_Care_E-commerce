@@ -53,10 +53,13 @@ export default function ChatWidget({ onClose }) {
           })
         });
 
+        console.log('API Response Status:', response.status);
+
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('API Error:', response.status, errorText);
-          throw new Error(`Failed to create conversation: ${response.status}`);
+          console.error('API Error Response:', errorText);
+          console.error('API Error Status:', response.status);
+          throw new Error(`Failed to create conversation: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
