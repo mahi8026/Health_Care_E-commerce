@@ -21,7 +21,6 @@ import CheckoutAuthGate from '@/components/checkout/CheckoutAuthGate';
 
 export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(2);
   const [selectedDelivery, setSelectedDelivery] = useState('standard');
   const [selectedPayment, setSelectedPayment] = useState('bank_transfer');
@@ -48,11 +47,6 @@ export default function CheckoutPage({ onBackToCart }) {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const t = useT();
 
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated()) {
@@ -62,8 +56,8 @@ export default function CheckoutPage({ onBackToCart }) {
     }
   }, [authLoading, isAuthenticated, router]);
 
-  // Show loading while checking authentication or mounting
-  if (!mounted || authLoading) {
+  // Show loading while checking authentication
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Spinner />
