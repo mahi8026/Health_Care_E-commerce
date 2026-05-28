@@ -16,6 +16,8 @@ const { performanceMonitor } = require('./middleware/performanceMonitor');
 const { monitorConnections } = require('./utils/databaseMonitor');
 const redisCache = require('./services/redisCache');
 const { initSentry, sentryErrorHandler } = require('./config/sentry');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 // Initialize express app
 const app = express();
@@ -132,6 +134,13 @@ if (process.env.NODE_ENV !== 'test') {
 // ── Performance Monitoring ────────────────────────────────────────────────────
 app.use(performanceMonitor);
 
+// ── API Documentation (Swagger) ───────────────────────────────────────────────
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'MedCore BD API Documentation',
+  customfavIcon: '/favicon.ico'
+}));
+
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 // Enhanced rate limiting is applied per-route (see routes files)
 // Global API limiter is not needed as we use specific limiters per endpoint
@@ -247,7 +256,8 @@ app.get('/', (req, res) => {
     message: 'MedCore BD API Server',
     version: '2.0.0',
     status: 'operational',
-    documentation: '/api/health',
+    documentation: '/api-docs',
+    health: '/api/health',
     endpoints: {
       health: '/api/health',
       stats: '/api/stats',

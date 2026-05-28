@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
+import GA4Tracker from '@/services/GA4Tracker';
 
 export default function FloatingCartButton({ onClick }) {
   const { getCartCount, getCartTotal } = useCart();
@@ -22,9 +23,14 @@ export default function FloatingCartButton({ onClick }) {
 
   if (cartCount === 0) return null;
 
+  const handleClick = () => {
+    GA4Tracker.trackEvent('cart_sidebar_open', { trigger: 'floating_button', item_count: cartCount, cart_value: cartTotal });
+    onClick?.();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={`fixed top-[110px] right-4 md:right-5 z-[950] transition-all duration-300 hover:scale-105 active:scale-95 ${bounce ? 'animate-bounce-cart' : ''}`}
       style={{
         background: 'rgba(11,37,69,0.72)',

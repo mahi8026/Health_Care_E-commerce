@@ -316,6 +316,25 @@ class GA4Tracker {
   }
   
   /**
+   * Track generic custom event
+   * @param {string} eventName - Event name (e.g., 'cart_sidebar_open', 'scroll_to_top_click')
+   * @param {Object} params - Event parameters
+   * Requirements: Generic event tracking for UI interactions
+   */
+  static trackEvent(eventName, params = {}) {
+    if (!this.isInitialized) return;
+    
+    try {
+      ReactGA.event(eventName, {
+        ...params,
+        session_id: this.sessionId
+      });
+    } catch (error) {
+      process.env.NODE_ENV !== "production" && console.error('GA4 Track Event Error:', error);
+    }
+  }
+  
+  /**
    * Set user ID for authenticated users
    * @param {string} userId - User ID
    * Requirements: 1.3

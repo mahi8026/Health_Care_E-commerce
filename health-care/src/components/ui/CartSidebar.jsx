@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaTimes, FaShoppingCart, FaArrowRight } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
+import GA4Tracker from '@/services/GA4Tracker';
 
 export default function CartSidebar({ isOpen, onClose }) {
   const router = useRouter();
@@ -13,6 +14,14 @@ export default function CartSidebar({ isOpen, onClose }) {
   const freeDeliveryThreshold = 50000;
   const amountToFreeDelivery = Math.max(0, freeDeliveryThreshold - subtotal);
   const freeDeliveryProgress = Math.min(100, (subtotal / freeDeliveryThreshold) * 100);
+
+  // Track open/close
+  useEffect(() => {
+    if (isOpen) {
+      GA4Tracker.trackEvent('cart_sidebar_open', { item_count: getCartCount(), cart_value: subtotal });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
@@ -25,8 +34,16 @@ export default function CartSidebar({ isOpen, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
 
-  const handleCheckout = () => { onClose(); router.push('/checkout'); };
-  const handleViewCart = () => { onClose(); router.push('/cart'); };
+  const handleCheckout = () => {
+    GA4Tracker.trackEvent('cart_sidebar_checkout_click', { item_count: getCartCount(), cart_value: subtotal });
+    onClose();
+    router.push('/checkout');
+  };
+  const handleViewCart = () => {
+    GA4Tracker.trackEvent('cart_sidebar_view_cart_click', { item_count: getCartCount() });
+    onClose();
+    router.push('/cart');
+  };
 
   const getImageUrl = (item) => {
     if (!item.images?.length) return null;

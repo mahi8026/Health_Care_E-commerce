@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaArrowUp } from 'react-icons/fa';
+import GA4Tracker from '@/services/GA4Tracker';
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,6 +16,7 @@ export default function ScrollToTop() {
   }, []);
 
   const scrollToTop = () => {
+    GA4Tracker.trackEvent('scroll_to_top_click', { scroll_position: window.pageYOffset });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
