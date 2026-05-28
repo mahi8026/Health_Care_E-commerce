@@ -103,7 +103,10 @@ export default function OrderSummary({
           userId: currentUserId,
         }),
       });
+
+      // Always parse JSON regardless of status code
       const data = await res.json();
+
       if (data.success && data.valid) {
         onCouponApply({
           code: data.data.code,
@@ -113,11 +116,12 @@ export default function OrderSummary({
         setCouponCode('');
         setShowCouponInput(false);
       } else {
-        setCouponError(data.message || 'Invalid code');
+        // Show the actual error message from the server
+        setCouponError(data.message || 'Invalid coupon code');
       }
     } catch (err) {
       console.error('Coupon validation error:', err);
-      setCouponError('Could not validate coupon');
+      setCouponError('Could not validate coupon. Please try again.');
     } finally {
       setCouponLoading(false);
     }

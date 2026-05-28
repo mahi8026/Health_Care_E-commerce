@@ -12,8 +12,8 @@ exports.validateCoupon = async (req, res) => {
   try {
     const { code, cartTotal, cartItems, userId } = req.body;
 
-    // Validation
-    if (!code || !cartTotal || !cartItems || !userId) {
+    // Validation — only reject truly malformed requests with 400
+    if (!code || cartTotal === undefined || cartTotal === null || !cartItems || !userId) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields: code, cartTotal, cartItems, userId'
@@ -26,16 +26,18 @@ exports.validateCoupon = async (req, res) => {
     }).populate('applicableProducts applicableCategories');
 
     if (!coupon) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: 'Invalid coupon code'
       });
     }
 
     // Check if active
     if (!coupon.isActive) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: 'This coupon is no longer active'
       });
     }
@@ -43,31 +45,35 @@ exports.validateCoupon = async (req, res) => {
     // Check date validity
     const now = new Date();
     if (now < coupon.startDate) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: `This coupon is not valid yet. Valid from ${coupon.startDate.toLocaleDateString()}`
       });
     }
 
     if (now > coupon.endDate) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: 'This coupon has expired'
       });
     }
 
     // Check usage limit
     if (coupon.usageLimit > 0 && coupon.usageCount >= coupon.usageLimit) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: 'This coupon has reached its usage limit'
       });
     }
 
     // Check if user already used this coupon
     if (coupon.hasBeenUsedBy(userId)) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: 'You have already used this coupon'
       });
     }
@@ -80,8 +86,9 @@ exports.validateCoupon = async (req, res) => {
       });
       
       if (orderCount > 0) {
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          valid: false,
           message: 'This coupon is only valid for first-time orders'
         });
       }
@@ -89,8 +96,9 @@ exports.validateCoupon = async (req, res) => {
 
     // Check minimum order amount
     if (cartTotal < coupon.minimumOrderAmount) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        valid: false,
         message: `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`
       });
     }
@@ -99,8 +107,9 @@ exports.validateCoupon = async (req, res) => {
     if (coupon.applicableUserRoles && coupon.applicableUserRoles.length > 0) {
       const user = req.user;
       if (!user || !coupon.applicableUserRoles.includes(user.role)) {
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          valid: false,
           message: 'This coupon is not applicable to your account type'
         });
       }
@@ -109,22 +118,19 @@ exports.validateCoupon = async (req, res) => {
     // Check applicable products/categories
     if (coupon.applicableProducts.length > 0 || coupon.applicableCategories.length > 0) {
       const hasMatchingProduct = cartItems.some(item => {
-        // Check if product is in applicable products
         if (coupon.applicableProducts.some(p => p._id.toString() === item.productId)) {
           return true;
         }
-        
-        // Check if product's category is in applicable categories
         if (coupon.applicableCategories.some(c => c._id.toString() === item.categoryId)) {
           return true;
         }
-        
         return false;
       });
 
       if (!hasMatchingProduct) {
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          valid: false,
           message: 'This coupon is not applicable to items in your cart'
         });
       }
@@ -135,17 +141,14 @@ exports.validateCoupon = async (req, res) => {
 
     switch (coupon.type) {
       case 'percentage':
-        // Validate percentage value
         if (coupon.value < 0 || coupon.value > 100) {
-          return res.status(400).json({
+          return res.status(200).json({
             success: false,
+            valid: false,
             message: 'Invalid coupon configuration'
           });
         }
-        
         discountAmount = (cartTotal * coupon.value) / 100;
-        
-        // Apply maximum discount cap if set
         if (coupon.maximumDiscount && discountAmount > coupon.maximumDiscount) {
           discountAmount = coupon.maximumDiscount;
         }
@@ -153,17 +156,13 @@ exports.validateCoupon = async (req, res) => {
 
       case 'fixed':
         discountAmount = coupon.value;
-        // Don't allow discount to exceed cart total
         if (discountAmount > cartTotal) {
           discountAmount = cartTotal;
         }
         break;
 
-      case 'buy_x_get_y':
-        // Calculate discount for buy X get Y
-        // Find eligible products in cart
+      case 'buy_x_get_y': {
         let eligibleItems = cartItems;
-        
         if (coupon.applicableProducts.length > 0) {
           eligibleItems = cartItems.filter(item => 
             coupon.applicableProducts.some(p => p._id.toString() === item.productId)
@@ -173,27 +172,24 @@ exports.validateCoupon = async (req, res) => {
             coupon.applicableCategories.some(c => c._id.toString() === item.categoryId)
           );
         }
-
-        // Calculate how many free items user gets
         eligibleItems.forEach(item => {
           const setsQualified = Math.floor(item.quantity / coupon.buyQuantity);
           const freeItems = setsQualified * coupon.getQuantity;
-          const itemDiscount = freeItems * item.price;
-          discountAmount += itemDiscount;
+          discountAmount += freeItems * item.price;
         });
         break;
+      }
 
       default:
-        return res.status(400).json({
+        return res.status(200).json({
           success: false,
+          valid: false,
           message: 'Invalid coupon type'
         });
     }
 
-    // Round to 2 decimal places
     discountAmount = Math.round(discountAmount * 100) / 100;
 
-    // Return success with discount details
     return res.status(200).json({
       success: true,
       valid: true,
