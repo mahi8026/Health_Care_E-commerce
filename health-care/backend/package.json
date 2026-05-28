@@ -9,6 +9,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "seed": "node src/utils/seedData.js",
+    "seed:whatsapp": "node scripts/seedWhatsApp.js",
     "fix:categories": "node src/scripts/fixProductCategories.js",
     "fix:brands": "node src/scripts/fixProductBrands.js",
     "generate-slugs": "node src/scripts/generateSlugs.js",
