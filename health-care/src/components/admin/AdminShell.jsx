@@ -67,6 +67,7 @@ export default function AdminShell({ children, title, action, onAction }) {
     { id: 'banners', path: '/admin/banners', icon: '🖼️', label: 'Banners' },
     { id: 'customers', path: '/admin/customers', icon: '👥', label: 'Customers' },
     { id: 'whatsapp', path: '/admin/whatsapp', icon: '💬', label: 'WhatsApp' },
+    { id: 'chat', path: '/admin/chat', icon: '🗨️', label: 'Live Chat' },
     { id: 'coupons', path: '/admin/coupons', icon: '🎟️', label: 'Coupons' },
     { id: 'categories', path: '/admin/categories', icon: '📁', label: 'Categories' },
     { id: 'manufacturers', path: '/admin/manufacturers', icon: '🏭', label: 'Manufacturers' },
