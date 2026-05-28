@@ -411,6 +411,11 @@ exports.sendPublicMessage = async (req, res) => {
       });
     }
 
+    // Build content object based on message type
+    const contentObj = messageType === 'text'
+      ? { text: typeof content === 'string' ? content : content.text }
+      : { fileUrl: content.fileUrl || content, fileName: content.fileName, fileSize: content.fileSize };
+
     const message = await Message.create({
       messageId: uuidv4(),
       conversationId,
@@ -421,7 +426,7 @@ exports.sendPublicMessage = async (req, res) => {
         type: sender?.type || 'customer'
       },
       messageType,
-      content,
+      content: contentObj,
       status: 'sent',
       deliveredAt: new Date()
     });
@@ -450,7 +455,7 @@ exports.sendPublicMessage = async (req, res) => {
     logger.error(`Error sending public message: ${error.message}`);
     res.status(500).json({
       success: false,
-      message: 'Failed to send message'
+      message: `Failed to send message: ${error.message}`
     });
   }
 };

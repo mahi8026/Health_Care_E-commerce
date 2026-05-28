@@ -60,13 +60,13 @@ export default function ChatMessages({ messages = [], isTyping = false, currentU
                   >
                     {message.messageType === 'text' && (
                       <p className="text-sm whitespace-pre-wrap break-words">
-                        {message.content}
+                        {message.content?.text || message.content}
                       </p>
                     )}
                     {message.messageType === 'image' && (
                       <div>
                         <img
-                          src={message.content}
+                          src={message.content?.fileUrl || message.content}
                           alt="Shared image"
                           className="rounded max-w-full h-auto"
                         />
@@ -74,7 +74,7 @@ export default function ChatMessages({ messages = [], isTyping = false, currentU
                     )}
                     {message.messageType === 'file' && (
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm">📎 {message.content}</span>
+                        <span className="text-sm">📎 {message.content?.fileName || message.content}</span>
                       </div>
                     )}
                   </div>
