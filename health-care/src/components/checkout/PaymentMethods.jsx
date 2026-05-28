@@ -1,5 +1,7 @@
 'use client';
 
+import BankTransferForm from './BankTransferForm';
+
 const METHODS = [
   { id: 'bkash', label: 'bKash', color: '#E2136E', bg: '#FDF2F8' },
   { id: 'nagad', label: 'Nagad', color: '#0E8A6E', bg: '#ECFDF5' },
@@ -9,7 +11,7 @@ const METHODS = [
   { id: 'cheque', label: 'Cheque', color: '#6D28D9', bg: '#F5F3FF' },
 ];
 
-export default function PaymentMethods({ selected, onSelect }) {
+export default function PaymentMethods({ selected, onSelect, orderNumber }) {
   return (
     <section className="bg-white rounded-2xl border border-[#E5E7EB] p-4 sm:p-5">
       <div className="mb-4 pb-3 border-b border-[#F3F4F6]">
@@ -46,13 +48,7 @@ export default function PaymentMethods({ selected, onSelect }) {
       </div>
 
       {selected === 'bank_transfer' && (
-        <div className="rounded-xl bg-[#F8FAFC] border border-[#E5E7EB] px-3.5 py-3 text-[12px] text-[#6B7280] leading-relaxed">
-          <strong className="text-[#0B2545]">Dutch-Bangla Bank</strong>
-          {' · '}
-          <span className="font-mono text-[#0B2545]">1721 2030 5678</span>
-          <br />
-          <span className="text-[#9CA3AF]">MedCore Bangladesh Ltd — use order # as reference</span>
-        </div>
+        <BankTransferForm orderNumber={orderNumber} />
       )}
     </section>
   );

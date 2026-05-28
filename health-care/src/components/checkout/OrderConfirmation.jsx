@@ -4,7 +4,80 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 
-export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery }) {
+// Inline copy button for bank details
+function CopyBtn({ text }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(text); }
+    catch { /* fallback */ }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className={`ml-2 px-2 py-0.5 rounded text-[10px] font-semibold transition-all min-h-[28px] min-w-[44px] flex-shrink-0 ${
+        copied ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#E5E7EB] text-[#6B7280] hover:bg-[#D1D5DB]'
+      }`}
+    >
+      {copied ? '✓ Copied' : 'Copy'}
+    </button>
+  );
+}
+
+function BankTransferConfirmation({ orderId }) {
+  const BANK_ROWS = [
+    { label: 'Bank', value: 'Dutch-Bangla Bank Ltd', mono: false },
+    { label: 'Account Name', value: 'MedCore Bangladesh Ltd', mono: false },
+    { label: 'Account No.', value: '1721 2030 5678', mono: true },
+    { label: 'Routing No.', value: '090261450', mono: true },
+  ];
+
+  return (
+    <div className="rounded-xl border border-[#FCD34D] bg-[#FFFBEB] overflow-hidden mb-6 text-left">
+      <div className="px-4 py-3 bg-[#FEF3C7] border-b border-[#FCD34D] flex items-center gap-2">
+        <span className="text-lg">🏦</span>
+        <div>
+          <p className="text-[13px] font-bold text-[#92400E] m-0">Complete Your Bank Transfer</p>
+          <p className="text-[11px] text-[#B45309] m-0">Transfer within 24 hours to confirm your order</p>
+        </div>
+      </div>
+
+      <div className="px-4 py-3 space-y-2">
+        {BANK_ROWS.map(({ label, value, mono }) => (
+          <div key={label} className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[10px] text-[#92400E] font-semibold uppercase tracking-wide m-0">{label}</p>
+              <p className={`text-[12px] text-[#78350F] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>{value}</p>
+            </div>
+            <CopyBtn text={value} />
+          </div>
+        ))}
+
+        {/* Reference — most important */}
+        <div className="mt-2 pt-2 border-t border-[#FCD34D]">
+          <div className="flex items-center justify-between gap-2 bg-[#FEF3C7] rounded-lg px-3 py-2">
+            <div>
+              <p className="text-[10px] text-[#92400E] font-bold uppercase tracking-wide m-0">⚠️ Transfer Reference (Required)</p>
+              <p className="text-[14px] font-bold text-[#78350F] font-mono m-0">{orderId}</p>
+            </div>
+            <CopyBtn text={orderId} />
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 pb-3">
+        <p className="text-[11px] text-[#92400E] m-0">
+          Your order will be confirmed within <strong>1–2 business hours</strong> after payment is received.
+          Email us at <strong>support@medcorebd.com</strong> with your transaction screenshot if needed.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery, paymentMethod }) {
   const router = useRouter();
   const [downloading, setDownloading] = useState(false);
 
@@ -69,6 +142,11 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery 
           </div>
         </div>
       </div>
+
+      {/* Bank Transfer Instructions — shown when payment method is bank_transfer */}
+      {paymentMethod === 'bank_transfer' && (
+        <BankTransferConfirmation orderId={orderId} />
+      )}
 
       {/* Info Messages */}
       <div className="space-y-3 mb-6">

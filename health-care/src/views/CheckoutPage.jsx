@@ -348,6 +348,7 @@ export default function CheckoutPage({ onBackToCart }) {
               orderId={orderId || 'ORD-XXXX'}
               mongoId={createdOrderId}
               estimatedDelivery="2–5 business days"
+              paymentMethod={selectedPayment}
             />
           </div>
         )}
