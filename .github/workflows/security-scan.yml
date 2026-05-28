@@ -61,6 +61,8 @@ jobs:
   code-security:
     name: Code Security Analysis
     runs-on: ubuntu-latest
+    # Only run if SNYK_TOKEN is available
+    if: ${{ secrets.SNYK_TOKEN != '' }}
 
     steps:
       - name: Checkout code
