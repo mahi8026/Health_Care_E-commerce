@@ -21,6 +21,7 @@ import CheckoutAuthGate from '@/components/checkout/CheckoutAuthGate';
 
 export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(2);
   const [selectedDelivery, setSelectedDelivery] = useState('standard');
   const [selectedPayment, setSelectedPayment] = useState('bank_transfer');
@@ -47,6 +48,11 @@ export default function CheckoutPage({ onBackToCart }) {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const t = useT();
 
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated()) {
@@ -56,8 +62,8 @@ export default function CheckoutPage({ onBackToCart }) {
     }
   }, [authLoading, isAuthenticated, router]);
 
-  // Show loading while checking authentication
-  if (authLoading) {
+  // Show loading while checking authentication or mounting
+  if (!mounted || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Spinner />
@@ -191,7 +197,6 @@ export default function CheckoutPage({ onBackToCart }) {
     orderTotal,
     deliveryFee,
     isAuthenticated,
-    router,
     selectedDelivery,
     selectedPayment,
     deliveryAddress,
@@ -331,7 +336,7 @@ export default function CheckoutPage({ onBackToCart }) {
                 deliveryMethod={selectedDelivery}
                 appliedCoupon={appliedCoupon}
                 onCouponApply={setAppliedCoupon}
-                userId={user?.id}
+                userId={user?.id || user?._id}
                 total={orderTotal}
                 onPlaceOrder={handlePlaceOrder}
                 loading={loading}

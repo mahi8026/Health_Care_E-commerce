@@ -73,6 +73,13 @@ export default function OrderSummary({
       return;
     }
 
+    // Get userId from props or user context
+    const currentUserId = userId || user?.id || user?._id;
+    if (!currentUserId) {
+      setCouponError('User ID not found. Please refresh and try again.');
+      return;
+    }
+
     setCouponLoading(true);
     setCouponError('');
 
@@ -93,7 +100,7 @@ export default function OrderSummary({
             quantity: item.quantity,
             price: item.price,
           })),
-          userId,
+          userId: currentUserId,
         }),
       });
       const data = await res.json();
@@ -108,7 +115,8 @@ export default function OrderSummary({
       } else {
         setCouponError(data.message || 'Invalid code');
       }
-    } catch {
+    } catch (err) {
+      console.error('Coupon validation error:', err);
       setCouponError('Could not validate coupon');
     } finally {
       setCouponLoading(false);
