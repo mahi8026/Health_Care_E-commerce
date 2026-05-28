@@ -13,19 +13,23 @@ const { v4: uuidv4 } = require('uuid');
  */
 exports.createConversation = async (req, res) => {
   try {
-    const { name, email, metadata } = req.body;
+    // Support both flat { name, email } and nested { customer: { name, email } }
+    const name = req.body.name || req.body.customer?.name;
+    const email = req.body.email || req.body.customer?.email;
+    const phone = req.body.phone || req.body.customer?.phone;
+    const userId = req.body.userId || req.body.customer?.userId || req.user?._id || null;
+    const { metadata, source } = req.body;
 
-    // Validate required fields
-    if (!name || !email) {
+    // Validate - only name is required, email is optional for guests
+    if (!name) {
       return res.status(400).json({
         success: false,
-        message: 'Name and email are required'
+        message: 'Name is required'
       });
     }
 
     // Check if user is authenticated
     const isAuthenticated = !!req.user;
-    const userId = req.user?._id || null;
 
     // Create conversation
     const conversation = await Conversation.create({
@@ -33,11 +37,13 @@ exports.createConversation = async (req, res) => {
       customer: {
         userId,
         name,
-        email,
+        email: email || null,
+        phone: phone || null,
         isAuthenticated
       },
       metadata: {
         ...metadata,
+        source: source || 'website',
         ipAddress: req.ip,
         userAgent: req.get('user-agent')
       },
