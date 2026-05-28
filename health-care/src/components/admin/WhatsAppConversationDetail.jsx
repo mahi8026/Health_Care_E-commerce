@@ -22,26 +22,26 @@ export default function WhatsAppConversationDetail({ conversationId }) {
   const [assigningAgent, setAssigningAgent] = useState(false);
 
   // Fetch conversation details
-  const fetchConversation = async () => {
-    try {
-      setError(null);
-      const response = await api.get(`/whatsapp/conversations/${conversationId}`);
-      
-      if (response.data.success) {
-        setConversation(response.data.conversation);
-        setMessages(response.data.messages);
-        
-        // Scroll to bottom on initial load
-        setTimeout(() => scrollToBottom(), 100);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load conversation');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchConversation = async () => {
+      try {
+        setError(null);
+        const response = await api.get(`/whatsapp/conversations/${conversationId}`);
+        
+        if (response.data.success) {
+          setConversation(response.data.conversation);
+          setMessages(response.data.messages);
+          
+          // Scroll to bottom on initial load
+          setTimeout(() => scrollToBottom(), 100);
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load conversation');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchConversation();
     
     // Poll for new messages every 10 seconds
