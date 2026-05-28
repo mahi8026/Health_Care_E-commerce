@@ -33,7 +33,8 @@ export default function ChatWidget({ onClose }) {
         chatSocketClient.on('chat:error', handleError);
 
         // Create or get existing conversation
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/conversations`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+        const response = await fetch(`${apiUrl}/chat/conversations`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -51,7 +52,9 @@ export default function ChatWidget({ onClose }) {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to create conversation');
+          const errorText = await response.text();
+          console.error('API Error:', response.status, errorText);
+          throw new Error(`Failed to create conversation: ${response.status}`);
         }
 
         const data = await response.json();
@@ -65,6 +68,15 @@ export default function ChatWidget({ onClose }) {
       } catch (error) {
         console.error('Error initializing chat:', error);
         setIsLoading(false);
+        // Show error to user
+        setMessages([{
+          messageId: 'error-1',
+          content: 'Unable to connect to chat. Please try again later or contact us at +8801800000000',
+          sender: { name: 'System', type: 'agent' },
+          messageType: 'text',
+          createdAt: new Date(),
+          status: 'sent'
+        }]);
       }
     };
 
@@ -124,8 +136,9 @@ export default function ChatWidget({ onClose }) {
           formData.append('file', file);
           formData.append('conversationId', conversationId);
 
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
           const uploadResponse = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/chat/upload`,
+            `${apiUrl}/chat/upload`,
             {
               method: 'POST',
               headers: {

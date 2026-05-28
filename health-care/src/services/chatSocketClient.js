@@ -16,8 +16,19 @@ class ChatSocketClient {
       return;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-    const socketUrl = apiUrl.replace('/api', '');
+    // Get API URL from environment or use relative path
+    let socketUrl;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    
+    if (apiUrl) {
+      // Remove /api suffix if present
+      socketUrl = apiUrl.replace('/api', '');
+    } else {
+      // In production, use current origin
+      socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5001';
+    }
+
+    console.log('Connecting to Socket.IO:', socketUrl);
 
     this.socket = io(socketUrl, {
       auth: {
@@ -26,7 +37,8 @@ class ChatSocketClient {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5
+      reconnectionAttempts: 5,
+      transports: ['websocket', 'polling'] // Try websocket first, fallback to polling
     });
 
     // Connection event handlers
