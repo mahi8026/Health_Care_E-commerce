@@ -1,10 +1,15 @@
+import AdminShell from '@/components/admin/AdminShell';
 import ChatDashboard from '@/components/admin/chat/ChatDashboard';
 
 export const metadata = {
-  title: 'Live Chat Dashboard',
-  description: 'Manage customer conversations in real-time',
+  title: 'Live Chat — Admin | MedCore BD',
+  description: 'Manage customer live chat conversations in real-time',
 };
 
 export default function AdminChatPage() {
-  return <ChatDashboard />;
+  return (
+    <AdminShell title="Live Chat">
+      <ChatDashboard />
+    </AdminShell>
+  );
 }
