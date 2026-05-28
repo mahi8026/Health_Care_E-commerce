@@ -1,10 +1,12 @@
 name: Security Scan
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  # Disabled temporarily - enable when secrets are configured
+  workflow_dispatch:
+  # push:
+  #   branches: [main, develop]
+  # pull_request:
+  #   branches: [main, develop]
   schedule:
     # Run security scan every Monday at 9 AM
     - cron: '0 9 * * 1'
@@ -61,14 +63,14 @@ jobs:
   code-security:
     name: Code Security Analysis
     runs-on: ubuntu-latest
-    # Only run if SNYK_TOKEN is available
-    if: ${{ secrets.SNYK_TOKEN != '' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        if: ${{ secrets.SNYK_TOKEN != '' }}
 
       - name: Run Snyk Security Scan
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
         continue-on-error: true
         env:

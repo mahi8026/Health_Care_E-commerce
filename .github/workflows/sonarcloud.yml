@@ -1,12 +1,14 @@
 name: SonarCloud Analysis
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
+  # Disabled temporarily - enable when SONAR_TOKEN is configured
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
 
 jobs:
   sonarcloud:
