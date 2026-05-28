@@ -16,17 +16,12 @@ class ChatSocketClient {
       return;
     }
 
-    // Get API URL from environment or use relative path
+    // Get API URL from environment or use hardcoded fallback
     let socketUrl;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
     
-    if (apiUrl) {
-      // Remove /api suffix if present
-      socketUrl = apiUrl.replace('/api', '');
-    } else {
-      // In production, use current origin
-      socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5001';
-    }
+    // Remove /api suffix if present
+    socketUrl = apiUrl.replace('/api', '');
 
     console.log('Connecting to Socket.IO:', socketUrl);
 

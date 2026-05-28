@@ -33,7 +33,9 @@ export default function ChatWidget({ onClose }) {
         chatSocketClient.on('chat:error', handleError);
 
         // Create or get existing conversation
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
+        console.log('Chat API URL:', apiUrl);
+        
         const response = await fetch(`${apiUrl}/chat/conversations`, {
           method: 'POST',
           headers: {
@@ -136,7 +138,7 @@ export default function ChatWidget({ onClose }) {
           formData.append('file', file);
           formData.append('conversationId', conversationId);
 
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
           const uploadResponse = await fetch(
             `${apiUrl}/chat/upload`,
             {
