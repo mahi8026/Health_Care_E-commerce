@@ -192,6 +192,7 @@ app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); //
 app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
 app.use('/api/whatsapp', require('./routes/whatsappRoutes')); // WhatsApp automation (webhook is public, others protected)
 app.use('/api/chat', require('./routes/chatRoutes')); // Live chat integration
+app.use('/api/loyalty', dbHealthCheck, require('./routes/loyaltyRoutes')); // Loyalty program
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

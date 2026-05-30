@@ -124,6 +124,7 @@ export default function AccountPage() {
         { icon: <FaShoppingBag />, label: t('account.myOrders'), description: `${stats.totalOrders} orders`, href: '/orders', badge: stats.pendingOrders > 0 ? stats.pendingOrders : null },
         { icon: <FaHeart />, label: t('account.wishlist'), description: `${stats.wishlistItems} items`, href: '/wishlist' },
         { icon: <FaStar />, label: t('account.myReviews'), description: `${stats.reviewsWritten} reviews`, href: '/account/reviews' },
+        { icon: <FaStar />, label: 'Loyalty Points', description: `${user?.loyaltyPoints || 0} pts available`, href: '/account/loyalty' },
       ]
     },
     {

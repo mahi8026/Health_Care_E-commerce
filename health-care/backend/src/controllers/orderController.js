@@ -29,7 +29,7 @@ exports.createOrder = async (req, res) => {
   session.startTransaction();
   
   try {
-    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber } = req.body;
+    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem } = req.body;
 
     if (!items || !items.length) {
       await session.abortTransaction();
@@ -146,8 +146,41 @@ exports.createOrder = async (req, res) => {
     const method = deliveryType || deliveryMethod || 'standard';
     const deliveryFee = DELIVERY_FEES[method] || DELIVERY_FEES.standard;
 
+    // Loyalty points redemption
+    let loyaltyDiscount = 0;
+    let pointsRedeemed = 0;
+    if (loyaltyPointsToRedeem && loyaltyPointsToRedeem > 0) {
+      const loyaltyService = require('../services/loyaltyService');
+      const { MIN_REDEEM_POINTS, POINTS_TO_TAKA, MAX_REDEEM_PERCENT } = loyaltyService.config;
+      const subtotalAfterDiscounts = subtotal - b2bDiscount - couponDiscount;
+
+      if (loyaltyPointsToRedeem < MIN_REDEEM_POINTS) {
+        await session.abortTransaction();
+        return res.status(400).json({ success: false, message: `Minimum ${MIN_REDEEM_POINTS} points required to redeem` });
+      }
+      if ((user.loyaltyPoints || 0) < loyaltyPointsToRedeem) {
+        await session.abortTransaction();
+        return res.status(400).json({ success: false, message: 'Insufficient loyalty points' });
+      }
+      const maxPoints = loyaltyService.maxRedeemablePoints(subtotalAfterDiscounts);
+      if (loyaltyPointsToRedeem > maxPoints) {
+        await session.abortTransaction();
+        return res.status(400).json({ success: false, message: `Cannot redeem more than ${maxPoints} points for this order` });
+      }
+
+      loyaltyDiscount = loyaltyService.pointsToTaka(loyaltyPointsToRedeem);
+      pointsRedeemed = loyaltyPointsToRedeem;
+
+      // Deduct points from user within transaction
+      await User.findByIdAndUpdate(
+        req.user.id,
+        { $inc: { loyaltyPoints: -pointsRedeemed } },
+        { session }
+      );
+    }
+
     // Total calculation without VAT
-    const totalAmount = Math.round((subtotal - b2bDiscount - couponDiscount + deliveryFee) * 100) / 100;
+    const totalAmount = Math.round((subtotal - b2bDiscount - couponDiscount - loyaltyDiscount + deliveryFee) * 100) / 100;
 
     const orderNumber = await generateOrderNumber();
 
@@ -195,6 +228,57 @@ exports.createOrder = async (req, res) => {
     }
 
     await session.commitTransaction();
+
+    // Award loyalty points asynchronously (non-blocking)
+    try {
+      const loyaltyService = require('../services/loyaltyService');
+      const LoyaltyTransaction = require('../models/LoyaltyTransaction');
+      const earnedPoints = loyaltyService.calculateEarnedPoints(totalAmount);
+
+      // Check if first order
+      const prevOrderCount = await Order.countDocuments({
+        user: req.user.id,
+        _id: { $ne: order[0]._id },
+        status: { $ne: 'cancelled' }
+      });
+      const isFirstOrder = prevOrderCount === 0;
+      const bonusPoints = isFirstOrder ? loyaltyService.config.BONUS_FIRST_ORDER : 0;
+      const totalPointsToAward = earnedPoints + bonusPoints;
+
+      if (totalPointsToAward > 0) {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.user.id,
+          { $inc: { loyaltyPoints: totalPointsToAward } },
+          { new: true }
+        );
+        await LoyaltyTransaction.create({
+          user: req.user.id,
+          type: 'earn',
+          points: totalPointsToAward,
+          balance: updatedUser.loyaltyPoints,
+          description: isFirstOrder
+            ? `Earned ${earnedPoints} pts for order ${orderNumber} + ${bonusPoints} first order bonus`
+            : `Earned ${earnedPoints} pts for order ${orderNumber}`,
+          order: order[0]._id,
+          expiresAt: new Date(Date.now() + loyaltyService.config.POINTS_EXPIRY_DAYS * 24 * 60 * 60 * 1000)
+        });
+
+        // Record redemption transaction if points were redeemed
+        if (pointsRedeemed > 0) {
+          const userAfterRedeem = await User.findById(req.user.id).select('loyaltyPoints');
+          await LoyaltyTransaction.create({
+            user: req.user.id,
+            type: 'redeem',
+            points: -pointsRedeemed,
+            balance: (userAfterRedeem?.loyaltyPoints || 0),
+            description: `Redeemed ${pointsRedeemed} pts for ৳${loyaltyDiscount} discount on order ${orderNumber}`,
+            order: order[0]._id
+          });
+        }
+      }
+    } catch (loyaltyErr) {
+      logger.error(`[createOrder] loyalty points error (non-fatal): ${loyaltyErr.message}`);
+    }
 
     // Invalidate analytics cache
     cacheService.invalidateAnalytics();

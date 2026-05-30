@@ -124,7 +124,10 @@ const orderSchema = new mongoose.Schema({
   accountManager: { type: String },
   coldChain: { type: Boolean, default: false },
   hasAMC: { type: Boolean, default: false },
-  promoCode: { type: String }
+  promoCode: { type: String },
+  loyaltyPointsEarned:   { type: Number, default: 0 },
+  loyaltyPointsRedeemed: { type: Number, default: 0 },
+  loyaltyDiscount:       { type: Number, default: 0 }
 }, {
   timestamps: true
 });
