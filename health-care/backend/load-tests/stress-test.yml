@@ -1,0 +1,55 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Ramp up - 10 users/sec"
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load - 50 users/sec"
+    - duration: 120
+      arrivalRate: 100
+      name: "High load - 100 users/sec"
+    - duration: 60
+      arrivalRate: 200
+      name: "Stress test - 200 users/sec"
+    - duration: 60
+      arrivalRate: 300
+      name: "Breaking point - 300 users/sec"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "./test-helpers.js"
+
+scenarios:
+  - name: "Heavy Product Browsing"
+    weight: 50
+    flow:
+      - loop:
+          - get:
+              url: "/api/products?page={{ $randomNumber(1, 10) }}&limit=20"
+          - think: 1
+        count: 5
+
+  - name: "Rapid Search"
+    weight: 30
+    flow:
+      - loop:
+          - get:
+              url: "/api/products/search?query={{ searchTerm }}"
+              beforeRequest: "setRandomSearchTerm"
+          - think: 0.5
+        count: 3
+
+  - name: "API Stress"
+    weight: 20
+    flow:
+      - parallel:
+          - get:
+              url: "/api/products"
+          - get:
+              url: "/api/categories"
+          - get:
+              url: "/api/brands"
+          - get:
+              url: "/api/products/featured"

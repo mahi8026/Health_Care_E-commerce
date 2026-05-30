@@ -1,0 +1,61 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 10
+      arrivalRate: 1
+      name: "Diagnostic test - 1 user/sec"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  # Test 1: Health check
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+
+  # Test 2: Get products
+  - name: "Get Products"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/products"
+          expect:
+            - statusCode: 200
+            - contentType: json
+          capture:
+            - json: "$.success"
+              as: "success"
+            - json: "$.data"
+              as: "products"
+
+  # Test 3: Get categories
+  - name: "Get Categories"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/categories"
+          expect:
+            - statusCode: 200
+
+  # Test 4: Get brands
+  - name: "Get Brands"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/brands"
+          expect:
+            - statusCode: 200
+
+  # Test 5: Search products
+  - name: "Search Products"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/products/search?query=ECG"
+          expect:
+            - statusCode: 200

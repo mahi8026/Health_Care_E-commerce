@@ -1,0 +1,154 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Authenticated users - 10 users/sec"
+    - duration: 120
+      arrivalRate: 25
+      name: "Peak authenticated - 25 users/sec"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "./test-helpers.js"
+  variables:
+    testEmail: "loadtest@medcorebd.com"
+    testPassword: "LoadTest123!"
+
+scenarios:
+  # Scenario 1: Login and browse
+  - name: "Login Flow"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 2
+      - get:
+          url: "/api/products"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 3
+
+  # Scenario 2: Cart operations (authenticated)
+  - name: "Authenticated Cart"
+    weight: 25
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/products?page=1&limit=5"
+          capture:
+            - json: "$.data[0]._id"
+              as: "productId"
+      - post:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            productId: "{{ productId }}"
+            quantity: 2
+          ifTrue: "authToken"
+      - think: 2
+      - get:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 3
+
+  # Scenario 3: Wishlist operations
+  - name: "Wishlist Operations"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/products?page=1&limit=5"
+          capture:
+            - json: "$.data[0]._id"
+              as: "productId"
+      - post:
+          url: "/api/wishlist"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            productId: "{{ productId }}"
+          ifTrue: "authToken"
+      - think: 2
+      - get:
+          url: "/api/wishlist"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 3
+
+  # Scenario 4: Order history
+  - name: "View Orders"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/orders"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 3
+
+  # Scenario 5: Profile management
+  - name: "Profile Operations"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testEmail }}"
+            password: "{{ testPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 2
+      - put:
+          url: "/api/users/profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            name: "Load Test User"
+            phone: "+8801700000000"
+          ifTrue: "authToken"
+      - think: 3

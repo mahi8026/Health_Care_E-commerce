@@ -1,0 +1,96 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up - 5 users/sec"
+    - duration: 120
+      arrivalRate: 20
+      name: "Normal load - 20 users/sec"
+    - duration: 60
+      arrivalRate: 50
+      name: "Peak load - 50 users/sec"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "./test-helpers.js"
+
+scenarios:
+  # Scenario 1: Browse products (most common)
+  - name: "Browse Products"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/products?page=1&limit=20"
+          capture:
+            - json: "$.data[0]._id"
+              as: "productId"
+      - think: 2
+      - get:
+          url: "/api/products/{{ productId }}"
+          ifTrue: "productId"
+      - think: 3
+
+  # Scenario 2: Search products
+  - name: "Search Products"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/products/search?query=ECG"
+      - think: 2
+      - get:
+          url: "/api/products/search?query=reagent"
+      - think: 3
+
+  # Scenario 3: Browse categories
+  - name: "Browse Categories"
+    weight: 15
+    flow:
+      - get:
+          url: "/api/categories"
+          capture:
+            - json: "$.data[0]._id"
+              as: "categoryId"
+      - think: 2
+      - get:
+          url: "/api/products?category={{ categoryId }}"
+          ifTrue: "categoryId"
+      - think: 3
+
+  # Scenario 4: View brands
+  - name: "Browse Brands"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/brands"
+      - think: 2
+      - get:
+          url: "/api/products?brand=Siemens"
+      - think: 3
+
+  # Scenario 5: Guest cart operations
+  - name: "Guest Cart Operations"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/products?page=1&limit=5"
+          capture:
+            - json: "$.data[0]._id"
+              as: "productId"
+      - think: 2
+      - post:
+          url: "/api/cart/guest"
+          json:
+            items:
+              - product: "{{ productId }}"
+                quantity: 2
+          ifTrue: "productId"
+      - think: 3
+
+  # Scenario 6: Check order tracking
+  - name: "Order Tracking"
+    weight: 5
+    flow:
+      - get:
+          url: "/api/orders/track/ORD-2024-001"
+      - think: 2

@@ -1,0 +1,148 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "B2B users - 5 users/sec"
+    - duration: 120
+      arrivalRate: 15
+      name: "Peak B2B - 15 users/sec"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "./test-helpers.js"
+  variables:
+    b2bEmail: "b2b@hospital.com"
+    b2bPassword: "B2BTest123!"
+
+scenarios:
+  # Scenario 1: B2B bulk order flow
+  - name: "B2B Bulk Order"
+    weight: 40
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ b2bEmail }}"
+            password: "{{ b2bPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/products?page=1&limit=20"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          capture:
+            - json: "$.data[0]._id"
+              as: "product1"
+            - json: "$.data[1]._id"
+              as: "product2"
+            - json: "$.data[2]._id"
+              as: "product3"
+          ifTrue: "authToken"
+      - think: 3
+      - post:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            productId: "{{ product1 }}"
+            quantity: 50
+          ifTrue: "authToken"
+      - post:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            productId: "{{ product2 }}"
+            quantity: 100
+          ifTrue: "authToken"
+      - post:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            productId: "{{ product3 }}"
+            quantity: 75
+          ifTrue: "authToken"
+      - think: 2
+      - get:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 5
+
+  # Scenario 2: Quote request
+  - name: "Quote Request"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ b2bEmail }}"
+            password: "{{ b2bPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/products?page=1&limit=10"
+          capture:
+            - json: "$.data[0]._id"
+              as: "productId"
+      - think: 2
+      - post:
+          url: "/api/quotes"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            products:
+              - productId: "{{ productId }}"
+                quantity: 200
+            message: "Need bulk pricing for hospital procurement"
+          ifTrue: "authToken"
+      - think: 3
+
+  # Scenario 3: View B2B dashboard
+  - name: "B2B Dashboard"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ b2bEmail }}"
+            password: "{{ b2bPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/b2b/dashboard"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 3
+      - get:
+          url: "/api/orders?limit=20"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 3
+
+  # Scenario 4: Credit terms check
+  - name: "Credit Terms"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ b2bEmail }}"
+            password: "{{ b2bPassword }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/b2b/credit-terms"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          ifTrue: "authToken"
+      - think: 2

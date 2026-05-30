@@ -1,0 +1,9 @@
+# Artillery reports
+*.json
+*.html
+
+# Node modules (if any)
+node_modules/
+
+# Logs
+*.log

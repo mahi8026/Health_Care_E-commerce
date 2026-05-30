@@ -16,7 +16,15 @@
     "diagnose": "node diagnose-connection.js",
     "restart": "powershell -ExecutionPolicy Bypass -File restart-server.ps1",
     "lint": "eslint src --max-warnings 0",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "load-test": "cd load-tests && artillery run basic-load-test.yml",
+    "load-test:stress": "cd load-tests && artillery run stress-test.yml",
+    "load-test:auth": "cd load-tests && artillery run authenticated-test.yml",
+    "load-test:b2b": "cd load-tests && artillery run b2b-test.yml",
+    "load-test:report": "cd load-tests && artillery run basic-load-test.yml --output report.json && artillery report report.json",
+    "load-test:quick": "artillery quick --count 100 --num 10 http://localhost:5000/api/products",
+    "load-test:create-users": "node load-tests/create-test-users.js",
+    "load-test:diagnostic": "cd load-tests && artillery run diagnostic-test.yml"
   },
   "keywords": [
     "medical",
