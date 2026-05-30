@@ -4,6 +4,7 @@ export default function AdminTabs({ activeTab, setActiveTab }) {
     { id: 'orders', label: 'Orders', badge: '24' },
     { id: 'products', label: 'Products', badge: null },
     { id: 'customers', label: 'Customers', badge: null },
+    { id: 'loyalty', label: 'Loyalty', badge: null },
     { id: 'quotes', label: 'Quotations', badge: '8' },
     { id: 'returns', label: 'Returns', badge: null },
     { id: 'analytics', label: 'Analytics', badge: null },

@@ -16,6 +16,7 @@ import AnalyticsReports from '@/components/admin/AnalyticsReports';
 import SystemMonitoring from '@/components/admin/SystemMonitoring';
 import ManufacturersManagement from '@/components/admin/ManufacturersManagement';
 import CategoriesManagement from '@/components/admin/CategoriesManagement';
+import LoyaltyDashboard from '@/components/admin/loyalty/LoyaltyDashboard';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function AdminDashboardPage() {
     orders: { title: 'Orders Management', action: 'Export orders' },
     products: { title: 'Product Catalogue', action: '+ Add product' },
     customers: { title: 'B2B Customers', action: '+ Add B2B account' },
+    loyalty: { title: 'Loyalty Program', action: 'Export report' },
     manufacturers: { title: 'Manufacturers', action: '+ Add Manufacturer' },
     categories: { title: 'Categories', action: '+ Add Category' },
     coupons: { title: 'Coupons & Discounts', action: '+ Create coupon' },
@@ -105,6 +107,7 @@ export default function AdminDashboardPage() {
             <ProductsManagement openCreateRef={openCreateProductRef} />
           )}
           {activeTab === 'customers' && <CustomersManagement />}
+          {activeTab === 'loyalty' && <LoyaltyDashboard />}
           {activeTab === 'manufacturers' && <ManufacturersManagement />}
           {activeTab === 'categories' && <CategoriesManagement />}
           {activeTab === 'quotes' && <QuotationsManagement />}
