@@ -1,5 +1,5 @@
 import AdminShell from '@/components/admin/AdminShell';
-import LoyaltyManagement from '@/components/admin/LoyaltyManagement';
+import LoyaltyManagement from '@/components/admin/loyalty/LoyaltyDashboard';
 
 export const dynamic = 'force-dynamic';
 
