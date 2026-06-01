@@ -86,7 +86,9 @@ const logPoolMetrics = () => {
 
 // Exponential backoff reconnection function
 const attemptReconnection = () => {
-  if (isReconnecting) return;
+  if (isReconnecting) {
+    return;
+  }
 
   isReconnecting = true;
   reconnectionAttempts++;
