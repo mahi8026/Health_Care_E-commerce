@@ -5,7 +5,12 @@
   "ignoreCommand": "exit 1",
   "env": {
     "NODE_ENV": "production",
-    "HUSKY": "0"
+    "HUSKY": "0",
+    "NEXT_PUBLIC_API_URL": "https://health-care-e-commerce.onrender.com/api",
+    "NEXT_PUBLIC_SITE_URL": "https://health-care-e-commerce-murex.vercel.app",
+    "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "dm8eqxwlz",
+    "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "ml_default",
+    "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "G-VCQNJESVNM"
   },
   "headers": [
     {
