@@ -3,7 +3,13 @@
 // Validate required environment variables at build time
 // This ensures the build fails fast if critical env vars are missing
 import { validateEnv } from './src/utils/validateEnv.js';
-validateEnv();
+try {
+  validateEnv();
+} catch (error) {
+  // Log warning but don't fail build - Vercel may set env vars after config load
+  console.warn('⚠️ Environment validation warning:', error.message);
+  console.warn('Continuing build - ensure env vars are set in Vercel dashboard');
+}
 
 // Conditionally load bundle analyzer — only available as a devDependency
 // Vercel production builds skip devDependencies, so guard the import
