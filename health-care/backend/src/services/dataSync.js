@@ -124,8 +124,17 @@ const CORE_CATEGORIES = [
  */
 async function ensureManufacturer(manufacturerData) {
   try {
+    // Validate input
+    if (!manufacturerData || !manufacturerData.name) {
+      logger.warn('⚠️  Skipping manufacturer with missing name');
+      return { skipped: true };
+    }
+
+    // Escape special regex characters
+    const escapedName = manufacturerData.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
     let manufacturer = await Manufacturer.findOne({
-      name: { $regex: new RegExp(`^${manufacturerData.name}$`, 'i') }
+      name: { $regex: new RegExp(`^${escapedName}$`, 'i') }
     });
 
     if (!manufacturer) {
@@ -141,7 +150,7 @@ async function ensureManufacturer(manufacturerData) {
 
     return { exists: true, manufacturer };
   } catch (error) {
-    logger.error(`❌ Error ensuring manufacturer ${manufacturerData.name}:`, error.message);
+    logger.error(`❌ Error ensuring manufacturer ${manufacturerData?.name || 'unknown'}:`, error.message);
     throw error;
   }
 }
@@ -151,8 +160,17 @@ async function ensureManufacturer(manufacturerData) {
  */
 async function ensureCategory(categoryData) {
   try {
+    // Validate input
+    if (!categoryData || !categoryData.name) {
+      logger.warn('⚠️  Skipping category with missing name');
+      return { skipped: true };
+    }
+
+    // Escape special regex characters
+    const escapedName = categoryData.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
     let category = await Category.findOne({
-      name: { $regex: new RegExp(`^${categoryData.name}$`, 'i') }
+      name: { $regex: new RegExp(`^${escapedName}$`, 'i') }
     });
 
     if (!category) {
@@ -169,7 +187,7 @@ async function ensureCategory(categoryData) {
 
     return { exists: true, category };
   } catch (error) {
-    logger.error(`❌ Error ensuring category ${categoryData.name}:`, error.message);
+    logger.error(`❌ Error ensuring category ${categoryData?.name || 'unknown'}:`, error.message);
     throw error;
   }
 }
@@ -211,8 +229,10 @@ async function fixProductBrandReferences() {
         }
 
         if (manufacturerName) {
+          // Escape special regex characters
+          const escapedName = manufacturerName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           const manufacturer = await Manufacturer.findOne({
-            name: { $regex: new RegExp(`^${manufacturerName}$`, 'i') }
+            name: { $regex: new RegExp(`^${escapedName}$`, 'i') }
           });
 
           if (manufacturer) {
