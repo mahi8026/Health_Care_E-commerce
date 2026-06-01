@@ -140,7 +140,7 @@ export default function ProductsManagement({ openCreateRef }) {
     }, 400);
 
     return () => { if (skuGenRef.current) clearTimeout(skuGenRef.current); };
-  }, [createForm.category, createForm.brand, modalMode]);
+  }, [createForm.category, createForm.brand, modalMode, categories, manufacturers]);
 
   // Manual trigger for the ↺ regenerate button
   const generateSku = useCallback(async (categoryId, brandId) => {
@@ -205,11 +205,12 @@ export default function ProductsManagement({ openCreateRef }) {
         const categoriesData = await categoriesRes.json();
         const manufacturersData = await manufacturersRes.json();
         
-        const cats = categoriesData.categories || categoriesData.data || [];
-        const mfrs = manufacturersData.manufacturers || manufacturersData.data || [];
+        const cats = categoriesData.categories || categoriesData.data?.categories || categoriesData.data || [];
+        const mfrs = manufacturersData.manufacturers || manufacturersData.data?.manufacturers || manufacturersData.data || [];
         
-        setCategories(cats);
-        setManufacturers(mfrs);
+        // Ensure arrays are always arrays
+        setCategories(Array.isArray(cats) ? cats : []);
+        setManufacturers(Array.isArray(mfrs) ? mfrs : []);
       } catch (err) {
         showMessage('Failed to load categories/manufacturers', 'error');
       } finally {
@@ -255,7 +256,9 @@ export default function ProductsManagement({ openCreateRef }) {
       
       const data = await res.json();
       
-      setProducts(data.products || data.data?.products || []);
+      // Ensure products is always an array, never undefined/null
+      const productsArray = data.products || data.data?.products || [];
+      setProducts(Array.isArray(productsArray) ? productsArray : []);
       setTotal(data.total || data.data?.total || 0);
     } catch (error) {
       showMessage('Failed to load products', 'error');

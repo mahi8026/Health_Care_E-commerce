@@ -8,7 +8,7 @@ const RATING_OPTIONS = ['all', '5', '4', '3', '2', '1'];
 
 export default function ReviewsManagement() {
   const [reviews, setReviews] = useState([]);
-  const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
+  const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
@@ -37,9 +37,15 @@ export default function ReviewsManagement() {
       const data = await res.json();
       
       if (data.success) {
-        setReviews(data.data);
-        setStats(data.stats);
-        setPagination(data.pagination);
+        setReviews(Array.isArray(data.data) ? data.data : []);
+        // Ensure stats always has the required properties
+        setStats({
+          pending: data.stats?.pending || 0,
+          approved: data.stats?.approved || 0,
+          rejected: data.stats?.rejected || 0,
+          total: data.stats?.total || 0
+        });
+        setPagination(data.pagination || null);
       }
     } catch (error) {
       process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);
@@ -156,25 +162,25 @@ export default function ReviewsManagement() {
           <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4">
             <div className="text-[11px] text-[var(--color-text-secondary)] mb-1">Total Reviews</div>
             <div className="text-[24px] font-bold font-[family-name:var(--font-plus-jakarta)]">
-              {stats.pending + stats.approved + stats.rejected}
+              {(stats?.pending || 0) + (stats?.approved || 0) + (stats?.rejected || 0)}
             </div>
           </div>
           <div className="bg-[#FEF3C7] rounded-lg p-4">
             <div className="text-[11px] text-[#92400E] mb-1">Pending</div>
             <div className="text-[24px] font-bold text-[#92400E] font-[family-name:var(--font-plus-jakarta)]">
-              {stats.pending}
+              {stats?.pending || 0}
             </div>
           </div>
           <div className="bg-[#D1FAE5] rounded-lg p-4">
             <div className="text-[11px] text-[#065F46] mb-1">Approved</div>
             <div className="text-[24px] font-bold text-[#065F46] font-[family-name:var(--font-plus-jakarta)]">
-              {stats.approved}
+              {stats?.approved || 0}
             </div>
           </div>
           <div className="bg-[#FEE2E2] rounded-lg p-4">
             <div className="text-[11px] text-[#991B1B] mb-1">Rejected</div>
             <div className="text-[24px] font-bold text-[#991B1B] font-[family-name:var(--font-plus-jakarta)]">
-              {stats.rejected}
+              {stats?.rejected || 0}
             </div>
           </div>
         </div>
