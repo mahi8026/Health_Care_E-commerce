@@ -64,7 +64,7 @@ function createLimiter({
       });
     },
     // Add custom headers on every request
-    onLimitReached: (req, res, options) => {
+    onLimitReached: (req, _res, _options) => {
       logger.warn(`[RateLimit] Limit reached — IP: ${req.ip}, path: ${req.path}`);
     }
   };
@@ -93,7 +93,9 @@ function createLimiter({
   return (req, res, next) => {
     // Call the base limiter first
     baseLimiter(req, res, (err) => {
-      if (err) return next(err);
+      if (err) {
+        return next(err);
+      }
       
       // After rate limiter runs, add custom X-RateLimit-* headers
       // The rate limiter sets req.rateLimit with limit, current, and remaining
