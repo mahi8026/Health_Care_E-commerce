@@ -2,7 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "ignoreCommand": "exit 1",
   "env": {
     "NODE_ENV": "production",
     "HUSKY": "0",
