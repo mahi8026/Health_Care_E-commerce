@@ -18,9 +18,10 @@
 # Keep template files ONLY
 !**/.env.example
 
-# ── Documentation Files (DO NOT COMMIT) ──────────────────────────────────────
-*.md
-!node_modules/**/*.md
+# ── Documentation Files ──────────────────────────────────────────────────────
+# Allow markdown files for documentation
+# *.md files are now allowed (commented out)
+# !node_modules/**/*.md
 
 # ── Dependencies ─────────────────────────────────────────────────────────────
 **/node_modules/
@@ -86,6 +87,8 @@
 # ── Sensitive Files Only ─────────────────────────────────────────────────────
 ENV_VARIABLES_QUICK_COPY.txt
 SECRETS.md
+.secrets.txt
+**/.secrets.txt
 
 # ── Lighthouse Reports ──────────────────────────────────────────────────────
 **/.lighthouseci/
