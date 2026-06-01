@@ -7,6 +7,7 @@ import FAQSchema from '@/components/seo/FAQSchema';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 import { API as API_BASE } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 // ---------------------------------------------------------------------------
 // Data fetching helper
@@ -147,9 +148,15 @@ export default async function ProductPage({ params }) {
     ? product.category?.name
     : product?.category || 'Products';
 
+  // Generate category URL using slug if available
+  const categorySlug = CATEGORY_NAME_TO_SLUG[catName];
+  const categoryUrl = categorySlug 
+    ? `${SITE_CONFIG.url}/products/category/${categorySlug}`
+    : `${SITE_CONFIG.url}/products?category=${encodeURIComponent(catName)}`;
+
   const breadcrumbs = [
     { name: 'Home',     url: SITE_CONFIG.url },
-    { name: catName,    url: `${SITE_CONFIG.url}/products?category=${encodeURIComponent(catName)}` },
+    { name: catName,    url: categoryUrl },
     { name: product?.name ?? 'Product', url: `${SITE_CONFIG.url}/products/${slug}` },
   ];
 

@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Header from './Header';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 export default function HeaderWrapper({ onCartClick }) {
   const router = useRouter();
@@ -56,10 +57,10 @@ export default function HeaderWrapper({ onCartClick }) {
       'search': '/products',
       'cart': '/cart',
       'product': '/products',
-      'diagnostics': '/products?category=Diagnostic Equipment',
-      'surgical': '/products?category=Surgical Instruments',
-      'machines': '/products?category=Hospital Machines',
-      'lab-equipment': '/products?category=Lab Equipment',
+      'diagnostics': '/products/category/diagnostic-equipment',
+      'surgical': '/products/category/surgical-instruments',
+      'machines': '/products/category/hospital-machines',
+      'lab-equipment': '/products/category/lab-equipment',
       'reagent': '/reagent-store',
       'orders': '/orders',
       'admin': '/admin',
@@ -68,9 +69,14 @@ export default function HeaderWrapper({ onCartClick }) {
       'wishlist': '/wishlist',
     };
     
-    // If a category is provided, append it to the products route
+    // If a category is provided, convert to slug-based URL
     if (view === 'product' && category) {
-      router.push(`/products?category=${encodeURIComponent(category)}`);
+      const slug = CATEGORY_NAME_TO_SLUG[category];
+      if (slug) {
+        router.push(`/products/category/${slug}`);
+      } else {
+        router.push(`/products?category=${encodeURIComponent(category)}`);
+      }
     } else {
       router.push(routes[view] || '/');
     }

@@ -738,13 +738,13 @@ export default function HomePage() {
           <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {[
-              { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', path: '/products?category=Laboratory+Reagents' },
-              { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', path: '/products?category=Hospital+Machines' },
-              { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', path: '/products?category=Lab+Equipment' },
-              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', path: '/products?category=PPE' },
-              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', path: '/products?category=Implants' },
-              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', path: '/products?category=Diagnostic+Equipment' },
-              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', path: '/products?category=Surgical+Instruments' },
+              { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', path: '/products/category/laboratory-reagents' },
+              { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', path: '/products/category/hospital-machines' },
+              { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', path: '/products/category/lab-equipment' },
+              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', path: '/products/category/ppe-safety' },
+              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', path: '/products/category/implants-ortho' },
+              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', path: '/products/category/diagnostic-equipment' },
+              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', path: '/products/category/surgical-instruments' },
             ].map(cat => (
               <div key={cat.name} onClick={() => router.push(cat.path)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -1217,7 +1217,7 @@ export default function HomePage() {
                 <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
                 <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Diagnostic Equipment</h2>
               </div>
-              <button onClick={() => router.push('/products?category=Diagnostic+Equipment')}
+              <button onClick={() => router.push('/products/category/diagnostic-equipment')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
                 {t('home.viewAllItems')}
@@ -1245,7 +1245,7 @@ export default function HomePage() {
                 <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
                 <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Laboratory Reagents</h2>
               </div>
-              <button onClick={() => router.push('/products?category=Laboratory+Reagents')}
+              <button onClick={() => router.push('/products/category/laboratory-reagents')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
                 {t('home.viewAllItems')}
@@ -1273,7 +1273,7 @@ export default function HomePage() {
                 <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
                 <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Hospital Machines</h2>
               </div>
-              <button onClick={() => router.push('/products?category=Hospital+Machines')}
+              <button onClick={() => router.push('/products/category/hospital-machines')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
                 {t('home.viewAllItems')}
@@ -1301,7 +1301,7 @@ export default function HomePage() {
                 <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
                 <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>PPE & Safety</h2>
               </div>
-              <button onClick={() => router.push('/products?category=PPE')}
+              <button onClick={() => router.push('/products/category/ppe-safety')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
                 {t('home.viewAllItems')}
@@ -1329,7 +1329,7 @@ export default function HomePage() {
                 <div style={{ width: 4, height: 24, background: '#0E8A6E', borderRadius: 2 }} />
                 <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lab Equipment</h2>
               </div>
-              <button onClick={() => router.push('/products?category=Lab+Equipment')}
+              <button onClick={() => router.push('/products/category/lab-equipment')}
                 style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
                   border: 'none', cursor: 'pointer' }}>
                 {t('home.viewAllItems')}

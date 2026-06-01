@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { CONTACT } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 /**
  * Redesigned Sticky Product Info Panel (Right Column)
@@ -107,7 +108,11 @@ export default function ProductInfoPanel({
         )}
         {categoryName && (
           <button 
-            onClick={() => router.push(`/products?category=${encodeURIComponent(product.categoryId || categoryName)}`)}
+            onClick={() => {
+              const slug = CATEGORY_NAME_TO_SLUG[categoryName];
+              const path = slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(product.categoryId || categoryName)}`;
+              router.push(path);
+            }}
             className="text-[11px] font-medium bg-surface-subtle text-[#6B7280] px-3 py-[5px] rounded-full hover:bg-[#E5E7EB] transition-colors"
           >
             {categoryName}

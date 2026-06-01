@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 const MAIN_LINKS = [
   { label: 'Home', path: '/' },
@@ -64,7 +65,8 @@ export default function MobileMenu({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen) {
-      setMounted(true);
+      // Use queueMicrotask to avoid synchronous setState in effect
+      queueMicrotask(() => setMounted(true));
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -296,7 +298,12 @@ export default function MobileMenu({ isOpen, onClose }) {
             <div>
               {categories.map(cat => {
                 const name = typeof cat === 'string' ? cat : cat.name;
-                const path = name === 'Laboratory Reagents' ? '/reagent-store' : `/products?category=${encodeURIComponent(name)}`;
+                const slug = CATEGORY_NAME_TO_SLUG[name];
+                const path = name === 'Laboratory Reagents' 
+                  ? '/reagent-store' 
+                  : slug 
+                    ? `/products/category/${slug}` 
+                    : `/products?category=${encodeURIComponent(name)}`;
                 const icon = CATEGORY_ICON_MAP[name] || <FaStethoscope size={13} />;
                 return (
                   <button key={name} onClick={() => handleNavigate(path)}

@@ -26,14 +26,14 @@ import {
 } from 'react-icons/fa';
 
 const PRODUCT_CATEGORIES = [
-  { label: 'Diagnostic Equipment', href: '/products?category=Diagnostic+Equipment', icon: <FaStethoscope size={14} />, desc: 'ECG, ultrasound, monitors' },
-  { label: 'Surgical Instruments', href: '/products?category=Surgical+Instruments', icon: <FaSyringe size={14} />, desc: 'Scalpels, forceps, retractors' },
+  { label: 'Diagnostic Equipment', href: '/products/category/diagnostic-equipment', icon: <FaStethoscope size={14} />, desc: 'ECG, ultrasound, monitors' },
+  { label: 'Surgical Instruments', href: '/products/category/surgical-instruments', icon: <FaSyringe size={14} />, desc: 'Scalpels, forceps, retractors' },
   { label: 'Laboratory Reagents', href: '/reagent-store', icon: <FaFlask size={14} />, desc: 'HbA1c, CBC, chemistry kits' },
-  { label: 'Hospital Machines', href: '/products?category=Hospital+Machines', icon: <FaHospital size={14} />, desc: 'Ventilators, infusion pumps' },
-  { label: 'Lab Equipment', href: '/products?category=Lab+Equipment', icon: <FaMicroscope size={14} />, desc: 'Centrifuges, analyzers' },
-  { label: 'PPE & Safety', href: '/products?category=PPE+%26+Safety', icon: <FaShieldAlt size={14} />, desc: 'Gloves, masks, gowns' },
-  { label: 'Dental Equipment', href: '/products?category=Dental+Equipment', icon: <FaTooth size={14} />, desc: 'Chairs, handpieces, X-ray' },
-  { label: 'Implants & Ortho', href: '/products?category=Implants+%26+Ortho', icon: <FaBone size={14} />, desc: 'Orthopedic implants, fixators' },
+  { label: 'Hospital Machines', href: '/products/category/hospital-machines', icon: <FaHospital size={14} />, desc: 'Ventilators, infusion pumps' },
+  { label: 'Lab Equipment', href: '/products/category/lab-equipment', icon: <FaMicroscope size={14} />, desc: 'Centrifuges, analyzers' },
+  { label: 'PPE & Safety', href: '/products/category/ppe-safety', icon: <FaShieldAlt size={14} />, desc: 'Gloves, masks, gowns' },
+  { label: 'Dental Equipment', href: '/products/category/dental-equipment', icon: <FaTooth size={14} />, desc: 'Chairs, handpieces, X-ray' },
+  { label: 'Implants & Ortho', href: '/products/category/implants-ortho', icon: <FaBone size={14} />, desc: 'Orthopedic implants, fixators' },
 ];
 
 const NAV_LINKS = [
@@ -66,7 +66,8 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
   // Cart bounce animation on count change
   useEffect(() => {
     if (cartCount > prevCartCount.current && cartCount > 0) {
-      setCartBounce(true);
+      // Use queueMicrotask to avoid synchronous setState in effect
+      queueMicrotask(() => setCartBounce(true));
       const timer = setTimeout(() => setCartBounce(false), 600);
       return () => clearTimeout(timer);
     }

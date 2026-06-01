@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { API } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 // Icon map for known category names — fallback to 🏥
 const CATEGORY_ICONS = {
@@ -54,12 +55,12 @@ export default function MobileCategories() {
               const name = typeof cat === 'string' ? cat : cat.name;
               const icon = CATEGORY_ICONS[name] || '🏥';
               const shortName = name.split(' ')[0]; // e.g. "Diagnostic" from "Diagnostic Equipment"
+              const slug = CATEGORY_NAME_TO_SLUG[name];
+              const path = slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(name)}`;
               return (
                 <button
                   key={name}
-                  onClick={() =>
-                    router.push(`/products?category=${encodeURIComponent(name)}`)
-                  }
+                  onClick={() => router.push(path)}
                   className="flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 bg-[var(--color-background-tertiary)] rounded-lg hover:bg-[#F0FBF8] hover:border-[#0E8A6E] border border-transparent transition-colors min-w-[70px]"
                   aria-label={name}
                 >

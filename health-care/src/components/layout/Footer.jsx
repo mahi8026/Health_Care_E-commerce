@@ -54,10 +54,10 @@ export default function Footer() {
     {
       heading: 'Products',
       items: [
-        { label: 'Diagnostic Equipment', href: '/products?category=Diagnostic+Equipment' },
-        { label: 'Surgical Instruments', href: '/products?category=Surgical+Instruments' },
+        { label: 'Diagnostic Equipment', href: '/products/category/diagnostic-equipment' },
+        { label: 'Surgical Instruments', href: '/products/category/surgical-instruments' },
         { label: 'Laboratory Reagents', href: '/reagent-store' },
-        { label: 'Hospital Machines', href: '/products?category=Hospital+Machines' },
+        { label: 'Hospital Machines', href: '/products/category/hospital-machines' },
       ],
     },
     {
