@@ -256,10 +256,19 @@ export default function ProductsManagement({ openCreateRef }) {
       
       const data = await res.json();
       
-      // Ensure products is always an array, never undefined/null
-      const productsArray = data.products || data.data?.products || [];
+      // API returns: { success, data: [...products...], pagination }
+      // where data is the products array directly
+      let productsArray = [];
+      if (Array.isArray(data.data)) {
+        productsArray = data.data;
+      } else if (data.data?.products) {
+        productsArray = data.data.products;
+      } else if (data.products) {
+        productsArray = data.products;
+      }
+      
       setProducts(Array.isArray(productsArray) ? productsArray : []);
-      setTotal(data.total || data.data?.total || 0);
+      setTotal(data.pagination?.total || data.total || data.data?.total || 0);
     } catch (error) {
       showMessage('Failed to load products', 'error');
     } finally {

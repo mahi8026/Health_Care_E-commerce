@@ -376,8 +376,9 @@ export default function HomePage() {
       safe(fetch(`${API}/products?category=PPE&limit=10`)), // Category: PPE
       safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)), // Category: Lab Equipment
     ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, deals, reviews, labEquip, topSelling, diagnostic, reagents, machines, ppe, labEquipCat]) => {
-      const fp = featured.data?.products || featured.products || [];
-      const ap = allProducts.data?.products || allProducts.products || [];
+      // API returns: { success, data: [...products...], pagination }
+      const fp = Array.isArray(featured.data) ? featured.data : (featured.data?.products || featured.products || []);
+      const ap = Array.isArray(allProducts.data) ? allProducts.data : (allProducts.data?.products || allProducts.products || []);
       // Use featured products if available (at least 8), otherwise use all products
       const productsToShow = fp.length >= 8 ? fp : ap;
       
@@ -392,26 +393,26 @@ export default function HomePage() {
       if (statsData.data) setStats(statsData.data);
       setPromo(promoData.data?.coupon || null);
 
-      const na = newest.data?.products || newest.products || [];
+      const na = Array.isArray(newest.data) ? newest.data : (newest.data?.products || newest.products || []);
       setNewArrivals(Array.isArray(na) ? na : []);
 
-      const dealList = deals.data?.products || deals.products || [];
+      const dealList = Array.isArray(deals.data) ? deals.data : (deals.data?.products || deals.products || []);
       setDealProducts(Array.isArray(dealList) ? dealList : []);
 
       const reviewList = reviews.data?.reviews || reviews.reviews || [];
       setTestimonials(Array.isArray(reviewList) ? reviewList : []);
 
-      const labEquipList = labEquip.data?.products || labEquip.products || [];
+      const labEquipList = Array.isArray(labEquip.data) ? labEquip.data : (labEquip.data?.products || labEquip.products || []);
       setLabEquipmentProducts(Array.isArray(labEquipList) ? labEquipList : []);
 
-      const topSellingList = topSelling.data?.products || topSelling.products || [];
+      const topSellingList = Array.isArray(topSelling.data) ? topSelling.data : (topSelling.data?.products || topSelling.products || []);
       setTopSellingProducts(Array.isArray(topSellingList) ? topSellingList : []);
 
-      const diagnosticList = diagnostic.data?.products || diagnostic.products || [];
-      const reagentsList = reagents.data?.products || reagents.products || [];
-      const machinesList = machines.data?.products || machines.products || [];
-      const ppeList = ppe.data?.products || ppe.products || [];
-      const labEquipCatList = labEquipCat.data?.products || labEquipCat.products || [];
+      const diagnosticList = Array.isArray(diagnostic.data) ? diagnostic.data : (diagnostic.data?.products || diagnostic.products || []);
+      const reagentsList = Array.isArray(reagents.data) ? reagents.data : (reagents.data?.products || reagents.products || []);
+      const machinesList = Array.isArray(machines.data) ? machines.data : (machines.data?.products || machines.products || []);
+      const ppeList = Array.isArray(ppe.data) ? ppe.data : (ppe.data?.products || ppe.products || []);
+      const labEquipCatList = Array.isArray(labEquipCat.data) ? labEquipCat.data : (labEquipCat.data?.products || labEquipCat.products || []);
       
       setCategoryProducts({
         diagnostic: Array.isArray(diagnosticList) ? diagnosticList : [],
@@ -470,8 +471,8 @@ export default function HomePage() {
       fetch(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
       fetch(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
     ]).then(([featuredData, fallbackData]) => {
-      const featured = featuredData.data?.products || featuredData.products || [];
-      const fallback = fallbackData.data?.products || fallbackData.products || [];
+      const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
+      const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
       const products = featured.length >= 8 ? featured : fallback;
       // Ensure always an array
       setFeaturedProducts(Array.isArray(products) ? products : []);
