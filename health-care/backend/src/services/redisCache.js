@@ -112,8 +112,7 @@ function initRedis() {
     
     // Auto-detect if TLS is needed (Redis Cloud uses non-standard ports and requires TLS)
     const needsTLS = process.env.REDIS_TLS === 'true' || 
-                     (redisHost.includes('redislabs.com') || redisHost.includes('redis.cloud')) ||
-                     (redisPort !== 6379 && redisHost !== 'localhost');
+                     (redisHost.includes('redislabs.com') || redisHost.includes('redis.cloud'));
     
     const redisConfig = {
       host: redisHost,
@@ -121,7 +120,11 @@ function initRedis() {
       password: process.env.REDIS_PASSWORD || undefined,
       db: parseInt(process.env.REDIS_DB) || 0,
       // Redis Cloud requires TLS on non-local connections
-      tls: needsTLS ? { rejectUnauthorized: false } : undefined,
+      tls: needsTLS ? {
+        rejectUnauthorized: false,
+        requestCert: true,
+        agent: false
+      } : undefined,
       retryStrategy: (times) => {
         // Stop retrying after 3 attempts
         if (times > 3) {
@@ -134,7 +137,9 @@ function initRedis() {
       maxRetriesPerRequest: 3,
       enableReadyCheck: true,
       lazyConnect: false,
-      connectTimeout: 10000
+      connectTimeout: 10000,
+      // Disable auto-pipelining to avoid connection issues
+      enableAutoPipelining: false
     };
 
     redisClient = new Redis(redisConfig);

@@ -62,10 +62,6 @@ function createLimiter({
         message,
         retryAfter: Math.ceil(windowMs / 1000)
       });
-    },
-    // Add custom headers on every request
-    onLimitReached: (req, _res, _options) => {
-      logger.warn(`[RateLimit] Limit reached — IP: ${req.ip}, path: ${req.path}`);
     }
   };
 
