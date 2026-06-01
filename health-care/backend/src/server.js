@@ -1,3 +1,7 @@
+/**
+ * MedCore BD Backend API Server
+ * Production-ready Express.js server with MongoDB, Redis, and comprehensive security
+ */
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
