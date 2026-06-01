@@ -3,6 +3,8 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
+import { useBrands } from '@/hooks/useBrands';
 import { useT } from '@/hooks/useT';
 import SearchResults from '@/components/search/SearchResults';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
@@ -61,29 +63,11 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   const [allProducts, setAllProducts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchFiltersData = async () => {
-      try {
-        const [categoriesRes, brandsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/manufacturers`)
-        ]);
-        if (categoriesRes.ok) {
-          const d = await categoriesRes.json();
-          setCategories(d.categories || []);
-        }
-        if (brandsRes.ok) {
-          const d = await brandsRes.json();
-          setBrands(d.manufacturers || []);
-        }
-      } catch {}
-    };
-    fetchFiltersData();
-  }, []);
+  // Use custom hooks for data fetching
+  const { categories, loading: categoriesLoading } = useCategories();
+  const { brands, loading: brandsLoading } = useBrands();
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -132,7 +116,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       setHasMore(false);
       setLoadingMore(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [products, page, pagination.page, pagination.pages]);
 
   const resetPagination = () => { setPage(1); setAllProducts([]); setHasMore(true); };
@@ -221,19 +205,19 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                   {searchQuery && (
                     <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       &ldquo;{searchQuery}&rdquo;
-                      <button onClick={() => { setSearchQuery(''); setSearchInput(''); resetPagination(); }} className="hover:text-red-300 ml-0.5">×</button>
+                      <button onClick={() => { setSearchQuery(''); setSearchInput(''); resetPagination(); }} className="hover:text-red-300 ml-0.5" aria-label="Clear search query">×</button>
                     </span>
                   )}
                   {filters.inStock && (
                     <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       In Stock
-                      <button onClick={() => handleFilterChange({ ...filters, inStock: false })} className="hover:text-red-300 ml-0.5">×</button>
+                      <button onClick={() => handleFilterChange({ ...filters, inStock: false })} className="hover:text-red-300 ml-0.5" aria-label="Remove in stock filter">×</button>
                     </span>
                   )}
                   {(filters.minPrice || filters.maxPrice) && (
                     <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       ৳{filters.minPrice || 0}–{filters.maxPrice ? `৳${filters.maxPrice}` : '∞'}
-                      <button onClick={() => handleFilterChange({ ...filters, minPrice: undefined, maxPrice: undefined })} className="hover:text-red-300 ml-0.5">×</button>
+                      <button onClick={() => handleFilterChange({ ...filters, minPrice: undefined, maxPrice: undefined })} className="hover:text-red-300 ml-0.5" aria-label="Remove price range filter">×</button>
                     </span>
                   )}
                   <button onClick={clearAllFilters}

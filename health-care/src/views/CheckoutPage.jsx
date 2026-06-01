@@ -47,29 +47,6 @@ export default function CheckoutPage({ onBackToCart }) {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const t = useT();
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated()) {
-      // Save current cart and intended destination
-      sessionStorage.setItem('medcore_redirect_after_login', '/checkout');
-      router.push('/login?redirect=/checkout');
-    }
-  }, [authLoading, isAuthenticated, router]);
-
-  // Show loading while checking authentication
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  // Don't render checkout if not authenticated
-  if (!isAuthenticated()) {
-    return null;
-  }
-
   // Restore saved delivery address from sessionStorage (survives auth redirect)
   useEffect(() => {
     try {
@@ -257,6 +234,20 @@ export default function CheckoutPage({ onBackToCart }) {
       categoryId: item.categoryId,
     };
   });
+
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  // Don't render checkout if not authenticated
+  if (!isAuthenticated()) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#F6F9FC] pb-24 lg:pb-10">

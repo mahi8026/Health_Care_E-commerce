@@ -76,7 +76,7 @@ const productSchema = new mongoose.Schema({
 // ── Indexes ──────────────────────────────────────────────────────────────────
 productSchema.index({ slug: 1 }, { unique: true, sparse: true });
 productSchema.index({ sku: 1 }, { unique: true });
-productSchema.index({ name: 'text', description: 'text', tags: 'text' }, {
+productSchema.index({ name: 'text', description: 'text', brand: 'text', tags: 'text' }, {
   weights: { name: 10, tags: 3, description: 1 },
   name: 'product_text_search'
 });
@@ -90,6 +90,9 @@ productSchema.index({ price: 1, isActive: 1 });                // price range fi
 productSchema.index({ category: 1, brand: 1, isActive: 1 });
 productSchema.index({ category: 1, isActive: 1, isFeatured: 1 });
 productSchema.index({ isActive: 1, price: 1 });
+// Additional compound indexes per optimization spec (Requirements 4.1, 4.2)
+productSchema.index({ category: 1, brand: 1, price: 1 });          // category + brand + price sort
+productSchema.index({ category: 1, isActive: 1, stock: 1 });       // filtered listings with stock check
 
 // ── Helper: Generate slug from name, brand, and SKU ──────────────────────────
 const generateSlug = (name, brand, sku) => {

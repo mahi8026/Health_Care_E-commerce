@@ -3,6 +3,7 @@ const whatsappBot = require('../services/whatsappBot');
 const WhatsAppConversation = require('../models/WhatsAppConversation');
 const WhatsAppMessage = require('../models/WhatsAppMessage');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 /**
  * @desc    Webhook verification (Meta Cloud API)
@@ -22,11 +23,11 @@ exports.verifyWebhook = async (req, res) => {
       res.status(200).send(challenge);
     } else {
       logger.warn('[WhatsApp] Webhook verification failed');
-      res.status(403).json({ success: false, message: 'Verification failed' });
+      return errorResponse(res, 'Verification failed', null, 403);
     }
   } catch (error) {
     logger.error(`[verifyWebhook] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Webhook verification error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -215,10 +216,7 @@ exports.sendMessage = async (req, res) => {
     const { to, text, type, options } = req.body;
 
     if (!to || !text) {
-      return res.status(400).json({
-        success: false,
-        message: 'Phone number and message text are required'
-      });
+      return errorResponse(res, 'Phone number and message text are required', null, 400);
     }
 
     const result = await whatsappService.sendMessage(to, text, {
@@ -229,23 +227,15 @@ exports.sendMessage = async (req, res) => {
     });
 
     if (result.success) {
-      res.status(200).json({
-        success: true,
-        message: 'WhatsApp message sent successfully',
+      return successResponse(res, {
         messageId: result.messageId
-      });
+      }, 'WhatsApp message sent successfully');
     } else {
-      res.status(500).json({
-        success: false,
-        message: result.error || 'Failed to send WhatsApp message'
-      });
+      return errorResponse(res, result.error || 'Failed to send WhatsApp message', null, 500);
     }
   } catch (error) {
     logger.error(`[sendMessage] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to send message', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -290,22 +280,17 @@ exports.getConversations = async (req, res) => {
 
     const total = await WhatsAppConversation.countDocuments(query);
 
-    res.status(200).json({
-      success: true,
-      conversations,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+    return paginatedResponse(res, conversations, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+      hasPrev: parseInt(page) > 1
     });
   } catch (error) {
     logger.error(`[getConversations] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to fetch conversations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -324,10 +309,7 @@ exports.getConversation = async (req, res) => {
       .populate('relatedProducts', 'name brand price');
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     // Get messages
@@ -337,17 +319,13 @@ exports.getConversation = async (req, res) => {
       .populate('sentBy', 'name email')
       .sort({ createdAt: 1 });
 
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       conversation,
       messages
     });
   } catch (error) {
     logger.error(`[getConversation] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to fetch conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -363,10 +341,7 @@ exports.updateConversation = async (req, res) => {
     const conversation = await WhatsAppConversation.findById(req.params.id);
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     if (category) {
@@ -375,17 +350,10 @@ exports.updateConversation = async (req, res) => {
 
     await conversation.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Conversation updated successfully',
-      conversation
-    });
+    return successResponse(res, conversation, 'Conversation updated successfully');
   } catch (error) {
     logger.error(`[updateConversation] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to update conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -401,25 +369,15 @@ exports.assignConversation = async (req, res) => {
     const conversation = await WhatsAppConversation.findById(req.params.id);
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     await conversation.assignTo(userId);
 
-    res.status(200).json({
-      success: true,
-      message: 'Conversation assigned successfully',
-      conversation
-    });
+    return successResponse(res, conversation, 'Conversation assigned successfully');
   } catch (error) {
     logger.error(`[assignConversation] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to assign conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -435,10 +393,7 @@ exports.updateConversationStatus = async (req, res) => {
     const conversation = await WhatsAppConversation.findById(req.params.id);
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     conversation.status = status;
@@ -451,17 +406,10 @@ exports.updateConversationStatus = async (req, res) => {
 
     await conversation.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Conversation status updated',
-      conversation
-    });
+    return successResponse(res, conversation, 'Conversation status updated');
   } catch (error) {
     logger.error(`[updateConversationStatus] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to update status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -475,34 +423,21 @@ exports.addNote = async (req, res) => {
     const { text } = req.body;
 
     if (!text) {
-      return res.status(400).json({
-        success: false,
-        message: 'Note text is required'
-      });
+      return errorResponse(res, 'Note text is required', null, 400);
     }
 
     const conversation = await WhatsAppConversation.findById(req.params.id);
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     await conversation.addNote(text, req.user._id);
 
-    res.status(200).json({
-      success: true,
-      message: 'Note added successfully',
-      conversation
-    });
+    return successResponse(res, conversation, 'Note added successfully');
   } catch (error) {
     logger.error(`[addNote] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to add note', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -557,24 +492,18 @@ exports.getAnalytics = async (req, res) => {
       { $group: { _id: null, avg: { $avg: '$responseTime' } } }
     ]);
 
-    res.status(200).json({
-      success: true,
-      analytics: {
-        totalConversations,
-        byStatus,
-        byCategory,
-        botVsHuman,
-        totalMessages,
-        messagesByDirection,
-        avgResponseTime: avgResponseTime[0]?.avg || 0
-      }
+    return successResponse(res, {
+      totalConversations,
+      byStatus,
+      byCategory,
+      botVsHuman,
+      totalMessages,
+      messagesByDirection,
+      avgResponseTime: avgResponseTime[0]?.avg || 0
     });
   } catch (error) {
     logger.error(`[getAnalytics] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to fetch analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -588,10 +517,7 @@ exports.testConnection = async (req, res) => {
     const { phone } = req.body;
 
     if (!phone) {
-      return res.status(400).json({
-        success: false,
-        message: 'Phone number is required'
-      });
+      return errorResponse(res, 'Phone number is required', null, 400);
     }
 
     const message = `🧪 *Test Message from MedCore BD*
@@ -608,23 +534,15 @@ If you received this, your WhatsApp automation is ready! 🎉`;
     });
 
     if (result.success) {
-      res.status(200).json({
-        success: true,
-        message: 'Test message sent successfully',
+      return successResponse(res, {
         messageId: result.messageId
-      });
+      }, 'Test message sent successfully');
     } else {
-      res.status(500).json({
-        success: false,
-        message: result.error || 'Failed to send test message'
-      });
+      return errorResponse(res, result.error || 'Failed to send test message', null, 500);
     }
   } catch (error) {
     logger.error(`[testConnection] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return errorResponse(res, 'Failed to test connection', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 

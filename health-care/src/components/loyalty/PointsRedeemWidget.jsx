@@ -90,7 +90,7 @@ export default function PointsRedeemWidget({ availablePoints = 0, orderTotal = 0
               Clear
             </button>
           </div>
-          {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+          {error && <p className="text-xs text-red-500 mt-1" role="alert" aria-live="polite">{error}</p>}
         </>
       )}
     </div>

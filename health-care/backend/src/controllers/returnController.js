@@ -3,6 +3,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { sendEmail } = require('../utils/emailService');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 // @desc    Create return request
 // @route   POST /api/returns
@@ -13,34 +14,22 @@ exports.createReturn = async (req, res) => {
 
     // Validate required fields
     if (!orderId || !products || !reason || !description) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide all required fields'
-      });
+      return errorResponse(res, 'Please provide all required fields', null, 400);
     }
 
     // Validate description length
     if (description.length < 20) {
-      return res.status(400).json({
-        success: false,
-        message: 'Description must be at least 20 characters'
-      });
+      return errorResponse(res, 'Description must be at least 20 characters', null, 400);
     }
 
     // Validate order exists and belongs to user
     const order = await Order.findById(orderId).populate('items.product');
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     if (order.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to request return for this order'
-      });
+      return errorResponse(res, 'Not authorized to request return for this order', null, 403);
     }
 
     // Check if order is eligible for return (within 7 days)
@@ -48,10 +37,7 @@ exports.createReturn = async (req, res) => {
     const daysSinceDelivery = Math.floor((Date.now() - deliveryDate) / (1000 * 60 * 60 * 24));
     
     if (daysSinceDelivery > 7) {
-      return res.status(400).json({
-        success: false,
-        message: 'Return window expired. Returns must be requested within 7 days of delivery.'
-      });
+      return errorResponse(res, 'Return window expired. Returns must be requested within 7 days of delivery.', null, 400);
     }
 
     // Check if return already exists for this order
@@ -61,10 +47,7 @@ exports.createReturn = async (req, res) => {
     });
 
     if (existingReturn) {
-      return res.status(400).json({
-        success: false,
-        message: 'A return request already exists for this order'
-      });
+      return errorResponse(res, 'A return request already exists for this order', null, 400);
     }
 
     // Calculate refund amount and prepare products array
@@ -74,17 +57,11 @@ exports.createReturn = async (req, res) => {
     for (const item of products) {
       const orderItem = order.items.find(i => i.product._id.toString() === item.product);
       if (!orderItem) {
-        return res.status(400).json({
-          success: false,
-          message: `Product ${item.product} not found in order`
-        });
+        return errorResponse(res, `Product ${item.product} not found in order`, null, 400);
       }
 
       if (item.quantity > orderItem.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Cannot return more than ordered quantity for product ${orderItem.product.name}`
-        });
+        return errorResponse(res, `Cannot return more than ordered quantity for product ${orderItem.product.name}`, null, 400);
       }
 
       refundAmount += orderItem.price * item.quantity;
@@ -165,17 +142,10 @@ MedCore BD Team
 
     logger.info(`[createReturn] Return request created: ${returnRequest._id} for order ${order.orderNumber}`);
 
-    res.status(201).json({
-      success: true,
-      data: returnRequest,
-      message: 'Return request submitted successfully'
-    });
+    return successResponse(res, returnRequest, 'Return request submitted successfully', 201);
   } catch (err) {
     logger.error(`[createReturn] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: err.message || 'Failed to create return request'
-    });
+    return errorResponse(res, 'Failed to create return request', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -190,17 +160,10 @@ exports.getMyReturns = async (req, res) => {
       .populate('approvedBy', 'name')
       .sort('-createdAt');
 
-    res.json({
-      success: true,
-      data: returns,
-      count: returns.length
-    });
+    return successResponse(res, { returns, count: returns.length });
   } catch (err) {
     logger.error(`[getMyReturns] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch return requests'
-    });
+    return errorResponse(res, 'Failed to fetch return requests', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -224,22 +187,17 @@ exports.getAllReturns = async (req, res) => {
 
     const count = await Return.countDocuments(query);
 
-    res.json({
-      success: true,
-      data: returns,
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total: count,
-        pages: Math.ceil(count / limit)
-      }
+    return paginatedResponse(res, returns, {
+      page: Number(page),
+      limit: Number(limit),
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      hasNext: Number(page) < Math.ceil(count / limit),
+      hasPrev: Number(page) > 1
     });
   } catch (err) {
     logger.error(`[getAllReturns] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch return requests'
-    });
+    return errorResponse(res, 'Failed to fetch return requests', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -258,10 +216,7 @@ exports.getReturn = async (req, res) => {
       .populate('approvedBy', 'name email');
 
     if (!returnRequest) {
-      return res.status(404).json({
-        success: false,
-        message: 'Return request not found'
-      });
+      return errorResponse(res, 'Return request not found', null, 404);
     }
 
     // Check authorization (user can only view their own returns, admin can view all)
@@ -269,22 +224,13 @@ exports.getReturn = async (req, res) => {
       req.user.role !== 'admin' &&
       returnRequest.user._id.toString() !== req.user._id.toString()
     ) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to view this return request'
-      });
+      return errorResponse(res, 'Not authorized to view this return request', null, 403);
     }
 
-    res.json({
-      success: true,
-      data: returnRequest
-    });
+    return successResponse(res, returnRequest);
   } catch (err) {
     logger.error(`[getReturn] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch return request'
-    });
+    return errorResponse(res, 'Failed to fetch return request', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -296,10 +242,7 @@ exports.updateReturnStatus = async (req, res) => {
     const { status, adminNotes, refundMethod, refundTransactionId } = req.body;
 
     if (!status) {
-      return res.status(400).json({
-        success: false,
-        message: 'Status is required'
-      });
+      return errorResponse(res, 'Status is required', null, 400);
     }
 
     const returnRequest = await Return.findById(req.params.id)
@@ -307,10 +250,7 @@ exports.updateReturnStatus = async (req, res) => {
       .populate('order', 'orderNumber');
 
     if (!returnRequest) {
-      return res.status(404).json({
-        success: false,
-        message: 'Return request not found'
-      });
+      return errorResponse(res, 'Return request not found', null, 404);
     }
 
     // Update return request
@@ -370,17 +310,10 @@ MedCore BD Team
 
     logger.info(`[updateReturnStatus] Return ${returnRequest._id} status updated to ${status} by ${req.user.name}`);
 
-    res.json({
-      success: true,
-      data: returnRequest,
-      message: `Return request ${status} successfully`
-    });
+    return successResponse(res, returnRequest, `Return request ${status} successfully`);
   } catch (err) {
     logger.error(`[updateReturnStatus] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update return status'
-    });
+    return errorResponse(res, 'Failed to update return status', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -392,26 +325,17 @@ exports.cancelReturn = async (req, res) => {
     const returnRequest = await Return.findById(req.params.id);
 
     if (!returnRequest) {
-      return res.status(404).json({
-        success: false,
-        message: 'Return request not found'
-      });
+      return errorResponse(res, 'Return request not found', null, 404);
     }
 
     // Check authorization
     if (returnRequest.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to cancel this return request'
-      });
+      return errorResponse(res, 'Not authorized to cancel this return request', null, 403);
     }
 
     // Can only cancel pending requests
     if (returnRequest.status !== 'pending') {
-      return res.status(400).json({
-        success: false,
-        message: 'Can only cancel pending return requests'
-      });
+      return errorResponse(res, 'Can only cancel pending return requests', null, 400);
     }
 
     returnRequest.status = 'cancelled';
@@ -419,16 +343,10 @@ exports.cancelReturn = async (req, res) => {
 
     logger.info(`[cancelReturn] Return ${returnRequest._id} cancelled by user ${req.user._id}`);
 
-    res.json({
-      success: true,
-      message: 'Return request cancelled successfully'
-    });
+    return successResponse(res, null, 'Return request cancelled successfully');
   } catch (err) {
     logger.error(`[cancelReturn] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to cancel return request'
-    });
+    return errorResponse(res, 'Failed to cancel return request', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -458,23 +376,17 @@ exports.getReturnStats = async (req, res) => {
       { $group: { _id: null, total: { $sum: '$refundAmount' } } }
     ]);
 
-    res.json({
-      success: true,
-      data: {
-        total: totalReturns,
-        pending: pendingReturns,
-        approved: approvedReturns,
-        refunded: refundedReturns,
-        rejected: rejectedReturns,
-        totalRefundAmount: totalRefundAmount[0]?.total || 0,
-        byStatus: stats
-      }
+    return successResponse(res, {
+      total: totalReturns,
+      pending: pendingReturns,
+      approved: approvedReturns,
+      refunded: refundedReturns,
+      rejected: rejectedReturns,
+      totalRefundAmount: totalRefundAmount[0]?.total || 0,
+      byStatus: stats
     });
   } catch (err) {
     logger.error(`[getReturnStats] ${err.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch return statistics'
-    });
+    return errorResponse(res, 'Failed to fetch return statistics', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };

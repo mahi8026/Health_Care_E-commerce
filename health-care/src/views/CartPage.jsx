@@ -186,7 +186,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={imageUrl}
-                          alt={item.name}
+                          alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`}
                           className="w-full h-24 md:h-28 object-contain"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';

@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // GET /api/orders/track/:orderNumber  — public endpoint
 exports.trackOrder = async (req, res) => {
@@ -15,10 +16,7 @@ exports.trackOrder = async (req, res) => {
       .select('-paymentDetails -__v');
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found. Please check your order number.'
-      });
+      return errorResponse(res, 'Order not found. Please check your order number.', null, 404);
     }
 
     // Build timeline
@@ -40,31 +38,28 @@ exports.trackOrder = async (req, res) => {
       timestamp: order.statusTimestamps?.[step.key] || null
     }));
 
-    res.status(200).json({
-      success: true,
-      order: {
-        orderNumber: order.orderNumber || order.orderId,
-        status: order.status,
-        paymentStatus: order.paymentStatus,
-        paymentMethod: order.paymentMethod,
-        items: order.items,
-        subtotal: order.subtotal,
-        deliveryFee: order.deliveryFee,
-        vatAmount: order.vatAmount,
-        totalAmount: order.totalAmount || order.total,
-        deliveryAddress: order.deliveryAddress,
-        deliveryType: order.deliveryType,
-        tracking: order.tracking,
-        trackingNumber: order.trackingNumber,
-        estimatedDelivery: order.estimatedDelivery,
-        deliveredAt: order.deliveredAt,
-        receivedBy: order.receivedBy,
-        coldChain: order.coldChain,
-        createdAt: order.createdAt,
-        timeline
-      }
+    return successResponse(res, {
+      orderNumber: order.orderNumber || order.orderId,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      paymentMethod: order.paymentMethod,
+      items: order.items,
+      subtotal: order.subtotal,
+      deliveryFee: order.deliveryFee,
+      vatAmount: order.vatAmount,
+      totalAmount: order.totalAmount || order.total,
+      deliveryAddress: order.deliveryAddress,
+      deliveryType: order.deliveryType,
+      tracking: order.tracking,
+      trackingNumber: order.trackingNumber,
+      estimatedDelivery: order.estimatedDelivery,
+      deliveredAt: order.deliveredAt,
+      receivedBy: order.receivedBy,
+      coldChain: order.coldChain,
+      createdAt: order.createdAt,
+      timeline
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to track order', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

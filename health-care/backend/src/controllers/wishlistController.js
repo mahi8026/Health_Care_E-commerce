@@ -1,5 +1,6 @@
 const Wishlist = require('../models/Wishlist');
 const Product = require('../models/Product');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // @desc    Get user's wishlist
 // @route   GET /api/wishlist
@@ -27,19 +28,13 @@ exports.getWishlist = async (req, res) => {
     // Filter out inactive or deleted products
     const activeProducts = wishlist.products.filter(p => p && p.isActive);
 
-    res.json({
-      success: true,
-      data: {
-        products: activeProducts,
-        count: activeProducts.length
-      }
+    return successResponse(res, {
+      products: activeProducts,
+      count: activeProducts.length
     });
   } catch (error) {
     console.error('Get wishlist error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch wishlist'
-    });
+    return errorResponse(res, 'Failed to fetch wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -53,10 +48,7 @@ exports.toggleProduct = async (req, res) => {
     // Check if product exists
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found'
-      });
+      return errorResponse(res, 'Product not found', null, 404);
     }
 
     // Get or create wishlist
@@ -68,34 +60,23 @@ exports.toggleProduct = async (req, res) => {
         products: [productId]
       });
 
-      return res.json({
-        success: true,
-        message: 'Added to wishlist',
-        data: {
-          added: true,
-          count: 1
-        }
-      });
+      return successResponse(res, {
+        added: true,
+        count: 1
+      }, 'Added to wishlist');
     }
 
     // Toggle product
     const result = wishlist.toggleProduct(productId);
     await wishlist.save();
 
-    res.json({
-      success: true,
-      message: result.message,
-      data: {
-        added: result.added,
-        count: wishlist.products.length
-      }
-    });
+    return successResponse(res, {
+      added: result.added,
+      count: wishlist.products.length
+    }, result.message);
   } catch (error) {
     console.error('Toggle wishlist error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update wishlist'
-    });
+    return errorResponse(res, 'Failed to update wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -109,29 +90,19 @@ exports.removeProduct = async (req, res) => {
     const wishlist = await Wishlist.findOne({ user: req.user._id });
     
     if (!wishlist) {
-      return res.status(404).json({
-        success: false,
-        message: 'Wishlist not found'
-      });
+      return errorResponse(res, 'Wishlist not found', null, 404);
     }
 
     // Remove product
     wishlist.products = wishlist.products.filter(id => !id.equals(productId));
     await wishlist.save();
 
-    res.json({
-      success: true,
-      message: 'Removed from wishlist',
-      data: {
-        count: wishlist.products.length
-      }
-    });
+    return successResponse(res, {
+      count: wishlist.products.length
+    }, 'Removed from wishlist');
   } catch (error) {
     console.error('Remove from wishlist error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to remove from wishlist'
-    });
+    return errorResponse(res, 'Failed to remove from wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -145,27 +116,14 @@ exports.checkProduct = async (req, res) => {
     const wishlist = await Wishlist.findOne({ user: req.user._id });
     
     if (!wishlist) {
-      return res.json({
-        success: true,
-        data: {
-          inWishlist: false
-        }
-      });
+      return successResponse(res, { inWishlist: false });
     }
 
     const inWishlist = wishlist.hasProduct(productId);
 
-    res.json({
-      success: true,
-      data: {
-        inWishlist
-      }
-    });
+    return successResponse(res, { inWishlist });
   } catch (error) {
     console.error('Check wishlist error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to check wishlist'
-    });
+    return errorResponse(res, 'Failed to check wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

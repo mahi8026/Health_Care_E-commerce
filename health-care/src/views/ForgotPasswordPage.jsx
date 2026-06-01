@@ -81,22 +81,27 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
                 </p>
               </div>
 
-              {error && (
-                <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] sm:text-[12px]">
-                  {error}
-                </div>
-              )}
+              {/* Error — aria-live ensures screen readers announce failures */}
+              <div role="alert" aria-live="polite" aria-atomic="true">
+                {error && (
+                  <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] sm:text-[12px]">
+                    {error}
+                  </div>
+                )}
+              </div>
 
               <div className="mb-4 sm:mb-6">
-                <label className="block text-[11px] sm:text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
+                <label htmlFor="forgot-email" className="block text-[11px] sm:text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
                   Email Address
                 </label>
                 <input
+                  id="forgot-email"
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
+                  autoComplete="email"
                   className="w-full px-2.5 sm:px-3 py-2.5 sm:py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
                 />
               </div>

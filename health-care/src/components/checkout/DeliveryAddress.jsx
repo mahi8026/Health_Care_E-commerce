@@ -90,40 +90,44 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="sm:col-span-2">
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-fullName" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             Full name / facility <span className="text-[#E24B4A]">*</span>
           </label>
           <input
+            id="checkout-fullName"
             type="text"
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
             placeholder="Dr. Shahid Hasan"
+            autoComplete="name"
             className={field('fullName')}
           />
-          {errors.fullName && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.fullName}</p>}
+          {errors.fullName && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{errors.fullName}</p>}
         </div>
 
         <div>
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-phone" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             Phone <span className="text-[#E24B4A]">*</span>
           </label>
           <input
+            id="checkout-phone"
             type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
             placeholder="01XXXXXXXXX"
+            autoComplete="tel"
             className={field('phone')}
           />
-          {errors.phone && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.phone}</p>}
+          {errors.phone && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{errors.phone}</p>}
         </div>
 
         <div>
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-district" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             District <span className="text-[#E24B4A]">*</span>
           </label>
-          <select name="district" value={formData.district} onChange={handleChange} className={inputBase}>
+          <select id="checkout-district" name="district" value={formData.district} onChange={handleChange} className={inputBase}>
             {DISTRICTS.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
@@ -131,56 +135,63 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-street" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             Street address <span className="text-[#E24B4A]">*</span>
           </label>
           <input
+            id="checkout-street"
             type="text"
             name="street"
             value={formData.street}
             onChange={handleChange}
             placeholder="House no., road, area"
+            autoComplete="street-address"
             className={field('street')}
           />
-          {errors.street && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.street}</p>}
+          {errors.street && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{errors.street}</p>}
         </div>
 
         <div>
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-thana" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             Thana / Upazila <span className="text-[#E24B4A]">*</span>
           </label>
           <input
+            id="checkout-thana"
             type="text"
             name="thana"
             value={formData.thana}
             onChange={handleChange}
             placeholder="Dhanmondi"
+            autoComplete="address-level2"
             className={field('thana')}
           />
-          {errors.thana && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.thana}</p>}
+          {errors.thana && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{errors.thana}</p>}
         </div>
 
         <div>
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-postcode" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             Postcode <span className="text-[#E24B4A]">*</span>
           </label>
           <input
+            id="checkout-postcode"
             type="text"
             name="postcode"
             value={formData.postcode}
             onChange={handleChange}
             placeholder="1209"
             maxLength={4}
+            autoComplete="postal-code"
             className={field('postcode')}
           />
-          {errors.postcode && <p className="text-[11px] text-[#E24B4A] mt-1">{errors.postcode}</p>}
+          {errors.postcode && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{errors.postcode}</p>}
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+          <label htmlFor="checkout-instructions" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             Instructions <span className="font-normal text-[#9CA3AF]">(optional)</span>
           </label>
           <textarea
+            id="checkout-instructions"
             name="instructions"
             value={formData.instructions}
             onChange={handleChange}

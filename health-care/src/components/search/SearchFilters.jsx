@@ -110,6 +110,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
           <button
             onClick={handleClearAll}
             className="text-white text-[10px] hover:underline flex items-center gap-1"
+            aria-label="Clear all filters"
           >
             <FaTimes size={8} />
             Clear
@@ -126,6 +127,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
               checked={inStock}
               onChange={handleStockToggle}
               className="w-3 h-3 cursor-pointer accent-[#0E8A6E]"
+              aria-label="Show only in-stock products"
             />
             <span className="text-xs text-gray-700 group-hover:text-[#0E8A6E] transition-colors">
               In stock only
@@ -138,12 +140,15 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
           <button
             onClick={() => toggleSection('price')}
             className="w-full flex items-center justify-between mb-1.5"
+            aria-expanded={expandedSections.price}
+            aria-controls="price-range-section"
+            aria-label="Toggle price range filter"
           >
             <span className="text-xs font-semibold text-gray-800">Price Range</span>
             <span className="text-gray-400 text-xs">{expandedSections.price ? '−' : '+'}</span>
           </button>
           {expandedSections.price && (
-            <div className="space-y-1.5">
+            <div id="price-range-section" className="space-y-1.5" role="group" aria-label="Price range filter">
               <div className="relative py-1">
                 <input
                   type="range"
@@ -153,6 +158,11 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
                   value={priceRange}
                   onChange={(e) => handlePriceChange(parseInt(e.target.value))}
                   className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  aria-label="Maximum price filter"
+                  aria-valuemin="0"
+                  aria-valuemax="200000"
+                  aria-valuenow={priceRange}
+                  aria-valuetext={`৳${priceRange.toLocaleString()}`}
                   style={{
                     background: `linear-gradient(to right, #0E8A6E 0%, #0E8A6E ${(priceRange / 200000) * 100}%, #e5e7eb ${(priceRange / 200000) * 100}%, #e5e7eb 100%)`,
                   }}
@@ -173,6 +183,9 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
           <button
             onClick={() => toggleSection('categories')}
             className="w-full flex items-center justify-between mb-1.5"
+            aria-expanded={expandedSections.categories}
+            aria-controls="categories-section"
+            aria-label="Toggle categories filter"
           >
             <span className="text-xs font-semibold text-gray-800">Categories</span>
             <div className="flex items-center gap-1.5">
@@ -185,7 +198,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
             </div>
           </button>
           {expandedSections.categories && (
-            <div className="space-y-1 max-h-32 overflow-y-auto">
+            <div id="categories-section" className="space-y-1 max-h-32 overflow-y-auto">
               {categories.length === 0 ? (
                 <div className="space-y-1">
                   {[1, 2, 3].map((i) => (
@@ -203,6 +216,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
                       checked={selectedCategories.includes(category)}
                       onChange={() => handleCategoryToggle(category)}
                       className="w-3 h-3 cursor-pointer accent-[#0E8A6E]"
+                      aria-label={`Filter by ${category} category`}
                     />
                     <span className="text-[11px] text-gray-700 group-hover:text-[#0E8A6E] transition-colors">
                       {category}
@@ -219,6 +233,9 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
           <button
             onClick={() => toggleSection('brands')}
             className="w-full flex items-center justify-between mb-1.5"
+            aria-expanded={expandedSections.brands}
+            aria-controls="brands-section"
+            aria-label="Toggle brands filter"
           >
             <span className="text-xs font-semibold text-gray-800">Brands</span>
             <div className="flex items-center gap-1.5">
@@ -231,7 +248,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
             </div>
           </button>
           {expandedSections.brands && (
-            <div className="space-y-1 max-h-32 overflow-y-auto">
+            <div id="brands-section" className="space-y-1 max-h-32 overflow-y-auto" role="group" aria-label="Brand filters">
               {brands.length === 0 ? (
                 <div className="space-y-1">
                   {[1, 2, 3].map((i) => (
@@ -249,6 +266,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
                       checked={selectedBrands.includes(brand)}
                       onChange={() => handleBrandToggle(brand)}
                       className="w-3 h-3 cursor-pointer accent-[#0E8A6E]"
+                      aria-label={`Filter by ${brand} brand`}
                     />
                     <span className="text-[11px] text-gray-700 group-hover:text-[#0E8A6E] transition-colors">
                       {brand}

@@ -3,7 +3,7 @@ import { TIMEOUTS } from '@/constants/config';
 
 // Dev-only logger — silent in production
 const devLog = {
-  error: (...args) => { if (process.env.NODE_ENV === 'development') process.env.NODE_ENV !== "production" && console.error('[API Error]', ...args); }, // eslint-disable-line no-console
+  error: (...args) => { if (process.env.NODE_ENV === 'development') process.env.NODE_ENV !== "production" && console.error('[API Error]', ...args); },  
 };
 
 // Get token from localStorage

@@ -5,7 +5,6 @@ import { useCart } from '@/context/CartContext';
 import { useCompare } from '@/context/CompareContext';
 import { useT } from '@/hooks/useT';
 import WishlistButton from './wishlist/WishlistButton';
-import { useT } from '@/hooks/useT';
 
 const ProductCard = React.memo(function ProductCard({ product, onProductClick }) {
   const router = useRouter();
@@ -14,7 +13,6 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
   const t = useT();
   const [addingToCart, setAddingToCart] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
-  const t = useT();
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
   const primaryImage = imageData ? {
@@ -139,8 +137,9 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
                 : 'bg-white/90 text-gray-600 hover:bg-white'
             }`}
             title={inCompareList ? 'Remove from compare' : 'Add to compare'}
+            aria-label={inCompareList ? 'Remove from compare' : 'Add to compare'}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
             </svg>
           </button>

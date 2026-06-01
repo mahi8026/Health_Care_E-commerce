@@ -1,6 +1,7 @@
 const Newsletter = require('../models/Newsletter');
 const { sendNewsletterWelcomeEmail, sendNewsletterBroadcast } = require('../utils/emailService');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 // ─── Public: Subscribe ───────────────────────────────────────────────────────
 exports.subscribe = async (req, res) => {
@@ -8,10 +9,7 @@ exports.subscribe = async (req, res) => {
     const { email, name, source = 'footer' } = req.body;
 
     if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email is required'
-      });
+      return errorResponse(res, 'Email is required', null, 400);
     }
 
     // Check if email already exists
@@ -19,11 +17,7 @@ exports.subscribe = async (req, res) => {
 
     if (subscriber) {
       if (subscriber.isSubscribed) {
-        return res.status(200).json({
-          success: true,
-          message: 'You are already subscribed to our newsletter',
-          alreadySubscribed: true
-        });
+        return successResponse(res, { alreadySubscribed: true }, 'You are already subscribed to our newsletter');
       } else {
         // Resubscribe
         subscriber.isSubscribed = true;
@@ -40,10 +34,7 @@ exports.subscribe = async (req, res) => {
           logger.error('Welcome email error:', emailErr);
         }
 
-        return res.json({
-          success: true,
-          message: 'Welcome back! You have been resubscribed to our newsletter'
-        });
+        return successResponse(res, null, 'Welcome back! You have been resubscribed to our newsletter');
       }
     }
 
@@ -62,17 +53,10 @@ exports.subscribe = async (req, res) => {
       logger.error('Welcome email error:', emailErr);
     }
 
-    res.status(201).json({
-      success: true,
-      message: 'Thank you for subscribing! Check your email for confirmation.'
-    });
+    return successResponse(res, null, 'Thank you for subscribing! Check your email for confirmation.', 201);
   } catch (error) {
     logger.error('Subscribe error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to subscribe',
-      error: error.message
-    });
+    return errorResponse(res, 'Failed to subscribe', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -270,30 +254,22 @@ exports.getSubscribers = async (req, res) => {
     const activeSubscribers = await Newsletter.countDocuments({ isSubscribed: true });
     const unsubscribedCount = await Newsletter.countDocuments({ isSubscribed: false });
 
-    res.json({
-      success: true,
-      data: {
-        subscribers,
-        pagination: {
-          total,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          pages: Math.ceil(total / parseInt(limit))
-        },
-        stats: {
-          total: totalSubscribers,
-          active: activeSubscribers,
-          unsubscribed: unsubscribedCount
-        }
+    return paginatedResponse(res, subscribers, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+      hasPrev: parseInt(page) > 1,
+      stats: {
+        total: totalSubscribers,
+        active: activeSubscribers,
+        unsubscribed: unsubscribedCount
       }
     });
   } catch (error) {
     logger.error('Get subscribers error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch subscribers',
-      error: error.message
-    });
+    return errorResponse(res, 'Failed to fetch subscribers', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -305,23 +281,13 @@ exports.deleteSubscriber = async (req, res) => {
     const subscriber = await Newsletter.findByIdAndDelete(id);
 
     if (!subscriber) {
-      return res.status(404).json({
-        success: false,
-        message: 'Subscriber not found'
-      });
+      return errorResponse(res, 'Subscriber not found', null, 404);
     }
 
-    res.json({
-      success: true,
-      message: 'Subscriber deleted successfully'
-    });
+    return successResponse(res, null, 'Subscriber deleted successfully');
   } catch (error) {
     logger.error('Delete subscriber error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete subscriber',
-      error: error.message
-    });
+    return errorResponse(res, 'Failed to delete subscriber', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -331,10 +297,7 @@ exports.broadcast = async (req, res) => {
     const { subject, htmlContent, targetTags = [] } = req.body;
 
     if (!subject || !htmlContent) {
-      return res.status(400).json({
-        success: false,
-        message: 'Subject and content are required'
-      });
+      return errorResponse(res, 'Subject and content are required', null, 400);
     }
 
     // Build query for target subscribers
@@ -346,21 +309,14 @@ exports.broadcast = async (req, res) => {
     const subscribers = await Newsletter.find(query).lean();
 
     if (subscribers.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No active subscribers found for the selected criteria'
-      });
+      return errorResponse(res, 'No active subscribers found for the selected criteria', null, 400);
     }
 
     // Respond immediately — emails will be sent in the background
-    res.json({
-      success: true,
-      message: `Broadcast started for ${subscribers.length} subscriber(s). Emails are being sent in the background.`,
-      data: {
-        total: subscribers.length,
-        status: 'processing'
-      }
-    });
+    successResponse(res, {
+      total: subscribers.length,
+      status: 'processing'
+    }, `Broadcast started for ${subscribers.length} subscriber(s). Emails are being sent in the background.`);
 
     // Process email sending in the background (after response is sent)
     const BATCH_SIZE = 50;
@@ -399,11 +355,7 @@ exports.broadcast = async (req, res) => {
     logger.error('Broadcast error:', error);
     // Only send error response if headers haven't been sent yet
     if (!res.headersSent) {
-      res.status(500).json({
-        success: false,
-        message: 'Failed to send broadcast',
-        error: error.message
-      });
+      return errorResponse(res, 'Failed to send broadcast', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
     }
   }
 };
@@ -430,22 +382,15 @@ exports.getStats = async (req, res) => {
       { $sort: { count: -1 } }
     ]);
 
-    res.json({
-      success: true,
-      data: {
-        total,
-        active,
-        unsubscribed,
-        thisMonth,
-        sources: sourceStats.map(s => ({ source: s._id, count: s.count }))
-      }
+    return successResponse(res, {
+      total,
+      active,
+      unsubscribed,
+      thisMonth,
+      sources: sourceStats.map(s => ({ source: s._id, count: s.count }))
     });
   } catch (error) {
     logger.error('Get stats error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch stats',
-      error: error.message
-    });
+    return errorResponse(res, 'Failed to fetch stats', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

@@ -1,4 +1,5 @@
 const Settings = require('../models/Settings');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 /**
  * @desc    Get site settings
@@ -25,17 +26,10 @@ exports.getSettings = async (req, res) => {
       });
     }
     
-    res.json({
-      success: true,
-      data: settings,
-    });
+    return successResponse(res, settings);
   } catch (error) {
     console.error('Error fetching settings:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching settings',
-      error: error.message,
-    });
+    return errorResponse(res, 'Error fetching settings', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -52,17 +46,9 @@ exports.updateSettings = async (req, res) => {
       { new: true, upsert: true, runValidators: true }
     );
     
-    res.json({
-      success: true,
-      data: settings,
-      message: 'Settings updated successfully',
-    });
+    return successResponse(res, settings, 'Settings updated successfully');
   } catch (error) {
     console.error('Error updating settings:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error updating settings',
-      error: error.message,
-    });
+    return errorResponse(res, 'Error updating settings', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

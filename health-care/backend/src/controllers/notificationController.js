@@ -10,6 +10,7 @@ const {
 } = require('../utils/emailService');
 const { generateInvoice } = require('../utils/invoiceGenerator');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // POST /api/notifications/order-confirmation
 exports.sendOrderConfirmation = async (req, res) => {
@@ -17,24 +18,24 @@ exports.sendOrderConfirmation = async (req, res) => {
     const { orderId } = req.body;
     
     if (!orderId) {
-      return res.status(400).json({ success: false, message: 'Order ID is required' });
+      return errorResponse(res, 'Order ID is required', null, 400);
     }
 
     const order = await Order.findById(orderId).populate('items.product', 'name sku brand');
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     const user = await User.findById(order.user);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return errorResponse(res, 'User not found', null, 404);
     }
 
     await sendOrderConfirmation(order, user);
-    res.status(200).json({ success: true, message: 'Order confirmation email sent successfully' });
+    return successResponse(res, null, 'Order confirmation email sent successfully');
   } catch (error) {
     logger.error(`[sendOrderConfirmation] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to send order confirmation' });
+    return errorResponse(res, 'Failed to send order confirmation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -44,17 +45,17 @@ exports.sendPaymentReceipt = async (req, res) => {
     const { orderId } = req.body;
     
     if (!orderId) {
-      return res.status(400).json({ success: false, message: 'Order ID is required' });
+      return errorResponse(res, 'Order ID is required', null, 400);
     }
 
     const order = await Order.findById(orderId).populate('items.product', 'name sku brand');
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     const user = await User.findById(order.user);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return errorResponse(res, 'User not found', null, 404);
     }
 
     // Generate PDF invoice
@@ -67,10 +68,10 @@ exports.sendPaymentReceipt = async (req, res) => {
     }
 
     await sendPaymentReceipt(order, user, pdfBuffer);
-    res.status(200).json({ success: true, message: 'Payment receipt email sent successfully' });
+    return successResponse(res, null, 'Payment receipt email sent successfully');
   } catch (error) {
     logger.error(`[sendPaymentReceipt] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to send payment receipt' });
+    return errorResponse(res, 'Failed to send payment receipt', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -80,24 +81,24 @@ exports.sendShipping = async (req, res) => {
     const { orderId } = req.body;
     
     if (!orderId) {
-      return res.status(400).json({ success: false, message: 'Order ID is required' });
+      return errorResponse(res, 'Order ID is required', null, 400);
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     const user = await User.findById(order.user);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return errorResponse(res, 'User not found', null, 404);
     }
 
     await sendShippingNotification(order, user);
-    res.status(200).json({ success: true, message: 'Shipping notification sent successfully' });
+    return successResponse(res, null, 'Shipping notification sent successfully');
   } catch (error) {
     logger.error(`[sendShipping] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to send shipping notification' });
+    return errorResponse(res, 'Failed to send shipping notification', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -106,15 +107,15 @@ exports.sendDelivered = async (req, res) => {
   try {
     const { orderId } = req.body;
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
 
     const user = await User.findById(order.user);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) return errorResponse(res, 'User not found', null, 404);
 
     await sendDeliveryConfirmation(order, user);
-    res.status(200).json({ success: true, message: 'Delivery confirmation sent' });
+    return successResponse(res, null, 'Delivery confirmation sent');
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to send delivery confirmation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -124,13 +125,13 @@ exports.sendQuotationReady = async (req, res) => {
     const { quoteId } = req.body;
     const Quote = require('../models/Quote');
     const quote = await Quote.findById(quoteId).populate('user', 'name email');
-    if (!quote) return res.status(404).json({ success: false, message: 'Quote not found' });
+    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
 
     const { sendQuotationReady: sendQuote } = require('../utils/emailService');
     await sendQuote(quote, quote.user);
-    res.status(200).json({ success: true, message: 'Quotation ready email sent' });
+    return successResponse(res, null, 'Quotation ready email sent');
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to send quotation email', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -143,12 +144,12 @@ exports.sendStockAlert = async (req, res) => {
     }).lean();
 
     if (!lowStockProducts.length) {
-      return res.status(200).json({ success: true, message: 'No low stock products found' });
+      return successResponse(res, null, 'No low stock products found');
     }
 
     await sendLowStockAlert(lowStockProducts);
-    res.status(200).json({ success: true, message: `Stock alert sent for ${lowStockProducts.length} product(s)` });
+    return successResponse(res, null, `Stock alert sent for ${lowStockProducts.length} product(s)`);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to send stock alert', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

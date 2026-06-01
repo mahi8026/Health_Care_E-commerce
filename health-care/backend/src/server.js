@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const passport = require('./config/passport');
 const connectDB = require('./config/database');
@@ -16,11 +18,13 @@ const { performanceMonitor } = require('./middleware/performanceMonitor');
 const { monitorConnections } = require('./utils/databaseMonitor');
 const redisCache = require('./services/redisCache');
 const { initSentry, sentryErrorHandler } = require('./config/sentry');
+const requestId = require('./middleware/requestId');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const http = require('http');
 const chatSocketService = require('./services/chatSocketService');
 const chatRoutingService = require('./services/chatRoutingService');
+const { etagMiddleware } = require('./middleware/etag');
 
 // Initialize express app
 const app = express();
@@ -52,7 +56,9 @@ connectDB();
 monitorConnections();
 
 // ── Security Middleware ──────────────────────────────────────────────────────
-// Enhanced Helmet configuration
+// Helmet: sets security-related HTTP response headers.
+// Covers: CSP (10.5), HSTS (10.5), X-Frame-Options (10.5), X-Content-Type-Options,
+//         X-XSS-Protection, Referrer-Policy, and Permissions-Policy.
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -62,17 +68,24 @@ app.use(helmet({
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com"],
       frameSrc: ["'self'", "https://www.google.com"],
-      connectSrc: ["'self'", "https://*.cloudinary.com"]
+      connectSrc: ["'self'", "https://*.cloudinary.com"],
+      upgradeInsecureRequests: [],
     }
   },
+  // HSTS: enforce HTTPS for 1 year, include subdomains, allow preload list
   hsts: {
     maxAge: 31536000,
     includeSubDomains: true,
     preload: true
   },
+  // X-Frame-Options: DENY — prevents clickjacking
   frameguard: { action: 'deny' },
+  // X-Content-Type-Options: nosniff — prevents MIME-type sniffing
   noSniff: true,
-  xssFilter: true
+  // X-XSS-Protection: legacy header for older browsers
+  xssFilter: true,
+  // Referrer-Policy: limit referrer information sent to third parties
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
 
 // Enhanced CORS configuration
@@ -124,18 +137,35 @@ app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// ── Cookie Parser ─────────────────────────────────────────────────────────────
+// Required to read httpOnly cookies (e.g. refresh token) via req.cookies.
+// CSRF note: This API uses stateless JWT authentication. csurf middleware is NOT
+// applied because all state-changing endpoints require a Bearer token in the
+// Authorization header (which cross-origin requests cannot set without CORS
+// pre-flight approval). The refresh token cookie uses SameSite=strict (prod) /
+// SameSite=lax (dev) + httpOnly, which provides equivalent CSRF protection for
+// cookie-based flows. See Req 10.4.
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 // ── Passport Initialization ──────────────────────────────────────────────────
 app.use(passport.initialize());
 
 // ── Security & Optimization ──────────────────────────────────────────────────
-app.use(mongoSanitize()); // Prevent NoSQL injection
-app.use(hpp()); // Prevent HTTP parameter pollution
-app.use(compression()); // Response compression
+// These three middleware MUST be applied after body parsers and BEFORE all routes.
+app.use(mongoSanitize()); // Req 10.6 — strip MongoDB operators ($gt, $ne, etc.) from req.body/params/query
+app.use(xssClean());      // Req 10.7 — HTML-encode dangerous characters in req.body/params/query
+app.use(hpp());           // Req 10.8 — collapse duplicate query-string params to prevent HPP attacks
+app.use(compression({ threshold: 1024, level: 6 })); // Compress responses >1KB (Req 6.1)
 
 // ── Logging ──────────────────────────────────────────────────────────────────
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
+
+// ── Request ID Middleware ─────────────────────────────────────────────────────
+// Generate UUID v4 for each request and set X-Request-ID header
+app.use(requestId);
 
 // ── Performance Monitoring ────────────────────────────────────────────────────
 app.use(performanceMonitor);
@@ -148,8 +178,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 }));
 
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
-// Enhanced rate limiting is applied per-route (see routes files)
-// Global API limiter is not needed as we use specific limiters per endpoint
+// General API limiter: 100 requests per 15 minutes per IP (Req 10.2)
+// Applied before all /api/* routes so every endpoint is covered.
+// Auth-specific limiter (5 req/15 min) is applied directly on login/register routes.
+const { apiLimiter } = require('./middleware/rateLimiter');
+app.use('/api/', apiLimiter);
 
 // ── Static files (local upload fallback — dev only) ──────────────────────────
 const path = require('path');
@@ -196,7 +229,6 @@ app.use('/api/loyalty', dbHealthCheck, require('./routes/loyaltyRoutes')); // Lo
 
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  const mongoose = require('mongoose');
   const dbState = mongoose.connection.readyState;
   const dbStatus = {
     0: 'disconnected',
@@ -291,6 +323,38 @@ app.use((req, res) => {
 app.use(sentryErrorHandler());
 app.use(errorHandler);
 
+// ── Cache Warming ─────────────────────────────────────────────────────────────
+/**
+ * Pre-populate Redis with high-traffic data on server startup.
+ * Called 3 seconds after listen() to allow the DB to be fully ready.
+ * Requirements: 5.1, 5.4, 6.2
+ */
+async function warmCache() {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      logger.info('[Cache Warming] DB not ready — skipping warm-up');
+      return;
+    }
+    if (!redisCache.isRedisConnected()) {
+      logger.info('[Cache Warming] Redis not connected — skipping warm-up');
+      return;
+    }
+
+    logger.info('[Cache Warming] Starting cache warm-up...');
+    
+    // Use centralized cache warming from redisCache service
+    const result = await redisCache.warmAllCaches();
+    
+    if (result.successful > 0) {
+      logger.info(`[Cache Warming] ✅ Warm-up complete: ${result.successful}/${result.successful + result.failed} caches warmed in ${result.duration}ms`);
+    } else {
+      logger.warn(`[Cache Warming] ⚠️  Warm-up failed: ${result.failed} caches failed`);
+    }
+  } catch (err) {
+    logger.warn(`[Cache Warming] Failed: ${err.message}`);
+  }
+}
+
 // ── Start Server ──────────────────────────────────────────────────────────────
 // Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
@@ -306,6 +370,9 @@ if (process.env.NODE_ENV !== 'test') {
     
     // Start cron jobs
     startCronJobs();
+
+    // Warm critical caches after DB is ready (3s delay for stability)
+    setTimeout(warmCache, 3000);
   });
 
   // Handle unhandled promise rejections
@@ -314,15 +381,32 @@ if (process.env.NODE_ENV !== 'test') {
     httpServer.close(() => process.exit(1));
   });
 
-  // Graceful shutdown
-  process.on('SIGTERM', async () => {
-    logger.info('SIGTERM received. Shutting down gracefully...');
+  // Shared graceful shutdown logic — Requirements 12.2, 12.9, 12.10
+  const gracefulShutdown = async (signal) => {
+    logger.info(`${signal} received. Shutting down gracefully...`);
     httpServer.close(async () => {
-      await redisCache.close();
+      try {
+        await mongoose.connection.close();
+        logger.info('MongoDB connection closed.');
+      } catch (err) {
+        logger.error(`Error closing MongoDB connection: ${err.message}`);
+      }
+      try {
+        await redisCache.close();
+        logger.info('Redis connection closed.');
+      } catch (err) {
+        logger.error(`Error closing Redis connection: ${err.message}`);
+      }
       logger.info('Server closed. Process terminating...');
       process.exit(0);
     });
-  });
+  };
+
+  // SIGTERM: sent by process managers (Render, Heroku, Docker, PM2) on deploy/scale-down
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+
+  // SIGINT: sent by Ctrl+C in development
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
 module.exports = app;

@@ -1,12 +1,20 @@
+'use client';
+
+import dynamic from 'next/dynamic';
 import AdminShell from '@/components/admin/AdminShell';
-import ReturnsManagement from '@/components/admin/ReturnsManagement';
 
-export const dynamic = 'force-dynamic';
-
-export const metadata = {
-  title: 'Returns Management - MedCore BD Admin',
-  description: 'Review and process customer return requests',
-};
+const ReturnsManagement = dynamic(
+  () => import('@/components/admin/ReturnsManagement'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="p-5 px-6 animate-pulse space-y-4">
+        <div className="h-10 bg-gray-200 rounded w-full" />
+        <div className="h-64 bg-gray-200 rounded w-full" />
+      </div>
+    ),
+  }
+);
 
 export default function ReturnsPage() {
   return (

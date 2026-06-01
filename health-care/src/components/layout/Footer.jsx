@@ -88,22 +88,24 @@ export default function Footer() {
         <div className="hidden md:grid md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-8 items-start">
 
           {/* 4 link columns */}
-          {links.map((col) => (
-            <div key={col.heading}>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-4 font-[family-name:var(--font-plus-jakarta)]">
-                {col.heading}
-              </h4>
-              <ul className="space-y-3">
-                {col.items.map((item) => (
-                  <li key={item.label}>
-                    <a href={item.href} className="text-[12px] text-white/70 hover:text-white transition-colors">
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <nav aria-label="Footer navigation" className="contents">
+            {links.map((col) => (
+              <div key={col.heading}>
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                  {col.heading}
+                </h4>
+                <ul className="space-y-3">
+                  {col.items.map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="text-[12px] text-white/70 hover:text-white transition-colors">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
 
           {/* MedCoreBD column — only logo + description + newsletter */}
           <div>

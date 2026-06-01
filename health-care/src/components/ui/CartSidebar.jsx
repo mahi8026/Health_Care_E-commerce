@@ -184,7 +184,7 @@ export default function CartSidebar({ isOpen, onClose }) {
                     style={{ background: 'rgba(248,250,252,0.9)', border: '1px solid rgba(229,231,235,0.6)' }}>
                     {imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={imageUrl} alt={item.name} className="w-full h-full object-contain"
+                      <img src={imageUrl} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`} className="w-full h-full object-contain"
                         onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.innerHTML = '<div style="font-size:24px">📦</div>'; }} />
                     ) : (
                       <div className="text-2xl">📦</div>

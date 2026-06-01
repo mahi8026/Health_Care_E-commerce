@@ -1,4 +1,5 @@
 const logger = require('../utils/logger');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 /**
  * @desc    Get trending search terms
@@ -17,18 +18,12 @@ exports.getTrendingSearches = async (req, res) => {
       'Blood Pressure Monitor',
     ];
     
-    res.json({
-      success: true,
-      data: {
-        searches: trendingSearches.slice(0, 4),
-      },
+    return successResponse(res, {
+      searches: trendingSearches.slice(0, 4),
     });
   } catch (error) {
     logger.error(`[getTrendingSearches] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching trending searches',
-    });
+    return errorResponse(res, 'Error fetching trending searches', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -42,24 +37,15 @@ exports.logSearch = async (req, res) => {
     const { query } = req.body;
     
     if (!query) {
-      return res.status(400).json({
-        success: false,
-        message: 'Search query is required',
-      });
+      return errorResponse(res, 'Search query is required', null, 400);
     }
     
     // Search logging is a no-op until a SearchLog model is implemented.
     // When ready: await SearchLog.create({ query, timestamp: new Date() });
     
-    res.json({
-      success: true,
-      message: 'Search logged successfully',
-    });
+    return successResponse(res, null, 'Search logged successfully');
   } catch (error) {
     logger.error(`[logSearch] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Error logging search',
-    });
+    return errorResponse(res, 'Error logging search', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

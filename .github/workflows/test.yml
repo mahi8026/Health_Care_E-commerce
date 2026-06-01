@@ -47,6 +47,37 @@ jobs:
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: dummy
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: dummy
+      
+      - name: Start Next.js server
+        working-directory: health-care
+        run: npm start &
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: dummy
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: dummy
+      
+      - name: Wait for server to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000 > /dev/null 2>&1; do sleep 2; done' || exit 1
+      
+      - name: Run Lighthouse CI
+        working-directory: health-care
+        run: npm run lighthouse
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        # Lighthouse CI will fail the build if performance budgets are not met:
+        # - Performance score <85%
+        # - LCP >2.5s, FID >100ms, CLS >0.1
+        # See lighthouserc.js for full configuration
+      
+      - name: Upload Lighthouse results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: health-care/.lighthouseci
+          retention-days: 30
 
   test-backend:
     name: Test Backend

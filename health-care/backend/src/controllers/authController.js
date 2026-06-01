@@ -11,8 +11,16 @@ const generateAccessToken = (id) =>
 const generateRefreshToken = (id) =>
   jwt.sign({ id }, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET, { expiresIn: '30d' });
 
-// ── Register ─────────────────────────────────────────────────────────────────
-// POST /api/auth/register
+/**
+ * Register a new user account (B2B or Retail).
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/register
+ * @access Public
+ */
 exports.register = async (req, res) => {
   try {
     const { name, email, password, phone, company, companyName, institutionType, accountType, b2bTier } = req.body;
@@ -80,8 +88,16 @@ exports.register = async (req, res) => {
   }
 };
 
-// ── Login ─────────────────────────────────────────────────────────────────────
-// POST /api/auth/login
+/**
+ * Authenticate user and return access and refresh tokens.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/login
+ * @access Public
+ */
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -160,8 +176,16 @@ exports.login = async (req, res) => {
   }
 };
 
-// ── Refresh Token ─────────────────────────────────────────────────────────────
-// POST /api/auth/refresh
+/**
+ * Refresh access token using refresh token.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/refresh
+ * @access Public
+ */
 exports.refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
@@ -194,8 +218,16 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
-// ── Get Current User ──────────────────────────────────────────────────────────
-// GET /api/auth/me
+/**
+ * Get current authenticated user profile.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/auth/me
+ * @access Private
+ */
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -234,8 +266,16 @@ exports.getMe = async (req, res) => {
   }
 };
 
-// ── Update Profile ────────────────────────────────────────────────────────────
-// PATCH /api/auth/profile
+/**
+ * Update user profile information.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route PATCH /api/auth/profile
+ * @access Private
+ */
 exports.updateProfile = async (req, res) => {
   try {
     const { name, phone, address, addresses, companyName, bkashPhone } = req.body;
@@ -259,8 +299,16 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// ── Change Password ───────────────────────────────────────────────────────────
-// PATCH /api/auth/change-password
+/**
+ * Change user password.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route PATCH /api/auth/change-password
+ * @access Private
+ */
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -308,8 +356,16 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-// ── Logout ────────────────────────────────────────────────────────────────────
-// POST /api/auth/logout
+/**
+ * Logout user and invalidate refresh token.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/logout
+ * @access Private
+ */
 exports.logout = async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user.id, { refreshToken: null }, { validateBeforeSave: false });
@@ -331,8 +387,16 @@ exports.logout = async (req, res) => {
   }
 };
 
-// ── Forgot Password ───────────────────────────────────────────────────────────
-// POST /api/auth/forgot-password
+/**
+ * Send password reset email with reset token.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/forgot-password
+ * @access Public
+ */
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -367,8 +431,16 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// ── Reset Password ────────────────────────────────────────────────────────────
-// POST /api/auth/reset-password
+/**
+ * Reset user password using reset token.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/reset-password
+ * @access Public
+ */
 exports.resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
@@ -409,8 +481,16 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// ── Send Phone OTP ────────────────────────────────────────────────────────────
-// POST /api/auth/send-phone-otp
+/**
+ * Send OTP to user's phone for verification.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/send-phone-otp
+ * @access Private
+ */
 exports.sendPhoneOTP = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -454,8 +534,16 @@ exports.sendPhoneOTP = async (req, res) => {
   }
 };
 
-// ── Verify Phone OTP ──────────────────────────────────────────────────────────
-// POST /api/auth/verify-phone-otp
+/**
+ * Verify phone OTP and mark phone as verified.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/verify-phone-otp
+ * @access Private
+ */
 exports.verifyPhoneOTP = async (req, res) => {
   try {
     const { otp } = req.body;
@@ -528,8 +616,16 @@ exports.verifyPhoneOTP = async (req, res) => {
   }
 };
 
-// ── 2FA Setup ─────────────────────────────────────────────────────────────────
-// POST /api/auth/2fa/setup
+/**
+ * Setup 2FA for user account and generate QR code.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/2fa/setup
+ * @access Private
+ */
 exports.setup2FA = async (req, res) => {
   try {
     const { generateTwoFactorSecret } = require('../services/twoFactorService');
@@ -560,8 +656,16 @@ exports.setup2FA = async (req, res) => {
   }
 };
 
-// ── 2FA Enable ────────────────────────────────────────────────────────────────
-// POST /api/auth/2fa/enable
+/**
+ * Enable 2FA after verifying setup token.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/2fa/enable
+ * @access Private
+ */
 exports.enable2FA = async (req, res) => {
   try {
     const { token } = req.body;
@@ -599,8 +703,16 @@ exports.enable2FA = async (req, res) => {
   }
 };
 
-// ── 2FA Disable ───────────────────────────────────────────────────────────────
-// POST /api/auth/2fa/disable
+/**
+ * Disable 2FA for user account.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/2fa/disable
+ * @access Private
+ */
 exports.disable2FA = async (req, res) => {
   try {
     const { password } = req.body;
@@ -641,8 +753,16 @@ exports.disable2FA = async (req, res) => {
   }
 };
 
-// ── 2FA Verify ────────────────────────────────────────────────────────────────
-// POST /api/auth/2fa/verify
+/**
+ * Verify 2FA token during login.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/auth/2fa/verify
+ * @access Public
+ */
 exports.verify2FA = async (req, res) => {
   try {
     const { token, backupCode, userId } = req.body;
@@ -712,8 +832,16 @@ exports.verify2FA = async (req, res) => {
   }
 };
 
-// ── 2FA Status ────────────────────────────────────────────────────────────────
-// GET /api/auth/2fa/status
+/**
+ * Get 2FA status for current user.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/auth/2fa/status
+ * @access Private
+ */
 exports.get2FAStatus = async (req, res) => {
   try {
     const { getTwoFactorStatus } = require('../services/twoFactorService');
@@ -730,8 +858,16 @@ exports.get2FAStatus = async (req, res) => {
   }
 };
 
-// ── Google OAuth Success ──────────────────────────────────────────────────────
-// GET /api/auth/google/success
+/**
+ * Handle successful Google OAuth authentication.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/auth/google/success
+ * @access Public
+ */
 exports.googleAuthSuccess = async (req, res) => {
   try {
     if (!req.user) {
@@ -765,15 +901,31 @@ exports.googleAuthSuccess = async (req, res) => {
   }
 };
 
-// ── Google OAuth Failure ──────────────────────────────────────────────────────
-// GET /api/auth/google/failure
+/**
+ * Handle failed Google OAuth authentication.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {void}
+ * 
+ * @route GET /api/auth/google/failure
+ * @access Public
+ */
 exports.googleAuthFailure = (req, res) => {
   logger.error('[googleAuthFailure] Google authentication failed');
   res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`);
 };
 
-// ── Update Notification Preferences ──────────────────────────────────────────
-// PATCH /api/auth/notification-preferences
+/**
+ * Update user notification preferences.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route PATCH /api/auth/notification-preferences
+ * @access Private
+ */
 exports.updateNotificationPreferences = async (req, res) => {
   try {
     const allowed = [

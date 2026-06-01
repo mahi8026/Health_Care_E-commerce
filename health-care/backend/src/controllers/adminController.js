@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Quote = require('../models/Quote');
 const Cart = require('../models/Cart');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 function calcMonthGrowth(current, previous) {
   if (previous === 0 && current === 0) return { pct: 0, trend: 'neutral' };
@@ -152,34 +153,31 @@ exports.getDashboard = async (req, res) => {
       .populate('user', 'name email companyName')
       .lean();
 
-    res.status(200).json({
-      success: true,
-      data: {
-        kpis: {
-          totalRevenue,
-          thisMonthRevenue,
-          revenueGrowth: revenueGrowthMeta.pct,
-          revenueGrowthTrend: revenueGrowthMeta.trend,
-          totalOrders,
-          ordersThisMonth,
-          ordersGrowth: ordersGrowthMeta.pct,
-          ordersGrowthTrend: ordersGrowthMeta.trend,
-          activeB2B,
-          pendingQuotes,
-          abandonedCarts: totalAbandoned,
-          abandonedCartValue,
-          cartRecoveryRate: recoveryRate,
-          cartEmailsSent: emailsSent,
-        },
-        monthlyRevenue,
-        salesByCategory,
-        stockAlerts: { lowStock, criticalStock },
-        recentOrders
-      }
+    return successResponse(res, {
+      kpis: {
+        totalRevenue,
+        thisMonthRevenue,
+        revenueGrowth: revenueGrowthMeta.pct,
+        revenueGrowthTrend: revenueGrowthMeta.trend,
+        totalOrders,
+        ordersThisMonth,
+        ordersGrowth: ordersGrowthMeta.pct,
+        ordersGrowthTrend: ordersGrowthMeta.trend,
+        activeB2B,
+        pendingQuotes,
+        abandonedCarts: totalAbandoned,
+        abandonedCartValue,
+        cartRecoveryRate: recoveryRate,
+        cartEmailsSent: emailsSent,
+      },
+      monthlyRevenue,
+      salesByCategory,
+      stockAlerts: { lowStock, criticalStock },
+      recentOrders
     });
   } catch (error) {
     logger.error(`[adminController] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -264,22 +262,19 @@ exports.getAnalytics = async (req, res) => {
       return total > 0 ? Math.round((converted / total) * 100) : 0;
     })();
 
-    res.status(200).json({
-      success: true,
-      data: {
-        metrics: {
-          avgOrderValue,
-          b2bShare,
-          quoteConversion,
-          retention: 91 // placeholder — real retention requires cohort analysis
-        },
-        topProducts,
-        topCustomers
-      }
+    return successResponse(res, {
+      metrics: {
+        avgOrderValue,
+        b2bShare,
+        quoteConversion,
+        retention: 91 // placeholder — real retention requires cohort analysis
+      },
+      topProducts,
+      topCustomers
     });
   } catch (error) {
     logger.error(`[adminController] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -326,10 +321,10 @@ exports.getCustomers = async (req, res) => {
       return { ...customer, ...stats };
     }));
 
-    res.status(200).json({ success: true, count: enriched.length, total, customers: enriched });
+    return successResponse(res, { count: enriched.length, total, customers: enriched });
   } catch (error) {
     logger.error(`[adminController] getCustomers error: ${error.message}`, { stack: error.stack });
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -343,7 +338,7 @@ exports.updateCustomer = async (req, res) => {
     // Validate customer ID
     if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
       logger.warn(`[adminController] Invalid customer ID format: ${req.params.id}`);
-      return res.status(400).json({ success: false, message: 'Invalid customer ID format' });
+      return errorResponse(res, 'Invalid customer ID format', null, 400);
     }
     
     const updates = {};
@@ -364,11 +359,11 @@ exports.updateCustomer = async (req, res) => {
 
     if (!customer) {
       logger.warn(`[adminController] Customer not found: ${req.params.id}`);
-      return res.status(404).json({ success: false, message: 'Customer not found' });
+      return errorResponse(res, 'Customer not found', null, 404);
     }
 
     logger.info(`[adminController] Customer updated successfully: ${customer._id}`);
-    res.status(200).json({ success: true, message: 'Customer updated', customer });
+    return successResponse(res, { customer }, 'Customer updated');
   } catch (error) {
     logger.error(`[adminController] Update customer error: ${error.message}`, { 
       stack: error.stack,
@@ -379,27 +374,15 @@ exports.updateCustomer = async (req, res) => {
     
     // Handle validation errors
     if (error.name === 'ValidationError') {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Validation error', 
-        error: error.message 
-      });
+      return errorResponse(res, 'Validation error', [error.message], 400);
     }
     
     // Handle cast errors (invalid ObjectId)
     if (error.name === 'CastError') {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid customer ID', 
-        error: error.message 
-      });
+      return errorResponse(res, 'Invalid customer ID', [error.message], 400);
     }
     
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error', 
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error' 
-    });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -413,14 +396,14 @@ exports.manualStockCheck = async (req, res) => {
     }).lean();
 
     if (!lowStockProducts.length) {
-      return res.status(200).json({ success: true, message: 'All products have sufficient stock', count: 0 });
+      return successResponse(res, { count: 0 }, 'All products have sufficient stock');
     }
 
     await sendLowStockAlert(lowStockProducts);
-    res.status(200).json({ success: true, message: `Stock alert sent for ${lowStockProducts.length} product(s)`, count: lowStockProducts.length, products: lowStockProducts });
+    return successResponse(res, { count: lowStockProducts.length, products: lowStockProducts }, `Stock alert sent for ${lowStockProducts.length} product(s)`);
   } catch (error) {
     logger.error(`[adminController] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -440,21 +423,14 @@ exports.getBadges = async (req, res) => {
     // For now, set notifications to 0 (can be enhanced later with a notifications system)
     const unreadNotifications = 0;
 
-    res.status(200).json({
-      success: true,
-      data: {
-        pendingOrders,
-        pendingQuotes,
-        unreadNotifications
-      }
+    return successResponse(res, {
+      pendingOrders,
+      pendingQuotes,
+      unreadNotifications
     });
   } catch (error) {
     logger.error(`[adminController] getBadges error: ${error.message}`);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error', 
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
-    });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -470,17 +446,12 @@ exports.getAdminUsers = async (req, res) => {
       .sort('name')
       .lean();
 
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       count: adminUsers.length,
       users: adminUsers
     });
   } catch (error) {
     logger.error(`[adminController] getAdminUsers error: ${error.message}`);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error', 
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
-    });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

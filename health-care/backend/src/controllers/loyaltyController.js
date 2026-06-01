@@ -2,6 +2,7 @@ const User = require('../models/User');
 const LoyaltyTransaction = require('../models/LoyaltyTransaction');
 const loyaltyService = require('../services/loyaltyService');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 /**
  * @desc    Get current user's loyalty summary
@@ -11,10 +12,10 @@ const logger = require('../utils/logger');
 exports.getMySummary = async (req, res) => {
   try {
     const summary = await loyaltyService.getUserLoyaltySummary(req.user.id);
-    res.json({ success: true, data: summary });
+    return successResponse(res, summary);
   } catch (error) {
     logger.error(`[loyalty] getMySummary: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Failed to fetch loyalty summary' });
+    return errorResponse(res, 'Failed to fetch loyalty summary', null, 500);
   }
 };
 
@@ -39,14 +40,19 @@ exports.getMyTransactions = async (req, res) => {
       LoyaltyTransaction.countDocuments({ user: req.user.id })
     ]);
 
-    res.json({
-      success: true,
-      data: transactions,
-      pagination: { total, page, pages: Math.ceil(total / limit) }
-    });
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNext: page < Math.ceil(total / limit),
+      hasPrev: page > 1
+    };
+
+    return paginatedResponse(res, transactions, pagination);
   } catch (error) {
     logger.error(`[loyalty] getMyTransactions: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Failed to fetch transactions' });
+    return errorResponse(res, 'Failed to fetch transactions', null, 500);
   }
 };
 
@@ -60,7 +66,7 @@ exports.validateRedeem = async (req, res) => {
     const { points, orderTotal } = req.body;
 
     if (!points || !orderTotal) {
-      return res.status(400).json({ success: false, message: 'points and orderTotal are required' });
+      return errorResponse(res, 'points and orderTotal are required', null, 400);
     }
 
     const user = await User.findById(req.user.id).select('loyaltyPoints');
@@ -68,37 +74,28 @@ exports.validateRedeem = async (req, res) => {
     const { MIN_REDEEM_POINTS, POINTS_TO_TAKA, MAX_REDEEM_PERCENT } = loyaltyService.config;
 
     if (points < MIN_REDEEM_POINTS) {
-      return res.status(400).json({
-        success: false,
-        message: `Minimum ${MIN_REDEEM_POINTS} points required to redeem`
-      });
+      return errorResponse(res, `Minimum ${MIN_REDEEM_POINTS} points required to redeem`, null, 400);
     }
 
     if (currentPoints < points) {
-      return res.status(400).json({ success: false, message: 'Insufficient loyalty points' });
+      return errorResponse(res, 'Insufficient loyalty points', null, 400);
     }
 
     const maxPoints = loyaltyService.maxRedeemablePoints(orderTotal);
     if (points > maxPoints) {
-      return res.status(400).json({
-        success: false,
-        message: `Cannot redeem more than ${maxPoints} points (${MAX_REDEEM_PERCENT}% of order total)`
-      });
+      return errorResponse(res, `Cannot redeem more than ${maxPoints} points (${MAX_REDEEM_PERCENT}% of order total)`, null, 400);
     }
 
     const discountAmount = loyaltyService.pointsToTaka(points);
 
-    res.json({
-      success: true,
-      data: {
-        pointsToRedeem: points,
-        discountAmount,
-        remainingPoints: currentPoints - points
-      }
+    return successResponse(res, {
+      pointsToRedeem: points,
+      discountAmount,
+      remainingPoints: currentPoints - points
     });
   } catch (error) {
     logger.error(`[loyalty] validateRedeem: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Validation failed' });
+    return errorResponse(res, 'Validation failed', null, 500);
   }
 };
 
@@ -140,14 +137,19 @@ exports.getMembers = async (req, res) => {
       tier: loyaltyService.getTier(u.loyaltyPoints || 0)
     }));
 
-    res.json({
-      success: true,
-      data: members,
-      pagination: { total, page, pages: Math.ceil(total / limit) }
-    });
+    const pagination = {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNext: page < Math.ceil(total / limit),
+      hasPrev: page > 1
+    };
+
+    return paginatedResponse(res, members, pagination);
   } catch (error) {
     logger.error(`[loyalty] getMembers: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Failed to fetch members' });
+    return errorResponse(res, 'Failed to fetch members', null, 500);
   }
 };
 
@@ -161,11 +163,11 @@ exports.adjustPoints = async (req, res) => {
     const { userId, points, description } = req.body;
 
     if (!userId || points === undefined || !description) {
-      return res.status(400).json({ success: false, message: 'userId, points, and description are required' });
+      return errorResponse(res, 'userId, points, and description are required', null, 400);
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) return errorResponse(res, 'User not found', null, 404);
 
     const newBalance = Math.max(0, (user.loyaltyPoints || 0) + points);
     const actualPoints = newBalance - (user.loyaltyPoints || 0);
@@ -181,14 +183,14 @@ exports.adjustPoints = async (req, res) => {
       createdBy: req.user.id
     });
 
-    res.json({
-      success: true,
-      message: `Points adjusted successfully`,
-      data: { userId, newBalance, adjustment: actualPoints }
-    });
+    return successResponse(res, {
+      userId,
+      newBalance,
+      adjustment: actualPoints
+    }, 'Points adjusted successfully');
   } catch (error) {
     logger.error(`[loyalty] adjustPoints: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Failed to adjust points' });
+    return errorResponse(res, 'Failed to adjust points', null, 500);
   }
 };
 
@@ -230,19 +232,16 @@ exports.getStats = async (req, res) => {
       tierDist[tier.label] = (tierDist[tier.label] || 0) + 1;
     });
 
-    res.json({
-      success: true,
-      data: {
-        totalMembers,
-        totalPointsIssued: totalPointsIssued[0]?.total || 0,
-        totalPointsRedeemed: Math.abs(totalPointsRedeemed[0]?.total || 0),
-        tierDistribution: tierDist,
-        recentTransactions
-      }
+    return successResponse(res, {
+      totalMembers,
+      totalPointsIssued: totalPointsIssued[0]?.total || 0,
+      totalPointsRedeemed: Math.abs(totalPointsRedeemed[0]?.total || 0),
+      tierDistribution: tierDist,
+      recentTransactions
     });
   } catch (error) {
     logger.error(`[loyalty] getStats: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Failed to fetch stats' });
+    return errorResponse(res, 'Failed to fetch stats', null, 500);
   }
 };
 
@@ -261,9 +260,9 @@ exports.getUserTransactions = async (req, res) => {
 
     const user = await User.findById(req.params.userId).select('name email loyaltyPoints');
 
-    res.json({ success: true, data: { user, transactions } });
+    return successResponse(res, { user, transactions });
   } catch (error) {
     logger.error(`[loyalty] getUserTransactions: ${error.message}`);
-    res.status(500).json({ success: false, message: 'Failed to fetch transactions' });
+    return errorResponse(res, 'Failed to fetch transactions', null, 500);
   }
 };

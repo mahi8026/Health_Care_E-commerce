@@ -3,6 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/utils/api';
 
+/**
+ * Fetch and manage a user's order history, with helpers for creating
+ * and updating orders.
+ *
+ * @param {string} userId - The authenticated user's ID
+ * @returns {{ orders: Object[], loading: boolean, error: string|null, refetch: () => Promise<void>, createOrder: (data: Object) => Promise<{success: boolean}>, updateOrder: (id: string, updates: Object) => Promise<{success: boolean}> }}
+ *
+ * @example
+ * const { orders, loading, createOrder } = useOrders(user.id);
+ */
 export function useOrders(userId) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -50,6 +60,15 @@ export function useOrders(userId) {
   return { orders, loading, error, refetch: fetchOrders, createOrder, updateOrder };
 }
 
+/**
+ * Fetch a single order by its ID.
+ *
+ * @param {string} orderId - The order's MongoDB ObjectId or order number
+ * @returns {{ order: Object|null, loading: boolean, error: string|null, refetch: () => Promise<void> }}
+ *
+ * @example
+ * const { order, loading } = useOrder('ORD-00042');
+ */
 export function useOrder(orderId) {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);

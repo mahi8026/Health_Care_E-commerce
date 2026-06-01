@@ -31,8 +31,24 @@ const {
   registerLimiter,
   passwordResetLimiter,
   otpLimiter,
-  authLimiter
+  authLimiter: enhancedAuthLimiter
 } = require('../middleware/enhancedRateLimiter');
+// Auth rate limiter from rateLimiter.js: 5 req/15 min per IP (Req 10.1)
+const { authLimiter } = require('../middleware/rateLimiter');
+// Validation middleware (Req 10.3)
+const {
+  validateRegistration,
+  validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
+  validateSendPhoneOTP,
+  validateVerifyPhoneOTP,
+  validate2FAEnable,
+  validate2FAVerify,
+  validateProfileUpdate,
+  validatePasswordChange,
+  validateNotificationPreferences
+} = require('../middleware/validation');
 
 /**
  * @swagger
@@ -86,7 +102,7 @@ const {
  *         description: Validation error or user already exists
  */
 // Public routes with CAPTCHA and rate limiting
-router.post('/register', registerLimiter, registerCaptcha, register);
+router.post('/register', authLimiter, registerCaptcha, validateRegistration, register);
 
 /**
  * @swagger
@@ -131,7 +147,7 @@ router.post('/register', registerLimiter, registerCaptcha, register);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', loginLimiter, login); // CAPTCHA temporarily disabled
+router.post('/login', authLimiter, validateLogin, login); // CAPTCHA temporarily disabled
 
 /**
  * @swagger
@@ -182,7 +198,7 @@ router.post('/refresh', authLimiter, refreshToken);
  *       404:
  *         description: User not found
  */
-router.post('/forgot-password', passwordResetLimiter, passwordResetCaptcha, forgotPassword);
+router.post('/forgot-password', passwordResetLimiter, passwordResetCaptcha, validateForgotPassword, forgotPassword);
 
 /**
  * @swagger
@@ -210,7 +226,7 @@ router.post('/forgot-password', passwordResetLimiter, passwordResetCaptcha, forg
  *       400:
  *         description: Invalid or expired token
  */
-router.post('/reset-password', passwordResetLimiter, resetPassword);
+router.post('/reset-password', passwordResetLimiter, validateResetPassword, resetPassword);
 
 // Google OAuth routes
 router.get('/google', 
@@ -250,20 +266,20 @@ router.get('/google/failure', googleAuthFailure);
 // Protected routes
 router.post('/logout', protect, noStore, logout);
 router.get('/me', protect, noStore, getMe);
-router.put('/profile', protect, noStore, updateProfile);
-router.patch('/profile', protect, noStore, updateProfile);
-router.patch('/change-password', protect, authLimiter, noStore, changePassword);
-router.patch('/notification-preferences', protect, noStore, updateNotificationPreferences);
+router.put('/profile', protect, noStore, validateProfileUpdate, updateProfile);
+router.patch('/profile', protect, noStore, validateProfileUpdate, updateProfile);
+router.patch('/change-password', protect, authLimiter, noStore, validatePasswordChange, changePassword);
+router.patch('/notification-preferences', protect, noStore, validateNotificationPreferences, updateNotificationPreferences);
 
 // Phone verification routes (with OTP rate limiting)
-router.post('/send-phone-otp', protect, otpLimiter, noStore, sendPhoneOTP);
-router.post('/verify-phone-otp', protect, otpLimiter, noStore, verifyPhoneOTP);
+router.post('/send-phone-otp', protect, otpLimiter, noStore, validateSendPhoneOTP, sendPhoneOTP);
+router.post('/verify-phone-otp', protect, otpLimiter, noStore, validateVerifyPhoneOTP, verifyPhoneOTP);
 
 // 2FA routes (with auth rate limiting)
 router.post('/2fa/setup', protect, authLimiter, noStore, setup2FA);
-router.post('/2fa/enable', protect, authLimiter, noStore, enable2FA);
+router.post('/2fa/enable', protect, authLimiter, noStore, validate2FAEnable, enable2FA);
 router.post('/2fa/disable', protect, authLimiter, noStore, disable2FA);
-router.post('/2fa/verify', authLimiter, verify2FA); // No protect - verifying before login
+router.post('/2fa/verify', authLimiter, validate2FAVerify, verify2FA); // No protect - verifying before login
 router.get('/2fa/status', protect, noStore, get2FAStatus);
 
 module.exports = router;

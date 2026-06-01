@@ -3,6 +3,25 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '@/utils/api';
 
+/**
+ * Fetch and manage a paginated, filterable product listing.
+ *
+ * Supports both offset-based pagination (page/limit) and cursor-based pagination (lastId).
+ * Caches the last filter-set to avoid redundant fetches, and
+ * accepts optional `initialData` for SSR-hydrated pages.
+ *
+ * @param {Object}   [filters={}]      - Query params (category, brand, search, page, limit, sortBy, lastId, …)
+ * @param {Object[]} [initialData=null] - Pre-fetched products from the server component
+ * @returns {{ products: Object[], loading: boolean, error: string|null, pagination: Object, refetch: () => Promise<void> }}
+ *
+ * @example
+ * // Offset-based pagination
+ * const { products, loading, pagination } = useProducts({ category: 'Diagnostics', page: 1 });
+ * 
+ * @example
+ * // Cursor-based pagination
+ * const { products, loading, pagination } = useProducts({ category: 'Diagnostics', lastId: '507f1f77bcf86cd799439011' });
+ */
 export function useProducts(filters = {}, initialData = null) {
   const [products, setProducts] = useState(
     initialData && initialData.length > 0 ? initialData : []
@@ -32,13 +51,26 @@ export function useProducts(filters = {}, initialData = null) {
       
       setProducts(Array.isArray(productsData) ? productsData : []);
       
-      // Store pagination metadata
-      setPagination({
-        total: response.total || response.pagination?.total || 0,
-        page: response.page || response.pagination?.page || filters.page || 1,
-        pages: response.pages || response.pagination?.pages || 0,
-        count: response.count || productsData.length || 0
-      });
+      // Store pagination metadata (supports both offset and cursor-based)
+      const paginationData = response.pagination || {};
+      
+      // Cursor-based pagination metadata
+      if (paginationData.lastId !== undefined) {
+        setPagination({
+          hasMore: paginationData.hasMore || false,
+          lastId: paginationData.lastId || null,
+          limit: paginationData.limit || filters.limit || 20,
+          count: response.count || productsData.length || 0
+        });
+      } else {
+        // Offset-based pagination metadata (legacy)
+        setPagination({
+          total: response.total || paginationData.total || 0,
+          page: response.page || paginationData.page || filters.page || 1,
+          pages: response.pages || paginationData.pages || 0,
+          count: response.count || productsData.length || 0
+        });
+      }
     } catch (err) {
       // Provide more specific error messages
       let errorMessage = 'Failed to load products';
@@ -78,6 +110,18 @@ export function useProducts(filters = {}, initialData = null) {
   return { products, loading, error, pagination, refetch: fetchProducts };
 }
 
+/**
+ * Fetch a single product by ID or slug.
+ *
+ * Only fetches once on mount (guarded by a ref) to avoid
+ * double-fetching in React 18 strict mode.
+ *
+ * @param {string} productId - MongoDB ObjectId or URL slug
+ * @returns {{ product: Object|null, loading: boolean, error: string|null, refetch: () => Promise<void> }}
+ *
+ * @example
+ * const { product, loading } = useProduct('siemens-ecg-pro-12');
+ */
 export function useProduct(productId) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);

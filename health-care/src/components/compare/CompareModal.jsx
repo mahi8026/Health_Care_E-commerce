@@ -111,7 +111,7 @@ export default function CompareModal({ onClose }) {
                           {getImageUrl(product) ? (
                             <img
                               src={getImageUrl(product)}
-                              alt={product.name}
+                              alt={`${product.name}${product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
                               className="w-full h-full object-cover"
                             />
                           ) : (

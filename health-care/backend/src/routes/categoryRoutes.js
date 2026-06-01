@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const { redisCacheMiddleware } = require('../middleware/cache');
+const { CACHE_KEYS, CACHE_TTL } = require('../services/redisCache');
+const { etagMiddleware } = require('../middleware/etag');
 const {
   getCategories,
   getCategoryTree,
@@ -39,10 +41,10 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Public routes with caching (10 minutes TTL)
-router.get('/', redisCacheMiddleware({ ttl: 600, keyPrefix: 'categories:' }), getCategories);
-router.get('/tree', redisCacheMiddleware({ ttl: 600, keyPrefix: 'categories:' }), getCategoryTree);
-router.get('/:slug', redisCacheMiddleware({ ttl: 600, keyPrefix: 'categories:' }), getCategory);
+// Public routes with caching — 24h TTL per CACHE_TTL.CATEGORIES_LIST
+router.get('/', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategories);
+router.get('/tree', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategoryTree);
+router.get('/:slug', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategory);
 
 // Admin routes
 router.post('/', protect, authorize('admin'), createCategory);

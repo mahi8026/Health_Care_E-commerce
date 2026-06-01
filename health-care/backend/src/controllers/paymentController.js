@@ -1,6 +1,7 @@
 ﻿const Order = require('../models/Order');
 const User = require('../models/User');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // Stripe has been removed as it doesn't work in Bangladesh
 // Available payment methods: bKash, Nagad, Bank Transfer, B2B Credit, Cheque
@@ -73,11 +74,11 @@ exports.initiateBkashPayment = async (req, res) => {
   try {
     const { amount, orderId } = req.body;
     if (!amount || !orderId) {
-      return res.status(400).json({ success: false, message: 'Amount and orderId are required' });
+      return errorResponse(res, 'Amount and orderId are required', null, 400);
     }
 
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
 
     const callbackUrl = process.env.BKASH_CALLBACK_URL || `${process.env.FRONTEND_URL}/payment/bkash/callback`;
 
@@ -103,26 +104,21 @@ exports.initiateBkashPayment = async (req, res) => {
     };
     await order.save();
 
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       paymentID: data.paymentID,
       bkashURL: data.bkashURL,
       callbackURL: data.callbackURL,
       successCallbackURL: data.successCallbackURL,
       failureCallbackURL: data.failureCallbackURL,
       cancelledCallbackURL: data.cancelledCallbackURL,
-    });
+    }, 'bKash payment initiated successfully');
   } catch (error) {
     logger.error(`[initiateBkashPayment] ${error.message}`);
     // Return a clear message if credentials are not configured
     if (error.message.includes('not configured')) {
-      return res.status(503).json({
-        success: false,
-        message: 'bKash payment is not available yet. Please use Bank Transfer or B2B Credit.',
-        code: 'BKASH_NOT_CONFIGURED'
-      });
+      return errorResponse(res, 'bKash payment is not available yet. Please use Bank Transfer or B2B Credit.', { code: 'BKASH_NOT_CONFIGURED' }, 503);
     }
-    res.status(500).json({ success: false, message: error.message || 'Failed to initiate bKash payment' });
+    return errorResponse(res, 'Failed to initiate bKash payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -130,7 +126,7 @@ exports.initiateBkashPayment = async (req, res) => {
 exports.executeBkashPayment = async (req, res) => {
   try {
     const { paymentID } = req.body;
-    if (!paymentID) return res.status(400).json({ success: false, message: 'paymentID is required' });
+    if (!paymentID) return errorResponse(res, 'paymentID is required', null, 400);
 
     const data = await bkashRequest('execute', { paymentID });
 
@@ -140,7 +136,7 @@ exports.executeBkashPayment = async (req, res) => {
 
     // Find order by bKash paymentID stored during initiation
     const order = await Order.findOne({ 'paymentDetails.bkashPaymentId': paymentID });
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found for this payment' });
+    if (!order) return errorResponse(res, 'Order not found for this payment', null, 404);
 
     order.paymentStatus = 'paid';
     order.status = 'confirmed';
@@ -154,10 +150,10 @@ exports.executeBkashPayment = async (req, res) => {
     };
     await order.save();
 
-    res.status(200).json({ success: true, message: 'bKash payment successful', trxID: data.trxID, order });
+    return successResponse(res, { trxID: data.trxID, order }, 'bKash payment successful');
   } catch (error) {
     logger.error(`[executeBkashPayment] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to execute bKash payment' });
+    return errorResponse(res, 'Failed to execute bKash payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -166,7 +162,7 @@ exports.verifyBkashPayment = async (req, res) => {
   try {
     const { paymentID, orderId } = req.body;
     if (!paymentID || !orderId) {
-      return res.status(400).json({ success: false, message: 'paymentID and orderId are required' });
+      return errorResponse(res, 'paymentID and orderId are required', null, 400);
     }
 
     const data = await bkashRequest('query/payment/status', { paymentID });
@@ -177,7 +173,7 @@ exports.verifyBkashPayment = async (req, res) => {
 
     if (data.transactionStatus === 'Completed') {
       const order = await Order.findById(orderId);
-      if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+      if (!order) return errorResponse(res, 'Order not found', null, 404);
 
       order.paymentStatus = 'paid';
       order.status = 'confirmed';
@@ -190,16 +186,16 @@ exports.verifyBkashPayment = async (req, res) => {
       };
       await order.save();
 
-      res.status(200).json({ success: true, message: 'bKash payment verified', order });
+      return successResponse(res, { order }, 'bKash payment verified');
     } else {
-      res.status(400).json({ success: false, message: `Payment status: ${data.transactionStatus}` });
+      return errorResponse(res, `Payment status: ${data.transactionStatus}`, null, 400);
     }
   } catch (error) {
     logger.error(`[verifyBkashPayment] ${error.message}`);
     if (error.message.includes('not configured')) {
-      return res.status(503).json({ success: false, message: 'bKash not configured', code: 'BKASH_NOT_CONFIGURED' });
+      return errorResponse(res, 'bKash not configured', { code: 'BKASH_NOT_CONFIGURED' }, 503);
     }
-    res.status(500).json({ success: false, message: error.message || 'Failed to verify bKash payment' });
+    return errorResponse(res, 'Failed to verify bKash payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -208,21 +204,17 @@ exports.processBankTransfer = async (req, res) => {
   try {
     const { orderId, transactionReference } = req.body;
     if (!orderId || !transactionReference) {
-      return res.status(400).json({ success: false, message: 'Order ID and transaction reference are required' });
+      return errorResponse(res, 'Order ID and transaction reference are required', null, 400);
     }
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
     order.paymentStatus = 'pending';
     order.paymentDetails = { method: 'bank', transactionReference, submittedAt: new Date() };
     await order.save();
-    res.status(200).json({
-      success: true,
-      message: 'Bank transfer details submitted. Payment will be verified within 2-4 hours.',
-      order
-    });
+    return successResponse(res, { order }, 'Bank transfer details submitted. Payment will be verified within 2-4 hours.');
   } catch (error) {
     logger.error(`[processBankTransfer] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to process bank transfer' });
+    return errorResponse(res, 'Failed to process bank transfer', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -230,23 +222,20 @@ exports.processBankTransfer = async (req, res) => {
 exports.processB2BCreditPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
-    if (!orderId) return res.status(400).json({ success: false, message: 'Order ID is required' });
+    if (!orderId) return errorResponse(res, 'Order ID is required', null, 400);
 
     const order = await Order.findById(orderId).populate('user');
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
 
     if (order.user.role !== 'b2b_customer') {
-      return res.status(403).json({ success: false, message: 'B2B credit is only available for B2B accounts' });
+      return errorResponse(res, 'B2B credit is only available for B2B accounts', null, 403);
     }
 
     const totalAmount = order.totalAmount || order.total || 0;
     const availableCredit = order.user.creditLimit - order.user.creditUsed;
 
     if (totalAmount > availableCredit) {
-      return res.status(400).json({
-        success: false,
-        message: `Insufficient credit. Available: ৳${availableCredit.toLocaleString()}, Required: ৳${totalAmount.toLocaleString()}`
-      });
+      return errorResponse(res, `Insufficient credit. Available: ৳${availableCredit.toLocaleString()}, Required: ৳${totalAmount.toLocaleString()}`, null, 400);
     }
 
     await User.findByIdAndUpdate(order.user._id, { $inc: { creditUsed: totalAmount } });
@@ -255,15 +244,13 @@ exports.processB2BCreditPayment = async (req, res) => {
     order.paymentDetails = { method: 'b2b_credit', creditUsed: totalAmount, paidAt: new Date() };
     await order.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Payment processed using B2B credit',
+    return successResponse(res, {
       order,
       remainingCredit: availableCredit - totalAmount
-    });
+    }, 'Payment processed using B2B credit');
   } catch (error) {
     logger.error(`[processB2BCreditPayment] ${error.message}`);
-    res.status(500).json({ success: false, message: error.message || 'Failed to process B2B credit payment' });
+    return errorResponse(res, 'Failed to process B2B credit payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -274,25 +261,19 @@ exports.initiateNagadPayment = async (req, res) => {
     const { NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY } = process.env;
 
     if (!NAGAD_MERCHANT_ID || NAGAD_MERCHANT_ID === 'your_nagad_merchant_id') {
-      return res.status(503).json({
-        success: false,
-        message: 'Nagad payment is not available yet. Please use Bank Transfer or B2B Credit.',
-        code: 'NAGAD_NOT_CONFIGURED'
-      });
+      return errorResponse(res, 'Nagad payment is not available yet. Please use Bank Transfer or B2B Credit.', { code: 'NAGAD_NOT_CONFIGURED' }, 503);
     }
 
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
 
-    res.json({
-      success: true,
-      message: 'Nagad payment initiated (sandbox)',
+    return successResponse(res, {
       redirectUrl: `${process.env.FRONTEND_URL}/checkout?payment=nagad&order=${orderId}`,
       merchantOrderId: `NAGAD-${Date.now()}`,
-    });
+    }, 'Nagad payment initiated (sandbox)');
   } catch (err) {
     logger.error(`[initiateNagadPayment] ${err.message}`);
-    res.status(500).json({ success: false, message: err.message });
+    return errorResponse(res, 'Failed to initiate Nagad payment', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -301,14 +282,14 @@ exports.submitChequePayment = async (req, res) => {
   try {
     const { orderId, chequeNumber, bankName, chequeDate, accountName } = req.body;
     const order = await Order.findById(orderId);
-    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
     order.paymentMethod = 'cheque';
     order.paymentStatus = 'pending';
     order.paymentDetails = { chequeNumber, bankName, chequeDate, accountName, submittedAt: new Date() };
     await order.save();
-    res.json({ success: true, message: 'Cheque payment recorded. Awaiting clearance.', order });
+    return successResponse(res, { order }, 'Cheque payment recorded. Awaiting clearance.');
   } catch (err) {
     logger.error(`[submitChequePayment] ${err.message}`);
-    res.status(500).json({ success: false, message: err.message });
+    return errorResponse(res, 'Failed to submit cheque payment', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };

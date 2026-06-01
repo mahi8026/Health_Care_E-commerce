@@ -87,6 +87,87 @@
   --color-brand-teal: var(--color-brand-teal);
 }
 
+/* ── Accessibility — Skip to content ──────────────────────────────────────── */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-brand-navy, #0b2545);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  z-index: 99999;
+  transition: top 0.2s ease;
+  white-space: nowrap;
+}
+.skip-to-content:focus {
+  top: 0;
+  outline: 3px solid var(--glass-teal, #4ddbb8);
+  outline-offset: 2px;
+}
+
+/* ── Accessibility — Global focus-visible ─────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-brand-teal, #0e8a6e);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Accessibility — Screen-reader only ───────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ── Skeleton loader — shimmer animation ──────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e8eff5 25%,
+    #d8e8f0 50%,
+    #e8eff5 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.25rem;
+}
+
+.skeleton-card {
+  background: linear-gradient(
+    90deg,
+    #f0f7fb 25%,
+    #e2f0f8 50%,
+    #f0f7fb 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeleton-card {
+    animation: none;
+    background: #e8eff5;
+  }
+}
+
 .site-nav-shell {
   position: fixed;
   top: 0;

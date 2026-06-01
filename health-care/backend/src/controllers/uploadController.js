@@ -10,6 +10,7 @@ const path = require('path');
 const { CLOUDINARY_CONFIGURED } = require('../services/uploadService');
 const logger = require('../utils/logger');
 const Product = require('../models/Product');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // Configure Cloudinary once
 let cloudinary;
@@ -74,7 +75,7 @@ function uploadBufferToCloudinary(buffer, originalname) {
 exports.uploadImage = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+      return errorResponse(res, 'No file uploaded', null, 400);
     }
 
     let url;
@@ -90,10 +91,10 @@ exports.uploadImage = async (req, res) => {
     }
 
     logger.info(`[uploadImage] Uploaded: ${url}`);
-    res.status(200).json({ success: true, url });
+    return successResponse(res, { url });
   } catch (error) {
     logger.error(`[uploadImage] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Upload failed', error: error.message });
+    return errorResponse(res, 'Upload failed', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -103,7 +104,7 @@ exports.uploadImage = async (req, res) => {
 exports.uploadImages = async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ success: false, message: 'No files uploaded' });
+      return errorResponse(res, 'No files uploaded', null, 400);
     }
 
     let urls;
@@ -119,10 +120,10 @@ exports.uploadImages = async (req, res) => {
     }
 
     logger.info(`[uploadImages] Uploaded ${urls.length} images`);
-    res.status(200).json({ success: true, urls });
+    return successResponse(res, { urls });
   } catch (error) {
     logger.error(`[uploadImages] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Upload failed', error: error.message });
+    return errorResponse(res, 'Upload failed', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -146,10 +147,10 @@ exports.deleteProductImage = async (req, res) => {
       logger.info(`[deleteProductImage] Removed from product: ${req.body.productId}`);
     }
 
-    res.json({ success: true, message: 'Image deleted' });
+    return successResponse(res, null, 'Image deleted');
   } catch (err) {
     logger.error(`[deleteProductImage] ${err.message}`);
-    res.status(500).json({ success: false, message: err.message });
+    return errorResponse(res, 'Failed to delete image', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };
 
@@ -162,15 +163,12 @@ exports.reorderProductImages = async (req, res) => {
     // imageOrder = array of publicIds in new desired order
     
     if (!productId || !imageOrder || !Array.isArray(imageOrder)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'productId and imageOrder array are required' 
-      });
+      return errorResponse(res, 'productId and imageOrder array are required', null, 400);
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ success: false, message: 'Product not found' });
+      return errorResponse(res, 'Product not found', null, 404);
     }
 
     const reordered = imageOrder.map((pubId, idx) => {
@@ -188,9 +186,9 @@ exports.reorderProductImages = async (req, res) => {
     await product.save();
     
     logger.info(`[reorderProductImages] Reordered images for product: ${productId}`);
-    res.json({ success: true, data: { images: product.images } });
+    return successResponse(res, { images: product.images });
   } catch (err) {
     logger.error(`[reorderProductImages] ${err.message}`);
-    res.status(500).json({ success: false, message: err.message });
+    return errorResponse(res, 'Failed to reorder images', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
   }
 };

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { getMetrics, getHealthStatus } = require('../middleware/performanceMonitor');
 const redisCache = require('../services/redisCache');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 function getServiceChecks() {
   const dbState = mongoose.connection.readyState;
@@ -57,23 +58,16 @@ exports.getMonitoringDashboard = (req, res) => {
     const metrics = getMetrics();
     const system = getSystemInfoPayload();
 
-    res.status(200).json({
-      success: true,
-      data: {
-        health,
-        services,
-        metrics,
-        system,
-        fetchedAt: new Date().toISOString(),
-      },
+    return successResponse(res, {
+      health,
+      services,
+      metrics,
+      system,
+      fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
     logger.error('Monitoring dashboard error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to load monitoring data',
-      error: error.message,
-    });
+    return errorResponse(res, 'Failed to load monitoring data', [error.message], 500);
   }
 };
 

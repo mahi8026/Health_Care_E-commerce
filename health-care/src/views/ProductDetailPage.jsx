@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { useProductDetail } from '@/hooks/useProductDetail';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import ProductInfoPanel from '@/components/product/ProductInfoPanel';
 import ProductTabsRedesigned from '@/components/product/ProductTabsRedesigned';
 import ProductReviews from '@/components/product/ProductReviews';
 import FrequentlyBoughtRedesigned from '@/components/product/FrequentlyBoughtRedesigned';
-import Spinner from '@/components/ui/Spinner';
-import GA4Tracker from '@/services/GA4Tracker';
-import { API as API_BASE } from '@/constants/api';
+import { ProductDetailSkeleton } from '@/components/ui/Skeleton';
+import ErrorMessage from '@/components/ui/ErrorMessage';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 export default function ProductDetailPage({ productId, heroPriority = false }) {
@@ -20,63 +20,26 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   const { addToCart } = useCart();
   const id = productId || searchParams?.get('id');
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState(null);
+  // Use custom hook for data fetching
+  const { product, loading, error: fetchError } = useProductDetail(id);
+
+  // UI state
   const [quantity, setQuantity] = useState(1);
   const [selectedConnectivity, setSelectedConnectivity] = useState('');
   const [selectedWarranty, setSelectedWarranty] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
 
+  // Initialize variant selections when product loads
   useEffect(() => {
-    if (!id) { setFetchError('No product selected.'); setLoading(false); return; }
-
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        setFetchError(null);
-        const res = await fetch(`${API_BASE}/products/${id}`);
-        if (!res.ok) throw new Error('Product not found');
-        const data = await res.json();
-        
-        const p = data.data || data.product || data;
-
-        if (p.rating && typeof p.rating === 'object') {
-          p.reviewCount = p.reviewCount || p.rating.count || 0;
-          p.rating = p.rating.average || 0;
-        }
-        if (p.brand && typeof p.brand === 'object') {
-          p.brandId = p.brand._id;
-          p.brandName = p.brand.name;
-          p.brand = p.brand.name;
-        }
-        if (p.category && typeof p.category === 'object') {
-          p.categoryId = p.category._id;
-          p.categoryName = p.category.name;
-        }
-        if (p.specifications && typeof p.specifications === 'object') {
-          const cleanSpecs = {};
-          for (const [k, v] of Object.entries(p.specifications)) {
-            if (typeof k === 'string' && !k.startsWith('$') && typeof v !== 'object') {
-              cleanSpecs[k] = String(v);
-            }
-          }
-          p.specifications = cleanSpecs;
-        }
-
-        setProduct(p);
-        if (p.variants?.connectivity?.length) setSelectedConnectivity(p.variants.connectivity[0]);
-        if (p.variants?.warranty?.length) setSelectedWarranty(p.variants.warranty[0]);
-        GA4Tracker.trackViewItem(p);
-      } catch (err) {
-        setFetchError(err.message || 'Failed to load product');
-      } finally {
-        setLoading(false);
+    if (product) {
+      if (product.variants?.connectivity?.length) {
+        setSelectedConnectivity(product.variants.connectivity[0]);
       }
-    };
-
-    fetchProduct();
-  }, [id]);
+      if (product.variants?.warranty?.length) {
+        setSelectedWarranty(product.variants.warranty[0]);
+      }
+    }
+  }, [product]);
 
   // Redirect from MongoDB ID to slug-based URL for SEO
   useEffect(() => {
@@ -94,31 +57,19 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
     }
   }, [product, id, router]);
 
+  // Loading state
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <Spinner />
-          <p className="text-[13px] text-gray-400">Loading product...</p>
-        </div>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
+  // Error state
   if (fetchError || !product) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
-        <div className="text-[56px]">😕</div>
-        <h2 className="text-[18px] font-semibold text-gray-800">{fetchError || 'Product not found'}</h2>
-        <p className="text-[13px] text-gray-500 text-center max-w-sm">
-          The product may have been removed or the link is incorrect.
-        </p>
-        <button
-          onClick={() => router.push('/products')}
-          className="px-6 py-2.5 bg-[#0B2545] text-white rounded-xl text-[13px] font-semibold hover:bg-[#0d2d52] transition-colors"
-        >
-          Browse Products
-        </button>
+      <div className="min-h-[60vh]">
+        <ErrorMessage 
+          message={fetchError || 'Product not found'}
+          onRetry={() => router.push('/products')}
+        />
       </div>
     );
   }

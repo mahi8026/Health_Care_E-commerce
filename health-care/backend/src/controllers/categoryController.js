@@ -3,6 +3,8 @@ const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const { invalidateCache } = require('../middleware/cache');
+const redisCache = require('../services/redisCache');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // @desc    Get all categories (with nested children)
 // @route   GET /api/categories
@@ -32,14 +34,13 @@ exports.getCategories = async (req, res) => {
       })
     );
     
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       count: categoriesWithCounts.length,
       categories: categoriesWithCounts
     });
   } catch (error) {
     logger.error(`[getCategories] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -76,13 +77,12 @@ exports.getCategoryTree = async (req, res) => {
       })
     );
     
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       tree: treeWithCounts
     });
   } catch (error) {
     logger.error(`[getCategoryTree] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -96,7 +96,7 @@ exports.getCategory = async (req, res) => {
       .lean();
     
     if (!category) {
-      return res.status(404).json({ success: false, message: 'Category not found' });
+      return errorResponse(res, 'Category not found', null, 404);
     }
     
     // Get product count
@@ -111,8 +111,7 @@ exports.getCategory = async (req, res) => {
       isActive: true 
     }).lean();
     
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       category: {
         ...category,
         productCount,
@@ -121,7 +120,7 @@ exports.getCategory = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getCategory] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -132,7 +131,10 @@ exports.createCategory = async (req, res) => {
   try {
     const category = await Category.create(req.body);
     
-    // Invalidate category cache
+    // Invalidate caches using centralized Redis cache service
+    await redisCache.invalidateCategories();
+    
+    // Keep legacy cache invalidation for backward compatibility
     await invalidateCache('categories:*');
     await invalidateCache('products:*'); // Products may be affected by new category
     
@@ -150,26 +152,18 @@ exports.createCategory = async (req, res) => {
       }
     });
     
-    res.status(201).json({
-      success: true,
-      message: 'Category created successfully',
-      category
-    });
+    logger.info(`[createCategory] Category ${category._id} created, cache invalidated`);
+    
+    return successResponse(res, { category }, 'Category created successfully', 201);
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Category name already exists' 
-      });
+      return errorResponse(res, 'Category name already exists', null, 400);
     }
     if (error.message.includes('Maximum category nesting')) {
-      return res.status(400).json({ 
-        success: false, 
-        message: error.message 
-      });
+      return errorResponse(res, error.message, null, 400);
     }
     logger.error(`[createCategory] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -184,19 +178,13 @@ exports.updateCategory = async (req, res) => {
       const categoryId = req.params.id;
       
       if (parentId === categoryId) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Category cannot be its own parent' 
-        });
+        return errorResponse(res, 'Category cannot be its own parent', null, 400);
       }
       
       // Check if parent is a child of this category
       const children = await Category.find({ parentCategory: categoryId });
       if (children.some(child => child._id.toString() === parentId)) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Cannot set a subcategory as parent (circular reference)' 
-        });
+        return errorResponse(res, 'Cannot set a subcategory as parent (circular reference)', null, 400);
       }
     }
     
@@ -207,8 +195,11 @@ exports.updateCategory = async (req, res) => {
     );
     
     if (!category) {
-      return res.status(404).json({ success: false, message: 'Category not found' });
+      return errorResponse(res, 'Category not found', null, 404);
     }
+    
+    // Invalidate caches using centralized Redis cache service
+    await redisCache.invalidateCategories();
     
     // Log category update activity
     logActivityAsync({
@@ -223,20 +214,15 @@ exports.updateCategory = async (req, res) => {
       }
     });
     
-    res.status(200).json({
-      success: true,
-      message: 'Category updated successfully',
-      category
-    });
+    logger.info(`[updateCategory] Category ${category._id} updated, cache invalidated`);
+    
+    return successResponse(res, { category }, 'Category updated successfully');
   } catch (error) {
     if (error.message.includes('Maximum category nesting')) {
-      return res.status(400).json({ 
-        success: false, 
-        message: error.message 
-      });
+      return errorResponse(res, error.message, null, 400);
     }
     logger.error(`[updateCategory] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -248,30 +234,27 @@ exports.deleteCategory = async (req, res) => {
     const category = await Category.findById(req.params.id);
     
     if (!category) {
-      return res.status(404).json({ success: false, message: 'Category not found' });
+      return errorResponse(res, 'Category not found', null, 404);
     }
     
     // Check if category has products
     const productCount = await Product.countDocuments({ category: category._id });
     if (productCount > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Cannot delete category with ${productCount} products. Please reassign products first.` 
-      });
+      return errorResponse(res, `Cannot delete category with ${productCount} products. Please reassign products first.`, null, 400);
     }
     
     // Check if category has subcategories
     const subcategoryCount = await Category.countDocuments({ parentCategory: category._id });
     if (subcategoryCount > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Cannot delete category with ${subcategoryCount} subcategories. Please delete subcategories first.` 
-      });
+      return errorResponse(res, `Cannot delete category with ${subcategoryCount} subcategories. Please delete subcategories first.`, null, 400);
     }
     
     // Soft delete - just deactivate
     category.isActive = false;
     await category.save();
+    
+    // Invalidate caches using centralized Redis cache service
+    await redisCache.invalidateCategories();
     
     // Log category deletion activity
     logActivityAsync({
@@ -283,13 +266,12 @@ exports.deleteCategory = async (req, res) => {
       req
     });
     
-    res.status(200).json({
-      success: true,
-      message: 'Category deactivated successfully'
-    });
+    logger.info(`[deleteCategory] Category ${category._id} deactivated, cache invalidated`);
+    
+    return successResponse(res, null, 'Category deactivated successfully');
   } catch (error) {
     logger.error(`[deleteCategory] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -301,12 +283,12 @@ exports.uploadCategoryImage = async (req, res) => {
     const { type } = req.body; // 'image' or 'banner'
     
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Please upload an image' });
+      return errorResponse(res, 'Please upload an image', null, 400);
     }
     
     const category = await Category.findById(req.params.id);
     if (!category) {
-      return res.status(404).json({ success: false, message: 'Category not found' });
+      return errorResponse(res, 'Category not found', null, 404);
     }
     
     // Cloudinary upload result is in req.file
@@ -324,13 +306,9 @@ exports.uploadCategoryImage = async (req, res) => {
     
     await category.save();
     
-    res.status(200).json({
-      success: true,
-      message: `Category ${type} uploaded successfully`,
-      [type]: imageData
-    });
+    return successResponse(res, { [type]: imageData }, `Category ${type} uploaded successfully`);
   } catch (error) {
     logger.error(`[uploadCategoryImage] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

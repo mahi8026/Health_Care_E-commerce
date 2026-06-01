@@ -1,4 +1,4 @@
-const { body, param, query, validationResult } = require('express-validator');
+const { body, param, query, validationResult, checkExact } = require('express-validator');
 
 // Validation error handler
 const handleValidationErrors = (req, res, next) => {
@@ -123,12 +123,160 @@ const validatePagination = [
   handleValidationErrors
 ];
 
+// Product query/filter validation (GET /products)
+const validateProductQuery = [
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be at least 1').toInt(),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100').toInt(),
+  query('minPrice').optional().isFloat({ min: 0 }).withMessage('minPrice must be a non-negative number').toFloat(),
+  query('maxPrice').optional().isFloat({ min: 0 }).withMessage('maxPrice must be a non-negative number').toFloat(),
+  query('category').optional().trim().escape(),
+  query('brand').optional().trim().escape(),
+  query('search').optional().trim().escape().isLength({ max: 200 }).withMessage('Search term too long'),
+  query('sort').optional().isIn(['price_asc', 'price_desc', 'name_asc', 'name_desc', 'newest', 'rating'])
+    .withMessage('Invalid sort option'),
+  query('fields').optional().trim().matches(/^[a-zA-Z0-9_,\s-]+$/).withMessage('Invalid fields parameter'),
+  handleValidationErrors
+];
+
+// Product create/update validation with exact field check
+const validateProductCreate = [
+  ...validateProduct.slice(0, -1), // reuse rules without the trailing handleValidationErrors
+  body('images').optional().isArray().withMessage('Images must be an array'),
+  body('images.*').optional().trim().isURL().withMessage('Each image must be a valid URL'),
+  body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
+  body('isFeatured').optional().isBoolean().withMessage('isFeatured must be a boolean'),
+  body('tags').optional().isArray().withMessage('Tags must be an array'),
+  body('tags.*').optional().trim().escape().isLength({ max: 50 }).withMessage('Each tag must be at most 50 characters'),
+  handleValidationErrors
+];
+
+// Order status update validation (admin)
+const validateOrderStatusUpdate = [
+  param('id').isMongoId().withMessage('Invalid order ID'),
+  body('status').trim().isIn([
+    'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded', 'returned'
+  ]).withMessage('Invalid order status'),
+  body('note').optional().trim().escape().isLength({ max: 500 }).withMessage('Note must not exceed 500 characters'),
+  handleValidationErrors
+];
+
+// Order note validation (admin)
+const validateOrderNote = [
+  param('id').isMongoId().withMessage('Invalid order ID'),
+  body('note').trim().notEmpty().withMessage('Note is required')
+    .escape().isLength({ max: 1000 }).withMessage('Note must not exceed 1000 characters'),
+  handleValidationErrors
+];
+
+// Profile update validation
+const validateProfileUpdate = [
+  body('name').optional().trim().escape()
+    .isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
+  body('phone').optional().trim()
+    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+  body('address').optional().trim().escape()
+    .isLength({ max: 500 }).withMessage('Address must not exceed 500 characters'),
+  body('company').optional().trim().escape()
+    .isLength({ max: 200 }).withMessage('Company name must not exceed 200 characters'),
+  body('avatar').optional().trim().isURL().withMessage('Avatar must be a valid URL'),
+  handleValidationErrors
+];
+
+// Password change validation
+const validatePasswordChange = [
+  body('currentPassword').notEmpty().withMessage('Current password is required'),
+  body('newPassword').isLength({ min: 8 }).withMessage('New password must be at least 8 characters')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/)
+    .withMessage('New password must contain uppercase, lowercase, number, and special character'),
+  body('confirmPassword').optional().custom((value, { req }) => {
+    if (value && value !== req.body.newPassword) {
+      throw new Error('Passwords do not match');
+    }
+    return true;
+  }),
+  handleValidationErrors
+];
+
+// Forgot password validation
+const validateForgotPassword = [
+  body('email').trim().isEmail().withMessage('Valid email is required').normalizeEmail(),
+  handleValidationErrors
+];
+
+// Reset password validation
+const validateResetPassword = [
+  body('token').trim().notEmpty().withMessage('Reset token is required'),
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/)
+    .withMessage('Password must contain uppercase, lowercase, number, and special character'),
+  handleValidationErrors
+];
+
+// Phone OTP validation
+const validateSendPhoneOTP = [
+  body('phone').trim().notEmpty().withMessage('Phone number is required')
+    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+  handleValidationErrors
+];
+
+const validateVerifyPhoneOTP = [
+  body('phone').trim().notEmpty().withMessage('Phone number is required')
+    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+  body('otp').trim().notEmpty().withMessage('OTP is required')
+    .isLength({ min: 4, max: 8 }).withMessage('Invalid OTP length')
+    .isNumeric().withMessage('OTP must be numeric'),
+  handleValidationErrors
+];
+
+// 2FA validation
+const validate2FASetup = [
+  handleValidationErrors
+];
+
+const validate2FAEnable = [
+  body('token').trim().notEmpty().withMessage('2FA token is required')
+    .isLength({ min: 6, max: 6 }).withMessage('Token must be 6 digits')
+    .isNumeric().withMessage('Token must be numeric'),
+  handleValidationErrors
+];
+
+const validate2FAVerify = [
+  body('email').trim().isEmail().withMessage('Valid email is required').normalizeEmail(),
+  body('token').trim().notEmpty().withMessage('2FA token is required')
+    .isLength({ min: 6, max: 6 }).withMessage('Token must be 6 digits')
+    .isNumeric().withMessage('Token must be numeric'),
+  handleValidationErrors
+];
+
+// Notification preferences validation
+const validateNotificationPreferences = [
+  body('emailNotifications').optional().isBoolean().withMessage('emailNotifications must be a boolean'),
+  body('smsNotifications').optional().isBoolean().withMessage('smsNotifications must be a boolean'),
+  body('orderUpdates').optional().isBoolean().withMessage('orderUpdates must be a boolean'),
+  body('promotions').optional().isBoolean().withMessage('promotions must be a boolean'),
+  handleValidationErrors
+];
+
 module.exports = {
   handleValidationErrors,
   validateProduct,
+  validateProductCreate,
+  validateProductQuery,
   validateOrder,
+  validateOrderStatusUpdate,
+  validateOrderNote,
   validateRegistration,
   validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
+  validateSendPhoneOTP,
+  validateVerifyPhoneOTP,
+  validate2FASetup,
+  validate2FAEnable,
+  validate2FAVerify,
+  validateProfileUpdate,
+  validatePasswordChange,
+  validateNotificationPreferences,
   validatePayment,
   validateReview,
   validateCoupon,

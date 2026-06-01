@@ -188,7 +188,7 @@ export default function CategoriesPage() {
                         {category.image?.url ? (
                           <img
                             src={category.image.url}
-                            alt={category.name}
+                            alt={`${category.name} supplier Bangladesh — MedCore BD`}
                             className="w-12 h-12 object-cover rounded"
                           />
                         ) : (
@@ -259,7 +259,7 @@ export default function CategoriesPage() {
                     {category.image?.url ? (
                       <img
                         src={category.image.url}
-                        alt={category.name}
+                        alt={`${category.name} supplier Bangladesh — MedCore BD`}
                         className="w-16 h-16 object-cover rounded flex-shrink-0"
                       />
                     ) : (

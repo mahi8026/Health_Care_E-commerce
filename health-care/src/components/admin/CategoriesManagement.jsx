@@ -143,7 +143,7 @@ export default function CategoriesManagement() {
                   <tr key={category._id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3 whitespace-nowrap">
                       {category.image?.url ? (
-                        <img src={category.image.url} alt={category.name} className="w-10 h-10 object-cover rounded border border-gray-200" />
+                        <img src={category.image.url} alt={`${category.name} supplier Bangladesh — MedCore BD`} className="w-10 h-10 object-cover rounded border border-gray-200" />
                       ) : (
                         <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">—</div>
                       )}
@@ -181,7 +181,7 @@ export default function CategoriesManagement() {
               <div key={category._id} className="bg-gray-50 rounded-lg border p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   {category.image?.url ? (
-                    <img src={category.image.url} alt={category.name} className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0" />
+                    <img src={category.image.url} alt={`${category.name} supplier Bangladesh — MedCore BD`} className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0" />
                   ) : (
                     <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300 flex-shrink-0">—</div>
                   )}

@@ -6,6 +6,7 @@ const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const mongoose = require('mongoose');
 const { DELIVERY_FEES } = require('../config/constants');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 const cacheService = new CacheService();
 
@@ -21,9 +22,16 @@ async function generateOrderNumber() {
   throw new Error('Failed to generate unique order number');
 }
 
-// @desc    Create new order
-// @route   POST /api/orders
-// @access  Private
+/**
+ * Create new order with transaction support.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route POST /api/orders
+ * @access Private
+ */
 exports.createOrder = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -33,7 +41,7 @@ exports.createOrder = async (req, res) => {
 
     if (!items || !items.length) {
       await session.abortTransaction();
-      return res.status(400).json({ success: false, message: 'Order must contain at least one item' });
+      return errorResponse(res, 'Order must contain at least one item', null, 400);
     }
 
     let subtotal = 0;
@@ -44,12 +52,12 @@ exports.createOrder = async (req, res) => {
       const product = await Product.findById(item.product).session(session);
       if (!product) {
         await session.abortTransaction();
-        return res.status(404).json({ success: false, message: `Product not found: ${item.product}` });
+        return errorResponse(res, `Product not found: ${item.product}`, null, 404);
       }
       const qty = item.qty || item.quantity || 1;
       if (product.stock < qty) {
         await session.abortTransaction();
-        return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}` });
+        return errorResponse(res, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}`, null, 400);
       }
       subtotal += product.price * qty;
       orderItems.push({ product: product._id, name: product.name, sku: product.sku, brand: product.brand, price: product.price, qty, quantity: qty });
@@ -91,10 +99,7 @@ exports.createOrder = async (req, res) => {
             // Validate percentage value
             if (coupon.value < 0 || coupon.value > 100) {
               await session.abortTransaction();
-              return res.status(400).json({ 
-                success: false, 
-                message: 'Invalid coupon configuration' 
-              });
+              return errorResponse(res, 'Invalid coupon configuration', null, 400);
             }
             couponDiscount = (subtotal * coupon.value) / 100;
             if (coupon.maximumDiscount && couponDiscount > coupon.maximumDiscount) {
@@ -134,11 +139,11 @@ exports.createOrder = async (req, res) => {
           else if (!roleMatches) errorMessage = 'This coupon is not applicable to your account type';
           else if (!isFirstOrder) errorMessage = 'This coupon is only valid for first-time orders';
           
-          return res.status(400).json({ success: false, message: errorMessage });
+          return errorResponse(res, errorMessage, null, 400);
         }
       } else {
         await session.abortTransaction();
-        return res.status(404).json({ success: false, message: 'Invalid coupon code' });
+        return errorResponse(res, 'Invalid coupon code', null, 404);
       }
     }
 
@@ -156,16 +161,16 @@ exports.createOrder = async (req, res) => {
 
       if (loyaltyPointsToRedeem < MIN_REDEEM_POINTS) {
         await session.abortTransaction();
-        return res.status(400).json({ success: false, message: `Minimum ${MIN_REDEEM_POINTS} points required to redeem` });
+        return errorResponse(res, `Minimum ${MIN_REDEEM_POINTS} points required to redeem`, null, 400);
       }
       if ((user.loyaltyPoints || 0) < loyaltyPointsToRedeem) {
         await session.abortTransaction();
-        return res.status(400).json({ success: false, message: 'Insufficient loyalty points' });
+        return errorResponse(res, 'Insufficient loyalty points', null, 400);
       }
       const maxPoints = loyaltyService.maxRedeemablePoints(subtotalAfterDiscounts);
       if (loyaltyPointsToRedeem > maxPoints) {
         await session.abortTransaction();
-        return res.status(400).json({ success: false, message: `Cannot redeem more than ${maxPoints} points for this order` });
+        return errorResponse(res, `Cannot redeem more than ${maxPoints} points for this order`, null, 400);
       }
 
       loyaltyDiscount = loyaltyService.pointsToTaka(loyaltyPointsToRedeem);
@@ -318,19 +323,26 @@ exports.createOrder = async (req, res) => {
       }
     });
 
-    res.status(201).json({ success: true, message: 'Order created successfully', order: order[0] });
+    return successResponse(res, { order: order[0] }, 'Order created successfully', 201);
   } catch (error) {
     await session.abortTransaction();
     logger.error(`[createOrder] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   } finally {
     session.endSession();
   }
 };
 
-// @desc    Get all orders (admin gets all, user gets own)
-// @route   GET /api/orders
-// @access  Private
+/**
+ * Get all orders (admin gets all, user gets own).
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/orders
+ * @access Private
+ */
 exports.getOrders = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -360,13 +372,20 @@ exports.getOrders = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getOrders] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
-// @desc    Get single order
-// @route   GET /api/orders/:id
-// @access  Private
+/**
+ * Get single order by ID.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/orders/:id
+ * @access Private
+ */
 exports.getOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -375,23 +394,30 @@ exports.getOrder = async (req, res) => {
       .populate('notesHistory.addedBy', 'name email');
 
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Not authorized to access this order' });
+      return errorResponse(res, 'Not authorized to access this order', null, 403);
     }
 
-    res.status(200).json({ success: true, order });
+    return successResponse(res, { order });
   } catch (error) {
     logger.error(`[getOrder] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
-// @desc    Update order status
-// @route   PUT /api/orders/:id/status
-// @access  Private/Admin
+/**
+ * Update order status and send notifications (admin only).
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route PUT /api/orders/:id/status
+ * @access Private/Admin
+ */
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { status, trackingNumber, courier } = req.body;
@@ -399,15 +425,15 @@ exports.updateOrderStatus = async (req, res) => {
     // Validate status
     const validStatuses = ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'pending'];
     if (!status) {
-      return res.status(400).json({ success: false, message: 'Status is required' });
+      return errorResponse(res, 'Status is required', null, 400);
     }
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ success: false, message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+      return errorResponse(res, `Invalid status. Must be one of: ${validStatuses.join(', ')}`, null, 400);
     }
 
     const order = await Order.findById(req.params.id);
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     const oldStatus = order.status;
@@ -472,44 +498,48 @@ exports.updateOrderStatus = async (req, res) => {
       metadata: { trackingNumber, courier }
     });
 
-    res.status(200).json({ success: true, message: 'Order status updated successfully', order });
+    return successResponse(res, { order }, 'Order status updated successfully');
   } catch (error) {
     logger.error(`[updateOrderStatus] ${error.message}`, { stack: error.stack });
     
     // Handle Mongoose validation errors
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ success: false, message: messages.join(', ') });
+      return errorResponse(res, messages.join(', '), null, 400);
     }
     
     // Handle cast errors (invalid ObjectId)
     if (error.name === 'CastError') {
-      return res.status(400).json({ success: false, message: 'Invalid order ID format' });
+      return errorResponse(res, 'Invalid order ID format', null, 400);
     }
     
-    res.status(500).json({ 
-      success: false, 
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Failed to update order status. Please try again.' 
-    });
+    return errorResponse(res, 'Failed to update order status. Please try again.', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
-// @desc    Cancel order
-// @route   PUT /api/orders/:id/cancel
-// @access  Private
+/**
+ * Cancel order and restore product stock.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route PUT /api/orders/:id/cancel
+ * @access Private
+ */
 exports.cancelOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate('user');
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Not authorized to cancel this order' });
+      return errorResponse(res, 'Not authorized to cancel this order', null, 403);
     }
 
     if (!['placed', 'pending', 'confirmed'].includes(order.status)) {
-      return res.status(400).json({ success: false, message: 'Cannot cancel order in current status' });
+      return errorResponse(res, 'Cannot cancel order in current status', null, 400);
     }
 
     // Restore product stock
@@ -546,16 +576,23 @@ exports.cancelOrder = async (req, res) => {
       }
     });
 
-    res.status(200).json({ success: true, message: 'Order cancelled successfully', order });
+    return successResponse(res, { order }, 'Order cancelled successfully');
   } catch (error) {
     logger.error(`[cancelOrder] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
-// @desc    Track order by order number (public)
-// @route   GET /api/orders/track/:orderNumber
-// @access  Public
+/**
+ * Track order by order number (public).
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/orders/track/:orderNumber
+ * @access Public
+ */
 exports.trackOrder = async (req, res) => {
   try {
     const order = await Order.findOne({ orderNumber: req.params.orderNumber })
@@ -563,30 +600,37 @@ exports.trackOrder = async (req, res) => {
       .lean();
 
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
-    res.status(200).json({ success: true, order });
+    return successResponse(res, { order });
   } catch (error) {
     logger.error(`[trackOrder] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
-// @desc    Add note to order
-// @route   PATCH /api/orders/:id/notes
-// @access  Private/Admin
+/**
+ * Add note to order (admin only).
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route PATCH /api/orders/:id/notes
+ * @access Private/Admin
+ */
 exports.addOrderNote = async (req, res) => {
   try {
     const { note } = req.body;
 
     if (!note || !note.trim()) {
-      return res.status(400).json({ success: false, message: 'Please provide a note' });
+      return errorResponse(res, 'Please provide a note', null, 400);
     }
 
     const order = await Order.findById(req.params.id);
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return errorResponse(res, 'Order not found', null, 404);
     }
 
     // Add to notes history
@@ -607,13 +651,9 @@ exports.addOrderNote = async (req, res) => {
     // Populate the addedBy field for response
     await order.populate('notesHistory.addedBy', 'name email');
 
-    res.status(200).json({
-      success: true,
-      message: 'Note added successfully',
-      notesHistory: order.notesHistory
-    });
+    return successResponse(res, { notesHistory: order.notesHistory }, 'Note added successfully');
   } catch (error) {
     logger.error(`[addOrderNote] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

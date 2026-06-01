@@ -3,17 +3,16 @@ import { getT } from '@/config/translations';
 
 /**
  * Returns a translation function for the current language.
- * Usage:
- *   const t = useT();
- *   t('nav.products') // → 'Products' or 'পণ্যসমূহ'
+ * 
+ * @returns {Function} Translation function that accepts a key and returns the translated string
+ * 
+ * @example
+ * const t = useT();
+ * const productsLabel = t('nav.products'); // → 'Products' or 'পণ্যসমূহ'
+ * const cartLabel = t('nav.cart'); // → 'Cart' or 'কার্ট'
  */
 export function useT() {
-  try {
-    const { lang } = useLang();
-    return getT(lang);
-  } catch (error) {
-    // Fallback to English if context is not available
-    console.warn('useT: LanguageContext not available, falling back to English');
-    return getT('en');
-  }
+  // Always call the hook unconditionally
+  const { lang } = useLang();
+  return getT(lang);
 }

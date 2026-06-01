@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 
+// Validate required environment variables at build time
+// This ensures the build fails fast if critical env vars are missing
+import { validateEnv } from './src/utils/validateEnv.js';
+validateEnv();
+
 // Conditionally load bundle analyzer — only available as a devDependency
 // Vercel production builds skip devDependencies, so guard the import
 let withBundleAnalyzer = (config) => config;
@@ -120,6 +125,14 @@ const nextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
+
+  // Optimize imports for large icon/component libraries to reduce bundle size
+  experimental: {
+    optimizePackageImports: ['react-icons', 'recharts', 'date-fns', '@heroicons/react'],
+  },
+
+  // Enable source maps in production for Sentry error tracking
+  productionBrowserSourceMaps: true,
 };
 
 export default withBundleAnalyzer(nextConfig);

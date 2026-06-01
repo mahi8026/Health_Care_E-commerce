@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const CacheService = require('../services/cacheService');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // Initialize cache service with 5 minute TTL
 const cacheService = new CacheService(300);
@@ -16,18 +17,12 @@ exports.getSalesAnalytics = async (req, res) => {
 
     // Validate required parameters
     if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date and end date are required'
-      });
+      return errorResponse(res, 'Start date and end date are required', null, 400);
     }
 
     // Validate groupBy parameter
     if (!['day', 'week', 'month'].includes(groupBy)) {
-      return res.status(400).json({
-        success: false,
-        message: 'groupBy must be one of: day, week, month'
-      });
+      return errorResponse(res, 'groupBy must be one of: day, week, month', null, 400);
     }
 
     // Parse and validate dates
@@ -35,17 +30,11 @@ exports.getSalesAnalytics = async (req, res) => {
     const end = new Date(endDate);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid date format'
-      });
+      return errorResponse(res, 'Invalid date format', null, 400);
     }
 
     if (start > end) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date must be before end date'
-      });
+      return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
     // Check cache first
@@ -53,11 +42,7 @@ exports.getSalesAnalytics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Determine date format based on groupBy parameter
@@ -169,19 +154,10 @@ exports.getSalesAnalytics = async (req, res) => {
     // Cache the result
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Sales Analytics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch sales analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch sales analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -196,10 +172,7 @@ exports.getOrderAnalytics = async (req, res) => {
 
     // Validate required parameters
     if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date and end date are required'
-      });
+      return errorResponse(res, 'Start date and end date are required', null, 400);
     }
 
     // Parse and validate dates
@@ -207,17 +180,11 @@ exports.getOrderAnalytics = async (req, res) => {
     const end = new Date(endDate);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid date format'
-      });
+      return errorResponse(res, 'Invalid date format', null, 400);
     }
 
     if (start > end) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date must be before end date'
-      });
+      return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
     // Check cache first
@@ -225,11 +192,7 @@ exports.getOrderAnalytics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Build aggregation pipeline for total orders and average order value
@@ -371,19 +334,10 @@ exports.getOrderAnalytics = async (req, res) => {
     // Cache the result
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Order Analytics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch order analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch order analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -398,10 +352,7 @@ exports.getCustomerAnalytics = async (req, res) => {
 
     // Validate required parameters
     if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date and end date are required'
-      });
+      return errorResponse(res, 'Start date and end date are required', null, 400);
     }
 
     // Parse and validate dates
@@ -409,17 +360,11 @@ exports.getCustomerAnalytics = async (req, res) => {
     const end = new Date(endDate);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid date format'
-      });
+      return errorResponse(res, 'Invalid date format', null, 400);
     }
 
     if (start > end) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date must be before end date'
-      });
+      return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
     // Check cache first
@@ -427,11 +372,7 @@ exports.getCustomerAnalytics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Calculate previous period dates for retention rate
@@ -647,19 +588,10 @@ exports.getCustomerAnalytics = async (req, res) => {
     // Cache the result
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Customer Analytics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch customer analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch customer analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -674,10 +606,7 @@ exports.getProductAnalytics = async (req, res) => {
 
     // Validate required parameters
     if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date and end date are required'
-      });
+      return errorResponse(res, 'Start date and end date are required', null, 400);
     }
 
     // Parse and validate dates
@@ -685,26 +614,17 @@ exports.getProductAnalytics = async (req, res) => {
     const end = new Date(endDate);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid date format'
-      });
+      return errorResponse(res, 'Invalid date format', null, 400);
     }
 
     if (start > end) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date must be before end date'
-      });
+      return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
     // Validate limit parameter
     const limitNum = parseInt(limit);
     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-      return res.status(400).json({
-        success: false,
-        message: 'Limit must be a number between 1 and 100'
-      });
+      return errorResponse(res, 'Limit must be a number between 1 and 100', null, 400);
     }
 
     // Check cache first
@@ -712,11 +632,7 @@ exports.getProductAnalytics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Build aggregation pipeline for top selling products by quantity
@@ -943,19 +859,10 @@ exports.getProductAnalytics = async (req, res) => {
     // Cache the result
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Product Analytics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch product analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch product analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -970,10 +877,7 @@ exports.getPaymentAnalytics = async (req, res) => {
 
     // Validate required parameters
     if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date and end date are required'
-      });
+      return errorResponse(res, 'Start date and end date are required', null, 400);
     }
 
     // Parse and validate dates
@@ -981,17 +885,11 @@ exports.getPaymentAnalytics = async (req, res) => {
     const end = new Date(endDate);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid date format'
-      });
+      return errorResponse(res, 'Invalid date format', null, 400);
     }
 
     if (start > end) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date must be before end date'
-      });
+      return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
     // Check cache first
@@ -999,11 +897,7 @@ exports.getPaymentAnalytics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Build aggregation pipeline for payment method distribution
@@ -1181,19 +1075,10 @@ exports.getPaymentAnalytics = async (req, res) => {
     // Cache the result
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Payment Analytics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch payment analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch payment analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -1208,10 +1093,7 @@ exports.getTrafficAnalytics = async (req, res) => {
 
     // Validate required parameters
     if (!startDate || !endDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date and end date are required'
-      });
+      return errorResponse(res, 'Start date and end date are required', null, 400);
     }
 
     // Parse and validate dates
@@ -1219,17 +1101,11 @@ exports.getTrafficAnalytics = async (req, res) => {
     const end = new Date(endDate);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid date format'
-      });
+      return errorResponse(res, 'Invalid date format', null, 400);
     }
 
     if (start > end) {
-      return res.status(400).json({
-        success: false,
-        message: 'Start date must be before end date'
-      });
+      return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
     // Check cache first
@@ -1237,11 +1113,7 @@ exports.getTrafficAnalytics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Build aggregation pipeline for total page views (using orders as proxy for site visits)
@@ -1502,19 +1374,10 @@ exports.getTrafficAnalytics = async (req, res) => {
     // Cache the result
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Traffic Analytics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch traffic analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch traffic analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -1543,11 +1406,7 @@ exports.getRealTimeMetrics = async (req, res) => {
     const cachedData = cacheService.get(cacheKey);
 
     if (cachedData) {
-      return res.status(200).json({
-        success: true,
-        data: cachedData,
-        cached: true
-      });
+      return successResponse(res, { ...cachedData, cached: true });
     }
 
     // Build aggregation pipeline for today's sales
@@ -1723,18 +1582,9 @@ exports.getRealTimeMetrics = async (req, res) => {
     // Cache the result with 5 minute TTL
     cacheService.set(cacheKey, responseData);
 
-    res.status(200).json({
-      success: true,
-      data: responseData,
-      cached: false
-    });
-
+    return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Real-Time Metrics Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch real-time metrics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch real-time metrics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

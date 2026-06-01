@@ -144,7 +144,7 @@ export default function OrderSummary({
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <img src={img} alt="" className="w-full h-full object-contain p-0.5" />
+                    <img src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <span className="text-lg">📦</span>
                   )}
@@ -199,7 +199,7 @@ export default function OrderSummary({
               </button>
             </div>
           )}
-          {couponError && <p className="text-[11px] text-[#E24B4A] mt-1">{couponError}</p>}
+          {couponError && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{couponError}</p>}
           {appliedCoupon && (
             <div className="flex justify-between items-center mt-2 p-2.5 rounded-lg bg-[#ECFDF5] border border-[#0E8A6E]/20">
               <span className="text-[12px] font-semibold text-[#065F46]">{appliedCoupon.code}</span>

@@ -5,6 +5,7 @@ const chatSocketService = require('../services/chatSocketService');
 const chatRoutingService = require('../services/chatRoutingService');
 const logger = require('../utils/logger');
 const { v4: uuidv4 } = require('uuid');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 /**
  * @desc    Create a new conversation
@@ -22,10 +23,7 @@ exports.createConversation = async (req, res) => {
 
     // Validate - only name is required, email is optional for guests
     if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: 'Name is required'
-      });
+      return errorResponse(res, 'Name is required', null, 400);
     }
 
     // Check if user is authenticated
@@ -67,16 +65,10 @@ exports.createConversation = async (req, res) => {
 
     logger.info(`New conversation created: ${conversation.conversationId}`);
 
-    res.status(201).json({
-      success: true,
-      data: conversation
-    });
+    return successResponse(res, conversation, null, 201);
   } catch (error) {
     logger.error(`Error creating conversation: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create conversation'
-    });
+    return errorResponse(res, 'Failed to create conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -112,21 +104,17 @@ exports.getConversations = async (req, res) => {
       Conversation.countDocuments(query)
     ]);
 
-    res.json({
-      success: true,
-      data: conversations,
-      pagination: {
-        total,
-        page: parseInt(page),
-        pages: Math.ceil(total / limit)
-      }
+    return paginatedResponse(res, conversations, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / limit),
+      hasNext: parseInt(page) < Math.ceil(total / limit),
+      hasPrev: parseInt(page) > 1
     });
   } catch (error) {
     logger.error(`Error fetching conversations: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch conversations'
-    });
+    return errorResponse(res, 'Failed to fetch conversations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -145,31 +133,19 @@ exports.getConversation = async (req, res) => {
       .populate('closedBy', 'name email');
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     // Check access permissions
     if (req.user.role === 'agent' && 
         conversation.assignedTo?._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied'
-      });
+      return errorResponse(res, 'Access denied', null, 403);
     }
 
-    res.json({
-      success: true,
-      data: conversation
-    });
+    return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error fetching conversation: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch conversation'
-    });
+    return errorResponse(res, 'Failed to fetch conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -187,10 +163,7 @@ exports.updateConversationStatus = async (req, res) => {
     });
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     conversation.status = status;
@@ -202,16 +175,10 @@ exports.updateConversationStatus = async (req, res) => {
       status
     });
 
-    res.json({
-      success: true,
-      data: conversation
-    });
+    return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error updating conversation status: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update status'
-    });
+    return errorResponse(res, 'Failed to update status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -229,10 +196,7 @@ exports.closeConversation = async (req, res) => {
     });
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     conversation.status = 'closed';
@@ -253,16 +217,10 @@ exports.closeConversation = async (req, res) => {
       closedAt: conversation.closedAt
     });
 
-    res.json({
-      success: true,
-      data: conversation
-    });
+    return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error closing conversation: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to close conversation'
-    });
+    return errorResponse(res, 'Failed to close conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -280,10 +238,7 @@ exports.transferConversation = async (req, res) => {
     });
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     // Add to transfer history
@@ -306,16 +261,10 @@ exports.transferConversation = async (req, res) => {
       newAgentId: toAgentId
     });
 
-    res.json({
-      success: true,
-      data: conversation
-    });
+    return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error transferring conversation: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to transfer conversation'
-    });
+    return errorResponse(res, 'Failed to transfer conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -333,10 +282,7 @@ exports.addInternalNote = async (req, res) => {
     });
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     conversation.internalNotes.push({
@@ -346,16 +292,10 @@ exports.addInternalNote = async (req, res) => {
 
     await conversation.save();
 
-    res.json({
-      success: true,
-      data: conversation
-    });
+    return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error adding note: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to add note'
-    });
+    return errorResponse(res, 'Failed to add note', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -373,16 +313,10 @@ exports.getConversationMessages = async (req, res) => {
       .sort({ createdAt: 1 })
       .limit(parseInt(limit));
 
-    res.json({
-      success: true,
-      data: messages
-    });
+    return successResponse(res, messages);
   } catch (error) {
     logger.error(`Error fetching messages: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch messages'
-    });
+    return errorResponse(res, 'Failed to fetch messages', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -396,19 +330,13 @@ exports.sendPublicMessage = async (req, res) => {
     const { conversationId, content, messageType = 'text', sender } = req.body;
 
     if (!conversationId || !content) {
-      return res.status(400).json({
-        success: false,
-        message: 'conversationId and content are required'
-      });
+      return errorResponse(res, 'conversationId and content are required', null, 400);
     }
 
     const conversation = await Conversation.findOne({ conversationId });
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     // Build content object based on message type
@@ -447,16 +375,10 @@ exports.sendPublicMessage = async (req, res) => {
       // Silent fail - WebSocket is optional
     }
 
-    res.status(201).json({
-      success: true,
-      data: message
-    });
+    return successResponse(res, message, null, 201);
   } catch (error) {
     logger.error(`Error sending public message: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: `Failed to send message: ${error.message}`
-    });
+    return errorResponse(res, 'Failed to send message', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -474,10 +396,7 @@ exports.sendMessage = async (req, res) => {
     });
 
     if (!conversation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Conversation not found'
-      });
+      return errorResponse(res, 'Conversation not found', null, 404);
     }
 
     const message = await Message.create({
@@ -505,16 +424,10 @@ exports.sendMessage = async (req, res) => {
       message: message.toObject()
     });
 
-    res.status(201).json({
-      success: true,
-      data: message
-    });
+    return successResponse(res, message, null, 201);
   } catch (error) {
     logger.error(`Error sending message: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to send message'
-    });
+    return errorResponse(res, 'Failed to send message', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -526,10 +439,7 @@ exports.sendMessage = async (req, res) => {
 exports.uploadChatFile = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded'
-      });
+      return errorResponse(res, 'No file uploaded', null, 400);
     }
 
     // File is already uploaded to Cloudinary by multer middleware
@@ -540,16 +450,10 @@ exports.uploadChatFile = async (req, res) => {
       fileType: req.file.mimetype
     };
 
-    res.json({
-      success: true,
-      data: fileData
-    });
+    return successResponse(res, fileData);
   } catch (error) {
     logger.error(`Error uploading file: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to upload file'
-    });
+    return errorResponse(res, 'Failed to upload file', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -605,23 +509,17 @@ exports.getAnalytics = async (req, res) => {
       }
     ]);
 
-    res.json({
-      success: true,
-      data: {
-        overall: stats,
-        byAgent: agentStats,
-        period: {
-          start,
-          end
-        }
+    return successResponse(res, {
+      overall: stats,
+      byAgent: agentStats,
+      period: {
+        start,
+        end
       }
     });
   } catch (error) {
     logger.error(`Error fetching analytics: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch analytics'
-    });
+    return errorResponse(res, 'Failed to fetch analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -634,16 +532,10 @@ exports.getChatConfig = async (req, res) => {
   try {
     const config = await ChatConfig.getActiveConfig();
 
-    res.json({
-      success: true,
-      data: config
-    });
+    return successResponse(res, config);
   } catch (error) {
     logger.error(`Error fetching config: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch configuration'
-    });
+    return errorResponse(res, 'Failed to fetch configuration', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -666,15 +558,9 @@ exports.updateChatConfig = async (req, res) => {
     config.lastModifiedBy = req.user._id;
     await config.save();
 
-    res.json({
-      success: true,
-      data: config
-    });
+    return successResponse(res, config);
   } catch (error) {
     logger.error(`Error updating config: ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update configuration'
-    });
+    return errorResponse(res, 'Failed to update configuration', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

@@ -16,7 +16,23 @@ jest.mock('mongoose', () => {
 jest.mock('../services/redisCache', () => ({
   isRedisConnected: jest.fn(() => true),
   getRedisClient: jest.fn(),
-  initRedis: jest.fn()
+  initRedis: jest.fn(),
+  get: jest.fn().mockResolvedValue(null),
+  set: jest.fn().mockResolvedValue(true),
+  del: jest.fn().mockResolvedValue(true),
+  cacheMiss: jest.fn(),
+  CACHE_KEYS: {
+    PRODUCTS_LIST: 'products:list',
+    PRODUCTS_DETAIL: 'products:detail',
+    CATEGORIES_LIST: 'categories:list',
+    HOMEPAGE_FEATURED: 'homepage:featured',
+  },
+  CACHE_TTL: {
+    PRODUCTS_LIST: 3600,
+    PRODUCTS_DETAIL: 1800,
+    CATEGORIES_LIST: 86400,
+    HOMEPAGE_FEATURED: 300,
+  },
 }));
 
 // Mock database connection

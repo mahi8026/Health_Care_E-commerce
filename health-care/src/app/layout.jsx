@@ -13,7 +13,8 @@ import StructuredData, {
   generateWebSiteSchema,
 } from "@/utils/structuredData";
 import Script from "next/script";
-import ChatContainer from "@/components/chat/ChatContainer";
+import LazyChatContainer from "@/components/chat/LazyChatContainer";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 export const dynamic = 'force-dynamic';
 
@@ -116,8 +117,13 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
       </head>
       <body className="min-h-screen antialiased text-[var(--color-text-primary)]">
+        {/* Skip to main content — keyboard/screen-reader accessibility */}
+        <a href="#main-content" className="skip-to-content">
+          Skip to main content
+        </a>
         {/* Site-wide structured data */}
         <StructuredData schema={generateOrganizationSchema()} />
         <StructuredData schema={generateWebSiteSchema()} />
@@ -128,8 +134,15 @@ export default function RootLayout({ children }) {
             <CartProvider>
               <WishlistProvider>
                 <CompareProvider>
-                  <SiteChrome>{children}</SiteChrome>
-                  <ChatContainer />
+                  <ErrorBoundary
+                    title="Something went wrong"
+                    message="An unexpected error occurred. Please refresh the page or contact support if the problem persists."
+                  >
+                    <main id="main-content">
+                      <SiteChrome>{children}</SiteChrome>
+                    </main>
+                    <LazyChatContainer />
+                  </ErrorBoundary>
                 </CompareProvider>
               </WishlistProvider>
             </CartProvider>

@@ -272,6 +272,22 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, [isSliderHovered, heroSlides]);
 
+  // Hero slider keyboard navigation (Left/Right arrow keys)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const total = heroSlides.length > 0 ? heroSlides.length : 4;
+      if (e.key === 'ArrowLeft') {
+        setCurrentSlide(prev => (prev - 1 + total) % total);
+      } else if (e.key === 'ArrowRight') {
+        setCurrentSlide(prev => (prev + 1) % total);
+      }
+    };
+    
+    const sliderEl = document.querySelector('.hero-right-panel');
+    sliderEl?.addEventListener('keydown', handleKeyDown);
+    return () => sliderEl?.removeEventListener('keydown', handleKeyDown);
+  }, [heroSlides]);
+
   // Load banner settings
   useEffect(() => {
     const loadBanners = async () => {
@@ -629,8 +645,21 @@ export default function HomePage() {
               return (
                 <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 10 }}>
                   {Array.from({ length: total }).map((_, i) => (
-                    <span key={i} onClick={() => setCurrentSlide(i)} role="button" aria-label={`Slide ${i + 1}`}
-                      style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} />
+                    <span 
+                      key={i} 
+                      onClick={() => setCurrentSlide(i)} 
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setCurrentSlide(i);
+                        }
+                      }}
+                      role="button" 
+                      tabIndex={0}
+                      aria-label={`Go to slide ${i + 1}`}
+                      aria-current={currentSlide === i ? 'true' : 'false'}
+                      style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} 
+                    />
                   ))}
                 </div>
               );
@@ -644,12 +673,22 @@ export default function HomePage() {
               const total = heroSlides.length > 0 ? heroSlides.length : 4;
               return (
                 <>
-                  <button onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
+                  <button 
+                    onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
+                    aria-label="Previous slide"
                     style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
-                    className="hero-slider-arrows">‹</button>
-                  <button onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
+                    className="hero-slider-arrows"
+                  >
+                    ‹
+                  </button>
+                  <button 
+                    onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
+                    aria-label="Next slide"
                     style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
-                    className="hero-slider-arrows">›</button>
+                    className="hero-slider-arrows"
+                  >
+                    ›
+                  </button>
                 </>
               );
             })()}

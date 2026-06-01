@@ -10,10 +10,11 @@ const { dbHealthCheck } = require('../dbHealthCheck');
 
 // Helper to create mock Express req/res/next objects
 function createMocks() {
-  const req = {};
+  const req = { headers: {} };
   const res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn().mockReturnThis(),
+    setHeader: jest.fn(),
   };
   const next = jest.fn();
   return { req, res, next };

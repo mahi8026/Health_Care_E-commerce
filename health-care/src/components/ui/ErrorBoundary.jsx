@@ -1,10 +1,22 @@
 "use client";
 
 import { Component } from 'react';
+import * as Sentry from '@sentry/nextjs';
 
 /**
  * Error Boundary Component
- * Catches React rendering errors and displays a fallback UI
+ * Catches React rendering errors, reports them to Sentry, and displays a fallback UI.
+ *
+ * Usage:
+ *   <ErrorBoundary>
+ *     <YourComponent />
+ *   </ErrorBoundary>
+ *
+ * Props:
+ *   - fallback: ReactNode — custom fallback UI (optional)
+ *   - title: string — custom error heading (optional)
+ *   - message: string — custom error message (optional)
+ *   - onReset: () => void — callback when user clicks "Try Again" (optional)
  */
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -17,18 +29,19 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    this.setState({
-      error,
-      errorInfo
+    this.setState({ error, errorInfo });
+
+    // Report to Sentry with component stack context
+    Sentry.captureException(error, {
+      extra: {
+        componentStack: errorInfo?.componentStack,
+      },
     });
-    
-    // Log error to console in development
+
+    // Also log to console in development for quick debugging
     if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_ENV !== "production" && console.error('ErrorBoundary caught an error:', error, errorInfo);
+      console.error('[ErrorBoundary] Caught an error:', error, errorInfo);
     }
-    
-    // In production, you could send this to an error tracking service like Sentry
-    // Sentry.captureException(error, { extra: errorInfo });
   }
 
   handleReset = () => {

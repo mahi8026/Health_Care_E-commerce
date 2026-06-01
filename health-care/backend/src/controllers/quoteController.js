@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const { sendQuotationReady } = require('../utils/emailService');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 // ── Customer: Submit quote request ──────────────────────────────────────────
 // POST /api/quotes
@@ -11,7 +12,7 @@ exports.createQuote = async (req, res) => {
     const { items, notes, paymentTerms } = req.body;
 
     if (!items || !items.length) {
-      return res.status(400).json({ success: false, message: 'Quote must have at least one item' });
+      return errorResponse(res, 'Quote must have at least one item', null, 400);
     }
 
     let subtotal = 0;
@@ -20,7 +21,7 @@ exports.createQuote = async (req, res) => {
     for (const item of items) {
       const product = await Product.findById(item.product);
       if (!product) {
-        return res.status(404).json({ success: false, message: `Product not found: ${item.product}` });
+        return errorResponse(res, `Product not found: ${item.product}`, null, 404);
       }
       const unitPrice = item.unitPrice || product.price;
       const discount = item.discount || 0;
@@ -62,9 +63,9 @@ exports.createQuote = async (req, res) => {
       accountManager: user.accountManager
     });
 
-    res.status(201).json({ success: true, message: 'Quote request submitted', quote });
+    return successResponse(res, quote, 'Quote request submitted', 201);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to create quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -75,9 +76,9 @@ exports.getMyQuotes = async (req, res) => {
     const quotes = await Quote.find({ user: req.user._id })
       .populate('items.product', 'name sku brand')
       .sort('-createdAt');
-    res.status(200).json({ success: true, count: quotes.length, quotes });
+    return successResponse(res, { count: quotes.length, quotes });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to fetch quotes', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -89,15 +90,15 @@ exports.getQuote = async (req, res) => {
       .populate('user', 'name email company companyName')
       .populate('items.product', 'name sku brand');
 
-    if (!quote) return res.status(404).json({ success: false, message: 'Quote not found' });
+    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
 
     if (quote.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Not authorized' });
+      return errorResponse(res, 'Not authorized', null, 403);
     }
 
-    res.status(200).json({ success: true, quote });
+    return successResponse(res, quote);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to fetch quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -118,9 +119,17 @@ exports.getAllQuotes = async (req, res) => {
 
     const total = await Quote.countDocuments(filter);
 
-    res.status(200).json({ success: true, count: quotes.length, total, quotes });
+    return paginatedResponse(res, quotes, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / limit),
+      hasNext: parseInt(page) < Math.ceil(total / limit),
+      hasPrev: parseInt(page) > 1,
+      count: quotes.length
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to fetch quotes', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -131,7 +140,7 @@ exports.updateQuote = async (req, res) => {
     const { status, discountPct, finalAmount, validUntil, notes, accountManager } = req.body;
 
     const quote = await Quote.findById(req.params.id).populate('user', 'name email');
-    if (!quote) return res.status(404).json({ success: false, message: 'Quote not found' });
+    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
 
     if (status) quote.status = status;
     if (discountPct !== undefined) {
@@ -163,9 +172,9 @@ exports.updateQuote = async (req, res) => {
       }
     }
 
-    res.status(200).json({ success: true, message: 'Quote updated', quote });
+    return successResponse(res, quote, 'Quote updated');
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to update quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -177,12 +186,12 @@ exports.convertQuoteToOrder = async (req, res) => {
       .populate('user')
       .populate('items.product');
 
-    if (!quote) return res.status(404).json({ success: false, message: 'Quote not found' });
+    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
     if (quote.status === 'converted') {
-      return res.status(400).json({ success: false, message: 'Quote already converted' });
+      return errorResponse(res, 'Quote already converted', null, 400);
     }
     if (quote.status === 'expired') {
-      return res.status(400).json({ success: false, message: 'Cannot convert expired quote' });
+      return errorResponse(res, 'Cannot convert expired quote', null, 400);
     }
 
     const Order = require('../models/Order');
@@ -224,8 +233,8 @@ exports.convertQuoteToOrder = async (req, res) => {
     quote.convertedOrderId = order._id;
     await quote.save();
 
-    res.status(201).json({ success: true, message: 'Quote converted to order', order, quote });
+    return successResponse(res, { order, quote }, 'Quote converted to order', 201);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, 'Failed to convert quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

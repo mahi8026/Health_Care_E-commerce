@@ -1,5 +1,6 @@
 const ActivityLog = require('../models/ActivityLog');
 const logger = require('../utils/logger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 /**
  * @desc    Get activity logs with filters
@@ -78,23 +79,17 @@ exports.getActivityLogs = async (req, res) => {
       ActivityLog.countDocuments(query)
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: logs,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+    return paginatedResponse(res, logs, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+      hasPrev: parseInt(page) > 1
     });
   } catch (error) {
     logger.error(`[getActivityLogs] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch activity logs',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch activity logs', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -160,23 +155,16 @@ exports.getActivityStats = async (req, res) => {
       ])
     ]);
 
-    res.status(200).json({
-      success: true,
-      data: {
-        totalToday,
-        adminActionsToday,
-        failedToday,
-        activeUsersToday,
-        actionBreakdown
-      }
+    return successResponse(res, {
+      totalToday,
+      adminActionsToday,
+      failedToday,
+      activeUsersToday,
+      actionBreakdown
     });
   } catch (error) {
     logger.error(`[getActivityStats] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch activity statistics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch activity statistics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -241,11 +229,7 @@ exports.exportActivityLogs = async (req, res) => {
     res.status(200).send(csvContent);
   } catch (error) {
     logger.error(`[exportActivityLogs] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to export activity logs',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to export activity logs', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -261,22 +245,12 @@ exports.getActivityLog = async (req, res) => {
       .lean();
 
     if (!log) {
-      return res.status(404).json({
-        success: false,
-        message: 'Activity log not found'
-      });
+      return errorResponse(res, 'Activity log not found', null, 404);
     }
 
-    res.status(200).json({
-      success: true,
-      data: log
-    });
+    return successResponse(res, log);
   } catch (error) {
     logger.error(`[getActivityLog] ${error.message}`);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch activity log',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    return errorResponse(res, 'Failed to fetch activity log', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

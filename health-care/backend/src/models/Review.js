@@ -121,6 +121,8 @@ reviewSchema.index({ product: 1, user: 1 }, { unique: true });
 reviewSchema.index({ product: 1, status: 1 });
 reviewSchema.index({ createdAt: -1 });
 reviewSchema.index({ helpfulCount: -1 });
+// Optimization spec indexes (Requirements 4.1, 4.2)
+reviewSchema.index({ product: 1, createdAt: -1 }); // product review listing sorted by date
 
 // Virtual: Check if a specific user marked this review as helpful
 reviewSchema.methods.isHelpful = function(userId) {

@@ -12,6 +12,13 @@ const {
 } = require('../controllers/productController');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const { cacheMiddleware, redisCacheMiddleware } = require('../middleware/cache');
+const { CACHE_KEYS, CACHE_TTL } = require('../services/redisCache');
+const { etagMiddleware } = require('../middleware/etag');
+const {
+  validateProductQuery,
+  validateProductCreate,
+  validateMongoId
+} = require('../middleware/validation');
 
 /**
  * @swagger
@@ -88,8 +95,8 @@ const { cacheMiddleware, redisCacheMiddleware } = require('../middleware/cache')
  *                       type: integer
  */
 // Use optionalAuth for getProducts so admin filters work
-// Disable cache for admin to ensure filters work properly
-router.get('/', optionalAuth, getProducts);
+// ETag enables conditional GET (304 Not Modified) for browsers and CDNs
+router.get('/', optionalAuth, validateProductQuery, etagMiddleware, getProducts);
 
 /**
  * @swagger
@@ -112,7 +119,7 @@ router.get('/', optionalAuth, getProducts);
  *                   items:
  *                     $ref: '#/components/schemas/Product'
  */
-router.get('/featured', redisCacheMiddleware({ ttl: 300, keyPrefix: 'products:' }), getFeaturedProducts);
+router.get('/featured', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.HOMEPAGE_FEATURED, keyPrefix: `${CACHE_KEYS.HOMEPAGE_FEATURED}:` }), getFeaturedProducts);
 
 /**
  * @swagger
@@ -140,7 +147,7 @@ router.get('/featured', redisCacheMiddleware({ ttl: 300, keyPrefix: 'products:' 
  *                       count:
  *                         type: integer
  */
-router.get('/category-counts', redisCacheMiddleware({ ttl: 600, keyPrefix: 'products:' }), getCategoryCounts);
+router.get('/category-counts', redisCacheMiddleware({ ttl: CACHE_TTL.PRODUCTS_LIST, keyPrefix: `${CACHE_KEYS.PRODUCTS_LIST}:` }), getCategoryCounts);
 
 /**
  * @swagger
@@ -193,7 +200,7 @@ router.get('/generate-sku', protect, authorize('admin'), generateSku);
  *       404:
  *         description: Product not found
  */
-router.get('/:id', redisCacheMiddleware({ ttl: 300, keyPrefix: 'products:' }), getProduct);
+router.get('/:id', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.PRODUCTS_DETAIL, keyPrefix: `${CACHE_KEYS.PRODUCTS_DETAIL}:` }), getProduct);
 
 /**
  * @swagger
@@ -237,7 +244,7 @@ router.get('/:id', redisCacheMiddleware({ ttl: 300, keyPrefix: 'products:' }), g
  *         description: Forbidden (not admin)
  */
 // Admin only routes
-router.post('/', protect, authorize('admin'), createProduct);
+router.post('/', protect, authorize('admin'), validateProductCreate, createProduct);
 
 /**
  * @swagger
@@ -265,7 +272,7 @@ router.post('/', protect, authorize('admin'), createProduct);
  *       404:
  *         description: Product not found
  */
-router.put('/:id', protect, authorize('admin'), updateProduct);
+router.put('/:id', protect, authorize('admin'), validateMongoId, validateProductCreate, updateProduct);
 
 /**
  * @swagger
@@ -287,6 +294,6 @@ router.put('/:id', protect, authorize('admin'), updateProduct);
  *       404:
  *         description: Product not found
  */
-router.delete('/:id', protect, authorize('admin'), deleteProduct);
+router.delete('/:id', protect, authorize('admin'), validateMongoId, deleteProduct);
 
 module.exports = router;

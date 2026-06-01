@@ -2,6 +2,7 @@ const Review = require('../models/Review');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
+const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
 // @desc    Create a new review
 // @route   POST /api/reviews
@@ -12,19 +13,13 @@ exports.createReview = async (req, res) => {
     
     // Validate required fields
     if (!productId || !orderId || !rating || !title || !comment) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide all required fields'
-      });
+      return errorResponse(res, 'Please provide all required fields', null, 400);
     }
     
     // Check if product exists
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found'
-      });
+      return errorResponse(res, 'Product not found', null, 404);
     }
     
     // Verify user purchased this product
@@ -36,10 +31,7 @@ exports.createReview = async (req, res) => {
     });
     
     if (!order) {
-      return res.status(403).json({
-        success: false,
-        message: 'You can only review products you have purchased and received'
-      });
+      return errorResponse(res, 'You can only review products you have purchased and received', null, 403);
     }
     
     // Check if user already reviewed this product
@@ -49,18 +41,12 @@ exports.createReview = async (req, res) => {
     });
     
     if (existingReview) {
-      return res.status(400).json({
-        success: false,
-        message: 'You have already reviewed this product. You can edit your existing review.'
-      });
+      return errorResponse(res, 'You have already reviewed this product. You can edit your existing review.', null, 400);
     }
     
     // Validate images count
     if (images && images.length > 5) {
-      return res.status(400).json({
-        success: false,
-        message: 'Maximum 5 images allowed per review'
-      });
+      return errorResponse(res, 'Maximum 5 images allowed per review', null, 400);
     }
     
     // Create review
@@ -92,17 +78,10 @@ exports.createReview = async (req, res) => {
       }
     });
     
-    res.status(201).json({
-      success: true,
-      message: 'Review submitted successfully',
-      data: review
-    });
+    return successResponse(res, review, 'Review submitted successfully', 201);
   } catch (error) {
     console.error('Create review error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to create review'
-    });
+    return errorResponse(res, 'Failed to create review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -163,23 +142,18 @@ exports.getProductReviews = async (req, res) => {
     // Get rating stats
     const stats = await Review.getProductStats(productId);
     
-    res.json({
-      success: true,
-      data: reviews,
-      stats,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+    return paginatedResponse(res, reviews, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+      hasPrev: parseInt(page) > 1,
+      stats
     });
   } catch (error) {
     console.error('Get product reviews error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch reviews'
-    });
+    return errorResponse(res, 'Failed to fetch reviews', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -199,22 +173,17 @@ exports.getUserReviews = async (req, res) => {
     
     const total = await Review.countDocuments({ user: req.user._id });
     
-    res.json({
-      success: true,
-      data: reviews,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+    return paginatedResponse(res, reviews, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+      hasPrev: parseInt(page) > 1
     });
   } catch (error) {
     console.error('Get user reviews error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch your reviews'
-    });
+    return errorResponse(res, 'Failed to fetch your reviews', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -229,35 +198,23 @@ exports.updateReview = async (req, res) => {
     const review = await Review.findById(id);
     
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Review not found'
-      });
+      return errorResponse(res, 'Review not found', null, 404);
     }
     
     // Check ownership
     if (review.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'You can only edit your own reviews'
-      });
+      return errorResponse(res, 'You can only edit your own reviews', null, 403);
     }
     
     // Check if within edit window (30 days)
     const daysSinceCreation = (Date.now() - review.createdAt) / (1000 * 60 * 60 * 24);
     if (daysSinceCreation > 30) {
-      return res.status(403).json({
-        success: false,
-        message: 'Reviews can only be edited within 30 days of creation'
-      });
+      return errorResponse(res, 'Reviews can only be edited within 30 days of creation', null, 403);
     }
     
     // Validate images count
     if (images && images.length > 5) {
-      return res.status(400).json({
-        success: false,
-        message: 'Maximum 5 images allowed per review'
-      });
+      return errorResponse(res, 'Maximum 5 images allowed per review', null, 400);
     }
     
     // Update fields
@@ -272,17 +229,10 @@ exports.updateReview = async (req, res) => {
     await review.save();
     await review.populate('user', 'name email');
     
-    res.json({
-      success: true,
-      message: 'Review updated successfully',
-      data: review
-    });
+    return successResponse(res, review, 'Review updated successfully');
   } catch (error) {
     console.error('Update review error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to update review'
-    });
+    return errorResponse(res, 'Failed to update review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -296,18 +246,12 @@ exports.deleteReview = async (req, res) => {
     const review = await Review.findById(id);
     
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Review not found'
-      });
+      return errorResponse(res, 'Review not found', null, 404);
     }
     
     // Check ownership (user can delete own, admin can delete any)
     if (review.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'You can only delete your own reviews'
-      });
+      return errorResponse(res, 'You can only delete your own reviews', null, 403);
     }
     
     await review.remove();
@@ -325,16 +269,10 @@ exports.deleteReview = async (req, res) => {
       }
     });
     
-    res.json({
-      success: true,
-      message: 'Review deleted successfully'
-    });
+    return successResponse(res, null, 'Review deleted successfully');
   } catch (error) {
     console.error('Delete review error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete review'
-    });
+    return errorResponse(res, 'Failed to delete review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -348,28 +286,18 @@ exports.markHelpful = async (req, res) => {
     const review = await Review.findById(id);
     
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Review not found'
-      });
+      return errorResponse(res, 'Review not found', null, 404);
     }
     
     const wasAdded = await review.toggleHelpful(req.user._id);
     
-    res.json({
-      success: true,
-      message: wasAdded ? 'Marked as helpful' : 'Removed helpful mark',
-      data: {
-        helpfulCount: review.helpfulCount,
-        isHelpful: wasAdded
-      }
-    });
+    return successResponse(res, {
+      helpfulCount: review.helpfulCount,
+      isHelpful: wasAdded
+    }, wasAdded ? 'Marked as helpful' : 'Removed helpful mark');
   } catch (error) {
     console.error('Mark helpful error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update helpful status'
-    });
+    return errorResponse(res, 'Failed to update helpful status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -382,19 +310,13 @@ exports.reportReview = async (req, res) => {
     const { reason } = req.body;
     
     if (!reason || reason.trim().length < 10) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide a reason (at least 10 characters)'
-      });
+      return errorResponse(res, 'Please provide a reason (at least 10 characters)', null, 400);
     }
     
     const review = await Review.findById(id);
     
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Review not found'
-      });
+      return errorResponse(res, 'Review not found', null, 404);
     }
     
     // Check daily report limit (3 per day)
@@ -407,24 +329,15 @@ exports.reportReview = async (req, res) => {
     });
     
     if (reportsToday >= 3) {
-      return res.status(429).json({
-        success: false,
-        message: 'You have reached the daily report limit (3 reports per day)'
-      });
+      return errorResponse(res, 'You have reached the daily report limit (3 reports per day)', null, 429);
     }
     
     await review.addReport(req.user._id, reason);
     
-    res.json({
-      success: true,
-      message: 'Review reported successfully. Our team will review it.'
-    });
+    return successResponse(res, null, 'Review reported successfully. Our team will review it.');
   } catch (error) {
     console.error('Report review error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message || 'Failed to report review'
-    });
+    return errorResponse(res, 'Failed to report review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -478,16 +391,10 @@ exports.getEligibleProducts = async (req, res) => {
       });
     });
     
-    res.json({
-      success: true,
-      data: eligibleProducts
-    });
+    return successResponse(res, eligibleProducts);
   } catch (error) {
     console.error('Get eligible products error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch eligible products'
-    });
+    return errorResponse(res, 'Failed to fetch eligible products', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -544,23 +451,18 @@ exports.getAllReviews = async (req, res) => {
       statusStats[stat._id] = stat.count;
     });
     
-    res.json({
-      success: true,
-      data: reviews,
-      stats: statusStats,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+    return paginatedResponse(res, reviews, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
+      hasPrev: parseInt(page) > 1,
+      stats: statusStats
     });
   } catch (error) {
     console.error('Get all reviews error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch reviews'
-    });
+    return errorResponse(res, 'Failed to fetch reviews', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -573,19 +475,13 @@ exports.updateReviewStatus = async (req, res) => {
     const { status, adminResponse, rejectionReason } = req.body;
     
     if (!status || !['pending', 'approved', 'rejected'].includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid status. Must be pending, approved, or rejected'
-      });
+      return errorResponse(res, 'Invalid status. Must be pending, approved, or rejected', null, 400);
     }
     
     const review = await Review.findById(id);
     
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Review not found'
-      });
+      return errorResponse(res, 'Review not found', null, 404);
     }
     
     review.status = status;
@@ -629,16 +525,9 @@ exports.updateReviewStatus = async (req, res) => {
       });
     }
     
-    res.json({
-      success: true,
-      message: `Review ${status} successfully`,
-      data: review
-    });
+    return successResponse(res, review, `Review ${status} successfully`);
   } catch (error) {
     console.error('Update review status error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update review status'
-    });
+    return errorResponse(res, 'Failed to update review status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };

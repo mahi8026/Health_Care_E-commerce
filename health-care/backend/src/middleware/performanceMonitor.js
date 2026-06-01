@@ -47,12 +47,17 @@ const performanceMonitor = (req, res, next) => {
     const endMemory = process.memoryUsage();
     const memoryDelta = endMemory.heapUsed - startMemory.heapUsed;
 
+    // Set X-Response-Time header on every response (Req 14.1, 14.8)
+    if (!res.headersSent) {
+      res.setHeader('X-Response-Time', `${duration}ms`);
+    }
+
     // Update metrics
     updateMetrics(req, res, duration, memoryDelta);
 
-    // Log slow requests
+    // Log slow requests (>1s) — Req 14.1
     if (duration > THRESHOLDS.SLOW_REQUEST) {
-      logSlowRequest(req, duration);
+      logSlowRequest(req, res, duration);
     }
 
     // Call original end function
@@ -138,14 +143,15 @@ function updateMetrics(req, res, duration, memoryDelta) {
 /**
  * Log slow requests
  */
-function logSlowRequest(req, duration) {
+function logSlowRequest(req, res, duration) {
   const level = 
     duration > THRESHOLDS.CRITICAL_REQUEST ? 'error' :
-    duration > THRESHOLDS.VERY_SLOW_REQUEST ? 'warn' : 'info';
+    duration > THRESHOLDS.VERY_SLOW_REQUEST ? 'warn' : 'warn';
 
-  logger[level](`Slow request detected: ${req.method} ${req.path} - ${duration}ms`, {
-    endpoint: req.path,
+  logger[level]('SLOW_REQUEST', {
     method: req.method,
+    path: req.path,
+    status: res.statusCode,
     duration,
     query: req.query,
     params: req.params,

@@ -203,6 +203,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 key={href}
                 onClick={() => router.push(href)}
                 className={`nav-link ${isActive(href) ? 'nav-link-active' : ''}`}
+                aria-current={isActive(href) ? 'page' : undefined}
               >
                 {t(`nav.${label}`)}
               </button>

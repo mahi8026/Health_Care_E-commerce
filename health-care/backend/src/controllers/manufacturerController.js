@@ -3,6 +3,8 @@ const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const { invalidateCache } = require('../middleware/cache');
+const redisCache = require('../services/redisCache');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // @desc    Get all manufacturers
 // @route   GET /api/manufacturers
@@ -41,14 +43,13 @@ exports.getManufacturers = async (req, res) => {
       })
     );
     
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       count: manufacturersWithCounts.length,
       manufacturers: manufacturersWithCounts
     });
   } catch (error) {
     logger.error(`[getManufacturers] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -60,7 +61,7 @@ exports.getManufacturer = async (req, res) => {
     const manufacturer = await Manufacturer.findOne({ slug: req.params.slug }).lean();
     
     if (!manufacturer) {
-      return res.status(404).json({ success: false, message: 'Manufacturer not found' });
+      return errorResponse(res, 'Manufacturer not found', null, 404);
     }
     
     // Get product count
@@ -69,8 +70,7 @@ exports.getManufacturer = async (req, res) => {
       isActive: true 
     });
     
-    res.status(200).json({
-      success: true,
+    return successResponse(res, {
       manufacturer: {
         ...manufacturer,
         productCount
@@ -78,7 +78,7 @@ exports.getManufacturer = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getManufacturer] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -89,7 +89,10 @@ exports.createManufacturer = async (req, res) => {
   try {
     const manufacturer = await Manufacturer.create(req.body);
     
-    // Invalidate cache so new manufacturer appears in lists
+    // Invalidate caches using centralized Redis cache service
+    await redisCache.invalidateBrands();
+    
+    // Keep legacy cache invalidation for backward compatibility
     await invalidateCache('manufacturers:*');
     
     // Log manufacturer creation activity
@@ -106,20 +109,15 @@ exports.createManufacturer = async (req, res) => {
       }
     });
     
-    res.status(201).json({
-      success: true,
-      message: 'Manufacturer created successfully',
-      manufacturer
-    });
+    logger.info(`[createManufacturer] Manufacturer ${manufacturer._id} created, cache invalidated`);
+    
+    return successResponse(res, { manufacturer }, 'Manufacturer created successfully', 201);
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Manufacturer name already exists' 
-      });
+      return errorResponse(res, 'Manufacturer name already exists', null, 400);
     }
     logger.error(`[createManufacturer] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -131,7 +129,7 @@ exports.updateManufacturer = async (req, res) => {
     const manufacturer = await Manufacturer.findById(req.params.id);
     
     if (!manufacturer) {
-      return res.status(404).json({ success: false, message: 'Manufacturer not found' });
+      return errorResponse(res, 'Manufacturer not found', null, 404);
     }
     
     // Allowed fields to update
@@ -147,7 +145,10 @@ exports.updateManufacturer = async (req, res) => {
     // Save triggers pre('save') middleware for slug regeneration
     await manufacturer.save();
     
-    // Invalidate cache so GET requests return fresh data
+    // Invalidate caches using centralized Redis cache service
+    await redisCache.invalidateBrands();
+    
+    // Keep legacy cache invalidation for backward compatibility
     await invalidateCache('manufacturers:*');
     
     // Log manufacturer update activity
@@ -163,20 +164,15 @@ exports.updateManufacturer = async (req, res) => {
       }
     });
     
-    res.status(200).json({
-      success: true,
-      message: 'Manufacturer updated successfully',
-      manufacturer
-    });
+    logger.info(`[updateManufacturer] Manufacturer ${manufacturer._id} updated, cache invalidated`);
+    
+    return successResponse(res, { manufacturer }, 'Manufacturer updated successfully');
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Manufacturer name already exists' 
-      });
+      return errorResponse(res, 'Manufacturer name already exists', null, 400);
     }
     logger.error(`[updateManufacturer] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -188,7 +184,7 @@ exports.deleteManufacturer = async (req, res) => {
     const manufacturer = await Manufacturer.findById(req.params.id);
     
     if (!manufacturer) {
-      return res.status(404).json({ success: false, message: 'Manufacturer not found' });
+      return errorResponse(res, 'Manufacturer not found', null, 404);
     }
     
     // Soft delete - just deactivate (allow even if products exist)
@@ -208,13 +204,10 @@ exports.deleteManufacturer = async (req, res) => {
       req
     });
     
-    res.status(200).json({
-      success: true,
-      message: 'Manufacturer deactivated successfully'
-    });
+    return successResponse(res, null, 'Manufacturer deactivated successfully');
   } catch (error) {
     logger.error(`[deleteManufacturer] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
 
@@ -224,12 +217,12 @@ exports.deleteManufacturer = async (req, res) => {
 exports.uploadManufacturerLogo = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Please upload a logo' });
+      return errorResponse(res, 'Please upload a logo', null, 400);
     }
     
     const manufacturer = await Manufacturer.findById(req.params.id);
     if (!manufacturer) {
-      return res.status(404).json({ success: false, message: 'Manufacturer not found' });
+      return errorResponse(res, 'Manufacturer not found', null, 404);
     }
     
     // Cloudinary upload result is in req.file
@@ -241,13 +234,9 @@ exports.uploadManufacturerLogo = async (req, res) => {
     
     await manufacturer.save();
     
-    res.status(200).json({
-      success: true,
-      message: 'Manufacturer logo uploaded successfully',
-      logo: manufacturer.logo
-    });
+    return successResponse(res, { logo: manufacturer.logo }, 'Manufacturer logo uploaded successfully');
   } catch (error) {
     logger.error(`[uploadManufacturerLogo] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
