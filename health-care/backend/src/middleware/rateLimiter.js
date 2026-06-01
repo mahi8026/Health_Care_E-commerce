@@ -122,12 +122,14 @@ function createLimiter({
  *
  * Applied to: POST /api/auth/login, POST /api/auth/register
  * Requirement: 10.1
+ * 
+ * Key prefix changed to v2 to invalidate old Redis cache.
  */
 const authLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: 'Too many authentication attempts. Please try again in 15 minutes.',
-  keyPrefix: 'rl:auth:'
+  keyPrefix: 'rl:auth:v2:'
 });
 
 /**
@@ -139,12 +141,14 @@ const authLimiter = createLimiter({
  * Note: Homepage makes 14+ API calls on load. With caching, most users
  * will make 20-50 requests per session. 1000/15min = ~67 req/min allows
  * normal browsing while still protecting against abuse.
+ * 
+ * Key prefix changed to v2 to invalidate old Redis cache with 100 limit.
  */
 const apiLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
   max: 1000,
   message: 'Too many requests from this IP. Please try again later.',
-  keyPrefix: 'rl:api:'
+  keyPrefix: 'rl:api:v2:'
 });
 
 /**
