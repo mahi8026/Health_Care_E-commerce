@@ -2,7 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install --legacy-peer-deps",
-  "ignoreCommand": "exit 0",
   "env": {
     "NODE_ENV": "production",
     "HUSKY": "0",
