@@ -34,7 +34,7 @@
   "author": "MedCore BD",
   "license": "MIT",
   "dependencies": {
-    "@sentry/node": "^8.0.0",
+    "@sentry/node": "^10.55.0",
     "@sentry/profiling-node": "^8.0.0",
     "@sentry/tracing": "^7.114.0",
     "axios": "^1.15.2",
