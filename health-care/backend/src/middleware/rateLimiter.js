@@ -118,27 +118,31 @@ function createLimiter({
 }
 
 /**
- * Auth rate limiter — 5 requests per 15 minutes per IP.
+ * Auth rate limiter — 10 requests per 15 minutes per IP.
  *
  * Applied to: POST /api/auth/login, POST /api/auth/register
  * Requirement: 10.1
  */
 const authLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 10,
   message: 'Too many authentication attempts. Please try again in 15 minutes.',
   keyPrefix: 'rl:auth:'
 });
 
 /**
- * General API rate limiter — 100 requests per 15 minutes per IP.
+ * General API rate limiter — 1000 requests per 15 minutes per IP.
  *
  * Applied to: all /api/* routes
  * Requirement: 10.2
+ * 
+ * Note: Homepage makes 14+ API calls on load. With caching, most users
+ * will make 20-50 requests per session. 1000/15min = ~67 req/min allows
+ * normal browsing while still protecting against abuse.
  */
 const apiLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
   message: 'Too many requests from this IP. Please try again later.',
   keyPrefix: 'rl:api:'
 });
