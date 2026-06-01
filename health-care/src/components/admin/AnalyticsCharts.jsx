@@ -1,17 +1,22 @@
 'use client';
 
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+let BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer;
+
+try {
+  const recharts = require('recharts');
+  BarChart = recharts.BarChart;
+  Bar = recharts.Bar;
+  LineChart = recharts.LineChart;
+  Line = recharts.Line;
+  XAxis = recharts.XAxis;
+  YAxis = recharts.YAxis;
+  CartesianGrid = recharts.CartesianGrid;
+  Tooltip = recharts.Tooltip;
+  Legend = recharts.Legend;
+  ResponsiveContainer = recharts.ResponsiveContainer;
+} catch (error) {
+  console.warn('Recharts failed to load:', error.message);
+}
 
 /**
  * Monthly revenue and order data for the analytics charts.
@@ -69,6 +74,30 @@ function OrdersTooltip({ active, payload, label }) {
  * (via next/dynamic lazy loading).
  */
 export default function AnalyticsCharts() {
+  // If recharts failed to load, show fallback
+  if (!BarChart || !LineChart) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
+          <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+            Monthly Revenue
+          </h3>
+          <div className="h-[200px] flex items-center justify-center text-[12px] text-[var(--color-text-secondary)]">
+            Chart unavailable
+          </div>
+        </div>
+        <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
+          <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+            Monthly Orders
+          </h3>
+          <div className="h-[200px] flex items-center justify-center text-[12px] text-[var(--color-text-secondary)]">
+            Chart unavailable
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       {/* Monthly Revenue Bar Chart */}
