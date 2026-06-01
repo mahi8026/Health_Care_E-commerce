@@ -14,15 +14,20 @@ let reconnectionAttempts = 0;
 let isReconnecting = false;
 
 // Connection pool options per Requirements 12.1, 12.3, 12.4, 12.6, 12.8
+// Optimized for M0 free tier and production stability
+const isProduction = process.env.NODE_ENV === 'production';
 const POOL_OPTIONS = {
-  minPoolSize: 10,
-  maxPoolSize: 50,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 10000,
-  heartbeatFrequencyMS: 30000,
-  waitQueueTimeoutMS: 5000,
+  minPoolSize: isProduction ? 2 : 10,  // Reduced for M0 free tier
+  maxPoolSize: isProduction ? 10 : 50, // Reduced for M0 free tier
+  serverSelectionTimeoutMS: isProduction ? 30000 : 5000, // Increased for production latency
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: isProduction ? 30000 : 10000, // Increased for production
+  heartbeatFrequencyMS: 10000, // More frequent heartbeats
+  waitQueueTimeoutMS: 10000,
   retryWrites: true,
   retryReads: true,
+  maxIdleTimeMS: 30000, // Close idle connections after 30s
+  compressors: ['zlib'], // Enable compression to reduce bandwidth
 };
 
 // Helper function to get pool metrics — Requirement 12.8
@@ -82,17 +87,25 @@ const logPoolMetrics = () => {
   }
 };
 
-// Exponential backoff reconnection function
+// Exponential backoff reconnection function with max attempts
+const MAX_RECONNECTION_ATTEMPTS = 10;
+
 const attemptReconnection = () => {
   if (isReconnecting) return;
+  
+  if (reconnectionAttempts >= MAX_RECONNECTION_ATTEMPTS) {
+    logger.error(`MongoDB reconnection failed after ${MAX_RECONNECTION_ATTEMPTS} attempts. Manual intervention required.`);
+    return;
+  }
 
   isReconnecting = true;
   reconnectionAttempts++;
 
   // Calculate delay: Math.min(2^attempt * 1000, 30000)
-  const delay = Math.min(Math.pow(2, reconnectionAttempts) * 1000, 30000);
+  // Start with shorter delays for faster recovery
+  const delay = Math.min(Math.pow(2, reconnectionAttempts) * 500, 30000);
 
-  logger.warn(`MongoDB reconnection attempt ${reconnectionAttempts} in ${delay}ms...`);
+  logger.warn(`MongoDB reconnection attempt ${reconnectionAttempts}/${MAX_RECONNECTION_ATTEMPTS} in ${delay}ms...`);
 
   setTimeout(async () => {
     try {
@@ -103,7 +116,11 @@ const attemptReconnection = () => {
     } catch (error) {
       logger.error(`MongoDB reconnection attempt ${reconnectionAttempts} failed: ${error.message}`);
       isReconnecting = false;
-      attemptReconnection();
+      
+      // Continue trying if under max attempts
+      if (reconnectionAttempts < MAX_RECONNECTION_ATTEMPTS) {
+        attemptReconnection();
+      }
     }
   }, delay);
 };
