@@ -1,0 +1,13 @@
+{
+  "name": "medcore-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MedCore BD Monorepo",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7"
+  }
+}

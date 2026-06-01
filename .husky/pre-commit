@@ -1,0 +1,4 @@
+# Run lint-staged to lint only staged files in both frontend and backend
+npx lint-staged
+
+
