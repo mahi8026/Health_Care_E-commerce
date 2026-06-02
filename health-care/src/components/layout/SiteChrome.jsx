@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import TopBar from '@/components/layout/TopBar';
 import HeaderWrapper from '@/components/layout/HeaderWrapper';
 import Footer from '@/components/layout/Footer';
 import BottomNav from '@/components/layout/BottomNav';
@@ -35,6 +36,7 @@ export default function SiteChrome({ children }) {
       {showStoreNav && <NavScrollEffect />}
       {showStoreNav && (
         <div className="site-nav-shell">
+          <TopBar />
           <HeaderWrapper onCartClick={() => setCartSidebarOpen(true)} />
         </div>
       )}

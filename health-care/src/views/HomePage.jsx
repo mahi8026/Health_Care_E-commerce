@@ -705,21 +705,6 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* TRUST BAR — desktop only */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-trust-bar hidden md:block" style={{ padding: '14px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-          {[{ icon: '🚚', text: t('home.freeDelivery') }, { icon: '❄️', text: t('home.coldChain') }, { icon: '🔧', text: t('home.freeInstall') }, { icon: '📞', text: t('home.support247') }, { icon: '↩', text: t('home.returns30') }].map(({ icon, text }) => (
-            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#374151', fontWeight: 500 }}>
-              <span style={{ fontSize: 16 }}>{icon}</span>{text}
-            </div>
-          ))}
-        </div>
-      </section>
-
-
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '32px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
