@@ -171,20 +171,20 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-cyan-400 to-transparent rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
           </div>
 
-          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
-            <Breadcrumb items={breadcrumbs} variant="embedded" className="mb-4 opacity-80" />
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6 relative z-10">
+            <Breadcrumb items={breadcrumbs} variant="embedded" className="mb-2 opacity-80" />
             
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-6 items-center">
               <div className="animate-slide-up">
-                <h1 className="text-[32px] md:text-[42px] font-bold mb-3 font-[family-name:var(--font-lora)] leading-tight">
+                <h1 className="text-[28px] md:text-[38px] font-bold mb-2 font-[family-name:var(--font-lora)] leading-tight">
                   Laboratory Reagents Store
                 </h1>
-                <p className="text-[15px] text-cyan-100 mb-6 leading-relaxed max-w-xl">
+                <p className="text-[14px] text-cyan-100 mb-4 leading-relaxed max-w-xl">
                   Premium laboratory reagents and diagnostic kits with temperature-controlled cold-chain delivery across Bangladesh. ISO 13485 certified products from global manufacturers.
                 </p>
                 
                 {/* Storage legend with icons */}
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {STORAGE_LEGEND.map(({ label, icon, className }) => (
                     <div
                       key={label}
