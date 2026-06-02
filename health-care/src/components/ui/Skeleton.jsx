@@ -1,101 +1,124 @@
 /**
- * Skeleton loading placeholder component for consistent loading states.
+ * Skeleton Loader Components
  * 
- * @param {Object} props
- * @param {string} [props.variant] - Skeleton variant: 'text', 'circular', 'rectangular'
- * @param {string} [props.width] - Width (CSS value)
- * @param {string} [props.height] - Height (CSS value)
- * @param {string} [props.className] - Additional CSS classes
+ * Usage:
+ * <Skeleton className="h-4 w-32" />
+ * <SkeletonCard />
+ * <SkeletonProductCard />
  */
-export default function Skeleton({ 
-  variant = 'rectangular', 
-  width, 
-  height, 
-  className = '' 
-}) {
-  const baseClasses = 'animate-pulse bg-gray-200';
-  
-  const variantClasses = {
-    text: 'rounded h-4',
-    circular: 'rounded-full',
-    rectangular: 'rounded-lg'
-  };
 
-  const style = {};
-  if (width) style.width = width;
-  if (height) style.height = height;
-
+export function Skeleton({ className = '', ...props }) {
   return (
-    <div 
-      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
-      style={style}
-      aria-hidden="true"
+    <div
+      className={`animate-shimmer bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] rounded ${className}`}
+      {...props}
     />
   );
 }
 
-/**
- * Product detail page skeleton loader
- */
-export function ProductDetailSkeleton() {
+export function SkeletonText({ lines = 3, className = '' }) {
   return (
-    <div className="bg-page min-h-screen pb-24 md:pb-8">
-      {/* Breadcrumb skeleton */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
-          <div className="flex items-center gap-2">
-            <Skeleton width="60px" height="16px" />
-            <Skeleton width="80px" height="16px" />
-            <Skeleton width="120px" height="16px" />
-          </div>
-        </div>
-      </div>
+    <div className={`space-y-2 ${className}`}>
+      {Array.from({ length: lines }).map((_, i) => (
+        <Skeleton
+          key={i}
+          className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`}
+        />
+      ))}
+    </div>
+  );
+}
 
-      {/* Main content skeleton */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-6 xl:gap-8">
-          {/* Image gallery skeleton */}
-          <div>
-            <Skeleton height="500px" className="mb-4" />
-            <div className="flex gap-2">
-              {[1, 2, 3, 4].map(i => (
-                <Skeleton key={i} width="80px" height="80px" />
-              ))}
-            </div>
-          </div>
+export function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
+      {/* Image */}
+      <Skeleton className="h-48 w-full" />
+      
+      {/* Title */}
+      <Skeleton className="h-6 w-3/4" />
+      
+      {/* Description */}
+      <SkeletonText lines={2} />
+      
+      {/* Button */}
+      <Skeleton className="h-10 w-full" />
+    </div>
+  );
+}
 
-          {/* Product info skeleton */}
-          <div className="space-y-4">
-            <Skeleton height="32px" width="80%" />
-            <Skeleton height="24px" width="40%" />
-            <Skeleton height="20px" width="60%" />
-            <div className="space-y-2 mt-6">
-              <Skeleton height="16px" width="100%" />
-              <Skeleton height="16px" width="90%" />
-              <Skeleton height="16px" width="95%" />
-            </div>
-            <Skeleton height="48px" width="100%" className="mt-6" />
-          </div>
+export function SkeletonProductCard() {
+  return (
+    <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col">
+      {/* Image */}
+      <Skeleton className="h-[140px] sm:h-[160px] md:h-[130px] w-full" />
+      
+      {/* Content */}
+      <div className="p-2.5 sm:p-3 space-y-2">
+        {/* Brand */}
+        <Skeleton className="h-3 w-20" />
+        
+        {/* Product Name */}
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        
+        {/* Rating */}
+        <Skeleton className="h-3 w-24" />
+        
+        {/* Price */}
+        <Skeleton className="h-5 w-28" />
+        
+        {/* Stock */}
+        <Skeleton className="h-3 w-32" />
+        
+        {/* Buttons */}
+        <div className="grid grid-cols-2 gap-2 pt-2">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
         </div>
       </div>
     </div>
   );
 }
 
-/**
- * Product list skeleton loader
- */
-export function ProductListSkeleton({ count = 8 }) {
+export function SkeletonTable({ rows = 5, columns = 4 }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-      {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-white rounded-xl border border-gray-100 p-3 space-y-3">
-          <Skeleton height="200px" />
-          <Skeleton height="16px" width="80%" />
-          <Skeleton height="14px" width="60%" />
-          <Skeleton height="20px" width="40%" />
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex gap-4">
+        {Array.from({ length: columns }).map((_, i) => (
+          <Skeleton key={i} className="h-8 flex-1" />
+        ))}
+      </div>
+      
+      {/* Rows */}
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div key={rowIndex} className="flex gap-4">
+          {Array.from({ length: columns }).map((_, colIndex) => (
+            <Skeleton key={colIndex} className="h-12 flex-1" />
+          ))}
         </div>
       ))}
     </div>
+  );
+}
+
+export function SkeletonAvatar({ size = 'md' }) {
+  const sizeClasses = {
+    sm: 'w-8 h-8',
+    md: 'w-12 h-12',
+    lg: 'w-16 h-16',
+    xl: 'w-24 h-24',
+  };
+
+  return <Skeleton className={`${sizeClasses[size]} rounded-full`} />;
+}
+
+export function SkeletonImage({ aspectRatio = '16/9', className = '' }) {
+  return (
+    <Skeleton
+      className={className}
+      style={{ aspectRatio }}
+    />
   );
 }

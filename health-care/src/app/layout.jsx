@@ -15,6 +15,7 @@ import StructuredData, {
 import Script from "next/script";
 import LazyChatContainer from "@/components/chat/LazyChatContainer";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import ToastProvider from "@/components/ui/ToastProvider";
 
 export const dynamic = 'force-dynamic';
 
@@ -148,6 +149,9 @@ export default function RootLayout({ children }) {
             </CartProvider>
           </AuthProvider>
         </LanguageProvider>
+
+        {/* Toast Notifications - Global */}
+        <ToastProvider />
 
         {/* Google Analytics 4 — loaded after interactive to avoid blocking */}
         {gaId && (

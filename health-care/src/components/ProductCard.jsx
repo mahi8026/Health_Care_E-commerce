@@ -80,10 +80,10 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
 
   return (
     <div 
-      className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-lg transition-shadow cursor-pointer"
+      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer"
       onClick={handleCardClick}
     >
-      {/* Image Container - Responsive Height */}
+      {/* Image Container - Responsive Height with hover zoom */}
       <div className="h-[140px] sm:h-[160px] md:h-[130px] bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {primaryImage ? (
           <>
@@ -92,7 +92,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
               alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
-              className="object-cover"
+              className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
             />
             {/* Fallback shown when image fails to load */}
             <div className="hidden absolute inset-0 items-center justify-center text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">
@@ -106,9 +106,9 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
           </div>
         )}
         
-        {/* Save Badge - Top Left - Responsive */}
+        {/* Save Badge - Top Left - Responsive with entrance animation */}
         {hasDiscount && (
-          <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-[#7C3AED] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md shadow-md">
+          <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-[#7C3AED] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md shadow-md animate-bounce-in">
             <span className="text-[9px] sm:text-[11px] font-semibold">
               Save: {savings.toLocaleString()}৳ (-{discountPercent}%)
             </span>
@@ -195,35 +195,41 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
           <span className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)]">{product.stock}</span>
         </div>
         
-        {/* Action Buttons - Responsive */}
+        {/* Action Buttons - Responsive with enhanced interactions */}
         <div className="grid grid-cols-2 gap-[5px] sm:gap-[6px]">
           <button 
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="bg-[#0B2545] text-white border-none px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+            className="relative overflow-hidden bg-[#0B2545] text-white border-none px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] hover:shadow-lg active:scale-95 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1 group/btn"
           >
-            {addingToCart ? (
-              <>
-                <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                </svg>
-                <span className="hidden sm:inline">{t('common.loading')}</span>
-              </>
-            ) : (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:inline">
-                  <circle cx="9" cy="21" r="1"/>
-                  <circle cx="20" cy="21" r="1"/>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                </svg>
-                {t('products.addToCart')}
-              </>
-            )}
+            {/* Ripple effect container */}
+            <span className="absolute inset-0 overflow-hidden">
+              <span className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-pulse-glow"></span>
+            </span>
+            <span className="relative flex items-center gap-1">
+              {addingToCart ? (
+                <>
+                  <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  <span className="hidden sm:inline">{t('common.loading')}</span>
+                </>
+              ) : (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:inline group-hover/btn:animate-cart-bounce">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                  </svg>
+                  {t('products.addToCart')}
+                </>
+              )}
+            </span>
           </button>
           <button 
             onClick={handleViewDetails}
-            className="bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-gray-50 transition-colors"
+            className="bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-gray-50 hover:border-[#0d2d52] active:scale-95 transition-all duration-200"
           >
             {t('products.viewDetails')}
           </button>

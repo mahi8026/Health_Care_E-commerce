@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import GA4Tracker from '@/services/GA4Tracker';
-
+import { showToast } from '@/components/ui/Toast';
 import { API } from '@/constants/api';
 
 import { CART_CONFIG } from '@/constants/config';
@@ -158,6 +158,7 @@ export function CartProvider({ children }) {
     
     if (!productId) {
       process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Product missing ID:', product);
+      showToast.error('Failed to add product to cart');
       return;
     }
 
@@ -170,7 +171,10 @@ export function CartProvider({ children }) {
     };
 
     setCart(prevCart => {
-      if (prevCart.length >= MAX_CART_ITEMS) return prevCart;
+      if (prevCart.length >= MAX_CART_ITEMS) {
+        showToast.warning(`Cart is full! Maximum ${MAX_CART_ITEMS} items allowed.`);
+        return prevCart;
+      }
       const existingItem = prevCart.find(item => (item.id || item._id) === productId);
       GA4Tracker.trackAddToCart(product, safeQty);
       
@@ -181,8 +185,10 @@ export function CartProvider({ children }) {
             ? { ...item, quantity: item.quantity + safeQty }
             : item
         );
+        showToast.success(`Updated ${product.name} quantity in cart`);
       } else {
         newCart = [...prevCart, { ...normalizedProduct, quantity: safeQty }];
+        showToast.success(`${product.name} added to cart!`);
       }
 
       updateBackendCart('add', productId, safeQty);
@@ -195,6 +201,7 @@ export function CartProvider({ children }) {
       const item = prevCart.find(i => i.id === productId);
       if (item) {
         GA4Tracker.trackRemoveFromCart(item, item.quantity);
+        showToast.info(`${item.name} removed from cart`);
       }
       
       // Update backend if logged in
@@ -225,6 +232,7 @@ export function CartProvider({ children }) {
 
   const clearCart = useCallback(() => {
     setCart([]);
+    showToast.success('Cart cleared successfully');
     
     // Update backend if logged in
     updateBackendCart('clear');

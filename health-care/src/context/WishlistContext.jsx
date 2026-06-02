@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-
+import { showToast } from '@/components/ui/Toast';
 import { API } from '@/constants/api';
 
 const WishlistContext = createContext();
@@ -19,6 +19,7 @@ export function WishlistProvider({ children }) {
     } else {
       setWishlist([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchWishlist = async () => {
@@ -42,6 +43,7 @@ export function WishlistProvider({ children }) {
 
   const toggleWishlist = async (productId) => {
     if (!isAuthenticated()) {
+      showToast.warning('Please login to add items to wishlist');
       return { success: false, requiresLogin: true };
     }
 
@@ -56,18 +58,22 @@ export function WishlistProvider({ children }) {
       if (data.success) {
         // Refresh wishlist
         await fetchWishlist();
+        showToast.success(data.data.added ? 'Added to wishlist!' : 'Removed from wishlist');
         return { success: true, added: data.data.added };
       }
       
+      showToast.error(data.message || 'Failed to update wishlist');
       return { success: false, message: data.message };
     } catch (error) {
       process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Toggle wishlist error:', error);
+      showToast.error('Failed to update wishlist');
       return { success: false, message: 'Failed to update wishlist' };
     }
   };
 
   const removeFromWishlist = async (productId) => {
     if (!isAuthenticated()) {
+      showToast.warning('Please login to manage wishlist');
       return { success: false, requiresLogin: true };
     }
 
@@ -82,12 +88,15 @@ export function WishlistProvider({ children }) {
       if (data.success) {
         // Update local state
         setWishlist(wishlist.filter(p => p._id !== productId));
+        showToast.success('Removed from wishlist');
         return { success: true };
       }
       
+      showToast.error(data.message || 'Failed to remove from wishlist');
       return { success: false, message: data.message };
     } catch (error) {
       process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Remove from wishlist error:', error);
+      showToast.error('Failed to remove from wishlist');
       return { success: false, message: 'Failed to remove from wishlist' };
     }
   };
