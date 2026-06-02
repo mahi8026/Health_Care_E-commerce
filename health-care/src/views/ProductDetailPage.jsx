@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
@@ -10,7 +10,7 @@ import ProductInfoPanel from '@/components/product/ProductInfoPanel';
 import ProductTabsRedesigned from '@/components/product/ProductTabsRedesigned';
 import ProductReviews from '@/components/product/ProductReviews';
 import FrequentlyBoughtRedesigned from '@/components/product/FrequentlyBoughtRedesigned';
-import { ProductDetailSkeleton } from '@/components/ui/Skeleton';
+import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
@@ -28,16 +28,27 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   const [selectedConnectivity, setSelectedConnectivity] = useState('');
   const [selectedWarranty, setSelectedWarranty] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
-
-  // Initialize variant selections when product loads
+  
+  // Previous product ID to detect when product changes
+  const prevProductIdRef = useRef(null);
+  
+  // Initialize variants when product first loads or changes
   useEffect(() => {
-    if (product) {
-      if (product.variants?.connectivity?.length) {
-        setSelectedConnectivity(product.variants.connectivity[0]);
-      }
-      if (product.variants?.warranty?.length) {
-        setSelectedWarranty(product.variants.warranty[0]);
-      }
+    const currentProductId = product?._id || product?.id;
+    
+    // Only initialize if product ID has changed (new product loaded)
+    if (product && currentProductId !== prevProductIdRef.current) {
+      prevProductIdRef.current = currentProductId;
+      
+      // Batch state updates using queueMicrotask to avoid synchronous setState warning
+      queueMicrotask(() => {
+        if (product.variants?.connectivity?.length) {
+          setSelectedConnectivity(product.variants.connectivity[0]);
+        }
+        if (product.variants?.warranty?.length) {
+          setSelectedWarranty(product.variants.warranty[0]);
+        }
+      });
     }
   }, [product]);
 
@@ -59,7 +70,36 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
   // Loading state
   if (loading) {
-    return <ProductDetailSkeleton />;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* Image skeleton */}
+          <div>
+            <Skeleton className="w-full aspect-square rounded-lg" />
+            <div className="flex gap-2 mt-4">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="w-20 h-20 rounded" />
+              ))}
+            </div>
+          </div>
+          
+          {/* Info skeleton */}
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-6 w-1/2" />
+            <SkeletonText lines={3} />
+            <Skeleton className="h-12 w-32" />
+            <div className="flex gap-2 pt-4">
+              <Skeleton className="h-12 flex-1" />
+              <Skeleton className="h-12 w-32" />
+            </div>
+          </div>
+        </div>
+        
+        {/* Tabs skeleton */}
+        <Skeleton className="h-64 w-full rounded-lg" />
+      </div>
+    );
   }
 
   // Error state
