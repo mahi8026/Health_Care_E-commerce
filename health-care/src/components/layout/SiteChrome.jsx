@@ -9,7 +9,6 @@ import BottomNav from '@/components/layout/BottomNav';
 import NavScrollEffect from '@/components/layout/NavScrollEffect';
 import FloatingCartButton from '@/components/ui/FloatingCartButton';
 import CartSidebar from '@/components/ui/CartSidebar';
-import ScrollToTop from '@/components/ui/ScrollToTop';
 import CompareBar from '@/components/compare/CompareBar';
 
 /** Routes with their own layout — no store footer / bottom nav. */
@@ -52,7 +51,6 @@ export default function SiteChrome({ children }) {
         <>
           <FloatingCartButton onClick={() => setCartSidebarOpen(true)} />
           <CartSidebar isOpen={cartSidebarOpen} onClose={() => setCartSidebarOpen(false)} />
-          <ScrollToTop />
           <CompareBar />
         </>
       )}

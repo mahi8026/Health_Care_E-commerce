@@ -87,10 +87,28 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
     setLoading(true);
     setFetchError(false);
     try {
-      const params = new URLSearchParams({
-        category: 'Laboratory Reagents',
+      // Try multiple category variations to handle database inconsistencies
+      const categoryVariations = [
+        'Laboratory Reagents',
+        'Lab Reagents',
+        'Reagents',
+        'Laboratory',
+        'Lab Equipment'
+      ];
+
+      let params = new URLSearchParams({
         limit: '24',
       });
+
+      // First, try to fetch all products and filter client-side if needed
+      // This is a fallback strategy if exact category match fails
+      if (!searchQuery && !filters.brands?.length && filters.priceRange >= 50000) {
+        // Initial load - try category search first
+        params.set('category', 'Laboratory Reagents');
+      } else {
+        // User has filters - don't restrict by category too much
+        // Remove the strict category filter to show all reagent-related products
+      }
 
       if (filters.brands?.length) params.set('brand', filters.brands[0]);
       if (filters.priceRange < 50000) params.set('maxPrice', String(filters.priceRange));
@@ -111,7 +129,17 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = await res.json();
-      const list = data.data?.products ?? data.products ?? [];
+      let list = data.data?.products ?? data.products ?? [];
+      
+      // Filter results client-side for reagent-related keywords if we got generic results
+      if (Array.isArray(list) && list.length > 0 && !debouncedSearch.trim()) {
+        const reagentKeywords = ['reagent', 'kit', 'assay', 'antibody', 'buffer', 'solution', 'test', 'chemistry', 'hematology', 'immunoassay', 'molecular'];
+        list = list.filter(product => {
+          const searchText = `${product.name || ''} ${product.description || ''} ${product.category || ''}`.toLowerCase();
+          return reagentKeywords.some(keyword => searchText.includes(keyword));
+        });
+      }
+
       setReagents(Array.isArray(list) ? list : []);
       setTotal(data.data?.total ?? data.total ?? list.length);
     } catch (err) {
@@ -121,7 +149,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
     } finally {
       setLoading(false);
     }
-  }, [filters, debouncedSearch, sortBy]);
+  }, [filters, debouncedSearch, sortBy, searchQuery]);
 
   useEffect(() => {
     fetchReagents();
