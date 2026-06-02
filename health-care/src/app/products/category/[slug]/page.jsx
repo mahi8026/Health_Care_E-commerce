@@ -14,13 +14,16 @@ import ProductsPage from '@/views/ProductsPage';
 import { CATEGORY_SEO, SITE_CONFIG } from '@/config/seo';
 import { CATEGORY_SLUG_MAP, CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
-// Tell Next.js which slugs to pre-render at build time
-export function generateStaticParams() {
+// Enable dynamic params for SSR rendering
+export const dynamic = 'force-dynamic';
+
+// Generate static params at build time for all known category slugs
+export async function generateStaticParams() {
   return Object.keys(CATEGORY_SLUG_MAP).map(slug => ({ slug }));
 }
 
 // Per-category metadata — full title, description, canonical, OG
-export function generateMetadata({ params }) {
+export async function generateMetadata({ params }) {
   const categoryName = CATEGORY_SLUG_MAP[params.slug];
   if (!categoryName) return {};
 
