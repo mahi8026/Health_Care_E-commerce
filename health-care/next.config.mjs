@@ -27,12 +27,21 @@ const nextConfig = {
   async rewrites() {
     // NEXT_PUBLIC_API_URL may be '/api' (relative) in dev — always proxy to real backend
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`,
-      },
-    ];
+    return {
+      beforeFiles: [
+        // Keep category routes intact - don't redirect them
+        {
+          source: '/products/category/:slug',
+          destination: '/products/category/:slug',
+        },
+      ],
+      afterFiles: [
+        {
+          source: '/api/:path*',
+          destination: `${backendUrl}/api/:path*`,
+        },
+      ],
+    };
   },
 
   // Redirect old query-param category URLs to slug-based URLs
