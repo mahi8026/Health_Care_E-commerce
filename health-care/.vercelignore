@@ -38,8 +38,7 @@ dist
 .DS_Store
 Thumbs.db
 
-# Git
-.git
+# Git (Keep .git folder, only ignore .gitignore)
 .gitignore
 
 # Documentation (not needed for deployment)
