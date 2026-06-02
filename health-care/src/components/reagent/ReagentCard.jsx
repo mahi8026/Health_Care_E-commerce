@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
-import Toast from '@/components/ui/Toast';
+import { showToast } from '@/components/ui/Toast';
 import { getProductBrandName, getProductCategoryName } from '@/utils/helpers';
 import { FaShoppingCart } from 'react-icons/fa';
 
@@ -45,7 +45,6 @@ function formatExpiry(reagent) {
 
 export default function ReagentCard({ reagent, onProductClick }) {
   const { addToCart } = useCart();
-  const [showToast, setShowToast] = useState(false);
 
   const brandName = getProductBrandName(reagent);
   const categoryName = getProductCategoryName(reagent);
@@ -73,7 +72,7 @@ export default function ReagentCard({ reagent, onProductClick }) {
       brand: brandName,
       category: categoryName || 'Laboratory Reagents',
     }, 1);
-    setShowToast(true);
+    // Toast is shown automatically by CartContext
   };
 
   const handleCardClick = () => {
@@ -166,15 +165,6 @@ export default function ReagentCard({ reagent, onProductClick }) {
           </button>
         </div>
       </div>
-
-      {showToast && (
-        <Toast
-          message={`${reagent.name} added to cart`}
-          type="success"
-          duration={2000}
-          onClose={() => setShowToast(false)}
-        />
-      )}
     </article>
   );
 }
