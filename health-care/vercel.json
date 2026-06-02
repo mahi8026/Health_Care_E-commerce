@@ -2,6 +2,8 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": ".next",
+  "devCommand": "npm run dev",
   "env": {
     "NODE_ENV": "production",
     "HUSKY": "0",
@@ -9,7 +11,20 @@
     "NEXT_PUBLIC_SITE_URL": "https://health-care-e-commerce-murex.vercel.app",
     "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "dm8eqxwlz",
     "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "ml_default",
-    "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "G-VCQNJESVNM"
+    "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "G-VCQNJESVNM",
+    "BACKEND_URL": "https://health-care-e-commerce.onrender.com"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "HUSKY": "0",
+      "NEXT_PUBLIC_API_URL": "https://health-care-e-commerce.onrender.com/api",
+      "NEXT_PUBLIC_SITE_URL": "https://health-care-e-commerce-murex.vercel.app",
+      "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "dm8eqxwlz",
+      "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "ml_default",
+      "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "G-VCQNJESVNM",
+      "BACKEND_URL": "https://health-care-e-commerce.onrender.com"
+    }
   },
   "headers": [
     {

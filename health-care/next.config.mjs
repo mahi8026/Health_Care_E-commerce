@@ -2,7 +2,7 @@
 
 // Validate required environment variables at build time
 // This ensures the build fails fast if critical env vars are missing
-import { validateEnv } from './src/utils/validateEnv.js';
+import { validateEnv } from './src/utils/validateEnv.mjs';
 try {
   validateEnv();
 } catch (error) {
