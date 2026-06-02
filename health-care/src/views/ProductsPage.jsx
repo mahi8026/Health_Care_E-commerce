@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
 import { useBrands } from '@/hooks/useBrands';
@@ -13,6 +13,7 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 export default function ProductsPage({ onProductClick, initialCategory }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const t = useT();
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
@@ -69,18 +70,41 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   const { categories, loading: categoriesLoading } = useCategories();
   const { brands, loading: brandsLoading } = useBrands();
 
+  // Sync filters to URL - but preserve category page URLs (/products/category/slug)
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set('q', searchQuery);
-    if (searchCategory) params.set('category', searchCategory);
-    if (filters.minPrice) params.set('minPrice', filters.minPrice);
-    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
-    if (filters.inStock) params.set('inStock', 'true');
-    if (filters.brands?.[0]) params.set('brand', filters.brands[0]);
-    if (sortBy !== 'name') params.set('sort', sortBy);
-    const qs = params.toString();
-    router.replace(qs ? `/products?${qs}` : '/products', { scroll: false });
-  }, [searchQuery, searchCategory, filters, sortBy, router]);
+    // If we're on a category page (/products/category/[slug]), don't redirect to /products?category=...
+    const isOnCategoryPage = pathname?.startsWith('/products/category/');
+    
+    if (isOnCategoryPage) {
+      // On category pages, only sync search and filters as query params, not the category itself
+      const params = new URLSearchParams();
+      if (searchQuery) params.set('q', searchQuery);
+      if (filters.minPrice) params.set('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      if (filters.inStock) params.set('inStock', 'true');
+      if (filters.brands?.[0]) params.set('brand', filters.brands[0]);
+      if (sortBy !== 'name') params.set('sort', sortBy);
+      
+      const qs = params.toString();
+      // Update query params only, keep the category slug in the URL
+      if (qs !== searchParams.toString()) {
+        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      }
+    } else {
+      // On /products page, include category in query params
+      const params = new URLSearchParams();
+      if (searchQuery) params.set('q', searchQuery);
+      if (searchCategory) params.set('category', searchCategory);
+      if (filters.minPrice) params.set('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      if (filters.inStock) params.set('inStock', 'true');
+      if (filters.brands?.[0]) params.set('brand', filters.brands[0]);
+      if (sortBy !== 'name') params.set('sort', sortBy);
+      
+      const qs = params.toString();
+      router.replace(qs ? `/products?${qs}` : '/products', { scroll: false });
+    }
+  }, [searchQuery, searchCategory, filters, sortBy, router, pathname, searchParams]);
 
   const productFilters = useMemo(() => ({
     search: searchQuery,
