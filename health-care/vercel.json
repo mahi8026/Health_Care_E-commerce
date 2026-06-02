@@ -4,6 +4,7 @@
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": ".next",
   "devCommand": "npm run dev",
+  "ignoreCommand": "exit 0",
   "env": {
     "NODE_ENV": "production",
     "HUSKY": "0",
