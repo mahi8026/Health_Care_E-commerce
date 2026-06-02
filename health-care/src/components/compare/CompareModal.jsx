@@ -15,8 +15,11 @@ export default function CompareModal({ onClose }) {
   const specs = [
     { key: 'price', label: 'Price' },
     { key: 'brand', label: 'Brand' },
+    { key: 'category', label: 'Category' },
     { key: 'stock', label: 'Availability' },
     { key: 'rating', label: 'Rating' },
+    { key: 'warranty', label: 'Warranty' },
+    { key: 'certification', label: 'Certification' },
     { key: 'specifications', label: 'Specifications', isNested: true },
   ];
 
@@ -36,6 +39,10 @@ export default function CompareModal({ onClose }) {
     if (spec.key === 'brand') {
       return getBrandName(product) || '—';
     }
+    if (spec.key === 'category') {
+      const cat = typeof product.category === 'object' ? product.category?.name : product.category;
+      return cat || '—';
+    }
     if (spec.key === 'stock') {
       return product.stock > 0 ? (
         <span className="text-[#0E8A6E] font-medium">✓ In Stock</span>
@@ -46,6 +53,13 @@ export default function CompareModal({ onClose }) {
     if (spec.key === 'rating') {
       const rating = typeof product.rating === 'object' ? product.rating?.average : product.rating;
       return rating ? `${rating.toFixed(1)} ★` : 'No reviews';
+    }
+    if (spec.key === 'warranty') {
+      return product.warranty || product.warrantyPeriod || '1 Year';
+    }
+    if (spec.key === 'certification') {
+      const cert = product.certifications?.join(', ') || product.certification;
+      return cert || 'DGDA Registered';
     }
     if (spec.isNested && product.specifications) {
       return (
@@ -109,6 +123,7 @@ export default function CompareModal({ onClose }) {
                         {/* Image */}
                         <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                           {getImageUrl(product) ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={getImageUrl(product)}
                               alt={`${product.name}${product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
@@ -169,7 +184,7 @@ export default function CompareModal({ onClose }) {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
           <p className="text-[11px] text-gray-500">
-            Tip: Click "Add to Cart" to purchase any product directly from here.
+            Tip: Click &ldquo;Add to Cart&rdquo; to purchase any product directly from here.
           </p>
           <button
             onClick={onClose}

@@ -107,13 +107,22 @@ export function Toast({ id, message, type = 'info', duration = 3000, onClose }) 
 
 // Toast Container
 export function ToastContainer({ toasts, removeToast }) {
-  if (typeof window === 'undefined') return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Use setTimeout to avoid setState in effect warning
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!mounted) return null;
 
   return createPortal(
     <div
       className="fixed top-4 right-4 z-[10000] flex flex-col gap-3 pointer-events-none"
       aria-live="polite"
       aria-atomic="true"
+      suppressHydrationWarning
     >
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">

@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState, useEffect, useRef, useCallback, memo } from 'react';
+import { useState, useEffect, useRef, useCallback, memo, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
@@ -27,6 +27,11 @@ import {
   FaShoppingCart,
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
+
+// Lazy load heavy components for better performance
+const SupportResources = lazy(() => import('@/components/home/SupportResources'));
+const VideoSection = lazy(() => import('@/components/home/VideoSection'));
 
 // ══════════════════════════════════════════════════════════════════════════════
 // FALLBACK DATA & CONSTANTS
@@ -95,6 +100,59 @@ function Skeleton({ w = '100%', h = 20, r = 8 }) {
     <div className="skeleton" style={{ width: w, height: h, borderRadius: r }} />
   );
 }
+
+// Product Card Skeleton for loading states
+const ProductCardSkeleton = memo(function ProductCardSkeleton() {
+  return (
+    <div style={{ background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
+      {/* Image skeleton */}
+      <div style={{ height: 190, background: '#F8FAFC' }}>
+        <Skeleton w="100%" h="100%" r={0} />
+      </div>
+      {/* Content skeleton */}
+      <div style={{ padding: '12px 14px 14px' }}>
+        <Skeleton w="60%" h={10} />
+        <div style={{ marginTop: 8 }}><Skeleton w="100%" h={14} /></div>
+        <div style={{ marginTop: 6 }}><Skeleton w="90%" h={14} /></div>
+        <div style={{ marginTop: 12 }}><Skeleton w="70%" h={20} /></div>
+      </div>
+    </div>
+  );
+});
+
+// Horizontal scroll product skeleton (smaller)
+const ProductCardSkeletonSmall = memo(function ProductCardSkeletonSmall() {
+  return (
+    <div style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ height: 160, background: '#F9FAFB' }}>
+        <Skeleton w="100%" h="100%" r={0} />
+      </div>
+      <div style={{ padding: '10px 12px' }}>
+        <Skeleton w="100%" h={11} />
+        <div style={{ marginTop: 6 }}><Skeleton w="60%" h={14} /></div>
+      </div>
+    </div>
+  );
+});
+
+// Top selling card skeleton (horizontal layout)
+const TopSellingCardSkeleton = memo(function TopSellingCardSkeleton() {
+  return (
+    <div style={{ display: 'flex', gap: 16, padding: 16, background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12 }}>
+      <div style={{ width: 140, height: 140, flexShrink: 0, background: '#F1F5F9', borderRadius: 8 }}>
+        <Skeleton w="100%" h="100%" r={8} />
+      </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <Skeleton w="40px" h={18} />
+        <Skeleton w="100%" h={16} />
+        <Skeleton w="80%" h={16} />
+        <div style={{ marginTop: 'auto' }}>
+          <Skeleton w="90px" h={24} />
+        </div>
+      </div>
+    </div>
+  );
+});
 
 const ProductCard = memo(function ProductCard({ product, onClick }) {
   const { addToCart } = useCart();
@@ -233,6 +291,17 @@ export default function HomePage() {
     labEquipment: [],
   });
   
+  // Loading states for all sections
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [dealLoading, setDealLoading] = useState(true);
+  const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
+  const [topSellingLoading, setTopSellingLoading] = useState(true);
+  const [categoryProductsLoading, setCategoryProductsLoading] = useState(true);
+  
+  // ── Memoized Values ────────────────────────────────────────────────────────
+  const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
+  const announcementItems = useMemo(() => buildAnnouncements(siteSettings), [siteSettings]);
+  
   // ── Effects ────────────────────────────────────────────────────────────────
 
   // Sticky navbar - throttled for better performance
@@ -268,7 +337,7 @@ export default function HomePage() {
     const count = heroSlides.filter(s => s.isActive).length || 4;
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % count);
-    }, 6000);
+    }, 5000); // Changed from 6000 to 5000 for better pacing
     return () => clearInterval(interval);
   }, [isSliderHovered, heroSlides]);
 
@@ -395,9 +464,11 @@ export default function HomePage() {
 
       const na = Array.isArray(newest.data) ? newest.data : (newest.data?.products || newest.products || []);
       setNewArrivals(Array.isArray(na) ? na : []);
+      setNewArrivalsLoading(false);
 
       const dealList = Array.isArray(deals.data) ? deals.data : (deals.data?.products || deals.products || []);
       setDealProducts(Array.isArray(dealList) ? dealList : []);
+      setDealLoading(false);
 
       const reviewList = reviews.data?.reviews || reviews.reviews || [];
       setTestimonials(Array.isArray(reviewList) ? reviewList : []);
@@ -407,6 +478,7 @@ export default function HomePage() {
 
       const topSellingList = Array.isArray(topSelling.data) ? topSelling.data : (topSelling.data?.products || topSelling.products || []);
       setTopSellingProducts(Array.isArray(topSellingList) ? topSellingList : []);
+      setTopSellingLoading(false);
 
       const diagnosticList = Array.isArray(diagnostic.data) ? diagnostic.data : (diagnostic.data?.products || diagnostic.products || []);
       const reagentsList = Array.isArray(reagents.data) ? reagents.data : (reagents.data?.products || reagents.products || []);
@@ -421,8 +493,15 @@ export default function HomePage() {
         ppe: Array.isArray(ppeList) ? ppeList : [],
         labEquipment: Array.isArray(labEquipCatList) ? labEquipCatList : [],
       });
+      setCategoryProductsLoading(false);
+      setIsLoadingData(false);
     }).catch(() => {
       setFeaturedLoading(false);
+      setNewArrivalsLoading(false);
+      setDealLoading(false);
+      setTopSellingLoading(false);
+      setCategoryProductsLoading(false);
+      setIsLoadingData(false);
       setCategories(FALLBACK_CATEGORIES);
       setFeaturedProducts([]);
     });
@@ -603,15 +682,8 @@ export default function HomePage() {
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 28, maxWidth: 480, lineHeight: 1.7 }}>
               {t('home.heroSubtitle')}
             </p>
-            <div style={{ display: 'flex', gap: 0, maxWidth: 520, marginBottom: 24, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.25)', width: '100%' }}>
-              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder={searchPlaceholder}
-                style={{ flex: 1, padding: '15px 18px', border: 'none', outline: 'none', fontSize: 14, color: '#1F2937', background: 'transparent', minWidth: 0 }} />
-              <button onClick={handleSearch}
-                style={{ padding: '15px 20px', background: '#0E8A6E', color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
-                onMouseEnter={e => e.currentTarget.style.background = '#0B7558'}
-                onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}>
-                {t('home.searchBtn')}
-              </button>
+            <div style={{ maxWidth: 520, marginBottom: 24, width: '100%' }}>
+              <EnhancedSearchBox placeholder={searchPlaceholder} />
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (
@@ -830,7 +902,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 7: DEAL OF THE DAY */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {dealProducts.length > 0 && (
+      {(dealLoading || dealProducts.length > 0) && (
         <section style={{ background: '#0B2545', padding: '24px 16px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             {/* Header row */}
@@ -885,9 +957,14 @@ export default function HomePage() {
             }}
               className="deal-grid"
             >
-              {dealProducts.slice(0, 4).map(product => (
-                <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
-              ))}
+              {dealLoading ? (
+                // Show 4 skeleton loaders
+                [...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)
+              ) : (
+                dealProducts.slice(0, 4).map(product => (
+                  <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -896,7 +973,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 7.5: TOP SELLING PRODUCTS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {topSellingProducts.length > 0 && (
+      {(topSellingLoading || topSellingProducts.length > 0) && (
         <section className="home-section" style={{ padding: '56px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
 
@@ -922,7 +999,11 @@ export default function HomePage() {
             {/* 2×2 Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}
               className="prod-grid-4">
-              {topSellingProducts.slice(0, 4).map((product, idx) => {
+              {topSellingLoading ? (
+                // Show 4 skeleton loaders
+                [...Array(4)].map((_, i) => <TopSellingCardSkeleton key={i} />)
+              ) : (
+                topSellingProducts.slice(0, 4).map((product, idx) => {
                 const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
                 const imgUrl = typeof imageData === 'string' ? imageData : imageData?.url;
                 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
@@ -1064,7 +1145,7 @@ export default function HomePage() {
                     </div>
                   </div>
                 );
-              })}
+              }))}
             </div>
           </div>
         </section>
@@ -1087,7 +1168,7 @@ export default function HomePage() {
           </div>
 
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+          <div role="tablist" aria-label="Product categories" style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
             {[
               { key: 'all', label: 'All Products' },
               { key: 'Diagnostic Equipment', label: '🩺 Diagnostic' },
@@ -1097,6 +1178,10 @@ export default function HomePage() {
             ].map(tab => (
               <button key={tab.key}
                 onClick={() => handleTabChange(tab.key)}
+                role="tab"
+                aria-selected={activeTab === tab.key}
+                aria-controls="featured-products-panel"
+                aria-label={`View ${tab.label}`}
                 className={activeTab === tab.key ? 'tab-active' : ''}
                 style={{ padding: '9px 18px', borderRadius: 8, border: '1.5px solid #E5E7EB',
                   background: activeTab === tab.key ? '#0B2545' : '#fff',
@@ -1108,12 +1193,10 @@ export default function HomePage() {
           </div>
 
           {/* Products grid */}
+          <div id="featured-products-panel" role="tabpanel" aria-label="Featured products">
           {featuredLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 64 }}>
-              <div style={{ width: 36, height: 36, border: '3px solid #E5E7EB',
-                borderTopColor: '#0B2545', borderRadius: '50%',
-                animation: 'spin 0.7s linear infinite' }} />
-              <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+              {[...Array(8)].map((_, i) => <ProductCardSkeleton key={i} />)}
             </div>
           ) : featuredProducts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '64px 24px', color: '#6B7280' }}>
@@ -1128,13 +1211,14 @@ export default function HomePage() {
               ))}
             </div>
           )}
+          </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {newArrivals.length > 0 && (
+      {(newArrivalsLoading || newArrivals.length > 0) && (
         <section className="home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -1146,13 +1230,19 @@ export default function HomePage() {
                   {t('home.newArrivals')}
                 </h2>
               </div>
-              <button onClick={() => router.push('/products?sortBy=newest')}
-                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none',
-                  border: 'none', cursor: 'pointer' }}>{t('home.viewAll')}</button>
+              {!newArrivalsLoading && (
+                <button onClick={() => router.push('/products?sortBy=newest')}
+                  style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none',
+                    border: 'none', cursor: 'pointer' }}>{t('home.viewAll')}</button>
+              )}
             </div>
             <div style={{ display: 'flex', gap: 16, overflowX: 'auto', padding: '4px 24px 16px',
               scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {newArrivals.map(p => {
+              {newArrivalsLoading ? (
+                // Show 6 skeleton loaders
+                [...Array(6)].map((_, i) => <ProductCardSkeletonSmall key={i} />)
+              ) : (
+                newArrivals.map(p => {
                 const img = p.images?.[0]?.url || p.images?.[0];
                 return (
                   <div key={p._id} className="product-card-hover"
@@ -1182,7 +1272,7 @@ export default function HomePage() {
                     </div>
                   </div>
                 );
-              })}
+              }))}
             </div>
           </div>
         </section>
@@ -1210,18 +1300,26 @@ export default function HomePage() {
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {categoryProducts.diagnostic.map(product => (
+              {categoryProductsLoading ? (
+                // Show 6 skeleton loaders
+                [...Array(6)].map((_, i) => (
+                  <div key={i} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                categoryProducts.diagnostic.map(product => (
                 <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
                   <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
                 </div>
-              ))}
+              )))}
             </div>
           </div>
         </section>
       )}
 
       {/* Category Section: Laboratory Reagents */}
-      {categoryProducts.reagents.length > 0 && (
+      {(categoryProductsLoading || categoryProducts.reagents.length > 0) && (
         <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
@@ -1238,18 +1336,26 @@ export default function HomePage() {
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {categoryProducts.reagents.map(product => (
-                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
-                </div>
-              ))}
+              {categoryProductsLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <div key={i} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                categoryProducts.reagents.map(product => (
+                  <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
       )}
 
       {/* Category Section: Hospital Machines */}
-      {categoryProducts.machines.length > 0 && (
+      {(categoryProductsLoading || categoryProducts.machines.length > 0) && (
         <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
@@ -1266,18 +1372,26 @@ export default function HomePage() {
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {categoryProducts.machines.map(product => (
-                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
-                </div>
-              ))}
+              {categoryProductsLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <div key={i} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                categoryProducts.machines.map(product => (
+                  <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
       )}
 
       {/* Category Section: PPE & Safety */}
-      {categoryProducts.ppe.length > 0 && (
+      {(categoryProductsLoading || categoryProducts.ppe.length > 0) && (
         <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
@@ -1294,18 +1408,26 @@ export default function HomePage() {
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {categoryProducts.ppe.map(product => (
-                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
-                </div>
-              ))}
+              {categoryProductsLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <div key={i} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                categoryProducts.ppe.map(product => (
+                  <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
       )}
 
       {/* Category Section: Lab Equipment */}
-      {categoryProducts.labEquipment.length > 0 && (
+      {(categoryProductsLoading || categoryProducts.labEquipment.length > 0) && (
         <section className="category-section home-section" style={{ padding: '40px 0' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="category-section-header" style={{ display: 'flex', justifyContent: 'space-between',
@@ -1322,11 +1444,19 @@ export default function HomePage() {
             </div>
             <div className="category-product-row" style={{ display: 'flex', gap: 16, overflowX: 'auto',
               padding: '0 24px 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {categoryProducts.labEquipment.map(product => (
-                <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
-                  <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
-                </div>
-              ))}
+              {categoryProductsLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <div key={i} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                categoryProducts.labEquipment.map(product => (
+                  <div key={product._id} style={{ minWidth: 200, maxWidth: 220, flexShrink: 0 }}>
+                    <ProductCard product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -1344,7 +1474,7 @@ export default function HomePage() {
             </h2>
           </div>
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {buildWhyUs(siteSettings).map(({ icon, title, desc }) => (
+            {whyUsItems.map(({ icon, title, desc }) => (
               <div key={title} className="trust-item"
                 style={{ padding: '24px', borderRadius: 16, border: '1px solid #E5E7EB', background: '#F9FAFB', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
@@ -1434,6 +1564,31 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SUPPORT & RESOURCES */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={
+        <div style={{ padding: '56px 24px', background: '#F8FAFC' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
+              <Skeleton w="180px" h={14} />
+              <div style={{ marginTop: 10 }}><Skeleton w="300px" h={28} /></div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+              {[1,2,3,4,5,6,7,8].map(i => (
+                <div key={i} style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid #E5E7EB' }}>
+                  <Skeleton w={48} h={48} r={12} />
+                  <div style={{ marginTop: 12 }}><Skeleton w="100%" h={16} /></div>
+                  <div style={{ marginTop: 8 }}><Skeleton w="80%" h={12} /></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      }>
+        <SupportResources />
+      </Suspense>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 15: HOW IT WORKS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
@@ -1471,6 +1626,33 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* VIDEO SECTION */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={
+        <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, #0B2545 0%, #134E7A 100%)' }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center' }}>
+            <div style={{ flex: '0 0 640px', maxWidth: '640px' }}>
+              <Skeleton w="100%" h={360} r={12} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Skeleton w="250px" h={28} />
+              <div style={{ marginTop: 16 }}><Skeleton w="100%" h={16} /></div>
+              <div style={{ marginTop: 8 }}><Skeleton w="90%" h={16} /></div>
+              <div style={{ marginTop: 24 }}>
+                {[1,2,3,4].map(i => (
+                  <div key={i} style={{ marginTop: 12 }}>
+                    <Skeleton w="80%" h={14} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      }>
+        <VideoSection />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 16: CUSTOMER TESTIMONIALS */}
