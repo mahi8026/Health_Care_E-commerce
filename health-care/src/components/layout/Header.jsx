@@ -345,24 +345,22 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden relative">
-                <div className="relative">
-                  <EnhancedSearchBox 
-                    placeholder="Search 10,000+ medical products..." 
-                    autoFocus 
-                    onClose={() => setSearchOpen(false)}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSearchOpen(false);
-                    }}
-                    className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group"
-                    style={{ zIndex: 10 }}
-                    aria-label="Close search"
-                  >
-                    <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
-                  </button>
-                </div>
+                <EnhancedSearchBox 
+                  placeholder="Search 10,000+ medical products..." 
+                  autoFocus 
+                  onClose={() => setSearchOpen(false)}
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSearchOpen(false);
+                  }}
+                  className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group"
+                  style={{ zIndex: 10 }}
+                  aria-label="Close search"
+                >
+                  <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
+                </button>
               </div>
               {/* Keyboard shortcuts hint */}
               <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400">

@@ -102,16 +102,16 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   }, [debouncedQuery]);
 
   // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  // NOTE: Disabled to prevent conflicts with modal click handlers
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+  //       setIsOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => document.removeEventListener('mousedown', handleClickOutside);
+  // }, []);
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
