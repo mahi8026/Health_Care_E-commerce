@@ -227,11 +227,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
               {/* Search */}
               <div className="relative flex-shrink-0" ref={searchRef}>
                 <button
-                  onClick={() => {
-                    console.log('Search button clicked!');
-                    setSearchOpen(true);
-                    console.log('searchOpen set to:', true);
-                  }}
+                  onClick={() => setSearchOpen(true)}
                   aria-label="Search"
                   title="Search products"
                   className="nav-glass-control nav-glass-control--icon"
@@ -328,35 +324,25 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       {/* World-Class Search Modal */}
       {searchOpen && (
         <>
-          {console.log('Rendering search modal, searchOpen:', searchOpen)}
-          {/* Backdrop - should be BEHIND modal */}
+          {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-black/60 backdrop-blur-md animate-fade-in"
             style={{ zIndex: 9998 }}
-            onClick={() => {
-              console.log('Backdrop clicked - closing modal');
-              setSearchOpen(false);
-            }}
+            onClick={() => setSearchOpen(false)}
           />
-          {/* Modal Container - IN FRONT of backdrop */}
+          {/* Modal Container */}
           <div 
             className="fixed top-[70px] left-0 right-0 px-4 animate-slide-down-modal"
             style={{ zIndex: 9999 }}
             onClick={(e) => {
-              console.log('Modal container clicked');
-              // Don't close if clicking inside the white box
               if (e.target === e.currentTarget) {
-                console.log('Clicked outside white box - closing');
                 setSearchOpen(false);
               }
             }}
           >
             <div 
               className="max-w-[680px] mx-auto"
-              onClick={(e) => {
-                console.log('White box wrapper clicked');
-                e.stopPropagation(); // Prevent closing when clicking inside
-              }}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden relative">
                 <div className="relative">
@@ -368,7 +354,6 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log('Close button clicked');
                       setSearchOpen(false);
                     }}
                     className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group"

@@ -63,21 +63,19 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
       try {
         // Try multiple parameter variations to match backend
         const searchParams = new URLSearchParams({
-          search: debouncedQuery, // Primary parameter
-          q: debouncedQuery, // Alternative parameter
-          name: debouncedQuery, // Name-based search
+          search: debouncedQuery,
+          q: debouncedQuery,
+          name: debouncedQuery,
           limit: '6'
         });
         
         const response = await fetch(`${API}/products?${searchParams.toString()}`);
         if (!response.ok) {
-          console.error('Search API error:', response.status, response.statusText);
           setSuggestions([]);
           setLoading(false);
           return;
         }
         const data = await response.json();
-        console.log('Search API response for:', debouncedQuery, data); // Debug log
         
         // Handle different response structures
         let products = [];
@@ -91,7 +89,6 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           products = data.data;
         }
         
-        console.log('Parsed products:', products.length, products.slice(0, 2)); // Debug log with first 2 products
         setSuggestions(products);
       } catch (error) {
         console.error('Search error:', error);
@@ -151,26 +148,11 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   };
 
   const handleProductClick = (product) => {
-    console.log('=== handleProductClick called ===');
-    console.log('Product:', product);
-    console.log('Product ID:', product._id);
-    console.log('Product slug:', product.slug);
-    
     const productUrl = `/products/${product.slug || product._id}`;
-    console.log('Navigating to:', productUrl);
-    console.log('Router object:', router);
-    
-    try {
-      router.push(productUrl);
-      console.log('router.push called successfully');
-    } catch (error) {
-      console.error('Error calling router.push:', error);
-    }
-    
+    router.push(productUrl);
     setIsOpen(false);
     setQuery('');
     if (onClose) {
-      console.log('Calling onClose');
       onClose();
     }
   };
@@ -212,7 +194,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
       {/* Dropdown Content */}
       {isOpen && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar" style={{ position: 'relative', zIndex: 1 }}>
+        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (
             <div className="p-4 border-t border-gray-100">
@@ -292,17 +274,12 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Product Suggestions */}
           {!loading && suggestions.length > 0 && (
-            <div className="p-4 border-t border-gray-100" onClick={(e) => {
-              console.log('Products section clicked, target:', e.target.tagName);
-            }}>
+            <div className="p-4 border-t border-gray-100">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Products</div>
                 <div className="text-[10px] text-gray-400">{suggestions.length} results</div>
               </div>
-              <div className="space-y-1.5" onClick={(e) => {
-                console.log('Product list clicked');
-                e.stopPropagation();
-              }}>
+              <div className="space-y-1.5">
                 {suggestions.map((product, idx) => {
                   const img = typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url;
                   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
@@ -315,14 +292,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       key={product._id}
                       onMouseEnter={() => setHoveredProduct(product._id)}
                       onMouseLeave={() => setHoveredProduct(null)}
-                      onClick={(e) => {
-                        console.log('Product card clicked:', product.name);
-                        console.log('Product ID:', product._id);
-                        console.log('Product slug:', product.slug);
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleProductClick(product);
-                      }}
+                      onClick={() => handleProductClick(product)}
                       className={`relative group rounded-xl transition-all duration-200 cursor-pointer ${
                         selectedIndex === idx 
                           ? 'bg-gradient-to-r from-[#0E8A6E]/5 to-[#0E8A6E]/10 border-2 border-[#0E8A6E] shadow-lg shadow-[#0E8A6E]/10' 
@@ -330,6 +300,12 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       }`}
                       role="button"
                       tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleProductClick(product);
+                        }
+                      }}
                     >
                       <div className="flex items-center gap-3 p-2.5">
                         {/* Product Image */}
