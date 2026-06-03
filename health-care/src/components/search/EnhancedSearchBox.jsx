@@ -151,13 +151,26 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   };
 
   const handleProductClick = (product) => {
-    console.log('Product clicked:', product._id, product.slug); // Debug log
+    console.log('=== handleProductClick called ===');
+    console.log('Product:', product);
+    console.log('Product ID:', product._id);
+    console.log('Product slug:', product.slug);
+    
     const productUrl = `/products/${product.slug || product._id}`;
-    console.log('Navigating to:', productUrl); // Debug log
-    router.push(productUrl);
+    console.log('Navigating to:', productUrl);
+    console.log('Router object:', router);
+    
+    try {
+      router.push(productUrl);
+      console.log('router.push called successfully');
+    } catch (error) {
+      console.error('Error calling router.push:', error);
+    }
+    
     setIsOpen(false);
     setQuery('');
     if (onClose) {
+      console.log('Calling onClose');
       onClose();
     }
   };
@@ -199,7 +212,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
       {/* Dropdown Content */}
       {isOpen && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
+        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar" style={{ position: 'relative', zIndex: 1 }}>
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (
             <div className="p-4 border-t border-gray-100">
@@ -279,12 +292,17 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Product Suggestions */}
           {!loading && suggestions.length > 0 && (
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-4 border-t border-gray-100" onClick={(e) => {
+              console.log('Products section clicked, target:', e.target.tagName);
+            }}>
               <div className="flex items-center justify-between mb-3">
                 <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Products</div>
                 <div className="text-[10px] text-gray-400">{suggestions.length} results</div>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5" onClick={(e) => {
+                console.log('Product list clicked');
+                e.stopPropagation();
+              }}>
                 {suggestions.map((product, idx) => {
                   const img = typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url;
                   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
@@ -297,12 +315,21 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       key={product._id}
                       onMouseEnter={() => setHoveredProduct(product._id)}
                       onMouseLeave={() => setHoveredProduct(null)}
-                      onClick={() => handleProductClick(product)}
+                      onClick={(e) => {
+                        console.log('Product card clicked:', product.name);
+                        console.log('Product ID:', product._id);
+                        console.log('Product slug:', product.slug);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleProductClick(product);
+                      }}
                       className={`relative group rounded-xl transition-all duration-200 cursor-pointer ${
                         selectedIndex === idx 
                           ? 'bg-gradient-to-r from-[#0E8A6E]/5 to-[#0E8A6E]/10 border-2 border-[#0E8A6E] shadow-lg shadow-[#0E8A6E]/10' 
                           : 'hover:bg-gray-50 border-2 border-transparent hover:border-gray-200 hover:shadow-md'
                       }`}
+                      role="button"
+                      tabIndex={0}
                     >
                       <div className="flex items-center gap-3 p-2.5">
                         {/* Product Image */}

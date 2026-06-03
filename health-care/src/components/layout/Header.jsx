@@ -343,9 +343,14 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                     onClose={() => setSearchOpen(false)}
                   />
                   <button
-                    onClick={() => setSearchOpen(false)}
-                    className="absolute top-4 right-4 flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('Close button clicked');
+                      setSearchOpen(false);
+                    }}
+                    className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group z-[100]"
                     aria-label="Close search"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
                   </button>
