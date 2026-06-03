@@ -227,7 +227,11 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
               {/* Search */}
               <div className="relative flex-shrink-0" ref={searchRef}>
                 <button
-                  onClick={() => setSearchOpen(true)}
+                  onClick={() => {
+                    console.log('Search button clicked!');
+                    setSearchOpen(true);
+                    console.log('searchOpen set to:', true);
+                  }}
                   aria-label="Search"
                   title="Search products"
                   className="nav-glass-control nav-glass-control--icon"
@@ -324,6 +328,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       {/* World-Class Search Modal */}
       {searchOpen && (
         <>
+          {console.log('Rendering search modal, searchOpen:', searchOpen)}
           <div 
             className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in"
             onClick={() => setSearchOpen(false)}
