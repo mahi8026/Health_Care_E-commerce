@@ -321,32 +321,50 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
         </div>
       </header>
 
-      {/* Full-screen Search Modal */}
+      {/* World-Class Search Modal */}
       {searchOpen && (
         <>
           <div 
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in"
             onClick={() => setSearchOpen(false)}
           />
-          <div className="fixed top-[80px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal">
-            <div className="max-w-[650px] mx-auto">
-              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-                  <FaSearch size={18} className="text-gray-400 flex-shrink-0" />
+          <div className="fixed top-[70px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal">
+            <div className="max-w-[680px] mx-auto">
+              <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/50 to-white">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-[#0E8A6E] to-[#0c7a61] flex items-center justify-center shadow-lg shadow-[#0E8A6E]/20">
+                    <FaSearch size={16} className="text-white" />
+                  </div>
                   <div className="flex-1">
                     <EnhancedSearchBox 
-                      placeholder={t('nav.search')} 
+                      placeholder="Search 10,000+ medical products..." 
                       autoFocus 
                       onClose={() => setSearchOpen(false)}
                     />
                   </div>
                   <button
                     onClick={() => setSearchOpen(false)}
-                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                    className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group"
                     aria-label="Close search"
                   >
-                    <FaTimes size={18} />
+                    <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
                   </button>
+                </div>
+              </div>
+              {/* Keyboard shortcuts hint */}
+              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400">
+                <div className="flex items-center gap-1.5">
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">↑</kbd>
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">↓</kbd>
+                  <span>Navigate</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">Enter</kbd>
+                  <span>Select</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">Esc</kbd>
+                  <span>Close</span>
                 </div>
               </div>
             </div>
