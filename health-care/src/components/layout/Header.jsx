@@ -330,19 +330,14 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
             style={{ zIndex: 9998 }}
             onClick={() => setSearchOpen(false)}
           />
-          {/* Modal Container */}
+          {/* Modal Container - NO CLICK HANDLER HERE */}
           <div 
             className="fixed top-[70px] left-0 right-0 px-4 animate-slide-down-modal"
-            style={{ zIndex: 9999 }}
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setSearchOpen(false);
-              }
-            }}
+            style={{ zIndex: 9999, pointerEvents: 'none' }}
           >
             <div 
               className="max-w-[680px] mx-auto"
-              onClick={(e) => e.stopPropagation()}
+              style={{ pointerEvents: 'auto' }}
             >
               <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden relative">
                 <EnhancedSearchBox 
@@ -351,10 +346,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                   onClose={() => setSearchOpen(false)}
                 />
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSearchOpen(false);
-                  }}
+                  onClick={() => setSearchOpen(false)}
                   className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group"
                   style={{ zIndex: 10 }}
                   aria-label="Close search"
