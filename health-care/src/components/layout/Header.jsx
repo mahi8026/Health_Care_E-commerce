@@ -9,6 +9,7 @@ import AccountMenu from './AccountMenu';
 import WishlistButton from '../wishlist/WishlistButton';
 import MobileMenu from './MobileMenu';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
+import EnhancedSearchBox from '../search/EnhancedSearchBox';
 import {
   FaSearch,
   FaShoppingCart,
@@ -52,12 +53,10 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [cartBounce, setCartBounce] = useState(false);
 
   const megaMenuRef = useRef(null);
   const searchRef = useRef(null);
-  const searchInputRef = useRef(null);
   const prevCartCount = useRef(cartCount);
 
   const isActive = (href) => pathname === href || pathname?.startsWith(href + '/');
@@ -88,31 +87,15 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
   }, []);
 
   useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchOpen]);
-
-  useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') {
         setMegaMenuOpen(false);
         setSearchOpen(false);
-        setSearchQuery('');
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, []);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery('');
-    }
-  };
 
   return (
     <>
@@ -122,8 +105,21 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           50% { transform: scale(1.4); }
           100% { transform: scale(1); }
         }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
         .cart-bounce {
           animation: cartBounce 0.4s ease;
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.2s ease-out;
         }
       `}</style>
       <header className="glass-nav">
@@ -219,36 +215,18 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
             <div className="nav-glass-controls-row">
               <div className="relative flex-shrink-0" ref={searchRef}>
                 {searchOpen ? (
-                  <form
-                    onSubmit={handleSearch}
-                    className="nav-search-field nav-glass-control"
-                    style={{ width: 'min(260px, 42vw)' }}
-                  >
-                    <FaSearch size={13} className="text-white/50 flex-shrink-0" />
-                    <input
-                      ref={searchInputRef}
-                      type="search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={t('nav.search')}
-                      className="flex-1 bg-transparent text-[13px] outline-none min-w-0"
-                      aria-label="Search products"
-                    />
-                    {searchQuery ? (
-                      <>
-                        <button type="submit" className="text-[#4ddbb8] hover:text-[#7ee8cc] transition-colors flex-shrink-0" aria-label="Search">
-                          <FaSearch size={13} />
-                        </button>
-                        <button type="button" onClick={() => setSearchQuery('')} className="text-white/50 hover:text-white transition-colors flex-shrink-0" aria-label="Clear search">
-                          <FaTimes size={13} />
-                        </button>
-                      </>
-                    ) : (
-                      <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="text-white/50 hover:text-white transition-colors flex-shrink-0" aria-label="Close search">
-                        <FaTimes size={13} />
-                      </button>
-                    )}
-                  </form>
+                  <div className="fixed top-[70px] right-4 z-[9999] w-full max-w-[420px] md:max-w-[480px] animate-fade-in">
+                    <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-1">
+                      <EnhancedSearchBox placeholder={t('nav.search')} autoFocus />
+                    </div>
+                    <button
+                      onClick={() => setSearchOpen(false)}
+                      className="absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full shadow-xl flex items-center justify-center text-gray-600 hover:text-red-500 hover:bg-gray-50 transition-colors border border-gray-200"
+                      aria-label="Close search"
+                    >
+                      <FaTimes size={14} />
+                    </button>
+                  </div>
                 ) : (
                   <button
                     onClick={() => setSearchOpen(true)}
