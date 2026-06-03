@@ -15,7 +15,7 @@ const POPULAR_SEARCHES = [
   'Blood Pressure Monitor',
 ];
 
-export default function EnhancedSearchBox({ placeholder = 'Search medical equipment...', autoFocus = false }) {
+export default function EnhancedSearchBox({ placeholder = 'Search medical equipment...', autoFocus = false, onClose }) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -44,9 +44,28 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
     const fetchSuggestions = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API}/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
+        const response = await fetch(`${API}/products?q=${encodeURIComponent(debouncedQuery)}&limit=6`);
+        if (!response.ok) {
+          console.error('Search API error:', response.status, response.statusText);
+          setSuggestions([]);
+          return;
+        }
         const data = await response.json();
-        const products = data.data?.products || data.products || [];
+        console.log('Search API response:', data); // Debug log
+        
+        // Handle different response structures
+        let products = [];
+        if (data.success && data.data?.products) {
+          products = data.data.products;
+        } else if (data.products) {
+          products = data.products;
+        } else if (Array.isArray(data)) {
+          products = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          products = data.data;
+        }
+        
+        console.log('Parsed products:', products.length); // Debug log
         setSuggestions(products);
       } catch (error) {
         console.error('Search error:', error);
@@ -102,12 +121,14 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
     router.push(`/products?q=${encodeURIComponent(searchTerm.trim())}`);
     setIsOpen(false);
     setQuery('');
+    onClose?.();
   };
 
   const handleProductClick = (product) => {
     router.push(`/products/${product.slug || product._id}`);
     setIsOpen(false);
     setQuery('');
+    onClose?.();
   };
 
   const clearSearch = () => {
@@ -120,9 +141,6 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
     <div ref={wrapperRef} className="relative w-full">
       {/* Search Input */}
       <div className="relative">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-          <FaSearch size={18} />
-        </div>
         <input
           ref={inputRef}
           type="text"
@@ -136,26 +154,18 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full pl-12 pr-12 py-3.5 rounded-xl border border-gray-200 focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/20 outline-none transition-all text-[14px]"
+          className="w-full px-4 py-3 bg-transparent border-0 focus:outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
         />
-        {query && (
-          <button
-            onClick={clearSearch}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <FaTimes size={16} />
-          </button>
-        )}
         {loading && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>
 
-      {/* Dropdown */}
+      {/* Dropdown Content */}
       {isOpen && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 max-h-[500px] overflow-y-auto z-50 animate-slide-down">
+        <div className="bg-white max-h-[calc(100vh-200px)] overflow-y-auto">
           {/* Popular Searches (shown when no query) */}
           {query.length === 0 && (
             <div className="p-4 border-b border-gray-100">
@@ -201,7 +211,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           {/* Product Suggestions */}
           {suggestions.length > 0 && (
             <div className="p-4">
-              <div className="text-xs font-semibold text-gray-500 mb-3">Products</div>
+              <div className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Products</div>
               <div className="space-y-2">
                 {suggestions.map((product, idx) => {
                   const img = typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url;
@@ -215,7 +225,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                         selectedIndex === idx ? 'bg-[#0E8A6E]/5 border border-[#0E8A6E]' : 'hover:bg-gray-50 border border-transparent'
                       }`}
                     >
-                      <div className="w-14 h-14 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                      <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                         {img ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={img} alt={product.name} className="w-full h-full object-cover" />
@@ -226,9 +236,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                         )}
                       </div>
                       <div className="flex-1 text-left min-w-0">
-                        <div className="text-sm font-medium text-gray-900 truncate">{product.name}</div>
+                        <div className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</div>
                         {brandName && (
-                          <div className="text-xs text-gray-500 mt-0.5">{brandName}</div>
+                          <div className="text-xs text-gray-500 mt-1">{brandName}</div>
                         )}
                       </div>
                       <div className="text-sm font-bold text-[#0B2545] whitespace-nowrap">
@@ -244,18 +254,18 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           {/* No results */}
           {query.length >= 2 && !loading && suggestions.length === 0 && (
             <div className="p-8 text-center">
-              <div className="text-4xl mb-3">🔍</div>
+              <div className="text-5xl mb-3">🔍</div>
               <div className="text-sm font-medium text-gray-900 mb-1">No products found</div>
-              <div className="text-xs text-gray-500">Try different keywords</div>
+              <div className="text-xs text-gray-500">Try different keywords or browse categories</div>
             </div>
           )}
 
           {/* View all results */}
           {query.length >= 2 && suggestions.length > 0 && (
-            <div className="p-3 border-t border-gray-100">
+            <div className="p-4 border-t border-gray-100">
               <button
                 onClick={() => handleSearch(query)}
-                className="w-full py-2.5 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-sm font-semibold transition-colors"
+                className="w-full py-3 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-sm font-semibold transition-colors"
               >
                 View all results for &quot;{query}&quot;
               </button>
@@ -263,22 +273,6 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           )}
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slide-down {
-          animation: slide-down 0.2s ease-out;
-        }
-      `}</style>
     </div>
   );
 }

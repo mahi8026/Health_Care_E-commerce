@@ -108,7 +108,15 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes slideDownModal {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
           }
           to {
             opacity: 1;
@@ -120,6 +128,9 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
         }
         .animate-fade-in {
           animation: fadeIn 0.2s ease-out;
+        }
+        .animate-slide-down-modal {
+          animation: slideDownModal 0.3s ease-out;
         }
       `}</style>
       <header className="glass-nav">
@@ -213,30 +224,16 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
 
             {/* Search, wishlist, cart, account — same size glass controls */}
             <div className="nav-glass-controls-row">
+              {/* Search */}
               <div className="relative flex-shrink-0" ref={searchRef}>
-                {searchOpen ? (
-                  <div className="fixed top-[70px] right-4 z-[9999] w-full max-w-[420px] md:max-w-[480px] animate-fade-in">
-                    <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-1">
-                      <EnhancedSearchBox placeholder={t('nav.search')} autoFocus />
-                    </div>
-                    <button
-                      onClick={() => setSearchOpen(false)}
-                      className="absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full shadow-xl flex items-center justify-center text-gray-600 hover:text-red-500 hover:bg-gray-50 transition-colors border border-gray-200"
-                      aria-label="Close search"
-                    >
-                      <FaTimes size={14} />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setSearchOpen(true)}
-                    aria-label="Search"
-                    title="Search products"
-                    className="nav-glass-control nav-glass-control--icon"
-                  >
-                    <FaSearch size={15} />
-                  </button>
-                )}
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Search"
+                  title="Search products"
+                  className="nav-glass-control nav-glass-control--icon"
+                >
+                  <FaSearch size={15} />
+                </button>
               </div>
 
               <LanguageSwitcher />
@@ -323,6 +320,39 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
           </div>
         </div>
       </header>
+
+      {/* Full-screen Search Modal */}
+      {searchOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998] animate-fade-in"
+            onClick={() => setSearchOpen(false)}
+          />
+          <div className="fixed top-0 left-0 right-0 z-[9999] animate-slide-down-modal">
+            <div className="max-w-[700px] mx-auto pt-4 px-4">
+              <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                <div className="p-4 border-b border-gray-100 flex items-center gap-3">
+                  <FaSearch size={20} className="text-gray-400 flex-shrink-0" />
+                  <div className="flex-1">
+                    <EnhancedSearchBox 
+                      placeholder={t('nav.search')} 
+                      autoFocus 
+                      onClose={() => setSearchOpen(false)}
+                    />
+                  </div>
+                  <button
+                    onClick={() => setSearchOpen(false)}
+                    className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                    aria-label="Close search"
+                  >
+                    <FaTimes size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
     </>
