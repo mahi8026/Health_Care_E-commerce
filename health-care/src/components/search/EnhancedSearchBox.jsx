@@ -156,32 +156,35 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   return (
     <div ref={wrapperRef} className="relative w-full">
       {/* Search Input */}
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setIsOpen(true);
-            setSelectedIndex(-1);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          className="w-full px-2 py-2 bg-transparent border-0 focus:outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
-        />
-        {loading && (
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
+      <div className="relative px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <FaSearch size={18} className="text-gray-400 flex-shrink-0" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setIsOpen(true);
+              setSelectedIndex(-1);
+            }}
+            onFocus={() => setIsOpen(true)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            autoFocus={autoFocus}
+            className="flex-1 bg-transparent border-0 focus:outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
+          />
+          {loading && (
+            <div className="flex-shrink-0">
+              <div className="w-5 h-5 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Dropdown Content */}
       {isOpen && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="bg-white max-h-[calc(100vh-220px)] overflow-y-auto custom-scrollbar">
+        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (
             <div className="p-4 border-t border-gray-100">
