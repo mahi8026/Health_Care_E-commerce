@@ -154,31 +154,31 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full px-4 py-3 bg-transparent border-0 focus:outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
+          className="w-full px-2 py-2 bg-transparent border-0 focus:outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
         />
         {loading && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <div className="w-5 h-5 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="w-4 h-4 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
       </div>
 
       {/* Dropdown Content */}
       {isOpen && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="bg-white max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div className="bg-white max-h-[calc(100vh-220px)] overflow-y-auto">
           {/* Popular Searches (shown when no query) */}
           {query.length === 0 && (
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-3">
-                <FaFire size={12} />
+            <div className="p-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                <FaFire size={11} />
                 Popular Searches
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {POPULAR_SEARCHES.map((term) => (
                   <button
                     key={term}
                     onClick={() => handleSearch(term)}
-                    className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-full text-xs font-medium text-gray-700 transition-colors"
+                    className="px-2.5 py-1 bg-gray-50 hover:bg-gray-100 rounded-full text-[11px] font-medium text-gray-700 transition-colors"
                   >
                     {term}
                   </button>
@@ -189,17 +189,17 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Recent Searches */}
           {query.length === 0 && recentSearches.length > 0 && (
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-3">
-                <FaClock size={12} />
+            <div className="p-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                <FaClock size={11} />
                 Recent Searches
               </div>
-              <div className="space-y-1">
+              <div className="space-y-0.5">
                 {recentSearches.map((term, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSearch(term)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-colors"
+                    className="w-full text-left px-2.5 py-1.5 hover:bg-gray-50 rounded text-[13px] text-gray-700 transition-colors"
                   >
                     {term}
                   </button>
@@ -210,9 +210,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Product Suggestions */}
           {suggestions.length > 0 && (
-            <div className="p-4">
-              <div className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Products</div>
-              <div className="space-y-2">
+            <div className="p-3 border-t border-gray-100">
+              <div className="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wide">Products</div>
+              <div className="space-y-1">
                 {suggestions.map((product, idx) => {
                   const img = typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url;
                   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
@@ -221,27 +221,27 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                     <button
                       key={product._id}
                       onClick={() => handleProductClick(product)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
+                      className={`w-full flex items-center gap-2.5 p-2 rounded-lg transition-all ${
                         selectedIndex === idx ? 'bg-[#0E8A6E]/5 border border-[#0E8A6E]' : 'hover:bg-gray-50 border border-transparent'
                       }`}
                     >
-                      <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                      <div className="w-12 h-12 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                         {img ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={img} alt={product.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">
                             🏥
                           </div>
                         )}
                       </div>
                       <div className="flex-1 text-left min-w-0">
-                        <div className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</div>
+                        <div className="text-[13px] font-medium text-gray-900 line-clamp-1">{product.name}</div>
                         {brandName && (
-                          <div className="text-xs text-gray-500 mt-1">{brandName}</div>
+                          <div className="text-[11px] text-gray-500 mt-0.5">{brandName}</div>
                         )}
                       </div>
-                      <div className="text-sm font-bold text-[#0B2545] whitespace-nowrap">
+                      <div className="text-[13px] font-bold text-[#0B2545] whitespace-nowrap">
                         {product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Quote'}
                       </div>
                     </button>
@@ -253,19 +253,19 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* No results */}
           {query.length >= 2 && !loading && suggestions.length === 0 && (
-            <div className="p-8 text-center">
-              <div className="text-5xl mb-3">🔍</div>
-              <div className="text-sm font-medium text-gray-900 mb-1">No products found</div>
-              <div className="text-xs text-gray-500">Try different keywords or browse categories</div>
+            <div className="p-6 text-center border-t border-gray-100">
+              <div className="text-4xl mb-2">🔍</div>
+              <div className="text-[13px] font-medium text-gray-900 mb-1">No products found</div>
+              <div className="text-[11px] text-gray-500">Try different keywords or browse categories</div>
             </div>
           )}
 
           {/* View all results */}
           {query.length >= 2 && suggestions.length > 0 && (
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-3 border-t border-gray-100">
               <button
                 onClick={() => handleSearch(query)}
-                className="w-full py-3 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-sm font-semibold transition-colors"
+                className="w-full py-2 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-[13px] font-semibold transition-colors"
               >
                 View all results for &quot;{query}&quot;
               </button>

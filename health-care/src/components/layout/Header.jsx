@@ -325,14 +325,14 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       {searchOpen && (
         <>
           <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998] animate-fade-in"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] animate-fade-in"
             onClick={() => setSearchOpen(false)}
           />
-          <div className="fixed top-0 left-0 right-0 z-[9999] animate-slide-down-modal">
-            <div className="max-w-[700px] mx-auto pt-4 px-4">
-              <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 flex items-center gap-3">
-                  <FaSearch size={20} className="text-gray-400 flex-shrink-0" />
+          <div className="fixed top-[80px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal">
+            <div className="max-w-[650px] mx-auto">
+              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                  <FaSearch size={18} className="text-gray-400 flex-shrink-0" />
                   <div className="flex-1">
                     <EnhancedSearchBox 
                       placeholder={t('nav.search')} 
@@ -342,10 +342,10 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                   </div>
                   <button
                     onClick={() => setSearchOpen(false)}
-                    className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
                     aria-label="Close search"
                   >
-                    <FaTimes size={20} />
+                    <FaTimes size={18} />
                   </button>
                 </div>
               </div>
