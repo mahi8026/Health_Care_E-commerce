@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, restrictTo } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const {
   getAllFlashDeals,
   getActiveFlashDeals,
@@ -16,7 +16,7 @@ router.get('/active', getActiveFlashDeals);
 
 // Admin routes
 router.use(protect);
-router.use(restrictTo('admin'));
+router.use(authorize('admin'));
 
 router.get('/', getAllFlashDeals);
 router.get('/:id', getFlashDealById);
