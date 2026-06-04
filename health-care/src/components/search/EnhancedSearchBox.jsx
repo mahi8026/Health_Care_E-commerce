@@ -60,7 +60,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
     const fetchSuggestions = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API}/products?q=${encodeURIComponent(debouncedQuery)}&limit=6`);
+        const response = await fetch(`${API}/products?search=${encodeURIComponent(debouncedQuery)}&limit=6`);
         if (!response.ok) {
           setSuggestions([]);
           return;
