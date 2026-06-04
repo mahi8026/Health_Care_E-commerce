@@ -8,7 +8,8 @@ const {
   initiateNagadPayment,
   submitChequePayment,
   processBankTransfer,
-  processB2BCreditPayment
+  processB2BCreditPayment,
+  processCODPayment
 } = require('../controllers/paymentController');
 const { paymentLimiter } = require('../middleware/enhancedRateLimiter');
 
@@ -24,6 +25,9 @@ router.post('/nagad/initiate', protect, paymentLimiter, initiateNagadPayment);
 
 // Cheque routes (with rate limiting)
 router.post('/cheque', protect, paymentLimiter, submitChequePayment);
+
+// Cash on Delivery routes (with rate limiting)
+router.post('/cod/process', protect, paymentLimiter, processCODPayment);
 
 // Bank transfer routes (with rate limiting)
 router.post('/bank/submit', protect, paymentLimiter, processBankTransfer);

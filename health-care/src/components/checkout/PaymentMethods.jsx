@@ -1,17 +1,19 @@
 'use client';
 
 import BankTransferForm from './BankTransferForm';
+import CODInfo from '@/components/payment/CODInfo';
 
 const METHODS = [
-  { id: 'bkash', label: 'bKash', color: '#E2136E', bg: '#FDF2F8' },
-  { id: 'nagad', label: 'Nagad', color: '#0E8A6E', bg: '#ECFDF5' },
-  { id: 'bank_transfer', label: 'Bank', color: '#185FA5', bg: '#EFF6FF' },
-  { id: 'npsb', label: 'NPSB', color: '#B45309', bg: '#FFFBEB' },
-  { id: 'b2b_credit', label: 'B2B Credit', color: '#0E8A6E', bg: '#ECFDF5' },
-  { id: 'cheque', label: 'Cheque', color: '#6D28D9', bg: '#F5F3FF' },
+  { id: 'cod', label: 'Cash on Delivery', color: '#059669', bg: '#ECFDF5', icon: '💵' },
+  { id: 'bkash', label: 'bKash', color: '#E2136E', bg: '#FDF2F8', icon: '📱' },
+  { id: 'nagad', label: 'Nagad', color: '#0E8A6E', bg: '#ECFDF5', icon: '📱' },
+  { id: 'bank_transfer', label: 'Bank', color: '#185FA5', bg: '#EFF6FF', icon: '🏦' },
+  { id: 'npsb', label: 'NPSB', color: '#B45309', bg: '#FFFBEB', icon: '🏛️' },
+  { id: 'b2b_credit', label: 'B2B Credit', color: '#0E8A6E', bg: '#ECFDF5', icon: '💼' },
+  { id: 'cheque', label: 'Cheque', color: '#6D28D9', bg: '#F5F3FF', icon: '📝' },
 ];
 
-export default function PaymentMethods({ selected, onSelect, orderNumber }) {
+export default function PaymentMethods({ selected, onSelect, orderNumber, orderTotal }) {
   return (
     <section className="bg-white rounded-2xl border border-[#E5E7EB] p-4 sm:p-5">
       <div className="mb-4 pb-3 border-b border-[#F3F4F6]">
@@ -34,10 +36,10 @@ export default function PaymentMethods({ selected, onSelect, orderNumber }) {
               }`}
             >
               <span
-                className="inline-flex w-9 h-9 rounded-lg items-center justify-center text-[11px] font-bold mb-1.5"
+                className="inline-flex w-9 h-9 rounded-lg items-center justify-center text-lg mb-1.5"
                 style={{ background: method.bg, color: method.color }}
               >
-                {method.label.slice(0, 2)}
+                {method.icon}
               </span>
               <span className={`block text-[11px] font-semibold ${isSelected ? 'text-[#0B2545]' : 'text-[#6B7280]'}`}>
                 {method.label}
@@ -46,6 +48,10 @@ export default function PaymentMethods({ selected, onSelect, orderNumber }) {
           );
         })}
       </div>
+
+      {selected === 'cod' && (
+        <CODInfo orderTotal={orderTotal} />
+      )}
 
       {selected === 'bank_transfer' && (
         <BankTransferForm orderNumber={orderNumber} />

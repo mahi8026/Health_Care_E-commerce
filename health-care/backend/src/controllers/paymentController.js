@@ -277,6 +277,42 @@ exports.initiateNagadPayment = async (req, res) => {
   }
 };
 
+// ── Cash on Delivery (COD) ───────────────────────────────────────────────────
+exports.processCODPayment = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!orderId) return errorResponse(res, 'Order ID is required', null, 400);
+
+    const order = await Order.findById(orderId);
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
+
+    // Mark as pending payment - will be paid on delivery
+    order.paymentMethod = 'cod';
+    order.paymentStatus = 'pending';
+    order.status = 'confirmed'; // Order is confirmed, just pending payment
+    order.paymentDetails = {
+      method: 'cod',
+      description: 'Cash on Delivery - Payment will be collected upon delivery',
+      createdAt: new Date(),
+    };
+    await order.save();
+
+    return successResponse(
+      res,
+      { order },
+      'Order confirmed with Cash on Delivery. Payment will be collected upon delivery.'
+    );
+  } catch (error) {
+    logger.error(`[processCODPayment] ${error.message}`);
+    return errorResponse(
+      res,
+      'Failed to process COD payment',
+      process.env.NODE_ENV === 'development' ? [error.message] : null,
+      500
+    );
+  }
+};
+
 // ── Cheque ────────────────────────────────────────────────────────────────────
 exports.submitChequePayment = async (req, res) => {
   try {

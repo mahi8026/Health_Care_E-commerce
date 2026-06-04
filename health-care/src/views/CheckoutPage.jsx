@@ -23,7 +23,7 @@ export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(2);
   const [selectedDelivery, setSelectedDelivery] = useState('standard');
-  const [selectedPayment, setSelectedPayment] = useState('bank_transfer');
+  const [selectedPayment, setSelectedPayment] = useState('cod');
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -139,7 +139,23 @@ export default function CheckoutPage({ onBackToCart }) {
       setCreatedOrderId(mongoId);
       setOrderId(orderNumber);
 
-      if (['bkash', 'nagad', 'b2b_credit'].includes(selectedPayment)) {
+      // COD doesn't need payment modal - directly confirm order
+      if (selectedPayment === 'cod') {
+        GA4Tracker.trackPurchase({
+          orderId: orderNumber,
+          total: orderTotal,
+          deliveryFee,
+          items: cart.map((item) => ({
+            product: item.id,
+            name: item.name,
+            price: item.price || 0,
+            quantity: item.quantity,
+          })),
+          paymentMethod: 'cod',
+        });
+        setIsConfirmed(true);
+        clearCart();
+      } else if (['bkash', 'nagad', 'b2b_credit'].includes(selectedPayment)) {
         setShowPaymentModal(true);
       } else {
         GA4Tracker.trackPurchase({
@@ -302,6 +318,7 @@ export default function CheckoutPage({ onBackToCart }) {
                   GA4Tracker.trackPaymentMethodSelected(method);
                   setCurrentStep(3);
                 }}
+                orderTotal={orderTotal}
               />
 
               <div className="hidden lg:flex gap-3 pt-1">

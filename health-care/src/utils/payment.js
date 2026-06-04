@@ -80,8 +80,28 @@ export function formatCurrency(amount, currency = 'BDT') {
   return `${currency} ${amount.toLocaleString()}`;
 }
 
+// Cash on Delivery (COD)
+export async function processCODPayment(orderId) {
+  try {
+    const response = await api.post('/payments/cod/process', {
+      orderId
+    });
+    return response;
+  } catch (error) {
+    process.env.NODE_ENV !== "production" && console.error('Failed to process COD payment:', error);
+    throw error;
+  }
+}
+
 // Payment method labels
 export const PAYMENT_METHODS = {
+  cod: {
+    id: 'cod',
+    label: 'Cash on Delivery',
+    description: 'Pay with cash when you receive your order',
+    icon: '💵',
+    color: '#059669'
+  },
   bkash: {
     id: 'bkash',
     label: 'bKash',
