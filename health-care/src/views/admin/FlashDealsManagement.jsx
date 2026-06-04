@@ -45,11 +45,19 @@ export default function FlashDealsManagement() {
   const fetchFlashDeals = async () => {
     try {
       setLoading(true);
+      // api.get returns the full response: { success: true, data: { flashDeals, total }, message }
       const response = await api.get('/flash-deals');
-      setFlashDeals(response.flashDeals || []);
+      console.log('Flash deals API response:', response);
+      
+      // Extract flashDeals from data object
+      const deals = response?.data?.flashDeals || [];
+      console.log('Extracted flash deals:', deals);
+      
+      setFlashDeals(Array.isArray(deals) ? deals : []);
     } catch (err) {
       setError('Failed to load flash deals');
-      console.error(err);
+      console.error('Error fetching flash deals:', err);
+      setFlashDeals([]);
     } finally {
       setLoading(false);
     }
