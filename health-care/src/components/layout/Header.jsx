@@ -323,28 +323,28 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
 
       {/* World-Class Search Modal */}
       {searchOpen && (
-        <div className="fixed inset-0" style={{ zIndex: 9998 }}>
-          {/* Backdrop */}
+        <>
           <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in"
             onClick={() => setSearchOpen(false)}
           />
-          {/* Modal Content */}
-          <div className="absolute top-[70px] left-0 right-0 px-4 animate-slide-down-modal">
-            <div className="max-w-[680px] mx-auto relative">
+          <div className="fixed top-[70px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal">
+            <div className="max-w-[680px] mx-auto">
               <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden">
-                <EnhancedSearchBox 
-                  placeholder="Search 10,000+ medical products..." 
-                  autoFocus 
-                  onClose={() => setSearchOpen(false)}
-                />
-                <button
-                  onClick={() => setSearchOpen(false)}
-                  className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group z-10"
-                  aria-label="Close search"
-                >
-                  <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
-                </button>
+                <div className="relative">
+                  <EnhancedSearchBox 
+                    placeholder="Search 10,000+ medical products..." 
+                    autoFocus 
+                    onClose={() => setSearchOpen(false)}
+                  />
+                  <button
+                    onClick={() => setSearchOpen(false)}
+                    className="absolute top-4 right-4 flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group z-10"
+                    aria-label="Close search"
+                  >
+                    <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
+                  </button>
+                </div>
               </div>
               {/* Keyboard shortcuts hint */}
               <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400">
@@ -364,7 +364,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />

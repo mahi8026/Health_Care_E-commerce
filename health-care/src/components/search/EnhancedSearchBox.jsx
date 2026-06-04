@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaSearch, FaTimes, FaClock, FaFire, FaShoppingCart, FaHeart, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
+import { FaSearch, FaClock, FaFire, FaShoppingCart, FaHeart, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { API } from '@/constants/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useCart } from '@/context/CartContext';
@@ -54,51 +54,15 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   useEffect(() => {
     if (debouncedQuery.trim().length < 2) {
       setSuggestions([]);
-      setLoading(false);
       return;
     }
 
     const fetchSuggestions = async () => {
       setLoading(true);
       try {
-        // Try multiple parameter variations to match backend
-        const searchParams = new URLSearchParams({
-          search: debouncedQuery,
-          q: debouncedQuery,
-          name: debouncedQuery,
-          limit: '6'
-        });
-        
-        const response = await fetch(`${API}/products?${searchParams.toString()}`);
+        const response = await fetch(`${API}/products?q=${encodeURIComponent(debouncedQuery)}&limit=6`);
         if (!response.ok) {
-          // FALLBACK: Use mock data if backend is down (for testing)
-          console.log('⚠️ Backend unavailable, using mock data');
-          const mockProducts = [
-            {
-              _id: 'mock-1',
-              name: 'ASO Latex Complete Kit',
-              slug: 'aso-latex-complete-kit',
-              price: 2100,
-              stock: 50,
-              images: ['https://via.placeholder.com/150'],
-              brand: { name: 'Generic' },
-              category: { name: 'Laboratory Reagents' }
-            },
-            {
-              _id: 'mock-2',
-              name: 'ASO Latex Vial',
-              slug: 'aso-latex-vial',
-              price: 1200,
-              stock: 30,
-              images: ['https://via.placeholder.com/150'],
-              brand: { name: 'Generic' },
-              category: { name: 'Laboratory Reagents' }
-            }
-          ];
-          setSuggestions(mockProducts.filter(p => 
-            p.name.toLowerCase().includes(debouncedQuery.toLowerCase())
-          ));
-          setLoading(false);
+          setSuggestions([]);
           return;
         }
         const data = await response.json();
@@ -117,24 +81,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
         
         setSuggestions(products);
       } catch (error) {
-        console.error('Search error:', error);
-        // FALLBACK: Use mock data on error
-        console.log('⚠️ Search failed, using mock data');
-        const mockProducts = [
-          {
-            _id: 'mock-1',
-            name: 'ASO Latex Complete Kit',
-            slug: 'aso-latex-complete-kit',
-            price: 2100,
-            stock: 50,
-            images: ['https://via.placeholder.com/150'],
-            brand: { name: 'Generic' },
-            category: { name: 'Laboratory Reagents' }
-          }
-        ];
-        setSuggestions(mockProducts.filter(p => 
-          p.name.toLowerCase().includes(debouncedQuery.toLowerCase())
-        ));
+        setSuggestions([]);
       } finally {
         setLoading(false);
       }
@@ -144,16 +91,16 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   }, [debouncedQuery]);
 
   // Close dropdown when clicking outside
-  // NOTE: Disabled to prevent conflicts with modal click handlers
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-  //       setIsOpen(false);
-  //     }
-  //   };
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => document.removeEventListener('mousedown', handleClickOutside);
-  // }, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
@@ -190,21 +137,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   };
 
   const handleProductClick = (product) => {
-    console.log('🔥 Product clicked:', product.name);
-    const productUrl = `/products/${product.slug || product._id}`;
-    console.log('🔥 Navigating to:', productUrl);
-    router.push(productUrl);
+    router.push(`/products/${product.slug || product._id}`);
     setIsOpen(false);
     setQuery('');
-    if (onClose) {
-      onClose();
-    }
-  };
-
-  const clearSearch = () => {
-    setQuery('');
-    setSuggestions([]);
-    inputRef.current?.focus();
+    onClose?.();
   };
 
   return (
@@ -238,7 +174,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
       {/* Dropdown Content */}
       {isOpen && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto overflow-x-hidden custom-scrollbar" style={{ overscrollBehavior: 'contain' }}>
+        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (
             <div className="p-4 border-t border-gray-100">
@@ -336,33 +272,18 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       key={product._id}
                       onMouseEnter={() => setHoveredProduct(product._id)}
                       onMouseLeave={() => setHoveredProduct(null)}
-                      onMouseDown={(e) => {
-                        console.log('🟢 MOUSE DOWN detected on:', product.name);
-                        console.log('🟢 Target:', e.target);
-                        console.log('🟢 CurrentTarget:', e.currentTarget);
-                      }}
-                      onClick={(e) => {
-                        console.log('🎯 DIV clicked:', product.name);
-                        handleProductClick(product);
-                      }}
-                      className={`relative group rounded-xl transition-all duration-200 cursor-pointer ${
+                      className={`relative group rounded-xl transition-all duration-200 ${
                         selectedIndex === idx 
                           ? 'bg-gradient-to-r from-[#0E8A6E]/5 to-[#0E8A6E]/10 border-2 border-[#0E8A6E] shadow-lg shadow-[#0E8A6E]/10' 
                           : 'hover:bg-gray-50 border-2 border-transparent hover:border-gray-200 hover:shadow-md'
                       }`}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          console.log('⌨️ Keyboard pressed:', product.name);
-                          handleProductClick(product);
-                        }
-                      }}
                     >
                       <div className="flex items-center gap-3 p-2.5">
                         {/* Product Image */}
-                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative">
+                        <button
+                          onClick={() => handleProductClick(product)}
+                          className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative"
+                        >
                           {img ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
@@ -373,14 +294,17 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           )}
                           {/* Stock badge */}
                           {!inStock && (
-                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none">
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                               <span className="text-white text-[9px] font-bold">OUT</span>
                             </div>
                           )}
-                        </div>
+                        </button>
 
                         {/* Product Info */}
-                        <div className="flex-1 text-left min-w-0">
+                        <button
+                          onClick={() => handleProductClick(product)}
+                          className="flex-1 text-left min-w-0"
+                        >
                           <div className="text-[13px] font-semibold text-gray-900 line-clamp-1 group-hover:text-[#0E8A6E] transition-colors">
                             {highlightMatch(product.name, query)}
                           </div>
@@ -398,12 +322,12 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           {/* Category tag */}
                           {product.category && (
                             <div className="mt-1">
-                              <span className="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[9px] font-medium pointer-events-none">
+                              <span className="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[9px] font-medium">
                                 {typeof product.category === 'object' ? product.category.name : product.category}
                               </span>
                             </div>
                           )}
-                        </div>
+                        </button>
 
                         {/* Price & Actions */}
                         <div className="flex-shrink-0 flex flex-col items-end gap-2">
