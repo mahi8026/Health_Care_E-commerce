@@ -6,7 +6,6 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { CompareProvider } from "@/context/CompareContext";
-import { ThemeProvider } from "@/context/ThemeContext";
 import { SITE_CONFIG } from "@/config/seo";
 import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
 import StructuredData, {
@@ -142,30 +141,28 @@ export default function RootLayout({ children }) {
         <StructuredData schema={generateWebSiteSchema()} />
         <LocalBusinessSchema />
 
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <CompareProvider>
-                    <ErrorBoundary
-                      title="Something went wrong"
-                      message="An unexpected error occurred. Please refresh the page or contact support if the problem persists."
-                    >
-                      <main id="main-content">
-                        <SiteChrome>{children}</SiteChrome>
-                      </main>
-                      <LazyChatContainer />
-                    </ErrorBoundary>
-                  </CompareProvider>
-                </WishlistProvider>
-              </CartProvider>
-            </AuthProvider>
-          </LanguageProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <CompareProvider>
+                  <ErrorBoundary
+                    title="Something went wrong"
+                    message="An unexpected error occurred. Please refresh the page or contact support if the problem persists."
+                  >
+                    <main id="main-content">
+                      <SiteChrome>{children}</SiteChrome>
+                    </main>
+                    <LazyChatContainer />
+                  </ErrorBoundary>
+                </CompareProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </LanguageProvider>
 
-          {/* Fly-to-cart animation container */}
-          <FlyToCartContainer />
-        </ThemeProvider>
+        {/* Fly-to-cart animation container */}
+        <FlyToCartContainer />
 
         {/* Toast Notifications - Global */}
         <ToastProvider />
