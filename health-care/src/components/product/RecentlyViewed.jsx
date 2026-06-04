@@ -71,12 +71,12 @@ export default function RecentlyViewed({
                 {product.images?.[0] ? (
                   <>
                     <Image
-                      src={product.images[0]}
+                      src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
                       alt={product.name}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 192px, 192px"
-                      unoptimized={!product.images[0].includes('res.cloudinary.com')}
+                      unoptimized={!(typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url)?.includes('res.cloudinary.com')}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                         const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
@@ -186,12 +186,12 @@ export function RecentlyViewedCompact({
             {product.images?.[0] ? (
               <>
                 <Image
-                  src={product.images[0]}
+                  src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
                   alt={product.name}
                   fill
                   className="object-cover rounded"
                   sizes="64px"
-                  unoptimized={!product.images[0].includes('res.cloudinary.com')}
+                  unoptimized={!(typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url)?.includes('res.cloudinary.com')}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback-compact');
