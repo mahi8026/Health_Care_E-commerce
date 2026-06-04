@@ -12,8 +12,8 @@ export const CONTACT = {
   // WhatsApp Business Number (without + or spaces)
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801646886795',
   phone: '+880 1646-886795',
-  email: 'info@medcorebd.com',
-  supportEmail: 'support@medcorebd.com',
+  email: 'mahimrahman07@gmail.com',
+  supportEmail: 'mahimrahman07@gmail.com',
 };
 
 export const ENDPOINTS = {

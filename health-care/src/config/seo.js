@@ -15,17 +15,17 @@
 
 export const SITE_CONFIG = {
   name:         'MedCore BD',
-  fullName:     'MedCore Bangladesh — Medical Equipment Supplier',
-  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com',
-  description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered, ISO 13485 certified. B2B & retail. Dhaka, Chittagong, Sylhet.",
+  fullName:     'MedCore BD — Medical Equipment Supplier',
+  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app',
+  description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered. B2B & retail. Dhaka.",
   keywords:     'medical equipment Bangladesh, diagnostic equipment Dhaka, surgical instruments BD, laboratory reagents Bangladesh, hospital equipment supplier, DGDA registered medical devices, ECG machine price Bangladesh, reagent supplier Dhaka, B2B medical supplier Bangladesh',
   ogImage:      '/og-default.png',
   twitterHandle: '@medcorebd',
   locale:       'en_BD',
-  phone:        '+8801800000000',
-  email:        'info@medcorebd.com',
+  phone:        '+880 1646-886795',
+  email:        'mahimrahman07@gmail.com',
   address: {
-    street:     'Nawabpur Road',
+    street:     '17/2/A Azad Tower, Shop-08 (Beside BMA Bhaban), Topkhana Road',
     city:       'Dhaka',
     country:    'Bangladesh',
     postalCode: '1000',
@@ -59,8 +59,7 @@ export const organization = {
     availableLanguage: ['en', 'bn'],
   },
   sameAs: [
-    'https://www.facebook.com/medcorebd',
-    'https://www.linkedin.com/company/medcorebd',
+    'https://www.facebook.com/profile.php?id=61590311825607',
   ],
 };
 
