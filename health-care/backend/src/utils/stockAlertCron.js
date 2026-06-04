@@ -3,6 +3,7 @@ const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 const User = require('../models/User');
 const { sendLowStockAlert, sendAbandonedCartEmail } = require('./emailService');
+const { updateFlashDealStatuses } = require('../controllers/flashDealController');
 const logger = require('./logger');
 
 /**
@@ -102,7 +103,17 @@ function startCronJobs() {
     }
   }, { timezone: 'Asia/Dhaka' });
 
-  logger.info('Cron jobs scheduled: stock alerts (8AM BDT) + quote expiry (midnight BDT) + abandoned carts (every 2h)');
+  // ── Flash Deal Status Update — every 5 minutes ────────────────────────────
+  cron.schedule('*/5 * * * *', async () => {
+    logger.info('[CRON] Updating flash deal statuses...');
+    try {
+      await updateFlashDealStatuses();
+    } catch (err) {
+      logger.error(`[CRON] Flash deal status update error: ${err.message}`);
+    }
+  }, { timezone: 'Asia/Dhaka' });
+
+  logger.info('Cron jobs scheduled: stock alerts (8AM BDT) + quote expiry (midnight BDT) + abandoned carts (every 2h) + flash deals (every 5min)');
 }
 
 module.exports = { startCronJobs };

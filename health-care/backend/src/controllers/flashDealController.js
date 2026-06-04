@@ -110,28 +110,19 @@ exports.createFlashDeal = async (req, res) => {
       });
     }
     
-    // Determine initial status
-    const now = new Date();
-    let status = 'scheduled';
-    if (new Date(startTime) <= now && new Date(endTime) >= now) {
-      status = 'active';
-    } else if (new Date(endTime) < now) {
-      status = 'expired';
-    }
-    
     const flashDeal = new FlashDeal({
       title: title || 'Deal of the Day',
       description: description || 'Limited time offer - grab it before it\'s gone!',
       products: processedProducts,
       startTime,
       endTime,
-      status,
       badge: badge || { text: 'FLASH DEAL', color: '#E11D48' },
       displayOrder: displayOrder || 0,
       createdBy: req.user.id
     });
     
-    await flashDeal.save();
+    // Update status based on current time
+    await flashDeal.updateStatus();
     
     const populatedDeal = await FlashDeal.findById(flashDeal._id)
       .populate('products.product');
