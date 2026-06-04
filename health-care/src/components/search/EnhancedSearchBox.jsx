@@ -137,16 +137,24 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   };
 
   const handleProductClick = (product) => {
-    // Close modal first
+    console.log('handleProductClick called', product.name, product._id);
+    
+    const productUrl = `/products/${product.slug || product._id}`;
+    console.log('Navigating to:', productUrl);
+    
+    // Close the search modal and dropdown
     setIsOpen(false);
-    onClose?.();
+    if (onClose) {
+      console.log('Calling onClose to close modal');
+      onClose();
+    }
     
-    // Small delay to ensure modal closes before navigation
-    setTimeout(() => {
-      router.push(`/products/${product.slug || product._id}`);
-    }, 100);
-    
+    // Clear query
     setQuery('');
+    
+    // Navigate to product page
+    console.log('Calling router.push');
+    router.push(productUrl);
   };
 
   return (
