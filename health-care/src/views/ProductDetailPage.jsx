@@ -16,6 +16,12 @@ import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
+// SEO Structured Data Components
+import ProductSchema from '@/components/seo/ProductSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import FAQSchema from '@/components/seo/FAQSchema';
+import ReviewSchema from '@/components/seo/ReviewSchema';
+
 export default function ProductDetailPage({ productId, heroPriority = false }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -122,8 +128,60 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   // Get category slug for SEO-friendly URL
   const categorySlug = categoryName ? CATEGORY_NAME_TO_SLUG[categoryName] : null;
 
+  // Prepare breadcrumb data for schema
+  const breadcrumbItems = [
+    { name: 'Home', url: '/' },
+    { name: 'Products', url: '/products' },
+  ];
+  if (categoryName && categorySlug) {
+    breadcrumbItems.push({
+      name: categoryName,
+      url: `/products/category/${categorySlug}`,
+    });
+  }
+  breadcrumbItems.push({
+    name: product.name,
+    url: `/products/${product.slug || product._id}`,
+  });
+
+  // Prepare FAQ data for schema (common product questions)
+  const productFAQs = [
+    {
+      question: `Is the ${product.name} DGDA certified?`,
+      answer: `Yes, the ${product.name} is DGDA registered and certified for use in Bangladesh. All our medical equipment meets Bangladesh Drug Administration requirements.`,
+    },
+    {
+      question: `What is the warranty on ${product.name}?`,
+      answer: `The ${product.name} comes with ${product.warranty || '1 year'} manufacturer warranty. We also offer extended warranty options and annual maintenance contracts.`,
+    },
+    {
+      question: `Do you provide free delivery for ${product.name}?`,
+      answer: 'Yes, we offer free delivery in Dhaka metro area for orders over ৳50,000. For other areas, delivery charges apply based on location.',
+    },
+    {
+      question: `Can I get installation service for ${product.name}?`,
+      answer: `Yes, we provide free installation and staff training for ${product.name} in Dhaka metro area. For outside Dhaka, installation charges may apply.`,
+    },
+    {
+      question: `Is B2B pricing available for ${product.name}?`,
+      answer: 'Yes, hospitals, clinics, and diagnostic centers receive 8-30% bulk discount depending on order quantity. We also offer 30-90 day credit terms for B2B clients.',
+    },
+  ];
+
   return (
     <div className="bg-page min-h-screen pb-24 md:pb-8">
+      {/* SEO Structured Data Schemas */}
+      <ProductSchema product={product} />
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <FAQSchema faqs={productFAQs} />
+      {product.reviews && product.reviews.length > 0 && (
+        <ReviewSchema
+          reviews={product.reviews}
+          productName={product.name}
+          productId={product._id || product.id}
+        />
+      )}
+
       {/* Sticky Add to Cart Bar (appears on scroll) */}
       <StickyAddToCart product={product} scrollThreshold={500} />
 

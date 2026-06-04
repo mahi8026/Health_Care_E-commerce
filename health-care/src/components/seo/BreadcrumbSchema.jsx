@@ -1,27 +1,42 @@
-import { generateBreadcrumbSchema, StructuredData } from '@/utils/structuredData';
-
 /**
- * BreadcrumbSchema — BreadcrumbList JSON-LD component.
- *
- * Renders a <script type="application/ld+json"> with a BreadcrumbList schema.
- * Eligible for Google breadcrumb rich results in search snippets.
- *
- * Usage:
- *   <BreadcrumbSchema
- *     items={[
- *       { name: 'Home',     url: 'https://medcorebd.com' },
- *       { name: 'Products', url: 'https://medcorebd.com/products' },
- *       { name: 'ECG Machine', url: 'https://medcorebd.com/products/siemens-ecg' },
- *     ]}
- *   />
- *
- * @param {{ items: Array<{ name: string, url: string }> }} props
+ * BreadcrumbSchema Component
+ * 
+ * Generates JSON-LD structured data for breadcrumb navigation following Schema.org/BreadcrumbList spec.
+ * This helps Google show breadcrumb trails in search results.
+ * 
+ * @see https://schema.org/BreadcrumbList
+ * @see https://developers.google.com/search/docs/appearance/structured-data/breadcrumb
+ * 
+ * @example
+ * <BreadcrumbSchema
+ *   items={[
+ *     { name: 'Home', url: '/' },
+ *     { name: 'Products', url: '/products' },
+ *     { name: 'ECG Machine', url: '/products/123' }
+ *   ]}
+ * />
  */
+
 export default function BreadcrumbSchema({ items }) {
-  if (!items?.length) return null;
+  if (!items || items.length === 0) return null;
 
-  const schema = generateBreadcrumbSchema(items);
-  if (!schema) return null;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app';
 
-  return <StructuredData schema={schema} />;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url.startsWith('http') ? item.url : `${baseUrl}${item.url}`,
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema, null, 2) }}
+    />
+  );
 }
