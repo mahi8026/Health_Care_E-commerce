@@ -9,6 +9,7 @@ import AccountMenu from './AccountMenu';
 import WishlistButton from '../wishlist/WishlistButton';
 import MobileMenu from './MobileMenu';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
+import ThemeToggle from '../ui/ThemeToggle';
 import EnhancedSearchBox from '../search/EnhancedSearchBox';
 import {
   FaSearch,
@@ -237,6 +238,11 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
               </div>
 
               <LanguageSwitcher />
+
+              {/* Theme Toggle */}
+              <div className="nav-glass-control nav-glass-control--icon">
+                <ThemeToggle className="!w-full !h-full !rounded-lg" />
+              </div>
 
               <div className="nav-glass-controls-desktop">
                 <WishlistButton variant="glass-chip" />

@@ -17,14 +17,14 @@
   --gradient-hero-glow-bl: radial-gradient(circle at 0% 100%, rgba(77, 219, 184, 0.12), transparent 70%);
 
   /* LIGHT MODE — Page & surfaces */
-  --color-background-page: #eef6fb;
-  --color-background-page-top: #e8f4fa;
+  --color-background-page: #ffffff;
+  --color-background-page-top: #ffffff;
   --color-background-primary: #ffffff;
-  --color-background-secondary: #f0f7fc;
-  --color-background-tertiary: #e4f0f7;
-  --color-background-muted: #d6e8f3;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #f1f5f9;
+  --color-background-muted: #e2e8f0;
   --color-background-elevated: #ffffff;
-  --color-background-inset: #c8dded;
+  --color-background-inset: #f1f5f9;
 
   --color-text-primary: #0f172a;
   --color-text-secondary: #64748b;
@@ -32,12 +32,8 @@
   --color-border-secondary: #b8cfdf;
   --color-border-tertiary: #ddeef7;
 
-  /* Storefront default — Soft Medical Blue wash */
-  --page-gradient-wash:
-    radial-gradient(ellipse 110% 55% at 50% -10%, rgba(14, 138, 110, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 50% at 100% 0%,   rgba(11, 37,  69, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 0%   80%,  rgba(77, 219, 184, 0.07) 0%, transparent 50%),
-    linear-gradient(180deg, #ddf0f8 0%, #e8f4fa 120px, #eef6fb 320px, #f2f8fc 100%);
+  /* Storefront default — Clean white background */
+  --page-gradient-wash: #ffffff;
 
   /* Fluid Typography Scale */
   --text-xs: clamp(10px, 2vw, 12px);
@@ -98,8 +94,7 @@
 
   /* Dark mode gradient wash */
   --page-gradient-wash:
-    radial-gradient(ellipse 110% 55% at 50% -10%, rgba(14, 138, 110, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 50% at 100% 0%,   rgba(77, 219, 184, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 110% 55% at 50% -10%, rgba(14, 138, 110, 0.05) 0%, transparent 55%),
     linear-gradient(180deg, #1e293b 0%, #0f172a 320px, #020617 100%);
 
   /* Dark mode glassmorphism */
