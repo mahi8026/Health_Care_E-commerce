@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   FaTimes, FaSave, FaSearch, FaPlus, FaTrash, FaPercentage,
   FaClock, FaTag, FaBoxes, FaCalendar, FaPalette, FaFire
@@ -406,15 +407,13 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
                                   {/* Product Image */}
                                   <div className="relative w-14 h-14 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
                                     {product.images?.[0] ? (
-                                      <img
+                                      <Image
                                         src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
                                         alt={product.name}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                          e.target.onerror = null;
-                                          e.target.style.display = 'none';
-                                          e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-2xl">🏥</div>';
-                                        }}
+                                        fill
+                                        className="object-cover"
+                                        sizes="56px"
+                                        unoptimized
                                       />
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center text-2xl">
@@ -507,10 +506,13 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
                             {/* Product Image */}
                             <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                               {item.product.images?.[0] ? (
-                                <img
+                                <Image
                                   src={item.product.images[0].url || item.product.images[0]}
                                   alt={item.product.name}
-                                  className="w-full h-full object-cover"
+                                  fill
+                                  className="object-cover"
+                                  sizes="80px"
+                                  unoptimized
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-3xl">
