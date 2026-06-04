@@ -137,10 +137,16 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   };
 
   const handleProductClick = (product) => {
-    router.push(`/products/${product.slug || product._id}`);
+    // Close modal first
     setIsOpen(false);
-    setQuery('');
     onClose?.();
+    
+    // Small delay to ensure modal closes before navigation
+    setTimeout(() => {
+      router.push(`/products/${product.slug || product._id}`);
+    }, 100);
+    
+    setQuery('');
   };
 
   return (
@@ -281,7 +287,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       <div className="flex items-center gap-3 p-2.5">
                         {/* Product Image */}
                         <button
-                          onClick={() => handleProductClick(product)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProductClick(product);
+                          }}
                           className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative"
                         >
                           {img ? (
@@ -302,7 +311,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
                         {/* Product Info */}
                         <button
-                          onClick={() => handleProductClick(product)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProductClick(product);
+                          }}
                           className="flex-1 text-left min-w-0"
                         >
                           <div className="text-[13px] font-semibold text-gray-900 line-clamp-1 group-hover:text-[#0E8A6E] transition-colors">
