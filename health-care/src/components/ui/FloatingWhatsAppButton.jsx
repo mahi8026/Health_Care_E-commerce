@@ -78,7 +78,7 @@ export default function FloatingWhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-[900] flex flex-col items-end gap-3">
+    <div className="fixed bottom-24 left-4 md:bottom-6 md:right-6 md:left-auto z-[900] flex flex-col items-start md:items-end gap-3">
       {/* Tooltip */}
       {showTooltip && (
         <div className="animate-fadeSlideUp bg-white rounded-2xl shadow-2xl p-4 max-w-xs border border-gray-200">
