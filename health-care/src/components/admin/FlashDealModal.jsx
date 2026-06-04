@@ -460,25 +460,6 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
                               );
                             })}
                           </div>
-                        ) : (                                        • Stock: {product.stock || 0}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Add Icon */}
-                                  {isAdded ? (
-                                    <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
-                                      <span>✓</span> Added
-                                    </div>
-                                  ) : (
-                                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600">
-                                      <FaPlus size={14} />
-                                    </div>
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
                         ) : (
                           <div className="p-8 text-center">
                             <div className="text-4xl text-gray-300 mb-2">🔍</div>
