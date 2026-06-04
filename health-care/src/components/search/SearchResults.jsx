@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import Spinner from '@/components/ui/Spinner';
 import WishlistButton from '@/components/wishlist/WishlistButton';
+import Pagination from '@/components/ui/Pagination';
 
 /* ─── Individual Product Card ─────────────────────────────────────────────── */
 function ProductCard({ product, onProductClick }) {
@@ -174,7 +175,20 @@ function ProductCard({ product, onProductClick }) {
 }
 
 /* ─── Search Results Container ────────────────────────────────────────────── */
-export default function SearchResults({ products, loading, query, onProductClick, hasMore, onLoadMore, loadingMore, totalResults }) {
+export default function SearchResults({ 
+  products, 
+  loading, 
+  query, 
+  onProductClick, 
+  hasMore, 
+  onLoadMore, 
+  loadingMore, 
+  totalResults,
+  // Pagination props
+  currentPage,
+  totalPages,
+  onPageChange
+}) {
 
   if (loading && products.length === 0) {
     return (
@@ -210,7 +224,7 @@ export default function SearchResults({ products, loading, query, onProductClick
             <strong className="text-gray-700">{totalResults || products.length}</strong> result{(totalResults || products.length) !== 1 ? 's' : ''}
             {query && (
               <>
-                {' '}for <strong className="text-gray-700">"{query}"</strong>
+                {' '}for <strong className="text-gray-700">&ldquo;{query}&rdquo;</strong>
               </>
             )}
           </>
@@ -228,37 +242,14 @@ export default function SearchResults({ products, loading, query, onProductClick
         ))}
       </div>
 
-      {/* Load More */}
-      {hasMore && (
-        <div className="flex justify-center mt-10">
-          <button
-            onClick={onLoadMore}
-            disabled={loadingMore}
-            className="flex items-center gap-3 px-10 py-3.5 bg-[#0B2545] hover:bg-[#0d2d52] text-white rounded-2xl text-[14px] font-semibold transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loadingMore ? (
-              <>
-                <Spinner size="sm" />
-                Loading...
-              </>
-            ) : (
-              <>
-                Load More Products
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 9l-7 7-7-7"/>
-                </svg>
-              </>
-            )}
-          </button>
-        </div>
-      )}
-
-      {/* End of results */}
-      {!hasMore && products.length > 0 && (
-        <div className="flex items-center justify-center gap-3 mt-10 text-[12px] text-gray-400">
-          <div className="h-px bg-gray-200 flex-1 max-w-24" />
-          All {products.length} products shown
-          <div className="h-px bg-gray-200 flex-1 max-w-24" />
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-10 mb-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
         </div>
       )}
     </div>

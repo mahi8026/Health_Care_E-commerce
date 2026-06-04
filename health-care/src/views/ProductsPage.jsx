@@ -32,21 +32,15 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       setSearchQuery(urlQuery);
       setSearchInput(urlQuery);
       setPage(1);
-      setAllProducts([]);
-      setHasMore(true);
     }
     if (urlCategory !== searchCategory) {
       setSearchCategory(urlCategory);
       setPage(1);
-      setAllProducts([]);
-      setHasMore(true);
     }
     const currentBrand = filters.brands?.[0] || '';
     if (urlBrand !== currentBrand) {
       setFilters((f) => ({ ...f, brands: urlBrand ? [urlBrand] : [] }));
       setPage(1);
-      setAllProducts([]);
-      setHasMore(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
@@ -61,9 +55,6 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   });
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
   const [page, setPage] = useState(1);
-  const [allProducts, setAllProducts] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Use custom hooks for data fetching
@@ -119,36 +110,10 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
   const { products, loading, pagination, error } = useProducts(productFilters);
 
-  // Update allProducts when products change (pagination handling)
-  useEffect(() => {
-    if (products && products.length > 0) {
-      if (page === 1) {
-        // Use functional update to avoid setState in effect warning
-        setAllProducts(() => products);
-      } else {
-        setAllProducts(prev => {
-          const existingIds = new Set(prev.map(p => p._id || p.id));
-          return [...prev, ...products.filter(p => !existingIds.has(p._id || p.id))];
-        });
-      }
-      setLoadingMore(false);
-      setHasMore(pagination.page < pagination.pages);
-    } else if (products && products.length === 0) {
-      if (page === 1) {
-        setAllProducts([]);
-      }
-      setHasMore(false);
-      setLoadingMore(false);
-    }
-     
-  }, [products, page, pagination.page, pagination.pages]);
-
-  const resetPagination = () => { setPage(1); setAllProducts([]); setHasMore(true); };
-
   const handleSearch = useCallback((e) => {
     e.preventDefault();
     setSearchQuery(searchInput);
-    resetPagination();
+    setPage(1);
   }, [searchInput]);
 
   const handleFilterChange = useCallback((newFilters) => {
@@ -156,17 +121,18 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       if (newFilters.minPrice > newFilters.maxPrice) newFilters.maxPrice = newFilters.minPrice;
     }
     setFilters(newFilters);
-    resetPagination();
+    setPage(1);
   }, []);
 
   const handleSortChange = useCallback((newSort) => {
     setSortBy(newSort);
-    resetPagination();
+    setPage(1);
   }, []);
 
-  const handleLoadMore = useCallback(() => {
-    setLoadingMore(true);
-    setPage(prev => prev + 1);
+  const handlePageChange = useCallback((newPage) => {
+    setPage(newPage);
+    // Scroll to top of products area when page changes
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   }, []);
 
   const clearAllFilters = () => {
@@ -174,6 +140,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     setSearchInput('');
     setSearchCategory('');
     handleFilterChange({ brands: [] });
+    setPage(1);
   };
 
   const hasActiveFilters = searchCategory || filters.brands?.length > 0 ||
@@ -208,7 +175,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                           router.push(`/products/category/${slug}`);
                         } else {
                           setSearchCategory(searchCategory === name ? '' : name);
-                          resetPagination();
+                          setPage(1);
                         }
                       }}
                       className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
@@ -229,7 +196,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                   {searchQuery && (
                     <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
                       &ldquo;{searchQuery}&rdquo;
-                      <button onClick={() => { setSearchQuery(''); setSearchInput(''); resetPagination(); }} className="hover:text-red-300 ml-0.5" aria-label="Clear search query">×</button>
+                      <button onClick={() => { setSearchQuery(''); setSearchInput(''); setPage(1); }} className="hover:text-red-300 ml-0.5" aria-label="Clear search query">×</button>
                     </span>
                   )}
                   {filters.inStock && (
@@ -400,7 +367,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 </button>
 
                 <div className="text-[11px] sm:text-[13px] text-gray-500 truncate min-w-0">
-                  {loading && allProducts.length === 0 ? (
+                  {loading && (!products || products.length === 0) ? (
                     <span className="text-gray-400">{t('products.loading')}</span>
                   ) : (
                     <>
@@ -408,7 +375,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                         ? <span className="font-semibold text-[#0B2545] truncate">{searchCategory}</span>
                         : <span className="text-gray-600">{t('products.allProducts')}</span>}
                       <span className="text-gray-400 mx-1 sm:mx-1.5">·</span>
-                      <span className="font-medium text-gray-700">{allProducts.length}</span>
+                      <span className="font-medium text-gray-700">{products?.length || 0}</span>
                       <span className="text-gray-400 hidden xs:inline"> of </span>
                       <span className="text-gray-400 xs:hidden">/</span>
                       <span className="font-medium text-gray-700">{pagination.total || 0}</span>
@@ -430,13 +397,14 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
             {/* Products Grid */}
             <SearchResults
-              products={allProducts}
+              products={products}
               loading={loading}
               error={error}
               onProductClick={onProductClick}
-              onLoadMore={handleLoadMore}
-              hasMore={hasMore}
-              loadingMore={loadingMore}
+              currentPage={pagination.page || 1}
+              totalPages={pagination.pages || 1}
+              onPageChange={handlePageChange}
+              totalResults={pagination.total}
             />
 
             {/* SEO Content */}
@@ -479,7 +447,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                       setSidebarOpen(false);
                     } else {
                       setSearchCategory(name);
-                      resetPagination();
+                      setPage(1);
                       setSidebarOpen(false);
                     }
                   }}
