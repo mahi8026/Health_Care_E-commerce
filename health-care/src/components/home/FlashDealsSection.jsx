@@ -440,7 +440,7 @@ export default function FlashDealsSection() {
   if (loading) {
     return (
       <section style={{
-        background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
         padding: '60px 24px',
       }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', textAlign: 'center', color: '#fff' }}>
@@ -458,7 +458,7 @@ export default function FlashDealsSection() {
 
   return (
     <section style={{
-      background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+      background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
       padding: '60px 24px',
       position: 'relative',
       overflow: 'hidden',
