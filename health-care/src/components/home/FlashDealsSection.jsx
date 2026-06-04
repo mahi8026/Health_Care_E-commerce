@@ -378,10 +378,18 @@ export default function FlashDealsSection() {
   const fetchFlashDeals = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API}/flash-deals/active`);
+      // Add cache-busting parameter to force fresh data
+      const timestamp = new Date().getTime();
+      const response = await fetch(`${API}/flash-deals/active?_t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       const data = await response.json();
       
       if (data.success && data.data?.flashDeals?.length > 0) {
+        console.log('✅ Flash Deals Loaded:', data.data.flashDeals.length, 'deal(s)');
         // Debug: Log first product's image data
         const firstDeal = data.data.flashDeals[0];
         if (firstDeal?.products?.[0]) {
@@ -392,12 +400,14 @@ export default function FlashDealsSection() {
             firstImage: firstProduct?.images?.[0]
           });
         }
+        console.log('📦 All Products in Flash Deal:', firstDeal?.products?.map(p => p.product?.name));
         setFlashDeals(data.data.flashDeals);
       } else {
+        console.warn('⚠️ No active flash deals found');
         setFlashDeals([]);
       }
     } catch (error) {
-      console.error('Failed to fetch flash deals:', error);
+      console.error('❌ Failed to fetch flash deals:', error);
       setFlashDeals([]);
     } finally {
       setLoading(false);
