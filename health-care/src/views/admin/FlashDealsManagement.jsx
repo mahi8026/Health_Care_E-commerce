@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa';
 import api from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
+import FlashDealModal from '@/components/admin/FlashDealModal';
 
 export default function FlashDealsManagement() {
   const router = useRouter();
@@ -306,10 +307,4 @@ export default function FlashDealsManagement() {
       )}
     </div>
   );
-}
-
-// Modal component will be in next file
-function FlashDealModal({ deal, onClose, onSave }) {
-  // Modal implementation will be created separately
-  return <div>Modal content coming in next file...</div>;
 }
