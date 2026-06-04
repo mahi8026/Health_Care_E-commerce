@@ -807,11 +807,6 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* FLASH DEALS SECTION */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <FlashDealsSection />
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '32px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
@@ -935,75 +930,9 @@ export default function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 7: DEAL OF THE DAY */}
+      {/* SECTION 7: DEAL OF THE DAY - FLASH DEALS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {(dealLoading || dealProducts.length > 0) && (
-        <section style={{ background: '#0B2545', padding: '24px 16px' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-            {/* Header row */}
-            <div style={{ marginBottom: 20 }}>
-              {/* Title + countdown stacked on mobile */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
-                    textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
-                    {t('home.flashDeals')}
-                  </div>
-                  <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700,
-                    color: '#fff', margin: 0 }}>{t('home.dealOfDay')}</h2>
-                </div>
-                <button onClick={() => router.push('/products?sortBy=discount')}
-                  style={{ background: 'rgba(255,255,255,0.1)', color: '#fff',
-                    border: '1px solid rgba(255,255,255,0.2)', padding: '7px 16px', borderRadius: 8,
-                    fontSize: 12, cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                  {t('home.seeAllDeals')}
-                </button>
-              </div>
-
-              {/* Countdown timer */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>{t('home.endsIn')}</span>
-                {[
-                  { val: timeLeft.h, label: 'hrs' },
-                  { val: timeLeft.m, label: 'min' },
-                  { val: timeLeft.s, label: 'sec' },
-                ].map((t, i) => (
-                  <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
-                    {i > 0 && <span style={{ color: '#4DDBB8', fontWeight: 700, fontSize: 16 }}>:</span>}
-                    <div style={{
-                      background: 'rgba(255,255,255,0.1)', borderRadius: 8,
-                      padding: '6px 10px', textAlign: 'center', minWidth: 46,
-                    }}>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: '#4DDBB8', lineHeight: 1 }}>
-                        {String(t.val).padStart(2, '0')}
-                      </div>
-                      <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Deal product cards — 2 cols on mobile, 4 on desktop */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: 12,
-            }}
-              className="deal-grid"
-            >
-              {dealLoading ? (
-                // Show 4 skeleton loaders
-                [...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)
-              ) : (
-                dealProducts.slice(0, 4).map(product => (
-                  <ProductCard key={product._id} product={product} onClick={() => router.push(`/products/${product.slug || product._id}`)} />
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-      )}
+      <FlashDealsSection />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 7.5: TOP SELLING PRODUCTS */}

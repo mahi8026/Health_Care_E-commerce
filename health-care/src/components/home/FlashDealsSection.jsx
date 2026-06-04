@@ -3,125 +3,12 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { FaBolt, FaArrowRight, FaClock } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
 import { API } from '@/constants/api';
 import { getProductCardImage } from '@/utils/cloudinary';
 
 // ══════════════════════════════════════════════════════════════════════════════
-// COUNTDOWN TIMER - TimeBlock component defined outside to avoid recreation
-// ══════════════════════════════════════════════════════════════════════════════
-
-const TimeBlock = ({ value, label }) => (
-  <div style={{
-    background: 'rgba(96, 165, 250, 0.15)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(96, 165, 250, 0.3)',
-    padding: '8px 14px',
-    borderRadius: 8,
-    minWidth: 65,
-    textAlign: 'center',
-  }}>
-    <div style={{
-      fontSize: 24,
-      fontWeight: 900,
-      color: '#60A5FA',
-      lineHeight: 1,
-      fontFamily: 'monospace',
-    }}>
-      {String(value).padStart(2, '0')}
-    </div>
-    <div style={{
-      fontSize: 10,
-      color: '#93C5FD',
-      fontWeight: 600,
-      marginTop: 4,
-      textTransform: 'uppercase',
-      letterSpacing: '0.05em',
-    }}>
-      {label}
-    </div>
-  </div>
-);
-
-const CountdownTimer = memo(function CountdownTimer({ endTime }) {
-  const [timeLeft, setTimeLeft] = useState(() => {
-    // Initialize with calculated time
-    const now = new Date().getTime();
-    const end = new Date(endTime).getTime();
-    const difference = end - now;
-
-    if (difference <= 0) {
-      return { hours: 0, minutes: 0, seconds: 0 };
-    }
-
-    return {
-      hours: Math.floor(difference / (1000 * 60 * 60)),
-      minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-      seconds: Math.floor((difference % (1000 * 60)) / 1000),
-    };
-  });
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = new Date().getTime();
-      const end = new Date(endTime).getTime();
-      const difference = end - now;
-
-      if (difference <= 0) {
-        return { hours: 0, minutes: 0, seconds: 0 };
-      }
-
-      return {
-        hours: Math.floor(difference / (1000 * 60 * 60)),
-        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((difference % (1000 * 60)) / 1000),
-      };
-    };
-
-    const timer = setInterval(() => {
-      const newTimeLeft = calculateTimeLeft();
-      setTimeLeft(newTimeLeft);
-
-      if (newTimeLeft.hours === 0 && newTimeLeft.minutes === 0 && newTimeLeft.seconds === 0) {
-        clearInterval(timer);
-        window.dispatchEvent(new Event('flashDealExpired'));
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [endTime]);
-
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 6,
-      flexWrap: 'wrap',
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 5,
-        color: '#93C5FD',
-        fontSize: 12,
-        fontWeight: 700,
-      }}>
-        <span>Ends in:</span>
-      </div>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <TimeBlock value={timeLeft.hours} label="HR" />
-        <div style={{ color: '#60A5FA', fontSize: 20, fontWeight: 700, alignSelf: 'center' }}>:</div>
-        <TimeBlock value={timeLeft.minutes} label="MIN" />
-        <div style={{ color: '#60A5FA', fontSize: 20, fontWeight: 700, alignSelf: 'center' }}>:</div>
-        <TimeBlock value={timeLeft.seconds} label="SEC" />
-      </div>
-    </div>
-  );
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// PRODUCT CARD COMPONENT
+// PRODUCT CARD COMPONENT (matches existing ProductCard style)
 // ══════════════════════════════════════════════════════════════════════════════
 
 const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick }) {
@@ -132,18 +19,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
 
   const imgRaw = product.images?.[0];
   const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
-  
-  // Handle both Cloudinary URLs and plain URLs
-  let optimizedImg = null;
-  if (img) {
-    if (img.includes('res.cloudinary.com') || img.includes('cloudinary.com')) {
-      optimizedImg = getProductCardImage(img);
-    } else {
-      // For non-Cloudinary URLs, use as-is
-      optimizedImg = img;
-    }
-  }
-  
+  const optimizedImg = img ? getProductCardImage(img) : null;
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   
   const originalPrice = product.price || 0;
@@ -151,151 +27,65 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
   const discountPct = item.discountPercentage || 0;
 
   return (
-    <div
-      onClick={onClick}
-      style={{
-        background: '#fff',
-        borderRadius: 12,
-        overflow: 'hidden',
-        cursor: 'pointer',
-        transition: 'all 0.3s',
-        width: '100%',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'none';
-      }}
-    >
+    <div onClick={onClick} className="group"
+      style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
+        border: '1px solid #E5E7EB', cursor: 'pointer',
+        transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+
       {/* Image */}
-      <div style={{ position: 'relative', height: 180, background: '#F8FAFC' }}>
+      <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
         {optimizedImg ? (
-          <Image
-            src={optimizedImg}
-            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Flash Deal Price ৳${finalPrice.toLocaleString()} Bangladesh`}
-            fill
-            style={{ objectFit: 'cover' }}
-            unoptimized={!optimizedImg.includes('res.cloudinary.com')}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
-              if (fallback) fallback.style.display = 'flex';
-            }}
+          <img src={optimizedImg} alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`} loading="lazy"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
           />
-        ) : null}
-        <div 
-          className="image-fallback"
-          style={{
-            display: optimizedImg ? 'none' : 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            fontSize: 48,
-            color: '#CBD5E1',
-          }}>
-          🏥
-        </div>
-        
-        <div style={{
-          position: 'absolute',
-          top: 10,
-          left: 10,
-          background: '#EF4444',
-          color: '#fff',
-          fontSize: 12,
-          fontWeight: 900,
-          padding: '6px 12px',
-          borderRadius: 6,
-        }}>
-          -{discountPct}%
-        </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>
+        )}
+        {/* Discount badge */}
+        {discountPct > 0 && (
+          <div style={{ position: 'absolute', top: 10, left: 10, background: '#EF4444', color: '#fff', fontSize: 10, fontWeight: 700,
+            padding: '3px 8px', borderRadius: 6 }}>-{discountPct}%</div>
+        )}
+        {/* Quick add button on hover */}
+        <button
+          onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
+          style={{ position: 'absolute', bottom: 10, right: 10, background: '#0E8A6E',
+            color: '#fff', border: 'none', borderRadius: 8, padding: '7px 12px',
+            fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#0B7558'; }}
+          onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}
+          className="quick-add-btn">
+          + Cart
+        </button>
       </div>
 
       {/* Content */}
-      <div style={{ padding: 14 }}>
+      <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {brandName && (
-          <div style={{
-            fontSize: 11,
-            color: '#0E8A6E',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            marginBottom: 6,
-          }}>
+          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
             {brandName}
           </div>
         )}
-        
-        <div style={{
-          fontSize: 13,
-          fontWeight: 600,
-          lineHeight: 1.4,
-          marginBottom: 10,
-          color: '#1F2937',
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-          minHeight: 36,
-        }}>
+        <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.45, marginBottom: 6, flex: 1,
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          color: '#1F2937' }}>
           {product.name}
         </div>
-
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
-            <span style={{
-              fontSize: 19,
-              fontWeight: 900,
-              color: '#0B2545',
-            }}>
-              ৳{finalPrice.toLocaleString()}
-            </span>
-            <span style={{
-              fontSize: 13,
-              color: '#9CA3AF',
-              textDecoration: 'line-through',
-            }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
+            {finalPrice > 0 ? `৳${finalPrice.toLocaleString()}` : 'Contact for price'}
+          </span>
+          {originalPrice > finalPrice && (
+            <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
               ৳{originalPrice.toLocaleString()}
             </span>
-          </div>
-          <div style={{
-            fontSize: 11,
-            color: '#059669',
-            fontWeight: 600,
-          }}>
-            Save ৳{(originalPrice - finalPrice).toLocaleString()}
-          </div>
+          )}
         </div>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            addToCart(product, 1);
-          }}
-          style={{
-            width: '100%',
-            background: '#0E8A6E',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '11px',
-            fontSize: 13,
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'background 0.2s',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#0B7558';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#0E8A6E';
-          }}
-        >
-          + Add to Cart
-        </button>
       </div>
     </div>
   );
@@ -309,6 +99,7 @@ export default function FlashDealsSection() {
   const router = useRouter();
   const [flashDeals, setFlashDeals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
 
   const fetchFlashDeals = useCallback(async () => {
     try {
@@ -324,7 +115,6 @@ export default function FlashDealsSection() {
       
       if (data.success && data.data?.flashDeals?.length > 0) {
         console.log('✅ Flash Deals Loaded:', data.data.flashDeals.length, 'deal(s)');
-        // Only use the FIRST active deal for homepage
         setFlashDeals([data.data.flashDeals[0]]);
       } else {
         console.warn('⚠️ No active flash deals found');
@@ -351,14 +141,46 @@ export default function FlashDealsSection() {
     };
   }, [fetchFlashDeals]);
 
+  // Countdown timer
+  useEffect(() => {
+    if (flashDeals.length === 0) return;
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const end = new Date(flashDeals[0].endTime).getTime();
+      const difference = end - now;
+
+      if (difference <= 0) {
+        return { h: 0, m: 0, s: 0 };
+      }
+
+      return {
+        h: Math.floor(difference / (1000 * 60 * 60)),
+        m: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        s: Math.floor((difference % (1000 * 60)) / 1000),
+      };
+    };
+
+    const updateTime = () => {
+      const newTimeLeft = calculateTimeLeft();
+      setTimeLeft(newTimeLeft);
+
+      if (newTimeLeft.h === 0 && newTimeLeft.m === 0 && newTimeLeft.s === 0) {
+        window.dispatchEvent(new Event('flashDealExpired'));
+      }
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+
+    return () => clearInterval(timer);
+  }, [flashDeals]);
+
   if (loading) {
     return (
-      <section style={{
-        background: 'linear-gradient(135deg, #0F2847 0%, #1A3A5C 50%, #2C5282 100%)',
-        padding: '48px 24px',
-      }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', textAlign: 'center', color: '#fff' }}>
-          <div style={{ fontSize: 18, fontWeight: 600 }}>Loading Flash Deals...</div>
+      <section style={{ background: '#0B2545', padding: '24px 16px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', color: '#fff' }}>
+          <div style={{ fontSize: 16, fontWeight: 600 }}>Loading Flash Deals...</div>
         </div>
       </section>
     );
@@ -371,93 +193,61 @@ export default function FlashDealsSection() {
   const currentDeal = flashDeals[0];
 
   return (
-    <section style={{
-      background: 'linear-gradient(135deg, #0F2847 0%, #1A3A5C 50%, #2C5282 100%)',
-      padding: '48px 24px',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 28,
-          flexWrap: 'wrap',
-          gap: 16,
-        }}>
-          <div>
-            <div style={{
-              fontSize: 11,
-              color: '#F59E0B',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: 8,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}>
-              <span style={{ 
-                width: 8, 
-                height: 8, 
-                borderRadius: '50%', 
-                background: '#EF4444',
-                animation: 'pulse-dot 1.5s ease-in-out infinite',
-              }} />
-              FLASH DEALS
+    <section style={{ background: '#0B2545', padding: '24px 16px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        {/* Header row */}
+        <div style={{ marginBottom: 20 }}>
+          {/* Title + countdown stacked on mobile */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
+                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+                FLASH DEALS
+              </div>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700,
+                color: '#fff', margin: 0 }}>Deal of the Day</h2>
             </div>
-            <h2 style={{
-              fontSize: 32,
-              fontWeight: 900,
-              color: '#fff',
-              margin: 0,
-              fontFamily: 'Plus Jakarta Sans, sans-serif',
-            }}>
-              Deal of the Day
-            </h2>
+            <button onClick={() => router.push('/flash-deals')}
+              style={{ background: 'rgba(255,255,255,0.1)', color: '#fff',
+                border: '1px solid rgba(255,255,255,0.2)', padding: '7px 16px', borderRadius: 8,
+                fontSize: 12, cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              See all deals →
+            </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-            <CountdownTimer endTime={currentDeal.endTime} />
-            <button
-              onClick={() => router.push('/flash-deals')}
-              style={{
-                background: 'transparent',
-                color: '#60A5FA',
-                border: '1px solid #3B82F6',
-                borderRadius: 8,
-                padding: '10px 18px',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
-                e.currentTarget.style.borderColor = '#60A5FA';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.borderColor = '#3B82F6';
-              }}
-            >
-              <span>See all deals</span>
-              <FaArrowRight style={{ fontSize: 11 }} />
-            </button>
+          {/* Countdown timer */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>Ends in</span>
+            {[
+              { val: timeLeft.h, label: 'hrs' },
+              { val: timeLeft.m, label: 'min' },
+              { val: timeLeft.s, label: 'sec' },
+            ].map((t, i) => (
+              <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
+                {i > 0 && <span style={{ color: '#4DDBB8', fontWeight: 700, fontSize: 16 }}>:</span>}
+                <div style={{
+                  background: 'rgba(255,255,255,0.1)', borderRadius: 8,
+                  padding: '6px 10px', textAlign: 'center', minWidth: 46,
+                }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: '#4DDBB8', lineHeight: 1 }}>
+                    {String(t.val).padStart(2, '0')}
+                  </div>
+                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
+        {/* Deal product cards — 2 cols on mobile, 4 on desktop */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-          gap: 20,
-          maxWidth: '100%',
-        }}>
-          {currentDeal.products.map((item, index) => (
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 12,
+        }}
+          className="deal-grid"
+        >
+          {currentDeal.products.slice(0, 4).map((item, index) => (
             <FlashDealProductCard
               key={item.product?._id || index}
               item={item}
@@ -472,12 +262,9 @@ export default function FlashDealsSection() {
       </div>
 
       <style>{`
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(1.3); }
-        }
-        section::-webkit-scrollbar {
-          display: none;
+        div:hover .quick-add-btn { opacity: 1 !important; }
+        @media (min-width: 768px) {
+          .deal-grid { grid-template-columns: repeat(4, 1fr) !important; }
         }
       `}</style>
     </section>
