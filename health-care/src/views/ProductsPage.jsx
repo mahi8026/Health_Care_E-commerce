@@ -110,6 +110,14 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
   const { products, loading, pagination, error } = useProducts(productFilters);
 
+  // Debug logging
+  console.log('ProductsPage pagination data:', {
+    filters: productFilters,
+    productsCount: products?.length,
+    pagination,
+    apiResponse: { products, pagination }
+  });
+
   const handleSearch = useCallback((e) => {
     e.preventDefault();
     setSearchQuery(searchInput);
