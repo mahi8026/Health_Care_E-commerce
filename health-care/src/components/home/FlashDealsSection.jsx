@@ -133,7 +133,18 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
 
   const imgRaw = product.images?.[0];
   const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
-  const optimizedImg = img ? getProductCardImage(img) : null;
+  
+  // Handle both Cloudinary URLs and plain URLs
+  let optimizedImg = null;
+  if (img) {
+    if (img.includes('res.cloudinary.com') || img.includes('cloudinary.com')) {
+      optimizedImg = getProductCardImage(img);
+    } else {
+      // For non-Cloudinary URLs, use as-is
+      optimizedImg = img;
+    }
+  }
+  
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   
   const originalPrice = product.price || 0;
@@ -177,19 +188,26 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Flash Deal Price ৳${finalPrice.toLocaleString()} Bangladesh`}
             fill
             style={{ objectFit: 'cover' }}
+            unoptimized={!optimizedImg.includes('res.cloudinary.com')}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
+              if (fallback) fallback.style.display = 'flex';
+            }}
           />
-        ) : (
-          <div style={{
-            display: 'flex',
+        ) : null}
+        <div 
+          className="image-fallback"
+          style={{
+            display: optimizedImg ? 'none' : 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             height: '100%',
             fontSize: 60,
             color: '#CBD5E1',
           }}>
-            🏥
-          </div>
-        )}
+          🏥
+        </div>
         
         <div style={{
           position: 'absolute',
@@ -364,6 +382,16 @@ export default function FlashDealsSection() {
       const data = await response.json();
       
       if (data.success && data.data?.flashDeals?.length > 0) {
+        // Debug: Log first product's image data
+        const firstDeal = data.data.flashDeals[0];
+        if (firstDeal?.products?.[0]) {
+          const firstProduct = firstDeal.products[0].product;
+          console.log('🖼️ Flash Deal Product Image Debug:', {
+            productName: firstProduct?.name,
+            images: firstProduct?.images,
+            firstImage: firstProduct?.images?.[0]
+          });
+        }
         setFlashDeals(data.data.flashDeals);
       } else {
         setFlashDeals([]);

@@ -93,9 +93,18 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
               className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+              unoptimized={!primaryImage.url.includes('res.cloudinary.com')}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
+                if (fallback) {
+                  fallback.classList.remove('hidden');
+                  fallback.classList.add('flex');
+                }
+              }}
             />
             {/* Fallback shown when image fails to load */}
-            <div className="hidden absolute inset-0 items-center justify-center text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">
+            <div className="image-fallback hidden absolute inset-0 items-center justify-center text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">
               🏥
             </div>
           </>
