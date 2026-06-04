@@ -121,8 +121,11 @@ async function handleResponse(response) {
   }
 }
 
-// Enhanced fetch with auto-retry on 401 and timeout
-async function fetchWithAuth(url, options = {}) {
+// Enhanced fetch with auto-retry on 401, 503, and timeout
+async function fetchWithAuth(url, options = {}, retryCount = 0) {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds
+  
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
   
@@ -133,6 +136,14 @@ async function fetchWithAuth(url, options = {}) {
     });
     
     clearTimeout(timeoutId);
+    
+    // Handle 503 (Service Unavailable - Render backend sleeping)
+    if (response.status === 503 && retryCount < MAX_RETRIES) {
+      clearTimeout(timeoutId);
+      console.log(`[API] Backend sleeping (503), retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+      return fetchWithAuth(url, options, retryCount + 1);
+    }
     
     // If 401 and we have a refresh token, try to refresh
     if (response.status === 401 && getRefreshToken()) {
@@ -206,21 +217,21 @@ async function fetchWithAuth(url, options = {}) {
     return response;
   } catch (error) {
     clearTimeout(timeoutId);
-    // Network error or timeout
-    if (error.name === 'AbortError') {
-      devLog.error('[API] Request timeout:', url);
+    // Network error or timeout - retry if not max retries
+    if (error.name === 'AbortError' || error.message.includes('fetch')) {
+      if (retryCount < MAX_RETRIES) {
+        console.log(`[API] Network error, retry ${retryCount + 1}/${MAX_RETRIES}...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return fetchWithAuth(url, options, retryCount + 1);
+      }
+      devLog.error('[API] Request failed after retries:', url);
       throw new ApiError(
-        'Request timeout. Please check your connection and try again.',
+        'Unable to connect to server. Please check your connection.',
         0,
-        { originalError: 'timeout' }
+        { originalError: error.message }
       );
     }
-    devLog.error('[API] Network error:', error.message);
-    throw new ApiError(
-      'Unable to connect to server. Please check if the backend is running.',
-      0,
-      { originalError: error.message }
-    );
+    throw error;
   }
 }
 
