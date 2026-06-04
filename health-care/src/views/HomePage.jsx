@@ -30,6 +30,7 @@ import { API } from '@/constants/api';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
 import RecentlyViewed from '@/components/product/RecentlyViewed';
+import FlashDealsSection from '@/components/home/FlashDealsSection';
 
 // Lazy load heavy components for better performance
 const SupportResources = lazy(() => import('@/components/home/SupportResources'));
@@ -804,6 +805,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* FLASH DEALS SECTION */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <FlashDealsSection />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
