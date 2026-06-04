@@ -159,9 +159,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         overflow: 'hidden',
         cursor: 'pointer',
         transition: 'all 0.3s',
-        minWidth: 240,
-        maxWidth: 260,
-        flexShrink: 0,
+        width: '100%',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'translateY(-4px)';
@@ -454,29 +452,22 @@ export default function FlashDealsSection() {
         </div>
 
         <div style={{
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+          gap: 20,
+          maxWidth: '100%',
         }}>
-          <div style={{
-            display: 'flex',
-            gap: 20,
-            paddingBottom: 6,
-          }}>
-            {currentDeal.products.map((item, index) => (
-              <FlashDealProductCard
-                key={item.product?._id || index}
-                item={item}
-                onClick={() => {
-                  if (item.product?._id) {
-                    router.push(`/products/${item.product._id}`);
-                  }
-                }}
-              />
-            ))}
-          </div>
+          {currentDeal.products.map((item, index) => (
+            <FlashDealProductCard
+              key={item.product?._id || index}
+              item={item}
+              onClick={() => {
+                if (item.product?._id) {
+                  router.push(`/products/${item.product._id}`);
+                }
+              }}
+            />
+          ))}
         </div>
       </div>
 
