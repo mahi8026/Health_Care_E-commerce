@@ -397,7 +397,7 @@ export default function SecurityPage() {
               <div className="bg-[#FFFBEB] border border-[#FCD34D] rounded-lg p-3 mb-4">
                 <p className="text-[12px] text-[#92400E]">
                   ⚠️ If you lose access to your authenticator app, contact{' '}
-                  <a href="mailto:support@medcorebd.com" className="font-semibold underline">support@medcorebd.com</a>.
+                  <a href="mailto:mahimrahman07@gmail.com" className="font-semibold underline">mahimrahman07@gmail.com</a>.
                 </p>
               </div>
               <button

@@ -19,8 +19,8 @@ exports.getSettings = async (req, res) => {
         b2bCreditDays: 90,
         certifications: ['DGDA Registered', 'ISO 13485 Certified'],
         supportHours: '24/7',
-        contactPhone: '+880 1800-MED-CORE',
-        contactEmail: 'info@medcorebd.com',
+        contactPhone: '+880 1646-886795',
+        contactEmail: 'mahimrahman07@gmail.com',
         companyName: 'MedCore BD',
         tagline: "Bangladesh's Most Trusted Medical Equipment Supplier",
       });

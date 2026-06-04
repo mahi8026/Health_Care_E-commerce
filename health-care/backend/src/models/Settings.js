@@ -33,11 +33,11 @@ const settingsSchema = new mongoose.Schema({
   },
   contactPhone: {
     type: String,
-    default: '+880 1800-MED-CORE',
+    default: '+880 1646-886795',
   },
   contactEmail: {
     type: String,
-    default: 'info@medcorebd.com',
+    default: 'mahimrahman07@gmail.com',
   },
   companyName: {
     type: String,

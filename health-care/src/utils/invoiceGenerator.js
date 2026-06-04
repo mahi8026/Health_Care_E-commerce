@@ -219,7 +219,7 @@ export class InvoiceGenerator {
     <header class="head">
       <div>
         <div class="logo">MedCore<span>BD</span></div>
-        <p class="tagline">Medical Equipment & Laboratory Supplies<br />Dhaka, Bangladesh · support@medcorebd.com</p>
+        <p class="tagline">Medical Equipment & Laboratory Supplies<br />Dhaka, Bangladesh · mahimrahman07@gmail.com</p>
       </div>
       <div class="inv-title">
         <h1>INVOICE</h1>

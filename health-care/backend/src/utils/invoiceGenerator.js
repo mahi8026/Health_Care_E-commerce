@@ -136,7 +136,7 @@ function generateInvoice(order, user) {
         fontSize: 8,
         fillColor: MINT,
       });
-      textAt(doc, 'Dhaka, Bangladesh  ·  +880 1646-886795  ·  support@medcorebd.com', MARGIN, 60, {
+      textAt(doc, 'Dhaka, Bangladesh  ·  +880 1646-886795  ·  mahimrahman07@gmail.com', MARGIN, 60, {
         fontSize: 7,
         fillColor: '#CBD5E1',
       });

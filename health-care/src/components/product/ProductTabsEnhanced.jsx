@@ -213,8 +213,8 @@ export default function ProductTabsEnhanced({ product }) {
               <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-600">
                   <strong>Need Help?</strong> Contact our customer support at{' '}
-                  <span className="text-[#0E8A6E] font-semibold">+880 1800-000000</span> or{' '}
-                  <span className="text-[#0E8A6E] font-semibold">info@medcorebd.com</span>
+                  <span className="text-[#0E8A6E] font-semibold">+880 1646-886795</span> or{' '}
+                  <span className="text-[#0E8A6E] font-semibold">mahimrahman07@gmail.com</span>
                 </p>
               </div>
             </div>

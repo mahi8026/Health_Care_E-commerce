@@ -70,7 +70,7 @@ function BankTransferConfirmation({ orderId }) {
       <div className="px-4 pb-3">
         <p className="text-[11px] text-[#92400E] m-0">
           Your order will be confirmed within <strong>1–2 business hours</strong> after payment is received.
-          Email us at <strong>support@medcorebd.com</strong> with your transaction screenshot if needed.
+          Email us at <strong>mahimrahman07@gmail.com</strong> with your transaction screenshot if needed.
         </p>
       </div>
     </div>

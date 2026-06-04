@@ -105,7 +105,7 @@ export default function BankTransferForm({ orderNumber }) {
             'Take a screenshot or note your transaction ID',
             'Your order will be confirmed within 1–2 business hours',
             'You\'ll receive an email confirmation once payment is verified',
-            'Contact support@medcorebd.com if you need help',
+            'Contact mahimrahman07@gmail.com if you need help',
           ].map((step, i) => (
             <p key={i} className="text-[11px] text-[#374151] m-0 flex items-start gap-1.5">
               <span className="text-[#3B82F6] font-bold flex-shrink-0">{i + 1}.</span>

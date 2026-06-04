@@ -49,7 +49,7 @@ const seedDatabase = async () => {
 
     const admin3 = await User.create({
       name: 'Karim Support',
-      email: 'support@medcorebd.com',
+      email: 'karim.support@medcorebd.com',
       password: 'support123',
       phone: '+880 1814-567890',
       role: 'admin',

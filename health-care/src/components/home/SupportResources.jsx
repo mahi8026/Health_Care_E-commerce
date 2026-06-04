@@ -16,8 +16,8 @@ const SUPPORT_OPTIONS = [
   {
     icon: <FaPhoneAlt />,
     title: 'Call Us',
-    desc: '+880 1800-MED-CORE',
-    action: 'tel:+8801800000000',
+    desc: '+880 1646-886795',
+    action: 'tel:+8801646886795',
     color: '#0066CC',
     bgColor: '#EFF6FF'
   },
@@ -32,8 +32,8 @@ const SUPPORT_OPTIONS = [
   {
     icon: <FaEnvelope />,
     title: 'Email Us',
-    desc: 'info@medcorebd.com',
-    action: 'mailto:info@medcorebd.com',
+    desc: 'mahimrahman07@gmail.com',
+    action: 'mailto:mahimrahman07@gmail.com',
     color: '#DC2626',
     bgColor: '#FFF1F2'
   },

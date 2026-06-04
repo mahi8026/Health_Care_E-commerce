@@ -172,7 +172,7 @@ exports.unsubscribe = async (req, res) => {
           <p>If you change your mind, you can always resubscribe from our website.</p>
           <div class="footer">
             <p>MedCore BD | Medical Equipment & Supplies</p>
-            <p>Dhaka, Bangladesh | support@medcorebd.com</p>
+            <p>Dhaka, Bangladesh | mahimrahman07@gmail.com</p>
           </div>
         </div>
       </body>

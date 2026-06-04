@@ -9,8 +9,8 @@ const options = {
       description: 'Comprehensive API documentation for MedCore BD medical equipment e-commerce platform',
       contact: {
         name: 'MedCore BD',
-        email: 'info@medcorebd.com',
-        url: 'https://medcorebd.com'
+        email: 'mahimrahman07@gmail.com',
+        url: 'https://health-care-e-commerce-murex.vercel.app'
       },
       license: {
         name: 'MIT',
