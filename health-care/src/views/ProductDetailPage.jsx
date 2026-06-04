@@ -22,6 +22,13 @@ import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import ReviewSchema from '@/components/seo/ReviewSchema';
 
+// Innovation Features
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import RecentlyViewed from '@/components/product/RecentlyViewed';
+import ProductVideo from '@/components/product/ProductVideo';
+import { getRecommendations } from '@/utils/recommendations';
+import { API } from '@/constants/api';
+
 export default function ProductDetailPage({ productId, heroPriority = false }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,11 +38,19 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   // Use custom hook for data fetching
   const { product, loading, error: fetchError } = useProductDetail(id);
 
+  // Recently viewed hook
+  const { addToRecentlyViewed, recentlyViewed } = useRecentlyViewed();
+
   // UI state
   const [quantity, setQuantity] = useState(1);
   const [selectedConnectivity, setSelectedConnectivity] = useState('');
   const [selectedWarranty, setSelectedWarranty] = useState('');
   const [addingToCart, setAddingToCart] = useState(false);
+  
+  // AI Recommendations state
+  const [allProducts, setAllProducts] = useState([]);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   
   // Previous product ID to detect when product changes
   const prevProductIdRef = useRef(null);
@@ -57,8 +72,47 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           setSelectedWarranty(product.variants.warranty[0]);
         }
       });
+
+      // Track in recently viewed
+      addToRecentlyViewed(product);
     }
-  }, [product]);
+  }, [product, addToRecentlyViewed]);
+
+  // Fetch AI-powered recommendations
+  useEffect(() => {
+    if (!product) return;
+
+    // Use callback form to avoid setState warning
+    setLoadingRecommendations(() => true);
+    
+    // Fetch all products for recommendations
+    fetch(`${API}/products?limit=100`)
+      .then(res => res.json())
+      .then(data => {
+        const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
+        setAllProducts(products);
+        
+        // Get cart items from context (if available)
+        const cartData = localStorage.getItem('cart');
+        const cartItems = cartData ? JSON.parse(cartData).items || [] : [];
+        
+        // Generate AI recommendations
+        const recommendations = getRecommendations(
+          product,
+          products,
+          recentlyViewed,
+          cartItems,
+          6 // limit to 6 recommendations
+        );
+        
+        setRecommendedProducts(recommendations);
+        setLoadingRecommendations(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch recommendations:', err);
+        setLoadingRecommendations(false);
+      });
+  }, [product, recentlyViewed]);
 
   // Redirect from MongoDB ID to slug-based URL for SEO
   useEffect(() => {
@@ -256,6 +310,76 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           <CustomersAlsoViewed
             productId={product._id || product.id}
             category={product.categoryId || (typeof product.category === 'object' ? product.category?._id : product.category)}
+          />
+        </div>
+
+        {/* Product Video (if available) */}
+        {product.videoUrl && (
+          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <h2 className="text-[15px] font-semibold text-[#0B2545] mb-4">Product Video</h2>
+            <ProductVideo
+              videoUrl={product.videoUrl}
+              thumbnail={product.videoThumbnail}
+              title={`${product.name} — Product Demo`}
+            />
+          </div>
+        )}
+
+        {/* AI-Powered Recommendations */}
+        {!loadingRecommendations && recommendedProducts.length > 0 && (
+          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🤖</span>
+              <h2 className="text-[15px] font-semibold text-[#0B2545]">You Might Also Like</h2>
+              <span className="text-[11px] text-gray-400 bg-purple-50 px-2 py-0.5 rounded-full font-medium">
+                AI Recommended
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {recommendedProducts.map((recProduct) => {
+                const recImageData = recProduct.images?.find(img => typeof img === 'object' && img.isPrimary) || recProduct.images?.[0];
+                const recImageUrl = typeof recImageData === 'string' ? recImageData : recImageData?.url;
+                const recPrice = recProduct.price || 0;
+                
+                return (
+                  <Link
+                    key={recProduct._id || recProduct.id}
+                    href={`/products/${recProduct.slug || recProduct._id}`}
+                    className="group bg-white rounded-lg border border-gray-100 hover:border-[#0E8A6E]/40 hover:shadow-lg transition-all overflow-hidden"
+                  >
+                    <div className="relative aspect-square bg-gray-50">
+                      {recImageUrl ? (
+                        <img
+                          src={recImageUrl}
+                          alt={recProduct.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-3xl">🏥</div>
+                      )}
+                    </div>
+                    <div className="p-2">
+                      <h3 className="text-[11px] font-medium text-gray-800 line-clamp-2 mb-1 group-hover:text-[#0E8A6E]">
+                        {recProduct.name}
+                      </h3>
+                      <p className="text-[13px] font-bold text-[#0B2545]">
+                        {recPrice > 0 ? `৳${recPrice.toLocaleString()}` : 'Contact'}
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Recently Viewed Products */}
+        <div className="mt-6">
+          <RecentlyViewed
+            currentProductId={product._id || product.id}
+            limit={6}
+            title="Your Recently Viewed Products"
           />
         </div>
 

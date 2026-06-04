@@ -1,8 +1,12 @@
 /**
- * ProductSchema Component
+ * ProductSchema — Google Rich Results for Products
  * 
- * Generates JSON-LD structured data for product pages following Schema.org/Product spec.
- * This helps Google show rich snippets with price, availability, ratings in search results.
+ * Displays product information in Google search results with:
+ * - Product name, image, description
+ * - Price, currency, availability
+ * - Brand, SKU, GTIN
+ * - Aggregate rating (stars in search results)
+ * - Seller information
  * 
  * @see https://schema.org/Product
  * @see https://developers.google.com/search/docs/appearance/structured-data/product
@@ -11,116 +15,137 @@
 import { useMemo } from 'react';
 
 export default function ProductSchema({ product }) {
-  // Use useMemo to ensure date calculation happens once and is pure
-  const schemaData = useMemo(() => {
-    if (!product) return null;
+  if (!product) return null;
 
-    // Calculate aggregate rating if reviews exist
-    const aggregateRating = product.reviews && product.reviews.length > 0
-      ? {
-          '@type': 'AggregateRating',
-          ratingValue: product.averageRating || calculateAverageRating(product.reviews),
-          reviewCount: product.reviews.length,
-          bestRating: 5,
-          worstRating: 1,
-        }
-      : null;
+  // Calculate price valid until date (30 days from now) - memoized to avoid impurity
+  const priceValidUntil = useMemo(() => {
+    return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  }, []);
 
-    // Determine availability based on stock
-    const availability = product.stock > 0
-      ? 'https://schema.org/InStock'
-      : 'https://schema.org/OutOfStock';
+  // Extract product data safely
+  const name = product.name || 'Medical Equipment';
+  const description = product.description || product.shortDescription || name;
+  const brand = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+  const category = typeof product.category === 'object' ? product.category?.name : product.category;
+  
+  // Get first image or fallback
+  const images = Array.isArray(product.images) && product.images.length > 0
+    ? product.images.map(img => {
+        const url = typeof img === 'string' ? img : img?.url;
+        // Ensure absolute URLs for schema
+        return url?.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'}${url}`;
+      })
+    : [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'}/images/placeholder-product.jpg`];
 
-    // Calculate price valid until date (90 days from now)
-    const priceValidDate = new Date();
-    priceValidDate.setDate(priceValidDate.getDate() + 90);
-    const priceValidUntil = priceValidDate.toISOString().split('T')[0];
+  // Price and availability
+  const price = product.price || product.sellingPrice || 0;
+  const availability = product.stock > 0 
+    ? 'https://schema.org/InStock' 
+    : 'https://schema.org/OutOfStock';
 
-    // Build offer object
-    const offer = {
+  // Rating data
+  const rating = typeof product.rating === 'object' 
+    ? product.rating 
+    : { average: product.rating || 0, count: product.reviewCount || 0 };
+
+  // SKU and identifiers
+  const sku = product.sku || product._id?.toString() || 'N/A';
+  const gtin = product.gtin || product.barcode || undefined;
+
+  // Build schema object
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name,
+    description: description.substring(0, 500), // Limit to 500 chars
+    image: images,
+    brand: brand ? {
+      '@type': 'Brand',
+      name: brand
+    } : undefined,
+    category,
+    sku,
+    gtin,
+    offers: {
       '@type': 'Offer',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app'}/products/${product._id}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'}/products/${product._id || product.slug}`,
       priceCurrency: 'BDT',
-      price: product.finalPrice || product.price,
-      priceValidUntil,
+      price: price.toString(),
       availability,
-      itemCondition: 'https://schema.org/NewCondition',
       seller: {
         '@type': 'Organization',
         name: 'MedCore BD',
+        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'
       },
-    };
-
-    // Add discount offer if product has a discount
-    if (product.discount && product.discount > 0) {
-      offer.priceSpecification = {
-        '@type': 'UnitPriceSpecification',
-        price: product.finalPrice || product.price,
-        priceCurrency: 'BDT',
-      };
-    }
-
-    const schema = {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: product.name,
-      description: product.description || `${product.name} — ${product.brand || 'Medical Equipment'} available at MedCore BD Bangladesh. DGDA registered. Buy online with fast delivery.`,
-      image: product.images?.map(img => img.url || img) || [],
-      brand: product.brand
-        ? {
-            '@type': 'Brand',
-            name: product.brand,
+      priceValidUntil, // 30 days from now
+      itemCondition: 'https://schema.org/NewCondition',
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'BD'
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          businessDays: {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+          },
+          cutoffTime: '17:00',
+          handlingTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 1,
+            maxValue: 2,
+            unitCode: 'DAY'
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 1,
+            maxValue: 3,
+            unitCode: 'DAY'
           }
-        : undefined,
-      manufacturer: product.manufacturer
-        ? {
-            '@type': 'Organization',
-            name: product.manufacturer,
-          }
-        : undefined,
-      sku: product.sku || product._id,
-      mpn: product.mpn || product.sku || undefined,
-      gtin: product.gtin || product.barcode || undefined,
-      offers: offer,
-      aggregateRating,
-      // Additional product details
-      category: product.category,
-      model: product.model || undefined,
-      // Medical equipment specific
-      additionalProperty: product.specifications
-        ? Object.entries(product.specifications).map(([name, value]) => ({
-            '@type': 'PropertyValue',
-            name,
-            value,
-          }))
-        : undefined,
-    };
-
-    // Clean up undefined values
-    Object.keys(schema).forEach(key => {
-      if (schema[key] === undefined) {
-        delete schema[key];
+        }
       }
-    });
+    }
+  };
 
-    return schema;
-  }, [product]);
+  // Add aggregate rating if available
+  if (rating?.count > 0 && rating?.average > 0) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: rating.average.toString(),
+      reviewCount: rating.count.toString(),
+      bestRating: '5',
+      worstRating: '1'
+    };
+  }
 
-  if (!schemaData) return null;
+  // Add review if available
+  if (product.reviews && Array.isArray(product.reviews) && product.reviews.length > 0) {
+    schema.review = product.reviews.slice(0, 5).map(review => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: review.userName || review.user?.name || 'Customer'
+      },
+      datePublished: review.createdAt || new Date().toISOString(),
+      reviewBody: review.comment || review.review || '',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: (review.rating || 5).toString(),
+        bestRating: '5',
+        worstRating: '1'
+      }
+    }));
+  }
+
+  // Clean undefined values
+  const cleanSchema = JSON.parse(JSON.stringify(schema));
 
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData, null, 2) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(cleanSchema) }}
     />
   );
-}
-
-/**
- * Calculate average rating from reviews array
- */
-function calculateAverageRating(reviews) {
-  if (!reviews || reviews.length === 0) return 0;
-  const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0);
-  return (sum / reviews.length).toFixed(1);
 }

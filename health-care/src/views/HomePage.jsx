@@ -28,6 +28,8 @@ import {
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
+import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
+import RecentlyViewed from '@/components/product/RecentlyViewed';
 
 // Lazy load heavy components for better performance
 const SupportResources = lazy(() => import('@/components/home/SupportResources'));
@@ -159,6 +161,8 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
   const t = useT();
   const imgRaw = product.images?.[0];
   const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
+  // Apply Cloudinary optimization — saves ~100-200KB per card image
+  const optimizedImg = img ? getProductCardImage(img) : null;
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const ratingVal = typeof product.rating === 'object' ? product.rating?.average : (product.rating || 0);
   const reviewCount = product.reviewCount || product.rating?.count || 0;
@@ -179,8 +183,8 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 
       {/* Image */}
       <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
-        {img ? (
-          <img src={img} alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`} loading="lazy"
+        {optimizedImg ? (
+          <img src={optimizedImg} alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`} loading="lazy"
             style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
             onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
@@ -415,7 +419,9 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  // Fetch data
+  // Fetch data — STAGED LOADING for better TBT/TTI
+  // Stage 1 (critical, above-fold): featured products, categories, settings
+  // Stage 2 (deferred, below-fold): deals, new arrivals, category products, reviews
   useEffect(() => {
     const safe = async (p) => {
       try {
@@ -427,84 +433,108 @@ export default function HomePage() {
       }
     };
 
+    const extractProducts = (d) => {
+      if (Array.isArray(d?.data)) return d.data;
+      if (Array.isArray(d?.data?.products)) return d.data.products;
+      if (Array.isArray(d?.products)) return d.products;
+      return [];
+    };
+
+    // ── STAGE 1: Critical above-fold data (4 requests vs previous 16) ─────
     Promise.all([
-      safe(fetch(`${API}/products?isFeatured=true&limit=24`)),
-      safe(fetch(`${API}/products?limit=24`)), // Fallback: all products
+      safe(fetch(`${API}/products?isFeatured=true&limit=12`)),
       safe(fetch(`${API}/categories`)),
       safe(fetch(`${API}/products/category-counts`)),
       safe(fetch(`${API}/stats`)),
-      safe(fetch(`${API}/coupons/active-promo`)),
-      safe(fetch(`${API}/products?sortBy=newest&limit=10`)),
-      safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
-      safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
-      safe(fetch(`${API}/products?category=Lab Equipment&limit=4`)), // Lab equipment products
-      safe(fetch(`${API}/products?sortBy=popular&limit=4`)), // Top selling
-      safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)), // Category: Diagnostic
-      safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)), // Category: Reagents
-      safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)), // Category: Machines
-      safe(fetch(`${API}/products?category=PPE&limit=10`)), // Category: PPE
-      safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)), // Category: Lab Equipment
-    ]).then(([featured, allProducts, cats, counts, statsData, promoData, newest, deals, reviews, labEquip, topSelling, diagnostic, reagents, machines, ppe, labEquipCat]) => {
-      // API returns: { success, data: [...products...], pagination }
-      const fp = Array.isArray(featured.data) ? featured.data : (featured.data?.products || featured.products || []);
-      const ap = Array.isArray(allProducts.data) ? allProducts.data : (allProducts.data?.products || allProducts.products || []);
-      // Use featured products if available (at least 8), otherwise use all products
-      const productsToShow = fp.length >= 8 ? fp : ap;
-      
-      // Ensure we always have an array
-      setFeaturedProducts(Array.isArray(productsToShow) ? productsToShow : []);
-      setFeaturedLoading(false);
+    ]).then(([featured, cats, counts, statsData]) => {
+      const fp = extractProducts(featured);
+      // If no featured products, fetch general products as fallback
+      if (fp.length >= 4) {
+        setFeaturedProducts(fp);
+        setFeaturedLoading(false);
+        setIsLoadingData(false);
+      } else {
+        safe(fetch(`${API}/products?limit=12`)).then((allProducts) => {
+          const ap = extractProducts(allProducts);
+          setFeaturedProducts(ap.length > 0 ? ap : []);
+          setFeaturedLoading(false);
+          setIsLoadingData(false);
+        });
+      }
 
       const catList = cats.data?.categories || cats.categories || [];
       setCategories(catList.length > 0 ? catList : FALLBACK_CATEGORIES);
       setCategoryCounts(counts.data || {});
-
       if (statsData.data) setStats(statsData.data);
-      setPromo(promoData.data?.coupon || null);
-
-      const na = Array.isArray(newest.data) ? newest.data : (newest.data?.products || newest.products || []);
-      setNewArrivals(Array.isArray(na) ? na : []);
-      setNewArrivalsLoading(false);
-
-      const dealList = Array.isArray(deals.data) ? deals.data : (deals.data?.products || deals.products || []);
-      setDealProducts(Array.isArray(dealList) ? dealList : []);
-      setDealLoading(false);
-
-      const reviewList = reviews.data?.reviews || reviews.reviews || [];
-      setTestimonials(Array.isArray(reviewList) ? reviewList : []);
-
-      const labEquipList = Array.isArray(labEquip.data) ? labEquip.data : (labEquip.data?.products || labEquip.products || []);
-      setLabEquipmentProducts(Array.isArray(labEquipList) ? labEquipList : []);
-
-      const topSellingList = Array.isArray(topSelling.data) ? topSelling.data : (topSelling.data?.products || topSelling.products || []);
-      setTopSellingProducts(Array.isArray(topSellingList) ? topSellingList : []);
-      setTopSellingLoading(false);
-
-      const diagnosticList = Array.isArray(diagnostic.data) ? diagnostic.data : (diagnostic.data?.products || diagnostic.products || []);
-      const reagentsList = Array.isArray(reagents.data) ? reagents.data : (reagents.data?.products || reagents.products || []);
-      const machinesList = Array.isArray(machines.data) ? machines.data : (machines.data?.products || machines.products || []);
-      const ppeList = Array.isArray(ppe.data) ? ppe.data : (ppe.data?.products || ppe.products || []);
-      const labEquipCatList = Array.isArray(labEquipCat.data) ? labEquipCat.data : (labEquipCat.data?.products || labEquipCat.products || []);
-      
-      setCategoryProducts({
-        diagnostic: Array.isArray(diagnosticList) ? diagnosticList : [],
-        reagents: Array.isArray(reagentsList) ? reagentsList : [],
-        machines: Array.isArray(machinesList) ? machinesList : [],
-        ppe: Array.isArray(ppeList) ? ppeList : [],
-        labEquipment: Array.isArray(labEquipCatList) ? labEquipCatList : [],
-      });
-      setCategoryProductsLoading(false);
-      setIsLoadingData(false);
     }).catch(() => {
       setFeaturedLoading(false);
-      setNewArrivalsLoading(false);
-      setDealLoading(false);
-      setTopSellingLoading(false);
-      setCategoryProductsLoading(false);
       setIsLoadingData(false);
       setCategories(FALLBACK_CATEGORIES);
-      setFeaturedProducts([]);
     });
+
+    // ── STAGE 2: Below-fold data — deferred until browser is idle ─────────
+    const loadDeferredData = () => {
+      Promise.all([
+        safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
+        safe(fetch(`${API}/products?sortBy=newest&limit=10`)),
+        safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
+        safe(fetch(`${API}/coupons/active-promo`)),
+        safe(fetch(`${API}/products?sortBy=popular&limit=4`)),
+        safe(fetch(`${API}/products?category=Lab+Equipment&limit=4`)),
+      ]).then(([deals, newest, reviews, promoData, topSelling, labEquip]) => {
+        const dealList = extractProducts(deals);
+        setDealProducts(dealList);
+        setDealLoading(false);
+
+        const na = extractProducts(newest);
+        setNewArrivals(na);
+        setNewArrivalsLoading(false);
+
+        const reviewList = reviews.data?.reviews || reviews.reviews || [];
+        setTestimonials(Array.isArray(reviewList) ? reviewList : []);
+
+        setPromo(promoData.data?.coupon || null);
+
+        const topSellingList = extractProducts(topSelling);
+        setTopSellingProducts(topSellingList);
+        setTopSellingLoading(false);
+
+        const labEquipList = extractProducts(labEquip);
+        setLabEquipmentProducts(labEquipList);
+      }).catch(() => {
+        setDealLoading(false);
+        setNewArrivalsLoading(false);
+        setTopSellingLoading(false);
+      });
+
+      // ── STAGE 3: Category product tabs — lowest priority ───────────────
+      Promise.all([
+        safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)),
+        safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)),
+        safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)),
+        safe(fetch(`${API}/products?category=PPE&limit=10`)),
+        safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)),
+      ]).then(([diagnostic, reagents, machines, ppe, labEquipCat]) => {
+        setCategoryProducts({
+          diagnostic: extractProducts(diagnostic),
+          reagents: extractProducts(reagents),
+          machines: extractProducts(machines),
+          ppe: extractProducts(ppe),
+          labEquipment: extractProducts(labEquipCat),
+        });
+        setCategoryProductsLoading(false);
+      }).catch(() => setCategoryProductsLoading(false));
+    };
+
+    // Use requestIdleCallback if available, otherwise setTimeout with 300ms delay
+    // This ensures Stage 1 data is rendered before we start Stage 2 fetching
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(loadDeferredData, { timeout: 2000 });
+      } else {
+        setTimeout(loadDeferredData, 300);
+      }
+    }
 
     // Check user auth
     const token = localStorage.getItem('medcore_token');
@@ -523,7 +553,6 @@ export default function HomePage() {
       try {
         const cart = JSON.parse(cartData);
         const count = cart.items?.length || 0;
-        // Use setTimeout to avoid setState in effect
         setTimeout(() => setCartCount(count), 0);
       } catch {}
     }
@@ -1461,6 +1490,15 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* RECENTLY VIEWED PRODUCTS */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section className="home-section" style={{ padding: '56px 24px 32px', background: '#FAFAFA' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <RecentlyViewed limit={8} title="Continue Where You Left Off" />
+        </div>
+      </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* WHY MEDCORE BD */}

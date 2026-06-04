@@ -16,7 +16,7 @@
   --gradient-hero-glow-tr: radial-gradient(circle at 95% 5%, rgba(14, 138, 110, 0.25), transparent 70%);
   --gradient-hero-glow-bl: radial-gradient(circle at 0% 100%, rgba(77, 219, 184, 0.12), transparent 70%);
 
-  /* Page & surfaces — Option 2: Soft Medical Blue */
+  /* LIGHT MODE — Page & surfaces */
   --color-background-page: #eef6fb;
   --color-background-page-top: #e8f4fa;
   --color-background-primary: #ffffff;
@@ -73,6 +73,53 @@
   --glass-highlight: rgba(255, 255, 255, 0.45);
   --glass-teal: #4ddbb8;
   --glass-teal-dim: rgba(77, 219, 184, 0.35);
+}
+
+/* DARK MODE — Override light mode variables */
+.dark {
+  /* Dark mode backgrounds */
+  --color-background-page: #0f172a;
+  --color-background-page-top: #1e293b;
+  --color-background-primary: #1e293b;
+  --color-background-secondary: #334155;
+  --color-background-tertiary: #475569;
+  --color-background-muted: #64748b;
+  --color-background-elevated: #334155;
+  --color-background-inset: #0f172a;
+
+  /* Dark mode text */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+
+  /* Dark mode borders */
+  --color-border-primary: #334155;
+  --color-border-secondary: #475569;
+  --color-border-tertiary: #64748b;
+
+  /* Dark mode gradient wash */
+  --page-gradient-wash:
+    radial-gradient(ellipse 110% 55% at 50% -10%, rgba(14, 138, 110, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 0%,   rgba(77, 219, 184, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, #1e293b 0%, #0f172a 320px, #020617 100%);
+
+  /* Dark mode glassmorphism */
+  --glass-navy: 30, 41, 59;
+  --glass-nav-alpha: 0.7;
+  --glass-nav-alpha-hero: 0.5;
+  --glass-nav-alpha-scrolled: 0.9;
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-strong: rgba(255, 255, 255, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+}
+
+/* Smooth transition for dark mode */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Disable transition during initial page load */
+.no-transition * {
+  transition: none !important;
 }
 
 /* Tailwind v4 semantic colors (sync with :root above) */

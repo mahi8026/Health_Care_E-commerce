@@ -6,6 +6,7 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { CompareProvider } from "@/context/CompareContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { SITE_CONFIG } from "@/config/seo";
 import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
 import StructuredData, {
@@ -16,6 +17,8 @@ import Script from "next/script";
 import LazyChatContainer from "@/components/chat/LazyChatContainer";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import ToastProvider from "@/components/ui/ToastProvider";
+import ServiceWorkerRegistration from "@/components/ui/ServiceWorkerRegistration";
+import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 
 export const dynamic = 'force-dynamic';
 
@@ -119,6 +122,15 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
+        {/* PWA manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        {/* Preload LCP hero image from Cloudinary CDN */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://res.cloudinary.com/dm8eqxwlz/image/upload/f_auto,q_auto,w_1200,c_limit/medcorebd/hero-banner"
+          fetchPriority="high"
+        />
       </head>
       <body className="min-h-screen antialiased text-[var(--color-text-primary)]">
         {/* Skip to main content — keyboard/screen-reader accessibility */}
@@ -130,28 +142,36 @@ export default function RootLayout({ children }) {
         <StructuredData schema={generateWebSiteSchema()} />
         <LocalBusinessSchema />
 
-        <LanguageProvider>
-          <AuthProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <CompareProvider>
-                  <ErrorBoundary
-                    title="Something went wrong"
-                    message="An unexpected error occurred. Please refresh the page or contact support if the problem persists."
-                  >
-                    <main id="main-content">
-                      <SiteChrome>{children}</SiteChrome>
-                    </main>
-                    <LazyChatContainer />
-                  </ErrorBoundary>
-                </CompareProvider>
-              </WishlistProvider>
-            </CartProvider>
-          </AuthProvider>
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <CompareProvider>
+                    <ErrorBoundary
+                      title="Something went wrong"
+                      message="An unexpected error occurred. Please refresh the page or contact support if the problem persists."
+                    >
+                      <main id="main-content">
+                        <SiteChrome>{children}</SiteChrome>
+                      </main>
+                      <LazyChatContainer />
+                    </ErrorBoundary>
+                  </CompareProvider>
+                </WishlistProvider>
+              </CartProvider>
+            </AuthProvider>
+          </LanguageProvider>
+
+          {/* Fly-to-cart animation container */}
+          <FlyToCartContainer />
+        </ThemeProvider>
 
         {/* Toast Notifications - Global */}
         <ToastProvider />
+
+        {/* PWA Service Worker */}
+        <ServiceWorkerRegistration />
 
         {/* Google Analytics 4 — loaded after interactive to avoid blocking */}
         {gaId && (

@@ -65,9 +65,30 @@ const nextConfig = {
     }));
   },
 
-  // Security headers
+  // Security + caching headers
   async headers() {
     return [
+      // Long-lived cache for Next.js static assets (_next/static)
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Cache static files in /public
+      {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      // Security headers for all pages
       {
         source: '/:path*',
         headers: [
@@ -107,9 +128,12 @@ const nextConfig = {
   // Image optimization configuration
   images: {
     formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    // Trimmed device/image sizes — only the breakpoints actually used in the UI
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 31536000, // 1 year
+    minimumCacheTTL: 2592000, // 30 days (was 1 year — allow re-optimization)
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: 'https',
@@ -144,10 +168,16 @@ const nextConfig = {
   // Optimize imports for large icon/component libraries to reduce bundle size
   experimental: {
     optimizePackageImports: ['react-icons', 'recharts', 'date-fns', '@heroicons/react'],
+    // Turbopack-compatible optimizations
+    webpackBuildWorker: true,
   },
 
+  // Turbopack config — required in Next.js 16 to silence warning
+  turbopack: {},
+
   // Enable source maps in production for Sentry error tracking
-  productionBrowserSourceMaps: true,
+  // NOTE: Disabled to reduce bundle size — re-enable only when debugging production errors
+  productionBrowserSourceMaps: false,
 };
 
 export default withBundleAnalyzer(nextConfig);
