@@ -213,6 +213,15 @@ export default function SearchResults({
     );
   }
 
+  // Debug logging
+  console.log('SearchResults pagination debug:', {
+    currentPage,
+    totalPages,
+    totalResults,
+    productsCount: products.length,
+    shouldShowPagination: totalPages > 1
+  });
+
   return (
     <div>
       {/* Result count */}
@@ -242,14 +251,30 @@ export default function SearchResults({
         ))}
       </div>
 
+      {/* Pagination - Debug View */}
+      <div className="mt-10 mb-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <p className="text-sm font-mono">
+          DEBUG: currentPage={currentPage}, totalPages={totalPages}, shouldShow={totalPages > 1 ? 'YES' : 'NO'}
+        </p>
+      </div>
+
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-10 mb-4">
+        <div className="mt-4 mb-4">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
           />
+        </div>
+      )}
+
+      {/* Fallback: Always show pagination for testing */}
+      {totalPages <=1 && products.length > 0 && (
+        <div className="mt-10 mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-sm text-red-700">
+            Pagination hidden because totalPages={totalPages} (need &gt; 1)
+          </p>
         </div>
       )}
     </div>
