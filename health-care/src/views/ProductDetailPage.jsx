@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useProductDetail } from '@/hooks/useProductDetail';
-import ProductImageGallery from '@/components/product/ProductImageGallery';
-import ProductInfoPanel from '@/components/product/ProductInfoPanel';
-import ProductTabsRedesigned from '@/components/product/ProductTabsRedesigned';
-import ProductReviews from '@/components/product/ProductReviews';
+import ProductImageGalleryEnhanced from '@/components/product/ProductImageGalleryEnhanced';
+import ProductInfoPanelEnhanced from '@/components/product/ProductInfoPanelEnhanced';
+import ProductTabsEnhanced from '@/components/product/ProductTabsEnhanced';
+import ProductReviewsEnhanced from '@/components/product/ProductReviewsEnhanced';
 import FrequentlyBoughtRedesigned from '@/components/product/FrequentlyBoughtRedesigned';
+import CustomersAlsoViewed from '@/components/product/CustomersAlsoViewed';
+import StickyAddToCart from '@/components/product/StickyAddToCart';
 import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
@@ -122,6 +124,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
   return (
     <div className="bg-page min-h-screen pb-24 md:pb-8">
+      {/* Sticky Add to Cart Bar (appears on scroll) */}
+      <StickyAddToCart product={product} scrollThreshold={500} />
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-100">
@@ -155,22 +159,18 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         {/* Two-column: image left, info right */}
         <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-6 xl:gap-8">
           <div>
-            <ProductImageGallery
+            <ProductImageGalleryEnhanced
               images={product.images || []}
               product={product}
               badges={product.certifications || []}
               heroPriority={heroPriority}
             />
           </div>
-          <div>
-            <ProductInfoPanel
+          <div id="add-to-cart">
+            <ProductInfoPanelEnhanced
               product={product}
               quantity={quantity}
               setQuantity={setQuantity}
-              selectedConnectivity={selectedConnectivity}
-              setSelectedConnectivity={setSelectedConnectivity}
-              selectedWarranty={selectedWarranty}
-              setSelectedWarranty={setSelectedWarranty}
             />
           </div>
         </div>
@@ -185,12 +185,20 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
         {/* Tabs: Specs, Description, Shipping */}
         <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-          <ProductTabsRedesigned product={product} />
+          <ProductTabsEnhanced product={product} />
         </div>
 
         {/* Reviews */}
         <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-          <ProductReviews productId={product._id || product.id} />
+          <ProductReviewsEnhanced productId={product._id || product.id} />
+        </div>
+
+        {/* Customers Also Viewed */}
+        <div className="mt-6">
+          <CustomersAlsoViewed
+            productId={product._id || product.id}
+            category={product.categoryId || (typeof product.category === 'object' ? product.category?._id : product.category)}
+          />
         </div>
 
         {/* SEO Content */}
