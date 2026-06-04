@@ -1,7 +1,4 @@
-export const metadata = {
-  title: 'You\'re Offline — MedCore BD',
-  description: 'Please check your internet connection and try again.',
-};
+'use client';
 
 export default function OfflinePage() {
   return (
