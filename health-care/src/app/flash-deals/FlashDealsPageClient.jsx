@@ -13,15 +13,15 @@ const TimeBlock = ({ value, label }) => (
   <div style={{
     background: 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(10px)',
-    padding: '16px 20px',
-    borderRadius: 16,
-    minWidth: 90,
+    padding: '8px 12px',
+    borderRadius: 8,
+    minWidth: 60,
     textAlign: 'center',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
   }}>
     <div style={{
-      fontSize: 36,
-      fontWeight: 900,
+      fontSize: 24,
+      fontWeight: 800,
       color: '#E11D48',
       lineHeight: 1,
       fontFamily: 'monospace',
@@ -29,10 +29,10 @@ const TimeBlock = ({ value, label }) => (
       {String(value).padStart(2, '0')}
     </div>
     <div style={{
-      fontSize: 12,
+      fontSize: 10,
       color: '#64748B',
       fontWeight: 600,
-      marginTop: 6,
+      marginTop: 4,
       textTransform: 'uppercase',
       letterSpacing: '0.05em',
     }}>
@@ -90,12 +90,12 @@ function CountdownTimer({ endTime }) {
   }, [endTime]);
 
   return (
-    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
       <TimeBlock value={timeLeft.hours} label="Hours" />
-      <div style={{ color: '#fff', fontSize: 32, fontWeight: 700, alignSelf: 'center' }}>:</div>
-      <TimeBlock value={timeLeft.minutes} label="Minutes" />
-      <div style={{ color: '#fff', fontSize: 32, fontWeight: 700, alignSelf: 'center' }}>:</div>
-      <TimeBlock value={timeLeft.seconds} label="Seconds" />
+      <div style={{ color: '#fff', fontSize: 20, fontWeight: 700 }}>:</div>
+      <TimeBlock value={timeLeft.minutes} label="Min" />
+      <div style={{ color: '#fff', fontSize: 20, fontWeight: 700 }}>:</div>
+      <TimeBlock value={timeLeft.seconds} label="Sec" />
     </div>
   );
 }
@@ -124,15 +124,18 @@ function FlashDealProductCard({ item, onClick }) {
       onClick={onClick}
       style={{
         background: '#fff',
-        borderRadius: 16,
+        borderRadius: 12,
         overflow: 'hidden',
-        border: '2px solid #FEE2E2',
+        border: '1px solid #FEE2E2',
         cursor: 'pointer',
         transition: 'all 0.3s',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-6px)';
-        e.currentTarget.style.boxShadow = '0 12px 40px rgba(225, 29, 72, 0.25)';
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(225, 29, 72, 0.2)';
         e.currentTarget.style.borderColor = '#E11D48';
       }}
       onMouseLeave={e => {
@@ -141,7 +144,7 @@ function FlashDealProductCard({ item, onClick }) {
         e.currentTarget.style.borderColor = '#FEE2E2';
       }}
     >
-      <div style={{ position: 'relative', height: 240, background: '#F8FAFC' }}>
+      <div style={{ position: 'relative', height: 200, background: '#F8FAFC', flexShrink: 0 }}>
         {optimizedImg ? (
           <Image
             src={optimizedImg}
@@ -155,7 +158,7 @@ function FlashDealProductCard({ item, onClick }) {
             alignItems: 'center',
             justifyContent: 'center',
             height: '100%',
-            fontSize: 80,
+            fontSize: 60,
             color: '#CBD5E1',
           }}>
             🏥
@@ -164,101 +167,101 @@ function FlashDealProductCard({ item, onClick }) {
         
         <div style={{
           position: 'absolute',
-          top: 12,
-          left: 12,
+          top: 8,
+          left: 8,
           background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
           color: '#fff',
-          fontSize: 16,
-          fontWeight: 900,
-          padding: '10px 16px',
-          borderRadius: 12,
-          boxShadow: '0 4px 12px rgba(225, 29, 72, 0.4)',
+          fontSize: 13,
+          fontWeight: 800,
+          padding: '6px 10px',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px rgba(225, 29, 72, 0.3)',
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 4,
         }}>
-          <FaBolt style={{ fontSize: 14 }} />
+          <FaBolt style={{ fontSize: 11 }} />
           <span>{discountPct}% OFF</span>
         </div>
 
         {stockRemaining !== null && stockRemaining <= 10 && (
           <div style={{
             position: 'absolute',
-            top: 12,
-            right: 12,
+            top: 8,
+            right: 8,
             background: '#F59E0B',
             color: '#fff',
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: 700,
-            padding: '8px 12px',
-            borderRadius: 10,
+            padding: '6px 10px',
+            borderRadius: 6,
           }}>
             Only {stockRemaining} left!
           </div>
         )}
       </div>
 
-      <div style={{ padding: 20 }}>
+      <div style={{ padding: 16, flex: 1, display: 'flex', flexDirection: 'column' }}>
         {brandName && (
           <div style={{
-            fontSize: 12,
+            fontSize: 11,
             color: '#E11D48',
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
-            marginBottom: 8,
+            marginBottom: 6,
           }}>
             {brandName}
           </div>
         )}
         
         <div style={{
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: 600,
-          lineHeight: 1.4,
-          marginBottom: 16,
+          lineHeight: 1.3,
+          marginBottom: 12,
           color: '#1F2937',
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
-          minHeight: 44,
+          minHeight: 36,
         }}>
           {product.name}
         </div>
 
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
-            <span style={{ fontSize: 28, fontWeight: 900, color: '#E11D48' }}>
+        <div style={{ marginBottom: 12, marginTop: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+            <span style={{ fontSize: 22, fontWeight: 900, color: '#E11D48' }}>
               ৳{finalPrice.toLocaleString()}
             </span>
-            <span style={{ fontSize: 16, color: '#9CA3AF', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: 14, color: '#9CA3AF', textDecoration: 'line-through' }}>
               ৳{originalPrice.toLocaleString()}
             </span>
           </div>
-          <div style={{ fontSize: 14, color: '#059669', fontWeight: 600 }}>
-            You save ৳{(originalPrice - finalPrice).toLocaleString()}
+          <div style={{ fontSize: 12, color: '#059669', fontWeight: 600 }}>
+            Save ৳{(originalPrice - finalPrice).toLocaleString()}
           </div>
         </div>
 
         {stockLimit && (
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 12 }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
-              fontSize: 12,
+              fontSize: 11,
               color: '#64748B',
-              marginBottom: 8,
+              marginBottom: 6,
               fontWeight: 600,
             }}>
               <span>Sold: {soldCount}</span>
-              <span>Available: {stockRemaining}</span>
+              <span>Left: {stockRemaining}</span>
             </div>
             <div style={{
               width: '100%',
-              height: 8,
+              height: 6,
               background: '#E5E7EB',
-              borderRadius: 4,
+              borderRadius: 3,
               overflow: 'hidden',
             }}>
               <div style={{
@@ -266,7 +269,7 @@ function FlashDealProductCard({ item, onClick }) {
                 height: '100%',
                 background: stockPercentage > 80 ? '#EF4444' : '#F59E0B',
                 transition: 'width 0.3s',
-                borderRadius: 4,
+                borderRadius: 3,
               }} />
             </div>
           </div>
@@ -282,16 +285,16 @@ function FlashDealProductCard({ item, onClick }) {
             background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
             color: '#fff',
             border: 'none',
-            borderRadius: 12,
-            padding: '14px',
-            fontSize: 15,
+            borderRadius: 8,
+            padding: '10px',
+            fontSize: 14,
             fontWeight: 700,
             cursor: 'pointer',
             transition: 'transform 0.2s, box-shadow 0.2s',
           }}
           onMouseEnter={e => {
             e.currentTarget.style.transform = 'scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(225, 29, 72, 0.4)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(225, 29, 72, 0.4)';
           }}
           onMouseLeave={e => {
             e.currentTarget.style.transform = 'scale(1)';
@@ -353,13 +356,13 @@ export default function FlashDealsPageClient() {
       }}>
         <div style={{ textAlign: 'center', color: '#fff' }}>
           <div style={{
-            fontSize: 64,
-            marginBottom: 20,
+            fontSize: 48,
+            marginBottom: 16,
             animation: 'pulse 1.5s ease-in-out infinite',
           }}>
             🔥
           </div>
-          <div style={{ fontSize: 24, fontWeight: 600 }}>Loading Flash Deals...</div>
+          <div style={{ fontSize: 18, fontWeight: 600 }}>Loading Flash Deals...</div>
         </div>
       </div>
     );
@@ -373,19 +376,19 @@ export default function FlashDealsPageClient() {
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
-        padding: '0 24px',
+        padding: '0 20px',
       }}>
         <div style={{ textAlign: 'center', color: '#fff', maxWidth: 500 }}>
-          <div style={{ fontSize: 64, marginBottom: 20 }}>😔</div>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>😔</div>
           <h2 style={{
-            fontSize: 32,
+            fontSize: 26,
             fontWeight: 800,
-            marginBottom: 12,
+            marginBottom: 10,
             fontFamily: 'Plus Jakarta Sans, sans-serif',
           }}>
             No Active Flash Deals
           </h2>
-          <p style={{ fontSize: 16, color: '#CBD5E1', marginBottom: 32 }}>
+          <p style={{ fontSize: 14, color: '#CBD5E1', marginBottom: 24, lineHeight: 1.5 }}>
             There are no flash deals available at the moment. Check back soon for amazing offers!
           </p>
           <button
@@ -394,9 +397,9 @@ export default function FlashDealsPageClient() {
               background: '#fff',
               color: '#E11D48',
               border: 'none',
-              borderRadius: 12,
-              padding: '14px 28px',
-              fontSize: 15,
+              borderRadius: 10,
+              padding: '12px 24px',
+              fontSize: 14,
               fontWeight: 700,
               cursor: 'pointer',
               display: 'inline-flex',
@@ -412,198 +415,200 @@ export default function FlashDealsPageClient() {
     );
   }
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
-      <section style={{
-        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
-        padding: '80px 24px 60px',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: -100,
-          right: -100,
-          width: 400,
-          height: 400,
-          background: 'radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, transparent 70%)',
-          borderRadius: '50%',
-          animation: 'pulse 3s ease-in-out infinite',
-        }} />
-        <div style={{
-          position: 'absolute',
-          bottom: -100,
-          left: -100,
-          width: 350,
-          height: 350,
-          background: 'radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%)',
-          borderRadius: '50%',
-          animation: 'pulse 4s ease-in-out infinite',
-        }} />
+    return (
+      <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
+        <section style={{
+          background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
+          padding: '40px 20px 32px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: -50,
+            right: -50,
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, transparent 70%)',
+            borderRadius: '50%',
+            animation: 'pulse 3s ease-in-out infinite',
+          }} />
+          <div style={{
+            position: 'absolute',
+            bottom: -50,
+            left: -50,
+            width: 180,
+            height: 180,
+            background: 'radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%)',
+            borderRadius: '50%',
+            animation: 'pulse 4s ease-in-out infinite',
+          }} />
 
-        <div style={{ maxWidth: 1400, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <button
-            onClick={() => router.push('/')}
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: 10,
-              padding: '10px 18px',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              marginBottom: 32,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-            }}
-          >
-            <FaArrowLeft />
-            <span>Back to Home</span>
-          </button>
-
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 16,
-              marginBottom: 16,
-            }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
-                padding: 16,
-                borderRadius: 16,
-                display: 'flex',
-              }}>
-                <FaFire style={{ fontSize: 40, color: '#fff' }} />
-              </div>
-              <h1 style={{
-                fontSize: 'clamp(32px, 5vw, 56px)',
-                fontWeight: 900,
+          <div style={{ maxWidth: 1400, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+            <button
+              onClick={() => router.push('/')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
                 color: '#fff',
-                margin: 0,
-                fontFamily: 'Plus Jakarta Sans, sans-serif',
-              }}>
-                🔥 Flash Deals
-              </h1>
-            </div>
-            <p style={{
-              fontSize: 18,
-              color: '#CBD5E1',
-              maxWidth: 600,
-              margin: '0 auto 32px',
-              fontWeight: 500,
-            }}>
-              Limited time offers on premium medical equipment and supplies. Grab them before they&apos;re gone!
-            </p>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 12,
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              padding: '12px 24px',
-              borderRadius: 12,
-              color: '#FEE2E2',
-            }}>
-              <FaClock style={{ fontSize: 20 }} />
-              <span style={{ fontSize: 15, fontWeight: 600 }}>
-                {flashDeals.length} Active Deal{flashDeals.length > 1 ? 's' : ''} Available
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: 8,
+                padding: '8px 14px',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                marginBottom: 24,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              <FaArrowLeft size={12} />
+              <span>Back to Home</span>
+            </button>
 
-      <section style={{ padding: '60px 24px' }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-          {flashDeals.map((deal, dealIndex) => (
-            <div key={deal._id} style={{
-              marginBottom: dealIndex < flashDeals.length - 1 ? 80 : 0,
-            }}>
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
               <div style={{
-                background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
-                borderRadius: 20,
-                padding: '32px',
-                marginBottom: 32,
-                color: '#fff',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 12,
+                marginBottom: 12,
               }}>
                 <div style={{
+                  background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
+                  padding: 10,
+                  borderRadius: 12,
                   display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: 24,
                 }}>
-                  <div>
-                    <div style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      marginBottom: 8,
-                      opacity: 0.9,
-                    }}>
-                      {deal.badge?.text || 'FLASH DEAL'}
-                    </div>
-                    <h2 style={{
-                      fontSize: 32,
-                      fontWeight: 900,
-                      margin: '0 0 8px 0',
-                      fontFamily: 'Plus Jakarta Sans, sans-serif',
-                    }}>
-                      {deal.title}
-                    </h2>
-                    <p style={{
-                      fontSize: 16,
-                      margin: 0,
-                      opacity: 0.9,
-                    }}>
-                      {deal.description}
-                    </p>
-                  </div>
-                  
-                  <CountdownTimer endTime={deal.endTime} />
+                  <FaFire style={{ fontSize: 28, color: '#fff' }} />
                 </div>
+                <h1 style={{
+                  fontSize: 'clamp(28px, 5vw, 42px)',
+                  fontWeight: 900,
+                  color: '#fff',
+                  margin: 0,
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
+                }}>
+                  🔥 Flash Deals
+                </h1>
               </div>
-
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: 24,
+              <p style={{
+                fontSize: 15,
+                color: '#CBD5E1',
+                maxWidth: 600,
+                margin: '0 auto 20px',
+                fontWeight: 500,
+                lineHeight: 1.5,
               }}>
-                {deal.products.map((item, index) => (
-                  <FlashDealProductCard
-                    key={item.product?._id || index}
-                    item={item}
-                    onClick={() => {
-                      if (item.product?._id) {
-                        router.push(`/products/${item.product._id}`);
-                      }
-                    }}
-                  />
-                ))}
+                Limited time offers on premium medical equipment and supplies.<br/>Grab them before they&apos;re gone!
+              </p>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                padding: '8px 16px',
+                borderRadius: 10,
+                color: '#FEE2E2',
+              }}>
+                <FaClock style={{ fontSize: 16 }} />
+                <span style={{ fontSize: 13, fontWeight: 600 }}>
+                  {flashDeals.length} Active Deal{flashDeals.length > 1 ? 's' : ''} Available
+                </span>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          50% { opacity: 0.8; transform: scale(1.1); }
-        }
-      `}</style>
-    </div>
-  );
+        <section style={{ padding: '40px 20px' }}>
+          <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+            {flashDeals.map((deal, dealIndex) => (
+              <div key={deal._id} style={{
+                marginBottom: dealIndex < flashDeals.length - 1 ? 48 : 0,
+              }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
+                  borderRadius: 16,
+                  padding: '20px 24px',
+                  marginBottom: 24,
+                  color: '#fff',
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 20,
+                  }}>
+                    <div style={{ flex: 1, minWidth: 250 }}>
+                      <div style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.1em',
+                        marginBottom: 6,
+                        opacity: 0.9,
+                      }}>
+                        {deal.badge?.text || 'FLASH DEAL'}
+                      </div>
+                      <h2 style={{
+                        fontSize: 24,
+                        fontWeight: 900,
+                        margin: '0 0 6px 0',
+                        fontFamily: 'Plus Jakarta Sans, sans-serif',
+                      }}>
+                        {deal.title}
+                      </h2>
+                      <p style={{
+                        fontSize: 14,
+                        margin: 0,
+                        opacity: 0.9,
+                        lineHeight: 1.4,
+                      }}>
+                        {deal.description}
+                      </p>
+                    </div>
+                    
+                    <CountdownTimer endTime={deal.endTime} />
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                  gap: 20,
+                }}>
+                  {deal.products.map((item, index) => (
+                    <FlashDealProductCard
+                      key={item.product?._id || index}
+                      item={item}
+                      onClick={() => {
+                        if (item.product?._id) {
+                          router.push(`/products/${item.product._id}`);
+                        }
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+          }
+        `}</style>
+      </div>
+    );
 }
