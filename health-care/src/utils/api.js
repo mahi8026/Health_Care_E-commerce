@@ -140,7 +140,7 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
     // Handle 503 (Service Unavailable - Render backend sleeping)
     if (response.status === 503 && retryCount < MAX_RETRIES) {
       clearTimeout(timeoutId);
-      console.log(`[API] Backend sleeping (503), retry ${retryCount + 1}/${MAX_RETRIES}...`);
+      // Backend is sleeping, retry with delay
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
       return fetchWithAuth(url, options, retryCount + 1);
     }
@@ -220,7 +220,7 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
     // Network error or timeout - retry if not max retries
     if (error.name === 'AbortError' || error.message.includes('fetch')) {
       if (retryCount < MAX_RETRIES) {
-        console.log(`[API] Network error, retry ${retryCount + 1}/${MAX_RETRIES}...`);
+        // Retry with delay
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         return fetchWithAuth(url, options, retryCount + 1);
       }
