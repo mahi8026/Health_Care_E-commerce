@@ -69,13 +69,27 @@ export default function RecentlyViewed({
               {/* Product Image */}
               <div className="relative aspect-square bg-gray-100 dark:bg-gray-900">
                 {product.images?.[0] ? (
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 192px, 192px"
-                  />
+                  <>
+                    <Image
+                      src={product.images[0]}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 192px, 192px"
+                      unoptimized={!product.images[0].includes('res.cloudinary.com')}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
+                        if (fallback) {
+                          fallback.classList.remove('hidden');
+                          fallback.classList.add('flex');
+                        }
+                      }}
+                    />
+                    <div className="image-fallback hidden w-full h-full items-center justify-center text-gray-400 dark:text-gray-600">
+                      <span className="text-4xl">🏥</span>
+                    </div>
+                  </>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
                     <span className="text-4xl">🏥</span>
@@ -170,13 +184,27 @@ export function RecentlyViewedCompact({
         >
           <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 dark:bg-gray-900 rounded">
             {product.images?.[0] ? (
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                className="object-cover rounded"
-                sizes="64px"
-              />
+              <>
+                <Image
+                  src={product.images[0]}
+                  alt={product.name}
+                  fill
+                  className="object-cover rounded"
+                  sizes="64px"
+                  unoptimized={!product.images[0].includes('res.cloudinary.com')}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback-compact');
+                    if (fallback) {
+                      fallback.classList.remove('hidden');
+                      fallback.classList.add('flex');
+                    }
+                  }}
+                />
+                <div className="image-fallback-compact hidden w-full h-full items-center justify-center text-2xl">
+                  🏥
+                </div>
+              </>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-2xl">
                 🏥
