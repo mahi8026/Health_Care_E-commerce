@@ -190,15 +190,6 @@ export default function SearchResults({
   onPageChange
 }) {
 
-  // Debug logging for pagination
-  console.log('SearchResults pagination:', {
-    currentPage,
-    totalPages,
-    totalResults,
-    productsCount: products.length,
-    shouldShowPagination: totalPages > 1
-  });
-
   if (loading && products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">

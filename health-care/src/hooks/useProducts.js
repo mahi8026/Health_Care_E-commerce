@@ -67,7 +67,7 @@ export function useProducts(filters = {}, initialData = null) {
         setPagination({
           total: response.total || paginationData.total || 0,
           page: response.page || paginationData.page || filters.page || 1,
-          pages: response.pages || paginationData.pages || 0,
+          pages: response.pages || paginationData.pages || paginationData.totalPages || 0,
           count: response.count || productsData.length || 0
         });
       }
