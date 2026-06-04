@@ -349,7 +349,7 @@ export default function FlashDealsPageClient() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
       }}>
         <div style={{ textAlign: 'center', color: '#fff' }}>
           <div style={{
@@ -372,7 +372,7 @@ export default function FlashDealsPageClient() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
         padding: '0 24px',
       }}>
         <div style={{ textAlign: 'center', color: '#fff', maxWidth: 500 }}>
@@ -415,7 +415,7 @@ export default function FlashDealsPageClient() {
   return (
     <div style={{ minHeight: '100vh', background: '#F8FAFC' }}>
       <section style={{
-        background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #3B82F6 100%)',
         padding: '80px 24px 60px',
         position: 'relative',
         overflow: 'hidden',
