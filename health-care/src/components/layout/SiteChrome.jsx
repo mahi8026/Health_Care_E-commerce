@@ -8,6 +8,7 @@ import Footer from '@/components/layout/Footer';
 import BottomNav from '@/components/layout/BottomNav';
 import NavScrollEffect from '@/components/layout/NavScrollEffect';
 import FloatingCartButton from '@/components/ui/FloatingCartButton';
+import FloatingWhatsAppButton from '@/components/ui/FloatingWhatsAppButton';
 import CartSidebar from '@/components/ui/CartSidebar';
 import CompareBar from '@/components/compare/CompareBar';
 
@@ -50,6 +51,7 @@ export default function SiteChrome({ children }) {
       {showFloatingWidgets && (
         <>
           <FloatingCartButton onClick={() => setCartSidebarOpen(true)} />
+          <FloatingWhatsAppButton />
           <CartSidebar isOpen={cartSidebarOpen} onClose={() => setCartSidebarOpen(false)} />
           <CompareBar />
         </>

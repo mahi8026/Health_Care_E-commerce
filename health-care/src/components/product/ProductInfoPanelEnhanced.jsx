@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { CONTACT } from '@/constants/api';
 import { 
   FaShoppingCart, 
   FaWhatsapp, 
@@ -330,6 +331,25 @@ export default function ProductInfoPanelEnhanced({ product, quantity, setQuantit
             </span>
           )}
         </div>
+      </div>
+
+      {/* Ask Product Question via WhatsApp */}
+      <div className="pt-4 border-t border-gray-200">
+        <button
+          onClick={() => {
+            const message = encodeURIComponent(
+              `Hi! I have a question about:\n\n${product.name}\n\nPrice: ৳${product.price?.toLocaleString()}\n\nQuestion: `
+            );
+            window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, '_blank');
+          }}
+          className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-3"
+        >
+          <FaWhatsapp size={20} />
+          <span>Ask a Question on WhatsApp</span>
+        </button>
+        <p className="text-xs text-gray-500 text-center mt-2">
+          Get instant answers about specifications, pricing, and availability
+        </p>
       </div>
 
       {/* Warranty Badge */}
