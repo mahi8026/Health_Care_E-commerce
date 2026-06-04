@@ -282,11 +282,17 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                   const inWishlist = isInWishlist(product._id);
                   
                   return (
-                    <div
+                    <button
                       key={product._id}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Product row clicked:', product.name);
+                        handleProductClick(product);
+                      }}
                       onMouseEnter={() => setHoveredProduct(product._id)}
                       onMouseLeave={() => setHoveredProduct(null)}
-                      className={`relative group rounded-xl transition-all duration-200 ${
+                      className={`w-full relative group rounded-xl transition-all duration-200 ${
                         selectedIndex === idx 
                           ? 'bg-gradient-to-r from-[#0E8A6E]/5 to-[#0E8A6E]/10 border-2 border-[#0E8A6E] shadow-lg shadow-[#0E8A6E]/10' 
                           : 'hover:bg-gray-50 border-2 border-transparent hover:border-gray-200 hover:shadow-md'
@@ -294,13 +300,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                     >
                       <div className="flex items-center gap-3 p-2.5">
                         {/* Product Image */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProductClick(product);
-                          }}
-                          className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative"
-                        >
+                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative">
                           {img ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
@@ -315,16 +315,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                               <span className="text-white text-[9px] font-bold">OUT</span>
                             </div>
                           )}
-                        </button>
+                        </div>
 
                         {/* Product Info */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProductClick(product);
-                          }}
-                          className="flex-1 text-left min-w-0"
-                        >
+                        <div className="flex-1 text-left min-w-0">
                           <div className="text-[13px] font-semibold text-gray-900 line-clamp-1 group-hover:text-[#0E8A6E] transition-colors">
                             {highlightMatch(product.name, query)}
                           </div>
@@ -347,7 +341,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                               </span>
                             </div>
                           )}
-                        </button>
+                        </div>
 
                         {/* Price & Actions */}
                         <div className="flex-shrink-0 flex flex-col items-end gap-2">
@@ -403,7 +397,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           )}
                         </div>
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
