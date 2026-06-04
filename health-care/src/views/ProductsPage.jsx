@@ -131,8 +131,15 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
   const handlePageChange = useCallback((newPage) => {
     setPage(newPage);
-    // Scroll to top of products area when page changes
-    window.scrollTo({ top: 300, behavior: 'smooth' });
+    // Smooth scroll to top of page with offset for header
+    const yOffset = -100; // Offset for fixed header
+    const element = document.querySelector('main') || document.body;
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth'
+    });
   }, []);
 
   const clearAllFilters = () => {

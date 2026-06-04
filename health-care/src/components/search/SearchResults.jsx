@@ -213,15 +213,6 @@ export default function SearchResults({
     );
   }
 
-  // Debug logging
-  console.log('SearchResults pagination debug:', {
-    currentPage,
-    totalPages,
-    totalResults,
-    productsCount: products.length,
-    shouldShowPagination: totalPages > 1
-  });
-
   return (
     <div>
       {/* Result count */}
@@ -240,15 +231,35 @@ export default function SearchResults({
         )}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-        {products.map(product => (
-          <ProductCard
-            key={product._id || product.id}
-            product={product}
-            onProductClick={onProductClick}
-          />
-        ))}
+      {/* Loading Overlay */}
+      <div className="relative">
+        {loading && products.length > 0 && (
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+            <div className="bg-white shadow-2xl rounded-2xl px-8 py-6 flex flex-col items-center gap-3 border border-gray-100">
+              <Spinner />
+              <p className="text-[13px] text-gray-600 font-medium">Loading page {currentPage}...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Grid with staggered fade-in */}
+        <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 transition-opacity duration-300 ${loading ? 'opacity-40' : 'opacity-100'}`}>
+          {products.map((product, index) => (
+            <div
+              key={product._id || product.id}
+              className="animate-fadeSlideUp"
+              style={{
+                animationDelay: `${index * 30}ms`,
+                animationFillMode: 'both'
+              }}
+            >
+              <ProductCard
+                product={product}
+                onProductClick={onProductClick}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Pagination */}
