@@ -9,7 +9,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API as API_BASE } from '@/constants/api';
-import { FaSnowflake, FaTruck, FaCertificate, FaFlask, FaMicroscope, FaVial, FaTint } from 'react-icons/fa';
+import { FaSnowflake, FaTint } from 'react-icons/fa';
 
 class ReagentErrorBoundary extends Component {
   constructor(props) {
@@ -48,19 +48,6 @@ const STORAGE_LEGEND = [
   { label: 'Room temp', icon: <FaTint />, className: 'bg-gradient-to-br from-[#E1F5EE] to-[#C8EBDD] text-[#085041] border-[#B0E1CE]' },
 ];
 
-const REAGENT_CATEGORIES = [
-  { name: 'Clinical Chemistry', icon: <FaFlask />, color: 'from-blue-500 to-cyan-500', count: '200+' },
-  { name: 'Hematology', icon: <FaTint />, color: 'from-red-500 to-pink-500', count: '150+' },
-  { name: 'Immunoassay', icon: <FaMicroscope />, color: 'from-purple-500 to-indigo-500', count: '180+' },
-  { name: 'Molecular Biology', icon: <FaVial />, color: 'from-green-500 to-teal-500', count: '120+' },
-];
-
-const FEATURES = [
-  { icon: <FaSnowflake />, title: 'Cold-Chain Delivery', desc: 'Temperature-controlled logistics from warehouse to your lab' },
-  { icon: <FaTruck />, title: 'Express Shipping', desc: 'Next-day delivery for Dhaka metro, 2-3 days nationwide' },
-  { icon: <FaCertificate />, title: 'Quality Assured', desc: 'ISO 13485 certified products with batch tracking' },
-];
-
 export default function ReagentStorePage({ onNavigateToProduct }) {
   const router = useRouter();
   const handleProductClick =
@@ -91,15 +78,13 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         limit: '48', // Show more products
       });
 
-      // ALWAYS filter by reagent-related categories on initial load
-      if (!filters.categories?.length && !debouncedSearch.trim()) {
-        // Default: show products from Laboratory Reagents category
-        params.set('category', 'Laboratory Reagents');
-      }
-
-      // Add search query if present
+      // Add search filter - if user is searching, search in product names/descriptions with "reagent" keywords
       if (debouncedSearch.trim()) {
         params.set('search', debouncedSearch.trim());
+      } else if (!filters.categories?.length) {
+        // If no search and no category filter, search for products with reagent-related keywords
+        // This will find products with "reagent", "kit", "test", etc. in their name or description
+        params.set('search', 'reagent kit test assay');
       }
 
       // Add brand filter
@@ -130,23 +115,16 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       }
       // Don't add sort params for 'relevance' - let backend use default
 
-      console.log('Fetching reagents from:', `${API_BASE}/products?${params.toString()}`);
-
       const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
         signal: AbortSignal.timeout(15000), // Increased timeout
         credentials: 'include',
       });
 
-      console.log('Response status:', res.status);
-
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Response error:', errorText);
         throw new Error(`HTTP ${res.status}`);
       }
 
       const data = await res.json();
-      console.log('Response data:', data);
 
       // Handle multiple response formats from backend
       let list = [];
@@ -159,8 +137,6 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       } else if (Array.isArray(data)) {
         list = data;
       }
-
-      console.log('Extracted products:', list.length);
 
       setReagents(Array.isArray(list) ? list : []);
       setTotal(data.data?.total ?? data.total ?? data.pagination?.total ?? (Array.isArray(list) ? list.length : 0));
@@ -292,9 +268,9 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
                   <span className="text-[36px]">🔬</span>
                 </div>
-                <p className="text-[16px] font-semibold text-[#0B2545] mb-2">No reagents found</p>
+                <p className="text-[16px] font-semibold text-[#0B2545] mb-2">No reagent products found</p>
                 <p className="text-[13px] text-[#6B7280] mb-6 max-w-md">
-                  We couldn&apos;t find any reagents matching your criteria. Try adjusting your filters or search terms.
+                  Currently, there are no products matching reagent-related keywords in the catalog. Please check back later or browse all products.
                 </p>
                 <div className="flex gap-2">
                   <button
