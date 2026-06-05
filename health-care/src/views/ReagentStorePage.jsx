@@ -87,40 +87,35 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
     setLoading(true);
     setFetchError(false);
     try {
-      // Try multiple category variations to handle database inconsistencies
-      const categoryVariations = [
-        'Laboratory Reagents',
-        'Lab Reagents',
-        'Reagents',
-        'Laboratory',
-        'Lab Equipment'
-      ];
-
       let params = new URLSearchParams({
-        limit: '24',
+        limit: '48', // Show more products
       });
 
-      // First, try to fetch all products and filter client-side if needed
-      // This is a fallback strategy if exact category match fails
-      if (!searchQuery && !filters.brands?.length && filters.priceRange >= 50000) {
-        // Initial load - try category search first
-        params.set('category', 'Laboratory Reagents');
-      } else {
-        // User has filters - don't restrict by category too much
-        // Remove the strict category filter to show all reagent-related products
+      // Add search query if present
+      if (debouncedSearch.trim()) {
+        params.set('search', debouncedSearch.trim());
       }
 
-      if (filters.brands?.length) params.set('brand', filters.brands[0]);
-      if (filters.priceRange < 50000) params.set('maxPrice', String(filters.priceRange));
-      if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
+      // Add brand filter
+      if (filters.brands?.length) {
+        params.set('brand', filters.brands.join(','));
+      }
 
-      // Wire temperature and hazard filters to API
-      if (filters.temperature?.length) params.set('temperature', filters.temperature.join(','));
-      if (filters.hazards?.length) params.set('hazards', filters.hazards.join(','));
+      // Add price filter
+      if (filters.priceRange && filters.priceRange < 50000) {
+        params.set('maxPrice', String(filters.priceRange));
+      }
 
-      if (sortBy === 'price-low') params.set('sortBy', 'price-low');
-      else if (sortBy === 'price-high') params.set('sortBy', 'price-high');
-      else if (sortBy === 'brand') params.set('sortBy', 'name');
+      // Add category filter if user selected one
+      if (filters.categories?.length) {
+        params.set('category', filters.categories.join(','));
+      }
+
+      // Add sorting
+      if (sortBy === 'price-low') params.set('sort', 'price');
+      else if (sortBy === 'price-high') params.set('sort', '-price');
+      else if (sortBy === 'brand') params.set('sort', 'name');
+      else params.set('sort', '-createdAt'); // newest first by default
 
       const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
         signal: AbortSignal.timeout(10000),
@@ -129,27 +124,21 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const data = await res.json();
-      let list = data.data?.products ?? data.products ?? [];
-      
-      // Filter results client-side for reagent-related keywords if we got generic results
-      if (Array.isArray(list) && list.length > 0 && !debouncedSearch.trim()) {
-        const reagentKeywords = ['reagent', 'kit', 'assay', 'antibody', 'buffer', 'solution', 'test', 'chemistry', 'hematology', 'immunoassay', 'molecular'];
-        list = list.filter(product => {
-          const searchText = `${product.name || ''} ${product.description || ''} ${product.category || ''}`.toLowerCase();
-          return reagentKeywords.some(keyword => searchText.includes(keyword));
-        });
-      }
+      const list = data.data?.products ?? data.products ?? [];
 
       setReagents(Array.isArray(list) ? list : []);
-      setTotal(data.data?.total ?? data.total ?? list.length);
+      setTotal(data.data?.total ?? data.total ?? (Array.isArray(list) ? list.length : 0));
     } catch (err) {
-      if (err.name !== 'AbortError') setFetchError(true);
+      if (err.name !== 'AbortError') {
+        console.error('Fetch reagents error:', err);
+        setFetchError(true);
+      }
       setReagents([]);
       setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, [filters, debouncedSearch, sortBy, searchQuery]);
+  }, [filters, debouncedSearch, sortBy]);
 
   useEffect(() => {
     fetchReagents();
@@ -165,62 +154,23 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] via-white to-[#F0F9FF]">
         {/* Enhanced Hero Section */}
         <div className="bg-gradient-to-r from-[#0B2545] via-[#0E3A5C] to-[#0B2545] text-white relative overflow-hidden">
-          {/* Animated background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-[#0E8A6E] to-transparent rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-cyan-400 to-transparent rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-          </div>
-
-          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6 relative z-10">
-            <Breadcrumb items={breadcrumbs} variant="embedded" className="mb-2 opacity-80" />
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-6 relative z-10">
+            <Breadcrumb items={breadcrumbs} variant="embedded" className="mb-3 opacity-80" />
             
-            <div className="grid md:grid-cols-2 gap-6 items-center">
-              <div className="animate-slide-up">
-                <h1 className="text-[28px] md:text-[38px] font-bold mb-2 font-[family-name:var(--font-lora)] leading-tight">
-                  Laboratory Reagents Store
-                </h1>
-                <p className="text-[14px] text-cyan-100 mb-4 leading-relaxed max-w-xl">
-                  Premium laboratory reagents and diagnostic kits with temperature-controlled cold-chain delivery across Bangladesh. ISO 13485 certified products from global manufacturers.
-                </p>
-                
-                {/* Storage legend with icons */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {STORAGE_LEGEND.map(({ label, icon, className }) => (
-                    <div
-                      key={label}
-                      className={`flex items-center gap-2 text-[11px] font-semibold px-3 py-2 rounded-lg border ${className} backdrop-blur-sm`}
-                    >
-                      <span className="text-[14px]">{icon}</span>
-                      {label}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Features */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {FEATURES.map(({ icon, title, desc }) => (
-                    <div key={title} className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
-                      <div className="text-[20px] text-cyan-300 mb-2">{icon}</div>
-                      <div className="text-[12px] font-semibold mb-1">{title}</div>
-                      <div className="text-[10px] text-cyan-200 opacity-80 leading-relaxed">{desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Reagent category cards */}
-              <div className="grid grid-cols-2 gap-3 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                {REAGENT_CATEGORIES.map(({ name, icon, color, count }) => (
-                  <div
-                    key={name}
-                    className="group bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all cursor-pointer hover:scale-105 hover:shadow-2xl"
-                    onClick={() => setSearchQuery(name)}
-                  >
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center text-white text-[20px] mb-3 group-hover:scale-110 transition-transform`}>
-                      {icon}
-                    </div>
-                    <div className="text-[13px] font-semibold mb-1">{name}</div>
-                    <div className="text-[11px] text-cyan-200">{count} Products</div>
+            <div className="mb-4">
+              <h1 className="text-[24px] md:text-[32px] font-bold mb-2 font-[family-name:var(--font-lora)]">
+                Laboratory Reagents Store
+              </h1>
+              <p className="text-[13px] text-cyan-100 mb-3 leading-relaxed max-w-2xl">
+                Premium laboratory reagents and diagnostic kits with temperature-controlled delivery across Bangladesh.
+              </p>
+              
+              {/* Storage legend - compact */}
+              <div className="flex flex-wrap gap-2">
+                {STORAGE_LEGEND.map(({ label, icon, className }) => (
+                  <div key={label} className={`flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg border ${className}`}>
+                    <span className="text-[12px]">{icon}</span>
+                    {label}
                   </div>
                 ))}
               </div>
