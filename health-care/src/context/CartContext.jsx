@@ -153,6 +153,18 @@ export function CartProvider({ children }) {
   }, [isLoggedIn]);
 
   const addToCart = useCallback((product, quantity = 1) => {
+    // ── Auth gate: guests must log in before adding to cart ──────────────────
+    const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+    if (!token) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('require-login-for-cart', {
+          detail: { productName: product?.name || '' }
+        }));
+      }
+      return;
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     const safeQty = Math.max(1, quantity);
     const productId = product.id || product._id;
     

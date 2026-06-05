@@ -18,6 +18,7 @@ import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import ToastProvider from "@/components/ui/ToastProvider";
 import ServiceWorkerRegistration from "@/components/ui/ServiceWorkerRegistration";
 import { FlyToCartContainer } from "@/components/ui/FlyToCart";
+import LoginPromptModal from "@/components/ui/LoginPromptModal";
 
 export const dynamic = 'force-dynamic';
 
@@ -163,6 +164,9 @@ export default function RootLayout({ children }) {
 
         {/* Fly-to-cart animation container */}
         <FlyToCartContainer />
+
+        {/* Login prompt modal for guest users */}
+        <LoginPromptModal />
 
         {/* Toast Notifications - Global */}
         <ToastProvider />
