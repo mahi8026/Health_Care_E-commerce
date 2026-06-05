@@ -8,8 +8,25 @@ import Button from '@/components/ui/Button';
 import { FaPlus, FaTrash, FaStar } from 'react-icons/fa';
 
 const DISTRICTS = [
-  'Dhaka', 'Chittagong', 'Sylhet', 'Rajshahi',
-  'Khulna', 'Barishal', 'Rangpur', 'Mymensingh',
+  // Dhaka Division
+  'Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur',
+  'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail',
+  // Chittagong Division
+  'Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Cox\'s Bazar', 'Cumilla',
+  'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati',
+  // Rajshahi Division
+  'Bogura', 'Chapai Nawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj',
+  // Khulna Division
+  'Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia',
+  'Magura', 'Meherpur', 'Narail', 'Satkhira',
+  // Barishal Division
+  'Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur',
+  // Sylhet Division
+  'Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet',
+  // Rangpur Division
+  'Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon',
+  // Mymensingh Division
+  'Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur',
 ];
 
 const EMPTY_ADDRESS = {
