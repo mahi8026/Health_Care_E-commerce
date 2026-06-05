@@ -1,27 +1,17 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-const DISTRICTS = [
-  // Dhaka Division
-  'Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur',
-  'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail',
-  // Chittagong Division
-  'Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Cox\'s Bazar', 'Cumilla',
-  'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati',
-  // Rajshahi Division
-  'Bogura', 'Chapai Nawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj',
-  // Khulna Division
-  'Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia',
-  'Magura', 'Meherpur', 'Narail', 'Satkhira',
-  // Barishal Division
-  'Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur',
-  // Sylhet Division
-  'Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet',
-  // Rangpur Division
-  'Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon',
-  // Mymensingh Division
-  'Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur',
-];
+const DIVISION_DISTRICTS = {
+  'Dhaka':      ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+  'Chattogram': ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', "Cox's Bazar", 'Cumilla', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+  'Rajshahi':   ['Bogura', 'Chapai Nawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
+  'Khulna':     ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+  'Barishal':   ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+  'Sylhet':     ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+  'Rangpur':    ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+  'Mymensingh': ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
+};
+const DIVISIONS = Object.keys(DIVISION_DISTRICTS);
 
 const PHONE_REGEX = /^(\+880|880|0)?1[3-9]\d{8}$/;
 const POSTCODE_REGEX = /^\d{4}$/;
@@ -30,6 +20,7 @@ const EMPTY_FORM = {
   fullName: '',
   phone: '',
   street: '',
+  division: 'Dhaka',
   district: 'Dhaka',
   thana: '',
   postcode: '',
@@ -67,7 +58,14 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
     const { name, val: rawVal } = e.target;
     const val = rawVal !== undefined ? rawVal : e.target.value;
     setErrors((prev) => ({ ...prev, [name]: validate(name, val) }));
-    if (onChange) onChange({ ...formData, [name]: val });
+
+    if (name === 'division') {
+      // Reset district to first district of new division
+      const firstDistrict = DIVISION_DISTRICTS[val]?.[0] || '';
+      if (onChange) onChange({ ...formData, division: val, district: firstDistrict });
+    } else {
+      if (onChange) onChange({ ...formData, [name]: val });
+    }
   };
 
   const handleUseSaved = () => {
@@ -141,11 +139,22 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
         </div>
 
         <div>
+          <label htmlFor="checkout-division" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
+            Division <span className="text-[#E24B4A]">*</span>
+          </label>
+          <select id="checkout-division" name="division" value={formData.division || 'Dhaka'} onChange={handleChange} className={inputBase}>
+            {DIVISIONS.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label htmlFor="checkout-district" className="block text-[12px] font-semibold text-[#374151] mb-1.5">
             District <span className="text-[#E24B4A]">*</span>
           </label>
           <select id="checkout-district" name="district" value={formData.district} onChange={handleChange} className={inputBase}>
-            {DISTRICTS.map((d) => (
+            {(DIVISION_DISTRICTS[formData.division || 'Dhaka'] || []).map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
           </select>

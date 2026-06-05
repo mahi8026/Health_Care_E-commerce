@@ -7,32 +7,23 @@ import api from '@/utils/api';
 import Button from '@/components/ui/Button';
 import { FaPlus, FaTrash, FaStar } from 'react-icons/fa';
 
-const DISTRICTS = [
-  // Dhaka Division
-  'Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur',
-  'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail',
-  // Chittagong Division
-  'Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Cox\'s Bazar', 'Cumilla',
-  'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati',
-  // Rajshahi Division
-  'Bogura', 'Chapai Nawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj',
-  // Khulna Division
-  'Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia',
-  'Magura', 'Meherpur', 'Narail', 'Satkhira',
-  // Barishal Division
-  'Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur',
-  // Sylhet Division
-  'Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet',
-  // Rangpur Division
-  'Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon',
-  // Mymensingh Division
-  'Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur',
-];
+const DIVISION_DISTRICTS = {
+  'Dhaka':      ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+  'Chattogram': ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', "Cox's Bazar", 'Cumilla', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+  'Rajshahi':   ['Bogura', 'Chapai Nawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
+  'Khulna':     ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+  'Barishal':   ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+  'Sylhet':     ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+  'Rangpur':    ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+  'Mymensingh': ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
+};
+const DIVISIONS = Object.keys(DIVISION_DISTRICTS);
 
 const EMPTY_ADDRESS = {
   label: 'Home',
   street: '',
   thana: '',
+  division: 'Dhaka',
   district: 'Dhaka',
   postcode: '',
   isDefault: false,
@@ -235,13 +226,29 @@ export default function AddressesPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-[12px] font-medium mb-1.5">Division</label>
+                  <select
+                    className={fieldClass}
+                    value={form.division || 'Dhaka'}
+                    onChange={(e) => {
+                      const division = e.target.value;
+                      const firstDistrict = DIVISION_DISTRICTS[division]?.[0] || '';
+                      setForm((f) => ({ ...f, division, district: firstDistrict }));
+                    }}
+                  >
+                    {DIVISIONS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label className="block text-[12px] font-medium mb-1.5">District</label>
                   <select
                     className={fieldClass}
                     value={form.district}
                     onChange={(e) => setForm((f) => ({ ...f, district: e.target.value }))}
                   >
-                    {DISTRICTS.map((d) => (
+                    {(DIVISION_DISTRICTS[form.division || 'Dhaka'] || []).map((d) => (
                       <option key={d} value={d}>{d}</option>
                     ))}
                   </select>
