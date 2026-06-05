@@ -78,13 +78,9 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         limit: '48', // Show more products
       });
 
-      // Add search filter - if user is searching, search in product names/descriptions with "reagent" keywords
+      // Add search filter if user is searching
       if (debouncedSearch.trim()) {
         params.set('search', debouncedSearch.trim());
-      } else if (!filters.categories?.length) {
-        // If no search and no category filter, search for products with reagent-related keywords
-        // This will find products with "reagent", "kit", "test", etc. in their name or description
-        params.set('search', 'reagent kit test assay');
       }
 
       // Add brand filter
@@ -116,7 +112,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       // Don't add sort params for 'relevance' - let backend use default
 
       const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
-        signal: AbortSignal.timeout(15000), // Increased timeout
+        signal: AbortSignal.timeout(15000),
         credentials: 'include',
       });
 
@@ -268,16 +264,16 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
                   <span className="text-[36px]">🔬</span>
                 </div>
-                <p className="text-[16px] font-semibold text-[#0B2545] mb-2">No reagent products found</p>
+                <p className="text-[16px] font-semibold text-[#0B2545] mb-2">No products found</p>
                 <p className="text-[13px] text-[#6B7280] mb-6 max-w-md">
-                  Currently, there are no products matching reagent-related keywords in the catalog. Please check back later or browse all products.
+                  {debouncedSearch ? 'No products match your search. Try different keywords.' : 'Use the search or filters to find reagents and laboratory products.'}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => { setFilters({ brands: [], categories: [], temperature: [], hazards: [], priceRange: 50000 }); setSearchQuery(''); }}
                     className="px-5 py-2.5 bg-white border border-gray-200 text-[#0B2545] rounded-xl text-[13px] font-semibold hover:shadow-md transition-all"
                   >
-                    Clear Filters
+                    Clear All
                   </button>
                   <button
                     onClick={() => router.push('/products')}
