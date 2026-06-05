@@ -78,6 +78,12 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         limit: '48', // Show more products
       });
 
+      // Default filter: Show only "Laboratory Reagents" category products
+      // This filter is overridden if user selects different categories or searches
+      if (!filters.categories?.length && !debouncedSearch.trim()) {
+        params.set('category', 'Laboratory Reagents');
+      }
+
       // Add search filter if user is searching
       if (debouncedSearch.trim()) {
         params.set('search', debouncedSearch.trim());
@@ -93,12 +99,12 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         params.set('maxPrice', String(filters.priceRange));
       }
 
-      // Add category filter if user selected one
+      // Add category filter if user selected specific categories
       if (filters.categories?.length) {
         params.set('category', filters.categories.join(','));
       }
 
-      // Add sorting - use the correct parameter name that backend expects
+      // Add sorting
       if (sortBy === 'price-low') {
         params.set('sortBy', 'price');
         params.set('order', 'asc');
@@ -109,7 +115,6 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         params.set('sortBy', 'name');
         params.set('order', 'asc');
       }
-      // Don't add sort params for 'relevance' - let backend use default
 
       const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
         signal: AbortSignal.timeout(15000),
@@ -159,25 +164,27 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
 
   return (
     <ReagentErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] via-white to-[#F0F9FF]">
-        {/* Enhanced Hero Section */}
-        <div className="bg-gradient-to-r from-[#0B2545] via-[#0E3A5C] to-[#0B2545] text-white relative overflow-hidden">
-          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-6 relative z-10">
-            <Breadcrumb items={breadcrumbs} variant="embedded" className="mb-3 opacity-80" />
+      <div className="min-h-screen bg-gray-50">
+        {/* Compact Header */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4">
+            <Breadcrumb items={breadcrumbs} className="mb-3" />
             
-            <div className="mb-4">
-              <h1 className="text-[24px] md:text-[32px] font-bold mb-2 font-[family-name:var(--font-lora)]">
-                Laboratory Reagents Store
-              </h1>
-              <p className="text-[13px] text-cyan-100 mb-3 leading-relaxed max-w-2xl">
-                Premium laboratory reagents and diagnostic kits with temperature-controlled delivery across Bangladesh.
-              </p>
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h1 className="text-[20px] md:text-[24px] font-bold text-[#0B2545] mb-1 font-[family-name:var(--font-lora)]">
+                  Laboratory Reagents
+                </h1>
+                <p className="text-[12px] text-gray-600">
+                  Premium reagents and diagnostic kits with temperature-controlled delivery
+                </p>
+              </div>
               
-              {/* Storage legend - compact */}
+              {/* Storage legend - compact inline */}
               <div className="flex flex-wrap gap-2">
                 {STORAGE_LEGEND.map(({ label, icon, className }) => (
                   <div key={label} className={`flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg border ${className}`}>
-                    <span className="text-[12px]">{icon}</span>
+                    <span className="text-[11px]">{icon}</span>
                     {label}
                   </div>
                 ))}
@@ -264,9 +271,13 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
                   <span className="text-[36px]">🔬</span>
                 </div>
-                <p className="text-[16px] font-semibold text-[#0B2545] mb-2">No products found</p>
+                <p className="text-[16px] font-semibold text-[#0B2545] mb-2">No laboratory reagents found</p>
                 <p className="text-[13px] text-[#6B7280] mb-6 max-w-md">
-                  {debouncedSearch ? 'No products match your search. Try different keywords.' : 'Use the search or filters to find reagents and laboratory products.'}
+                  {debouncedSearch 
+                    ? 'No reagents match your search. Try different keywords or clear your search.' 
+                    : filters.brands?.length || filters.categories?.length || filters.priceRange < 50000
+                      ? 'No reagents match your current filters. Try adjusting or clearing them.'
+                      : 'No products are currently categorized as Laboratory Reagents. Please check back later or contact support to add reagent products.'}
                 </p>
                 <div className="flex gap-2">
                   <button
