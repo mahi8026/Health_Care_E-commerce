@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import ReagentFilters from '@/components/reagent/ReagentFilters';
 import ReagentToolbar from '@/components/reagent/ReagentToolbar';
 import ReagentGrid from '@/components/reagent/ReagentGrid';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import Spinner from '@/components/ui/Spinner';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API as API_BASE } from '@/constants/api';
@@ -157,19 +156,12 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
     fetchReagents();
   }, [fetchReagents]);
 
-  const breadcrumbs = [
-    { label: 'Home', href: '/' },
-    { label: 'Reagent Store' },
-  ];
-
   return (
     <ReagentErrorBoundary>
       <div className="min-h-screen bg-gray-50">
         {/* Compact Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4">
-            <Breadcrumb items={breadcrumbs} className="mb-3" />
-            
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
                 <h1 className="text-[20px] md:text-[24px] font-bold text-[#0B2545] mb-1 font-[family-name:var(--font-lora)]">
