@@ -111,11 +111,18 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         params.set('category', filters.categories.join(','));
       }
 
-      // Add sorting
-      if (sortBy === 'price-low') params.set('sort', 'price');
-      else if (sortBy === 'price-high') params.set('sort', '-price');
-      else if (sortBy === 'brand') params.set('sort', 'name');
-      else params.set('sort', '-createdAt'); // newest first by default
+      // Add sorting - use the correct parameter name that backend expects
+      if (sortBy === 'price-low') {
+        params.set('sortBy', 'price');
+        params.set('order', 'asc');
+      } else if (sortBy === 'price-high') {
+        params.set('sortBy', 'price');
+        params.set('order', 'desc');
+      } else if (sortBy === 'brand') {
+        params.set('sortBy', 'name');
+        params.set('order', 'asc');
+      }
+      // Don't add sort params for 'relevance' - let backend use default
 
       console.log('Fetching reagents from:', `${API_BASE}/products?${params.toString()}`);
 
