@@ -1,14 +1,7 @@
 'use client';
 
-/**
- * LoginPromptModal
- * Shows when a guest user tries to add a product to cart.
- * Triggered via a custom 'require-login-for-cart' window event.
- */
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaTimes, FaShoppingCart, FaUser, FaLock } from 'react-icons/fa';
 
 export default function LoginPromptModal() {
   const router = useRouter();
@@ -28,89 +21,155 @@ export default function LoginPromptModal() {
 
   const close = () => setVisible(false);
 
-  const goToLogin = () => {
-    close();
-    // Save current path so we can redirect back after login
+  const saveRedirect = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('redirect_after_login', window.location.pathname);
     }
-    router.push('/login');
   };
 
-  const goToRegister = () => {
-    close();
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('redirect_after_login', window.location.pathname);
-    }
-    router.push('/register');
-  };
+  const goToLogin = () => { saveRedirect(); close(); router.push('/login'); };
+  const goToRegister = () => { saveRedirect(); close(); router.push('/register'); };
 
   return (
     <div
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
       onClick={close}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 99999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px',
+        background: 'rgba(15, 23, 42, 0.6)',
+        backdropFilter: 'blur(6px)',
+      }}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden"
         onClick={e => e.stopPropagation()}
+        style={{
+          background: '#fff',
+          borderRadius: '20px',
+          width: '100%',
+          maxWidth: '400px',
+          overflow: 'hidden',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
+          animation: 'modalIn 0.2s ease',
+        }}
       >
-        {/* Top accent bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-red-500 to-red-400" />
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-2">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-              <FaShoppingCart className="text-red-500 text-lg" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-gray-900 leading-tight">Sign in required</h2>
-              <p className="text-xs text-gray-500">Please log in to add items to your cart</p>
-            </div>
-          </div>
+        {/* Illustration area */}
+        <div style={{
+          background: 'linear-gradient(135deg, #0B2545 0%, #1a3a6b 100%)',
+          padding: '32px 32px 28px',
+          textAlign: 'center',
+          position: 'relative',
+        }}>
+          {/* Close button */}
           <button
             onClick={close}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            style={{
+              position: 'absolute', top: 14, right: 14,
+              background: 'rgba(255,255,255,0.12)',
+              border: 'none', borderRadius: '50%',
+              width: 30, height: 30,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: '#fff', fontSize: 16,
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
           >
-            <FaTimes size={14} />
+            ×
           </button>
+
+          {/* Cart icon */}
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #E11D48, #BE123C)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 16,
+            boxShadow: '0 8px 24px rgba(225,29,72,0.4)',
+          }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+          </div>
+
+          <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: '0 0 6px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            Login to Continue
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, margin: 0, lineHeight: 1.5 }}>
+            You need an account to add items to your cart and place orders.
+          </p>
         </div>
 
-        {/* Body */}
-        <div className="px-6 py-4">
+        {/* Content */}
+        <div style={{ padding: '24px 28px 28px' }}>
+          {/* Product hint */}
           {productName && (
-            <div className="mb-4 px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg">
-              <p className="text-xs text-red-700 font-medium truncate">
-                🛒 &ldquo;{productName}&rdquo; will be added after login
+            <div style={{
+              background: '#FFF7F7',
+              border: '1px solid #FEE2E2',
+              borderRadius: 10,
+              padding: '10px 14px',
+              marginBottom: 20,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+              <span style={{ fontSize: 16 }}>🛒</span>
+              <p style={{
+                margin: 0, fontSize: 12, color: '#9F1239', fontWeight: 500,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                &ldquo;{productName}&rdquo; will be added after login
               </p>
             </div>
           )}
 
-          <div className="space-y-2.5">
+          {/* Buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button
               onClick={goToLogin}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition-colors"
+              style={{
+                width: '100%', padding: '13px',
+                background: 'linear-gradient(135deg, #E11D48, #BE123C)',
+                color: '#fff', border: 'none', borderRadius: 12,
+                fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                transition: 'opacity 0.2s, transform 0.15s',
+                letterSpacing: '0.02em',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.92'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
             >
-              <FaLock size={13} />
               Log In
             </button>
+
             <button
               onClick={goToRegister}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-semibold rounded-xl transition-colors"
+              style={{
+                width: '100%', padding: '13px',
+                background: '#F8FAFC',
+                color: '#1E293B', border: '1.5px solid #E2E8F0', borderRadius: 12,
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                transition: 'background 0.2s, border-color 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
             >
-              <FaUser size={13} />
               Create an Account
             </button>
           </div>
-        </div>
 
-        <div className="px-6 pb-5 text-center">
-          <p className="text-xs text-gray-400">
-            Your cart items will be saved and ready after you log in.
+          <p style={{ textAlign: 'center', fontSize: 11, color: '#94A3B8', margin: '16px 0 0' }}>
+            Your cart will be saved and ready after you sign in.
           </p>
         </div>
       </div>
+
+      <style>{`
+        @keyframes modalIn {
+          from { opacity: 0; transform: scale(0.95) translateY(8px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
