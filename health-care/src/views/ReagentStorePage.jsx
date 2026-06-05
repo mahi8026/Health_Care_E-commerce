@@ -117,17 +117,40 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       else if (sortBy === 'brand') params.set('sort', 'name');
       else params.set('sort', '-createdAt'); // newest first by default
 
+      console.log('Fetching reagents from:', `${API_BASE}/products?${params.toString()}`);
+
       const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(15000), // Increased timeout
+        credentials: 'include',
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      console.log('Response status:', res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Response error:', errorText);
+        throw new Error(`HTTP ${res.status}`);
+      }
 
       const data = await res.json();
-      const list = data.data?.products ?? data.products ?? [];
+      console.log('Response data:', data);
+
+      // Handle multiple response formats from backend
+      let list = [];
+      if (data.data?.products) {
+        list = data.data.products;
+      } else if (data.products) {
+        list = data.products;
+      } else if (Array.isArray(data.data)) {
+        list = data.data;
+      } else if (Array.isArray(data)) {
+        list = data;
+      }
+
+      console.log('Extracted products:', list.length);
 
       setReagents(Array.isArray(list) ? list : []);
-      setTotal(data.data?.total ?? data.total ?? (Array.isArray(list) ? list.length : 0));
+      setTotal(data.data?.total ?? data.total ?? data.pagination?.total ?? (Array.isArray(list) ? list.length : 0));
     } catch (err) {
       if (err.name !== 'AbortError') {
         console.error('Fetch reagents error:', err);
