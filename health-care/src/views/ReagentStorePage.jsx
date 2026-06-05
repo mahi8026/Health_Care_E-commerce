@@ -91,6 +91,12 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
         limit: '48', // Show more products
       });
 
+      // ALWAYS filter by reagent-related categories on initial load
+      if (!filters.categories?.length && !debouncedSearch.trim()) {
+        // Default: show products from Laboratory Reagents category
+        params.set('category', 'Laboratory Reagents');
+      }
+
       // Add search query if present
       if (debouncedSearch.trim()) {
         params.set('search', debouncedSearch.trim());
