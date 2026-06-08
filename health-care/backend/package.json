@@ -34,7 +34,7 @@
   "author": "MedCore BD",
   "license": "MIT",
   "dependencies": {
-    "@sentry/node": "^8.55.2",
+    "@sentry/node": "^10.56.0",
     "@sentry/profiling-node": "^8.55.2",
     "axios": "^1.16.1",
     "bcryptjs": "^2.4.3",
