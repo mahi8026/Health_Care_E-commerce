@@ -221,7 +221,12 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                 {POPULAR_SEARCHES.map((term) => (
                   <button
                     key={term}
-                    onClick={() => handleSearch(term)}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSearch(term);
+                    }}
                     className="px-3 py-1.5 bg-white hover:bg-gradient-to-r hover:from-[#0E8A6E] hover:to-[#0c7a61] border border-gray-200 hover:border-transparent rounded-full text-[11px] font-medium text-gray-700 hover:text-white transition-all duration-200 hover:shadow-md hover:scale-105"
                   >
                     {term}
@@ -242,7 +247,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                   Recent Searches
                 </div>
                 <button
-                  onClick={() => {
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     localStorage.removeItem('recentSearches');
                     setRecentSearches([]);
                   }}
@@ -255,7 +263,12 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                 {recentSearches.map((term, idx) => (
                   <button
                     key={idx}
-                    onClick={() => handleSearch(term)}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSearch(term);
+                    }}
                     className="w-full text-left px-3 py-2 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 rounded-lg text-[13px] text-gray-700 hover:text-gray-900 transition-all duration-150 flex items-center justify-between group"
                   >
                     <span>{term}</span>
@@ -362,7 +375,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           {isHovered && inStock && (
                             <div className="flex gap-1 animate-fade-in">
                               <button
+                                type="button"
                                 onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   addToWishlist(product);
                                 }}
@@ -376,7 +391,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                                 <FaHeart size={11} className={inWishlist ? 'fill-current' : ''} />
                               </button>
                               <button
+                                type="button"
                                 onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   addToCart(product);
                                 }}
@@ -424,7 +441,12 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           {query.length >= 2 && suggestions.length > 0 && (
             <div className="p-4 border-t border-gray-100 bg-gray-50">
               <button
-                onClick={() => handleSearch(query)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSearch(query);
+                }}
                 className="w-full py-2.5 bg-gradient-to-r from-[#0E8A6E] to-[#0c7a61] hover:from-[#0c7a61] hover:to-[#0E8A6E] text-white rounded-xl text-[13px] font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#0E8A6E]/30 hover:scale-[1.02] flex items-center justify-center gap-2"
               >
                 <FaSearch size={12} />
