@@ -209,23 +209,83 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-[11px] text-white/50">
-            © {currentYear} MedCore Bangladesh Ltd. All rights reserved.
-          </p>
-          <div className="flex items-center flex-wrap justify-center gap-3 md:gap-4">
-            <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
-              className="text-[11px] text-white/50 hover:text-white/80 transition-colors flex items-center gap-1">
-              <span>📱</span><span>{CONTACT.phone}</span>
-            </a>
-            <a href={`mailto:${CONTACT.email}`}
-              className="text-[11px] text-white/50 hover:text-white/80 transition-colors flex items-center gap-1">
-              <span>✉️</span><span>{CONTACT.email}</span>
-            </a>
-            <a href="/privacy" className="text-[11px] text-white/50 hover:text-white/80 transition-colors">Privacy Policy</a>
-            <a href="/terms" className="text-[11px] text-white/50 hover:text-white/80 transition-colors">Terms of Service</a>
-            <span className="text-[11px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">DGDA Registered</span>
-            <span className="text-[11px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">ISO 13485</span>
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4">
+          {/* Desktop: Single row with all items */}
+          <div className="hidden md:flex items-center justify-between gap-4">
+            <p className="text-[11px] text-white/50 whitespace-nowrap">
+              © {currentYear} MedCore Bangladesh Ltd. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-[11px] text-white/50">
+              <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
+                className="hover:text-white/80 transition-colors whitespace-nowrap">
+                📱 {CONTACT.phone}
+              </a>
+              <a href={`mailto:${CONTACT.email}`}
+                className="hover:text-white/80 transition-colors whitespace-nowrap">
+                ✉️ {CONTACT.email}
+              </a>
+            </div>
+            <div className="flex items-center gap-3">
+              <a href="/privacy" className="text-[11px] text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Privacy Policy</a>
+              <a href="/terms" className="text-[11px] text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Terms of Service</a>
+              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded whitespace-nowrap">DGDA Registered</span>
+              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded whitespace-nowrap">ISO 13485</span>
+            </div>
+          </div>
+
+          {/* Tablet: Two rows */}
+          <div className="hidden sm:flex md:hidden flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] text-white/50">
+                © {currentYear} MedCore Bangladesh Ltd. All rights reserved.
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">DGDA Registered</span>
+                <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">ISO 13485</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-white/50">
+              <div className="flex items-center gap-3">
+                <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
+                  className="hover:text-white/80 transition-colors">
+                  📱 {CONTACT.phone}
+                </a>
+                <a href={`mailto:${CONTACT.email}`}
+                  className="hover:text-white/80 transition-colors">
+                  ✉️ {CONTACT.email}
+                </a>
+              </div>
+              <div className="flex items-center gap-3">
+                <a href="/privacy" className="hover:text-white/80 transition-colors">Privacy</a>
+                <a href="/terms" className="hover:text-white/80 transition-colors">Terms</a>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: Three rows, centered */}
+          <div className="flex sm:hidden flex-col gap-3 text-center">
+            <p className="text-[10px] text-white/50">
+              © {currentYear} MedCore Bangladesh Ltd.
+            </p>
+            <div className="flex flex-col gap-2 text-[11px] text-white/50">
+              <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
+                className="hover:text-white/80 transition-colors">
+                📱 {CONTACT.phone}
+              </a>
+              <a href={`mailto:${CONTACT.email}`}
+                className="hover:text-white/80 transition-colors">
+                ✉️ {CONTACT.email}
+              </a>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <a href="/privacy" className="text-[10px] text-white/50 hover:text-white/80 transition-colors">Privacy</a>
+              <span className="text-white/30">·</span>
+              <a href="/terms" className="text-[10px] text-white/50 hover:text-white/80 transition-colors">Terms</a>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">DGDA</span>
+              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">ISO 13485</span>
+            </div>
           </div>
         </div>
       </div>
