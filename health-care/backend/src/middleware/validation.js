@@ -1,5 +1,8 @@
 const { body, param, query, validationResult, checkExact } = require('express-validator');
 
+// Accepts: 01XXXXXXXXX  |  +8801XXXXXXXXX  |  8801XXXXXXXXX  (digit after country prefix must be 3-9)
+const BD_PHONE_REGEX = /^(\+880|880|0)?1[3-9]\d{8}$/;
+
 // Validation error handler
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -41,7 +44,7 @@ const validateOrder = [
   body('items.*.quantity').isInt({ min: 1, max: 1000 }).withMessage('Quantity must be between 1 and 1000'),
   body('deliveryAddress.name').trim().notEmpty().withMessage('Delivery name is required'),
   body('deliveryAddress.phone').trim().notEmpty().withMessage('Phone number is required')
-    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+    .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),
   body('deliveryAddress.street').trim().notEmpty().withMessage('Street address is required'),
   body('deliveryAddress.district').trim().notEmpty().withMessage('District is required'),
   body('paymentMethod').isIn(['cod', 'beftn', 'bkash', 'nagad', 'npsb', 'cheque', 'b2b_credit', 'bank_transfer', 'credit_terms', 'card', 'cash'])
@@ -61,7 +64,7 @@ const validateRegistration = [
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/)
     .withMessage('Password must contain uppercase, lowercase, number, and special character'),
   body('phone').trim().notEmpty().withMessage('Phone number is required')
-    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+    .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),
   body('accountType').optional().isIn(['Retail', 'B2B']).withMessage('Invalid account type'),
   handleValidationErrors
 ];
@@ -173,7 +176,7 @@ const validateProfileUpdate = [
   body('name').optional().trim().escape()
     .isLength({ min: 2, max: 100 }).withMessage('Name must be 2-100 characters'),
   body('phone').optional().trim()
-    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+    .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),
   body('address').optional().trim().escape()
     .isLength({ max: 500 }).withMessage('Address must not exceed 500 characters'),
   body('company').optional().trim().escape()
@@ -215,13 +218,13 @@ const validateResetPassword = [
 // Phone OTP validation
 const validateSendPhoneOTP = [
   body('phone').trim().notEmpty().withMessage('Phone number is required')
-    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+    .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),
   handleValidationErrors
 ];
 
 const validateVerifyPhoneOTP = [
   body('phone').trim().notEmpty().withMessage('Phone number is required')
-    .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
+    .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),
   body('otp').trim().notEmpty().withMessage('OTP is required')
     .isLength({ min: 4, max: 8 }).withMessage('Invalid OTP length')
     .isNumeric().withMessage('OTP must be numeric'),
