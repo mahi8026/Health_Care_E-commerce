@@ -7,6 +7,7 @@ const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const mongoose = require('mongoose');
 const { DELIVERY_FEES } = require('../config/constants');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
+const emailService = require('../services/emailService');
 
 const cacheService = new CacheService();
 
@@ -318,8 +319,7 @@ exports.createOrder = async (req, res) => {
     cacheService.invalidateAnalytics();
 
     // Send order confirmation email asynchronously
-    const { sendOrderConfirmation } = require('../utils/emailService');
-    sendOrderConfirmation(order[0], user).catch(err => logger.error(`[createOrder] email failed: ${err.message}`));
+    emailService.sendNewOrderEmail(order[0], user).catch(err => logger.error(`[createOrder] email failed: ${err.message}`));
 
     // Send order confirmation SMS asynchronously (non-blocking)
     if (user.phone) {
@@ -720,9 +720,21 @@ exports.sendNotification = async (req, res) => {
 
     logger.info(`[Notification] Admin sent "${NOTIFICATION_LABELS[type]}" for order ${order.orderNumber} to ${order.user?.email || 'unknown'}`);
 
-    // ── TODO: replace with real email/SMS call ──
-    // await emailService.send({ to: order.user.email, template: type, order });
-    // ────────────────────────────────────────────
+    // ── Send real email ──────────────────────────────────────────────────────
+    if (order.user?.email) {
+      const customer = { name: order.user.name, email: order.user.email };
+      try {
+        switch (type) {
+          case 'confirmation': await emailService.sendOrderConfirmation(order, customer); break;
+          case 'payment':      await emailService.sendPaymentReceipt(order, customer);    break;
+          case 'shipping':     await emailService.sendShippingNotification(order, customer); break;
+          case 'delivery':     await emailService.sendDeliveryConfirmation(order, customer); break;
+        }
+      } catch (emailErr) {
+        logger.warn(`[sendNotification] Email failed (non-fatal): ${emailErr.message}`);
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     return successResponse(res, {
       type,
