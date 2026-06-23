@@ -10,12 +10,19 @@ const { successResponse, errorResponse, paginatedResponse } = require('../utils/
 
 const cacheService = new CacheService();
 
-// Generate a collision-resistant order number
+// Generate a human-friendly branded order number: MC-YYMMDD-XXXX
+// Example: MC-260623-4231  (14 chars, readable, unique per day)
 async function generateOrderNumber() {
-  const maxAttempts = 5;
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const datePart = `${yy}${mm}${dd}`;
+
+  const maxAttempts = 10;
   for (let i = 0; i < maxAttempts; i++) {
-    const rand = Math.floor(Math.random() * 900) + 100; // 100–999
-    const orderNumber = `ORD-${Date.now()}-${rand}`;
+    const rand = Math.floor(Math.random() * 9000) + 1000; // 1000–9999
+    const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await Order.findOne({ orderNumber }).lean();
     if (!exists) return orderNumber;
   }
