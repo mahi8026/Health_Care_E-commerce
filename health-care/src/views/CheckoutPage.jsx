@@ -174,7 +174,12 @@ export default function CheckoutPage({ onBackToCart }) {
         clearCart();
       }
     } catch (err) {
-      setError(err.message || 'Could not place order. Please try again.');
+      // Log full error details to console for debugging
+      console.error('[Checkout] Order failed:', err.message, err.data || err);
+      if (err.data?.errors) {
+        console.error('[Checkout] Validation errors:', err.data.errors);
+      }
+      setError(err.data?.errors?.length ? err.data.errors : err.message || 'Could not place order. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -291,9 +296,17 @@ export default function CheckoutPage({ onBackToCart }) {
               {error && (
                 <div
                   role="alert"
-                  className="px-4 py-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] text-sm"
+                  className="px-4 py-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] text-sm space-y-1"
                 >
-                  {error}
+                  {Array.isArray(error) ? (
+                    error.map((e, i) => (
+                      <div key={i}>
+                        <span className="font-semibold">{e.field}:</span> {e.message}
+                      </div>
+                    ))
+                  ) : (
+                    <div>{error}</div>
+                  )}
                 </div>
               )}
 
