@@ -105,8 +105,33 @@ export default function CheckoutPage({ onBackToCart }) {
       return;
     }
 
+    // ── Front-end validation before hitting the API ──────────────────────────
+    const BD_PHONE = /^(\+880|880|0)?1[3-9]\d{8}$/;
+    const fieldErrors = [];
+    if (!deliveryAddress.fullName?.trim() || deliveryAddress.fullName.trim().length < 2)
+      fieldErrors.push('Full name must be at least 2 characters');
+    if (!deliveryAddress.phone?.trim() || !BD_PHONE.test(deliveryAddress.phone.replace(/[\s\-+]/g, '')))
+      fieldErrors.push('Please enter a valid Bangladesh phone number (01XXXXXXXXX)');
+    if (!deliveryAddress.street?.trim() || deliveryAddress.street.trim().length < 5)
+      fieldErrors.push('Please enter a full street address');
+    if (!deliveryAddress.district?.trim())
+      fieldErrors.push('District is required');
+    if (!deliveryAddress.thana?.trim() || deliveryAddress.thana.trim().length < 2)
+      fieldErrors.push('Please enter thana / upazila');
+    if (!/^\d{4}$/.test(deliveryAddress.postcode || ''))
+      fieldErrors.push('Postcode must be 4 digits');
+
+    if (fieldErrors.length > 0) {
+      setError(fieldErrors.map((msg, i) => ({ field: i, message: msg })));
+      // Scroll to error
+      document.querySelector('[role="alert"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     setLoading(true);
     setError(null);
+
 
     try {
       const orderData = {

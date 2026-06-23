@@ -33,15 +33,34 @@ async function generateOrderNumber() {
  * @access Private
  */
 exports.createOrder = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
+  // Start a session for atomic transactions.
+  // Falls back to no-session if the MongoDB instance doesn't support replica-set transactions.
+  let session = null;
+  let useTransaction = false;
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    useTransaction = true;
+  } catch {
+    // Standalone MongoDB (no replica set) — proceed without transactions
+    session = null;
+    useTransaction = false;
+  }
+
+  const withSession = (q) => (session ? q.session(session) : q);
+  const sessionOpt = session ? { session } : {};
+
+  const abortAndError = async (res, msg, code = 400) => {
+    if (useTransaction && session) await session.abortTransaction();
+    return errorResponse(res, msg, null, code);
+  };
+
+
   try {
     const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem } = req.body;
 
     if (!items || !items.length) {
-      await session.abortTransaction();
-      return errorResponse(res, 'Order must contain at least one item', null, 400);
+      return abortAndError(res, 'Order must contain at least one item', 400);
     }
 
     let subtotal = 0;
@@ -49,22 +68,23 @@ exports.createOrder = async (req, res) => {
 
     // Validate all items and check stock atomically
     for (const item of items) {
-      const product = await Product.findById(item.product).session(session);
+      const product = await withSession(Product.findById(item.product));
       if (!product) {
-        await session.abortTransaction();
-        return errorResponse(res, `Product not found: ${item.product}`, null, 404);
+        return abortAndError(res, `Product not found: ${item.product}`, 404);
       }
       const qty = item.qty || item.quantity || 1;
       if (product.stock < qty) {
-        await session.abortTransaction();
-        return errorResponse(res, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}`, null, 400);
+        return abortAndError(res, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}`, 400);
       }
       subtotal += product.price * qty;
       orderItems.push({ product: product._id, name: product.name, sku: product.sku, brand: product.brand, price: product.price, qty, quantity: qty });
     }
 
     // B2B discount — use user's b2bDiscountPct or default 8%
-    const user = await User.findById(req.user.id).session(session);
+    const user = await withSession(User.findById(req.user.id));
+    if (!user) {
+      return abortAndError(res, 'User not found', 404);
+    }
     let b2bDiscountPct = 0;
     let b2bDiscount = 0;
     if (user.role === 'b2b_customer') {
@@ -77,7 +97,7 @@ exports.createOrder = async (req, res) => {
     let appliedCoupon = null;
     if (promoCode) {
       const Coupon = require('../models/Coupon');
-      const coupon = await Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true }).session(session);
+      const coupon = await withSession(Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true }));
       
       if (coupon) {
         const now = new Date();
@@ -89,7 +109,7 @@ exports.createOrder = async (req, res) => {
         
         let isFirstOrder = true;
         if (coupon.isFirstOrderOnly) {
-          const orderCount = await Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } }).session(session);
+          const orderCount = await withSession(Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } }));
           isFirstOrder = orderCount === 0;
         }
         
@@ -98,8 +118,7 @@ exports.createOrder = async (req, res) => {
           if (coupon.type === 'percentage') {
             // Validate percentage value
             if (coupon.value < 0 || coupon.value > 100) {
-              await session.abortTransaction();
-              return errorResponse(res, 'Invalid coupon configuration', null, 400);
+              return abortAndError(res, 'Invalid coupon configuration', 400);
             }
             couponDiscount = (subtotal * coupon.value) / 100;
             if (coupon.maximumDiscount && couponDiscount > coupon.maximumDiscount) {
@@ -127,9 +146,9 @@ exports.createOrder = async (req, res) => {
           // Update coupon usage
           coupon.usageCount += 1;
           coupon.usedBy.push(req.user.id);
-          await coupon.save({ session });
+          await coupon.save(sessionOpt);
         } else {
-          await session.abortTransaction();
+          if (useTransaction && session) await session.abortTransaction();
           // Return specific error message
           let errorMessage = 'Invalid or expired coupon';
           if (!isValid) errorMessage = 'This coupon has expired or is not yet valid';
@@ -142,7 +161,7 @@ exports.createOrder = async (req, res) => {
           return errorResponse(res, errorMessage, null, 400);
         }
       } else {
-        await session.abortTransaction();
+        if (useTransaction && session) await session.abortTransaction();
         return errorResponse(res, 'Invalid coupon code', null, 404);
       }
     }
@@ -160,17 +179,14 @@ exports.createOrder = async (req, res) => {
       const subtotalAfterDiscounts = subtotal - b2bDiscount - couponDiscount;
 
       if (loyaltyPointsToRedeem < MIN_REDEEM_POINTS) {
-        await session.abortTransaction();
-        return errorResponse(res, `Minimum ${MIN_REDEEM_POINTS} points required to redeem`, null, 400);
+        return abortAndError(res, `Minimum ${MIN_REDEEM_POINTS} points required to redeem`, 400);
       }
       if ((user.loyaltyPoints || 0) < loyaltyPointsToRedeem) {
-        await session.abortTransaction();
-        return errorResponse(res, 'Insufficient loyalty points', null, 400);
+        return abortAndError(res, 'Insufficient loyalty points', 400);
       }
       const maxPoints = loyaltyService.maxRedeemablePoints(subtotalAfterDiscounts);
       if (loyaltyPointsToRedeem > maxPoints) {
-        await session.abortTransaction();
-        return errorResponse(res, `Cannot redeem more than ${maxPoints} points for this order`, null, 400);
+        return abortAndError(res, `Cannot redeem more than ${maxPoints} points for this order`, 400);
       }
 
       loyaltyDiscount = loyaltyService.pointsToTaka(loyaltyPointsToRedeem);
@@ -180,7 +196,7 @@ exports.createOrder = async (req, res) => {
       await User.findByIdAndUpdate(
         req.user.id,
         { $inc: { loyaltyPoints: -pointsRedeemed } },
-        { session }
+        sessionOpt
       );
     }
 
@@ -213,26 +229,26 @@ exports.createOrder = async (req, res) => {
       notes,
       poNumber,
       statusTimestamps: { placed: new Date() }
-    }], { session });
+    }], sessionOpt);
 
     // Decrement stock atomically within transaction
     for (const item of orderItems) {
       const result = await Product.findOneAndUpdate(
         { _id: item.product, stock: { $gte: item.qty } },
         { $inc: { stock: -item.qty } },
-        { session, new: true }
+        { ...sessionOpt, new: true }
       );
       
       if (!result) {
-        await session.abortTransaction();
-        return res.status(400).json({ 
-          success: false, 
-          message: `Stock changed during order processing. Please try again.` 
+        if (useTransaction && session) await session.abortTransaction();
+        return res.status(400).json({
+          success: false,
+          message: `Stock changed during order processing. Please try again.`
         });
       }
     }
 
-    await session.commitTransaction();
+    if (useTransaction && session) await session.commitTransaction();
 
     // Award loyalty points asynchronously (non-blocking)
     try {
@@ -325,11 +341,13 @@ exports.createOrder = async (req, res) => {
 
     return successResponse(res, { order: order[0] }, 'Order created successfully', 201);
   } catch (error) {
-    await session.abortTransaction();
+    if (useTransaction && session) {
+      try { await session.abortTransaction(); } catch { /* ignore */ }
+    }
     logger.error(`[createOrder] ${error.message}`);
     return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   } finally {
-    session.endSession();
+    if (session) session.endSession();
   }
 };
 
