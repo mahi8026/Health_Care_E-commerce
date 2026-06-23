@@ -6,9 +6,12 @@ import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
 import { FaLock, FaTag } from 'react-icons/fa';
 
-export function getDeliveryFee(/* method */) {
-  // Delivery is free — charges vary by location and are handled separately
-  return 0;
+import { getDeliveryZone, DELIVERY_ZONE_INFO } from './DeliveryOptions';
+
+// Returns Steadfast Courier fee based on delivery district
+export function getDeliveryFee(district = '') {
+  const zone = getDeliveryZone(district);
+  return DELIVERY_ZONE_INFO[zone].fee;
 }
 
 function getItemImage(item) {
@@ -22,6 +25,7 @@ function getItemImage(item) {
 export default function OrderSummary({
   items,
   deliveryMethod = 'standard',
+  district = '',
   appliedCoupon,
   onCouponApply,
   userId,
@@ -44,9 +48,10 @@ export default function OrderSummary({
   const availablePoints = loyaltyPoints || user?.loyaltyPoints || 0;
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const deliveryFee = getDeliveryFee(district);
   const couponDiscount = appliedCoupon?.discountAmount || 0;
   const pointsDiscount = redeemedPoints || 0;
-  const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount) * 100) / 100;
+  const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount + deliveryFee) * 100) / 100;
   const displayTotal = total ?? computedTotal;
 
   useEffect(() => {
@@ -292,6 +297,10 @@ export default function OrderSummary({
               <span className="font-medium">−৳{pointsDiscount.toLocaleString()}</span>
             </div>
           )}
+          <div className="flex justify-between text-[#6B7280]">
+            <span>Delivery <span className="text-[10px] text-[#9CA3AF]">(Steadfast Courier)</span></span>
+            <span className="font-medium text-[#0B2545]">৳{deliveryFee.toLocaleString()}</span>
+          </div>
         </div>
 
         <div className="px-4 sm:px-5 py-4 border-t-2 border-[#0B2545]/10 flex justify-between items-center">

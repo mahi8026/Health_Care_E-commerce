@@ -84,14 +84,17 @@ export default function CheckoutPage({ onBackToCart }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const deliveryFee = 0;
+  const deliveryFee = useMemo(
+    () => getDeliveryFee(deliveryAddress?.district || ''),
+    [deliveryAddress?.district]
+  );
 
   const orderTotal = useMemo(() => {
     const sub = getCartTotal();
     const discount = appliedCoupon?.discountAmount || 0;
     const pointsDiscount = redeemedPoints || 0;
-    return Math.round((sub - discount - pointsDiscount) * 100) / 100;
-  }, [getCartTotal, appliedCoupon, redeemedPoints]);
+    return Math.round((sub - discount - pointsDiscount + deliveryFee) * 100) / 100;
+  }, [getCartTotal, appliedCoupon, redeemedPoints, deliveryFee]);
 
   const handlePlaceOrder = useCallback(async () => {
     if (!isAuthenticated()) {
@@ -342,13 +345,7 @@ export default function CheckoutPage({ onBackToCart }) {
                 savedAddress={user?.addresses?.[0]}
               />
 
-              <DeliveryOptions
-                selected={selectedDelivery}
-                onSelect={(method) => {
-                  setSelectedDelivery(method);
-                  setCurrentStep(2);
-                }}
-              />
+              <DeliveryOptions district={deliveryAddress?.district || ''} />
 
               <PaymentMethods
                 selected={selectedPayment}
@@ -375,6 +372,7 @@ export default function CheckoutPage({ onBackToCart }) {
               <OrderSummary
                 items={cartItems}
                 deliveryMethod={selectedDelivery}
+                district={deliveryAddress?.district || ''}
                 appliedCoupon={appliedCoupon}
                 onCouponApply={setAppliedCoupon}
                 userId={user?.id || user?._id}

@@ -6,12 +6,12 @@ const CART_CONFIG = {
   MAX_QUANTITY_PER_ITEM: parseInt(process.env.MAX_QUANTITY_PER_ITEM) || 1000,
 };
 
-// Delivery fees (in BDT) — set to 0 (free delivery, as charges vary by location)
+// Delivery fees (BDT) — Steadfast Courier official rates (per 1 kg parcel)
+// Source: https://steadfast.com.bd
 const DELIVERY_FEES = {
-  standard: parseInt(process.env.DELIVERY_FEE_STANDARD) || 0,
-  express: parseInt(process.env.DELIVERY_FEE_EXPRESS) || 0,
-  nationwide: parseInt(process.env.DELIVERY_FEE_NATIONWIDE) || 0,
-  cold_chain: parseInt(process.env.DELIVERY_FEE_COLD_CHAIN) || 0,
+  inside_dhaka: parseInt(process.env.DELIVERY_FEE_INSIDE_DHAKA) || 70,
+  dhaka_suburban: parseInt(process.env.DELIVERY_FEE_DHAKA_SUBURBAN) || 100,
+  outside_dhaka: parseInt(process.env.DELIVERY_FEE_OUTSIDE_DHAKA) || 130,
 };
 
 // B2B configuration

@@ -173,9 +173,15 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // Delivery fee
-    const method = deliveryType || deliveryMethod || 'standard';
-    const deliveryFee = DELIVERY_FEES[method] || DELIVERY_FEES.standard;
+    // Delivery fee — Steadfast Courier zone-based pricing from district
+    const SUBURBAN_DISTRICTS = new Set([
+      'narayanganj', 'gazipur', 'manikganj', 'munshiganj', 'narsingdi',
+    ]);
+    const rawDistrict = (deliveryAddress?.district || '').trim().toLowerCase();
+    let zone = 'outside_dhaka';
+    if (!rawDistrict || rawDistrict === 'dhaka') zone = 'inside_dhaka';
+    else if (SUBURBAN_DISTRICTS.has(rawDistrict)) zone = 'dhaka_suburban';
+    const deliveryFee = DELIVERY_FEES[zone] ?? DELIVERY_FEES.outside_dhaka;
 
     // Loyalty points redemption
     let loyaltyDiscount = 0;

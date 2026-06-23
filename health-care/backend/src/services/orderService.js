@@ -162,12 +162,16 @@ async function validateAndApplyCoupon(promoCode, user, subtotal, orderItems, fin
 /**
  * Calculate delivery fee based on delivery method
  * 
- * @param {string} deliveryMethod - Delivery method (standard, express, etc.)
+ * @param {string} district - Delivery district from deliveryAddress
  * @returns {number} Delivery fee amount
  */
-function calculateDeliveryFee(deliveryMethod) {
-  const method = deliveryMethod || 'standard';
-  return DELIVERY_FEES[method] || DELIVERY_FEES.standard;
+function calculateDeliveryFee(district) {
+  const SUBURBAN = new Set(['narayanganj', 'gazipur', 'manikganj', 'munshiganj', 'narsingdi']);
+  const d = (district || '').trim().toLowerCase();
+  let zone = 'outside_dhaka';
+  if (!d || d === 'dhaka') zone = 'inside_dhaka';
+  else if (SUBURBAN.has(d)) zone = 'dhaka_suburban';
+  return DELIVERY_FEES[zone] ?? DELIVERY_FEES.outside_dhaka;
 }
 
 /**
