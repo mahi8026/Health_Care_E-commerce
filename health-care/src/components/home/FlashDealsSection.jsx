@@ -37,10 +37,13 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
       {/* Image */}
       <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
         {optimizedImg ? (
-          <img src={optimizedImg} alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`} loading="lazy"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          <Image
+            src={optimizedImg}
+            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
+            fill
+            sizes="(max-width: 640px) 50vw, 25vw"
+            style={{ objectFit: 'cover', transition: 'transform 0.3s' }}
+            className="flash-deal-img"
           />
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>
@@ -52,7 +55,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         )}
         {/* Quick add button on hover */}
         <button
-          onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
+          onClick={e => { e.stopPropagation(); addToCart({ ...product, price: finalPrice }, 1); }}
           style={{ position: 'absolute', bottom: 10, right: 10, background: '#0E8A6E',
             color: '#fff', border: 'none', borderRadius: 8, padding: '7px 12px',
             fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}

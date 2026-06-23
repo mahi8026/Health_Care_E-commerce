@@ -278,7 +278,7 @@ function FlashDealProductCard({ item, onClick }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            addToCart(product, 1);
+            addToCart({ ...product, price: finalPrice }, 1);
           }}
           style={{
             width: '100%',
