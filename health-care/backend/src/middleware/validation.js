@@ -41,7 +41,13 @@ const validateProduct = [
 const validateOrder = [
   body('items').isArray({ min: 1 }).withMessage('Order must contain at least one item'),
   body('items.*.product').isMongoId().withMessage('Invalid product ID'),
-  body('items.*.quantity').isInt({ min: 1, max: 1000 }).withMessage('Quantity must be between 1 and 1000'),
+  body('items.*').custom((item) => {
+    const qty = item.quantity ?? item.qty;
+    if (!Number.isInteger(qty) || qty < 1 || qty > 1000) {
+      throw new Error('Quantity must be between 1 and 1000');
+    }
+    return true;
+  }),
   body('deliveryAddress.name').trim().notEmpty().withMessage('Delivery name is required'),
   body('deliveryAddress.phone').trim().notEmpty().withMessage('Phone number is required')
     .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),

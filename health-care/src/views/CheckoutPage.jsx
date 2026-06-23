@@ -132,9 +132,10 @@ export default function CheckoutPage({ onBackToCart }) {
       };
 
       const response = await api.createOrder(orderData);
+      const orderObj = response.data?.order || response.order || response.data || {};
       const orderNumber =
-        response.order.orderNumber || response.order.orderId || `ORD-${response.order._id}`;
-      const mongoId = response.order._id || response.order.id;
+        orderObj.orderNumber || orderObj.orderId || `ORD-${orderObj._id}`;
+      const mongoId = orderObj._id || orderObj.id;
 
       setCreatedOrderId(mongoId);
       setOrderId(orderNumber);
