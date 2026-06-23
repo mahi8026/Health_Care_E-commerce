@@ -369,6 +369,42 @@ export const api = {
     return handleResponse(response);
   },
 
+  async sendOrderConfirmation(orderId) {
+    const response = await fetchWithAuth(`${API_BASE_URL}/orders/${orderId}/notify`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ type: 'confirmation' }),
+    });
+    return handleResponse(response);
+  },
+
+  async sendPaymentReceipt(orderId) {
+    const response = await fetchWithAuth(`${API_BASE_URL}/orders/${orderId}/notify`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ type: 'payment' }),
+    });
+    return handleResponse(response);
+  },
+
+  async sendShippingNotification(orderId) {
+    const response = await fetchWithAuth(`${API_BASE_URL}/orders/${orderId}/notify`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ type: 'shipping' }),
+    });
+    return handleResponse(response);
+  },
+
+  async sendDeliveryConfirmation(orderId) {
+    const response = await fetchWithAuth(`${API_BASE_URL}/orders/${orderId}/notify`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ type: 'delivery' }),
+    });
+    return handleResponse(response);
+  },
+
   // Authentication
   async login(email, password) {
     const response = await fetchWithAuth(`${API_BASE_URL}/auth/login`, {

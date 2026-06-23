@@ -6,7 +6,8 @@ const {
   getOrder,
   updateOrderStatus,
   cancelOrder,
-  addOrderNote
+  addOrderNote,
+  sendNotification,
 } = require('../controllers/orderController');
 const { trackOrder } = require('../controllers/trackingController');
 const { protect, authorize } = require('../middleware/auth');
@@ -31,5 +32,6 @@ router.put('/:id/cancel', protect, noStore, validateMongoId, cancelOrder);
 router.put('/:id/status', protect, authorize('admin'), noStore, validateOrderStatusUpdate, updateOrderStatus);
 router.patch('/:id/status', protect, authorize('admin'), noStore, validateOrderStatusUpdate, updateOrderStatus);
 router.patch('/:id/notes', protect, authorize('admin'), noStore, validateOrderNote, addOrderNote);
+router.post('/:id/notify', protect, authorize('admin'), noStore, sendNotification);
 
 module.exports = router;

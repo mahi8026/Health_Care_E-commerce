@@ -688,3 +688,50 @@ exports.addOrderNote = async (req, res) => {
     return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
+
+// ─── Admin Notification Handlers ─────────────────────────────────────────────
+// These record the notification action on the order.
+// Plug in your email/SMS service (e.g. Nodemailer, Twilio) inside each case.
+
+const NOTIFICATION_LABELS = {
+  confirmation: 'Order Confirmation',
+  payment:      'Payment Receipt',
+  shipping:     'Shipping Notification',
+  delivery:     'Delivery Confirmation',
+};
+
+exports.sendNotification = async (req, res) => {
+  try {
+    const { id }   = req.params;
+    const { type } = req.body;
+
+    if (!NOTIFICATION_LABELS[type]) {
+      return errorResponse(res, 'Invalid notification type', null, 400);
+    }
+
+    const order = await Order.findById(id).populate('user', 'name email phone');
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
+
+    // Record that the admin triggered this notification
+    if (!order.notifications) order.notifications = {};
+    order.notifications[type] = new Date();
+    order.markModified('notifications');
+    await order.save();
+
+    logger.info(`[Notification] Admin sent "${NOTIFICATION_LABELS[type]}" for order ${order.orderNumber} to ${order.user?.email || 'unknown'}`);
+
+    // ── TODO: replace with real email/SMS call ──
+    // await emailService.send({ to: order.user.email, template: type, order });
+    // ────────────────────────────────────────────
+
+    return successResponse(res, {
+      type,
+      label: NOTIFICATION_LABELS[type],
+      orderNumber: order.orderNumber,
+      sentAt: order.notifications[type],
+    }, `${NOTIFICATION_LABELS[type]} notification logged successfully`);
+  } catch (error) {
+    logger.error(`[sendNotification] ${error.message}`);
+    return errorResponse(res, 'Failed to send notification', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+  }
+};
