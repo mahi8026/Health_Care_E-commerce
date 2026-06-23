@@ -138,7 +138,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
     
     try {
       const result = await api.trackOrder(orderNum.trim());
-      setOrder(result.order);
+      setOrder(result.data);
       
       // Update URL if tracking from search
       if (!initialOrderNumber) {
