@@ -121,9 +121,12 @@ export function calculatePercentage(value, total) {
 }
 
 export function generateOrderId() {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
-  return `ORD-${timestamp}-${random}`;
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const rand = Math.floor(Math.random() * 9000) + 1000;
+  return `MC-${yy}${mm}${dd}-${rand}`;
 }
 
 export function generateSKU(category, brand) {

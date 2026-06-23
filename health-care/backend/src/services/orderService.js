@@ -10,21 +10,30 @@ const { DELIVERY_FEES } = require('../config/constants');
 
 /**
  * Generate a collision-resistant order number
+ * Format: MC-YYMMDD-XXXX (e.g., MC-260623-0042)
  * 
  * @param {Function} checkOrderNumberExists - Repository function to check if order number exists
  * @returns {Promise<string>} Unique order number
  * @throws {Error} If unable to generate unique order number after max attempts
  */
 async function generateOrderNumber(checkOrderNumberExists) {
-  const maxAttempts = 5;
-  
+  const maxAttempts = 10;
+
+  // Get today's date in YYMMDD format
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const datePart = `${yy}${mm}${dd}`;
+
   for (let i = 0; i < maxAttempts; i++) {
-    const rand = Math.floor(Math.random() * 900) + 100; // 100–999
-    const orderNumber = `ORD-${Date.now()}-${rand}`;
+    // 4-digit random number (1000–9999)
+    const rand = Math.floor(Math.random() * 9000) + 1000;
+    const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await checkOrderNumberExists(orderNumber);
     if (!exists) return orderNumber;
   }
-  
+
   throw new Error('Failed to generate unique order number');
 }
 
