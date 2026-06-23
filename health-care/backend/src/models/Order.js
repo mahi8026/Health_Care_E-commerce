@@ -65,8 +65,8 @@ const orderSchema = new mongoose.Schema({
   },
   deliveryType: {
     type: String,
-    enum: ['standard', 'express', 'nationwide', 'cold_chain'],
-    default: 'standard'
+    enum: ['standard', 'express', 'nationwide', 'cold_chain', 'inside_dhaka', 'dhaka_suburban', 'outside_dhaka'],
+    default: 'inside_dhaka'
   },
   // legacy alias
   deliveryMethod: { type: String },
