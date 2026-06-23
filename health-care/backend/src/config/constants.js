@@ -6,12 +6,12 @@ const CART_CONFIG = {
   MAX_QUANTITY_PER_ITEM: parseInt(process.env.MAX_QUANTITY_PER_ITEM) || 1000,
 };
 
-// Delivery fees (in BDT)
+// Delivery fees (in BDT) — set to 0 (free delivery, as charges vary by location)
 const DELIVERY_FEES = {
-  standard: parseInt(process.env.DELIVERY_FEE_STANDARD) || 150,
-  express: parseInt(process.env.DELIVERY_FEE_EXPRESS) || 300,
-  nationwide: parseInt(process.env.DELIVERY_FEE_NATIONWIDE) || 200,
-  cold_chain: parseInt(process.env.DELIVERY_FEE_COLD_CHAIN) || 500,
+  standard: parseInt(process.env.DELIVERY_FEE_STANDARD) || 0,
+  express: parseInt(process.env.DELIVERY_FEE_EXPRESS) || 0,
+  nationwide: parseInt(process.env.DELIVERY_FEE_NATIONWIDE) || 0,
+  cold_chain: parseInt(process.env.DELIVERY_FEE_COLD_CHAIN) || 0,
 };
 
 // B2B configuration

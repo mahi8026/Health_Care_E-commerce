@@ -1,19 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
 import { FaLock, FaTag } from 'react-icons/fa';
 
-export function getDeliveryFee(method) {
-  const fees = {
-    express: 500,
-    nationwide: 1200,
-    coldchain: 1800,
-    cold_chain: 1800,
-    standard: 150,
-  };
-  return fees[method] ?? 150;
+export function getDeliveryFee(/* method */) {
+  // Delivery is free — charges vary by location and are handled separately
+  return 0;
 }
 
 function getItemImage(item) {
@@ -49,10 +44,9 @@ export default function OrderSummary({
   const availablePoints = loyaltyPoints || user?.loyaltyPoints || 0;
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryFee = getDeliveryFee(deliveryMethod);
   const couponDiscount = appliedCoupon?.discountAmount || 0;
   const pointsDiscount = redeemedPoints || 0;
-  const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount + deliveryFee) * 100) / 100;
+  const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount) * 100) / 100;
   const displayTotal = total ?? computedTotal;
 
   useEffect(() => {
@@ -144,7 +138,7 @@ export default function OrderSummary({
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <img src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`} className="w-full h-full object-contain p-0.5" />
+                    <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <span className="text-lg">📦</span>
                   )}
@@ -298,10 +292,6 @@ export default function OrderSummary({
               <span className="font-medium">−৳{pointsDiscount.toLocaleString()}</span>
             </div>
           )}
-          <div className="flex justify-between text-[#6B7280]">
-            <span>Delivery</span>
-            <span className="font-medium text-[#0B2545]">৳{deliveryFee.toLocaleString()}</span>
-          </div>
         </div>
 
         <div className="px-4 sm:px-5 py-4 border-t-2 border-[#0B2545]/10 flex justify-between items-center">

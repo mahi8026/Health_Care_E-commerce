@@ -21,9 +21,8 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
   const subtotal = getCartTotal();
   const b2bDiscount = isB2BCustomer() ? Math.round(subtotal * 0.08) : 0;
+  const total = subtotal - b2bDiscount;
   const freeDeliveryThreshold = 50000;
-  const deliveryFee = subtotal >= freeDeliveryThreshold ? 0 : (cart.length > 0 ? 150 : 0);
-  const total = subtotal - b2bDiscount + deliveryFee;
   const amountToFreeDelivery = Math.max(0, freeDeliveryThreshold - subtotal);
   const freeDeliveryProgress = Math.min(100, (subtotal / freeDeliveryThreshold) * 100);
 
@@ -354,13 +353,6 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                   </div>
                 )}
 
-                <div className="flex justify-between text-[13px]">
-                  <span className="text-[#6B7280]">{t('cart.delivery')}</span>
-                  {deliveryFee === 0
-                    ? <span className="text-[#0E8A6E] font-bold">{t('cart.free')}</span>
-                    : <span className="font-semibold text-[#0B2545]">৳{deliveryFee}</span>
-                  }
-                </div>
               </div>
 
               {/* Total */}
@@ -369,9 +361,9 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                   <span className="text-[15px] font-bold text-[#0B2545]">{t('cart.total')}</span>
                   <span className="text-[22px] font-bold text-[#0B2545]">৳{total.toLocaleString()}</span>
                 </div>
-                {(b2bDiscount > 0 || deliveryFee === 0) && (
+                {b2bDiscount > 0 && (
                   <div className="mt-2 text-[11px] text-[#0E8A6E] font-medium">
-                    {t('cart.youSaved')} ৳{(b2bDiscount + (deliveryFee === 0 && subtotal > 0 ? 150 : 0)).toLocaleString()} {t('cart.onThisOrder')}
+                    {t('cart.youSaved')} ৳{b2bDiscount.toLocaleString()} {t('cart.onThisOrder')}
                   </div>
                 )}
               </div>

@@ -84,14 +84,14 @@ export default function CheckoutPage({ onBackToCart }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const deliveryFee = useMemo(() => getDeliveryFee(selectedDelivery), [selectedDelivery]);
+  const deliveryFee = 0;
 
   const orderTotal = useMemo(() => {
     const sub = getCartTotal();
     const discount = appliedCoupon?.discountAmount || 0;
     const pointsDiscount = redeemedPoints || 0;
-    return Math.round((sub - discount - pointsDiscount + deliveryFee) * 100) / 100;
-  }, [getCartTotal, appliedCoupon, redeemedPoints, deliveryFee]);
+    return Math.round((sub - discount - pointsDiscount) * 100) / 100;
+  }, [getCartTotal, appliedCoupon, redeemedPoints]);
 
   const handlePlaceOrder = useCallback(async () => {
     if (!isAuthenticated()) {
