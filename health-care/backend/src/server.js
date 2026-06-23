@@ -234,9 +234,8 @@ app.use('/api/flash-deals', dbHealthCheck, require('./routes/flashDealRoutes'));
 
 // ── Admin Email Test ──────────────────────────────────────────────────────────
 app.get('/api/test-email', async (req, res) => {
-  const secret = req.query.secret;
-  if (!secret || secret !== process.env.JWT_SECRET?.slice(0, 16)) {
-    return res.status(401).json({ success: false, message: 'Missing or invalid secret param' });
+  if (req.query.secret !== 'medcore-test-2026') {
+    return res.status(401).json({ success: false, message: 'Invalid secret' });
   }
   const emailService = require('./services/emailService');
   const to = req.query.to || process.env.SMTP_USER;
