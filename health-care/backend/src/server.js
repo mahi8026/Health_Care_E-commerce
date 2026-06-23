@@ -232,6 +232,19 @@ app.use('/api/chat', require('./routes/chatRoutes')); // Live chat integration
 app.use('/api/loyalty', dbHealthCheck, require('./routes/loyaltyRoutes')); // Loyalty program
 app.use('/api/flash-deals', dbHealthCheck, require('./routes/flashDealRoutes')); // Flash deals management
 
+// ── Admin Email Test (dev + production debug) ─────────────────────────────────
+app.get('/api/test-email', require('./middleware/auth').protect, require('./middleware/auth').authorize('admin'), async (req, res) => {
+  const emailService = require('./services/emailService');
+  const to = req.query.to || req.user.email;
+  try {
+    await emailService.verifyConnection();
+    const info = await emailService.sendTestEmail(to);
+    res.json({ success: true, message: `Test email sent to ${to}`, messageId: info?.messageId });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message, smtp: { host: process.env.SMTP_HOST, user: process.env.SMTP_USER, port: process.env.SMTP_PORT } });
+  }
+});
+
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;

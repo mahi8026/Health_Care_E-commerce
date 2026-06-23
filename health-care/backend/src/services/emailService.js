@@ -8,21 +8,24 @@ let _transporter = null;
 function getTransporter() {
   if (_transporter) return _transporter;
   _transporter = nodemailer.createTransport({
-    host:   process.env.SMTP_HOST   || 'smtp.gmail.com',
+    host:   process.env.SMTP_HOST || 'smtp.gmail.com',
     port:   parseInt(process.env.SMTP_PORT || '587'),
     secure: parseInt(process.env.SMTP_PORT || '587') === 465,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
+    tls: { rejectUnauthorized: false },
   });
   return _transporter;
 }
 
-// ─── Brand Styles ─────────────────────────────────────────────────────────────
+// ─── Brand Styles (lazy — env vars guaranteed available at call time) ─────────
 const BRAND = {
   name:    process.env.EMAIL_FROM_NAME || 'MedCore BD',
-  from:    `${process.env.EMAIL_FROM_NAME || 'MedCore BD'} <${process.env.SMTP_USER}>`,
+  get from() {
+    return `${process.env.EMAIL_FROM_NAME || 'MedCore BD'} <${process.env.SMTP_USER}>`;
+  },
   primary: '#0B2545',
   accent:  '#0E8A6E',
   site:    process.env.FRONTEND_URL || 'https://health-care-e-commerce-murex.vercel.app',
@@ -323,6 +326,26 @@ async function sendNewOrderEmail(order, customer) {
   return sendOrderConfirmation(order, customer);
 }
 
+// Debug helper — sends a plain test email
+async function sendTestEmail(to) {
+  return sendEmail({
+    to,
+    subject: `✅ MedCore BD Email Test — ${new Date().toLocaleTimeString('en-BD')}`,
+    html: emailLayout('Email Test', `
+      <h2 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#0B2545;">Email is working! 🎉</h2>
+      <p style="font-size:14px;color:#6B7280;">This is a test email from MedCore BD. Your SMTP is configured correctly.</p>
+      <p style="font-size:12px;color:#9CA3AF;margin-top:16px;">
+        SMTP Host: ${process.env.SMTP_HOST}<br/>
+        From: ${process.env.SMTP_USER}<br/>
+        Sent at: ${new Date().toISOString()}
+      </p>`),
+  });
+}
+
+async function verifyConnection() {
+  return getTransporter().verify();
+}
+
 module.exports = {
   sendEmail,
   sendOrderConfirmation,
@@ -330,4 +353,6 @@ module.exports = {
   sendShippingNotification,
   sendDeliveryConfirmation,
   sendNewOrderEmail,
+  sendTestEmail,
+  verifyConnection,
 };
