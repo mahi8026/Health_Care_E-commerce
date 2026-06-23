@@ -72,7 +72,7 @@ const orderSchema = new mongoose.Schema({
   deliveryMethod: { type: String },
   paymentMethod: {
     type: String,
-    enum: ['beftn', 'bkash', 'nagad', 'npsb', 'cheque', 'b2b_credit', 'bank_transfer', 'credit_terms', 'card', 'cash'],
+    enum: ['cod', 'beftn', 'bkash', 'nagad', 'npsb', 'cheque', 'b2b_credit', 'bank_transfer', 'credit_terms', 'card', 'cash'],
     required: true
   },
   paymentStatus: {

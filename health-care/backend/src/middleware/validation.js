@@ -44,7 +44,7 @@ const validateOrder = [
     .matches(/^(\+8801|01)[3-9]\d{8}$/).withMessage('Invalid Bangladesh phone number'),
   body('deliveryAddress.street').trim().notEmpty().withMessage('Street address is required'),
   body('deliveryAddress.district').trim().notEmpty().withMessage('District is required'),
-  body('paymentMethod').isIn(['beftn', 'bkash', 'nagad', 'npsb', 'cheque', 'b2b_credit', 'bank_transfer', 'credit_terms', 'card', 'cash'])
+  body('paymentMethod').isIn(['cod', 'beftn', 'bkash', 'nagad', 'npsb', 'cheque', 'b2b_credit', 'bank_transfer', 'credit_terms', 'card', 'cash'])
     .withMessage('Invalid payment method'),
   body('deliveryType').optional().isIn(['standard', 'express', 'nationwide', 'cold_chain'])
     .withMessage('Invalid delivery type'),

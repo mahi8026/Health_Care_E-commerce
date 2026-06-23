@@ -21,7 +21,8 @@ export function getProductCategoryName(product) {
 }
 
 export function formatCurrency(amount, currency = '৳') {
-  return `${currency}${amount.toLocaleString()}`;
+  const n = Number(amount) || 0;
+  return `${currency}${n.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
 export function formatDate(date, format = 'short') {

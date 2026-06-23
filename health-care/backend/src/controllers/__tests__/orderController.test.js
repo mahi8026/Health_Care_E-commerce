@@ -395,7 +395,7 @@ describe('trackOrder', () => {
     const res = mockRes();
     await trackOrder(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json.mock.calls[0][0].order.orderNumber).toBe('ORD-001');
+    expect(res.json.mock.calls[0][0].data.order.orderNumber).toBe('ORD-001');
   });
 });
 

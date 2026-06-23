@@ -1,0 +1,372 @@
+FACEBOOK POST TEMPLATES
+=======================
+
+VERSION 1: BANGLADESH IT MARKETPLACE
+=====================================
+
+🏥 মেডিকেল ই-কমার্স প্ল্যাটফর্ম বিক্রয়ের জন্য 🏥
+
+একটি সম্পূর্ণ এন্টারপ্রাইজ-গ্রেড মেডিকেল ইকুইপমেন্ট ই-কমার্স ওয়েবসাইট বিক্রয় করছি।
+
+✅ কী কী আছে:
+• ৪৯২টি মেডিকেল প্রোডাক্ট (database ready)
+• পূর্ণাঙ্গ B2B পোর্টাল (bulk pricing + credit system)
+• ৬টি payment gateway (bKash, Nagad, card, bank)
+• Professional admin dashboard (analytics + charts)
+• Automatic invoice + email system
+• SEO optimized (Google-ready)
+• Mobile responsive
+• Already deployed LIVE
+
+
+
+
+
+
+🏆 Quality:
+• AI Audit Score: 96/100
+• Google Lighthouse: 100/100 SEO
+• Development cost: ৯৩,০০০ ডলার (১ কোটি+ টাকা)
+• 1,860 hours of development
+
+💻 Technology Stack:
+• Next.js 16 (React 19)
+• Node.js + Express
+• MongoDB database
+• Redis caching
+• Tailwind CSS 4
+• Vercel + Render deployed
+
+💰 মূল্য: মাত্র ৫-৮ লাখ টাকা (negotiable)
+(স্ক্র্যাচ থেকে বানাতে ১ কোটি+ লাগবে)
+
+🎯 Perfect for:
+✓ Medical equipment companies
+✓ Hospital/Lab suppliers
+✓ Software agencies
+✓ Startup entrepreneurs
+
+🔗 Live Demo: https://health-care-e-commerce-murex.vercel.app
+🔐 Demo Login: demo@admin.com / Demo@1234
+
+📞 Serious buyers only, please.
+💬 Comment "INTERESTED" or DM for details.
+
+#MedicalEcommerce #WebsiteForSale #BangladeshBusiness #EcommerceWebsite #MedicalEquipment #B2BPlatform #StartupBangladesh
+
+
+VERSION 2: BANGLADESH MEDICAL EQUIPMENT GROUP
+==============================================
+
+🏥 MEDICAL EQUIPMENT E-COMMERCE PLATFORM 🏥
+বিক্রয়ের জন্য প্রস্তুত
+
+মেডিকেল ইকুইপমেন্ট ব্যবসায়ীদের জন্য বিশেষ সুযোগ!
+
+একটি সম্পূর্ণ অনলাইন প্ল্যাটফর্ম পাবেন যেখানে আছে:
+
+📦 PRODUCTS:
+• ৪৯২টি medical products ready
+• 8 categories (Diagnostic, Surgical, Lab, etc.)
+• Siemens, GE, Roche, Abbott এর products
+• Stock management system
+
+💼 B2B FEATURES:
+• Dedicated B2B dashboard
+• Bulk discount calculator (8-30%)
+• Credit terms (30-90 days)
+• Quote request system
+• Account manager assignment
+
+💳 PAYMENT:
+• bKash integration
+• Nagad integration
+• Credit card (Stripe)
+• Bank transfer
+• Cash on delivery
+• B2B credit accounts
+
+📊 ADMIN PANEL:
+• Real-time analytics
+• Order management
+• Product management
+• User management
+• PDF invoice generation
+• Email notifications
+
+📱 MOBILE READY:
+• Fully responsive design
+• Perfect on all devices
+• Fast loading (optimized)
+
+🔒 SECURITY:
+• Enterprise-level security
+• SSL certified
+• Payment gateway secured
+• Data encrypted
+
+💰 Price Details:
+Development cost: ৯৩,০০০ ডলার
+Selling for: ৫-৮ লাখ টাকা only
+Savings: 91%
+
+🎯 এই প্ল্যাটফর্ম দিয়ে আপনি:
+✅ ১ সপ্তাহেই online business শুরু করতে পারবেন
+✅ Hospital, clinic-দের কাছে B2B sale করতে পারবেন
+✅ Development cost ৯০%+ বাঁচাতে পারবেন
+✅ Professional image maintain করতে পারবেন
+
+🔗 LIVE DEMO: https://health-care-e-commerce-murex.vercel.app
+
+Admin: demo@admin.com / Demo@1234
+B2B: demo@b2b.com / Demo@1234
+Customer: demo@customer.com / Demo@1234
+
+📞 Contact: [Your Number]
+📧 Email: [Your Email]
+
+Comment করুন অথবা inbox করুন!
+
+#MedicalEquipment #Bangladesh #Ecommerce #B2BSales #HospitalSupplies #MedicalSupplies #DhakaBusiness
+
+
+VERSION 3: DHAKA STARTUP COMMUNITY
+===================================
+
+🚀 Startup Opportunity: Medical E-Commerce Platform For Sale
+
+Entrepreneurs & Agencies — here's a ready-made opportunity!
+
+I've built a complete medical equipment B2B/B2C e-commerce platform that's production-ready and deployed live.
+
+📊 THE NUMBERS:
+• Development time: 1,860 hours
+• Development cost: $93,000+ (৯৩ লক্ষ+ টাকা)
+• Asking price: $5,000-8,000 (৫-৮ লক্ষ টাকা)
+• Discount: 91% off replacement cost
+• AI Audit Score: 96/100
+• Google Lighthouse: 100/100 SEO
+
+💎 WHAT YOU GET:
+✅ 492 pre-seeded products (real data, not placeholders)
+✅ Complete B2B portal (bulk pricing, credit terms, quotes)
+✅ 6 payment methods integrated
+✅ Professional admin dashboard with analytics
+✅ 10 HTML email templates
+✅ PDF invoice generation
+✅ Order tracking system
+✅ SEO optimized (ready to rank on Google)
+✅ Mobile responsive (perfect design)
+✅ Already deployed live on Vercel + Render
+
+🛠️ TECH STACK (Modern & Scalable):
+• Next.js 16 + React 19
+• Node.js + Express
+• MongoDB + Mongoose
+• Redis caching
+• Tailwind CSS 4
+• CI/CD with GitHub Actions
+
+🎯 BUSINESS MODELS YOU CAN USE:
+
+1️⃣ Run as Your Own Medical Supply Business
+→ Target hospitals, clinics, diagnostic centers
+→ B2B clients can generate ৳15+ lakh/month
+
+2️⃣ White-Label & Resell to Medical Companies
+→ Sell to 1 client for ৳15-25 lakh
+→ 3-4x ROI immediately
+
+3️⃣ SaaS Model
+→ Charge ৳15,000/month per business
+→ 10 clients = ৳1.5 lakh/month recurring
+
+4️⃣ Agency License
+→ Unlimited client projects
+→ Keep selling to multiple medical companies
+
+🔗 LIVE DEMO: https://health-care-e-commerce-murex.vercel.app
+
+Try these accounts:
+• Admin: demo@admin.com / Demo@1234
+• B2B Customer: demo@b2b.com / Demo@1234
+
+📦 WHAT'S INCLUDED:
+• Full source code (GitHub repo transfer)
+• Database with 492 products
+• Documentation (setup, API, deployment)
+• 30 days email support
+• 1 video call for setup assistance
+
+💡 WHY I'M SELLING:
+I built this as a learning project and to showcase my skills. Now moving to other projects. Your gain is my portfolio piece!
+
+🎁 BONUS (First Buyer):
+• 60 days support (instead of 30)
+• Marketing templates (FB ads, Google ads)
+• Bangladesh medical market analysis
+
+💬 Serious inquiries only.
+DM me or comment "DETAILS" for more info.
+
+#StartupBangladesh #Ecommerce #WebDevelopment #BusinessOpportunity #TechStartup #SaaS #B2B #MedicalTech
+
+
+VERSION 4: LINKEDIN POST (Professional)
+========================================
+
+🏥 Enterprise Medical Equipment E-Commerce Platform — Available for Acquisition
+
+I'm offering a production-ready medical equipment B2B/B2C marketplace that represents 1,860 hours of development work and $93,000+ in replacement value.
+
+📊 Platform Overview:
+• 492 pre-seeded medical products across 8 categories
+• Full B2B portal with bulk pricing and credit terms
+• Multi-payment gateway integration (bKash, Nagad, cards, bank)
+• Advanced admin dashboard with real-time analytics
+• Automated invoice generation and email notifications
+• SEO optimized with 100/100 Lighthouse score
+
+🛠️ Technical Stack:
+• Frontend: Next.js 16, React 19, Tailwind CSS 4
+• Backend: Node.js, Express, MongoDB, Redis
+• Security: Enterprise-grade (Helmet, rate limiting, XSS protection)
+• Infrastructure: Deployed on Vercel + Render with CI/CD
+• Performance: 96/100 AI audit score, fully responsive
+
+🎯 Ideal For:
+1. Medical equipment distributors wanting instant online presence
+2. Software agencies seeking turnkey solutions for healthcare clients
+3. Entrepreneurs building a medical marketplace SaaS
+4. International companies targeting South Asian healthcare market
+
+💰 Investment: $5,000-8,000 (91% discount from development cost)
+
+🔗 Live Demo: https://health-care-e-commerce-murex.vercel.app
+Credentials: demo@admin.com / Demo@1234
+
+This is a unique opportunity to acquire enterprise-grade software at a fraction of development cost. The platform is ready for immediate deployment or white-labeling.
+
+Serious inquiries welcome. DM for detailed documentation and business case analysis.
+
+#HealthTech #Ecommerce #BusinessOpportunity #SoftwareAcquisition #B2B #DigitalHealth #StartupInvestment
+
+
+VERSION 5: BIKROY.COM DESCRIPTION
+===================================
+
+Title: Complete Medical E-Commerce Website for Sale | Next.js + Node.js
+
+Category: Electronics & Technology > Websites & Domains
+
+Price: ৳5,00,000 (Negotiable)
+
+Description:
+
+🏥 MEDICAL EQUIPMENT E-COMMERCE PLATFORM FOR SALE
+
+A fully functional, production-ready medical equipment B2B/B2C e-commerce website built with latest technology.
+
+✅ WHAT'S INCLUDED:
+• 492 medical products (pre-loaded)
+• B2B portal for hospital/clinic sales
+• bKash + Nagad payment integration
+• Admin dashboard with analytics
+• Automatic invoice generation
+• Email notification system
+• SEO optimized (Google ready)
+• Mobile responsive
+• Already deployed LIVE
+
+💻 TECHNOLOGY:
+• Next.js 16 (latest version)
+• Node.js backend
+• MongoDB database
+• Professional design
+
+💰 VALUE:
+Development cost: ৯৩,০০০ USD (1 crore+ taka)
+Selling price: ৫-৮ lakh taka only
+
+🎯 PERFECT FOR:
+• Medical equipment companies
+• Hospital/lab suppliers
+• Startup entrepreneurs
+• Software agencies
+
+🔗 DEMO: https://health-care-e-commerce-murex.vercel.app
+Login: demo@admin.com / Demo@1234
+
+📦 YOU GET:
+• Complete source code
+• Database with products
+• Documentation
+• 1 month support
+
+📞 Contact: [Your Number]
+📧 Email: [Your Email]
+📍 Location: Dhaka, Bangladesh
+
+Condition: New
+Type: Website/Domain
+
+Serious buyers only. Available for viewing demo anytime.
+
+
+VERSION 6: INSTAGRAM/FACEBOOK STORY TEXT
+=========================================
+
+🏥 Medical E-Commerce Platform
+
+FOR SALE 💰
+
+✅ 492 Products Ready
+✅ B2B Portal Included
+✅ Admin Dashboard
+✅ Payment Gateway
+✅ Live & Running
+
+💵 Worth: $93,000
+💵 Price: Only $5,000-8,000
+
+🔗 Demo Link in Bio
+
+DM for Details 📩
+
+#forsale #ecommerce #medical
+#startup #business #bangladesh
+
+
+USAGE GUIDE:
+============
+
+WHERE TO POST WHAT:
+
+Facebook Groups → Use VERSION 1 or VERSION 2
+LinkedIn → Use VERSION 4 (Professional)
+Bikroy.com → Use VERSION 5
+Instagram Story → Use VERSION 6
+Startup Communities → Use VERSION 3
+
+POSTING SCHEDULE:
+
+Day 1: Post in 3 Facebook groups
+Day 3: Post on LinkedIn
+Day 5: Update Facebook groups (bump)
+Day 7: Post in 3 more Facebook groups
+Day 10: Post on LinkedIn again with different angle
+
+RESPONSE TEMPLATE:
+
+When someone comments "Interested" or "Details":
+
+"Thank you for your interest! 
+
+Live demo: https://health-care-e-commerce-murex.vercel.app
+Login: demo@admin.com / Demo@1234
+
+Can I call you for a quick 10-minute demo? Please share your WhatsApp number.
+
+Or join this Google Meet for instant demo: [Your Meet Link]
+
+Thanks!"

@@ -6,7 +6,7 @@ import DashboardSkeleton from './DashboardSkeleton';
 import OrderDetailModal from './OrderDetailModal';
 import KPIDetailModal from './KPIDetailModal';
 import { API } from '@/constants/api';
-import { formatBdt, formatGrowthBadge } from '@/utils/formatBdt';
+import { formatBdt, formatPrice, formatGrowthBadge } from '@/utils/formatBdt';
 
 function KPICard({ label, value, subtitle, badge, trend, icon, accent, onClick }) {
   const badgeStyles = {
@@ -108,7 +108,7 @@ export default function DashboardOverview() {
     {
       label: 'Revenue (YTD)',
       value: formatBdt(k.totalRevenue),
-      subtitle: `${formatBdt(k.thisMonthRevenue)} this month`,
+      subtitle: `${formatBdt(k.thisMonthRevenue ?? 0)} this month`,
       badge: revenueBadge,
       icon: '💰',
       accent: '#0E8A6E',
@@ -144,7 +144,7 @@ export default function DashboardOverview() {
       value: String(k.abandonedCarts ?? 0),
       subtitle:
         (k.abandonedCartValue ?? 0) > 0
-          ? `${formatBdt(k.abandonedCartValue)} at risk`
+          ? `${formatPrice(k.abandonedCartValue)} at risk`
           : 'No carts at risk',
       badge:
         (k.abandonedCarts ?? 0) > 0
@@ -284,7 +284,7 @@ export default function DashboardOverview() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-[14px] font-bold text-[#0B2545]">
-                      {formatBdt(order.totalAmount || order.total || 0)}
+                      {formatPrice(order.totalAmount || order.total || 0)}
                     </p>
                     <p className="text-[11px] text-[#9CA3AF]">
                       {order.createdAt
@@ -313,7 +313,7 @@ export default function DashboardOverview() {
             <div className="p-3.5 rounded-lg bg-red-50 border border-red-100">
               <p className="text-[10px] font-semibold text-red-800 uppercase tracking-wide">Value at risk</p>
               <p className="text-[22px] font-bold text-red-900 mt-1">
-                {formatBdt(abandonedCartPanel.totalValueAtRisk)}
+                {formatPrice(abandonedCartPanel.totalValueAtRisk)}
               </p>
             </div>
             <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-100">
