@@ -1,31 +1,20 @@
 'use strict';
 
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// ─── Transporter ──────────────────────────────────────────────────────────────
-let _transporter = null;
+// ─── Resend Client ────────────────────────────────────────────────────────────
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-function getTransporter() {
-  if (_transporter) return _transporter;
-  _transporter = nodemailer.createTransport({
-    host:   process.env.SMTP_HOST || 'smtp.gmail.com',
-    port:   parseInt(process.env.SMTP_PORT || '587'),
-    secure: parseInt(process.env.SMTP_PORT || '587') === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-    tls:    { rejectUnauthorized: false },
-    family: 4, // Force IPv4 — Render free tier has no IPv6 outbound
-  });
-  return _transporter;
+function isResendConfigured() {
+  return !!process.env.RESEND_API_KEY;
 }
 
 // ─── Brand Styles (lazy — env vars guaranteed available at call time) ─────────
 const BRAND = {
   name:    process.env.EMAIL_FROM_NAME || 'MedCore BD',
+  // Resend: use onboarding domain (noreply@...) or custom domain
   get from() {
-    return `${process.env.EMAIL_FROM_NAME || 'MedCore BD'} <${process.env.SMTP_USER}>`;
+    return process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
   },
   primary: '#0B2545',
   accent:  '#0E8A6E',
@@ -289,17 +278,26 @@ function buildDeliveryConfirmation(order, customer) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 async function sendEmail({ to, subject, html }) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn('[EmailService] SMTP not configured — email skipped');
+  if (!isResendConfigured()) {
+    console.warn('[EmailService] Resend API key not configured — email skipped');
     return { skipped: true };
   }
-  const info = await getTransporter().sendMail({
-    from:    BRAND.from,
-    to,
-    subject,
-    html,
-  });
-  return info;
+  try {
+    const response = await resend.emails.send({
+      from:    BRAND.from,
+      to,
+      subject,
+      html,
+    });
+    if (response.error) {
+      console.error('[EmailService] Resend error:', response.error);
+      return { error: response.error };
+    }
+    return { success: true, messageId: response.data.id };
+  } catch (error) {
+    console.error('[EmailService] Exception:', error.message);
+    return { error: error.message };
+  }
 }
 
 async function sendOrderConfirmation(order, customer) {
@@ -334,17 +332,18 @@ async function sendTestEmail(to) {
     subject: `✅ MedCore BD Email Test — ${new Date().toLocaleTimeString('en-BD')}`,
     html: emailLayout('Email Test', `
       <h2 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#0B2545;">Email is working! 🎉</h2>
-      <p style="font-size:14px;color:#6B7280;">This is a test email from MedCore BD. Your SMTP is configured correctly.</p>
+      <p style="font-size:14px;color:#6B7280;">This is a test email from MedCore BD. Your Resend API is configured correctly.</p>
       <p style="font-size:12px;color:#9CA3AF;margin-top:16px;">
-        SMTP Host: ${process.env.SMTP_HOST}<br/>
-        From: ${process.env.SMTP_USER}<br/>
+        Provider: Resend<br/>
+        API Key: ${process.env.RESEND_API_KEY ? '✓ Configured' : '✗ Missing'}<br/>
         Sent at: ${new Date().toISOString()}
       </p>`),
   });
 }
 
 async function verifyConnection() {
-  return getTransporter().verify();
+  // Resend uses HTTP API — just check if key is configured
+  return { success: isResendConfigured() };
 }
 
 module.exports = {

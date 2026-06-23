@@ -238,13 +238,15 @@ app.get('/api/test-email', async (req, res) => {
     return res.status(401).json({ success: false, message: 'Invalid secret' });
   }
   const emailService = require('./services/emailService');
-  const to = req.query.to || process.env.SMTP_USER;
+  const to = req.query.to || 'test@example.com';
   try {
-    await emailService.verifyConnection();
     const info = await emailService.sendTestEmail(to);
-    res.json({ success: true, message: `Test email sent to ${to}`, messageId: info?.messageId });
+    if (info.error) {
+      return res.status(400).json({ success: false, error: info.error, resend: { apiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing', fromEmail: process.env.RESEND_FROM_EMAIL } });
+    }
+    res.json({ success: true, message: `Test email sent to ${to}`, messageId: info.messageId });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message, smtp: { host: process.env.SMTP_HOST, user: process.env.SMTP_USER, port: process.env.SMTP_PORT } });
+    res.status(500).json({ success: false, error: err.message, resend: { apiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing', provider: 'Resend' } });
   }
 });
 
