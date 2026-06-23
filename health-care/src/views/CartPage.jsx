@@ -353,6 +353,16 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                   </div>
                 )}
 
+                {/* Delivery note */}
+                <div className="flex justify-between text-[13px]">
+                  <span className="text-[#6B7280] flex items-center gap-1">
+                    🚚 Delivery
+                  </span>
+                  <span className="text-[#0E8A6E] font-semibold text-[12px]">
+                    ৳70 – ৳130 · at checkout
+                  </span>
+                </div>
+
               </div>
 
               {/* Total */}
