@@ -1,13 +1,16 @@
 /**
- * One-time migration: fix product slugs that contain forward slashes.
+ * One-time migration: regenerate ALL product slugs using the new
+ * name-only slug format.
  *
- * A slug with '/' breaks URL routing in Next.js because '/' is treated
- * as a path separator. This script finds all affected products, clears
- * their slug, and re-saves them so the pre-save hook generates a clean
- * slug using the fixed generateSlug function (which now sanitises the
- * SKU suffix).
+ * Previous slugs included brand name and SKU suffix (e.g.
+ * "nichipore-surgical-tape-25mm-x-6m-nichiban-25-001"), making URLs
+ * ugly and hard to read. The new format uses the product name only
+ * (e.g. "nichipore-surgical-tape-25mm-x-6m").
  *
- * Run once on Render via the shell or as a one-off job:
+ * This script clears every slug and re-saves each product so the
+ * pre-save hook generates a clean slug.
+ *
+ * Run once on Render via the Shell tab:
  *   node src/scripts/fixSlashSlugs.js
  */
 require('dotenv').config({ path: '.env' });
@@ -23,29 +26,23 @@ async function fix() {
   await mongoose.connect(process.env.MONGODB_URI);
   console.log('✓ Connected to MongoDB');
 
-  // Find all products whose slug contains a forward slash
-  const affected = await Product.find({ slug: /\// }).populate('brand', 'name');
-  console.log(`Found ${affected.length} product(s) with slash in slug`);
-
-  if (affected.length === 0) {
-    console.log('Nothing to fix.');
-    await mongoose.connection.close();
-    return;
-  }
+  const products = await Product.find({});
+  console.log(`Found ${products.length} total product(s) — regenerating all slugs\n`);
 
   let fixed = 0;
   let errors = 0;
 
-  for (const product of affected) {
+  for (const product of products) {
     const oldSlug = product.slug;
     try {
-      // Clear slug so the pre-save hook regenerates it
-      product.slug = undefined;
-      product.markModified('name'); // ensure hook runs
+      product.slug = undefined;          // clear so pre-save hook regenerates it
+      product.markModified('name');      // ensure the if(!this.slug) branch runs
       await product.save();
-      console.log(`  ✓ ${product.name}`);
-      console.log(`    old: ${oldSlug}`);
-      console.log(`    new: ${product.slug}`);
+      if (oldSlug !== product.slug) {
+        console.log(`  ✓ ${product.name}`);
+        console.log(`    old: ${oldSlug || '(none)'}`);
+        console.log(`    new: ${product.slug}`);
+      }
       fixed++;
     } catch (err) {
       console.error(`  ✗ ${product.name}: ${err.message}`);
@@ -53,7 +50,7 @@ async function fix() {
     }
   }
 
-  console.log(`\n✅ Fixed: ${fixed}  ✗ Errors: ${errors}`);
+  console.log(`\n✅ Processed: ${fixed}  ✗ Errors: ${errors}`);
   await mongoose.connection.close();
 }
 

@@ -94,49 +94,33 @@ productSchema.index({ isActive: 1, price: 1 });
 productSchema.index({ category: 1, brand: 1, price: 1 });          // category + brand + price sort
 productSchema.index({ category: 1, isActive: 1, stock: 1 });       // filtered listings with stock check
 
-// ── Helper: Generate slug from name, brand, and SKU ──────────────────────────
-const generateSlug = (name, brand, sku) => {
-  const base = `${name}-${brand || ''}`
+// ── Helper: Generate a clean, readable slug from product name ────────────────
+// Uses name only — brand and SKU are excluded to keep URLs short and readable.
+// A numeric suffix is added only when needed for uniqueness.
+const generateSlug = (name) => {
+  return name
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')      // remove special chars (keeps word chars, spaces, hyphens)
-    .replace(/\s+/g, '-')          // spaces to hyphens
+    .replace(/[^\w\s-]/g, '')      // strip special chars (keep word chars, spaces, hyphens)
+    .replace(/\s+/g, '-')          // spaces → hyphens
     .replace(/-+/g, '-')           // collapse multiple hyphens
-    .replace(/^-|-$/g, '')         // trim hyphens
+    .replace(/^-|-$/g, '')         // trim leading/trailing hyphens
     .trim();
-  // Sanitise SKU suffix: strip anything that isn't alphanumeric or hyphen
-  const skuSanitised = sku
-    ? sku.replace(/[^A-Za-z0-9-]/g, '').toLowerCase()
-    : '';
-  const suffix = skuSanitised ? `-${skuSanitised.slice(-6)}` : '';
-  return base + suffix;
 };
 
 // ── Pre-save hook: auto-generate slug + sync legacy aliases ──────────────────
 productSchema.pre('save', async function (next) {
   // Generate slug if not set OR if name changed
   if (!this.slug || this.isModified('name')) {
-    // Get brand name if it's an ObjectId reference
-    let brandName = '';
-    if (this.brand) {
-      if (typeof this.brand === 'object' && this.brand.name) {
-        brandName = this.brand.name;
-      } else {
-        // Populate brand to get name
-        const populated = await this.populate('brand');
-        brandName = populated.brand?.name || '';
-      }
-    }
+    let slug = generateSlug(this.name);
     
-    let slug = generateSlug(this.name, brandName, this.sku || '');
-    
-    // Ensure uniqueness — check if slug exists
+    // Ensure uniqueness — append a counter only if the slug already exists
     let exists = await mongoose.model('Product').findOne({
       slug,
       _id: { $ne: this._id }
     });
     let counter = 1;
     while (exists) {
-      slug = `${generateSlug(this.name, brandName, this.sku || '')}-${counter}`;
+      slug = `${generateSlug(this.name)}-${counter}`;
       exists = await mongoose.model('Product').findOne({
         slug,
         _id: { $ne: this._id }
