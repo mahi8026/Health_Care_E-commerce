@@ -324,13 +324,17 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       {/* World-Class Search Modal */}
       {searchOpen && (
         <>
+          {/* Backdrop — pointer-events-none so it never blocks clicks inside the modal */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in pointer-events-none"
+          />
+          {/* Click-to-close layer sits behind the modal panel */}
+          <div
+            className="fixed inset-0 z-[9998]"
             onClick={() => setSearchOpen(false)}
           />
           <div 
             className="fixed top-[70px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal"
-            onClick={(e) => e.stopPropagation()}
           >
             <div className="max-w-[680px] mx-auto">
               <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden">
