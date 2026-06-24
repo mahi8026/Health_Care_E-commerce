@@ -22,7 +22,8 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   const { addToCart } = useCart();
   const { addToWishlist, isInWishlist } = useWishlist();
   const [query, setQuery] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+  // When inside a modal (onClose provided) start open; standalone starts closed
+  const [isOpen, setIsOpen] = useState(!!onClose);
   const [suggestions, setSuggestions] = useState([]);
   const [recentSearches, setRecentSearches] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,17 +91,19 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
     fetchSuggestions();
   }, [debouncedQuery]);
 
-  // Close dropdown when clicking outside
+  // Close internal dropdown when clicking outside (only relevant when used standalone)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    // Only attach when no onClose prop (standalone mode, not inside a modal)
+    if (!onClose) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [onClose]);
 
   // Keyboard navigation
   const handleKeyDown = (e) => {
@@ -186,8 +189,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
         </div>
       </div>
 
-      {/* Dropdown Content */}
-      {isOpen && (query.length > 0 || recentSearches.length > 0) && (
+      {/* Dropdown Content — always visible when inside a modal (onClose provided),
+          otherwise gated by isOpen to support standalone usage */}
+      {(onClose ? true : isOpen) && (query.length > 0 || recentSearches.length > 0) && (
         <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (

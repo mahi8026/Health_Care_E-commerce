@@ -324,20 +324,21 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       {/* World-Class Search Modal */}
       {searchOpen && (
         <>
-          {/* Backdrop — pointer-events-none so it never blocks clicks inside the modal */}
+          {/* Backdrop: closes modal when clicking outside the panel */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in pointer-events-none"
-          />
-          {/* Click-to-close layer sits behind the modal panel */}
-          <div
-            className="fixed inset-0 z-[9998]"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in"
             onClick={() => setSearchOpen(false)}
           />
+          {/* Modal panel: higher z-index, stopPropagation on the white card only */}
           <div 
-            className="fixed top-[70px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal"
+            className="fixed top-[70px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal pointer-events-none"
           >
-            <div className="max-w-[680px] mx-auto">
-              <div className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden">
+            <div className="max-w-[680px] mx-auto pointer-events-none">
+              {/* White card — re-enable pointer events here so all children are clickable */}
+              <div
+                className="bg-white rounded-2xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.3)] border border-gray-200/80 overflow-hidden pointer-events-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="relative">
                   <EnhancedSearchBox 
                     placeholder="Search 10,000+ medical products..." 
@@ -354,7 +355,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
                 </div>
               </div>
               {/* Keyboard shortcuts hint */}
-              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400">
+              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400 pointer-events-none">
                 <div className="flex items-center gap-1.5">
                   <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">↑</kbd>
                   <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">↓</kbd>
