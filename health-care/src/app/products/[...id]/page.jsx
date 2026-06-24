@@ -1,4 +1,3 @@
-import { generateProductMetadata } from '@/utils/metadata';
 import StructuredData, {
   generateProductSchema,
   generateBreadcrumbSchema,
@@ -12,10 +11,10 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 // ---------------------------------------------------------------------------
 // Data fetching helper
 // ---------------------------------------------------------------------------
-async function fetchProduct(id) {
+async function fetchProduct(slug) {
   try {
-    const res = await fetch(`${API_BASE}/products/${id}`, {
-      next: { revalidate: 3600, tags: [`product-${id}`] },
+    const res = await fetch(`${API_BASE}/products/${slug}`, {
+      next: { revalidate: 3600, tags: [`product-${slug}`] },
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -29,10 +28,6 @@ async function fetchProduct(id) {
 // Metadata helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Extract a plain string name from a field that may be a populated Mongoose
- * object ({ _id, name, … }) or already a plain string.
- */
 function extractName(field) {
   if (!field) return '';
   if (typeof field === 'object' && field.name) return String(field.name);
@@ -40,57 +35,42 @@ function extractName(field) {
   return '';
 }
 
-/**
- * Format a price value.  Returns "Contact for Price" when the value is
- * falsy (0, null, undefined).
- */
 function formatPrice(price) {
   if (!price) return 'Contact for Price';
   return `৳${Number(price).toLocaleString('en-BD')}`;
 }
 
-/**
- * Build a ≤155-character meta description from product fields.
- * Format: "Buy {name} online in Bangladesh. Brand: {brand}. Category: {cat}. Price: {price}."
- * Falls back gracefully when individual fields are missing.
- */
 function buildDescription(name, brandName, catName, price) {
   const priceStr = formatPrice(price);
-
   const parts = [`Buy ${name} online in Bangladesh.`];
   if (brandName) parts.push(`Brand: ${brandName}.`);
   if (catName)   parts.push(`Category: ${catName}.`);
   parts.push(`Price: ${priceStr}.`);
-
-  // Join, collapse extra whitespace, then truncate to 155 chars
   const raw = parts.join(' ').replace(/\s+/g, ' ').trim();
   return raw.length <= 155 ? raw : raw.slice(0, 152) + '…';
 }
 
-/**
- * Build a comma-separated keywords string from product fields.
- */
 function buildKeywords(name, brandName, catName, sku) {
-  const tokens = [
-    name,
-    brandName,
-    catName,
-    sku,
-    'Bangladesh',
-    'buy online BD',
-    'price',
-  ].filter(Boolean);
-
-  // Deduplicate and join
+  const tokens = [name, brandName, catName, sku, 'Bangladesh', 'buy online BD', 'price'].filter(Boolean);
   return [...new Set(tokens)].join(', ');
 }
 
 // ---------------------------------------------------------------------------
-// Dynamic metadata — rich title/description/keywords for Google rankings
+// Resolve slug from catch-all segments
+// Handles both clean slugs (/products/my-product) and legacy slugs with
+// forward slashes (/products/flu-a/b) by joining all segments back together.
+// ---------------------------------------------------------------------------
+function resolveSlug(segments) {
+  return Array.isArray(segments) ? segments.join('/') : String(segments);
+}
+
+// ---------------------------------------------------------------------------
+// Dynamic metadata
 // ---------------------------------------------------------------------------
 export async function generateMetadata({ params }) {
-  const { id } = await params;
-  const product = await fetchProduct(id);
+  const { id: segments } = await params;
+  const slug = resolveSlug(segments);
+  const product = await fetchProduct(slug);
 
   if (!product) {
     return { title: 'Product Not Found | MedCore BD', robots: { index: false } };
@@ -100,20 +80,19 @@ export async function generateMetadata({ params }) {
   const brandName = extractName(product.brand);
   const catName   = extractName(product.category);
 
-  // Always use slug for canonical — fall back to id only if slug missing
-  const slug = product.slug || id;
+  // Canonical always uses the clean slug stored on the product (no slashes)
+  const canonicalSlug = product.slug || slug;
 
   const title       = `${name} — Price in Bangladesh | MedCore BD`;
   const description = buildDescription(name, brandName, catName, product.price);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
-  // Primary image — prefer isPrimary flag, then first image, then site default
   const primaryImg = product.images?.find(i => i?.isPrimary) || product.images?.[0];
   const imageUrl   =
     (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) ||
     `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`;
 
-  const canonicalUrl = `${SITE_CONFIG.url}/products/${slug}`;
+  const canonicalUrl = `${SITE_CONFIG.url}/products/${canonicalSlug}`;
 
   return {
     title,
@@ -140,24 +119,24 @@ export async function generateMetadata({ params }) {
 // Page component
 // ---------------------------------------------------------------------------
 export default async function ProductPage({ params }) {
-  const { id } = await params;
-  const product = await fetchProduct(id);
+  const { id: segments } = await params;
+  const slug = resolveSlug(segments);
+  const product = await fetchProduct(slug);
 
-  const slug      = product?.slug || id;
-  const catName   = typeof product?.category === 'object'
+  const canonicalSlug = product?.slug || slug;
+  const catName = typeof product?.category === 'object'
     ? product.category?.name
     : product?.category || 'Products';
 
-  // Generate category URL using slug if available
   const categorySlug = CATEGORY_NAME_TO_SLUG[catName];
-  const categoryUrl = categorySlug 
+  const categoryUrl  = categorySlug
     ? `${SITE_CONFIG.url}/products/category/${categorySlug}`
     : `${SITE_CONFIG.url}/products?category=${encodeURIComponent(catName)}`;
 
   const breadcrumbs = [
-    { name: 'Home',     url: SITE_CONFIG.url },
-    { name: catName,    url: categoryUrl },
-    { name: product?.name ?? 'Product', url: `${SITE_CONFIG.url}/products/${slug}` },
+    { name: 'Home',                     url: SITE_CONFIG.url },
+    { name: catName,                    url: categoryUrl },
+    { name: product?.name ?? 'Product', url: `${SITE_CONFIG.url}/products/${canonicalSlug}` },
   ];
 
   const productSchema    = product ? generateProductSchema(product) : null;
@@ -169,7 +148,7 @@ export default async function ProductPage({ params }) {
       {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
       {product          && <FAQSchema product={product} />}
 
-      <ProductDetailPage productId={id} heroPriority={true} />
+      <ProductDetailPage productId={slug} heroPriority={true} />
     </>
   );
 }

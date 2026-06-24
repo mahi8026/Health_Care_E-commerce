@@ -98,13 +98,16 @@ productSchema.index({ category: 1, isActive: 1, stock: 1 });       // filtered l
 const generateSlug = (name, brand, sku) => {
   const base = `${name}-${brand || ''}`
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')      // remove special chars
+    .replace(/[^\w\s-]/g, '')      // remove special chars (keeps word chars, spaces, hyphens)
     .replace(/\s+/g, '-')          // spaces to hyphens
     .replace(/-+/g, '-')           // collapse multiple hyphens
     .replace(/^-|-$/g, '')         // trim hyphens
     .trim();
-  // Append last 6 chars of SKU for uniqueness
-  const suffix = sku ? `-${sku.slice(-6).toLowerCase()}` : '';
+  // Sanitise SKU suffix: strip anything that isn't alphanumeric or hyphen
+  const skuSanitised = sku
+    ? sku.replace(/[^A-Za-z0-9-]/g, '').toLowerCase()
+    : '';
+  const suffix = skuSanitised ? `-${skuSanitised.slice(-6)}` : '';
   return base + suffix;
 };
 
