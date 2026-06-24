@@ -45,8 +45,20 @@ exports.getProducts = async (req, res) => {
       page = 1,
       limit = 20,
       cursor, // For cursor-based pagination
-      fields // For field filtering
+      fields, // For field filtering
+      slug,   // Direct slug lookup for legacy slugs containing '/'
     } = req.query;
+
+    // ── Direct slug lookup (for legacy slugs containing forward slashes) ─────
+    // When ?slug=some/slug/with/slashes is passed, return the single product.
+    if (slug) {
+      const product = await Product.findOne({ slug })
+        .populate('category', 'name slug description')
+        .populate('brand', 'name slug logo country website')
+        .lean();
+      if (!product) return errorResponse(res, 'Product not found', null, 404);
+      return successResponse(res, product);
+    }
 
     // Debug logging
     logger.info('[getProducts] Query params:', req.query);

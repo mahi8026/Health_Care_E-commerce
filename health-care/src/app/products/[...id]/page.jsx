@@ -13,7 +13,12 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 // ---------------------------------------------------------------------------
 async function fetchProduct(slug) {
   try {
-    const res = await fetch(`${API_BASE}/products/${slug}`, {
+    // If the slug contains a slash (legacy slug with / in it), pass it as a
+    // query param — Express won't decode %2F in path segments by default.
+    const url = slug.includes('/')
+      ? `${API_BASE}/products?slug=${encodeURIComponent(slug)}`
+      : `${API_BASE}/products/${slug}`;
+    const res = await fetch(url, {
       next: { revalidate: 3600, tags: [`product-${slug}`] },
     });
     if (!res.ok) return null;

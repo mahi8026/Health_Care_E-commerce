@@ -45,7 +45,16 @@ export function useProductDetail(productId) {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${API_BASE}/products/${productId}`);
+        // If the slug contains a slash (legacy slug), pass it as a query param
+        // because Express won't match encoded slashes (%2F) in path segments.
+        // For normal slugs and MongoDB IDs, use the standard path format.
+        let url;
+        if (productId.includes('/')) {
+          url = `${API_BASE}/products?slug=${encodeURIComponent(productId)}`;
+        } else {
+          url = `${API_BASE}/products/${productId}`;
+        }
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Product not found');
         
         const data = await res.json();
