@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '@/utils/api';
 
 export default function ManufacturersManagement() {
   const [manufacturers, setManufacturers] = useState([]);
+  const [totalProductCount, setTotalProductCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [includeInactive, setIncludeInactive] = useState(false);
@@ -21,9 +22,10 @@ export default function ManufacturersManagement() {
 
   useEffect(() => {
     fetchManufacturers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [includeInactive, searchTerm, countryFilter]);
 
-  const fetchManufacturers = async () => {
+  const fetchManufacturers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -39,6 +41,10 @@ export default function ManufacturersManagement() {
       const mfrArray = Array.isArray(manufacturersData) ? manufacturersData : [];
       
       setManufacturers(mfrArray);
+      
+      // Use the global totalProductCount from the API (counts all active products)
+      const globalTotal = response.totalProductCount ?? response.data?.totalProductCount ?? 0;
+      setTotalProductCount(globalTotal);
       
       const uniqueCountries = [...new Set(mfrArray
         .filter(m => m.country)
@@ -58,7 +64,7 @@ export default function ManufacturersManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [includeInactive, searchTerm, countryFilter]);
 
   const handleDelete = async (id, name) => {
     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;
@@ -203,7 +209,7 @@ export default function ManufacturersManagement() {
         <div className="bg-gradient-warning text-white rounded-lg shadow-lg p-3 md:p-4 border-l-4 border-white/30">
           <div className="text-xs text-white/80 font-medium uppercase">Products</div>
           <div className="text-2xl md:text-3xl font-bold mt-1 md:mt-2">
-            {manufacturers.reduce((sum, m) => sum + (m.productCount || 0), 0)}
+            {totalProductCount}
           </div>
         </div>
       </div>
@@ -301,6 +307,7 @@ export default function ManufacturersManagement() {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       {manufacturer.logo?.url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={manufacturer.logo.url} alt={manufacturer.name} className="w-10 h-10 object-contain rounded border border-gray-200" />
                       ) : (
                         <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">—</div>
@@ -342,6 +349,7 @@ export default function ManufacturersManagement() {
               <div key={manufacturer._id} className="bg-gray-50 rounded-lg border p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   {manufacturer.logo?.url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={manufacturer.logo.url} alt={manufacturer.name} className="w-12 h-12 object-contain rounded border border-gray-200 flex-shrink-0" />
                   ) : (
                     <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300 flex-shrink-0">—</div>

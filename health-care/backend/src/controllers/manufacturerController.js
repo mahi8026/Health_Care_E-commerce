@@ -32,10 +32,9 @@ exports.getManufacturers = async (req, res) => {
       .sort({ name: 1 })
       .lean();
     
-    // Get product counts for all manufacturers in a single aggregation
-    // Count ALL products (active + inactive) so it matches the Products page total
+    // Per-manufacturer product counts (active products only, matching Products page "Active" filter)
     const productCounts = await Product.aggregate([
-      { $match: { brand: { $in: manufacturers.map(m => m._id) } } },
+      { $match: { brand: { $in: manufacturers.map(m => m._id) }, isActive: true } },
       { $group: { _id: '$brand', total: { $sum: 1 } } }
     ]);
 
@@ -48,9 +47,13 @@ exports.getManufacturers = async (req, res) => {
       ...mfr,
       productCount: countMap[mfr._id.toString()] || 0
     }));
+
+    // Global total: ALL active products across ALL manufacturers (for the stats card)
+    const totalProductCount = await Product.countDocuments({ isActive: true });
     
     return successResponse(res, {
       count: manufacturersWithCounts.length,
+      totalProductCount,
       manufacturers: manufacturersWithCounts
     });
   } catch (error) {
