@@ -2,11 +2,22 @@
 
 const { Resend } = require('resend');
 
-// ─── Resend Client ────────────────────────────────────────────────────────────
-const resend = new Resend(process.env.RESEND_API_KEY);
+// ─── Resend Client (lazy-initialized) ─────────────────────────────────────────
+let resend = null;
+
+function getResendClient() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 function isResendConfigured() {
-  return !!process.env.RESEND_API_KEY;
+  const hasKey = !!process.env.RESEND_API_KEY;
+  if (!hasKey) {
+    console.warn('[EmailService] ⚠️  RESEND_API_KEY not configured in environment');
+  }
+  return hasKey;
 }
 
 // ─── Brand Styles (lazy — env vars guaranteed available at call time) ─────────
@@ -279,24 +290,36 @@ function buildDeliveryConfirmation(order, customer) {
 
 async function sendEmail({ to, subject, html }) {
   if (!isResendConfigured()) {
-    console.warn('[EmailService] Resend API key not configured — email skipped');
-    return { skipped: true };
+    console.warn('[EmailService] ⚠️  RESEND_API_KEY not configured — email to %s skipped', to);
+    return { skipped: true, reason: 'RESEND_API_KEY not configured' };
   }
+
+  const client = getResendClient();
+  if (!client) {
+    console.error('[EmailService] ❌ Failed to initialize Resend client');
+    return { error: 'Resend client initialization failed' };
+  }
+
   try {
-    const response = await resend.emails.send({
+    console.log('[EmailService] 📧 Sending email to %s (subject: %s)', to, subject);
+    const response = await client.emails.send({
       from:    BRAND.from,
       to,
       subject,
       html,
     });
+
     if (response.error) {
-      console.error('[EmailService] Resend error:', response.error);
-      return { error: response.error };
+      console.error('[EmailService] ❌ Resend error for %s: %O', to, response.error);
+      return { error: response.error, errorMessage: response.error.message };
     }
-    return { success: true, messageId: response.data.id };
+
+    console.log('[EmailService] ✅ Email sent to %s (ID: %s)', to, response.data?.id);
+    return { success: true, messageId: response.data?.id };
   } catch (error) {
-    console.error('[EmailService] Exception:', error.message);
-    return { error: error.message };
+    console.error('[EmailService] ❌ Exception sending to %s: %s', to, error.message);
+    console.error('[EmailService] Stack trace:', error.stack);
+    return { error: error.message, stack: error.stack };
   }
 }
 

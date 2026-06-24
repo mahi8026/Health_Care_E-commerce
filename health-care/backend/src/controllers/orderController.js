@@ -319,7 +319,15 @@ exports.createOrder = async (req, res) => {
     cacheService.invalidateAnalytics();
 
     // Send order confirmation email asynchronously
-    emailService.sendNewOrderEmail(order[0], user).catch(err => logger.error(`[createOrder] email failed: ${err.message}`));
+    emailService.sendNewOrderEmail(order[0], user).then(result => {
+      if (result.success) {
+        logger.info(`[createOrder] Order confirmation email sent to ${user.email}`);
+      } else if (result.skipped) {
+        logger.warn(`[createOrder] Email skipped: ${result.reason}`);
+      } else {
+        logger.error(`[createOrder] Email failed: ${result.error}`);
+      }
+    }).catch(err => logger.error(`[createOrder] email exception: ${err.message}`));
 
     // Send order confirmation SMS asynchronously (non-blocking)
     if (user.phone) {

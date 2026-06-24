@@ -250,6 +250,27 @@ app.get('/api/test-email', async (req, res) => {
   }
 });
 
+// ── Email Status Debug (admin only) ──────────────────────────────────────────
+app.get('/api/email-debug', async (req, res) => {
+  if (req.query.secret !== 'medcore-test-2026') {
+    return res.status(401).json({ success: false, message: 'Invalid secret' });
+  }
+  res.json({
+    success: true,
+    email: {
+      resendApiKey: process.env.RESEND_API_KEY ? `✓ Configured (${process.env.RESEND_API_KEY.substring(0, 10)}...)` : '✗ MISSING',
+      resendFromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev (default)',
+      emailFromName: process.env.EMAIL_FROM_NAME || 'MedCore BD',
+      frontendUrl: process.env.FRONTEND_URL || 'https://health-care-e-commerce-murex.vercel.app'
+    },
+    environment: {
+      nodeEnv: process.env.NODE_ENV,
+      port: process.env.PORT || 5000
+    },
+    message: 'If resendApiKey is MISSING, add RESEND_API_KEY to Render environment variables'
+  });
+});
+
 // ── Health Check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
