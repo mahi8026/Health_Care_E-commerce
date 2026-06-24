@@ -28,7 +28,7 @@ const validateProduct = [
   body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('stock').isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
   body('sku').trim().notEmpty().withMessage('SKU is required')
-    .matches(/^[A-Z0-9-]+$/).withMessage('SKU must contain only uppercase letters, numbers, and hyphens'),
+    .matches(/^[A-Z0-9\-\/\.]+$/).withMessage('SKU must contain only uppercase letters, numbers, hyphens, slashes, and dots'),
   body('category').isMongoId().withMessage('Invalid category ID'),
   body('brand').isMongoId().withMessage('Invalid brand ID'),
   body('oldPrice').optional().isFloat({ min: 0 }).withMessage('Old price must be a positive number'),
@@ -177,7 +177,7 @@ const validateProductUpdate = [
   body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('stock').optional().isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
   body('sku').optional().trim().notEmpty().withMessage('SKU cannot be empty')
-    .matches(/^[A-Z0-9-]+$/).withMessage('SKU must contain only uppercase letters, numbers, and hyphens'),
+    .matches(/^[A-Z0-9\-\/\.]+$/).withMessage('SKU must contain only uppercase letters, numbers, hyphens, slashes, and dots'),
   body('category').optional().isMongoId().withMessage('Invalid category ID'),
   body('brand').optional().isMongoId().withMessage('Invalid brand ID'),
   body('oldPrice').optional().isFloat({ min: 0 }).withMessage('Old price must be a positive number'),
