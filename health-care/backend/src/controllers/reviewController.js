@@ -11,8 +11,8 @@ exports.createReview = async (req, res) => {
   try {
     const { productId, orderId, rating, title, comment, images } = req.body;
     
-    // Validate required fields
-    if (!productId || !orderId || !rating || !title || !comment) {
+    // Validate required fields (orderId is optional — we'll determine verifiedPurchase below)
+    if (!productId || !rating || !title || !comment) {
       return errorResponse(res, 'Please provide all required fields', null, 400);
     }
     
@@ -20,18 +20,6 @@ exports.createReview = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) {
       return errorResponse(res, 'Product not found', null, 404);
-    }
-    
-    // Verify user purchased this product
-    const order = await Order.findOne({
-      _id: orderId,
-      user: req.user._id,
-      status: 'delivered',
-      'items.product': productId
-    });
-    
-    if (!order) {
-      return errorResponse(res, 'You can only review products you have purchased and received', null, 403);
     }
     
     // Check if user already reviewed this product
@@ -43,28 +31,58 @@ exports.createReview = async (req, res) => {
     if (existingReview) {
       return errorResponse(res, 'You have already reviewed this product. You can edit your existing review.', null, 400);
     }
+
+    // Determine verified purchase status
+    // If orderId provided, verify the order belongs to this user and is delivered
+    let verifiedPurchase = false;
+    let resolvedOrderId = null;
+
+    if (orderId) {
+      const order = await Order.findOne({
+        _id: orderId,
+        user: req.user._id,
+        status: 'delivered',
+        'items.product': productId
+      });
+      if (order) {
+        verifiedPurchase = true;
+        resolvedOrderId = order._id;
+      }
+    }
+
+    // If no orderId given (or not matched), try to find any delivered order for this product
+    if (!verifiedPurchase) {
+      const anyOrder = await Order.findOne({
+        user: req.user._id,
+        status: 'delivered',
+        'items.product': productId
+      }).sort({ createdAt: -1 });
+      if (anyOrder) {
+        verifiedPurchase = true;
+        resolvedOrderId = anyOrder._id;
+      }
+    }
     
     // Validate images count
     if (images && images.length > 5) {
       return errorResponse(res, 'Maximum 5 images allowed per review', null, 400);
     }
     
-    // Create review
+    // Create review — unverified reviews pending approval, verified auto-approved
     const review = await Review.create({
       product: productId,
       user: req.user._id,
-      order: orderId,
+      order: resolvedOrderId,
       rating,
       title,
       comment,
       images: images || [],
-      verifiedPurchase: true,
-      status: 'approved' // Auto-approve verified purchases
+      verifiedPurchase,
+      status: verifiedPurchase ? 'approved' : 'pending'
     });
     
     await review.populate('user', 'name email');
     
-    // Log review creation activity
     logActivityAsync({
       user: req.user,
       action: ACTIONS.REVIEW.CREATED,
@@ -72,10 +90,7 @@ exports.createReview = async (req, res) => {
       targetId: review._id,
       targetName: product.name,
       req,
-      metadata: {
-        rating,
-        verifiedPurchase: true
-      }
+      metadata: { rating, verifiedPurchase }
     });
     
     return successResponse(res, review, 'Review submitted successfully', 201);

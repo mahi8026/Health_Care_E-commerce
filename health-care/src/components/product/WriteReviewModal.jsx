@@ -13,6 +13,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
   const [orderId, setOrderId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [eligibleLoading, setEligibleLoading] = useState(true);
 
   useEffect(() => {
     fetchEligibleOrder();
@@ -35,6 +36,8 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
       }
     } catch (error) {
       process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Fetch eligible order error:', error);
+    } finally {
+      setEligibleLoading(false);
     }
   };
 
@@ -77,10 +80,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
       setError('Comment must be at least 50 characters');
       return;
     }
-    if (!orderId) {
-      setError('Order information not found');
-      return;
-    }
+    // orderId is optional — backend auto-detects verified purchase status
 
     setLoading(true);
 
@@ -164,6 +164,18 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
           {error && (
             <div className="bg-[#FEE2E2] text-[#991B1B] px-4 py-3 rounded-lg text-[13px]">
               {error}
+            </div>
+          )}
+
+          {/* Verified purchase notice */}
+          {!eligibleLoading && !orderId && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-[12px]">
+              ℹ️ No delivered order found for this product. You can still submit a review — it will be marked as unverified and pending approval.
+            </div>
+          )}
+          {!eligibleLoading && orderId && (
+            <div className="bg-[#F0FDF9] border border-[#D1FAE5] text-[#065F46] px-4 py-3 rounded-lg text-[12px]">
+              ✓ Verified purchase — your review will be published immediately.
             </div>
           )}
 
@@ -317,6 +329,14 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
               {loading ? 'Submitting...' : 'Submit Review'}
             </button>
           </div>
+          {/* Show why button is disabled */}
+          {(rating === 0 || title.trim().length < 10 || comment.trim().length < 50) && (
+            <p className="text-[11px] text-center text-[var(--color-text-secondary)]">
+              {rating === 0 && 'Select a star rating · '}
+              {title.trim().length < 10 && `Title needs ${10 - title.trim().length} more chars · `}
+              {comment.trim().length < 50 && `Review needs ${50 - comment.trim().length} more chars`}
+            </p>
+          )}
         </form>
       </div>
       </div>
