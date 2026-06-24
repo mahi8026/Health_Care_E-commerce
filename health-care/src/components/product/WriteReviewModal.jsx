@@ -142,11 +142,17 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
-      <div className="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-2xl shadow-2xl sm:my-8 max-h-[92vh] overflow-y-auto flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
+    <div
+      className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col"
+        style={{ maxHeight: 'calc(100vh - 2rem)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header — always visible at top */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] flex-shrink-0">
           <h3 className="text-[16px] sm:text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
             Write a Review
           </h3>
@@ -158,8 +164,11 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
           </button>
         </div>
 
+        {/* Scrollable body */}
+        <div className="overflow-y-auto flex-1 min-h-0">
+
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-5 space-y-5">
+        <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-5 space-y-5 pb-6">
           {/* Error Message */}
           {error && (
             <div className="bg-[#FEE2E2] text-[#991B1B] px-4 py-3 rounded-lg text-[13px]">
@@ -338,8 +347,8 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
             </p>
           )}
         </form>
-      </div>
-      </div>
+        </div>{/* end scrollable body */}
+      </div>{/* end card */}
     </div>
   );
 }
