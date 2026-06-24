@@ -32,16 +32,22 @@ exports.getManufacturers = async (req, res) => {
       .sort({ name: 1 })
       .lean();
     
-    // Get product counts for each manufacturer
-    const manufacturersWithCounts = await Promise.all(
-      manufacturers.map(async (mfr) => {
-        const productCount = await Product.countDocuments({ 
-          brand: mfr._id, 
-          isActive: true 
-        });
-        return { ...mfr, productCount };
-      })
-    );
+    // Get product counts for all manufacturers in a single aggregation
+    // Count ALL products (active + inactive) so it matches the Products page total
+    const productCounts = await Product.aggregate([
+      { $match: { brand: { $in: manufacturers.map(m => m._id) } } },
+      { $group: { _id: '$brand', total: { $sum: 1 } } }
+    ]);
+
+    const countMap = {};
+    productCounts.forEach(({ _id, total }) => {
+      countMap[_id.toString()] = total;
+    });
+
+    const manufacturersWithCounts = manufacturers.map(mfr => ({
+      ...mfr,
+      productCount: countMap[mfr._id.toString()] || 0
+    }));
     
     return successResponse(res, {
       count: manufacturersWithCounts.length,
@@ -64,10 +70,9 @@ exports.getManufacturer = async (req, res) => {
       return errorResponse(res, 'Manufacturer not found', null, 404);
     }
     
-    // Get product count
+    // Get product count (all products, active + inactive)
     const productCount = await Product.countDocuments({ 
-      brand: manufacturer._id, 
-      isActive: true 
+      brand: manufacturer._id
     });
     
     return successResponse(res, {
