@@ -232,6 +232,49 @@ app.use('/api/chat', require('./routes/chatRoutes')); // Live chat integration
 app.use('/api/loyalty', dbHealthCheck, require('./routes/loyaltyRoutes')); // Loyalty program
 app.use('/api/flash-deals', dbHealthCheck, require('./routes/flashDealRoutes')); // Flash deals management
 
+// ── One-time slug migration endpoint (admin, secret-protected) ───────────────
+// Regenerates all product slugs using the clean name-only format.
+// Hit once after deploy: GET /api/fix-slugs?secret=medcore-test-2026
+app.get('/api/fix-slugs', async (req, res) => {
+  if (req.query.secret !== 'medcore-test-2026') {
+    return res.status(401).json({ success: false, message: 'Invalid secret' });
+  }
+  try {
+    const Product = require('./models/Product');
+    const products = await Product.find({});
+    const results = [];
+    let fixed = 0;
+    let skipped = 0;
+    let errors = 0;
+
+    for (const product of products) {
+      const oldSlug = product.slug;
+      try {
+        product.slug = undefined;
+        product.markModified('name');
+        await product.save();
+        if (oldSlug !== product.slug) {
+          results.push({ name: product.name, old: oldSlug, new: product.slug });
+          fixed++;
+        } else {
+          skipped++;
+        }
+      } catch (err) {
+        results.push({ name: product.name, error: err.message });
+        errors++;
+      }
+    }
+
+    res.json({
+      success: true,
+      summary: { total: products.length, fixed, skipped, errors },
+      changes: results.filter(r => r.old !== r.new || r.error),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ── Admin Email Test ──────────────────────────────────────────────────────────
 app.get('/api/test-email', async (req, res) => {
   if (req.query.secret !== 'medcore-test-2026') {
