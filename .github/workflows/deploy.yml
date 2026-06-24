@@ -43,10 +43,10 @@ jobs:
         run: npm run build
         continue-on-error: true
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.medcorebd.com/api' }}
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com' }}
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dummy' }}
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'dummy' }}
+          NEXT_PUBLIC_API_URL: https://health-care-e-commerce.onrender.com/api
+          NEXT_PUBLIC_SITE_URL: https://health-care-e-commerce-murex.vercel.app
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: dm8eqxwlz
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: medcore-upload
 
   test-backend:
     name: Test Backend
