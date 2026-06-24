@@ -545,7 +545,14 @@ export default function ProductsManagement({ openCreateRef }) {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || `${modalMode === 'edit' ? 'Update' : 'Create'} failed`);
+      if (!res.ok || !data.success) {
+        // Show the specific field errors if the backend returns them
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          const errorDetails = data.errors.map(e => `${e.field}: ${e.message}`).join(' · ');
+          throw new Error(errorDetails);
+        }
+        throw new Error(data.message || `${modalMode === 'edit' ? 'Update' : 'Create'} failed`);
+      }
       showMessage(modalMode === 'edit' ? 'Product updated successfully' : 'Product created successfully', 'success');
       closeModal();
       fetchProducts();
