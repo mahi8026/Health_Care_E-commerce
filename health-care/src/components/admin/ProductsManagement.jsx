@@ -320,7 +320,9 @@ export default function ProductsManagement({ openCreateRef }) {
         unit:              product.unit || 'piece',
         minOrderQty:       product.minOrderQty?.toString() || '1',
         certifications:    product.certifications || [],
-        specifications:    product.specifications ? Object.entries(product.specifications).map(([key, value]) => ({ key, value })) : [],
+        specifications:    product.specifications && typeof product.specifications === 'object'
+                           ? Object.entries(product.specifications).map(([key, value]) => ({ key: String(key), value: String(value) }))
+                           : [],
         storageTemp:       product.storageTemp || 'room',
         hazardClass:       product.hazardClass || 'safe',
         compatibleWith:    product.compatibleWith || [],
@@ -514,23 +516,26 @@ export default function ProductsManagement({ openCreateRef }) {
         ? Number(createForm.b2bPrice) 
         : Math.round(retailPrice * 0.78);
       
-      // Convert specifications array to object
+      // Convert specifications array [{key, value}] → plain object for the API
       const specificationsObj = {};
       (createForm.specifications || []).forEach(({ key, value }) => {
-        if (key.trim() && value.trim()) {
+        if (key && key.trim() && value && value.trim()) {
           specificationsObj[key.trim()] = value.trim();
         }
       });
+
+      // Strip internal UI-only fields before sending to the API
+      const { tagInput, compatibleInput, ...formFields } = createForm;
       
       const payload = {
-        ...createForm,
+        ...formFields,
         price: retailPrice,
         b2bPrice: calculatedB2bPrice,
         stock: Number(createForm.stock),
         lowStockThreshold: Number(createForm.lowStockThreshold) || 10,
         minOrderQty: Number(createForm.minOrderQty) || 1,
         specifications: specificationsObj,
-        ...(createForm.oldPrice ? { oldPrice: Number(createForm.oldPrice) } : {}),
+        ...(createForm.oldPrice ? { oldPrice: Number(createForm.oldPrice) } : { oldPrice: undefined }),
         ...(createForm.discountPct ? { discountPct: Number(createForm.discountPct) } : {}),
         ...(createForm.expiryDate ? { expiryDate: createForm.expiryDate } : {}),
       };

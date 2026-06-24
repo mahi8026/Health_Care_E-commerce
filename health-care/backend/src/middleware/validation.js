@@ -147,13 +147,54 @@ const validateProductQuery = [
   handleValidationErrors
 ];
 
-// Product create/update validation with exact field check
+// Product create validation (all required fields must be present)
 const validateProductCreate = [
   ...validateProduct.slice(0, -1), // reuse rules without the trailing handleValidationErrors
   body('images').optional().isArray().withMessage('Images must be an array'),
-  body('images.*').optional().trim().isURL().withMessage('Each image must be a valid URL'),
-  body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
-  body('isFeatured').optional().isBoolean().withMessage('isFeatured must be a boolean'),
+  // Images can be either a plain URL string or an object with a url property
+  body('images.*').optional().custom((img) => {
+    if (typeof img === 'string') {
+      try { new URL(img); return true; } catch { throw new Error('Each image must be a valid URL'); }
+    }
+    if (typeof img === 'object' && img !== null && typeof img.url === 'string') {
+      return true; // object with url property (uploaded image)
+    }
+    throw new Error('Each image must be a URL string or an object with a url property');
+  }),
+  body('isActive').optional().isBoolean({ strict: true }).withMessage('isActive must be a boolean'),
+  body('isFeatured').optional().isBoolean({ strict: true }).withMessage('isFeatured must be a boolean'),
+  body('tags').optional().isArray().withMessage('Tags must be an array'),
+  body('tags.*').optional().trim().escape().isLength({ max: 50 }).withMessage('Each tag must be at most 50 characters'),
+  handleValidationErrors
+];
+
+// Product update validation (all fields optional — only validate what is sent)
+const validateProductUpdate = [
+  body('name').optional().trim().notEmpty().withMessage('Product name cannot be empty')
+    .isLength({ min: 3, max: 200 }).withMessage('Product name must be 3-200 characters'),
+  body('description').optional().trim().notEmpty().withMessage('Description cannot be empty')
+    .isLength({ min: 10, max: 5000 }).withMessage('Description must be 10-5000 characters'),
+  body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a positive number'),
+  body('stock').optional().isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
+  body('sku').optional().trim().notEmpty().withMessage('SKU cannot be empty')
+    .matches(/^[A-Z0-9-]+$/).withMessage('SKU must contain only uppercase letters, numbers, and hyphens'),
+  body('category').optional().isMongoId().withMessage('Invalid category ID'),
+  body('brand').optional().isMongoId().withMessage('Invalid brand ID'),
+  body('oldPrice').optional().isFloat({ min: 0 }).withMessage('Old price must be a positive number'),
+  body('b2bPrice').optional().isFloat({ min: 0 }).withMessage('B2B price must be a positive number'),
+  body('minOrderQty').optional().isInt({ min: 1 }).withMessage('Minimum order quantity must be at least 1'),
+  body('images').optional().isArray().withMessage('Images must be an array'),
+  body('images.*').optional().custom((img) => {
+    if (typeof img === 'string') {
+      try { new URL(img); return true; } catch { throw new Error('Each image must be a valid URL'); }
+    }
+    if (typeof img === 'object' && img !== null && typeof img.url === 'string') {
+      return true;
+    }
+    throw new Error('Each image must be a URL string or an object with a url property');
+  }),
+  body('isActive').optional().isBoolean({ strict: true }).withMessage('isActive must be a boolean'),
+  body('isFeatured').optional().isBoolean({ strict: true }).withMessage('isFeatured must be a boolean'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
   body('tags.*').optional().trim().escape().isLength({ max: 50 }).withMessage('Each tag must be at most 50 characters'),
   handleValidationErrors
@@ -270,6 +311,7 @@ module.exports = {
   handleValidationErrors,
   validateProduct,
   validateProductCreate,
+  validateProductUpdate,
   validateProductQuery,
   validateOrder,
   validateOrderStatusUpdate,

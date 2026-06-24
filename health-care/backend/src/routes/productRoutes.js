@@ -17,6 +17,7 @@ const { etagMiddleware } = require('../middleware/etag');
 const {
   validateProductQuery,
   validateProductCreate,
+  validateProductUpdate,
   validateMongoId
 } = require('../middleware/validation');
 
@@ -272,7 +273,7 @@ router.post('/', protect, authorize('admin'), validateProductCreate, createProdu
  *       404:
  *         description: Product not found
  */
-router.put('/:id', protect, authorize('admin'), validateMongoId, validateProductCreate, updateProduct);
+router.put('/:id', protect, authorize('admin'), validateMongoId, validateProductUpdate, updateProduct);
 
 /**
  * @swagger
