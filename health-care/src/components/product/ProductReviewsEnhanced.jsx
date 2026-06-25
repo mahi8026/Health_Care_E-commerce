@@ -28,6 +28,7 @@ export default function ProductReviewsEnhanced({ productId }) {
   const [sortBy, setSortBy] = useState('helpful');
   const [showWriteModal, setShowWriteModal] = useState(false);
   const [canReview, setCanReview] = useState(false);
+  const [hasEligibleOrder, setHasEligibleOrder] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
   useEffect(() => {
@@ -37,7 +38,13 @@ export default function ProductReviewsEnhanced({ productId }) {
 
   useEffect(() => {
     if (user) {
+      // Any logged-in user can write a review
+      setCanReview(true);
+      // Check if they have an eligible order (determines verified vs unverified)
       checkEligibility();
+    } else {
+      setCanReview(false);
+      setHasEligibleOrder(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, productId]);
@@ -78,7 +85,7 @@ export default function ProductReviewsEnhanced({ productId }) {
       
       if (data.success) {
         const eligible = data.data.some(p => p._id === productId);
-        setCanReview(eligible);
+        setHasEligibleOrder(eligible);
       }
     } catch (error) {
       process.env.NODE_ENV !== "production" && console.error('Check eligibility error:', error);
@@ -232,23 +239,30 @@ export default function ProductReviewsEnhanced({ productId }) {
             Share your experience and help others make informed decisions. Your review matters!
           </p>
 
-          {canReview ? (
-            <button
-              onClick={() => setShowWriteModal(true)}
-              className="px-8 py-4 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:scale-105 inline-flex items-center gap-3"
-            >
-              <FaEdit size={20} />
-              <span>Write Your Review</span>
-            </button>
+          {user ? (
+            <div className="space-y-3">
+              <button
+                onClick={() => setShowWriteModal(true)}
+                className="px-8 py-4 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:scale-105 inline-flex items-center gap-3"
+              >
+                <FaEdit size={20} />
+                <span>Write Your Review</span>
+              </button>
+              {hasEligibleOrder ? (
+                <p className="text-xs text-green-600">✓ Verified purchase — your review will be published immediately</p>
+              ) : (
+                <p className="text-xs text-gray-400">Review will be marked as unverified and pending approval</p>
+              )}
+            </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-gray-500">You need to purchase this product to write a review</p>
-              <button
-                onClick={() => window.location.href = '#add-to-cart'}
-                className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold text-base transition-colors"
+              <p className="text-sm text-gray-500">Sign in to write a review</p>
+              <a
+                href="/login"
+                className="px-6 py-3 bg-[#0B2545] hover:bg-[#0d2e56] text-white rounded-xl font-semibold text-base transition-colors inline-block"
               >
-                Purchase This Product
-              </button>
+                Sign In to Review
+              </a>
             </div>
           )}
 
@@ -256,11 +270,11 @@ export default function ProductReviewsEnhanced({ productId }) {
           <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <span className="text-green-600 text-xl">✓</span>
-              <span>Verified purchases only</span>
+              <span>Honest reviews</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-blue-600 text-xl">🛡️</span>
-              <span>Authentic reviews</span>
+              <span>Moderated content</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-purple-600 text-xl">📸</span>
@@ -269,14 +283,12 @@ export default function ProductReviewsEnhanced({ productId }) {
           </div>
         </div>
 
-        {/* Write Review Modal */}
         {showWriteModal && (
           <WriteReviewModal
             productId={productId}
             onClose={() => setShowWriteModal(false)}
             onSuccess={() => {
               setShowWriteModal(false);
-              setCanReview(false);
               fetchReviews();
               showMessage('Review submitted successfully! Thank you for your feedback.', 'success');
             }}
@@ -314,7 +326,7 @@ export default function ProductReviewsEnhanced({ productId }) {
               Based on {stats.totalReviews} {stats.totalReviews === 1 ? 'review' : 'reviews'}
             </div>
             
-            {canReview && (
+            {user && (
               <button
                 onClick={() => setShowWriteModal(true)}
                 className="mt-6 w-full py-3 px-4 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2"
@@ -322,6 +334,14 @@ export default function ProductReviewsEnhanced({ productId }) {
                 <FaEdit size={16} />
                 <span>Write a Review</span>
               </button>
+            )}
+            {!user && (
+              <a
+                href="/login"
+                className="mt-6 w-full py-3 px-4 bg-[#0B2545] hover:bg-[#0d2e56] text-white rounded-xl font-bold transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>Sign In to Review</span>
+              </a>
             )}
           </div>
 
@@ -517,7 +537,6 @@ export default function ProductReviewsEnhanced({ productId }) {
           onClose={() => setShowWriteModal(false)}
           onSuccess={() => {
             setShowWriteModal(false);
-            setCanReview(false);
             fetchReviews();
             showMessage('Review submitted successfully! Thank you for your feedback.', 'success');
           }}
