@@ -713,7 +713,7 @@ export default function HomePage() {
               {t('home.heroSubtitle')}
             </p>
             <div style={{ maxWidth: 520, marginBottom: 24, width: '100%' }}>
-              <EnhancedSearchBox placeholder={searchPlaceholder} />
+              <EnhancedSearchBox placeholder={searchPlaceholder} variant="hero" />
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (

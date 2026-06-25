@@ -17,7 +17,8 @@ const POPULAR_SEARCHES = [
   'Blood Pressure Monitor',
 ];
 
-export default function EnhancedSearchBox({ placeholder = 'Search medical equipment...', autoFocus = false, onClose }) {
+export default function EnhancedSearchBox({ placeholder = 'Search medical equipment...', autoFocus = false, onClose, variant = 'default' }) {
+  const isHero = variant === 'hero';
   const router = useRouter();
   const { addToCart } = useCart();
   const { addToWishlist, isInWishlist } = useWishlist();
@@ -163,9 +164,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   return (
     <div ref={wrapperRef} className="relative w-full">
       {/* Search Input */}
-      <div className="relative px-5 py-4 border-b border-gray-100">
+      <div className={`relative px-5 py-4 ${isHero ? 'border-b border-white/20 bg-white/10 backdrop-blur-md rounded-2xl' : 'border-b border-gray-100'}`}>
         <div className="flex items-center gap-3">
-          <FaSearch size={18} className="text-gray-400 flex-shrink-0" />
+          <FaSearch size={18} className={isHero ? 'text-white/70 flex-shrink-0' : 'text-gray-400 flex-shrink-0'} />
           <input
             ref={inputRef}
             type="text"
@@ -179,11 +180,15 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             autoFocus={autoFocus}
-            className="flex-1 bg-transparent border-0 focus:outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
+            className={`flex-1 bg-transparent border-0 focus:outline-none text-[15px] ${
+              isHero
+                ? 'text-white placeholder:text-white/50'
+                : 'text-gray-900 placeholder:text-gray-400'
+            }`}
           />
           {loading && (
             <div className="flex-shrink-0">
-              <div className="w-5 h-5 border-2 border-[#0E8A6E] border-t-transparent rounded-full animate-spin" />
+              <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${isHero ? 'border-white/70' : 'border-[#0E8A6E]'}`} />
             </div>
           )}
         </div>
@@ -192,7 +197,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
       {/* Dropdown Content — always visible when inside a modal (onClose provided),
           otherwise gated by isOpen to support standalone usage */}
       {(onClose ? true : isOpen) && (query.length > 0 || recentSearches.length > 0) && (
-        <div className="bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
+        <div className={`bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar ${isHero ? 'rounded-2xl mt-2 shadow-2xl border border-gray-100' : ''}`}>
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (
             <div className="p-4 border-t border-gray-100">
