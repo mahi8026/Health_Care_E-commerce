@@ -29,7 +29,7 @@ export default function TopBar() {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const [settings, setSettings] = useState(null);
-  const [contactPhone, setContactPhone] = useState('+880 1800-MED');
+  const [contactPhone, setContactPhone] = useState('+8801646886795');
 
   // Fetch settings once on mount
   useEffect(() => {
@@ -47,7 +47,10 @@ export default function TopBar() {
 
   // Reset index if it's out of bounds after settings load
   useEffect(() => {
-    setIndex((i) => i % announcements.length);
+    if (index >= announcements.length) {
+      setIndex(0);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [announcements.length]);
 
   useEffect(() => {
