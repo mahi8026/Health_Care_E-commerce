@@ -47,6 +47,7 @@
     "husky": "^9.1.7",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
-    "lint-staged": "^17.0.7"
+    "lint-staged": "^17.0.7",
+    "wrangler": "^3"
   }
 }
