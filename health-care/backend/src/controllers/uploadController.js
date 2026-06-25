@@ -79,19 +79,22 @@ exports.uploadImage = async (req, res) => {
     }
 
     let url;
+    let publicId = '';
 
     if (CLOUDINARY_CONFIGURED) {
       // Memory storage: req.file.buffer contains the image bytes
       const result = await uploadBufferToCloudinary(req.file.buffer, req.file.originalname);
       url = result.secure_url;
+      publicId = result.public_id;
     } else {
       // Local fallback
       const baseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
       url = `${baseUrl}/uploads/${req.file.filename}`;
+      publicId = req.file.filename || '';
     }
 
     logger.info(`[uploadImage] Uploaded: ${url}`);
-    return successResponse(res, { url });
+    return successResponse(res, { url, publicId });
   } catch (error) {
     logger.error(`[uploadImage] ${error.message}`);
     return errorResponse(res, 'Upload failed', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);

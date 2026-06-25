@@ -452,18 +452,19 @@ export default function ProductsManagement({ openCreateRef }) {
         
         const data = await response.json();
         
-        if (data.success && data.url) {
-          const newImage = {
-            url: data.url,
-            publicId: data.url.split('/').pop().split('.')[0], // Extract public ID from URL
-            isPrimary: createForm.images.length === 0,
-            alt: createForm.name || 'Product image',
-          };
+        if (data.success && (data.data?.url || data.url)) {
+          const imageUrl = data.data?.url || data.url;
+          const imagePublicId = data.data?.publicId || data.publicId || '';
           
-          setCreateForm(f => ({
-            ...f,
-            images: [...f.images, newImage],
-          }));
+          setCreateForm(f => {
+            const newImage = {
+              url: imageUrl,
+              publicId: imagePublicId,
+              isPrimary: f.images.length === 0, // first image is primary
+              alt: f.name || 'Product image',
+            };
+            return { ...f, images: [...f.images, newImage] };
+          });
         } else {
           showMessage(data.message || 'Upload failed', 'error');
         }
