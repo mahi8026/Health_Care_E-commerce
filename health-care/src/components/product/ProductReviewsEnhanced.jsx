@@ -64,9 +64,17 @@ export default function ProductReviewsEnhanced({ productId }) {
       const data = await res.json();
       
       if (data.success) {
-        setReviews(data.data);
-        setStats(data.stats);
-        setPagination(data.pagination);
+        setReviews(data.data || []);
+        // stats is nested inside pagination from paginatedResponse
+        setStats(data.pagination?.stats || null);
+        const { stats: _stats, ...paginationData } = data.pagination || {};
+        setPagination({
+          page: paginationData.page,
+          pages: paginationData.totalPages,
+          total: paginationData.total,
+          hasNext: paginationData.hasNext,
+          hasPrev: paginationData.hasPrev,
+        });
       }
     } catch (error) {
       process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);

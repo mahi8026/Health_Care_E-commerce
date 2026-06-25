@@ -82,20 +82,19 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   useEffect(() => {
     if (!product) return;
 
-    // Use callback form to avoid setState warning
-    setLoadingRecommendations(() => true);
-    
     // Fetch all products for recommendations
-    fetch(`${API}/products?limit=100`)
-      .then(res => res.json())
-      .then(data => {
+    const fetchRecs = async () => {
+      setLoadingRecommendations(true);
+      try {
+        const res = await fetch(`${API}/products?limit=100`);
+        const data = await res.json();
         const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
         setAllProducts(products);
-        
+
         // Get cart items from context (if available)
         const cartData = localStorage.getItem('cart');
         const cartItems = cartData ? JSON.parse(cartData).items || [] : [];
-        
+
         // Generate AI recommendations
         const recommendations = getRecommendations(
           product,
@@ -104,14 +103,16 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           cartItems,
           6 // limit to 6 recommendations
         );
-        
+
         setRecommendedProducts(recommendations);
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') console.error('Failed to fetch recommendations:', err);
+      } finally {
         setLoadingRecommendations(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch recommendations:', err);
-        setLoadingRecommendations(false);
-      });
+      }
+    };
+
+    fetchRecs();
   }, [product, recentlyViewed]);
 
   // Redirect from MongoDB ID to slug-based URL for SEO
@@ -272,7 +273,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-6 xl:gap-8">
           <div>
             <ProductImageGalleryEnhanced
-              images={product.images || []}
+              images={(product.images || []).map(img =>
+                typeof img === 'string'
+                  ? { url: img, isPrimary: false, alt: product.name }
+                  : img
+              ).filter(img => img?.url)}
               product={product}
               badges={product.certifications || []}
               heroPriority={heroPriority}
@@ -350,6 +355,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
                   >
                     <div className="relative aspect-square bg-gray-50">
                       {recImageUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img
                           src={recImageUrl}
                           alt={recProduct.name}

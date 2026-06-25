@@ -47,7 +47,6 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
 
     if (file) {
       // TODO: Implement file upload for agents
-      console.log('File upload not yet implemented for agents');
       return;
     }
 

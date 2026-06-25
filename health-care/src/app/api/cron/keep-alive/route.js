@@ -22,7 +22,6 @@ export async function GET(request) {
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     // In production, you should set CRON_SECRET in Vercel env vars
     // For now, we'll allow requests without auth for testing
-    console.log('[keep-alive] Warning: No valid CRON_SECRET provided');
   }
 
   try {
@@ -39,7 +38,7 @@ export async function GET(request) {
       );
     }
 
-    console.log(`[keep-alive] Pinging backend: ${backendUrl}`);
+
     
     const startTime = Date.now();
     const response = await fetch(`${backendUrl}/products?limit=1`, {
@@ -52,7 +51,6 @@ export async function GET(request) {
     const duration = Date.now() - startTime;
 
     if (response.ok) {
-      console.log(`[keep-alive] Backend is alive (${duration}ms)`);
       return Response.json({
         success: true,
         backend: backendUrl,
@@ -61,7 +59,6 @@ export async function GET(request) {
         timestamp: new Date().toISOString(),
       });
     } else {
-      console.log(`[keep-alive] Backend responded with status ${response.status}`);
       return Response.json({
         success: false,
         backend: backendUrl,

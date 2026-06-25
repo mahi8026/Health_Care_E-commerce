@@ -23,7 +23,7 @@ class ChatSocketClient {
     // Remove /api suffix if present
     socketUrl = apiUrl.replace('/api', '');
 
-    console.log('Connecting to Socket.IO:', socketUrl);
+    if (process.env.NODE_ENV !== 'production') console.log('Connecting to Socket.IO:', socketUrl);
 
     this.socket = io(socketUrl, {
       auth: {
@@ -39,13 +39,13 @@ class ChatSocketClient {
     // Connection event handlers
     this.socket.on('connect', () => {
       this.connected = true;
-      console.log('✅ Socket.IO connected:', this.socket.id);
+      if (process.env.NODE_ENV !== 'production') console.log('✅ Socket.IO connected:', this.socket.id);
       this.emit('connected', { socketId: this.socket.id });
     });
 
     this.socket.on('disconnect', (reason) => {
       this.connected = false;
-      console.log('❌ Socket.IO disconnected:', reason);
+      if (process.env.NODE_ENV !== 'production') console.log('❌ Socket.IO disconnected:', reason);
       this.emit('disconnected', { reason });
     });
 

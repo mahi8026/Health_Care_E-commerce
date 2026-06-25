@@ -37,7 +37,6 @@ const getBackendUrl = () => {
 // Wake up the backend if it's sleeping (Render.com free tier spins down after 15 min)
 async function wakeUpBackend(backendUrl) {
   try {
-    console.log('[sitemap] Waking up backend...');
     // Make a simple request to wake up the backend
     const wakeUpResponse = await fetch(`${backendUrl}/products?limit=1`, {
       signal: AbortSignal.timeout(30000), // 30 second timeout for wake-up
@@ -48,14 +47,11 @@ async function wakeUpBackend(backendUrl) {
     });
     
     if (wakeUpResponse.ok) {
-      console.log('[sitemap] Backend is awake and responsive');
       return true;
     } else {
-      console.log(`[sitemap] Backend responded with status ${wakeUpResponse.status}`);
       return false;
     }
   } catch (err) {
-    console.log('[sitemap] Backend wake-up failed:', err.message);
     return false;
   }
 }
@@ -107,13 +103,10 @@ export default async function sitemap() {
     const isAwake = await wakeUpBackend(backendUrl);
     
     if (!isAwake) {
-      console.log('[sitemap] Backend not responsive, skipping product pages');
       return [...staticPages, ...categoryPages];
     }
     
     const productsUrl = `${backendUrl}/products?limit=5000&fields=slug,_id,updatedAt`;
-    
-    console.log(`[sitemap] Fetching products from: ${productsUrl}`);
 
     const res = await fetch(productsUrl, { 
       next: { revalidate: 3600 },
@@ -141,13 +134,10 @@ export default async function sitemap() {
         changeFrequency: 'weekly',
         priority:        0.7,
       }));
-
-    console.log(`[sitemap] Successfully generated ${productPages.length} product pages`);
   } catch (err) {
     // Graceful degrade — static + category pages always returned.
     // This ensures the sitemap is always valid even if the backend is unavailable.
     console.error('[sitemap] Failed to fetch products:', err.message);
-    console.error('[sitemap] Returning static and category pages only');
   }
 
   return [...staticPages, ...categoryPages, ...productPages];

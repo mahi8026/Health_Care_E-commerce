@@ -104,6 +104,11 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
 
       const data = await res.json();
 
+      if (!res.ok) {
+        setError(data.message || `Request failed (${res.status})`);
+        return;
+      }
+
       if (data.success) {
         onSuccess();
       } else {

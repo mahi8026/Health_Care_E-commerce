@@ -20,7 +20,6 @@ export const dynamicParams = true;
 // Generate static params at build time for all known category slugs
 export async function generateStaticParams() {
   const slugs = Object.keys(CATEGORY_SLUG_MAP).map(slug => ({ slug }));
-  console.log('Generating static params for category slugs:', slugs);
   return slugs;
 }
 
@@ -63,11 +62,8 @@ export default async function CategoryPage({ params }) {
 
   // Unknown slug → 404
   if (!categoryName) {
-    console.error(`Category slug not found: ${resolvedParams.slug}`);
     notFound();
   }
-
-  console.log(`Rendering category page: ${resolvedParams.slug} -> ${categoryName}`);
 
   // Pass the resolved category name to ProductsPage so it pre-filters
   return <ProductsPage initialCategory={categoryName} />;
