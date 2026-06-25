@@ -4,11 +4,5 @@
 name = "medcorebd"
 compatibility_date = "2024-09-23"
 
-# Pages build configuration
-[env.production]
-# Environment variables are set in the Cloudflare Pages dashboard, not here.
-# Sensitive keys (API keys, secrets) should NEVER be in this file.
-
-[env.preview]
-# Preview deployments (pull requests) use these overrides.
-# You can set branch-specific vars in the CF Pages dashboard too.
+# Required: tells Cloudflare Pages where Next.js outputs its build
+pages_build_output_dir = ".next"
