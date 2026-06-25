@@ -78,9 +78,8 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       if (megaMenuRef.current && !megaMenuRef.current.contains(e.target)) {
         setMegaMenuOpen(false);
       }
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setSearchOpen(false);
-      }
+      // Search modal is closed via its backdrop onClick and Escape key only —
+      // do NOT close it here, searchRef only covers the trigger button not the modal panel
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -225,7 +224,7 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
             {/* Search, wishlist, cart, account — same size glass controls */}
             <div className="nav-glass-controls-row">
               {/* Search */}
-              <div className="relative flex-shrink-0" ref={searchRef}>
+              <div className="relative flex-shrink-0">
                 <button
                   onClick={() => setSearchOpen(true)}
                   aria-label="Search"
