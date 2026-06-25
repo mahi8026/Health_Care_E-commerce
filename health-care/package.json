@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cf": "next build && npx @opennextjs/cloudflare@latest build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",

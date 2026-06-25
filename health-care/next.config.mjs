@@ -6,9 +6,9 @@ import { validateEnv } from './src/utils/validateEnv.mjs';
 try {
   validateEnv();
 } catch (error) {
-  // Log warning but don't fail build - Vercel may set env vars after config load
+  // Log warning but don't fail build — env vars set in CF Pages / Vercel dashboard
   console.warn('⚠️ Environment validation warning:', error.message);
-  console.warn('Continuing build - ensure env vars are set in Vercel dashboard');
+  console.warn('Continuing build - ensure env vars are set in the hosting dashboard');
 }
 
 // Conditionally load bundle analyzer — only available as a devDependency
