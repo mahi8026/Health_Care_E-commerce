@@ -25,7 +25,22 @@ if (process.env.ANALYZE === 'true') {
 const nextConfig = {
   // Proxy /api/* to the backend in development to avoid CORS issues
   async rewrites() {
-    // NEXT_PUBLIC_API_URL may be '/api' (relative) in dev — always proxy to real backend
+    // On Cloudflare Pages/Workers, rewrites to external hosts are not supported.
+    // API calls go directly to NEXT_PUBLIC_API_URL from the browser.
+    // Only proxy in Node.js environments (local dev / Vercel).
+    const isCloudflare = process.env.CF_PAGES === '1';
+    if (isCloudflare) {
+      return {
+        beforeFiles: [
+          {
+            source: '/products/category/:slug',
+            destination: '/products/category/:slug',
+          },
+        ],
+        afterFiles: [],
+      };
+    }
+
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
     return {
       beforeFiles: [

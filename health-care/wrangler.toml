@@ -14,3 +14,6 @@ compatibility_flags = ["nodejs_compat"]
 
 # Point Pages to the assets directory for static file serving
 pages_build_output_dir = ".open-next/assets"
+
+[vars]
+CF_PAGES = "1"

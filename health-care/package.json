@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "next build && npx @opennextjs/cloudflare@latest build && node build-cf-fix.js",
+    "build:cf": "cross-env CF_PAGES=1 next build && npx @opennextjs/cloudflare@latest build && node build-cf-fix.js",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
