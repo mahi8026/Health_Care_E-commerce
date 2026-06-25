@@ -29,7 +29,7 @@ const BRAND = {
   },
   primary: '#0B2545',
   accent:  '#0E8A6E',
-  site:    process.env.FRONTEND_URL || 'https://health-care-e-commerce-murex.vercel.app',
+  site:    process.env.FRONTEND_URL || 'https://medcorebd.pages.dev',
 };
 
 // ─── Shared Layout ────────────────────────────────────────────────────────────

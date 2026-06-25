@@ -11,7 +11,7 @@
 export default function ReviewSchema({ reviews, productName, productId }) {
   if (!reviews || reviews.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.pages.dev';
 
   // Create individual review schemas
   const reviewSchemas = reviews.slice(0, 5).map((review, index) => ({

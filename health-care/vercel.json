@@ -1,4 +1,5 @@
 {
+  "_note": "INACTIVE — project has migrated to Cloudflare Pages. This file is kept for reference only. Safe to delete after confirming CF deployment works.",
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install --legacy-peer-deps",
@@ -9,7 +10,7 @@
     "NODE_ENV": "production",
     "HUSKY": "0",
     "NEXT_PUBLIC_API_URL": "https://health-care-e-commerce.onrender.com/api",
-    "NEXT_PUBLIC_SITE_URL": "https://health-care-e-commerce-murex.vercel.app",
+    "NEXT_PUBLIC_SITE_URL": "https://medcorebd.pages.dev",
     "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "dm8eqxwlz",
     "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "ml_default",
     "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "G-VCQNJESVNM",
@@ -20,7 +21,7 @@
       "NODE_ENV": "production",
       "HUSKY": "0",
       "NEXT_PUBLIC_API_URL": "https://health-care-e-commerce.onrender.com/api",
-      "NEXT_PUBLIC_SITE_URL": "https://health-care-e-commerce-murex.vercel.app",
+      "NEXT_PUBLIC_SITE_URL": "https://medcorebd.pages.dev",
       "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "dm8eqxwlz",
       "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "ml_default",
       "NEXT_PUBLIC_GA4_MEASUREMENT_ID": "G-VCQNJESVNM",

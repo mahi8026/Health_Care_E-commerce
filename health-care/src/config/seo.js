@@ -16,7 +16,7 @@
 export const SITE_CONFIG = {
   name:         'MedCore BD',
   fullName:     'MedCore BD — Medical Equipment Supplier',
-  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app',
+  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.pages.dev',
   description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered. B2B & retail. Dhaka.",
   keywords:     'medical equipment Bangladesh, diagnostic equipment Dhaka, surgical instruments BD, laboratory reagents Bangladesh, hospital equipment supplier, DGDA registered medical devices, ECG machine price Bangladesh, reagent supplier Dhaka, B2B medical supplier Bangladesh',
   ogImage:      '/og-default.png',

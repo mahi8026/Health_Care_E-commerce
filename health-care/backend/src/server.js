@@ -304,7 +304,7 @@ app.get('/api/email-debug', async (req, res) => {
       resendApiKey: process.env.RESEND_API_KEY ? `✓ Configured (${process.env.RESEND_API_KEY.substring(0, 10)}...)` : '✗ MISSING',
       resendFromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev (default)',
       emailFromName: process.env.EMAIL_FROM_NAME || 'MedCore BD',
-      frontendUrl: process.env.FRONTEND_URL || 'https://health-care-e-commerce-murex.vercel.app'
+      frontendUrl: process.env.FRONTEND_URL || 'https://medcorebd.pages.dev'
     },
     environment: {
       nodeEnv: process.env.NODE_ENV,

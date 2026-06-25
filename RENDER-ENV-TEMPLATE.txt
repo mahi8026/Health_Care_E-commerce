@@ -9,9 +9,9 @@
 NODE_ENV=production
 PORT=5000
 
-# ── Frontend URL (Your Vercel deployment) ────────────────────────────────────
-FRONTEND_URL=https://health-care-e-commerce-murex.vercel.app
-CORS_ORIGINS=https://health-care-e-commerce-murex.vercel.app
+# ── Frontend URL (Your Cloudflare Pages deployment) ──────────────────────────
+FRONTEND_URL=https://medcorebd.pages.dev
+CORS_ORIGINS=https://medcorebd.pages.dev
 
 # ── Database (MongoDB Atlas) ─────────────────────────────────────────────────
 # Get from: https://www.mongodb.com/cloud/atlas

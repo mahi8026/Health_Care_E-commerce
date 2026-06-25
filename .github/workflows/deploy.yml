@@ -1,4 +1,4 @@
-name: CI
+name: CI / Deploy
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
       - main
   workflow_dispatch:
 
-# Vercel handles production deployment automatically via Git integration.
-# This workflow only runs lint, build verification, and tests.
+# Cloudflare Pages handles production deployment via GitHub integration OR
+# this workflow deploys explicitly using wrangler for full control.
 
 jobs:
   lint-and-build:
@@ -41,12 +41,26 @@ jobs:
       - name: Build frontend
         working-directory: health-care
         run: npm run build
-        continue-on-error: true
         env:
+          NODE_ENV: production
+          HUSKY: "0"
           NEXT_PUBLIC_API_URL: https://health-care-e-commerce.onrender.com/api
-          NEXT_PUBLIC_SITE_URL: https://health-care-e-commerce-murex.vercel.app
+          NEXT_PUBLIC_SITE_URL: https://medcorebd.pages.dev
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: dm8eqxwlz
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: medcore-upload
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ml_default
+          NEXT_PUBLIC_GA4_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA4_MEASUREMENT_ID }}
+          BACKEND_URL: https://health-care-e-commerce.onrender.com
+
+      # Deploy to Cloudflare Pages on pushes to main only
+      # Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repo secrets.
+      # Setup: https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/
+      - name: Deploy to Cloudflare Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy health-care/.next --project-name=medcorebd --commit-dirty=true
 
   test-backend:
     name: Test Backend
