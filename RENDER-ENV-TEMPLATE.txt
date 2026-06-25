@@ -62,7 +62,7 @@ SMS_PROVIDER=ssl_wireless
 SMS_API_URL=https://smsplus.sslwireless.com/api/v3/send-sms
 SMS_SENDER_ID=MedCoreBD
 SMS_API_KEY=<your-sms-api-key>
-ADMIN_PHONE=<+8801800000000>
+ADMIN_PHONE=<+8801646886795>
 
 # ── Rate Limiting ────────────────────────────────────────────────────────────
 RATE_LIMIT_WINDOW_MS=900000

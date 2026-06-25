@@ -32,24 +32,15 @@ export default function WhatsAppManager() {
         ...(filters.search && { search: filters.search })
       });
 
-      console.log('[WhatsApp] Fetching conversations with params:', params.toString());
       const response = await api.get(`/whatsapp/conversations?${params}`);
-      console.log('[WhatsApp] API response:', response);
       
       if (response.data.success) {
         setConversations(response.data.conversations);
         setPagination(response.data.pagination);
       } else {
-        console.error('[WhatsApp] API returned success=false:', response.data);
         setError(response.data.message || 'Failed to load conversations');
       }
     } catch (err) {
-      console.error('[WhatsApp] Fetch error:', err);
-      console.error('[WhatsApp] Error details:', {
-        message: err.message,
-        status: err.status,
-        data: err.data
-      });
       setError(err.response?.data?.message || err.message || 'Failed to load conversations');
     } finally {
       setLoading(false);
@@ -62,7 +53,7 @@ export default function WhatsAppManager() {
     // Poll for updates every 30 seconds
     const interval = setInterval(fetchConversations, 30000);
     return () => clearInterval(interval);
-  }, [pagination.page, filters]);
+  }, [pagination.page, filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));

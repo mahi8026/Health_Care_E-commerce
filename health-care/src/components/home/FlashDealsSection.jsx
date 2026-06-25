@@ -117,10 +117,8 @@ export default function FlashDealsSection() {
       const data = await response.json();
       
       if (data.success && data.data?.flashDeals?.length > 0) {
-        console.log('✅ Flash Deals Loaded:', data.data.flashDeals.length, 'deal(s)');
         setFlashDeals([data.data.flashDeals[0]]);
       } else {
-        console.warn('⚠️ No active flash deals found');
         setFlashDeals([]);
       }
     } catch (error) {

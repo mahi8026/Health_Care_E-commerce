@@ -24,10 +24,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
         }
         
         const data = await res.json();
-        console.log('Fetched order data:', data);
-        
         const orderData = data.data || data.order || data;
-        console.log('Order ID:', orderData._id || orderData.id);
         setOrder(orderData);
       } catch (err) {
         console.error('Failed to load order:', err);

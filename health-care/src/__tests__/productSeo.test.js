@@ -19,7 +19,7 @@ jest.mock('@/config/seo', () => ({
   SITE_CONFIG: {
     name: 'MedCore BD',
     url: 'https://medcorebd.com',
-    phone: '+8801800000000',
+    phone: '+8801646886795',
     email: 'info@medcorebd.com',
   },
   siteConfig: {

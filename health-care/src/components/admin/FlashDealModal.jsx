@@ -68,12 +68,7 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
     setSearching(true);
     try {
       const response = await api.get(`/products?search=${encodeURIComponent(query)}&limit=20`);
-      console.log('🔍 Product search response:', response);
-      
-      // Handle different response structures
       const products = response.data?.products || response.products || response.data || [];
-      console.log('📦 Extracted products:', products.length);
-      
       setSearchResults(Array.isArray(products) ? products : []);
     } catch (err) {
       console.error('Search error:', err);
@@ -198,7 +193,6 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
       onSave();
     } catch (err) {
       setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} flash deal`);
-      console.error(err);
     } finally {
       setLoading(false);
     }

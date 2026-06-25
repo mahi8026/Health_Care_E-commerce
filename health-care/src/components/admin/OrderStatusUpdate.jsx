@@ -30,11 +30,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
       if (!token) throw new Error('Not authenticated. Please log in again.');
 
       const orderId = order._id || order.id;
-      if (!orderId) {
-        throw new Error('Order ID is missing');
-      }
-
-      console.log('Updating order status:', { orderId, status, trackingNumber, courier });
+      if (!orderId) throw new Error('Order ID is missing');
 
       const res = await fetch(`${API}/orders/${orderId}/status`, {
         method: 'PUT',
@@ -49,14 +45,10 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
         }),
       });
 
-      console.log('Response status:', res.status);
-
       let data;
       try {
         data = await res.json();
-        console.log('Response data:', data);
-      } catch (parseError) {
-        console.error('Failed to parse response:', parseError);
+      } catch {
         throw new Error(`Server returned ${res.status} — invalid response`);
       }
 
@@ -67,7 +59,6 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
       if (onUpdate) onUpdate(data.order || data.data || data);
       onClose();
     } catch (err) {
-      console.error('Order status update error:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

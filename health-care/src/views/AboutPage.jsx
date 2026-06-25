@@ -145,7 +145,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="tel:+8801800000000"
+                href="tel:+8801646886795000000"
                 className="flex items-center gap-3 bg-gray-50 rounded-xl px-5 py-4 hover:bg-gray-100 transition-colors"
               >
                 <FaPhone className="text-[#0B2545]" />

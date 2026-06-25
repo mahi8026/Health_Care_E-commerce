@@ -2,7 +2,6 @@ const whatsappService = require('./whatsappService');
 const WhatsAppConversation = require('../models/WhatsAppConversation');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
-const Quote = require('../models/Quote');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
@@ -26,7 +25,7 @@ class WhatsAppBot {
   /**
    * Process incoming message
    */
-  async processMessage(from, text, messageId) {
+  async processMessage(from, text, _messageId) {
     try {
       logger.info(`[WhatsAppBot] Processing message from ${from}: ${text}`);
 
@@ -166,7 +165,7 @@ You can find it in your order confirmation email or SMS.`;
       if (!order) {
         const message = `❌ Order ${orderNumber} not found.
 
-Please check the order number and try again, or contact support at +8801800000000.`;
+Please check the order number and try again, or contact support at +8801646886795.`;
 
         await whatsappService.sendMessage(from, message, {
           isBot: true,
@@ -200,7 +199,7 @@ ${order.status === 'delivered' ? '✅ Your order has been delivered!' : ''}
 
 Track online: https://medcorebd.com/track/${orderNumber}
 
-Need help? Reply "support" or call +8801800000000`;
+Need help? Reply "support" or call +8801646886795`;
 
       await whatsappService.sendMessage(from, message, {
         isBot: true,
@@ -269,12 +268,7 @@ https://medcorebd.com/products`;
 Try different keywords or browse all products:
 https://medcorebd.com/products
 
-Need help? Reply "support" or call +8801800000000`;
-
-        await whatsappService.sendMessage(from, message, {
-          isBot: true,
-          botIntent: 'product_not_found'
-        });
+Need help? Reply "support" or call +8801646886795`;
 
         return message;
       }
@@ -314,7 +308,7 @@ Need help? Reply "support" or call +8801800000000`;
   /**
    * Handle quote request
    */
-  async handleQuoteRequest(conversation, from, text) {
+  async handleQuoteRequest(conversation, from, _text) {
     const message = `📋 *Request a Quote*
 
 To get a customized quote, please provide:
@@ -347,7 +341,7 @@ Our team will respond within 24 hours!
   /**
    * Handle support request
    */
-  async handleSupport(conversation, from, text) {
+  async handleSupport(conversation, from, _text) {
     const message = `🆘 *Customer Support*
 
 How can we help you?
@@ -409,7 +403,7 @@ Please describe your issue, and I'll connect you with our support team.
 I'm transferring you to one of our team members. They'll respond shortly.
 
 ⏰ Response time: 5-15 minutes during business hours
-📞 Urgent? Call: +8801800000000
+📞 Urgent? Call: +8801646886795
 
 Please wait...`;
 
@@ -452,7 +446,7 @@ Please wait...`;
   /**
    * Handle default/unknown intent
    */
-  async handleDefault(conversation, from, text) {
+  async handleDefault(_conversation, from, _text) {
     const message = `I'm not sure I understand. Let me help you with:
 
 *Quick Options:*
@@ -496,7 +490,7 @@ We'll notify you when your order ships.
 Track your order:
 https://medcorebd.com/track/${order.orderNumber}
 
-Questions? Reply to this message or call +8801800000000`;
+Questions? Reply to this message or call +8801646886795`;
 
       const result = await whatsappService.sendMessage(user.phone, message, {
         isBot: true,
@@ -573,7 +567,7 @@ Your quotation #${quote.quoteNumber} is ready for review.
 View your quote:
 https://medcorebd.com/account/quotes/${quote._id}
 
-Questions? Reply to this message or call +8801800000000`;
+Questions? Reply to this message or call +8801646886795`;
 
       const result = await whatsappService.sendMessage(user.phone, message, {
         isBot: true,

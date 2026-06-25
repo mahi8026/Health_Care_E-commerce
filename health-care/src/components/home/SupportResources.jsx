@@ -202,7 +202,7 @@ export default function SupportResources() {
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
-              onClick={() => handleClick('tel:+8801800000000')}
+              onClick={() => handleClick('tel:+8801646886795000000')}
               style={{
                 padding: '10px 24px',
                 background: '#0E8A6E',
