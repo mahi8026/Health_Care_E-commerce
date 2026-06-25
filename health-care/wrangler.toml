@@ -1,9 +1,16 @@
 # Cloudflare Pages + OpenNext configuration
 # Docs: https://opennext.js.org/cloudflare
+#
+# OpenNext builds to .open-next/ with this structure:
+#   .open-next/worker.js          ← Cloudflare Worker (SSR)
+#   .open-next/assets/            ← Static files served by Pages
+#
+# Cloudflare Pages reads pages_build_output_dir for static assets.
+# The Worker is deployed as a Pages Function via the _worker.js convention.
 
 name = "medcorebd"
-compatibility_date = "2024-09-23"
+compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat"]
 
-# OpenNext builds into .open-next/assets for Cloudflare Pages
+# Point Pages to the assets directory for static file serving
 pages_build_output_dir = ".open-next/assets"

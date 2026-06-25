@@ -1,16 +1,6 @@
 # Cloudflare Pages redirects
 # Docs: https://developers.cloudflare.com/pages/configuration/redirects/
-# Next.js redirects in next.config.mjs take priority — these are a fallback layer.
-
-# Old category query-param URLs → slug-based URLs (SEO: 301 passes link equity)
-/products?category=Diagnostic+Equipment    /products/category/diagnostic-equipment    301
-/products?category=Surgical+Instruments    /products/category/surgical-instruments    301
-/products?category=Laboratory+Reagents     /products/category/laboratory-reagents     301
-/products?category=Hospital+Machines       /products/category/hospital-machines       301
-/products?category=Lab+Equipment           /products/category/lab-equipment           301
-/products?category=PPE+%26+Safety          /products/category/ppe-safety              301
-/products?category=Dental+Equipment        /products/category/dental-equipment        301
-/products?category=Implants+%26+Ortho      /products/category/implants-ortho          301
-
-# SPA fallback — required for Next.js App Router on Cloudflare Pages
-# (Cloudflare Pages handles this automatically for Next.js, but kept as safety net)
+#
+# NOTE: Category query-param redirects (e.g. /products?category=X → /products/category/slug)
+# are handled by Next.js redirects in next.config.mjs — Cloudflare Pages does not
+# support query-parameter-based redirect rules, so they are intentionally omitted here.
