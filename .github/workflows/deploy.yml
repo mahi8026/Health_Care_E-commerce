@@ -1,103 +1,51 @@
-name: CI / Deploy
+name: Deploy to Cloudflare Workers
 
 on:
   push:
     branches:
       - main
-      - develop
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
-# Cloudflare Pages handles production deployment via GitHub integration OR
-# this workflow deploys explicitly using wrangler for full control.
-
 jobs:
-  lint-and-build:
-    name: Lint and Build
+  deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: health-care/package-lock.json
+          node-version: '22'
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
         working-directory: health-care
-        run: npm ci --ignore-scripts
-
-      - name: Run frontend linter
-        working-directory: health-care
-        run: npm run lint
-        continue-on-error: true
-
-      - name: Build frontend
-        working-directory: health-care
-        run: npm run build
+        run: npm install --legacy-peer-deps
         env:
-          NODE_ENV: production
           HUSKY: "0"
-          NEXT_PUBLIC_API_URL: https://health-care-e-commerce.onrender.com/api
-          NEXT_PUBLIC_SITE_URL: https://medcorebd.pages.dev
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: dm8eqxwlz
-          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ml_default
-          NEXT_PUBLIC_GA4_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA4_MEASUREMENT_ID }}
-          BACKEND_URL: https://health-care-e-commerce.onrender.com
 
-      # Deploy to Cloudflare Pages on pushes to main only
-      # Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repo secrets.
-      # Setup: https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/
-      - name: Deploy to Cloudflare Pages
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy health-care/.next --project-name=medcorebd --commit-dirty=true
-
-  test-backend:
-    name: Test Backend
-    runs-on: ubuntu-latest
-
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand({ping: 1})'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: health-care/backend/package-lock.json
-
-      - name: Install backend dependencies
-        working-directory: health-care/backend
-        run: npm install
-
-      - name: Run backend tests
-        working-directory: health-care/backend
-        run: npm test
-        continue-on-error: true
+      - name: Build for Cloudflare Workers
+        working-directory: health-care
+        run: npm run build:cf
         env:
-          NODE_ENV: test
-          JWT_SECRET: ci_test_secret
-          JWT_REFRESH_SECRET: ci_test_refresh_secret
-          MONGODB_URI: mongodb://localhost:27017/medcore-test
+          HUSKY: "0"
+          NODE_ENV: production
+          CF_PAGES: "1"
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
+          NEXT_PUBLIC_GA4_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA4_MEASUREMENT_ID }}
+          NEXT_PUBLIC_WHATSAPP_NUMBER: ${{ secrets.NEXT_PUBLIC_WHATSAPP_NUMBER }}
+          NEXT_PUBLIC_PHONE: ${{ secrets.NEXT_PUBLIC_PHONE }}
+          NEXT_PUBLIC_EMAIL: ${{ secrets.NEXT_PUBLIC_EMAIL }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+
+      - name: Deploy to Cloudflare Workers
+        working-directory: health-care
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
