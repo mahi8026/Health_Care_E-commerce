@@ -1,27 +1,23 @@
 /**
  * build-cf-fix.js
  *
- * Prepares the Cloudflare Pages output directory.
+ * Prepares the Cloudflare Pages _worker.js bundle.
  *
- * OpenNext builds to .open-next/ with:
- *   .open-next/worker.js                          ← Worker entry (references siblings)
- *   .open-next/cloudflare/                        ← Worker deps
- *   .open-next/middleware/                        ← middleware handler
- *   .open-next/server-functions/default/          ← SSR handler
- *   .open-next/.build/durable-objects/            ← durable objects
- *   .open-next/assets/                            ← static files (_next/, public files)
+ * OpenNext builds:
+ *   .open-next/worker.js           ← entry point (has dynamic imports to siblings)
+ *   .open-next/assets/             ← static files
+ *   .open-next/cloudflare/         ← worker deps
+ *   .open-next/middleware/
+ *   .open-next/server-functions/
+ *   .open-next/.build/
  *
- * Cloudflare Pages with _worker.js support expects the output dir to contain:
- *   <output>/_worker.js      ← Worker entry
- *   <output>/cloudflare/     ← sibling deps (same level as _worker.js)
- *   <output>/middleware/
- *   <output>/server-functions/
- *   <output>/.build/
- *   <output>/<static files>  ← _next/, images, etc. also at root
+ * Cloudflare Pages _worker.js requirement:
+ *   - Must be in the pages_build_output_dir (.open-next/assets/)
+ *   - Must be a SINGLE self-contained file (no external imports)
+ *     OR the sibling files must also be in pages_build_output_dir
  *
- * Strategy: use .open-next/ as the Pages output dir (not .open-next/assets/).
- * Copy static assets UP from .open-next/assets/ to .open-next/, 
- * and rename worker.js → _worker.js at .open-next/ root.
+ * Strategy: Copy the entire .open-next/ tree INTO .open-next/assets/
+ * so _worker.js and all its siblings are together in the output dir.
  */
 
 const fs = require('fs');
@@ -31,6 +27,7 @@ const openNextDir = path.join(__dirname, '.open-next');
 const assetsDir = path.join(openNextDir, 'assets');
 
 function copyRecursive(src, dest) {
+  if (!fs.existsSync(src)) return;
   const stat = fs.statSync(src);
   if (stat.isDirectory()) {
     if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
@@ -38,30 +35,58 @@ function copyRecursive(src, dest) {
       copyRecursive(path.join(src, item), path.join(dest, item));
     }
   } else {
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(src, dest);
   }
 }
 
-// Step 1: Copy static assets from .open-next/assets/ UP to .open-next/
-console.log('Copying static assets from .open-next/assets/ → .open-next/...');
-if (fs.existsSync(assetsDir)) {
-  for (const item of fs.readdirSync(assetsDir)) {
-    const src = path.join(assetsDir, item);
-    const dest = path.join(openNextDir, item);
-    // Don't overwrite Worker deps (cloudflare/, middleware/, etc.)
-    if (!fs.existsSync(dest)) {
-      copyRecursive(src, dest);
-      console.log(`  Copied: assets/${item} → .open-next/${item}`);
-    }
+// Directories inside .open-next/ that worker.js imports from
+const workerDeps = ['cloudflare', 'middleware', 'server-functions', '.build'];
+
+console.log('Preparing Cloudflare Pages _worker.js bundle...');
+
+// Copy each worker dependency into .open-next/assets/
+for (const dep of workerDeps) {
+  const src = path.join(openNextDir, dep);
+  const dest = path.join(assetsDir, dep);
+  if (fs.existsSync(src)) {
+    copyRecursive(src, dest);
+    console.log(`  ✓ Copied .open-next/${dep}/ → .open-next/assets/${dep}/`);
   }
 }
 
-// Step 2: Rename worker.js → _worker.js at .open-next/ root
+// Copy worker.js → assets/_worker.js
 const workerSrc = path.join(openNextDir, 'worker.js');
-const workerDest = path.join(openNextDir, '_worker.js');
-if (fs.existsSync(workerSrc) && !fs.existsSync(workerDest)) {
-  fs.renameSync(workerSrc, workerDest);
-  console.log('Renamed .open-next/worker.js → .open-next/_worker.js');
+const workerDest = path.join(assetsDir, '_worker.js');
+if (fs.existsSync(workerSrc)) {
+  fs.copyFileSync(workerSrc, workerDest);
+  console.log('  ✓ Copied .open-next/worker.js → .open-next/assets/_worker.js');
+} else {
+  console.error('  ✗ ERROR: .open-next/worker.js not found!');
+  process.exit(1);
 }
 
-console.log('✅ Cloudflare Pages output prepared in .open-next/');
+// Write _routes.json to tell CF Pages which routes go to the Worker
+// Without this, CF Pages serves static files directly and bypasses the Worker
+const routesJson = {
+  version: 1,
+  include: ['/*'],
+  exclude: [
+    '/_next/static/*',
+    '/images/*',
+    '/fonts/*',
+    '/icons/*',
+    '/favicon.ico',
+    '/manifest.json',
+    '/sw.js',
+    '/robots.txt',
+    '/sitemap.xml',
+  ],
+};
+fs.writeFileSync(
+  path.join(assetsDir, '_routes.json'),
+  JSON.stringify(routesJson, null, 2)
+);
+console.log('  ✓ Written .open-next/assets/_routes.json');
+
+console.log('\n✅ Cloudflare Pages output ready in .open-next/assets/');

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "cross-env CF_PAGES=1 next build && npx @opennextjs/cloudflare@latest build",
+    "build:cf": "cross-env CF_PAGES=1 next build && npx @opennextjs/cloudflare@latest build && node build-cf-fix.js",
     "deploy:cf": "npm run build:cf && wrangler pages deploy .open-next/assets --project-name=health-care-e-commerce",
     "start": "next start",
     "lint": "next lint",

@@ -1,15 +1,12 @@
-# Cloudflare Workers + OpenNext configuration
-# This deploys as a Cloudflare Worker (not Pages)
-# The Worker handles SSR; static assets are served via the assets binding.
+# Cloudflare Pages + OpenNext configuration
+# Docs: https://opennext.js.org/cloudflare
 
 name = "health-care-e-commerce"
-main = ".open-next/worker.js"
 compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
-[assets]
-directory = ".open-next/assets"
-binding = "ASSETS"
+# Pages build output — static assets directory
+pages_build_output_dir = ".open-next/assets"
 
 [vars]
 CF_PAGES = "1"
