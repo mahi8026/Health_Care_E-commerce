@@ -49,7 +49,7 @@ curl -X POST http://localhost:5000/api/auth/register \
     "name": "B2B Hospital",
     "email": "b2b@hospital.com",
     "password": "B2BTest123!",
-    "phone": "+8801646886795000000",
+    "phone": "+8801646886795",
     "accountType": "b2b"
   }'
 ```

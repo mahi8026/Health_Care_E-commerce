@@ -141,8 +141,8 @@ export default function CODInfo({ orderTotal }) {
       <div className="p-3 rounded-lg bg-teal-50 border border-teal-200">
         <p className="text-xs text-teal-900">
           <span className="font-semibold">Need help?</span> Contact our support team at{' '}
-          <a href="tel:+8801646886795000000" className="font-bold text-teal-700 hover:underline">
-            +880 1800 000 000
+          <a href="tel:+8801646886795" className="font-bold text-teal-700 hover:underline">
+            +880 1646886795
           </a>
           {' '}or{' '}
           <a href="mailto:support@medcorebd.com" className="font-bold text-teal-700 hover:underline">

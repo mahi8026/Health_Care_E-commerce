@@ -1,7 +1,10 @@
 /**
  * Create Test Users for Load Testing
  * Run this script before running authenticated or B2B load tests
+ *
+ * This is a standalone CLI script — console output is intentional.
  */
+/* eslint-disable no-console */
 
 const axios = require('axios');
 
@@ -20,7 +23,7 @@ const testUsers = [
     name: 'B2B Hospital',
     email: 'b2b@hospital.com',
     password: 'B2BTest123!',
-    phone: '+8801646886795000000',
+    phone: '+8801646886795',
     accountType: 'b2b',
     companyName: 'Test Hospital Ltd',
     description: 'B2B user for bulk order testing'

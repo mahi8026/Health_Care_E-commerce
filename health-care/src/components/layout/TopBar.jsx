@@ -9,7 +9,7 @@ import { API } from '@/constants/api';
 const DEFAULT_ANNOUNCEMENTS = [
   { icon: <FaTruck size={11} />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
   { icon: <FaSnowflake size={11} />, text: 'Cold chain delivery for temperature-sensitive reagents — door to door' },
-  { icon: <FaTag size={11} />, text: 'B2B institutions get up to 30% bulk discount — Register today' },
+  { icon: <FaTag size={11} />, text: 'B2B institutions get up to 10% bulk discount — Register today' },
 ];
 
 function buildAnnouncements(settings) {

@@ -4,7 +4,7 @@ import FAQSchema from '../FAQSchema';
 // Mock SITE_CONFIG
 jest.mock('@/config/seo', () => ({
   SITE_CONFIG: {
-    phone: '+8801646886795000000',
+    phone: '+8801646886795',
     email: 'info@medcorebd.com',
     url: 'https://medcorebd.com',
   },
