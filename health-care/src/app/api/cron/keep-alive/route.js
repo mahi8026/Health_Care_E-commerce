@@ -14,8 +14,6 @@
  * }
  */
 
-export const runtime = 'edge';
-
 export async function GET(request) {
   // Verify this is a Vercel Cron request
   const authHeader = request.headers.get('authorization');
