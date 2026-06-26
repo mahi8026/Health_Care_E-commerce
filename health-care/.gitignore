@@ -46,8 +46,8 @@ build/
 .open-next/
 
 # ── Lock file — managed per-environment to avoid npm ci conflicts ─────────────
-# Cloudflare Pages will run npm install when no lock file is present
-package-lock.json
+# Committed so that Cloudflare Workers Builds can use npm ci
+# package-lock.json
 dist/
 .turbo/
 
