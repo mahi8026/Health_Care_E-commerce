@@ -114,10 +114,16 @@ const corsOptions = {
     // Allow all Vercel preview URLs
     const isVercelPreview = origin && origin.includes('.vercel.app');
 
+    // Allow all Cloudflare Workers/Pages preview URLs
+    const isCloudflarePreview = origin && (
+      origin.includes('.workers.dev') ||
+      origin.includes('.pages.dev')
+    );
+
     // Allow requests with no origin (mobile apps, Postman, server-side, etc.)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin) || isVercelPreview) {
+    if (allowedOrigins.includes(origin) || isVercelPreview || isCloudflarePreview) {
       callback(null, true);
     } else {
       logger.warn(`CORS rejected origin: ${origin}`);
