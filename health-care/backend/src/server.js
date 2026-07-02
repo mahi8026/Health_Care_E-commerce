@@ -499,9 +499,26 @@ if (process.env.NODE_ENV !== 'test') {
   });
 
   // Handle unhandled promise rejections
-  process.on('unhandledRejection', (err) => {
-    logger.error(`Unhandled Rejection: ${err.message}`);
+  process.on('unhandledRejection', (err, promise) => {
+    logger.error('Unhandled Promise Rejection detected:', {
+      error: err.message,
+      stack: err.stack,
+      promise: promise
+    });
+    console.error('❌ UNHANDLED REJECTION:', err);
+    console.error('Stack:', err.stack);
     httpServer.close(() => process.exit(1));
+  });
+
+  // Handle uncaught exceptions
+  process.on('uncaughtException', (err) => {
+    logger.error('Uncaught Exception detected:', {
+      error: err.message,
+      stack: err.stack
+    });
+    console.error('❌ UNCAUGHT EXCEPTION:', err);
+    console.error('Stack:', err.stack);
+    process.exit(1);
   });
 
   // Shared graceful shutdown logic — Requirements 12.2, 12.9, 12.10
