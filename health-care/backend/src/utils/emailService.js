@@ -19,9 +19,24 @@ async function getTransporter() {
       // Force IPv4 to avoid IPv6 connectivity issues on some hosts
       family: 4,
       // Add connection timeout and retry settings
-      connectionTimeout: 10000,
-      greetingTimeout: 5000,
-      socketTimeout: 10000
+      connectionTimeout: 30000,  // Increased to 30 seconds
+      greetingTimeout: 15000,    // Increased to 15 seconds
+      socketTimeout: 45000,      // Increased to 45 seconds
+      // Connection pooling settings
+      pool: true,
+      maxConnections: 1,
+      maxMessages: 3,
+      // Force TLS
+      requireTLS: true,
+      tls: {
+        rejectUnauthorized: false,  // Don't reject self-signed certificates
+        minVersion: 'TLSv1.2'
+      },
+      // Retry on error
+      retry: 3,
+      // Add debug logging
+      logger: process.env.NODE_ENV === 'development',
+      debug: process.env.NODE_ENV === 'development'
     });
   } else {
     // Ethereal test account for development
