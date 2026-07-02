@@ -15,7 +15,13 @@ async function getTransporter() {
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
-      }
+      },
+      // Force IPv4 to avoid IPv6 connectivity issues on some hosts
+      family: 4,
+      // Add connection timeout and retry settings
+      connectionTimeout: 10000,
+      greetingTimeout: 5000,
+      socketTimeout: 10000
     });
   } else {
     // Ethereal test account for development
