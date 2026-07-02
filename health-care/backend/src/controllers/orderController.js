@@ -767,13 +767,6 @@ exports.sendNotification = async (req, res) => {
       .lean();
     if (!order) return errorResponse(res, 'Order not found', null, 404);
 
-    // Add database query timeout (5 seconds)
-    const order = await Order.findById(id)
-      .populate('user', 'name email phone')
-      .maxTimeMS(5000)
-      .lean();
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
-
     // Get mutable order for updating (without .lean())
     const mutableOrder = await Order.findById(id);
     
