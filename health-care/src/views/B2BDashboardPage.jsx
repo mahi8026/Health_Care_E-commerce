@@ -678,6 +678,59 @@ export default function B2BDashboardPage() {
   // Not logged in → show marketing landing page
   if (!authed) return <B2BLanding />;
 
+  // Check if user is actually a B2B customer
+  // B2B users have a tier property or accountType === 'b2b'
+  const isB2BUser = user?.tier || user?.accountType === 'b2b' || user?.role === 'b2b';
+  
+  // Regular B2C customer trying to access B2B portal → show landing page with message
+  if (authed && !isB2BUser) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="bg-[#0B2545] text-white px-4 md:px-8 py-4">
+          <div className="max-w-7xl mx-auto">
+            <h1 className="text-[18px] font-bold">B2B Portal</h1>
+          </div>
+        </div>
+        <div className="max-w-3xl mx-auto px-4 py-16 text-center">
+          <div className="text-[64px] mb-6">🏢</div>
+          <h2 className="text-[28px] font-bold text-[#0B2545] mb-4">
+            B2B Portal Access Required
+          </h2>
+          <p className="text-[15px] text-[#6B7280] leading-relaxed mb-6">
+            This section is exclusively for B2B customers (hospitals, clinics, diagnostic centers). 
+            If you're interested in bulk orders and special pricing, please apply for a B2B account.
+          </p>
+          <div className="bg-[#F0FDF9] border border-[#0E8A6E]/20 rounded-2xl p-6 mb-8">
+            <h3 className="text-[16px] font-bold text-[#0B2545] mb-3">B2B Benefits:</h3>
+            <div className="grid md:grid-cols-2 gap-3 text-left text-[13px] text-[#374151]">
+              {['Up to 30% bulk discounts', 'Credit terms (30-90 days)', 'Dedicated account manager', 'Free installation & training'].map(benefit => (
+                <div key={benefit} className="flex items-center gap-2">
+                  <span className="text-[#0E8A6E]">✓</span>
+                  {benefit}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            <button 
+              onClick={() => document.getElementById('b2b-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-6 py-3 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-xl text-[14px] font-bold transition-colors"
+            >
+              Apply for B2B Account
+            </button>
+            <button 
+              onClick={() => window.location.href = '/products'}
+              className="px-6 py-3 border border-[#E5E7EB] hover:border-[#0E8A6E]/40 text-[#374151] rounded-xl text-[14px] font-semibold transition-colors"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+        <B2BLanding />
+      </div>
+    );
+  }
+
   // Loading
   if (loading) {
     return (
