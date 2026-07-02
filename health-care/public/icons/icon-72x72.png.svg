@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="72" height="72" fill="#0B2545"/>
+  
+  <!-- Medical cross -->
+  <g transform="translate(36, 36)">
+    <rect x="-5.76" y="-18" width="11.52" height="36" fill="white" rx="1.44"/>
+    <rect x="-18" y="-5.76" width="36" height="11.52" fill="white" rx="1.44"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="36" y="54" 
+        font-family="Arial, sans-serif" 
+        font-size="8.64" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle">MedCore</text>
+</svg>

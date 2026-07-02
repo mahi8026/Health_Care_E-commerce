@@ -19,6 +19,7 @@ import ToastProvider from "@/components/ui/ToastProvider";
 import ServiceWorkerRegistration from "@/components/ui/ServiceWorkerRegistration";
 import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 import LoginPromptModal from "@/components/ui/LoginPromptModal";
+import InstallPWA from "@/components/ui/InstallPWA";
 
 export const dynamic = 'force-dynamic';
 
@@ -124,6 +125,26 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://www.google-analytics.com" />
         {/* PWA manifest */}
         <link rel="manifest" href="/manifest.json" />
+        
+        {/* Apple Touch Icons for iOS */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-128x128.png" />
+        
+        {/* iOS Meta Tags */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="MedCore BD" />
+        
+        {/* Favicon */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-72x72.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png" />
+        
+        {/* MS Tiles for Windows */}
+        <meta name="msapplication-TileColor" content="#0B2545" />
+        <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
         {/* Preload LCP hero image from Cloudinary CDN */}
         <link
           rel="preload"
@@ -173,6 +194,9 @@ export default function RootLayout({ children }) {
 
         {/* PWA Service Worker */}
         <ServiceWorkerRegistration />
+
+        {/* PWA Install Prompt */}
+        <InstallPWA />
 
         {/* Google Analytics 4 — loaded after interactive to avoid blocking */}
         {gaId && (

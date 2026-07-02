@@ -11,6 +11,63 @@ try {
   console.warn('Continuing build - ensure env vars are set in the hosting dashboard');
 }
 
+// PWA configuration
+import withPWA from 'next-pwa';
+
+const pwaConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'cloudinary-images',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        },
+      },
+    },
+    {
+      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts-stylesheets',
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+        },
+      },
+    },
+    {
+      urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts-webfonts',
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+        },
+      },
+    },
+    {
+      urlPattern: /\/api\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'api-cache',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 5 * 60, // 5 minutes
+        },
+        networkTimeoutSeconds: 10,
+      },
+    },
+  ],
+});
+
 // Conditionally load bundle analyzer — only available as a devDependency
 // Vercel production builds skip devDependencies, so guard the import
 let withBundleAnalyzer = (config) => config;
@@ -195,4 +252,4 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default withBundleAnalyzer(pwaConfig(nextConfig));

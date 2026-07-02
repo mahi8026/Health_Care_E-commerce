@@ -2,7 +2,7 @@
   "name": "MedCore BD — Medical Equipment Bangladesh",
   "short_name": "MedCore BD",
   "description": "Bangladesh's leading medical equipment e-commerce platform. Buy ECG machines, surgical instruments, lab reagents and more.",
-  "start_url": "/",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
   "background_color": "#F6F9FC",
   "theme_color": "#0B2545",
@@ -11,22 +11,143 @@
   "lang": "en-BD",
   "dir": "ltr",
   "categories": ["shopping", "medical", "health"],
-  "icons": [],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96x96.png.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png.svg",
+      "sizes": "152x152",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384x384.png.svg",
+      "sizes": "384x384",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192-maskable.png.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Browse Products",
-      "url": "/products",
-      "description": "Browse all medical equipment"
+      "short_name": "Products",
+      "url": "/products?utm_source=pwa_shortcut",
+      "description": "Browse all medical equipment",
+      "icons": [
+        {
+          "src": "/icons/shortcut-products.png.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
     },
     {
       "name": "Reagent Store",
-      "url": "/reagent-store",
-      "description": "Laboratory reagents and supplies"
+      "short_name": "Reagents",
+      "url": "/reagent-store?utm_source=pwa_shortcut",
+      "description": "Laboratory reagents and supplies",
+      "icons": [
+        {
+          "src": "/icons/shortcut-reagents.png.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
     },
     {
       "name": "B2B Portal",
-      "url": "/b2b",
-      "description": "B2B pricing and bulk orders"
+      "short_name": "B2B",
+      "url": "/b2b?utm_source=pwa_shortcut",
+      "description": "B2B pricing and bulk orders",
+      "icons": [
+        {
+          "src": "/icons/shortcut-b2b.png.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Track Order",
+      "short_name": "Track",
+      "url": "/track?utm_source=pwa_shortcut",
+      "description": "Track your order status",
+      "icons": [
+        {
+          "src": "/icons/shortcut-track.png.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home-mobile.png",
+      "sizes": "640x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "MedCore BD Homepage"
+    },
+    {
+      "src": "/screenshots/products-mobile.png",
+      "sizes": "640x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Product Catalog"
+    },
+    {
+      "src": "/screenshots/home-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "MedCore BD Desktop View"
     }
   ],
   "related_applications": [],

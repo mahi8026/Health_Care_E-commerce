@@ -45,6 +45,19 @@ build/
 # ── Cloudflare / OpenNext build output ───────────────────────────────────────
 .open-next/
 
+# ── PWA Generated Files ──────────────────────────────────────────────────────
+# next-pwa generates these files automatically
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/worker-*.js
+public/worker-*.js.map
+public/fallback-*.js
+
+# Keep custom service worker if you wrote one manually
+!public/sw-custom.js
+
 # ── Lock file — managed per-environment to avoid npm ci conflicts ─────────────
 # Committed so that Cloudflare Workers Builds can use npm ci
 # package-lock.json
