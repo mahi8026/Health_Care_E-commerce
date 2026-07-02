@@ -184,7 +184,7 @@ exports.updateManufacturer = async (req, res) => {
   }
 };
 
-// @desc    Delete/Deactivate manufacturer
+// @desc    Delete/Deactivate manufacturer (CASCADE: deletes all associated products)
 // @route   DELETE /api/manufacturers/:id
 // @access  Private/Admin
 exports.deleteManufacturer = async (req, res) => {
@@ -195,24 +195,90 @@ exports.deleteManufacturer = async (req, res) => {
       return errorResponse(res, 'Manufacturer not found', null, 404);
     }
     
-    // Soft delete - just deactivate (allow even if products exist)
-    manufacturer.isActive = false;
-    await manufacturer.save();
+    // Check if force delete is requested (query param ?force=true)
+    const forceDelete = req.query.force === 'true';
     
-    // Invalidate cache so GET requests return fresh data
-    await invalidateCache('manufacturers:*');
-    
-    // Log manufacturer deletion activity
-    logActivityAsync({
-      user: req.user,
-      action: ACTIONS.MANUFACTURER.DELETED,
-      targetModel: 'Manufacturer',
-      targetId: manufacturer._id,
-      targetName: manufacturer.name,
-      req
-    });
-    
-    return successResponse(res, null, 'Manufacturer deactivated successfully');
+    if (forceDelete) {
+      // HARD DELETE: Permanently delete manufacturer and all products
+      // Count products before deletion for logging
+      const productCount = await Product.countDocuments({ brand: manufacturer._id });
+      
+      // Delete all products associated with this manufacturer (CASCADE DELETE)
+      const productDeleteResult = await Product.deleteMany({ brand: manufacturer._id });
+      
+      // Delete the manufacturer permanently
+      await Manufacturer.findByIdAndDelete(req.params.id);
+      
+      // Invalidate caches
+      await redisCache.invalidateBrands();
+      await redisCache.invalidateProducts();
+      await invalidateCache('manufacturers:*');
+      await invalidateCache('products:*');
+      
+      // Log manufacturer deletion activity
+      logActivityAsync({
+        user: req.user,
+        action: ACTIONS.MANUFACTURER.DELETED,
+        targetModel: 'Manufacturer',
+        targetId: manufacturer._id,
+        targetName: manufacturer.name,
+        req,
+        metadata: {
+          deleteType: 'hard',
+          productsDeleted: productDeleteResult.deletedCount,
+          productCountBefore: productCount
+        }
+      });
+      
+      logger.warn(`[deleteManufacturer] HARD DELETE: Manufacturer ${manufacturer._id} and ${productDeleteResult.deletedCount} products permanently deleted`);
+      
+      return successResponse(res, {
+        manufacturerDeleted: true,
+        productsDeleted: productDeleteResult.deletedCount
+      }, `Manufacturer and ${productDeleteResult.deletedCount} associated products deleted permanently`);
+    } else {
+      // SOFT DELETE: Deactivate manufacturer and all products (default behavior)
+      // Count products before deactivation
+      const productCount = await Product.countDocuments({ brand: manufacturer._id, isActive: true });
+      
+      // Deactivate all products associated with this manufacturer (CASCADE DEACTIVATE)
+      const productUpdateResult = await Product.updateMany(
+        { brand: manufacturer._id },
+        { $set: { isActive: false } }
+      );
+      
+      // Deactivate the manufacturer
+      manufacturer.isActive = false;
+      await manufacturer.save();
+      
+      // Invalidate caches
+      await redisCache.invalidateBrands();
+      await redisCache.invalidateProducts();
+      await invalidateCache('manufacturers:*');
+      await invalidateCache('products:*');
+      
+      // Log manufacturer deletion activity
+      logActivityAsync({
+        user: req.user,
+        action: ACTIONS.MANUFACTURER.DELETED,
+        targetModel: 'Manufacturer',
+        targetId: manufacturer._id,
+        targetName: manufacturer.name,
+        req,
+        metadata: {
+          deleteType: 'soft',
+          productsDeactivated: productUpdateResult.modifiedCount,
+          activeProductCountBefore: productCount
+        }
+      });
+      
+      logger.info(`[deleteManufacturer] SOFT DELETE: Manufacturer ${manufacturer._id} and ${productUpdateResult.modifiedCount} products deactivated`);
+      
+      return successResponse(res, {
+        manufacturerDeactivated: true,
+        productsDeactivated: productUpdateResult.modifiedCount
+      }, `Manufacturer and ${productUpdateResult.modifiedCount} associated products deactivated successfully`);
+    }
   } catch (error) {
     logger.error(`[deleteManufacturer] ${error.message}`);
     return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
