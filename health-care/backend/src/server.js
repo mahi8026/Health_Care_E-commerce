@@ -267,6 +267,7 @@ app.use('/api/whatsapp', require('./routes/whatsappRoutes')); // WhatsApp automa
 app.use('/api/chat', require('./routes/chatRoutes')); // Live chat integration
 app.use('/api/loyalty', dbHealthCheck, require('./routes/loyaltyRoutes')); // Loyalty program
 app.use('/api/flash-deals', dbHealthCheck, require('./routes/flashDealRoutes')); // Flash deals management
+app.use('/api/test', dbHealthCheck, require('./routes/testRoutes')); // Test and debugging endpoints (admin only)
 
 // ── One-time slug migration endpoint (admin, secret-protected) ───────────────
 // Regenerates all product slugs using the clean name-only format.

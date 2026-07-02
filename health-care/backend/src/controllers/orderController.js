@@ -349,8 +349,14 @@ exports.createOrder = async (req, res) => {
 
     // Send order confirmation email asynchronously
     emailService.sendOrderConfirmation(order[0], user).then(result => {
-      logger.info(`[createOrder] Order confirmation email sent to ${user.email}`);
-    }).catch(err => logger.error(`[createOrder] email exception: ${err.message}`));
+      logger.info(`[createOrder] ✅ Order confirmation email sent successfully to ${user.email}`);
+    }).catch(err => {
+      logger.error(`[createOrder] ❌ Email failed for ${user.email}: ${err.message}`);
+      logger.error(`[createOrder] Email error stack: ${err.stack}`);
+      // Log SMTP configuration status (without sensitive data)
+      logger.error(`[createOrder] SMTP_HOST configured: ${!!process.env.SMTP_HOST}`);
+      logger.error(`[createOrder] SMTP_USER configured: ${!!process.env.SMTP_USER}`);
+    });
 
     // Send order confirmation SMS asynchronously (non-blocking)
     if (user.phone) {
