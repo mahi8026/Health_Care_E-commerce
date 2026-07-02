@@ -1,4 +1,4 @@
-const redis = require('../config/redis');
+const redisCache = require('../services/redisCache');
 const logger = require('../utils/logger');
 
 /**
@@ -17,6 +17,17 @@ class TokenBlacklistService {
   }
 
   /**
+   * Get raw Redis client for direct operations
+   * @returns {Object|null} Redis client or null if not connected
+   */
+  getClient() {
+    if (!redisCache.isRedisConnected()) {
+      return null;
+    }
+    return redisCache.getRedisClient();
+  }
+
+  /**
    * Blacklist a JWT token
    * @param {string} token - JWT token to blacklist
    * @param {number} expiresIn - Token expiration time in seconds
@@ -29,11 +40,17 @@ class TokenBlacklistService {
         return false;
       }
 
+      const client = this.getClient();
+      if (!client) {
+        logger.warn('[TokenBlacklist] Redis not connected, token not blacklisted');
+        return false;
+      }
+
       const key = `${this.keyPrefix}${token}`;
       
       // Store token in Redis with TTL
       // After expiration, token is automatically removed (no need to check blacklist)
-      await redis.setex(key, expiresIn, Date.now().toString());
+      await client.setex(key, expiresIn, Date.now().toString());
       
       logger.info('[TokenBlacklist] Token blacklisted successfully', {
         tokenPrefix: token.substring(0, 20) + '...',
@@ -58,8 +75,14 @@ class TokenBlacklistService {
         return false;
       }
 
+      const client = this.getClient();
+      if (!client) {
+        // Redis not connected - fail open (allow access for availability)
+        return false;
+      }
+
       const key = `${this.keyPrefix}${token}`;
-      const exists = await redis.exists(key);
+      const exists = await client.exists(key);
       
       return exists === 1;
     } catch (error) {
@@ -77,8 +100,14 @@ class TokenBlacklistService {
    */
   async recordSecretRotation() {
     try {
+      const client = this.getClient();
+      if (!client) {
+        logger.warn('[TokenBlacklist] Redis not connected, rotation not recorded');
+        return false;
+      }
+
       const timestamp = Date.now();
-      await redis.set(this.secretRotationKey, timestamp.toString());
+      await client.set(this.secretRotationKey, timestamp.toString());
       
       logger.info('[TokenBlacklist] JWT secret rotation recorded', { timestamp });
       
@@ -95,7 +124,12 @@ class TokenBlacklistService {
    */
   async getSecretRotationTimestamp() {
     try {
-      const timestamp = await redis.get(this.secretRotationKey);
+      const client = this.getClient();
+      if (!client) {
+        return null;
+      }
+
+      const timestamp = await client.get(this.secretRotationKey);
       
       if (!timestamp) {
         return null;
@@ -141,12 +175,18 @@ class TokenBlacklistService {
    */
   async blacklistAllUserTokens(userId) {
     try {
+      const client = this.getClient();
+      if (!client) {
+        logger.warn('[TokenBlacklist] Redis not connected, user tokens not blacklisted');
+        return false;
+      }
+
       const key = `blacklist:user:${userId}`;
       const timestamp = Date.now();
       
       // Store timestamp when all user tokens were invalidated
       // Tokens issued before this timestamp are invalid
-      await redis.set(key, timestamp.toString());
+      await client.set(key, timestamp.toString());
       
       logger.info('[TokenBlacklist] All tokens invalidated for user', { userId });
       
@@ -165,8 +205,13 @@ class TokenBlacklistService {
    */
   async isUserTokenInvalidated(userId, tokenIssuedAt) {
     try {
+      const client = this.getClient();
+      if (!client) {
+        return false;
+      }
+
       const key = `blacklist:user:${userId}`;
-      const invalidationTimestamp = await redis.get(key);
+      const invalidationTimestamp = await client.get(key);
       
       if (!invalidationTimestamp) {
         return false;
@@ -188,11 +233,16 @@ class TokenBlacklistService {
    */
   async clearAll() {
     try {
+      const client = this.getClient();
+      if (!client) {
+        return false;
+      }
+
       const pattern = `${this.keyPrefix}*`;
-      const keys = await redis.keys(pattern);
+      const keys = await client.keys(pattern);
       
       if (keys.length > 0) {
-        await redis.del(...keys);
+        await client.del(...keys);
       }
       
       logger.info('[TokenBlacklist] Cleared all blacklisted tokens', { count: keys.length });
