@@ -331,9 +331,9 @@ exports.getCustomers = async (req, res) => {
 // PATCH /api/admin/customers/:id
 exports.updateCustomer = async (req, res) => {
   try {
-    const { b2bTier, creditLimit, accountManager, paymentTerms, isActive, role } = req.body;
+    const { b2bTier, creditLimit, accountManager, paymentTerms, isActive, role, b2bDiscountEnabled, b2bDiscountPct } = req.body;
     
-    logger.info(`[adminController] Updating customer ${req.params.id} with:`, { b2bTier, creditLimit, accountManager, paymentTerms, isActive, role });
+    logger.info(`[adminController] Updating customer ${req.params.id} with:`, { b2bTier, creditLimit, accountManager, paymentTerms, isActive, role, b2bDiscountEnabled, b2bDiscountPct });
     
     // Validate customer ID
     if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -348,6 +348,9 @@ exports.updateCustomer = async (req, res) => {
     if (paymentTerms) updates.paymentTerms = paymentTerms;
     if (isActive !== undefined) updates.isActive = isActive;
     if (role) updates.role = role;
+    // B2B discount — admin controlled
+    if (b2bDiscountEnabled !== undefined) updates.b2bDiscountEnabled = b2bDiscountEnabled;
+    if (b2bDiscountPct !== undefined) updates.b2bDiscountPct = Math.min(100, Math.max(0, Number(b2bDiscountPct) || 0));
 
     logger.info(`[adminController] Updates to apply:`, updates);
 

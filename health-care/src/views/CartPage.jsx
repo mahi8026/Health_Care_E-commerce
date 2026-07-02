@@ -11,7 +11,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
   const router = useRouter();
   const t = useT();
   const { cart, updateQuantity, removeFromCart, getCartTotal, getCartCount, clearCart } = useCart();
-  const { isB2BCustomer } = useAuth();
+  const { isB2BCustomer, user } = useAuth();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [removingId, setRemovingId] = useState(null);
@@ -20,7 +20,10 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
   const [toast, setToast] = useState(null);
 
   const subtotal = getCartTotal();
-  const b2bDiscount = isB2BCustomer() ? Math.round(subtotal * 0.08) : 0;
+  // B2B discount only shown if admin has explicitly enabled it for this user
+  const b2bDiscount = (isB2BCustomer() && user?.b2bDiscountEnabled && user?.b2bDiscountPct > 0)
+    ? Math.round(subtotal * (user.b2bDiscountPct / 100))
+    : 0;
   const total = subtotal - b2bDiscount;
   const freeDeliveryThreshold = 50000;
   const amountToFreeDelivery = Math.max(0, freeDeliveryThreshold - subtotal);

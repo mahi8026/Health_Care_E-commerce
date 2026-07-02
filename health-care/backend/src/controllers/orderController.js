@@ -109,15 +109,15 @@ exports.createOrder = async (req, res) => {
       orderItems.push({ product: product._id, name: product.name, sku: product.sku, brand: product.brand, price: product.price, qty, quantity: qty });
     }
 
-    // B2B discount — use user's b2bDiscountPct or default 8%
+    // B2B discount — only apply if admin has explicitly enabled it for this user
     const user = await withSession(User.findById(req.user.id));
     if (!user) {
       return abortAndError(res, 'User not found', 404);
     }
     let b2bDiscountPct = 0;
     let b2bDiscount = 0;
-    if (user.role === 'b2b_customer') {
-      b2bDiscountPct = user.b2bDiscountPct || 8;
+    if (user.role === 'b2b_customer' && user.b2bDiscountEnabled === true && user.b2bDiscountPct > 0) {
+      b2bDiscountPct = user.b2bDiscountPct;
       b2bDiscount = subtotal * (b2bDiscountPct / 100);
     }
 

@@ -82,6 +82,9 @@ const userSchema = new mongoose.Schema({
   },
   b2bId: { type: String },
   accountManager: { type: String },
+  // B2B discount — must be explicitly enabled by admin per user
+  b2bDiscountEnabled: { type: Boolean, default: false },
+  b2bDiscountPct: { type: Number, default: 0, min: 0, max: 100 },
   paymentTerms: {
     type: Number,
     enum: [30, 60, 90],

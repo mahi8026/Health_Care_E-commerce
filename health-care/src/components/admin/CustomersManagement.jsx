@@ -119,6 +119,23 @@ export default function CustomersManagement() {
     }
   };
 
+  const handleUpdateDiscount = async (customerId, enabled, pct) => {
+    try {
+      const token = localStorage.getItem('medcore_token');
+      const res = await fetch(`${API}/admin/customers/${customerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ b2bDiscountEnabled: enabled, b2bDiscountPct: pct }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Update failed');
+      showMessage(`B2B discount ${enabled ? 'enabled at ' + pct + '%' : 'disabled'}`, 'success');
+      fetchCustomers();
+    } catch (error) {
+      showMessage(error.message || 'Failed to update discount', 'error');
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     setSearch(searchInput);
@@ -247,7 +264,7 @@ export default function CustomersManagement() {
             <table className="w-full" style={{minWidth: '900px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                  {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
+                  {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'B2B Discount', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                       {h}
                     </th>
@@ -292,6 +309,26 @@ export default function CustomersManagement() {
                         <option value="Gold">Gold</option>
                         <option value="Platinum">Platinum</option>
                       </select>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={!!customer.b2bDiscountEnabled}
+                          onChange={e => handleUpdateDiscount(customerId, e.target.checked, customer.b2bDiscountPct || 0)}
+                          className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
+                          title="Enable B2B discount"
+                        />
+                        <input
+                          type="number"
+                          min="0" max="100"
+                          defaultValue={customer.b2bDiscountPct || 0}
+                          onBlur={e => handleUpdateDiscount(customerId, !!customer.b2bDiscountEnabled, Number(e.target.value))}
+                          disabled={!customer.b2bDiscountEnabled}
+                          className="w-14 text-[11px] px-1 py-[3px] border border-[#E5E7EB] rounded text-center disabled:opacity-40"
+                        />
+                        <span className="text-[11px] text-[#6B7280]">%</span>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(customer.creditLimit || 0).toLocaleString()}
@@ -384,6 +421,33 @@ export default function CustomersManagement() {
                         <option value="Gold">Gold</option>
                         <option value="Platinum">Platinum</option>
                       </select>
+                    </div>
+                  </div>
+
+                  {/* B2B Discount control */}
+                  <div className="bg-white rounded-lg p-3 border border-[var(--color-border-tertiary)]">
+                    <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold mb-2">B2B Discount</div>
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!customer.b2bDiscountEnabled}
+                          onChange={e => handleUpdateDiscount(customerId, e.target.checked, customer.b2bDiscountPct || 0)}
+                          className="w-4 h-4 accent-[#0E8A6E]"
+                        />
+                        <span className="text-[12px] font-medium text-[#0B2545]">Enable</span>
+                      </label>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          min="0" max="100"
+                          defaultValue={customer.b2bDiscountPct || 0}
+                          onBlur={e => handleUpdateDiscount(customerId, !!customer.b2bDiscountEnabled, Number(e.target.value))}
+                          disabled={!customer.b2bDiscountEnabled}
+                          className="w-16 text-[13px] px-2 py-1 border border-[#E5E7EB] rounded-lg text-center disabled:opacity-40 min-h-[36px]"
+                        />
+                        <span className="text-[13px] text-[#6B7280] font-medium">%</span>
+                      </div>
                     </div>
                   </div>
 

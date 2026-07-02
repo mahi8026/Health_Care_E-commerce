@@ -58,11 +58,12 @@ function calculateSubtotal(items) {
  * @returns {Object} { discountPct, discountAmount }
  */
 function calculateB2BDiscount(user, subtotal) {
-  if (user.role !== 'b2b_customer') {
+  // Only apply if admin has explicitly enabled discount for this user
+  if (user.role !== 'b2b_customer' || !user.b2bDiscountEnabled || !user.b2bDiscountPct) {
     return { discountPct: 0, discountAmount: 0 };
   }
 
-  const discountPct = user.b2bDiscountPct || 8;
+  const discountPct = user.b2bDiscountPct;
   const discountAmount = subtotal * (discountPct / 100);
 
   return { discountPct, discountAmount };
