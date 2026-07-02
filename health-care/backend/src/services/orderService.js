@@ -341,8 +341,15 @@ async function awardLoyaltyPoints(
 async function sendOrderNotifications(order, user) {
   // Send order confirmation email
   try {
-    const { sendOrderConfirmation } = require('../utils/emailService');
-    await sendOrderConfirmation(order, user);
+    const { sendOrderConfirmation } = require('../services/emailService');
+    const result = await sendOrderConfirmation(order, user);
+    if (result.success) {
+      logger.info(`[sendOrderNotifications] ✅ Email sent to ${user.email}`);
+    } else if (result.skipped) {
+      logger.warn(`[sendOrderNotifications] ⚠️ Email skipped: ${result.reason}`);
+    } else {
+      logger.error(`[sendOrderNotifications] ❌ Email failed: ${result.error || result.errorMessage}`);
+    }
   } catch (error) {
     logger.error(`[sendOrderNotifications] Email failed: ${error.message}`);
   }

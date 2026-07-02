@@ -7,7 +7,7 @@ const {
   sendShippingNotification,
   sendDeliveryConfirmation,
   sendLowStockAlert
-} = require('../utils/emailService');
+} = require('../services/emailService');
 const { generateInvoice } = require('../utils/invoiceGenerator');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
