@@ -717,30 +717,50 @@ exports.sendNotification = async (req, res) => {
       return errorResponse(res, 'Invalid notification type', null, 400);
     }
 
-    const order = await Order.findById(id).populate('user', 'name email phone');
+    // Add database query timeout (5 seconds)
+    const order = await Order.findById(id)
+      .populate('user', 'name email phone')
+      .maxTimeMS(5000)
+      .lean();
     if (!order) return errorResponse(res, 'Order not found', null, 404);
 
+    // Add database query timeout (5 seconds)
+    const order = await Order.findById(id)
+      .populate('user', 'name email phone')
+      .maxTimeMS(5000)
+      .lean();
+    if (!order) return errorResponse(res, 'Order not found', null, 404);
+
+    // Get mutable order for updating (without .lean())
+    const mutableOrder = await Order.findById(id);
+    
     // Record that the admin triggered this notification
-    if (!order.notifications) order.notifications = {};
-    order.notifications[type] = new Date();
-    order.markModified('notifications');
-    await order.save();
+    if (!mutableOrder.notifications) mutableOrder.notifications = {};
+    mutableOrder.notifications[type] = new Date();
+    mutableOrder.markModified('notifications');
+    await mutableOrder.save();
 
     logger.info(`[Notification] Admin sent "${NOTIFICATION_LABELS[type]}" for order ${order.orderNumber} to ${order.user?.email || 'unknown'}`);
 
-    // ── Send real email ──────────────────────────────────────────────────────
+    // ── Send real email asynchronously (non-blocking) ────────────────────────
+    // Don't wait for email to complete - respond immediately to prevent timeout
     if (order.user?.email) {
       const customer = { name: order.user.name, email: order.user.email };
-      try {
-        switch (type) {
-          case 'confirmation': await emailService.sendOrderConfirmation(order, customer); break;
-          case 'payment':      await emailService.sendPaymentReceipt(order, customer);    break;
-          case 'shipping':     await emailService.sendShippingNotification(order, customer); break;
-          case 'delivery':     await emailService.sendDeliveryConfirmation(order, customer); break;
+      
+      // Send email in background (don't await)
+      setImmediate(async () => {
+        try {
+          switch (type) {
+            case 'confirmation': await emailService.sendOrderConfirmation(order, customer); break;
+            case 'payment':      await emailService.sendPaymentReceipt(order, customer);    break;
+            case 'shipping':     await emailService.sendShippingNotification(order, customer); break;
+            case 'delivery':     await emailService.sendDeliveryConfirmation(order, customer); break;
+          }
+          logger.info(`[sendNotification] Email sent successfully: ${type} for order ${order.orderNumber}`);
+        } catch (emailErr) {
+          logger.warn(`[sendNotification] Email failed (non-fatal): ${emailErr.message}`);
         }
-      } catch (emailErr) {
-        logger.warn(`[sendNotification] Email failed (non-fatal): ${emailErr.message}`);
-      }
+      });
     }
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -748,8 +768,8 @@ exports.sendNotification = async (req, res) => {
       type,
       label: NOTIFICATION_LABELS[type],
       orderNumber: order.orderNumber,
-      sentAt: order.notifications[type],
-    }, `${NOTIFICATION_LABELS[type]} notification logged successfully`);
+      sentAt: mutableOrder.notifications[type],
+    }, `${NOTIFICATION_LABELS[type]} notification queued successfully`);
   } catch (error) {
     logger.error(`[sendNotification] ${error.message}`);
     return errorResponse(res, 'Failed to send notification', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);

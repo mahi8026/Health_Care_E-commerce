@@ -177,6 +177,36 @@ if (process.env.NODE_ENV !== 'test') {
 // Generate UUID v4 for each request and set X-Request-ID header
 app.use(requestId);
 
+// ── Request Timeout Middleware ────────────────────────────────────────────────
+// Prevent requests from hanging for 120+ seconds
+// Requirement: 12.3 - Prevent indefinite request hangs
+app.use((req, res, next) => {
+  // Set 30-second timeout for all requests
+  req.setTimeout(30000, () => {
+    logger.error(`Request timeout: ${req.method} ${req.originalUrl}`);
+    if (!res.headersSent) {
+      res.status(408).json({
+        success: false,
+        message: 'Request timeout - operation took too long',
+        error: 'ETIMEDOUT'
+      });
+    }
+  });
+
+  res.setTimeout(30000, () => {
+    logger.error(`Response timeout: ${req.method} ${req.originalUrl}`);
+    if (!res.headersSent) {
+      res.status(504).json({
+        success: false,
+        message: 'Gateway timeout - server took too long to respond',
+        error: 'GATEWAY_TIMEOUT'
+      });
+    }
+  });
+
+  next();
+});
+
 // ── Performance Monitoring ────────────────────────────────────────────────────
 app.use(performanceMonitor);
 
