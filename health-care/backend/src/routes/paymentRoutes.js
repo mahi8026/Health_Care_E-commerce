@@ -13,11 +13,9 @@ const {
 } = require('../controllers/paymentController');
 const { paymentLimiter } = require('../middleware/enhancedRateLimiter');
 
-// Stripe removed - doesn't work in Bangladesh
-
 // bKash Tokenized Checkout routes (with rate limiting)
 router.post('/bkash/initiate', protect, paymentLimiter, initiateBkashPayment);
-router.post('/bkash/execute', protect, paymentLimiter, executeBkashPayment); // called after user completes in bKash app
+router.post('/bkash/execute', protect, paymentLimiter, executeBkashPayment);
 router.post('/bkash/verify', protect, paymentLimiter, verifyBkashPayment);
 
 // Nagad routes (with rate limiting)

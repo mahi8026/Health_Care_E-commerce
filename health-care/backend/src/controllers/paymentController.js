@@ -219,6 +219,7 @@ exports.processBankTransfer = async (req, res) => {
 };
 
 // ── B2B Credit ────────────────────────────────────────────────────────────────
+// ✅ Security Fix #5: Atomic credit check and update to prevent race conditions
 exports.processB2BCreditPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -231,22 +232,106 @@ exports.processB2BCreditPayment = async (req, res) => {
       return errorResponse(res, 'B2B credit is only available for B2B accounts', null, 403);
     }
 
-    const totalAmount = order.totalAmount || order.total || 0;
-    const availableCredit = order.user.creditLimit - order.user.creditUsed;
-
-    if (totalAmount > availableCredit) {
-      return errorResponse(res, `Insufficient credit. Available: ৳${availableCredit.toLocaleString()}, Required: ৳${totalAmount.toLocaleString()}`, null, 400);
+    // Verify order not already paid
+    if (order.paymentStatus === 'paid') {
+      return errorResponse(res, 'Order already paid', null, 400);
     }
 
-    await User.findByIdAndUpdate(order.user._id, { $inc: { creditUsed: totalAmount } });
+    const totalAmount = order.totalAmount || order.total || 0;
+
+    // ✅ ATOMIC OPERATION: Check and update credit in single database operation
+    // This prevents race conditions by using MongoDB's atomic update operators
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id: order.user._id,
+        role: 'b2b_customer',
+        isActive: true,
+        // ✅ CRITICAL: Only update if sufficient credit available
+        // This check happens atomically inside the database
+        $expr: { 
+          $gte: [
+            { $subtract: ['$creditLimit', '$creditUsed'] },  // availableCredit
+            totalAmount                                       // requiredAmount
+          ]
+        }
+      },
+      { 
+        // ✅ Increment credit used
+        $inc: { creditUsed: totalAmount },
+        // ✅ Record transaction
+        $push: {
+          creditTransactions: {
+            orderId: order._id,
+            orderNumber: order.orderNumber,
+            amount: totalAmount,
+            type: 'debit',
+            timestamp: new Date(),
+            previousBalance: order.user.creditUsed,
+            newBalance: order.user.creditUsed + totalAmount
+          }
+        }
+      },
+      { 
+        new: true,  // Return updated document
+        runValidators: true
+      }
+    );
+
+    // ✅ If update returned null, credit limit was exceeded
+    if (!updatedUser) {
+      // Get current user state to provide accurate error message
+      const currentUser = await User.findById(order.user._id);
+      
+      if (!currentUser) {
+        return errorResponse(res, 'User not found', null, 404);
+      }
+      
+      if (!currentUser.isActive) {
+        return errorResponse(res, 'Account is inactive', null, 403);
+      }
+      
+      const available = currentUser.creditLimit - currentUser.creditUsed;
+      
+      logger.warn(`[B2B Credit] Insufficient credit - User: ${currentUser.email}, Required: ৳${totalAmount}, Available: ৳${available}`);
+      
+      return errorResponse(
+        res,
+        `Insufficient credit. Available: ৳${available.toLocaleString()}, Required: ৳${totalAmount.toLocaleString()}`,
+        {
+          creditLimit: currentUser.creditLimit,
+          creditUsed: currentUser.creditUsed,
+          availableCredit: available,
+          requiredAmount: totalAmount
+        },
+        400
+      );
+    }
+
+    // ✅ Credit successfully allocated - update order
     order.paymentStatus = 'paid';
     order.status = 'confirmed';
-    order.paymentDetails = { method: 'b2b_credit', creditUsed: totalAmount, paidAt: new Date() };
+    order.transactionId = `B2B-${Date.now()}-${order.orderNumber}`;
+    order.paymentDetails = {
+      method: 'b2b_credit',
+      creditUsed: totalAmount,
+      paidAt: new Date(),
+      previousCreditUsed: updatedUser.creditUsed - totalAmount,
+      newCreditUsed: updatedUser.creditUsed,
+      availableCredit: updatedUser.creditLimit - updatedUser.creditUsed
+    };
     await order.save();
+
+    const creditUtilization = (updatedUser.creditUsed / updatedUser.creditLimit) * 100;
 
     return successResponse(res, {
       order,
-      remainingCredit: availableCredit - totalAmount
+      remainingCredit: availableCredit - totalAmount,
+      creditInfo: {
+        creditLimit: updatedUser.creditLimit,
+        creditUsed: updatedUser.creditUsed,
+        availableCredit: updatedUser.creditLimit - updatedUser.creditUsed,
+        utilizationPercent: creditUtilization.toFixed(2)
+      }
     }, 'Payment processed using B2B credit');
   } catch (error) {
     logger.error(`[processB2BCreditPayment] ${error.message}`);

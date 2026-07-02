@@ -98,6 +98,17 @@ const userSchema = new mongoose.Schema({
   },
   creditLimit: { type: Number, default: 0 },
   creditUsed: { type: Number, default: 0 },
+  // ✅ Security Fix: Add credit transaction history for audit trail
+  creditTransactions: [{
+    orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
+    orderNumber: String,
+    amount: Number,
+    type: { type: String, enum: ['debit', 'credit', 'adjustment'] },
+    timestamp: { type: Date, default: Date.now },
+    note: String,
+    previousBalance: Number,
+    newBalance: Number
+  }],
   refreshToken: { type: String, select: false },
   passwordResetToken: { type: String, select: false },
   passwordResetExpires: { type: Date, select: false },

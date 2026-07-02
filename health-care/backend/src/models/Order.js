@@ -127,7 +127,23 @@ const orderSchema = new mongoose.Schema({
   promoCode: { type: String },
   loyaltyPointsEarned:   { type: Number, default: 0 },
   loyaltyPointsRedeemed: { type: Number, default: 0 },
-  loyaltyDiscount:       { type: Number, default: 0 }
+  loyaltyDiscount:       { type: Number, default: 0 },
+  // ✅ Security Fix: Add metadata for idempotency and audit trail
+  metadata: {
+    idempotencyKey: {
+      type: String,
+      required: false,  // Optional for backward compatibility with existing orders
+      index: true
+    },
+    createdVia: {
+      type: String,
+      enum: ['web', 'mobile', 'api', 'admin'],
+      default: 'web'
+    },
+    userAgent: String,
+    ipAddress: String,
+    requestId: String
+  }
 }, {
   timestamps: true
 });
@@ -177,5 +193,7 @@ orderSchema.index({ createdAt: -1 });
 // Compound indexes for common query patterns
 orderSchema.index({ user: 1, status: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
+// ✅ Security Fix: Idempotency index to prevent duplicate orders
+orderSchema.index({ user: 1, 'metadata.idempotencyKey': 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('Order', orderSchema);

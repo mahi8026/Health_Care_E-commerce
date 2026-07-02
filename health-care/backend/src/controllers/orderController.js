@@ -65,7 +65,28 @@ exports.createOrder = async (req, res) => {
 
 
   try {
-    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem } = req.body;
+    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey } = req.body;
+
+    // ✅ Security Fix #4: Validate idempotency key to prevent double charging
+    if (!idempotencyKey || typeof idempotencyKey !== 'string') {
+      return abortAndError(res, 'Idempotency key required. Please refresh and try again.', 400);
+    }
+
+    // ✅ Check for duplicate order with same idempotency key
+    const existingOrder = await Order.findOne({
+      user: req.user.id,
+      'metadata.idempotencyKey': idempotencyKey
+    }).lean();
+
+    if (existingOrder) {
+      logger.info(`[createOrder] Duplicate request detected - idempotency key: ${idempotencyKey}, user: ${req.user.email}`);
+      return res.status(200).json({
+        success: true,
+        message: 'Order already created',
+        order: existingOrder,
+        isDuplicate: true
+      });
+    }
 
     if (!items || !items.length) {
       return abortAndError(res, 'Order must contain at least one item', 400);
@@ -242,7 +263,15 @@ exports.createOrder = async (req, res) => {
       promoCode: appliedCoupon?.code || null,
       notes,
       poNumber,
-      statusTimestamps: { placed: new Date() }
+      statusTimestamps: { placed: new Date() },
+      // ✅ Security Fix #4: Add metadata with idempotency key
+      metadata: {
+        idempotencyKey,
+        createdVia: 'web',
+        userAgent: req.headers['user-agent'],
+        ipAddress: req.ip,
+        requestId: req.id
+      }
     }], sessionOpt);
 
     // Decrement stock atomically within transaction
@@ -365,6 +394,20 @@ exports.createOrder = async (req, res) => {
     if (useTransaction && session) {
       try { await session.abortTransaction(); } catch { /* ignore */ }
     }
+    
+    // ✅ Security Fix #4: Handle duplicate key error gracefully
+    if (error.code === 11000 && error.keyPattern?.['metadata.idempotencyKey']) {
+      const existingOrder = await Order.findOne({
+        'metadata.idempotencyKey': req.body.idempotencyKey
+      });
+      return res.status(200).json({
+        success: true,
+        message: 'Order already created',
+        order: existingOrder,
+        isDuplicate: true
+      });
+    }
+    
     logger.error(`[createOrder] ${error.message}`);
     return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   } finally {

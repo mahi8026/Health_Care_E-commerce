@@ -301,6 +301,7 @@ exports.updateProfile = async (req, res) => {
 
 /**
  * Change user password.
+ * ✅ Security Fix #2: Invalidate all user sessions after password change
  * 
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
@@ -338,6 +339,10 @@ exports.changePassword = async (req, res) => {
     user.refreshToken = null; // Invalidate all sessions for security
     await user.save();
 
+    // ✅ Invalidate all tokens issued before this moment
+    const tokenBlacklist = require('../services/tokenBlacklist');
+    await tokenBlacklist.blacklistAllUserTokens(user._id.toString());
+
     // Log password change activity
     logActivityAsync({
       user,
@@ -358,6 +363,7 @@ exports.changePassword = async (req, res) => {
 
 /**
  * Logout user and invalidate refresh token.
+ * ✅ Security Fix #2: Blacklist access token to prevent reuse
  * 
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
@@ -368,7 +374,29 @@ exports.changePassword = async (req, res) => {
  */
 exports.logout = async (req, res) => {
   try {
+    // Clear refresh token in database
     await User.findByIdAndUpdate(req.user.id, { refreshToken: null }, { validateBeforeSave: false });
+    
+    // ✅ Blacklist the current access token
+    if (req.token) {
+      const tokenBlacklist = require('../services/tokenBlacklist');
+      
+      // Extract expiration from token (default 7 days if not found)
+      const jwt = require('jsonwebtoken');
+      let expiresIn = 604800; // 7 days in seconds
+      
+      try {
+        const decoded = jwt.decode(req.token);
+        if (decoded && decoded.exp) {
+          const now = Math.floor(Date.now() / 1000);
+          expiresIn = Math.max(decoded.exp - now, 60); // At least 60 seconds
+        }
+      } catch (err) {
+        logger.warn('[logout] Failed to decode token for TTL calculation');
+      }
+      
+      await tokenBlacklist.blacklistToken(req.token, expiresIn);
+    }
     
     // Log logout activity
     logActivityAsync({
@@ -433,6 +461,7 @@ exports.forgotPassword = async (req, res) => {
 
 /**
  * Reset user password using reset token.
+ * ✅ Security Fix #3: Atomic token clearing and timing attack prevention
  * 
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
@@ -444,23 +473,48 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
+    
+    // ✅ Validate inputs before database access
     if (!token || !password) {
       return res.status(400).json({ success: false, message: 'Token and new password are required' });
     }
 
+    // ✅ Validate password strength BEFORE touching database
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long' });
+    }
+
+    if (password.length > 128) {
+      return res.status(400).json({ success: false, message: 'Password must not exceed 128 characters' });
+    }
+
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const user = await User.findOne({
-      passwordResetToken: tokenHash,
-      passwordResetExpires: { $gt: Date.now() }
-    });
+    
+    // ✅ ATOMIC OPERATION: Find and clear token in single query
+    // This prevents token reuse even if subsequent operations fail
+    const user = await User.findOneAndUpdate(
+      {
+        passwordResetToken: tokenHash,
+        passwordResetExpires: { $gt: Date.now() },
+        isActive: true
+      },
+      {
+        $unset: { 
+          passwordResetToken: '', 
+          passwordResetExpires: '' 
+        }
+      },
+      { new: true }
+    );
 
     if (!user) {
+      // ✅ Constant-time response to prevent timing attacks
+      await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
       return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
     }
 
+    // ✅ Now update password (token already cleared, can't be reused)
     user.password = password;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
     user.refreshToken = null; // Invalidate all sessions
     await user.save();
 
@@ -471,13 +525,23 @@ exports.resetPassword = async (req, res) => {
       targetModel: 'User',
       targetId: user._id,
       targetName: user.email,
-      req
+      req,
+      metadata: { 
+        method: 'token-reset',
+        ip: req.ip,
+        userAgent: req.headers['user-agent']
+      }
     });
 
     res.status(200).json({ success: true, message: 'Password reset successfully. Please log in.' });
   } catch (error) {
-    logger.error(`[resetPassword] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    logger.error(`[resetPassword] ${error.message}`, {
+      stack: error.stack,
+      ip: req.ip
+    });
+    
+    // ✅ Generic error message for client
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 

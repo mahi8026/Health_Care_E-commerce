@@ -31,6 +31,15 @@ export default function CheckoutPage({ onBackToCart }) {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
   const [showAuthGate, setShowAuthGate] = useState(false);
+  
+  // ✅ Security Fix #4: Generate idempotency key to prevent double charging
+  const [idempotencyKey] = useState(() => {
+    // Generate once per checkout session (survives re-renders)
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 15);
+    return `checkout-${timestamp}-${random}`;
+  });
+  
   const [deliveryAddress, setDeliveryAddress] = useState({
     fullName: '',
     phone: '',
@@ -135,7 +144,6 @@ export default function CheckoutPage({ onBackToCart }) {
     setLoading(true);
     setError(null);
 
-
     try {
       const orderData = {
         items: cart.map((item) => ({
@@ -156,11 +164,19 @@ export default function CheckoutPage({ onBackToCart }) {
           postcode: deliveryAddress.postcode,
           instructions: deliveryAddress.instructions,
         },
+        // ✅ Security Fix #4: Include idempotency key to prevent duplicate orders
+        idempotencyKey,
         ...(appliedCoupon && { promoCode: appliedCoupon.code }),
       };
 
       const response = await api.createOrder(orderData);
       const orderObj = response.data?.order || response.order || response.data || {};
+      
+      // ✅ Handle duplicate order response
+      if (response.data?.isDuplicate) {
+        console.warn('[Checkout] Duplicate order detected, using existing order');
+      }
+      
       const orderNumber =
         orderObj.orderNumber || orderObj.orderId || `ORD-${orderObj._id}`;
       const mongoId = orderObj._id || orderObj.id;

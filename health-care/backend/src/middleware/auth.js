@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
+const tokenBlacklist = require('../services/tokenBlacklist');
 
 // Protect routes — verify JWT and attach req.user
+// ✅ Security Fix #2: Check token blacklist and secret rotation
 exports.protect = async (req, res, next) => {
   try {
     let token;
@@ -15,11 +17,32 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Not authorized to access this route' });
     }
 
+    // ✅ Check if token is blacklisted (logout, password change)
+    const isBlacklisted = await tokenBlacklist.isBlacklisted(token);
+    if (isBlacklisted) {
+      logger.warn('[protect] Attempted use of blacklisted token', {
+        tokenPrefix: token.substring(0, 20) + '...'
+      });
+      return res.status(401).json({ success: false, message: 'Token has been revoked. Please log in again.' });
+    }
+
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
       return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    // ✅ Check if token was issued before JWT secret rotation
+    if (decoded.iat) {
+      const isFromBeforeRotation = await tokenBlacklist.isTokenFromBeforeRotation(decoded.iat);
+      if (isFromBeforeRotation) {
+        logger.warn('[protect] Token issued before secret rotation', {
+          userId: decoded.id,
+          issuedAt: new Date(decoded.iat * 1000)
+        });
+        return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+      }
     }
 
     const user = await User.findById(decoded.id).select('-password');
@@ -31,7 +54,20 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Account is deactivated' });
     }
 
+    // ✅ Check if user's tokens were invalidated (password change, security event)
+    if (decoded.iat) {
+      const isUserTokenInvalidated = await tokenBlacklist.isUserTokenInvalidated(decoded.id, decoded.iat);
+      if (isUserTokenInvalidated) {
+        logger.warn('[protect] User tokens invalidated', {
+          userId: decoded.id,
+          issuedAt: new Date(decoded.iat * 1000)
+        });
+        return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+      }
+    }
+
     req.user = user;
+    req.token = token; // Store token for potential blacklisting
     next();
   } catch (error) {
     logger.error(`[protect] ${error.message}`);
