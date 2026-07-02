@@ -6,12 +6,12 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { sendOrderConfirmation } = require('../utils/emailService');
+const { sendOrderConfirmation, sendTestEmail, verifyConnection } = require('../services/emailService');
 const Order = require('../models/Order');
 const logger = require('../utils/logger');
 
 /**
- * Test email sending
+ * Test email sending by order number
  * POST /api/test/email
  * Body: { orderNumber: "MC-260702-8191" }
  */
@@ -20,130 +20,80 @@ router.post('/email', protect, authorize('admin'), async (req, res) => {
     const { orderNumber } = req.body;
 
     if (!orderNumber) {
-      return res.status(400).json({
-        success: false,
-        message: 'orderNumber is required'
-      });
+      return res.status(400).json({ success: false, message: 'orderNumber is required' });
     }
 
-    // Find the order
-    const order = await Order.findOne({ orderNumber })
-      .populate('user')
-      .populate('items.product');
-
+    const order = await Order.findOne({ orderNumber }).populate('user').populate('items.product');
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: `Order ${orderNumber} not found`
-      });
+      return res.status(404).json({ success: false, message: `Order ${orderNumber} not found` });
     }
 
-    logger.info(`[testEmail] Attempting to send email for order ${orderNumber} to ${order.user.email}`);
+    logger.info(`[testEmail] Sending email for order ${orderNumber} to ${order.user.email}`);
 
-    // Check SMTP configuration
-    const smtpConfigured = !!process.env.SMTP_HOST && !!process.env.SMTP_USER && !!process.env.SMTP_PASS;
-    
-    if (!smtpConfigured) {
-      logger.error('[testEmail] SMTP not configured!');
-      return res.status(500).json({
-        success: false,
-        message: 'SMTP not configured on server',
-        debug: {
-          SMTP_HOST: !!process.env.SMTP_HOST,
-          SMTP_USER: !!process.env.SMTP_USER,
-          SMTP_PASS: !!process.env.SMTP_PASS
-        }
-      });
+    const result = await sendOrderConfirmation(order, order.user);
+
+    if (result.error) {
+      return res.status(500).json({ success: false, message: 'Email failed', error: result.error });
     }
 
-    // Send email
-    await sendOrderConfirmation(order, order.user);
-
-    logger.info(`[testEmail] ✅ Email sent successfully to ${order.user.email}`);
-
+    logger.info(`[testEmail] ✅ Email sent to ${order.user.email} (ID: ${result.messageId})`);
     res.json({
       success: true,
       message: 'Email sent successfully',
       data: {
         orderNumber: order.orderNumber,
         customerEmail: order.user.email,
-        customerName: order.user.name
+        customerName: order.user.name,
+        messageId: result.messageId,
       }
     });
 
   } catch (error) {
     logger.error(`[testEmail] Error: ${error.message}`);
-    logger.error(`[testEmail] Stack: ${error.stack}`);
-
-    res.status(500).json({
-      success: false,
-      message: 'Failed to send email',
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
+    res.status(500).json({ success: false, message: 'Failed to send email', error: error.message });
   }
 });
 
 /**
- * Test SMTP connection
- * GET /api/test/smtp
+ * Send a plain test email to any address
+ * POST /api/test/email/send
+ * Body: { email: "someone@example.com" }
  */
-router.get('/smtp', protect, authorize('admin'), async (req, res) => {
+router.post('/email/send', protect, authorize('admin'), async (req, res) => {
   try {
-    const nodemailer = require('nodemailer');
-
-    const config = {
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT) || 587,
-      secure: parseInt(process.env.SMTP_PORT) === 465,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    };
-
-    if (!config.host) {
-      return res.status(500).json({
-        success: false,
-        message: 'SMTP not configured',
-        config: {
-          SMTP_HOST: !!process.env.SMTP_HOST,
-          SMTP_PORT: !!process.env.SMTP_PORT,
-          SMTP_USER: !!process.env.SMTP_USER,
-          SMTP_PASS: !!process.env.SMTP_PASS,
-          SMTP_FROM: !!process.env.SMTP_FROM
-        }
-      });
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'email is required' });
     }
 
-    const transporter = nodemailer.createTransport(config);
+    const result = await sendTestEmail(email);
 
-    // Verify connection
-    await transporter.verify();
+    if (result.error) {
+      return res.status(500).json({ success: false, message: 'Test email failed', error: result.error });
+    }
 
-    logger.info('[testSMTP] ✅ SMTP connection successful');
+    res.json({ success: true, message: `Test email sent to ${email}`, messageId: result.messageId });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
+/**
+ * Check email service configuration
+ * GET /api/test/email/status
+ */
+router.get('/email/status', protect, authorize('admin'), async (req, res) => {
+  try {
+    const result = await verifyConnection();
     res.json({
       success: true,
-      message: 'SMTP connection successful',
-      config: {
-        host: config.host,
-        port: config.port,
-        secure: config.secure,
-        user: config.auth.user,
-        from: process.env.SMTP_FROM
-      }
+      provider: 'Brevo HTTP API',
+      configured: result.success,
+      BREVO_API_KEY: !!process.env.BREVO_API_KEY,
+      BREVO_FROM_EMAIL: process.env.BREVO_FROM_EMAIL || '(not set)',
     });
-
   } catch (error) {
-    logger.error(`[testSMTP] Error: ${error.message}`);
-
-    res.status(500).json({
-      success: false,
-      message: 'SMTP connection failed',
-      error: error.message,
-      code: error.code
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
