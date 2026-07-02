@@ -6,7 +6,8 @@ const {
   sendPaymentReceipt,
   sendShippingNotification,
   sendDeliveryConfirmation,
-  sendLowStockAlert
+  sendLowStockAlert,
+  sendQuotationReady
 } = require('../services/emailService');
 const { generateInvoice } = require('../utils/invoiceGenerator');
 const logger = require('../utils/logger');
@@ -127,8 +128,7 @@ exports.sendQuotationReady = async (req, res) => {
     const quote = await Quote.findById(quoteId).populate('user', 'name email');
     if (!quote) return errorResponse(res, 'Quote not found', null, 404);
 
-    const { sendQuotationReady: sendQuote } = require('../utils/emailService');
-    await sendQuote(quote, quote.user);
+    await sendQuotationReady(quote, quote.user);
     return successResponse(res, null, 'Quotation ready email sent');
   } catch (error) {
     return errorResponse(res, 'Failed to send quotation email', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);

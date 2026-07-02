@@ -364,6 +364,80 @@ async function sendTestEmail(to) {
   });
 }
 
+async function sendQuotationReady(quote, user) {
+  const name = user?.name?.split(' ')[0] || 'Valued Customer';
+  const quoteUrl = `${BRAND.site}/b2b?tab=quotes`;
+
+  const itemRows = (quote.items || []).map(item => `
+    <tr>
+      <td style="padding:8px 0;font-size:13px;color:#374151;border-bottom:1px solid #F3F4F6;">
+        ${item.name || item.product?.name || 'Product'}
+      </td>
+      <td style="padding:8px 0;text-align:center;font-size:13px;color:#6B7280;border-bottom:1px solid #F3F4F6;">
+        ${item.qty || item.quantity || 1}
+      </td>
+      <td style="padding:8px 0;text-align:right;font-size:13px;color:#6B7280;border-bottom:1px solid #F3F4F6;">
+        ৳${(item.unitPrice || item.price || 0).toLocaleString()}
+      </td>
+      ${item.discount ? `<td style="padding:8px 0;text-align:right;font-size:13px;color:#0E8A6E;border-bottom:1px solid #F3F4F6;">−${item.discount}%</td>` : '<td style="padding:8px 0;border-bottom:1px solid #F3F4F6;"></td>'}
+      <td style="padding:8px 0;text-align:right;font-size:13px;font-weight:600;color:#0B2545;border-bottom:1px solid #F3F4F6;">
+        ৳${((item.unitPrice || item.price || 0) * (item.qty || item.quantity || 1) * (1 - (item.discount || 0) / 100)).toLocaleString()}
+      </td>
+    </tr>`).join('');
+
+  const body = `
+    <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:${BRAND.primary};">
+      Your Quotation is Ready 📋
+    </h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#6B7280;">Hi ${name}, your quotation has been prepared and is ready for review.</p>
+
+    <div style="background:${BRAND.accent}15;border-radius:8px;padding:16px;margin-bottom:20px;">
+      <div style="display:flex;gap:16px;">
+        <div>
+          <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Quote ID</div>
+          <div style="font-size:16px;font-weight:700;color:${BRAND.primary};font-family:monospace;">${quote.quoteId || quote._id}</div>
+        </div>
+        ${quote.validUntil ? `
+        <div style="margin-left:24px;">
+          <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Valid Until</div>
+          <div style="font-size:16px;font-weight:700;color:${BRAND.primary};">${new Date(quote.validUntil).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+        </div>` : ''}
+      </div>
+    </div>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
+      <thead>
+        <tr style="background:#F9FAFB;">
+          <th style="padding:10px 0;text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Product</th>
+          <th style="padding:10px 0;text-align:center;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Qty</th>
+          <th style="padding:10px 0;text-align:right;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Unit Price</th>
+          <th style="padding:10px 0;text-align:right;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Discount</th>
+          <th style="padding:10px 0;text-align:right;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Total</th>
+        </tr>
+      </thead>
+      <tbody>${itemRows}</tbody>
+    </table>
+
+    <div style="text-align:right;background:#F9FAFB;border-radius:8px;padding:14px 16px;margin:8px 0;">
+      <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Quoted Total</div>
+      <div style="font-size:22px;font-weight:800;color:${BRAND.primary};">৳${(quote.finalAmount || quote.totalAmount || 0).toLocaleString()}</div>
+    </div>
+
+    ${ctaButton('Review & Approve Quotation', quoteUrl)}
+
+    <div style="margin-top:16px;padding:14px 16px;background:#EFF6FF;border-radius:8px;border:1px solid #BFDBFE;">
+      <div style="font-size:12px;color:#1D4ED8;">
+        Please review the quotation and approve it from your B2B dashboard. For any revisions, contact your account manager.
+      </div>
+    </div>`;
+
+  return sendEmail({
+    to: user.email,
+    subject: `📋 Quotation Ready – ${quote.quoteId || quote._id} | ${BRAND.name}`,
+    html: emailLayout(`Quotation Ready – ${quote.quoteId || quote._id}`, body),
+  });
+}
+
 async function sendLowStockAlert(products) {
   if (!products || products.length === 0) {
     console.log('[EmailService] No low stock products to alert');
@@ -460,5 +534,6 @@ module.exports = {
   sendNewOrderEmail,
   sendTestEmail,
   sendLowStockAlert,
+  sendQuotationReady,
   verifyConnection,
 };
