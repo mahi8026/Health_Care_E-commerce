@@ -2,12 +2,9 @@
 
 import { useState } from 'react';
 import Modal from '@/components/ui/Modal';
-import BkashPaymentForm from './BkashPaymentForm';
 import BankTransferForm from './BankTransferForm';
 import B2BCreditForm from './B2BCreditForm';
 import { PAYMENT_METHODS } from '@/utils/payment';
-
-// Stripe has been removed — not supported in Bangladesh
 
 export default function PaymentModal({ 
   isOpen, 
@@ -31,17 +28,94 @@ export default function PaymentModal({
 
   const renderPaymentForm = () => {
     switch (currentMethod) {
+      case 'cod':
+        return (
+          <div className="space-y-4">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
+              <div className="text-5xl mb-3">💵</div>
+              <h3 className="text-base font-bold text-green-900 mb-2">
+                Cash on Delivery
+              </h3>
+              <p className="text-sm text-green-700 mb-4">
+                Pay <strong>৳{amount?.toLocaleString()}</strong> in cash when you receive your order
+              </p>
+              <div className="bg-white rounded-lg p-4 border border-green-200 mb-4">
+                <div className="text-xs text-gray-500 mb-2">How it works:</div>
+                <div className="text-left text-sm text-gray-700 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>Our delivery agent will bring your order</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>Inspect the products before payment</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>Pay the exact amount in cash</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>Get your receipt and invoice</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-xs text-yellow-800">
+                ⚠️ Please keep the exact amount ready. Our agents may not carry change.
+              </div>
+            </div>
+            <button
+              onClick={() => handleSuccess({ method: 'cod', orderId })}
+              className="w-full py-3 rounded-xl bg-green-600 text-white text-sm font-bold hover:bg-green-700 transition-colors"
+            >
+              Confirm Cash on Delivery
+            </button>
+            <p className="text-xs text-center text-gray-500">
+              Your order will be confirmed and delivered within 2-3 business days
+            </p>
+          </div>
+        );
+
       case 'bkash':
       case 'nagad':
+      case 'rocket':
         return (
-          <BkashPaymentForm
-            amount={amount}
-            orderId={orderId}
-            onSuccess={handleSuccess}
-            onError={handleError}
-          />
+          <div className="space-y-4">
+            <div className="bg-pink-50 border border-pink-200 rounded-xl p-5 text-center">
+              <div className="text-5xl mb-3">📱</div>
+              <h3 className="text-base font-bold text-pink-900 mb-2">
+                {currentMethod === 'bkash' ? 'bKash' : currentMethod === 'nagad' ? 'Nagad' : 'Rocket'} Payment
+              </h3>
+              <p className="text-sm text-pink-700 mb-4">
+                Please send <strong>৳{amount?.toLocaleString()}</strong> to our {currentMethod === 'bkash' ? 'bKash' : currentMethod === 'nagad' ? 'Nagad' : 'Rocket'} number:
+              </p>
+              <div className="bg-white rounded-lg p-4 border border-pink-200 mb-4">
+                <div className="text-xs text-gray-500 mb-1">Send money to</div>
+                <div className="text-2xl font-bold font-mono text-gray-900">
+                  +880 1646-886795
+                </div>
+              </div>
+              <div className="text-left bg-white rounded-lg p-4 space-y-2 border border-pink-200 text-sm">
+                <div className="font-semibold text-gray-700 mb-2">Steps:</div>
+                <div>1. Open your {currentMethod === 'bkash' ? 'bKash' : currentMethod === 'nagad' ? 'Nagad' : 'Rocket'} app</div>
+                <div>2. Go to <strong>Send Money</strong></div>
+                <div>3. Send exactly <strong>৳{amount?.toLocaleString()}</strong></div>
+                <div>4. Use your Order ID as reference</div>
+                <div>5. Take a screenshot and contact support</div>
+              </div>
+            </div>
+            <button
+              onClick={() => handleSuccess({ method: currentMethod, orderId, manual: true })}
+              className="w-full py-3 rounded-xl bg-pink-600 text-white text-sm font-bold hover:bg-pink-700 transition-colors"
+            >
+              I have sent the payment
+            </button>
+            <p className="text-xs text-center text-gray-500">
+              Our team will verify and confirm your order within 1-2 hours
+            </p>
+          </div>
         );
-      
+
       case 'bank':
       case 'npsb':
         return (
@@ -52,7 +126,7 @@ export default function PaymentModal({
             onError={handleError}
           />
         );
-      
+
       case 'credit':
         return (
           <B2BCreditForm
@@ -62,7 +136,7 @@ export default function PaymentModal({
             onError={handleError}
           />
         );
-      
+
       case 'cheque':
         return (
           <div className="space-y-4">
@@ -76,8 +150,8 @@ export default function PaymentModal({
               </p>
               <div className="bg-white rounded-lg p-3 text-[12px] text-left space-y-1">
                 <div><strong>MedCore Bangladesh Ltd</strong></div>
-                <div>House 45, Road 12, Gulshan-1</div>
-                <div>Dhaka 1212, Bangladesh</div>
+                <div>17/2/A Azad Tower, Shop-08, Topkhana Road</div>
+                <div>Dhaka-1000, Bangladesh</div>
               </div>
               <p className="text-[11px] text-[var(--color-text-secondary)] mt-3">
                 Write order ID <span className="font-mono font-semibold">{orderId}</span> on the back of the cheque
@@ -91,7 +165,7 @@ export default function PaymentModal({
             </button>
           </div>
         );
-      
+
       default:
         return (
           <div className="text-center py-8 text-[var(--color-text-secondary)]">
@@ -140,7 +214,7 @@ export default function PaymentModal({
             </div>
           </div>
           <div className="text-[14px] font-semibold">
-            ৳{amount.toLocaleString()}
+            ৳{amount?.toLocaleString()}
           </div>
         </div>
 

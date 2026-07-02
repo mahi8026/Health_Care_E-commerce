@@ -116,6 +116,13 @@ export const PAYMENT_METHODS = {
     icon: '📱',
     color: '#F15D22'
   },
+  rocket: {
+    id: 'rocket',
+    label: 'Rocket',
+    description: 'Pay with Rocket mobile wallet',
+    icon: '🚀',
+    color: '#8B3FE5'
+  },
   bank: {
     id: 'bank',
     label: 'Bank Transfer',
@@ -125,7 +132,7 @@ export const PAYMENT_METHODS = {
   },
   credit: {
     id: 'credit',
-    label: 'B2B Credit Line',
+    label: 'B2B Credit',
     description: 'Use your B2B credit limit',
     icon: '💼',
     color: '#0E8A6E'
