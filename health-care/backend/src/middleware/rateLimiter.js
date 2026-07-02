@@ -160,4 +160,68 @@ const reviewRateLimiter = createLimiter({
   keyGenerator: (req) => req.user?._id?.toString() || req.ip
 });
 
-module.exports = { authLimiter, apiLimiter, reviewRateLimiter };
+/**
+ * Payment rate limiter — 10 payment attempts per 15 minutes per user.
+ * 
+ * ✅ Security Enhancement: Prevent payment endpoint abuse
+ * Applied to: bKash, Nagad, B2B credit payment endpoints
+ */
+const paymentLimiter = createLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many payment attempts. Please try again in 15 minutes.',
+  keyPrefix: 'rl:payment:',
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip
+});
+
+/**
+ * Order creation rate limiter — 20 orders per hour per user.
+ * 
+ * ✅ Security Enhancement: Prevent order spam/abuse
+ */
+const orderLimiter = createLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  message: 'Too many orders created. Please try again later.',
+  keyPrefix: 'rl:order:',
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip
+});
+
+/**
+ * Password reset rate limiter — 3 attempts per hour per IP/email.
+ * 
+ * ✅ Security Enhancement: Prevent password reset abuse
+ */
+const passwordResetLimiter = createLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  message: 'Too many password reset attempts. Please try again in 1 hour.',
+  keyPrefix: 'rl:password-reset:',
+  keyGenerator: (req) => {
+    const email = req.body.email?.toLowerCase() || '';
+    return `${req.ip}:${email}`;
+  }
+});
+
+/**
+ * Admin action rate limiter — 100 actions per 15 minutes.
+ * 
+ * ✅ Security Enhancement: Prevent admin endpoint abuse
+ */
+const adminLimiter = createLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many admin actions. Please try again later.',
+  keyPrefix: 'rl:admin:',
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip
+});
+
+module.exports = { 
+  authLimiter, 
+  apiLimiter, 
+  reviewRateLimiter,
+  paymentLimiter,
+  orderLimiter,
+  passwordResetLimiter,
+  adminLimiter
+};

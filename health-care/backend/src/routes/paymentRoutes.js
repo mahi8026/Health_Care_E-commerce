@@ -11,7 +11,7 @@ const {
   processB2BCreditPayment,
   processCODPayment
 } = require('../controllers/paymentController');
-const { paymentLimiter } = require('../middleware/enhancedRateLimiter');
+const { paymentLimiter } = require('../middleware/rateLimiter');
 
 // bKash Tokenized Checkout routes (with rate limiting)
 router.post('/bkash/initiate', protect, paymentLimiter, initiateBkashPayment);
