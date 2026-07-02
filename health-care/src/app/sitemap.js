@@ -106,26 +106,52 @@ export default async function sitemap() {
       return [...staticPages, ...categoryPages];
     }
     
-    const productsUrl = `${backendUrl}/products?limit=5000&fields=slug,_id,updatedAt`;
-
-    const res = await fetch(productsUrl, { 
-      next: { revalidate: 3600 },
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'MedCore-Sitemap-Generator',
-      },
-      // Shorter timeout since backend should already be awake
-      signal: AbortSignal.timeout(15000), // 15 second timeout
-    });
+    // Fetch products in paginated batches (backend limits to max 100 per request)
+    const BATCH_SIZE = 100;
+    const MAX_PRODUCTS = 10000; // Safety limit to prevent infinite loops
+    let allProducts = [];
+    let currentPage = 1;
+    let hasMorePages = true;
     
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    while (hasMorePages && allProducts.length < MAX_PRODUCTS) {
+      const productsUrl = `${backendUrl}/products?page=${currentPage}&limit=${BATCH_SIZE}&fields=slug,_id,updatedAt`;
+
+      const res = await fetch(productsUrl, { 
+        next: { revalidate: 3600 },
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'MedCore-Sitemap-Generator',
+        },
+        // Shorter timeout since backend should already be awake
+        signal: AbortSignal.timeout(15000), // 15 second timeout
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      const data = await res.json();
+      const products = data.data?.products || data.products || [];
+      
+      if (products.length === 0) {
+        hasMorePages = false;
+      } else {
+        allProducts = allProducts.concat(products);
+        
+        // Check if there are more pages (pagination metadata)
+        const totalPages = data.data?.pagination?.totalPages || data.pagination?.totalPages;
+        if (totalPages && currentPage >= totalPages) {
+          hasMorePages = false;
+        } else if (products.length < BATCH_SIZE) {
+          // If we got fewer products than requested, we've reached the end
+          hasMorePages = false;
+        } else {
+          currentPage++;
+        }
+      }
     }
-    
-    const data = await res.json();
-    const products = data.data?.products || data.products || [];
 
-    productPages = products
+    productPages = allProducts
       .filter(product => product.slug || product._id) // skip products with no identifier
       .map(product => ({
         // Always prefer slug — canonical URLs must match generateMetadata()
