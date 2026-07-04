@@ -321,9 +321,12 @@ export default function OrdersManagement() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      setOrders(data.data?.orders || data.orders || []);
+      const ordersList = data.data?.orders || data.orders || [];
+      console.log('Orders fetched:', ordersList.length, 'First order ID:', ordersList[0]?._id);
+      setOrders(ordersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
+      console.error('Fetch orders error:', err);
       showMessage('Failed to load orders', 'error');
     } finally {
       setLoading(false);
@@ -336,15 +339,23 @@ export default function OrdersManagement() {
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
     try {
       const token = localStorage.getItem('medcore_token');
-      await fetch(`${API}/orders/${orderId}/status`, {
+      const response = await fetch(`${API}/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus })
       });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || `Failed with status ${response.status}`);
+      }
+      
       showMessage('Order status updated', 'success');
       fetchOrders();
-    } catch {
-      showMessage('Failed to update status', 'error');
+    } catch (error) {
+      console.error('Status update error:', error);
+      showMessage(error.message || 'Failed to update status', 'error');
     } finally {
       setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: false }));
     }
