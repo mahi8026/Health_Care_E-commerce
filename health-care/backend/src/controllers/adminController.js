@@ -389,6 +389,45 @@ exports.updateCustomer = async (req, res) => {
   }
 };
 
+// DELETE /api/admin/customers/:id
+exports.deleteCustomer = async (req, res) => {
+  try {
+    // Validate customer ID
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      logger.warn(`[adminController] Invalid customer ID format: ${req.params.id}`);
+      return errorResponse(res, 'Invalid customer ID format', null, 400);
+    }
+
+    const customer = await User.findById(req.params.id);
+    if (!customer) {
+      logger.warn(`[adminController] Customer not found: ${req.params.id}`);
+      return errorResponse(res, 'Customer not found', null, 404);
+    }
+
+    // Prevent deleting admins
+    if (customer.role === 'admin') {
+      logger.warn(`[adminController] Attempted to delete admin: ${req.params.id}`);
+      return errorResponse(res, 'Cannot delete admin users', null, 403);
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    
+    logger.info(`[adminController] Customer deleted successfully: ${customer.email} (${req.params.id})`);
+    return successResponse(res, null, 'Customer deleted successfully');
+  } catch (error) {
+    logger.error(`[adminController] Delete customer error: ${error.message}`, { 
+      stack: error.stack,
+      customerId: req.params.id
+    });
+    
+    if (error.name === 'CastError') {
+      return errorResponse(res, 'Invalid customer ID', [error.message], 400);
+    }
+    
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+  }
+};
+
 // POST /api/admin/stock-check
 exports.manualStockCheck = async (req, res) => {
   try {
@@ -457,4 +496,15 @@ exports.getAdminUsers = async (req, res) => {
     logger.error(`[adminController] getAdminUsers error: ${error.message}`);
     return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
+};
+
+module.exports = {
+  getDashboard: exports.getDashboard,
+  getAnalytics: exports.getAnalytics,
+  getCustomers: exports.getCustomers,
+  updateCustomer: exports.updateCustomer,
+  deleteCustomer: exports.deleteCustomer,
+  manualStockCheck: exports.manualStockCheck,
+  getBadges: exports.getBadges,
+  getAdminUsers: exports.getAdminUsers
 };

@@ -25,6 +25,9 @@ export default function CustomersManagement() {
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // { id: string, name: string } or 'bulk'
+  const [editingCustomer, setEditingCustomer] = useState(null);
 
   const fetchCustomers = useCallback(async () => {
     try {
@@ -136,6 +139,63 @@ export default function CustomersManagement() {
     }
   };
 
+  const handleDeleteCustomer = async (customerId) => {
+    try {
+      const token = localStorage.getItem('medcore_token');
+      const res = await fetch(`${API}/admin/customers/${customerId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Delete failed');
+      }
+      showMessage('Customer deleted successfully', 'success');
+      setDeleteConfirm(null);
+      setSelectedCustomers(prev => prev.filter(id => id !== customerId));
+      fetchCustomers();
+    } catch (error) {
+      showMessage(error.message || 'Failed to delete customer', 'error');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!selectedCustomers.length) return;
+    try {
+      const token = localStorage.getItem('medcore_token');
+      await Promise.all(
+        selectedCustomers.map(id =>
+          fetch(`${API}/admin/customers/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        )
+      );
+      showMessage(`${selectedCustomers.length} customer(s) deleted successfully`, 'success');
+      setDeleteConfirm(null);
+      setSelectedCustomers([]);
+      fetchCustomers();
+    } catch (error) {
+      showMessage('Failed to delete customers', 'error');
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedCustomers.length === customers.length) {
+      setSelectedCustomers([]);
+    } else {
+      setSelectedCustomers(customers.map(c => c._id || c.id));
+    }
+  };
+
+  const toggleSelectCustomer = (customerId) => {
+    setSelectedCustomers(prev =>
+      prev.includes(customerId)
+        ? prev.filter(id => id !== customerId)
+        : [...prev, customerId]
+    );
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     setSearch(searchInput);
@@ -190,6 +250,69 @@ export default function CustomersManagement() {
           message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
         }`}>
           {message.text}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-[#FEE2E2] flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-[#DC2626]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#0B2545]">Confirm Delete</h3>
+                <p className="text-sm text-[#6B7280] mt-1">
+                  {deleteConfirm === 'bulk'
+                    ? `Delete ${selectedCustomers.length} customer(s)?`
+                    : `Delete ${deleteConfirm.name}?`}
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-[#6B7280] mb-6">
+              This action cannot be undone. All customer data, orders, and history will be permanently deleted.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 px-4 py-2.5 border border-[#E5E7EB] text-[#374151] rounded-lg font-semibold hover:bg-[#F9FAFB] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteConfirm === 'bulk' ? handleBulkDelete() : handleDeleteCustomer(deleteConfirm.id)}
+                className="flex-1 px-4 py-2.5 bg-[#DC2626] text-white rounded-lg font-semibold hover:bg-[#B91C1C] transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Actions Bar */}
+      {selectedCustomers.length > 0 && (
+        <div className="bg-[#EFF6FF] border-b border-[#BFDBFE] px-4 py-3 flex items-center justify-between">
+          <span className="text-sm font-semibold text-[#1E40AF]">
+            {selectedCustomers.length} customer{selectedCustomers.length > 1 ? 's' : ''} selected
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedCustomers([])}
+              className="text-sm px-3 py-1.5 text-[#1E40AF] hover:underline"
+            >
+              Clear
+            </button>
+            <button
+              onClick={() => setDeleteConfirm('bulk')}
+              className="text-sm px-4 py-1.5 bg-[#DC2626] text-white rounded-lg font-semibold hover:bg-[#B91C1C]"
+            >
+              Delete Selected
+            </button>
+          </div>
         </div>
       )}
 
@@ -264,6 +387,14 @@ export default function CustomersManagement() {
             <table className="w-full" style={{minWidth: '900px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
+                  <th className="px-4 py-3 w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedCustomers.length === customers.length && customers.length > 0}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
+                    />
+                  </th>
                   {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'B2B Discount', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                       {h}
@@ -274,8 +405,17 @@ export default function CustomersManagement() {
               <tbody>
                 {customers.map((customer, index) => {
                   const customerId = customer._id || customer.id;
+                  const isSelected = selectedCustomers.includes(customerId);
                   return (
-                  <tr key={customerId || `customer-${index}`} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+                  <tr key={customerId || `customer-${index}`} className={`border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)] ${isSelected ? 'bg-[#EFF6FF]' : ''}`}>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelectCustomer(customerId)}
+                        className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
                         {customer.companyName || customer.name}
@@ -342,9 +482,23 @@ export default function CustomersManagement() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <button className="text-[11px] text-[#0E8A6E] font-medium hover:underline">
-                        View profile
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setEditingCustomer(customer)}
+                          className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
+                          title="Edit customer"
+                        >
+                          Edit
+                        </button>
+                        <span className="text-[#E5E7EB]">|</span>
+                        <button
+                          onClick={() => setDeleteConfirm({ id: customerId, name: customer.companyName || customer.name })}
+                          className="text-[11px] text-[#DC2626] font-medium hover:underline"
+                          title="Delete customer"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -357,10 +511,17 @@ export default function CustomersManagement() {
           <div className="md:hidden space-y-3 p-3">
             {customers.map((customer, index) => {
               const customerId = customer._id || customer.id;
+              const isSelected = selectedCustomers.includes(customerId);
               return (
-                <div key={customerId || `customer-${index}`} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-2">
+                <div key={customerId || `customer-${index}`} className={`bg-[var(--color-background-secondary)] rounded-lg border p-4 space-y-3 ${isSelected ? 'border-[#3B82F6] bg-[#EFF6FF]' : 'border-[var(--color-border-tertiary)]'}`}>
+                  {/* Header with checkbox */}
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelectCustomer(customerId)}
+                      className="w-5 h-5 accent-[#0E8A6E] cursor-pointer mt-0.5 flex-shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="text-[14px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)] truncate">
                         {customer.companyName || customer.name}
@@ -452,9 +613,20 @@ export default function CustomersManagement() {
                   </div>
 
                   {/* Action */}
-                  <button className="w-full min-h-[48px] px-4 py-2 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg text-[13px] font-semibold hover:bg-[#F0FBF8] transition-colors">
-                    View Profile
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setEditingCustomer(customer)}
+                      className="min-h-[48px] px-4 py-2 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg text-[13px] font-semibold hover:bg-[#F0FBF8] transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm({ id: customerId, name: customer.companyName || customer.name })}
+                      className="min-h-[48px] px-4 py-2 border border-[#DC2626] text-[#DC2626] rounded-lg text-[13px] font-semibold hover:bg-[#FEE2E2] transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               );
             })}

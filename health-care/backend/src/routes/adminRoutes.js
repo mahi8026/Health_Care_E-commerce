@@ -6,6 +6,7 @@ const {
   getAnalytics,
   getCustomers,
   updateCustomer,
+  deleteCustomer,
   manualStockCheck,
   getBadges,
   getAdminUsers
@@ -29,6 +30,7 @@ router.get('/badges', getBadges);
 router.get('/users', getAdminUsers);
 router.get('/customers', getCustomers);
 router.patch('/customers/:id', updateCustomer);
+router.delete('/customers/:id', deleteCustomer);
 router.post('/stock-check', manualStockCheck);
 
 // Quote management
