@@ -336,16 +336,22 @@ export default function OrdersManagement() {
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
+    console.log('handleStatusChange called:', { orderId, newStatus, API });
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
     try {
       const token = localStorage.getItem('medcore_token');
-      const response = await fetch(`${API}/orders/${orderId}/status`, {
+      const url = `${API}/orders/${orderId}/status`;
+      console.log('Making PATCH request to:', url);
+      
+      const response = await fetch(url, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status: newStatus })
       });
       
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
       
       if (!response.ok) {
         throw new Error(data.message || `Failed with status ${response.status}`);
@@ -656,7 +662,7 @@ export default function OrdersManagement() {
         <>
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-            <table className="w-full" style={{minWidth: '1100px'}}>
+            <table className="w-full" style={{minWidth: '1200px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[#F9FAFB]">
                   <th className="px-4 py-3 w-12">
@@ -667,11 +673,15 @@ export default function OrdersManagement() {
                       className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
                     />
                   </th>
-                  {['Order ID', 'Customer', 'Items', 'Amount', 'Payment', 'Status', 'Date', 'Invoice', 'Notifications'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide">
-                      {h}
-                    </th>
-                  ))}
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '140px'}}>Order ID</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '200px'}}>Customer</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '80px'}}>Items</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '110px'}}>Amount</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '120px'}}>Payment</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '130px'}}>Status</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '100px'}}>Date</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '110px'}}>Invoice</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '200px'}}>Notifications</th>
                 </tr>
               </thead>
               <tbody>
@@ -723,7 +733,11 @@ export default function OrdersManagement() {
                     <td className="px-4 py-3">
                       <select
                         value={order.status}
-                        onChange={e => handleStatusChange(order._id, e.target.value)}
+                        onChange={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleStatusChange(order._id, e.target.value);
+                        }}
                         onClick={(e) => e.stopPropagation()}
                         disabled={actionLoading[`status-${order._id}`]}
                         className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
@@ -755,7 +769,7 @@ export default function OrdersManagement() {
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-1">
+                      <div className="flex gap-2 flex-wrap">
                         {[
                           { type: 'confirmation', icon: '📧', title: 'Send order confirmation' },
                           { type: 'payment', icon: '💳', title: 'Send payment receipt' },
@@ -767,7 +781,7 @@ export default function OrdersManagement() {
                             onClick={(e) => { e.stopPropagation(); handleSendNotification(type, order._id); }}
                             disabled={actionLoading[`${type}-${order._id}`]}
                             title={title}
-                            className="text-[10px] px-2 py-1 bg-[#F3F4F6] text-[#374151] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors"
+                            className="text-[13px] px-2.5 py-1.5 bg-[#F3F4F6] text-[#374151] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
                           >
                             {icon}
                           </button>
@@ -845,7 +859,11 @@ export default function OrdersManagement() {
                     <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold mb-2">Order Status</div>
                     <select
                       value={order.status}
-                      onChange={e => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleStatusChange(order._id, e.target.value);
+                      }}
                       disabled={actionLoading[`status-${order._id}`]}
                       className={`w-full text-[11px] px-2 py-1.5 rounded-lg font-medium border cursor-pointer ${getStatusColor(order.status)}`}
                     >
