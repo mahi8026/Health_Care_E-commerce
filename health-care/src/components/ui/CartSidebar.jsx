@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { FaTimes, FaShoppingCart, FaArrowRight } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
 import GA4Tracker from '@/services/GA4Tracker';
@@ -180,12 +181,16 @@ export default function CartSidebar({ isOpen, onClose }) {
                   }}
                 >
                   {/* Image */}
-                  <div className="w-14 h-14 flex-shrink-0 rounded-xl flex items-center justify-center overflow-hidden"
+                  <div className="w-14 h-14 flex-shrink-0 rounded-xl flex items-center justify-center overflow-hidden relative"
                     style={{ background: 'rgba(248,250,252,0.9)', border: '1px solid rgba(229,231,235,0.6)' }}>
                     {imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={imageUrl} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`} className="w-full h-full object-contain"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.innerHTML = '<div style="font-size:24px">📦</div>'; }} />
+                      <Image 
+                        src={imageUrl} 
+                        alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MedCore BD`}
+                        fill
+                        sizes="56px"
+                        style={{ objectFit: 'contain', padding: '4px' }}
+                      />
                     ) : (
                       <div className="text-2xl">📦</div>
                     )}

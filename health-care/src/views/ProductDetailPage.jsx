@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useProductDetail } from '@/hooks/useProductDetail';
 import ProductImageGalleryEnhanced from '@/components/product/ProductImageGalleryEnhanced';
@@ -355,11 +356,13 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
                   >
                     <div className="relative aspect-square bg-gray-50">
                       {recImageUrl ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
+                        <Image
                           src={recImageUrl}
-                          alt={recProduct.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          alt={`${recProduct.name}${recProduct.brand ? ` — ${typeof recProduct.brand === 'object' ? recProduct.brand.name : recProduct.brand}` : ''} — Related product Bangladesh — MedCore BD`}
+                          fill
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+                          style={{ objectFit: 'cover' }}
+                          className="group-hover:scale-105 transition-transform"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-3xl">🏥</div>

@@ -124,7 +124,7 @@ export function FlyToCartContainer() {
           {image.src && (
             <img
               src={image.src}
-              alt="Flying to cart"
+              alt="Product added to cart - animation"
               className="w-20 h-20 object-cover rounded-lg shadow-2xl"
             />
           )}

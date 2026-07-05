@@ -1,9 +1,8 @@
 'use client';
 
-/* eslint-disable @next/next/no-img-element */
-
 import { useState, useEffect, useRef, useCallback, memo, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
 import { 
@@ -185,10 +184,13 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       {/* Image */}
       <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
         {optimizedImg ? (
-          <img src={optimizedImg} alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`} loading="lazy"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          <Image 
+            src={optimizedImg} 
+            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            style={{ objectFit: 'cover' }}
+            className="group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>
@@ -736,15 +738,55 @@ export default function HomePage() {
             {heroSlides.length > 0 ? (
               heroSlides.map((slide, i) => currentSlide === i && (
                 <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <img src={slide.imageUrl} alt={slide.altText || `Slide ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <Image 
+                    src={slide.imageUrl} 
+                    alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MedCore BD`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 52vw"
+                    style={{ objectFit: 'cover' }}
+                    priority={i === 0}
+                  />
                 </div>
               ))
             ) : (
               <>
-                {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" alt="Diagnostic medical equipment Bangladesh — ECG machines and patient monitors — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" alt="Laboratory reagents Bangladesh — HbA1c CBC diagnostic kits — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" alt="Hospital equipment Bangladesh — ICU ventilators and infusion pumps — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}><img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" alt="Surgical instruments Bangladesh — scissors forceps trocar sets — MedCore BD" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+                {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+                  <Image 
+                    src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" 
+                    alt="Diagnostic medical equipment Bangladesh — ECG machines and patient monitors — MedCore BD"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 52vw"
+                    style={{ objectFit: 'cover' }}
+                    priority
+                  />
+                </div>}
+                {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+                  <Image 
+                    src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" 
+                    alt="Laboratory reagents Bangladesh — HbA1c CBC diagnostic kits — MedCore BD"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 52vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>}
+                {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+                  <Image 
+                    src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" 
+                    alt="Hospital equipment Bangladesh — ICU ventilators and infusion pumps — MedCore BD"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 52vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>}
+                {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+                  <Image 
+                    src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" 
+                    alt="Surgical instruments Bangladesh — scissors forceps trocar sets — MedCore BD"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 52vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>}
               </>
             )}
             {/* Bottom gradient */}
@@ -1001,14 +1043,17 @@ export default function HomePage() {
                     <div style={{ width: 140, minHeight: 160, flexShrink: 0, position: 'relative',
                       background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {imgUrl ? (
-                        <img src={imgUrl} alt={`${product.name}${typeof product.brand === 'object' ? ` — ${product.brand?.name}` : product.brand ? ` — ${product.brand}` : ''} — MedCore BD Bangladesh`}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover',
-                            position: 'absolute', inset: 0 }}
-                          onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                      ) : null}
-                      {/* Fallback icon */}
-                      <div style={{ fontSize: 40, display: imgUrl ? 'none' : 'flex',
-                        alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>🏥</div>
+                        <Image 
+                          src={imgUrl} 
+                          alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Top selling product #${rank} — MedCore BD Bangladesh`}
+                          fill
+                          sizes="140px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{ fontSize: 40, display: 'flex',
+                          alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>🏥</div>
+                      )}
 
                       {/* Rank badge */}
                       <div style={{
@@ -1246,12 +1291,18 @@ export default function HomePage() {
                     style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12,
                       border: '1px solid #E5E7EB', overflow: 'hidden', flexShrink: 0 }}>
                     <div style={{ height: 160, background: '#F9FAFB', position: 'relative', overflow: 'hidden' }}>
-                      {img
-                        ? <img src={img} alt={`${p.name}${typeof p.brand === 'object' ? ` — ${p.brand?.name}` : p.brand ? ` — ${p.brand}` : ''} — new arrival Bangladesh`} loading="lazy"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            height: '100%', fontSize: 40 }}>🏥</div>
-                      }
+                      {img ? (
+                        <Image 
+                          src={img} 
+                          alt={`${p.name}${typeof p.brand === 'object' ? ` — ${p.brand?.name}` : p.brand ? ` — ${p.brand}` : ''} — new arrival Bangladesh — MedCore BD`}
+                          fill
+                          sizes="180px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          height: '100%', fontSize: 40 }}>🏥</div>
+                      )}
                       <span style={{ position: 'absolute', top: 8, left: 8, background: '#0E8A6E',
                         color: '#fff', fontSize: 9, padding: '3px 8px', borderRadius: 20, fontWeight: 700 }}>
                         ✨ NEW

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -183,17 +184,14 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 >
                   <div className="flex gap-0">
                     {/* Image panel */}
-                    <div className="w-28 md:w-36 flex-shrink-0 bg-surface-subtle flex items-center justify-center border-r border-[#E5E7EB] p-3">
+                    <div className="w-28 md:w-36 flex-shrink-0 bg-surface-subtle flex items-center justify-center border-r border-[#E5E7EB] p-3 relative">
                       {imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={imageUrl}
-                          alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`}
-                          className="w-full h-24 md:h-28 object-contain"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.parentElement.innerHTML = '<div style="font-size:40px;display:flex;align-items:center;justify-content:center;height:100%">📦</div>';
-                          }}
+                          alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MedCore BD`}
+                          fill
+                          sizes="(max-width: 768px) 112px, 144px"
+                          style={{ objectFit: 'contain', padding: '12px' }}
                         />
                       ) : (
                         <div className="text-[44px] flex items-center justify-center h-24 md:h-28">📦</div>

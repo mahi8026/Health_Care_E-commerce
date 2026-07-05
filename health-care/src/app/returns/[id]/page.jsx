@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { API } from '@/constants/api';
 
 const STATUS_COLORS = {
@@ -160,11 +161,16 @@ export default function ReturnDetailPage() {
           <div className="space-y-4">
             {returnRequest.products?.map((item, idx) => (
               <div key={idx} className="flex gap-4 items-center pb-4 border-b last:border-b-0 last:pb-0">
-                <img 
-                  src={item.product?.images?.[0]?.url || '/placeholder.png'} 
-                  alt={item.product?.name}
-                  className="w-24 h-24 object-cover rounded-lg border"
-                />
+                <div className="relative w-24 h-24 flex-shrink-0">
+                  <Image 
+                    src={item.product?.images?.[0]?.url || '/placeholder.png'} 
+                    alt={`${item.product?.name} — Return request #${returnRequest._id?.slice(-6)} — MedCore BD Bangladesh`}
+                    fill
+                    sizes="96px"
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-lg border"
+                  />
+                </div>
                 <div className="flex-1">
                   <h3 className="font-medium text-[#0B2545] mb-1">{item.product?.name}</h3>
                   <p className="text-sm text-gray-600 mb-1">SKU: {item.product?.sku}</p>
@@ -205,12 +211,15 @@ export default function ReturnDetailPage() {
                       href={img.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block"
+                      className="block relative h-24"
                     >
-                      <img
+                      <Image
                         src={img.url}
-                        alt={img.alt || `Return image ${idx + 1}`}
-                        className="w-full h-24 object-cover rounded-lg border hover:opacity-75 transition-opacity cursor-pointer"
+                        alt={`${returnRequest.products?.[0]?.product?.name || 'Product'} — Return evidence photo ${idx + 1} — MedCore BD`}
+                        fill
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                        style={{ objectFit: 'cover' }}
+                        className="rounded-lg border hover:opacity-75 transition-opacity cursor-pointer"
                       />
                     </a>
                   ))}

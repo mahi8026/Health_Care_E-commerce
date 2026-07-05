@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { API } from '@/constants/api';
 import { getProductImageUrl, IMAGES } from '@/constants/images';
 
@@ -235,12 +236,16 @@ export default function ReturnRequestPage() {
               
               return (
                 <div key={idx} className="flex gap-4 items-center">
-                  <img 
-                    src={productImage} 
-                    alt={productName}
-                    className="w-20 h-20 object-cover rounded-lg border"
-                    onError={(e) => { e.target.src = IMAGES.placeholder; }}
-                  />
+                  <div className="relative w-20 h-20 flex-shrink-0">
+                    <Image 
+                      src={productImage} 
+                      alt={`${productName} — Return request — MedCore BD Bangladesh`}
+                      fill
+                      sizes="80px"
+                      style={{ objectFit: 'cover' }}
+                      className="rounded-lg border"
+                    />
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-[#0B2545]">{productName}</h3>
                     <p className="text-sm text-gray-600">
@@ -328,16 +333,19 @@ export default function ReturnRequestPage() {
             {images.length > 0 && (
               <div className="grid grid-cols-5 gap-3 mt-4">
                 {images.map((img, idx) => (
-                  <div key={idx} className="relative group">
-                    <img
+                  <div key={idx} className="relative group h-24">
+                    <Image
                       src={img.url}
-                      alt={img.alt}
-                      className="w-full h-24 object-cover rounded-lg border"
+                      alt={`Return evidence photo ${idx + 1} — MedCore BD`}
+                      fill
+                      sizes="(max-width: 768px) 20vw, 15vw"
+                      style={{ objectFit: 'cover' }}
+                      className="rounded-lg border"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(idx)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
                     >
                       ×
                     </button>

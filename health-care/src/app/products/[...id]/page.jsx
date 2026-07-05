@@ -2,7 +2,7 @@ import StructuredData, {
   generateProductSchema,
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
-import FAQSchema from '@/components/seo/FAQSchema';
+import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 import { API as API_BASE } from '@/constants/api';
@@ -146,12 +146,13 @@ export default async function ProductPage({ params }) {
 
   const productSchema    = product ? generateProductSchema(product) : null;
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs);
+  const faqs             = product ? generateProductFAQs(product) : null;
 
   return (
     <>
       {productSchema    && <StructuredData schema={productSchema} />}
       {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
-      {product          && <FAQSchema product={product} />}
+      {faqs             && <FAQSchema faqs={faqs} />}
 
       <ProductDetailPage productId={slug} heroPriority={true} />
     </>
