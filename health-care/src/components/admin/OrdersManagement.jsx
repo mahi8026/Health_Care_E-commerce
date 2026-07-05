@@ -489,7 +489,6 @@ export default function OrdersManagement() {
   const totalPages = Math.ceil(total / 20);
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 max-w-full">
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Order Detail Modal */}
       {selectedOrder && (
@@ -1001,7 +1000,6 @@ export default function OrdersManagement() {
           </button>
         </div>
       )}
-    </div>
     </div>
   );
 }
