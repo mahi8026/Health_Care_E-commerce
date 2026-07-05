@@ -1132,14 +1132,22 @@ export default function HomePage() {
           </div>
 
           {/* Tabs */}
-          <div role="tablist" aria-label="Product categories" style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+          <div role="tablist" aria-label="Product categories" style={{ 
+            display: 'flex', 
+            gap: 8, 
+            marginBottom: 24, 
+            flexWrap: 'wrap',
+            listStyle: 'none',
+            padding: 0,
+            margin: '0 0 24px 0'
+          }}>
             {[
               { key: 'all', label: 'All Products' },
               { key: 'Diagnostic Equipment', label: '🩺 Diagnostic' },
               { key: 'Surgical Instruments', label: '💉 Surgical' },
               { key: 'Laboratory Reagents', label: '🧪 Reagents' },
               { key: 'Hospital Machines', label: '🏥 Machines' },
-            ].map(tab => (
+            ].map((tab, index) => (
               <button key={tab.key}
                 onClick={() => handleTabChange(tab.key)}
                 role="tab"
@@ -1147,10 +1155,23 @@ export default function HomePage() {
                 aria-controls="featured-products-panel"
                 aria-label={`View ${tab.label}`}
                 className={activeTab === tab.key ? 'tab-active' : ''}
-                style={{ padding: '9px 18px', borderRadius: 8, border: '1.5px solid #E5E7EB',
+                style={{ 
+                  padding: '10px 20px', 
+                  borderRadius: 8, 
+                  border: '1.5px solid #E5E7EB',
                   background: activeTab === tab.key ? '#0B2545' : '#fff',
                   color: activeTab === tab.key ? '#fff' : '#374151',
-                  fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }}>
+                  fontSize: 14, 
+                  fontWeight: 600, 
+                  cursor: 'pointer', 
+                  transition: 'all 0.2s',
+                  boxShadow: activeTab === tab.key ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
+                  transform: activeTab === tab.key ? 'translateY(-1px)' : 'none',
+                  listStyle: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
                 {tab.label}
               </button>
             ))}
@@ -1159,7 +1180,12 @@ export default function HomePage() {
           {/* Products grid */}
           <div id="featured-products-panel" role="tabpanel" aria-label="Featured products">
           {featuredLoading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+              gap: 20,
+              padding: '0 4px'
+            }}>
               {[...Array(8)].map((_, i) => <ProductCardSkeleton key={i} />)}
             </div>
           ) : featuredProducts.length === 0 ? (
@@ -1169,9 +1195,15 @@ export default function HomePage() {
               <p style={{ fontSize: 14 }}>Try selecting a different category or check back later</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
-              {featuredProducts.map(p => (
-                <ProductCard key={p._id} product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+              gap: 20,
+              padding: '0 4px',
+              listStyle: 'none'
+            }}>
+              {featuredProducts.map((p, index) => (
+                <ProductCard key={p._id || index} product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
               ))}
             </div>
           )}
