@@ -694,7 +694,6 @@ export default function OrdersManagement() {
               <tbody>
                 {orders.map((order, index) => {
                   const isSelected = selectedOrders.includes(order._id);
-                  const [showActions, setShowActions] = useState(false);
                   return (
                   <tr key={order._id}
                     className={`border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)] transition-colors ${isSelected ? 'bg-[#EFF6FF]' : ''}`}>
@@ -782,12 +781,6 @@ export default function OrdersManagement() {
                         ))}
                       </div>
                     </td>
-                  </tr>
-                );
-                })}
-              </tbody>
-            </table>
-          </div>
                   </tr>
                 );
                 })}
