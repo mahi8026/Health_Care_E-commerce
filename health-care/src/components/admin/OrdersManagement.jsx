@@ -659,24 +659,12 @@ export default function OrdersManagement() {
         </div>
       ) : (
         <>
-          {/* Desktop Table — no horizontal scroll, all columns fit */}
-          <div className="hidden md:block w-full">
-            <table className="w-full table-fixed">
-              <colgroup>
-                <col style={{width: '36px'}} />
-                <col style={{width: '14%'}} />
-                <col style={{width: '18%'}} />
-                <col style={{width: '7%'}} />
-                <col style={{width: '10%'}} />
-                <col style={{width: '10%'}} />
-                <col style={{width: '13%'}} />
-                <col style={{width: '9%'}} />
-                <col style={{width: '8%'}} />
-                <col style={{width: '11%'}} />
-              </colgroup>
+          {/* Desktop Table - allows horizontal scroll for better column spacing */}
+          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <table className="w-full" style={{minWidth: '1200px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[#F9FAFB]">
-                  <th className="px-2 py-3">
+                  <th className="px-3 py-3" style={{width: '48px'}}>
                     <input
                       type="checkbox"
                       checked={selectedOrders.length === orders.length && orders.length > 0}
@@ -684,11 +672,33 @@ export default function OrdersManagement() {
                       className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
                     />
                   </th>
-                  {['Order ID','Customer','Items','Amount','Payment','Status','Date','Invoice','Notify'].map(h => (
-                    <th key={h} className="text-left px-2 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide truncate">
-                      {h}
-                    </th>
-                  ))}
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '140px'}}>
+                    Order ID
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '200px'}}>
+                    Customer
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '70px'}}>
+                    Items
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '120px'}}>
+                    Amount
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '100px'}}>
+                    Payment
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '150px'}}>
+                    Status
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '100px'}}>
+                    Date
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '80px'}}>
+                    Invoice
+                  </th>
+                  <th className="text-left px-3 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide whitespace-nowrap" style={{width: '150px'}}>
+                    Notifications
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -697,7 +707,7 @@ export default function OrdersManagement() {
                   return (
                   <tr key={order._id}
                     className={`border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)] transition-colors ${isSelected ? 'bg-[#EFF6FF]' : ''}`}>
-                    <td className="px-2 py-3">
+                    <td className="px-3 py-3">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -706,31 +716,31 @@ export default function OrdersManagement() {
                         className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
                       />
                     </td>
-                    <td className="px-2 py-3">
+                    <td className="px-3 py-3 whitespace-nowrap">
                       <button
                         onClick={() => setSelectedOrder(order)}
-                        className="text-[11px] font-semibold font-[family-name:var(--font-plus-jakarta)] text-[#0E8A6E] hover:underline text-left truncate block w-full"
+                        className="text-[11px] font-semibold font-[family-name:var(--font-plus-jakarta)] text-[#0E8A6E] hover:underline text-left"
                         title={order.orderNumber}
                       >
                         {order.orderNumber}
                       </button>
                     </td>
-                    <td className="px-2 py-3">
-                      <div className="text-[11px] font-medium truncate" title={order.user?.name}>{order.user?.name || '—'}</div>
-                      <div className="text-[9px] text-[var(--color-text-secondary)] truncate" title={order.user?.email}>{order.user?.email || '—'}</div>
+                    <td className="px-3 py-3">
+                      <div className="text-[11px] font-medium">{order.user?.name || '—'}</div>
+                      <div className="text-[10px] text-[var(--color-text-secondary)]">{order.user?.email || '—'}</div>
                     </td>
-                    <td className="px-2 py-3 text-[11px] text-center">
+                    <td className="px-3 py-3 text-[11px] text-center whitespace-nowrap">
                       {order.items?.length || 0}
                     </td>
-                    <td className="px-2 py-3 text-[11px] font-bold font-[family-name:var(--font-plus-jakarta)] text-[#0B2545] truncate" title={`৳${(order.totalAmount || order.total || 0).toLocaleString()}`}>
+                    <td className="px-3 py-3 text-[12px] font-bold font-[family-name:var(--font-plus-jakarta)] text-[#0B2545] whitespace-nowrap">
                       ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </td>
-                    <td className="px-2 py-3">
-                      <span className={`text-[9px] px-1.5 py-1 rounded font-medium inline-block ${getPaymentColor(order.paymentStatus)}`}>
-                        {order.paymentStatus === 'paid' ? '✓ Paid' : '○ Pending'}
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      <span className={`text-[10px] px-2 py-1 rounded font-medium inline-block ${getPaymentColor(order.paymentStatus)}`}>
+                        {order.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
                       </span>
                     </td>
-                    <td className="px-2 py-3">
+                    <td className="px-3 py-3 whitespace-nowrap">
                       <select
                         value={order.status}
                         onChange={(e) => {
@@ -740,30 +750,30 @@ export default function OrdersManagement() {
                         }}
                         onClick={(e) => e.stopPropagation()}
                         disabled={actionLoading[`status-${order._id}`]}
-                        className={`w-full text-[9px] px-1.5 py-1 rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
+                        className={`text-[10px] px-2 py-1 rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
                       >
                         {['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'].map(s => (
                           <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
                         ))}
                       </select>
                     </td>
-                    <td className="px-2 py-3">
-                      <div className="text-[10px] truncate">
-                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : '—'}
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      <div className="text-[11px]">
+                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                       </div>
                     </td>
-                    <td className="px-2 py-3">
+                    <td className="px-3 py-3 whitespace-nowrap">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDownloadInvoice(order._id); }}
                         disabled={actionLoading[`invoice-${order._id}`]}
-                        className="text-[10px] text-[#0E8A6E] font-medium hover:underline disabled:opacity-50"
-                        title="Download Invoice"
+                        className="text-[11px] px-2 py-1 bg-[#F3F4F6] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors font-medium text-[#0E8A6E]"
+                        title="Download Invoice PDF"
                       >
-                        {actionLoading[`invoice-${order._id}`] ? '...' : '📄'}
+                        {actionLoading[`invoice-${order._id}`] ? '...' : '📄 PDF'}
                       </button>
                     </td>
-                    <td className="px-2 py-3 relative">
-                      <div className="flex gap-1">
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-1.5">
                         {[
                           { type: 'confirmation', icon: '📧', title: 'Order confirmation' },
                           { type: 'payment', icon: '💳', title: 'Payment receipt' },
@@ -774,7 +784,7 @@ export default function OrdersManagement() {
                             onClick={(e) => { e.stopPropagation(); handleSendNotification(type, order._id); }}
                             disabled={actionLoading[`${type}-${order._id}`]}
                             title={title}
-                            className="text-[11px] w-6 h-6 bg-[#F3F4F6] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors flex items-center justify-center"
+                            className="text-[13px] w-7 h-7 bg-[#F3F4F6] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors flex items-center justify-center flex-shrink-0"
                           >
                             {icon}
                           </button>
