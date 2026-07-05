@@ -659,12 +659,24 @@ export default function OrdersManagement() {
         </div>
       ) : (
         <>
-          {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
-            <table className="w-full" style={{minWidth: '1200px'}}>
+          {/* Desktop Table — no horizontal scroll, all columns fit */}
+          <div className="hidden md:block w-full">
+            <table className="w-full table-fixed">
+              <colgroup>
+                <col style={{width: '36px'}} />
+                <col style={{width: '14%'}} />
+                <col style={{width: '18%'}} />
+                <col style={{width: '7%'}} />
+                <col style={{width: '10%'}} />
+                <col style={{width: '10%'}} />
+                <col style={{width: '13%'}} />
+                <col style={{width: '9%'}} />
+                <col style={{width: '8%'}} />
+                <col style={{width: '11%'}} />
+              </colgroup>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[#F9FAFB]">
-                  <th className="px-4 py-3 w-12">
+                  <th className="px-2 py-3">
                     <input
                       type="checkbox"
                       checked={selectedOrders.length === orders.length && orders.length > 0}
@@ -672,24 +684,21 @@ export default function OrdersManagement() {
                       className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
                     />
                   </th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '140px'}}>Order ID</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '200px'}}>Customer</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '80px'}}>Items</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '110px'}}>Amount</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '120px'}}>Payment</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '130px'}}>Status</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '100px'}}>Date</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '110px'}}>Invoice</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide" style={{minWidth: '200px'}}>Notifications</th>
+                  {['Order ID','Customer','Items','Amount','Payment','Status','Date','Invoice','Notify'].map(h => (
+                    <th key={h} className="text-left px-2 py-3 text-[10px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)] uppercase tracking-wide truncate">
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order, index) => {
                   const isSelected = selectedOrders.includes(order._id);
+                  const [showActions, setShowActions] = useState(false);
                   return (
                   <tr key={order._id}
                     className={`border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)] transition-colors ${isSelected ? 'bg-[#EFF6FF]' : ''}`}>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -698,38 +707,31 @@ export default function OrdersManagement() {
                         className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
                       />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3">
                       <button
                         onClick={() => setSelectedOrder(order)}
-                        className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)] text-[#0E8A6E] hover:underline text-left"
+                        className="text-[11px] font-semibold font-[family-name:var(--font-plus-jakarta)] text-[#0E8A6E] hover:underline text-left truncate block w-full"
+                        title={order.orderNumber}
                       >
                         {order.orderNumber}
                       </button>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-[12px] font-medium">{order.user?.name || '—'}</div>
-                      {order.user?.companyName && (
-                        <div className="text-[10px] text-[var(--color-text-secondary)]">{order.user.companyName}</div>
-                      )}
-                      <div className="text-[10px] text-[var(--color-text-secondary)]">{order.user?.email || '—'}</div>
+                    <td className="px-2 py-3">
+                      <div className="text-[11px] font-medium truncate" title={order.user?.name}>{order.user?.name || '—'}</div>
+                      <div className="text-[9px] text-[var(--color-text-secondary)] truncate" title={order.user?.email}>{order.user?.email || '—'}</div>
                     </td>
-                    <td className="px-4 py-3 text-[12px] text-[var(--color-text-secondary)]">
-                      {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}
+                    <td className="px-2 py-3 text-[11px] text-center">
+                      {order.items?.length || 0}
                     </td>
-                    <td className="px-4 py-3 text-[13px] font-bold font-[family-name:var(--font-plus-jakarta)] text-[#0B2545]">
+                    <td className="px-2 py-3 text-[11px] font-bold font-[family-name:var(--font-plus-jakarta)] text-[#0B2545] truncate" title={`৳${(order.totalAmount || order.total || 0).toLocaleString()}`}>
                       ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col gap-1">
-                        <span className={`text-[10px] px-2 py-[3px] rounded font-medium inline-block w-fit ${getPaymentColor(order.paymentStatus)}`}>
-                          {order.paymentStatus?.toUpperCase()}
-                        </span>
-                        <span className="text-[10px] text-[var(--color-text-secondary)]">
-                          {order.paymentMethod?.replace(/_/g, ' ')}
-                        </span>
-                      </div>
+                    <td className="px-2 py-3">
+                      <span className={`text-[9px] px-1.5 py-1 rounded font-medium inline-block ${getPaymentColor(order.paymentStatus)}`}>
+                        {order.paymentStatus === 'paid' ? '✓ Paid' : '○ Pending'}
+                      </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3">
                       <select
                         value={order.status}
                         onChange={(e) => {
@@ -739,54 +741,53 @@ export default function OrdersManagement() {
                         }}
                         onClick={(e) => e.stopPropagation()}
                         disabled={actionLoading[`status-${order._id}`]}
-                        className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
+                        className={`w-full text-[9px] px-1.5 py-1 rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
                       >
                         {['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'].map(s => (
                           <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-[11px] font-medium">
+                    <td className="px-2 py-3">
+                      <div className="text-[10px] truncate">
                         {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : '—'}
                       </div>
-                      <div className="text-[10px] text-[var(--color-text-secondary)]">
-                        {order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDownloadInvoice(order._id); }}
                         disabled={actionLoading[`invoice-${order._id}`]}
-                        className="text-[11px] text-[#0E8A6E] font-medium hover:underline disabled:opacity-50 flex items-center gap-1"
+                        className="text-[10px] text-[#0E8A6E] font-medium hover:underline disabled:opacity-50"
+                        title="Download Invoice"
                       >
-                        {actionLoading[`invoice-${order._id}`] ? (
-                          <>⏳ Loading...</>
-                        ) : (
-                          <>📄 Download</>
-                        )}
+                        {actionLoading[`invoice-${order._id}`] ? '...' : '📄'}
                       </button>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2 flex-wrap">
+                    <td className="px-2 py-3 relative">
+                      <div className="flex gap-1">
                         {[
-                          { type: 'confirmation', icon: '📧', title: 'Send order confirmation' },
-                          { type: 'payment', icon: '💳', title: 'Send payment receipt' },
-                          { type: 'shipping', icon: '🚚', title: 'Send shipping notification' },
-                          { type: 'delivery', icon: '✅', title: 'Send delivery confirmation' },
+                          { type: 'confirmation', icon: '📧', title: 'Order confirmation' },
+                          { type: 'payment', icon: '💳', title: 'Payment receipt' },
+                          { type: 'shipping', icon: '🚚', title: 'Shipping notification' },
                         ].map(({ type, icon, title }) => (
                           <button
                             key={type}
                             onClick={(e) => { e.stopPropagation(); handleSendNotification(type, order._id); }}
                             disabled={actionLoading[`${type}-${order._id}`]}
                             title={title}
-                            className="text-[13px] px-2.5 py-1.5 bg-[#F3F4F6] text-[#374151] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
+                            className="text-[11px] w-6 h-6 bg-[#F3F4F6] rounded hover:bg-[#E5E7EB] disabled:opacity-50 transition-colors flex items-center justify-center"
                           >
                             {icon}
                           </button>
                         ))}
                       </div>
                     </td>
+                  </tr>
+                );
+                })}
+              </tbody>
+            </table>
+          </div>
                   </tr>
                 );
                 })}
