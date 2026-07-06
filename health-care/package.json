@@ -35,7 +35,7 @@
     "web-vitals": "5.3.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.5.3",
+    "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^20.5.3",
     "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^16.2.6",
