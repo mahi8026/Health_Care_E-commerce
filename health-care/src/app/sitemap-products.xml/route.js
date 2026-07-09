@@ -19,6 +19,11 @@ const SITE_URL = SITE_CONFIG.url;
 
 // Get the backend API URL
 const getBackendUrl = () => {
+  // In production on Cloudflare Workers, always use the production API
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://health-care-e-commerce.onrender.com/api';
+  }
+  
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   
   if (apiUrl && apiUrl.startsWith('http')) {
