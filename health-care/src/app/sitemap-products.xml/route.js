@@ -87,7 +87,8 @@ async function fetchProducts() {
       }
       
       const data = await res.json();
-      const products = data.data?.products || data.products || [];
+      // API returns { success, data: [...products], pagination }
+      const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
       
       if (products.length === 0) {
         hasMorePages = false;
@@ -95,7 +96,7 @@ async function fetchProducts() {
         allProducts = allProducts.concat(products);
         
         // Check pagination metadata
-        const totalPages = data.data?.pagination?.totalPages || data.pagination?.totalPages;
+        const totalPages = data.pagination?.totalPages;
         if (totalPages && currentPage >= totalPages) {
           hasMorePages = false;
         } else if (products.length < BATCH_SIZE) {
