@@ -1,14 +1,14 @@
 /**
  * Product Pages Sitemap for MedCore BD
  * 
- * Contains all product detail pages.
- * This sitemap is resilient to backend timeouts and cold starts.
+ * Contains all product detail pages (up to 1000 products).
+ * Optimized for Cloudflare Workers 30-second timeout.
  * 
  * Strategy:
- * 1. Attempt to fetch products from backend with aggressive timeout
- * 2. If backend is cold/slow, return empty sitemap (graceful degradation)
- * 3. Cache successful responses for 1 hour
- * 4. Google will retry failed requests automatically
+ * 1. Fetch all products in a single request with high limit (faster than batching)
+ * 2. If backend is cold/slow/times out, return empty sitemap (graceful degradation)
+ * 3. Cache successful responses for 1 hour, empty responses for 5 minutes
+ * 4. Google will retry empty sitemaps automatically
  * 
  * Route: /sitemap-products.xml
  */
@@ -35,80 +35,34 @@ const getBackendUrl = () => {
 // Fetch products with timeout and retry logic
 async function fetchProducts() {
   const backendUrl = getBackendUrl();
-  const BATCH_SIZE = 100;
-  const MAX_PRODUCTS = 10000;
-  const TIMEOUT_MS = 45000; // 45 seconds total timeout for all requests
-  
-  let allProducts = [];
-  let currentPage = 1;
-  let hasMorePages = true;
-  const startTime = Date.now();
+  const TIMEOUT_MS = 25000; // 25 seconds total timeout (Cloudflare Workers limit)
   
   try {
-    // Wake up backend with initial request
-    const wakeUpRes = await fetch(`${backendUrl}/products?limit=1`, {
-      signal: AbortSignal.timeout(20000), // 20 second timeout for cold start
+    const startTime = Date.now();
+    
+    // Fetch all products in a single request with high limit
+    // This is faster than batching for Cloudflare Workers
+    const productsUrl = `${backendUrl}/products?limit=1000&fields=slug,_id,updatedAt`;
+
+    const res = await fetch(productsUrl, {
+      signal: AbortSignal.timeout(TIMEOUT_MS),
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'MedCore-Sitemap-Products',
       },
     });
     
-    if (!wakeUpRes.ok) {
-      console.error('[sitemap-products] Backend wake-up failed:', wakeUpRes.status);
+    if (!res.ok) {
+      console.error('[sitemap-products] Backend fetch failed:', res.status);
       return [];
     }
     
-    // Fetch products in batches
-    while (hasMorePages && allProducts.length < MAX_PRODUCTS) {
-      // Check if we're running out of time
-      const elapsed = Date.now() - startTime;
-      if (elapsed > TIMEOUT_MS) {
-        console.warn('[sitemap-products] Timeout reached, returning partial results');
-        break;
-      }
-      
-      const remainingTime = TIMEOUT_MS - elapsed;
-      const batchTimeout = Math.min(remainingTime, 10000); // Max 10 seconds per batch
-      
-      const productsUrl = `${backendUrl}/products?page=${currentPage}&limit=${BATCH_SIZE}&fields=slug,_id,updatedAt`;
-
-      const res = await fetch(productsUrl, {
-        signal: AbortSignal.timeout(batchTimeout),
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'MedCore-Sitemap-Products',
-        },
-      });
-      
-      if (!res.ok) {
-        console.error(`[sitemap-products] Batch ${currentPage} failed:`, res.status);
-        break;
-      }
-      
-      const data = await res.json();
-      // API returns { success, data: [...products], pagination }
-      const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
-      
-      if (products.length === 0) {
-        hasMorePages = false;
-      } else {
-        allProducts = allProducts.concat(products);
-        
-        // Check pagination metadata
-        const totalPages = data.pagination?.totalPages;
-        if (totalPages && currentPage >= totalPages) {
-          hasMorePages = false;
-        } else if (products.length < BATCH_SIZE) {
-          hasMorePages = false;
-        } else {
-          currentPage++;
-        }
-      }
-    }
+    const data = await res.json();
+    // API returns { success, data: [...products], pagination }
+    const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
     
-    console.log(`[sitemap-products] Fetched ${allProducts.length} products in ${Date.now() - startTime}ms`);
-    return allProducts;
+    console.log(`[sitemap-products] Fetched ${products.length} products in ${Date.now() - startTime}ms`);
+    return products;
     
   } catch (err) {
     console.error('[sitemap-products] Error fetching products:', err.message);
