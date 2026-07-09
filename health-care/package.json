@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "build:cf": "cross-env CF_PAGES=1 next build && npx @opennextjs/cloudflare@latest build",
+    "build": "node scripts/generate-sitemap.js && next build",
+    "build:cf": "node scripts/generate-sitemap.js && cross-env CF_PAGES=1 next build && npx @opennextjs/cloudflare@latest build",
     "deploy:cf": "npm run build:cf && wrangler deploy",
     "start": "next start",
     "lint": "next lint",
