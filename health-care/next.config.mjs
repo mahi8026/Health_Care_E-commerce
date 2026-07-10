@@ -261,6 +261,12 @@ const nextConfig = {
   // Turbopack config — required in Next.js 16 to silence warning
   turbopack: {},
 
+  // TypeScript is installed only for ESLint (eslint-config-next dependency)
+  // Skip build-time type checking — this is a JS codebase with no tsconfig.json
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Enable source maps in production for Sentry error tracking
   // NOTE: Disabled to reduce bundle size — re-enable only when debugging production errors
   productionBrowserSourceMaps: false,
