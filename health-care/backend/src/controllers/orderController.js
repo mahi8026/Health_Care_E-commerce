@@ -534,6 +534,21 @@ exports.updateOrderStatus = async (req, res) => {
     }
     if (status === 'delivered') {
       order.deliveredAt = new Date();
+      
+      // ── Update Product soldCount when order is delivered ────────────────────
+      // Increment soldCount for all products in the order
+      const Product = require('../models/Product');
+      for (const item of order.items) {
+        try {
+          await Product.findByIdAndUpdate(
+            item.product,
+            { $inc: { soldCount: item.quantity || item.qty || 1 } },
+            { new: false, runValidators: false }
+          );
+        } catch (err) {
+          logger.error(`[updateOrderStatus] Failed to increment soldCount for product ${item.product}: ${err.message}`);
+        }
+      }
     }
 
     await order.save();

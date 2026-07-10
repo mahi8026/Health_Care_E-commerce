@@ -225,6 +225,7 @@ exports.getProducts = async (req, res) => {
     else if (sortBy === 'name_desc') sortStage.name = -1;
     else if (sortBy === 'newest') sortStage.createdAt = -1;
     else if (sortBy === 'rating') sortStage['rating.average'] = -1;
+    else if (sortBy === 'popular') sortStage.soldCount = -1; // Sort by sales count (highest first)
     else sortStage.createdAt = -1;
 
     // Always add _id as secondary sort for consistent cursor pagination
@@ -263,6 +264,8 @@ exports.getProducts = async (req, res) => {
       lowStockThreshold: 1,
       subcategory: 1,
       discountPct: 1,
+      soldCount: 1,
+      viewCount: 1,
       // Category fields
       'category._id': 1,
       'category.name': 1,

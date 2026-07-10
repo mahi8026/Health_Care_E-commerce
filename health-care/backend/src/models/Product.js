@@ -68,6 +68,8 @@ const productSchema = new mongoose.Schema({
   reviewsCount: { type: Number, default: 0 },
   // Legacy fields for backward compatibility
   reviewCount: { type: Number, default: 0 },
+  soldCount: { type: Number, default: 0, min: 0 }, // Track total units sold
+  viewCount: { type: Number, default: 0, min: 0 }, // Track product views
   isActive: { type: Boolean, default: true },
   isFeatured: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }

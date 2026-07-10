@@ -67,14 +67,14 @@ export default function RecentlyViewed({
               className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
               {/* Product Image */}
-              <div className="relative aspect-square bg-gray-100 dark:bg-gray-900">
+              <div className="relative aspect-square bg-gray-50 dark:bg-gray-900">
                 {product.images?.[0] ? (
                   <>
                     <Image
                       src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
                       alt={product.name}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2"
                       sizes="(max-width: 768px) 192px, 192px"
                       unoptimized={!(typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url)?.includes('res.cloudinary.com')}
                       onError={(e) => {
@@ -86,13 +86,13 @@ export default function RecentlyViewed({
                         }
                       }}
                     />
-                    <div className="image-fallback hidden w-full h-full items-center justify-center text-gray-400 dark:text-gray-600">
-                      <span className="text-4xl">🏥</span>
+                    <div className="image-fallback hidden w-full h-full items-center justify-center text-gray-400 dark:text-gray-600 bg-white dark:bg-gray-800">
+                      <span className="text-5xl">🏥</span>
                     </div>
                   </>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
-                    <span className="text-4xl">🏥</span>
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 bg-white dark:bg-gray-800">
+                    <span className="text-5xl">🏥</span>
                   </div>
                 )}
 
@@ -124,12 +124,20 @@ export default function RecentlyViewed({
 
                 {/* Price */}
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-teal-600 dark:text-teal-400">
-                    ৳{product.price?.toLocaleString()}
-                  </span>
-                  {product.originalPrice && product.price < product.originalPrice && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500 line-through">
-                      ৳{product.originalPrice.toLocaleString()}
+                  {product.price > 0 ? (
+                    <>
+                      <span className="text-lg font-bold text-teal-600 dark:text-teal-400">
+                        ৳{product.price.toLocaleString()}
+                      </span>
+                      {product.originalPrice && product.price < product.originalPrice && (
+                        <span className="text-xs text-gray-400 dark:text-gray-500 line-through">
+                          ৳{product.originalPrice.toLocaleString()}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                      Price unavailable
                     </span>
                   )}
                 </div>
