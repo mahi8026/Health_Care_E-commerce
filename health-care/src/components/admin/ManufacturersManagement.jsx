@@ -19,6 +19,7 @@ export default function ManufacturersManagement() {
   const [countries, setCountries] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [deduping, setDeduping] = useState(false);
 
   useEffect(() => {
     fetchManufacturers();
@@ -103,6 +104,21 @@ export default function ManufacturersManagement() {
       fetchManufacturers();
     } catch (err) {
       alert(err.message || err.data?.message || 'Failed to update manufacturer');
+    }
+  };
+
+  const handleDeduplicate = async () => {
+    if (!confirm('This will remove all duplicate manufacturers (keeping the oldest) and reassign their products. Continue?')) return;
+    setDeduping(true);
+    try {
+      const result = await api.post('/manufacturers/deduplicate');
+      const msg = result.message || result.data?.message || 'Deduplication complete';
+      alert(msg);
+      fetchManufacturers();
+    } catch (err) {
+      alert(err.message || err.data?.message || 'Failed to deduplicate manufacturers');
+    } finally {
+      setDeduping(false);
     }
   };
 
@@ -216,7 +232,7 @@ export default function ManufacturersManagement() {
 
       {/* Filters */}
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg shadow p-4 border border-blue-100">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-2">Search</label>
             <input
@@ -258,6 +274,13 @@ export default function ManufacturersManagement() {
             className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-3 py-3 rounded-lg hover:shadow-lg transition text-sm font-medium min-h-[48px]"
           >
             ⟳ Refresh
+          </button>
+          <button
+            onClick={handleDeduplicate}
+            disabled={deduping}
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-3 rounded-lg hover:shadow-lg transition text-sm font-medium min-h-[48px] disabled:opacity-60"
+          >
+            {deduping ? '⏳ Removing…' : '🧹 Remove Duplicates'}
           </button>
         </div>
       </div>

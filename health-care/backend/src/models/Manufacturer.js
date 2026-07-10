@@ -49,9 +49,21 @@ const manufacturerSchema = new mongoose.Schema({
 });
 
 // Auto-generate slug from name before saving
-manufacturerSchema.pre('save', function(next) {
+manufacturerSchema.pre('save', async function(next) {
   if (this.isModified('name')) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
+    const base = slugify(this.name, { lower: true, strict: true });
+    let slug = base;
+    let count = 1;
+    // Ensure slug is unique (append -2, -3, etc. if needed)
+    while (true) {
+      const existing = await mongoose.model('Manufacturer').findOne({
+        slug,
+        _id: { $ne: this._id }
+      }).lean();
+      if (!existing) break;
+      slug = `${base}-${++count}`;
+    }
+    this.slug = slug;
   }
   next();
 });
@@ -65,8 +77,8 @@ manufacturerSchema.virtual('productCount', {
 });
 
 // Indexes for performance
-manufacturerSchema.index({ slug: 1 });
+manufacturerSchema.index({ slug: 1 }, { unique: true });
 manufacturerSchema.index({ isActive: 1 });
-manufacturerSchema.index({ name: 1 });
+manufacturerSchema.index({ name: 1 }, { unique: true });
 
 module.exports = mongoose.model('Manufacturer', manufacturerSchema);

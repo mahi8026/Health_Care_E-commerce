@@ -8,7 +8,8 @@ const {
   createManufacturer,
   updateManufacturer,
   deleteManufacturer,
-  uploadManufacturerLogo
+  uploadManufacturerLogo,
+  deduplicateManufacturers
 } = require('../controllers/manufacturerController');
 
 // Import upload middleware
@@ -43,6 +44,7 @@ router.get('/', redisCacheMiddleware({ ttl: 600, keyPrefix: 'manufacturers:' }),
 router.get('/:slug', redisCacheMiddleware({ ttl: 600, keyPrefix: 'manufacturers:' }), getManufacturer);
 
 // Admin routes
+router.post('/deduplicate', protect, authorize('admin'), deduplicateManufacturers);
 router.post('/', protect, authorize('admin'), createManufacturer);
 router.put('/:id', protect, authorize('admin'), updateManufacturer);
 router.patch('/:id', protect, authorize('admin'), updateManufacturer);

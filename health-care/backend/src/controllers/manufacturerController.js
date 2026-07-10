@@ -184,6 +184,75 @@ exports.updateManufacturer = async (req, res) => {
   }
 };
 
+// @desc    Remove duplicate manufacturers (keep oldest, delete the rest)
+// @route   POST /api/manufacturers/deduplicate
+// @access  Private/Admin
+exports.deduplicateManufacturers = async (req, res) => {
+  try {
+    // Find all groups of manufacturers sharing the same name (case-insensitive)
+    const duplicateGroups = await Manufacturer.aggregate([
+      {
+        $group: {
+          _id: { $toLower: '$name' },
+          ids: { $push: '$_id' },
+          count: { $sum: 1 }
+        }
+      },
+      { $match: { count: { $gt: 1 } } }
+    ]);
+
+    if (duplicateGroups.length === 0) {
+      return successResponse(res, { removed: 0 }, 'No duplicate manufacturers found');
+    }
+
+    let totalRemoved = 0;
+    const mongoose = require('mongoose');
+
+    for (const group of duplicateGroups) {
+      // Sort by _id ascending — oldest ObjectId = first created
+      const sorted = group.ids.sort((a, b) => a.toString().localeCompare(b.toString()));
+      const keepId = sorted[0];
+      const removeIds = sorted.slice(1);
+
+      // Reassign all products from duplicate manufacturers to the one we keep
+      await Product.updateMany(
+        { brand: { $in: removeIds } },
+        { $set: { brand: keepId } }
+      );
+
+      // Hard-delete the duplicates
+      await Manufacturer.deleteMany({ _id: { $in: removeIds } });
+      totalRemoved += removeIds.length;
+
+      logger.info(`[deduplicateManufacturers] Kept ${keepId}, removed ${removeIds.length} duplicates for "${group._id}"`);
+    }
+
+    // Invalidate caches
+    await redisCache.invalidateBrands();
+    await redisCache.invalidateProductList();
+    await invalidateCache('manufacturers:*');
+    await invalidateCache('products:*');
+
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.MANUFACTURER.DELETED,
+      targetModel: 'Manufacturer',
+      targetId: null,
+      targetName: 'BULK DEDUP',
+      req,
+      metadata: { duplicateGroupsFound: duplicateGroups.length, totalRemoved }
+    });
+
+    return successResponse(res, {
+      duplicateGroupsFound: duplicateGroups.length,
+      removed: totalRemoved
+    }, `Removed ${totalRemoved} duplicate manufacturer(s) across ${duplicateGroups.length} group(s)`);
+  } catch (error) {
+    logger.error(`[deduplicateManufacturers] ${error.message}`);
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+  }
+};
+
 // @desc    Delete/Deactivate manufacturer (CASCADE: deletes all associated products)
 // @route   DELETE /api/manufacturers/:id
 // @access  Private/Admin
@@ -211,7 +280,7 @@ exports.deleteManufacturer = async (req, res) => {
       
       // Invalidate caches
       await redisCache.invalidateBrands();
-      await redisCache.invalidateProducts();
+      await redisCache.invalidateProductList();
       await invalidateCache('manufacturers:*');
       await invalidateCache('products:*');
       
@@ -253,7 +322,7 @@ exports.deleteManufacturer = async (req, res) => {
       
       // Invalidate caches
       await redisCache.invalidateBrands();
-      await redisCache.invalidateProducts();
+      await redisCache.invalidateProductList();
       await invalidateCache('manufacturers:*');
       await invalidateCache('products:*');
       
