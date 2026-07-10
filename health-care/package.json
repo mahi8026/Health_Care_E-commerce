@@ -5,9 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "cross-env CF_PAGES=1 next build && npx @opennextjs/cloudflare@latest build",
     "build:sitemap": "node scripts/generate-sitemap.js",
-    "deploy:cf": "npm run build:cf && wrangler deploy",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
