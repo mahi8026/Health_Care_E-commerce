@@ -77,8 +77,10 @@ manufacturerSchema.virtual('productCount', {
 });
 
 // Indexes for performance
-manufacturerSchema.index({ slug: 1 }, { unique: true });
+// NOTE: Unique constraint is enforced at application level (pre-save hook + controller)
+// until existing duplicate data is cleaned up via POST /api/manufacturers/deduplicate
+manufacturerSchema.index({ slug: 1 }, { sparse: true });
 manufacturerSchema.index({ isActive: 1 });
-manufacturerSchema.index({ name: 1 }, { unique: true });
+manufacturerSchema.index({ name: 1 });
 
 module.exports = mongoose.model('Manufacturer', manufacturerSchema);

@@ -95,6 +95,14 @@ exports.getManufacturer = async (req, res) => {
 // @access  Private/Admin
 exports.createManufacturer = async (req, res) => {
   try {
+    // Check for duplicate name at application level
+    const existing = await Manufacturer.findOne({
+      name: { $regex: new RegExp(`^${req.body.name?.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+    }).lean();
+    if (existing) {
+      return errorResponse(res, 'A manufacturer with this name already exists', null, 400);
+    }
+
     const manufacturer = await Manufacturer.create(req.body);
     
     // Invalidate caches using centralized Redis cache service
