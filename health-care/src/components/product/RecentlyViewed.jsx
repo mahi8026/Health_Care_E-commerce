@@ -33,125 +33,227 @@ export default function RecentlyViewed({
   }
 
   return (
-    <section className={`py-8 ${className}`}>
-      <div className="flex items-center gap-2 mb-4">
-        <FiClock className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          {title}
-        </h2>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          ({products.length})
-        </span>
+    <section className={`${className}`}>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        marginBottom: 20 
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <FiClock style={{ width: 20, height: 20, color: '#0E8A6E' }} />
+          <h2 style={{ 
+            fontFamily: 'Georgia, serif',
+            fontSize: 28,
+            fontWeight: 700,
+            margin: 0,
+            color: '#0B2545'
+          }}>
+            {title}
+          </h2>
+          <span style={{ 
+            fontSize: 13,
+            color: '#9CA3AF',
+            fontWeight: 500,
+            marginLeft: 4
+          }}>
+            ({products.length} {products.length === 1 ? 'item' : 'items'})
+          </span>
+        </div>
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
-        {products.map((product) => (
-          <div
-            key={product._id}
-            className="group relative flex-shrink-0 w-48 snap-start"
-          >
-            {/* Remove button */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                removeFromRecentlyViewed(product._id);
+        {products.map((product) => {
+          const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+          const price = product.price || 0;
+          const oldPrice = product.originalPrice || 0;
+          const discount = oldPrice > price && oldPrice > 0
+            ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+          const hasDiscount = discount > 0 && oldPrice > price;
+
+          return (
+            <div
+              key={product._id}
+              className="group relative flex-shrink-0 w-48 snap-start"
+              style={{ 
+                background: '#fff',
+                borderRadius: 14,
+                overflow: 'hidden',
+                border: '1px solid #E5E7EB',
+                transition: 'box-shadow 0.2s, transform 0.2s',
+                cursor: 'pointer'
               }}
-              className="absolute top-2 right-2 z-10 p-1.5 bg-white dark:bg-gray-800 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-50 dark:hover:bg-red-900/20"
-              aria-label="Remove from recently viewed"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
-              <FiX className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400" />
-            </button>
+              {/* Remove button */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  removeFromRecentlyViewed(product._id);
+                }}
+                className="absolute top-2 right-2 z-10 p-1.5 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-50"
+                aria-label="Remove from recently viewed"
+                style={{ border: '1px solid #E5E7EB' }}
+              >
+                <FiX className="w-3.5 h-3.5 text-gray-600 hover:text-red-600" />
+              </button>
 
-            <Link
-              href={`/products/${product.slug || product._id}`}
-              className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-            >
-              {/* Product Image */}
-              <div className="relative aspect-square bg-gray-50 dark:bg-gray-900">
-                {product.images?.[0] ? (
-                  <>
-                    <Image
-                      src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
-                      alt={product.name}
-                      fill
-                      className="object-contain p-2"
-                      sizes="(max-width: 768px) 192px, 192px"
-                      unoptimized={!(typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url)?.includes('res.cloudinary.com')}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
-                        if (fallback) {
-                          fallback.classList.remove('hidden');
-                          fallback.classList.add('flex');
-                        }
-                      }}
-                    />
-                    <div className="image-fallback hidden w-full h-full items-center justify-center text-gray-400 dark:text-gray-600 bg-white dark:bg-gray-800">
-                      <span className="text-5xl">🏥</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 bg-white dark:bg-gray-800">
-                    <span className="text-5xl">🏥</span>
-                  </div>
-                )}
-
-                {/* Discount badge */}
-                {product.originalPrice && product.price < product.originalPrice && (
-                  <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
-                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                  </div>
-                )}
-              </div>
-
-              {/* Product Info */}
-              <div className="p-3">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 mb-2">
-                  {product.name}
-                </h3>
-
-                {/* Rating */}
-                {product.rating && (
-                  <div className="flex items-center gap-1 mb-2">
-                    <span className="text-yellow-500">★</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {typeof product.rating === 'object' 
-                        ? product.rating.average?.toFixed(1) 
-                        : product.rating?.toFixed(1)}
-                    </span>
-                  </div>
-                )}
-
-                {/* Price */}
-                <div className="flex items-center gap-2">
-                  {product.price > 0 ? (
+              <Link
+                href={`/products/${product.slug || product._id}`}
+                className="block"
+              >
+                {/* Product Image */}
+                <div style={{ 
+                  position: 'relative', 
+                  height: 190, 
+                  background: '#F8FAFC',
+                  overflow: 'hidden',
+                  flexShrink: 0 
+                }}>
+                  {product.images?.[0] ? (
                     <>
-                      <span className="text-lg font-bold text-teal-600 dark:text-teal-400">
-                        ৳{product.price.toLocaleString()}
-                      </span>
-                      {product.originalPrice && product.price < product.originalPrice && (
-                        <span className="text-xs text-gray-400 dark:text-gray-500 line-through">
-                          ৳{product.originalPrice.toLocaleString()}
-                        </span>
-                      )}
+                      <Image
+                        src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
+                        alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
+                        fill
+                        sizes="192px"
+                        style={{ objectFit: 'cover' }}
+                        className="group-hover:scale-105 transition-transform duration-300"
+                        unoptimized={!(typeof product.images[0] === 'string' ? product.images[0] : product.images[0].url)?.includes('res.cloudinary.com')}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');
+                          if (fallback) {
+                            fallback.style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <div 
+                        className="image-fallback" 
+                        style={{ 
+                          display: 'none',
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          height: '100%', 
+                          fontSize: 52, 
+                          color: '#CBD5E1',
+                          background: '#F8FAFC'
+                        }}
+                      >
+                        🏥
+                      </div>
                     </>
                   ) : (
-                    <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                      Price unavailable
-                    </span>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      height: '100%', 
+                      fontSize: 52, 
+                      color: '#CBD5E1',
+                      background: '#F8FAFC'
+                    }}>
+                      🏥
+                    </div>
+                  )}
+
+                  {/* Discount badge */}
+                  {hasDiscount && (
+                    <div style={{ 
+                      position: 'absolute', 
+                      top: 10, 
+                      left: 10, 
+                      background: '#EF4444', 
+                      color: '#fff', 
+                      fontSize: 10, 
+                      fontWeight: 700,
+                      padding: '3px 8px', 
+                      borderRadius: 6 
+                    }}>
+                      -{discount}%
+                    </div>
+                  )}
+
+                  {/* Out of stock badge */}
+                  {product.stock === 0 && (
+                    <div style={{ 
+                      position: 'absolute', 
+                      top: hasDiscount ? 34 : 10, 
+                      left: 10, 
+                      background: '#6B7280', 
+                      color: '#fff', 
+                      fontSize: 10, 
+                      fontWeight: 700,
+                      padding: '3px 8px', 
+                      borderRadius: 6 
+                    }}>
+                      Out of Stock
+                    </div>
                   )}
                 </div>
 
-                {/* Stock status */}
-                {product.stock === 0 && (
-                  <span className="inline-block mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
-                    Out of Stock
-                  </span>
-                )}
-              </div>
-            </Link>
-          </div>
-        ))}
+                {/* Product Info */}
+                <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column' }}>
+                  {brandName && (
+                    <div style={{ 
+                      fontSize: 10, 
+                      color: '#0E8A6E', 
+                      fontWeight: 700,
+                      textTransform: 'uppercase', 
+                      letterSpacing: '0.06em', 
+                      marginBottom: 4 
+                    }}>
+                      {brandName}
+                    </div>
+                  )}
+                  
+                  <div style={{ 
+                    fontSize: 13, 
+                    fontWeight: 600, 
+                    lineHeight: 1.45, 
+                    marginBottom: 8,
+                    display: '-webkit-box', 
+                    WebkitLineClamp: 2, 
+                    WebkitBoxOrient: 'vertical', 
+                    overflow: 'hidden',
+                    color: '#1F2937',
+                    minHeight: 38
+                  }}>
+                    {product.name}
+                  </div>
+
+                  {/* Price */}
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 'auto' }}>
+                    {price > 0 ? (
+                      <>
+                        <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
+                          ৳{price.toLocaleString()}
+                        </span>
+                        {hasDiscount && (
+                          <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
+                            ৳{oldPrice.toLocaleString()}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span style={{ fontSize: 12, color: '#9CA3AF', fontStyle: 'italic' }}>
+                        Contact for price
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

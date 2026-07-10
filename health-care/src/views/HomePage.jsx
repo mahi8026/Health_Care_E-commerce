@@ -1512,7 +1512,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* RECENTLY VIEWED PRODUCTS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '56px 24px 32px', background: '#FAFAFA' }}>
+      <section className="home-section" style={{ padding: '56px 24px 32px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <RecentlyViewed limit={8} title="Continue Where You Left Off" />
         </div>
