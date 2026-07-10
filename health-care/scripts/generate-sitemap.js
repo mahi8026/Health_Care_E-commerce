@@ -5,6 +5,9 @@
  * This runs during `npm run build` to avoid runtime API calls and timeouts.
  * 
  * Output: public/sitemap-products-static.xml
+ * 
+ * GRACEFUL FAILURE: If this script fails, the build continues with an empty sitemap.
+ * The product sitemap route will fall back gracefully.
  */
 
 const fs = require('fs');
@@ -16,11 +19,31 @@ const OUTPUT_FILE = path.join(__dirname, '../public/sitemap-products-static.xml'
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 5000; // 5 seconds
 
+// Check if fetch is available (Node 18+) or use dynamic import
+let fetchImpl;
+try {
+  // Try using built-in fetch (Node 18+)
+  fetchImpl = global.fetch || fetch;
+} catch {
+  // If fetch not available, we'll handle it in main()
+  fetchImpl = null;
+}
+
 // Sleep utility
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Fetch with retry logic
 async function fetchWithRetry(url, retries = MAX_RETRIES) {
+  // Import node-fetch if native fetch not available
+  if (!fetchImpl) {
+    try {
+      const nodeFetch = await import('node-fetch');
+      fetchImpl = nodeFetch.default;
+    } catch (err) {
+      throw new Error('Fetch is not available. Please use Node.js 18+ or install node-fetch.');
+    }
+  }
+  
   for (let i = 0; i < retries; i++) {
     try {
       console.log(`[Sitemap] Fetching: ${url} (attempt ${i + 1}/${retries})`);
@@ -28,7 +51,7 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
       
-      const response = await fetch(url, {
+      const response = await fetchImpl(url, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'MedCore-Sitemap-Generator',
