@@ -255,7 +255,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
                   name="company"
                   value={registerData.company}
                   onChange={(e) => setRegisterData({ ...registerData, company: e.target.value })}
-                  placeholder="Square Hospital, Dhaka"
+                  placeholder="Your hospital or clinic name"
                   error={registerErrors.company}
                   required
                   className="mb-3"

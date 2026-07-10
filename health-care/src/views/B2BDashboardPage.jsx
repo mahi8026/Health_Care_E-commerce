@@ -162,7 +162,7 @@ function B2BLanding() {
   // Fallback client list if no reviews yet
   const clients = b2bClients.length > 0
     ? b2bClients
-    : ['Dhaka Medical College', 'Square Hospital', 'Popular Diagnostic', 'Ibn Sina Hospital', 'Labaid Group', 'Delta Hospital'];
+    : ['Hospital A', 'Diagnostic Center B', 'Clinic C', 'Medical College D', 'Healthcare Group E', 'Laboratory F'];
 
   return (
     <div className="bg-white">
@@ -698,7 +698,7 @@ export default function B2BDashboardPage() {
           </h2>
           <p className="text-[15px] text-[#6B7280] leading-relaxed mb-6">
             This section is exclusively for B2B customers (hospitals, clinics, diagnostic centers). 
-            If you're interested in bulk orders and special pricing, please apply for a B2B account.
+            If you&apos;re interested in bulk orders and special pricing, please apply for a B2B account.
           </p>
           <div className="bg-[#F0FDF9] border border-[#0E8A6E]/20 rounded-2xl p-6 mb-8">
             <h3 className="text-[16px] font-bold text-[#0B2545] mb-3">B2B Benefits:</h3>

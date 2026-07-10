@@ -24,11 +24,13 @@ export default function InstallPWA() {
       window.matchMedia('(display-mode: standalone)').matches ||
       window.navigator.standalone === true;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsStandalone(isInStandaloneMode);
 
     // Detect iOS devices
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
+     
     setIsIOS(isIOSDevice);
 
     // Check if user dismissed prompt in last 7 days
@@ -70,9 +72,9 @@ export default function InstallPWA() {
     const { outcome } = await deferredPrompt.userChoice;
 
     if (outcome === 'accepted') {
-      console.log('✅ PWA installed');
+      if (process.env.NODE_ENV !== 'production') console.log('✅ PWA installed');
     } else {
-      console.log('❌ PWA installation declined');
+      if (process.env.NODE_ENV !== 'production') console.log('❌ PWA installation declined');
     }
 
     setDeferredPrompt(null);
@@ -126,11 +128,11 @@ export default function InstallPWA() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="bg-blue-100 text-blue-700 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</span>
-                  <span>Scroll down and tap <strong>"Add to Home Screen"</strong></span>
+                  <span>Scroll down and tap <strong>&quot;Add to Home Screen&quot;</strong></span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="bg-blue-100 text-blue-700 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</span>
-                  <span>Tap <strong>"Add"</strong> in the top-right corner</span>
+                  <span>Tap <strong>&quot;Add&quot;</strong> in the top-right corner</span>
                 </li>
               </ol>
               <button

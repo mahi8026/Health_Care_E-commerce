@@ -100,7 +100,8 @@ exports.getConversations = async (req, res) => {
         .populate('customer.userId', 'name email')
         .sort({ lastMessageAt: -1 })
         .skip(skip)
-        .limit(parseInt(limit)),
+        .limit(parseInt(limit))
+        .lean(),
       Conversation.countDocuments(query)
     ]);
 
@@ -130,7 +131,8 @@ exports.getConversation = async (req, res) => {
     })
       .populate('assignedTo', 'name email role')
       .populate('customer.userId', 'name email phone role')
-      .populate('closedBy', 'name email');
+      .populate('closedBy', 'name email')
+      .lean();
 
     if (!conversation) {
       return errorResponse(res, 'Conversation not found', null, 404);
@@ -311,7 +313,8 @@ exports.getConversationMessages = async (req, res) => {
 
     const messages = await Message.find({ conversationId })
       .sort({ createdAt: 1 })
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
 
     return successResponse(res, messages);
   } catch (error) {

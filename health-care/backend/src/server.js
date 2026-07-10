@@ -271,9 +271,10 @@ app.use('/api/test', dbHealthCheck, require('./routes/testRoutes')); // Test and
 
 // ── One-time slug migration endpoint (admin, secret-protected) ───────────────
 // Regenerates all product slugs using the clean name-only format.
-// Hit once after deploy: GET /api/fix-slugs?secret=medcore-test-2026
+// Hit once after deploy: GET /api/fix-slugs?secret=<ADMIN_SECRET>
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'medcore-test-2026';
 app.get('/api/fix-slugs', async (req, res) => {
-  if (req.query.secret !== 'medcore-test-2026') {
+  if (req.query.secret !== ADMIN_SECRET) {
     return res.status(401).json({ success: false, message: 'Invalid secret' });
   }
   try {
@@ -314,7 +315,7 @@ app.get('/api/fix-slugs', async (req, res) => {
 
 // ── Admin Email Test ──────────────────────────────────────────────────────────
 app.get('/api/test-email', async (req, res) => {
-  if (req.query.secret !== 'medcore-test-2026') {
+  if (req.query.secret !== ADMIN_SECRET) {
     return res.status(401).json({ success: false, message: 'Invalid secret' });
   }
   const emailService = require('./services/emailService');

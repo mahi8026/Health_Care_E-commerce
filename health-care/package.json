@@ -7,8 +7,8 @@
     "build": "next build",
     "build:sitemap": "node scripts/generate-sitemap.js",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint --config eslint.config.mjs src/",
+    "lint:fix": "eslint --config eslint.config.mjs src/ --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -50,6 +50,7 @@
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "lint-staged": "^17.0.7",
+    "typescript": "^5.8.3",
     "wrangler": "^4"
   }
 }

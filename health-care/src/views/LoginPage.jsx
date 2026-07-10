@@ -25,6 +25,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
         server_error: 'Server error occurred. Please try again later.',
         missing_tokens: 'Authentication incomplete. Please try again.',
       };
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(errorMessages[errorParam] || 'An error occurred. Please try again.');
     }
   }, [searchParams]);
@@ -91,7 +92,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                 MedCore<span className="text-[#0E8A6E]">BD</span>
               </span>
             </Link>
-            <p className="text-gray-400 text-xs mt-1">Bangladesh's trusted medical equipment platform</p>
+            <p className="text-gray-400 text-xs mt-1">Bangladesh&apos;s trusted medical equipment platform</p>
           </div>
 
           {/* Heading */}
@@ -100,7 +101,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               Sign in to your account
             </h1>
             <p className="text-gray-500 text-sm mt-1">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 type="button"
                 onClick={handleSwitchToRegister}
@@ -250,7 +251,6 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               <div className="space-y-2">
                 {[
                   { label: 'B2B Customer', email: 'shahid@squarehospital.com', pass: 'password123', color: 'from-violet-600 to-violet-700', icon: '🏢' },
-                  { label: 'Admin', email: 'admin@medcorebd.com', pass: 'admin123', color: 'from-[#0E8A6E] to-[#0c7a61]', icon: '👨‍💼' },
                   { label: 'Customer', email: 'kamal@example.com', pass: 'password123', color: 'from-[#0B2545] to-[#0d2d52]', icon: '👤' },
                 ].map((q) => (
                   <button

@@ -1600,7 +1600,7 @@ export default function HomePage() {
             {/* Right stat boxes */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
-                { val: stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1,200+', label: 'Active B2B Clients' },
+                { val: stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '500+', label: 'Active B2B Clients' },
                 { val: '30%', label: 'Max Bulk Discount' },
                 { val: '90 days', label: 'Credit Terms' },
                 { val: '24/7', label: 'Dedicated Support' },
@@ -1737,17 +1737,17 @@ export default function HomePage() {
               _id: 'fallback-2',
               rating: 5,
               comment: 'Best prices for laboratory reagents in Bangladesh. Fast delivery and cold chain maintained properly. Highly recommend for diagnostic centers.',
-              userName: 'Fatima Rahman',
-              companyName: 'Popular Diagnostic Centre',
-              user: { name: 'Fatima Rahman', companyName: 'Popular Diagnostic Centre' }
+              userName: 'Customer',
+              companyName: 'Diagnostic Centre',
+              user: { name: 'Customer', companyName: 'Diagnostic Centre' }
             },
             {
               _id: 'fallback-3',
               rating: 5,
               comment: 'Professional team with deep knowledge of medical equipment. They helped us set up our entire ICU with quality machines. Free installation and training was very helpful.',
-              userName: 'Dr. Ahmed Khan',
-              companyName: 'Square Hospital',
-              user: { name: 'Dr. Ahmed Khan', companyName: 'Square Hospital' }
+              userName: 'Customer',
+              companyName: 'Hospital',
+              user: { name: 'Customer', companyName: 'Hospital' }
             }
           ]).map((review, i) => {
             const userName = review.user?.name || review.userName || 'Anonymous';

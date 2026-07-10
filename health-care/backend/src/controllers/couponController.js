@@ -21,7 +21,8 @@ exports.validateCoupon = async (req, res) => {
     // Find coupon (case-insensitive)
     const coupon = await Coupon.findOne({ 
       code: code.toUpperCase() 
-    }).populate('applicableProducts applicableCategories');
+    }).populate('applicableProducts applicableCategories')
+    .lean();
 
     if (!coupon) {
       return successResponse(res, { valid: false }, 'Invalid coupon code');
@@ -244,7 +245,8 @@ exports.getCouponById = async (req, res) => {
     const coupon = await Coupon.findById(req.params.id)
       .populate('createdBy', 'name email')
       .populate('applicableProducts', 'name sku price')
-      .populate('applicableCategories', 'name');
+      .populate('applicableCategories', 'name')
+      .lean();
 
     if (!coupon) {
       return errorResponse(res, 'Coupon not found', null, 404);

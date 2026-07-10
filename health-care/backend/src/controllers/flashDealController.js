@@ -15,7 +15,8 @@ exports.getAllFlashDeals = async (req, res) => {
     const flashDeals = await FlashDeal.find(filter)
       .populate('products.product', 'name brand images price stock')
       .populate('createdBy', 'name email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
     
     return successResponse(res, { flashDeals, total: flashDeals.length }, 'Flash deals retrieved successfully');
   } catch (error) {
@@ -92,7 +93,7 @@ exports.createFlashDeal = async (req, res) => {
     // Validate products and calculate prices
     const processedProducts = [];
     for (const item of products) {
-      const product = await Product.findById(item.productId);
+      const product = await Product.findById(item.productId).lean();
       if (!product) {
         return errorResponse(res, `Product ${item.productId} not found`, null, 404);
       }
@@ -125,7 +126,8 @@ exports.createFlashDeal = async (req, res) => {
     await flashDeal.updateStatus();
     
     const populatedDeal = await FlashDeal.findById(flashDeal._id)
-      .populate('products.product');
+      .populate('products.product')
+      .lean();
     
     logger.info(`Flash deal created: ${flashDeal._id} by ${req.user.email}`);
     
@@ -167,7 +169,7 @@ exports.updateFlashDeal = async (req, res) => {
     if (products && products.length > 0) {
       const processedProducts = [];
       for (const item of products) {
-        const product = await Product.findById(item.productId);
+        const product = await Product.findById(item.productId).lean();
         if (!product) {
           return errorResponse(res, `Product ${item.productId} not found`, null, 404);
         }
@@ -194,7 +196,8 @@ exports.updateFlashDeal = async (req, res) => {
     await flashDeal.save();
     
     const updatedDeal = await FlashDeal.findById(id)
-      .populate('products.product');
+      .populate('products.product')
+      .lean();
     
     logger.info(`Flash deal updated: ${id} by ${req.user.email}`);
     
@@ -250,7 +253,7 @@ exports.toggleFlashDealStatus = async (req, res) => {
 // ── Update flash deal statuses (cron job) ────────────────────────────────────
 exports.updateFlashDealStatuses = async () => {
   try {
-    const flashDeals = await FlashDeal.find({ isActive: true });
+    const flashDeals = await FlashDeal.find({ isActive: true }).limit(50);
     
     for (const deal of flashDeals) {
       await deal.updateStatus();

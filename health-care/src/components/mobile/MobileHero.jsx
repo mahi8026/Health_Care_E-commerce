@@ -42,7 +42,7 @@ export default function MobileHero() {
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
           <div className="text-[14px] font-bold font-[family-name:var(--font-plus-jakarta)]">
-            {stats.totalProducts > 0 ? `${stats.totalProducts.toLocaleString()}+` : '5,200+'}
+            {stats.totalProducts > 0 ? `${stats.totalProducts.toLocaleString()}+` : '500+'}
           </div>
           <div className="text-[9px] opacity-80">Products</div>
         </div>

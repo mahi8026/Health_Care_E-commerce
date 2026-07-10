@@ -307,6 +307,11 @@ export default function OrdersManagement() {
   const [dateTo, setDateTo] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
 
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
@@ -322,26 +327,28 @@ export default function OrdersManagement() {
       });
       const data = await res.json();
       const ordersList = data.data?.orders || data.orders || [];
-      console.log('Orders fetched:', ordersList.length, 'First order ID:', ordersList[0]?._id);
+      if (process.env.NODE_ENV !== 'production') console.log('Orders fetched:', ordersList.length, 'First order ID:', ordersList[0]?._id);
       setOrders(ordersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
       console.error('Fetch orders error:', err);
-      showMessage('Failed to load orders', 'error');
+      setMessage({ text: 'Failed to load orders', type: 'error' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 3000);
     } finally {
       setLoading(false);
     }
   }, [page, statusFilter, search, dateFrom, dateTo, paymentFilter]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
-    console.log('handleStatusChange called:', { orderId, newStatus, API });
+    if (process.env.NODE_ENV !== 'production') console.log('handleStatusChange called:', { orderId, newStatus, API });
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
     try {
       const token = localStorage.getItem('medcore_token');
       const url = `${API}/orders/${orderId}/status`;
-      console.log('Making PATCH request to:', url);
+      if (process.env.NODE_ENV !== 'production') console.log('Making PATCH request to:', url);
       
       const response = await fetch(url, {
         method: 'PATCH',
@@ -349,9 +356,9 @@ export default function OrdersManagement() {
         body: JSON.stringify({ status: newStatus })
       });
       
-      console.log('Response status:', response.status);
+      if (process.env.NODE_ENV !== 'production') console.log('Response status:', response.status);
       const data = await response.json();
-      console.log('Response data:', data);
+      if (process.env.NODE_ENV !== 'production') console.log('Response data:', data);
       
       if (!response.ok) {
         throw new Error(data.message || `Failed with status ${response.status}`);
@@ -402,11 +409,6 @@ export default function OrdersManagement() {
     } finally {
       setActionLoading(prev => ({ ...prev, [`${type}-${orderId}`]: false }));
     }
-  };
-
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
   };
 
   const handleSearch = (e) => {

@@ -131,7 +131,7 @@ export default function VideoSection() {
               Why Choose MedCore BD?
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginBottom: 24, lineHeight: 1.6 }}>
-              Bangladesh&apos;s trusted partner for medical equipment, serving 1,200+ hospitals and diagnostic centers.
+              Bangladesh&apos;s trusted partner for medical equipment, serving hospitals and diagnostic centers nationwide.
             </p>
 
             {/* Features Grid */}

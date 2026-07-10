@@ -189,6 +189,7 @@ exports.exportActivityLogs = async (req, res) => {
     })
       .populate('user', 'name email role')
       .sort({ createdAt: -1 })
+      .limit(500)
       .lean();
 
     // Build CSV

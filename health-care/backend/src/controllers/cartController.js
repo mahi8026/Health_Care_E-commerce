@@ -51,7 +51,7 @@ exports.syncCart = async (req, res) => {
       if (!productId) continue;
 
       // Verify product exists and is active
-      const product = await Product.findById(productId);
+      const product = await Product.findById(productId).lean();
       if (!product || !product.isActive) continue;
 
       // Check if product already in DB cart
@@ -100,7 +100,7 @@ exports.addItem = async (req, res) => {
     }
 
     // Verify product exists
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).lean();
     if (!product || !product.isActive) {
       return errorResponse(res, 'Product not found or inactive', null, 404);
     }
@@ -248,7 +248,7 @@ exports.getAbandonedCartStats = async (req, res) => {
     const totalAbandoned = await Cart.countDocuments({ isAbandoned: true });
 
     // Total value at risk
-    const abandonedCarts = await Cart.find({ isAbandoned: true });
+    const abandonedCarts = await Cart.find({ isAbandoned: true }).limit(500).lean();
     const totalValueAtRisk = abandonedCarts.reduce((sum, cart) => sum + cart.subtotal, 0);
 
     // Recovery stats

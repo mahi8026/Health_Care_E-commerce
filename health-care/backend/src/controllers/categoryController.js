@@ -21,6 +21,7 @@ exports.getCategories = async (req, res) => {
     const categories = await Category.find(query)
       .populate('parentCategory', 'name slug')
       .sort({ displayOrder: 1, name: 1 })
+      .limit(100)
       .lean();
     
     // Get product counts for each category
@@ -109,7 +110,7 @@ exports.getCategory = async (req, res) => {
     const subcategories = await Category.find({ 
       parentCategory: category._id, 
       isActive: true 
-    }).lean();
+    }).limit(100).lean();
     
     return successResponse(res, {
       category: {
@@ -182,7 +183,7 @@ exports.updateCategory = async (req, res) => {
       }
       
       // Check if parent is a child of this category
-      const children = await Category.find({ parentCategory: categoryId });
+      const children = await Category.find({ parentCategory: categoryId }).limit(100).lean();
       if (children.some(child => child._id.toString() === parentId)) {
         return errorResponse(res, 'Cannot set a subcategory as parent (circular reference)', null, 400);
       }

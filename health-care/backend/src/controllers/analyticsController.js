@@ -835,6 +835,7 @@ exports.getProductAnalytics = async (req, res) => {
     // Get all active products
     const allActiveProducts = await Product.find({ isActive: true })
       .select('_id name')
+      .limit(100)
       .lean();
 
     // Filter products with no recent sales
@@ -1050,6 +1051,7 @@ exports.getPaymentAnalytics = async (req, res) => {
       creditLimit: { $gt: 0 }
     })
     .select('creditLimit creditUsed')
+    .limit(100)
     .lean();
 
     // Calculate total B2B credit utilization

@@ -81,7 +81,7 @@ exports.getDashboard = async (req, res) => {
 
     // Abandoned carts (real DB counts)
     const totalAbandoned = await Cart.countDocuments({ isAbandoned: true });
-    const abandonedCarts = await Cart.find({ isAbandoned: true }).select('subtotal').lean();
+    const abandonedCarts = await Cart.find({ isAbandoned: true }).select('subtotal').limit(500).lean();
     const abandonedCartValue = abandonedCarts.reduce((sum, c) => sum + (c.subtotal || 0), 0);
     const emailsSent = await Cart.countDocuments({ recoveryEmailSent: true });
     const totalRecovered = await Cart.countDocuments({ recoveredAt: { $exists: true, $ne: null } });
@@ -398,7 +398,7 @@ exports.deleteCustomer = async (req, res) => {
       return errorResponse(res, 'Invalid customer ID format', null, 400);
     }
 
-    const customer = await User.findById(req.params.id);
+    const customer = await User.findById(req.params.id).lean();
     if (!customer) {
       logger.warn(`[adminController] Customer not found: ${req.params.id}`);
       return errorResponse(res, 'Customer not found', null, 404);
@@ -435,7 +435,7 @@ exports.manualStockCheck = async (req, res) => {
     const lowStockProducts = await Product.find({
       isActive: true,
       $expr: { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', '$minStock', 10] }] }
-    }).lean();
+    }).limit(50).lean();
 
     if (!lowStockProducts.length) {
       return successResponse(res, { count: 0 }, 'All products have sufficient stock');
@@ -486,6 +486,7 @@ exports.getAdminUsers = async (req, res) => {
     })
       .select('_id name email')
       .sort('name')
+      .limit(100)
       .lean();
 
     return successResponse(res, {

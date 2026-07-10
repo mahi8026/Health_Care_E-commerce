@@ -80,3 +80,11 @@ services:
         value: 0
       - key: REDIS_TTL
         value: 3600
+      - key: ADMIN_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        value: noreply@medcorebd.com
+      - key: ADMIN_URL
+        sync: false

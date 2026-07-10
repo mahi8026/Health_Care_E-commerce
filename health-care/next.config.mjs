@@ -140,16 +140,7 @@ const nextConfig = {
   // Security + caching headers
   async headers() {
     return [
-      // Long-lived cache for Next.js static assets (_next/static)
-      {
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
+      // Next.js handles _next/static caching automatically
       // Cache static files in /public
       {
         source: '/images/:path*',
