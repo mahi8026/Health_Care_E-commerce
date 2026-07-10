@@ -56,7 +56,8 @@ public/worker-*.js.map
 public/fallback-*.js
 
 # Build-time generated sitemap (regenerated on every build)
-public/sitemap-products-static.xml
+# Temporarily committed to ensure it's available in deployment
+# public/sitemap-products-static.xml
 
 # Keep custom service worker if you wrote one manually
 !public/sw-custom.js
