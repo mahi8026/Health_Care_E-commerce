@@ -23,7 +23,7 @@ class ChatSocketService {
       process.env.FRONTEND_URL,
       'http://localhost:3000',
       'http://localhost:3001',
-      'https://medcorebd.pages.dev'
+      'https://health-care-e-commerce-murex.vercel.app'
     ].filter(Boolean);
 
     this.io = new Server(httpServer, {

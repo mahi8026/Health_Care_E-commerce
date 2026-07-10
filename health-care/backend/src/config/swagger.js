@@ -10,7 +10,7 @@ const options = {
       contact: {
         name: 'MedCore BD',
         email: 'mahimrahman07@gmail.com',
-        url: 'https://medcorebd.pages.dev'
+        url: 'https://health-care-e-commerce-murex.vercel.app'
       },
       license: {
         name: 'MIT',
