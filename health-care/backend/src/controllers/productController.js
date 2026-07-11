@@ -535,12 +535,16 @@ exports.createProduct = async (req, res) => {
     }
 
     const product = await Product.create(req.body);
-    
-    // Invalidate caches using centralized Redis cache service
-    await redisCache.invalidateProductList();
-    
-    // Keep legacy cache invalidation for backward compatibility
-    invalidateProductListCache();
+
+    // ── Post-creation operations (cache invalidation, logging) ─────────
+    // These are NON-CRITICAL — product already saved to DB.
+    // Wrap in try-catch so failures here never mask the success response.
+    try {
+      await redisCache.invalidateProductList();
+      invalidateProductListCache();
+    } catch (cacheError) {
+      logger.error(`[createProduct] Cache invalidation failed: ${cacheError.message}`);
+    }
 
     logActivityAsync({
       user: req.user,
@@ -552,7 +556,7 @@ exports.createProduct = async (req, res) => {
       metadata: { sku: product.sku, price: product.price, category: product.category }
     });
 
-    logger.info(`[createProduct] Product ${product._id} created, cache invalidated`);
+    logger.info(`[createProduct] Product ${product._id} created`);
 
     return successResponse(res, product, 'Product created successfully', 201);
   } catch (error) {
