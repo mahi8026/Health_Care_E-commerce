@@ -557,6 +557,35 @@ exports.createProduct = async (req, res) => {
     return successResponse(res, product, 'Product created successfully', 201);
   } catch (error) {
     logger.error(`[createProduct] ${error.message}`);
+
+    // Mongoose validation error → 400 with field details
+    if (error.name === 'ValidationError') {
+      const errors = Object.entries(error.errors).map(([field, e]) => ({
+        field,
+        message: e.message
+      }));
+      const messages = errors.map(e => e.message);
+      return errorResponse(res, messages.join('; '), errors, 400);
+    }
+
+    // Mongoose duplicate key (E11000) → 400 with field name
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue || {})[0];
+      return errorResponse(res, `Duplicate value for ${field}: ${error.keyValue?.[field]}`, [{
+        field,
+        message: `This ${field} already exists`
+      }], 400);
+    }
+
+    // Mongoose bad ObjectId → 400
+    if (error.name === 'CastError') {
+      return errorResponse(res, `Invalid ${error.path}: ${error.value}`, [{
+        field: error.path,
+        message: `Invalid value for ${error.path}`
+      }], 400);
+    }
+
+    // Everything else → 500
     return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
   }
 };
