@@ -155,11 +155,11 @@ const adminApiLimiter = createRateLimiter({
 
 /**
  * File upload rate limiter
- * 10 uploads per hour per IP
+ * 100 uploads per hour per IP — admin users batch-upload product images
  */
 const uploadLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000,
-  max: 10,
+  max: 100,
   message: 'Too many file uploads, please try again after 1 hour'
 });
 

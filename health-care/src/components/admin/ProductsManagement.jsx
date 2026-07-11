@@ -436,18 +436,22 @@ export default function ProductsManagement({ openCreateRef }) {
     }
     
     setUploading(true);
+    let uploaded = 0;
+    let failed = 0;
     
     try {
       for (const file of files) {
         // Validate file type
         if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
           showMessage(`Invalid file type: ${file.name}. Only JPEG, PNG, WebP allowed.`, 'error');
+          failed++;
           continue;
         }
         
         // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
           showMessage(`File too large: ${file.name}. Max 5MB.`, 'error');
+          failed++;
           continue;
         }
         
@@ -472,22 +476,29 @@ export default function ProductsManagement({ openCreateRef }) {
             const newImage = {
               url: imageUrl,
               publicId: imagePublicId,
-              isPrimary: f.images.length === 0, // first image is primary
+              isPrimary: f.images.length === 0,
               alt: f.name || 'Product image',
             };
             return { ...f, images: [...f.images, newImage] };
           });
+          uploaded++;
         } else {
           showMessage(data.message || 'Upload failed', 'error');
+          failed++;
         }
       }
       
-      showMessage('Images uploaded successfully', 'success');
+      if (uploaded > 0 && failed === 0) {
+        showMessage(`${uploaded} image${uploaded > 1 ? 's' : ''} uploaded`, 'success');
+      } else if (uploaded > 0 && failed > 0) {
+        showMessage(`${uploaded} uploaded, ${failed} failed`, 'success');
+      } else if (failed > 0) {
+        showMessage(`Upload failed`, 'error');
+      }
     } catch (error) {
       showMessage('Upload failed. Please try again.', 'error');
     } finally {
       setUploading(false);
-      // Reset file input
       e.target.value = '';
     }
   };
