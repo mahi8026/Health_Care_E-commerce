@@ -536,29 +536,31 @@ exports.createProduct = async (req, res) => {
 
     const product = await Product.create(req.body);
 
-    // ── Post-creation operations (cache invalidation, logging) ─────────
-    // These are NON-CRITICAL — product already saved to DB.
-    // Wrap in try-catch so failures here never mask the success response.
-    try {
-      await redisCache.invalidateProductList();
-      invalidateProductListCache();
-    } catch (cacheError) {
-      logger.error(`[createProduct] Cache invalidation failed: ${cacheError.message}`);
-    }
+    // ── Send success FIRST, then post-process async ────────────────────
+    // Cache invalidation and logging happen after the response is sent
+    // so they can NEVER mask a successful creation with a 500.
+    const productJson = product.toObject();
+    successResponse(res, productJson, 'Product created successfully', 201);
 
-    logActivityAsync({
-      user: req.user,
-      action: ACTIONS.PRODUCT.CREATED,
-      targetModel: 'Product',
-      targetId: product._id,
-      targetName: product.name,
-      req,
-      metadata: { sku: product.sku, price: product.price, category: product.category }
+    // ── Non-blocking post-creation operations ─────────────────────────
+    setImmediate(async () => {
+      try {
+        await redisCache.invalidateProductList();
+        invalidateProductListCache();
+      } catch (err) {
+        logger.error(`[createProduct] Cache invalidation failed: ${err.message}`);
+      }
+
+      logActivityAsync({
+        user: req.user,
+        action: ACTIONS.PRODUCT.CREATED,
+        targetModel: 'Product',
+        targetId: product._id,
+        targetName: product.name,
+        req,
+        metadata: { sku: product.sku, price: product.price, category: product.category }
+      });
     });
-
-    logger.info(`[createProduct] Product ${product._id} created`);
-
-    return successResponse(res, product, 'Product created successfully', 201);
   } catch (error) {
     logger.error(`[createProduct] ${error.message}`);
 
