@@ -37,7 +37,18 @@ const productSchema = new mongoose.Schema({
   ],
   variants: {
     connectivity: [String],
-    warranty: [String]
+    warranty: [String],
+    sizes: [{
+      name: { 
+        type: String, 
+        enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+        required: true 
+      },
+      sku: { type: String }, // e.g., "PRODUCT-SKU-M"
+      priceAdjustment: { type: Number, default: 0 }, // +/- price for this size
+      stock: { type: Number, default: 0, min: 0 },
+      isAvailable: { type: Boolean, default: true }
+    }]
   },
   specifications: { type: Map, of: String },
   certifications: [{ type: String }], // Removed enum to allow any certification string

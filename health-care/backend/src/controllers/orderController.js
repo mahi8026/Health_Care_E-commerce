@@ -102,11 +102,57 @@ exports.createOrder = async (req, res) => {
         return abortAndError(res, `Product not found: ${item.product}`, 404);
       }
       const qty = item.qty || item.quantity || 1;
-      if (product.stock < qty) {
-        return abortAndError(res, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}`, 400);
+      
+      // Check if product has size variants
+      if (product.variants?.sizes && product.variants.sizes.length > 0) {
+        // Product has sizes - validate size selection
+        if (!item.selectedSize || !item.selectedSize.name) {
+          return abortAndError(res, `Size selection required for ${product.name}`, 400);
+        }
+        
+        // Find the selected size
+        const sizeVariant = product.variants.sizes.find(s => s.name === item.selectedSize.name);
+        if (!sizeVariant) {
+          return abortAndError(res, `Invalid size ${item.selectedSize.name} for ${product.name}`, 400);
+        }
+        
+        // Check size-specific stock
+        if (sizeVariant.stock < qty) {
+          return abortAndError(res, `Insufficient stock for ${product.name} (Size: ${item.selectedSize.name}). Available: ${sizeVariant.stock}, Requested: ${qty}`, 400);
+        }
+        
+        // Calculate price with size adjustment
+        const finalPrice = product.price + (item.selectedSize.priceAdjustment || 0);
+        subtotal += finalPrice * qty;
+        
+        orderItems.push({ 
+          product: product._id, 
+          name: product.name, 
+          sku: product.sku, 
+          brand: product.brand, 
+          price: finalPrice, 
+          qty, 
+          quantity: qty,
+          variant: {
+            size: item.selectedSize.name
+          }
+        });
+      } else {
+        // Product without sizes - use regular stock
+        if (product.stock < qty) {
+          return abortAndError(res, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}`, 400);
+        }
+        subtotal += product.price * qty;
+        orderItems.push({ 
+          product: product._id, 
+          name: product.name, 
+          sku: product.sku, 
+          brand: product.brand, 
+          price: product.price, 
+          qty, 
+          quantity: qty 
+        });
       }
-      subtotal += product.price * qty;
-      orderItems.push({ product: product._id, name: product.name, sku: product.sku, brand: product.brand, price: product.price, qty, quantity: qty });
     }
 
     // B2B discount — only apply if admin has explicitly enabled it for this user
@@ -276,18 +322,51 @@ exports.createOrder = async (req, res) => {
 
     // Decrement stock atomically within transaction
     for (const item of orderItems) {
-      const result = await Product.findOneAndUpdate(
-        { _id: item.product, stock: { $gte: item.qty } },
-        { $inc: { stock: -item.qty } },
-        { ...sessionOpt, new: true }
-      );
+      const product = await Product.findById(item.product);
       
-      if (!result) {
-        if (useTransaction && session) await session.abortTransaction();
-        return res.status(400).json({
-          success: false,
-          message: `Stock changed during order processing. Please try again.`
-        });
+      // Check if this is a size variant order
+      if (item.variant?.size) {
+        // Decrement size-specific stock
+        const sizeIndex = product.variants.sizes.findIndex(s => s.name === item.variant.size);
+        if (sizeIndex === -1) {
+          if (useTransaction && session) await session.abortTransaction();
+          return res.status(400).json({
+            success: false,
+            message: `Size variant not found during order processing. Please try again.`
+          });
+        }
+        
+        // Check if size has enough stock
+        if (product.variants.sizes[sizeIndex].stock < item.qty) {
+          if (useTransaction && session) await session.abortTransaction();
+          return res.status(400).json({
+            success: false,
+            message: `Stock changed during order processing for size ${item.variant.size}. Please try again.`
+          });
+        }
+        
+        // Decrement size-specific stock
+        product.variants.sizes[sizeIndex].stock -= item.qty;
+        
+        // Also decrement main product stock
+        product.stock = Math.max(0, product.stock - item.qty);
+        
+        await product.save(sessionOpt);
+      } else {
+        // Regular product without sizes - use original logic
+        const result = await Product.findOneAndUpdate(
+          { _id: item.product, stock: { $gte: item.qty } },
+          { $inc: { stock: -item.qty } },
+          { ...sessionOpt, new: true }
+        );
+        
+        if (!result) {
+          if (useTransaction && session) await session.abortTransaction();
+          return res.status(400).json({
+            success: false,
+            message: `Stock changed during order processing. Please try again.`
+          });
+        }
       }
     }
 

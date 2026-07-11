@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useProductDetail } from '@/hooks/useProductDetail';
+import { showToast } from '@/components/ui/Toast';
 import ProductImageGalleryEnhanced from '@/components/product/ProductImageGalleryEnhanced';
 import ProductInfoPanelEnhanced from '@/components/product/ProductInfoPanelEnhanced';
 import ProductTabsEnhanced from '@/components/product/ProductTabsEnhanced';
@@ -46,6 +47,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedConnectivity, setSelectedConnectivity] = useState('');
   const [selectedWarranty, setSelectedWarranty] = useState('');
+  const [selectedSize, setSelectedSize] = useState(null);
   const [addingToCart, setAddingToCart] = useState(false);
   
   // AI Recommendations state
@@ -71,6 +73,15 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         }
         if (product.variants?.warranty?.length) {
           setSelectedWarranty(product.variants.warranty[0]);
+        }
+        // Auto-select first available size
+        if (product.variants?.sizes?.length) {
+          const firstAvailableSize = product.variants.sizes.find(
+            size => size.isAvailable && size.stock > 0
+          );
+          if (firstAvailableSize) {
+            setSelectedSize(firstAvailableSize);
+          }
         }
       });
 
@@ -289,6 +300,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
               product={product}
               quantity={quantity}
               setQuantity={setQuantity}
+              selectedSize={selectedSize}
+              onSizeChange={setSelectedSize}
             />
           </div>
         </div>
@@ -431,8 +444,13 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
         <button
           onClick={() => {
+            // Validate size selection if product has sizes
+            if (product.variants?.sizes?.length > 0 && !selectedSize) {
+              showToast.warning('Please select a size');
+              return;
+            }
             setAddingToCart(true);
-            addToCart(product, quantity);
+            addToCart(product, quantity, { size: selectedSize });
             setTimeout(() => setAddingToCart(false), 1200);
           }}
           disabled={addingToCart}

@@ -16,7 +16,8 @@ const orderItemSchema = new mongoose.Schema({
   quantity: { type: Number },
   variant: {
     connectivity: String,
-    warranty: String
+    warranty: String,
+    size: String
   }
 }, { _id: false });
 

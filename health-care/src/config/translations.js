@@ -89,6 +89,12 @@ export const translations = {
       onlyLeft: 'Only {n} left',
       new: '✨ NEW',
       save: 'Save:',
+      selectSize: 'Select Size',
+      sizeChart: 'Size Chart',
+      selectedSize: 'Selected Size',
+      only: 'Only',
+      left: 'left',
+      lowStock: 'Only {count} in stock',
     },
 
     // Cart
@@ -316,6 +322,12 @@ export const translations = {
       onlyLeft: 'মাত্র {n}টি বাকি',
       new: '✨ নতুন',
       save: 'সাশ্রয়:',
+      selectSize: 'সাইজ নির্বাচন করুন',
+      sizeChart: 'সাইজ চার্ট',
+      selectedSize: 'নির্বাচিত সাইজ',
+      only: 'মাত্র',
+      left: 'বাকি',
+      lowStock: 'মাত্র {count}টি স্টকে আছে',
     },
 
     // Cart

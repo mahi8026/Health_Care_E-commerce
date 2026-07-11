@@ -15,13 +15,54 @@ export function CartProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [syncPending, setSyncPending] = useState(false);
 
-  // Check if user is logged in
+  // Check if user is logged in on mount
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
-    setIsLoggedIn(!!token);
+    const checkAuth = () => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+      setIsLoggedIn(!!token);
+    };
+    checkAuth();
   }, []);
 
+  // Update cart in backend if logged in
+  const updateBackendCart = useCallback(async (action, productId, quantity, size = null) => {
+    if (!isLoggedIn) return;
+
+    try {
+      const token = localStorage.getItem('medcore_token');
+      let url = `${API}/cart/items`;
+      let method = 'POST';
+      let body = {};
+
+      if (action === 'add') {
+        body = { productId, quantity, selectedSize: size };
+      } else if (action === 'update') {
+        url = `${API}/cart/items/${productId}`;
+        method = 'PUT';
+        body = { quantity, selectedSize: size };
+      } else if (action === 'remove') {
+        url = `${API}/cart/items/${productId}`;
+        method = 'DELETE';
+      } else if (action === 'clear') {
+        url = `${API}/cart`;
+        method = 'DELETE';
+      }
+
+      await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: method !== 'DELETE' ? JSON.stringify(body) : undefined
+      });
+    } catch (error) {
+      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Backend cart update error:', error);
+    }
+  }, [isLoggedIn]);
+
   // Sync cart to backend when user logs in
+   
   const syncCartToBackend = useCallback(async (retryCount = 0) => {
     if (!isLoggedIn || syncPending || cart.length === 0) return;
 
@@ -57,21 +98,11 @@ export function CartProvider({ children }) {
         }));
         setCart(mergedCart);
       }
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Cart sync error:', error);
-      
-      // Retry with exponential backoff for network errors
-      if (retryCount < MAX_RETRIES && error.message?.includes('network')) {
-        const delay = RETRY_DELAY * Math.pow(2, retryCount);
-        // Retry cart sync after delay
-        setTimeout(() => {
-          setSyncPending(false);
-          syncCartToBackend(retryCount + 1);
-        }, delay);
-        return; // Don't set syncPending to false yet
-      }
-    } finally {
       setSyncPending(false);
+    } catch (error) {
+      process.env.NODE_ENV !== "production" && console.error('Cart sync error:', error);
+      setSyncPending(false);
+      // Note: Retry logic removed to avoid recursion issues
     }
   }, [isLoggedIn, cart, syncPending]);
 
@@ -93,21 +124,24 @@ export function CartProvider({ children }) {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem('medcore_cart');
-      if (savedCart) {
-        const parsed = JSON.parse(savedCart);
-        // Sanitize stale items that may have populated objects stored
-        const sanitized = parsed.map(item => ({
-          ...item,
-          brand: typeof item.brand === 'object' ? (item.brand?.name || '') : (item.brand || ''),
-          category: typeof item.category === 'object' ? (item.category?.name || '') : (item.category || ''),
-        }));
-        setCart(sanitized);
+    const loadCart = () => {
+      try {
+        const savedCart = localStorage.getItem('medcore_cart');
+        if (savedCart) {
+          const parsed = JSON.parse(savedCart);
+          // Sanitize stale items that may have populated objects stored
+          const sanitized = parsed.map(item => ({
+            ...item,
+            brand: typeof item.brand === 'object' ? (item.brand?.name || '') : (item.brand || ''),
+            category: typeof item.category === 'object' ? (item.category?.name || '') : (item.category || ''),
+          }));
+          setCart(sanitized);
+        }
+      } catch {
+        // Ignore parse errors — start with empty cart
       }
-    } catch {
-      // Ignore parse errors — start with empty cart
-    }
+    };
+    loadCart();
   }, []);
 
   // Persist cart to localStorage whenever it changes
@@ -115,44 +149,7 @@ export function CartProvider({ children }) {
     localStorage.setItem('medcore_cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Update cart in backend if logged in
-  const updateBackendCart = useCallback(async (action, productId, quantity) => {
-    if (!isLoggedIn) return;
-
-    try {
-      const token = localStorage.getItem('medcore_token');
-      let url = `${API}/cart/items`;
-      let method = 'POST';
-      let body = {};
-
-      if (action === 'add') {
-        body = { productId, quantity };
-      } else if (action === 'update') {
-        url = `${API}/cart/items/${productId}`;
-        method = 'PUT';
-        body = { quantity };
-      } else if (action === 'remove') {
-        url = `${API}/cart/items/${productId}`;
-        method = 'DELETE';
-      } else if (action === 'clear') {
-        url = `${API}/cart`;
-        method = 'DELETE';
-      }
-
-      await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: method !== 'DELETE' ? JSON.stringify(body) : undefined
-      });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Backend cart update error:', error);
-    }
-  }, [isLoggedIn]);
-
-  const addToCart = useCallback((product, quantity = 1) => {
+  const addToCart = useCallback((product, quantity = 1, options = {}) => {
     // ── Auth gate: guests must log in before adding to cart ──────────────────
     const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
     if (!token) {
@@ -167,6 +164,7 @@ export function CartProvider({ children }) {
 
     const safeQty = Math.max(1, quantity);
     const productId = product.id || product._id;
+    const { size } = options;
     
     if (!productId) {
       process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Product missing ID:', product);
@@ -182,28 +180,58 @@ export function CartProvider({ children }) {
       category: typeof product.category === 'object' ? (product.category?.name || '') : (product.category || ''),
     };
 
+    // Add size information if provided
+    if (size) {
+      normalizedProduct.selectedSize = {
+        name: size.name,
+        priceAdjustment: size.priceAdjustment || 0
+      };
+    }
+
     setCart(prevCart => {
       if (prevCart.length >= MAX_CART_ITEMS) {
         showToast.warning(`Cart is full! Maximum ${MAX_CART_ITEMS} items allowed.`);
         return prevCart;
       }
-      const existingItem = prevCart.find(item => (item.id || item._id) === productId);
+      
+      // For products with sizes, treat each size as a unique cart item
+      const cartKey = size ? `${productId}-${size.name}` : productId;
+      const existingItem = prevCart.find(item => {
+        const itemId = item.id || item._id;
+        const itemSize = item.selectedSize?.name;
+        const currentSize = size?.name;
+        
+        if (size) {
+          return itemId === productId && itemSize === currentSize;
+        }
+        return itemId === productId && !itemSize;
+      });
+      
       GA4Tracker.trackAddToCart(product, safeQty);
       
       let newCart;
       if (existingItem) {
-        newCart = prevCart.map(item =>
-          (item.id || item._id) === productId
+        newCart = prevCart.map(item => {
+          const itemId = item.id || item._id;
+          const itemSize = item.selectedSize?.name;
+          const currentSize = size?.name;
+          
+          if (size) {
+            return (itemId === productId && itemSize === currentSize)
+              ? { ...item, quantity: item.quantity + safeQty }
+              : item;
+          }
+          return (itemId === productId && !itemSize)
             ? { ...item, quantity: item.quantity + safeQty }
-            : item
-        );
-        showToast.success(`Updated ${product.name} quantity in cart`);
+            : item;
+        });
+        showToast.success(`Updated ${product.name}${size ? ` (${size.name})` : ''} quantity in cart`);
       } else {
         newCart = [...prevCart, { ...normalizedProduct, quantity: safeQty }];
-        showToast.success(`${product.name} added to cart!`);
+        showToast.success(`${product.name}${size ? ` (${size.name})` : ''} added to cart!`);
       }
 
-      updateBackendCart('add', productId, safeQty);
+      updateBackendCart('add', productId, safeQty, size);
       return newCart;
     });
   }, [updateBackendCart]);

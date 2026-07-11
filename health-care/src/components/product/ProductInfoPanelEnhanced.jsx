@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { CONTACT } from '@/constants/api';
+import SizeSelector from './SizeSelector';
 import { 
   FaShoppingCart, 
   FaWhatsapp, 
@@ -29,9 +30,16 @@ import {
  * - Trust signals row
  * - Share buttons
  * - Better quantity selector
+ * - Size selector for products with size variants
  * - Engaging CTA buttons
  */
-export default function ProductInfoPanelEnhanced({ product, quantity, setQuantity }) {
+export default function ProductInfoPanelEnhanced({ 
+  product, 
+  quantity, 
+  setQuantity,
+  selectedSize,
+  onSizeChange 
+}) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [addingToCart, setAddingToCart] = useState(false);
@@ -39,10 +47,19 @@ export default function ProductInfoPanelEnhanced({ product, quantity, setQuantit
 
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
-  const inStock = product.stock > 0;
-  const lowStock = product.stock > 0 && product.stock < 10;
-  const hasDiscount = product.oldPrice && product.oldPrice > product.price;
-  const savings = hasDiscount ? product.oldPrice - product.price : 0;
+  
+  // Determine stock based on size selection
+  const productStock = selectedSize ? selectedSize.stock : product.stock;
+  const inStock = productStock > 0;
+  const lowStock = productStock > 0 && productStock < 10;
+  
+  // Calculate price with size adjustment
+  const basePrice = product.price || 0;
+  const sizeAdjustment = selectedSize?.priceAdjustment || 0;
+  const finalPrice = basePrice + sizeAdjustment;
+  
+  const hasDiscount = product.oldPrice && product.oldPrice > finalPrice;
+  const savings = hasDiscount ? product.oldPrice - finalPrice : 0;
   const discountPercent = hasDiscount ? Math.round((savings / product.oldPrice) * 100) : 0;
 
   const handleAddToCart = async () => {
@@ -145,7 +162,7 @@ export default function ProductInfoPanelEnhanced({ product, quantity, setQuantit
         
         <div className="flex items-baseline gap-3 mb-2">
           <span className="text-4xl font-extrabold text-gray-900">
-            {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
+            {finalPrice > 0 ? `৳${finalPrice?.toLocaleString()}` : 'Contact for Price'}
           </span>
           {hasDiscount && (
             <span className="text-green-600 text-lg font-bold">
@@ -154,7 +171,7 @@ export default function ProductInfoPanelEnhanced({ product, quantity, setQuantit
           )}
         </div>
 
-        {product.price > 0 && (
+        {finalPrice > 0 && (
           <p className="text-sm text-gray-600">
             B2B pricing available for bulk orders (8-30% off)
           </p>
@@ -204,6 +221,17 @@ export default function ProductInfoPanelEnhanced({ product, quantity, setQuantit
         </div>
       </div>
 
+      {/* Size Selector */}
+      {product.variants?.sizes && product.variants.sizes.length > 0 && (
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <SizeSelector
+            sizes={product.variants.sizes}
+            selectedSize={selectedSize}
+            onSizeChange={onSizeChange}
+          />
+        </div>
+      )}
+
       {/* Quantity Selector */}
       {inStock && (
         <div>
@@ -223,23 +251,23 @@ export default function ProductInfoPanelEnhanced({ product, quantity, setQuantit
               <input
                 type="number"
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
+                onChange={(e) => setQuantity(Math.max(1, Math.min(productStock, parseInt(e.target.value) || 1)))}
                 className="w-16 h-12 text-center text-lg font-bold text-gray-900 border-none focus:outline-none"
                 min="1"
-                max={product.stock}
+                max={productStock}
               />
               <button
-                onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                disabled={quantity >= product.stock}
+                onClick={() => setQuantity(Math.min(productStock, quantity + 1))}
+                disabled={quantity >= productStock}
                 className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="Increase quantity"
               >
                 <FaPlus size={14} />
               </button>
             </div>
-            {product.stock && (
+            {productStock && (
               <span className="text-sm text-gray-500">
-                {product.stock} available
+                {productStock} available
               </span>
             )}
           </div>

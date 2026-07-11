@@ -8,7 +8,7 @@ exports.getCart = async (req, res) => {
   try {
     const userId = req.user._id;
     
-    let cart = await Cart.findOne({ user: userId }).populate('items.product', 'name slug price images brand stock isActive');
+    let cart = await Cart.findOne({ user: userId }).populate('items.product', 'name slug price images brand stock isActive variants');
     
     if (!cart) {
       // Create empty cart if doesn't exist
@@ -80,7 +80,7 @@ exports.syncCart = async (req, res) => {
     await cart.save();
     
     // Populate and return merged cart
-    await cart.populate('items.product', 'name slug price images brand stock isActive');
+    await cart.populate('items.product', 'name slug price images brand stock isActive variants');
 
     return successResponse(res, cart, 'Cart synced successfully');
   } catch (error) {
@@ -93,7 +93,7 @@ exports.syncCart = async (req, res) => {
 exports.addItem = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { productId, quantity = 1 } = req.body;
+    const { productId, quantity = 1, selectedSize } = req.body;
 
     if (!productId) {
       return errorResponse(res, 'Product ID is required', null, 400);
@@ -105,32 +105,62 @@ exports.addItem = async (req, res) => {
       return errorResponse(res, 'Product not found or inactive', null, 404);
     }
 
+    // Validate size if product has size variants
+    if (product.variants?.sizes && product.variants.sizes.length > 0) {
+      if (!selectedSize || !selectedSize.name) {
+        return errorResponse(res, 'Size selection is required for this product', null, 400);
+      }
+      
+      // Verify selected size exists and is available
+      const sizeVariant = product.variants.sizes.find(s => s.name === selectedSize.name);
+      if (!sizeVariant) {
+        return errorResponse(res, 'Invalid size selection', null, 400);
+      }
+      if (!sizeVariant.isAvailable || sizeVariant.stock < quantity) {
+        return errorResponse(res, `Size ${selectedSize.name} is not available or out of stock`, null, 400);
+      }
+    }
+
     // Find or create cart
     let cart = await Cart.findOne({ user: userId });
     if (!cart) {
       cart = new Cart({ user: userId, items: [] });
     }
 
-    // Check if item already exists
-    const existingIndex = cart.items.findIndex(
-      item => item.product.toString() === productId.toString()
-    );
+    // For products with sizes, each size is a separate cart item
+    const existingIndex = cart.items.findIndex(item => {
+      const isSameProduct = item.product.toString() === productId.toString();
+      if (!selectedSize) return isSameProduct;
+      
+      // Match both product and size
+      return isSameProduct && item.selectedSize?.name === selectedSize.name;
+    });
+
+    // Calculate final price with size adjustment
+    const finalPrice = product.price + (selectedSize?.priceAdjustment || 0);
 
     if (existingIndex >= 0) {
       // Update quantity
       cart.items[existingIndex].quantity += quantity;
-      cart.items[existingIndex].price = product.price; // Update to current price
+      cart.items[existingIndex].price = finalPrice;
+      if (selectedSize) {
+        cart.items[existingIndex].selectedSize = selectedSize;
+      }
     } else {
       // Add new item
-      cart.items.push({
+      const newItem = {
         product: productId,
         quantity,
-        price: product.price
-      });
+        price: finalPrice
+      };
+      if (selectedSize) {
+        newItem.selectedSize = selectedSize;
+      }
+      cart.items.push(newItem);
     }
 
     await cart.save();
-    await cart.populate('items.product', 'name slug price images brand stock isActive');
+    await cart.populate('items.product', 'name slug price images brand stock isActive variants');
 
     return successResponse(res, cart, 'Item added to cart');
   } catch (error) {
@@ -144,7 +174,7 @@ exports.updateItem = async (req, res) => {
   try {
     const userId = req.user._id;
     const { productId } = req.params;
-    const { quantity } = req.body;
+    const { quantity, selectedSize } = req.body;
 
     if (!quantity || quantity < 1) {
       return errorResponse(res, 'Quantity must be at least 1', null, 400);
@@ -155,17 +185,30 @@ exports.updateItem = async (req, res) => {
       return errorResponse(res, 'Cart not found', null, 404);
     }
 
-    const itemIndex = cart.items.findIndex(
-      item => item.product.toString() === productId.toString()
-    );
+    const itemIndex = cart.items.findIndex(item => {
+      const isSameProduct = item.product.toString() === productId.toString();
+      if (!selectedSize) return isSameProduct;
+      
+      // Match both product and size
+      return isSameProduct && item.selectedSize?.name === selectedSize.name;
+    });
 
     if (itemIndex === -1) {
       return errorResponse(res, 'Item not found in cart', null, 404);
     }
 
+    // Verify stock for size variant
+    if (selectedSize) {
+      const product = await Product.findById(productId).lean();
+      const sizeVariant = product?.variants?.sizes?.find(s => s.name === selectedSize.name);
+      if (sizeVariant && quantity > sizeVariant.stock) {
+        return errorResponse(res, `Only ${sizeVariant.stock} units available for size ${selectedSize.name}`, null, 400);
+      }
+    }
+
     cart.items[itemIndex].quantity = quantity;
     await cart.save();
-    await cart.populate('items.product', 'name slug price images brand stock isActive');
+    await cart.populate('items.product', 'name slug price images brand stock isActive variants');
 
     return successResponse(res, cart, 'Item updated');
   } catch (error) {

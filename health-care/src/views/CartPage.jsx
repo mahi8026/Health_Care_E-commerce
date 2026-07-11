@@ -205,6 +205,14 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                         <div className="flex-1 min-w-0">
                           <h3 className="text-[14px] md:text-[15px] font-bold text-[#0B2545] leading-snug line-clamp-2 mb-1">
                             {item.name}
+                            {item.selectedSize && (
+                              <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-[#0E8A6E]/10 text-[#0E8A6E] rounded-md text-[11px] font-semibold">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <rect x="4" y="4" width="16" height="16" rx="2"/>
+                                </svg>
+                                Size: {item.selectedSize.name}
+                              </span>
+                            )}
                           </h3>
                           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mb-2">
                             {item.brand && (
