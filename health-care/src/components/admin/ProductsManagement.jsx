@@ -1275,16 +1275,46 @@ export default function ProductsManagement({ openCreateRef }) {
                       </button>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => setCreateForm(f => ({
-                      ...f,
-                      sizes: [...(f.sizes || []), { name: 'M', stock: 0, priceAdjustment: 0, isAvailable: true }]
-                    }))}
-                    className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
-                  >
-                    + Add size variant
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCreateForm(f => ({
+                        ...f,
+                        sizes: [...(f.sizes || []), { name: 'M', stock: 0, priceAdjustment: 0, isAvailable: true }]
+                      }))}
+                      className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
+                    >
+                      + Add size variant
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+                        const existingSizes = (createForm.sizes || []).map(s => s.name);
+                        const newSizes = allSizes
+                          .filter(sizeName => !existingSizes.includes(sizeName))
+                          .map(sizeName => ({
+                            name: sizeName,
+                            stock: 10,
+                            priceAdjustment: 0,
+                            isAvailable: true
+                          }));
+                        
+                        if (newSizes.length > 0) {
+                          setCreateForm(f => ({
+                            ...f,
+                            sizes: [...(f.sizes || []), ...newSizes]
+                          }));
+                          showMessage(`Added ${newSizes.length} size variant(s)`, 'success');
+                        } else {
+                          showMessage('All sizes already added', 'error');
+                        }
+                      }}
+                      className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[#0E8A6E] bg-[#0E8A6E]/5 text-[#0E8A6E] hover:bg-[#0E8A6E]/10 transition-colors font-medium"
+                    >
+                      ✨ Add All Sizes
+                    </button>
+                  </div>
                   <div className="text-[10px] text-[#9CA3AF] mt-1">
                     💡 For products like clothing, PPE, support belts. Price adj. = extra cost for larger sizes (e.g., +50 for XL)
                   </div>
