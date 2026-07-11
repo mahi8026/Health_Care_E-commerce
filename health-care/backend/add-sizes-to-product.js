@@ -13,6 +13,8 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Product = require('./src/models/Product');
+const Category = require('./src/models/Category');
+const Manufacturer = require('./src/models/Manufacturer');
 
 const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 

@@ -266,6 +266,7 @@ exports.getProducts = async (req, res) => {
       discountPct: 1,
       soldCount: 1,
       viewCount: 1,
+      variants: 1, // Include size variants and other variant types
       // Category fields
       'category._id': 1,
       'category.name': 1,
