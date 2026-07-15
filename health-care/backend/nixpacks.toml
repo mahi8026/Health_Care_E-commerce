@@ -2,7 +2,7 @@
 # https://nixpacks.com/docs/configuration
 
 [phases.setup]
-nixPkgs = ["nodejs-18_x"]
+nixPkgs = ["nodejs"]
 
 [phases.install]
 cmds = ["npm install --production=false"]

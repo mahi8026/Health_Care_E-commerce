@@ -1,131 +1,287 @@
-# MedCore BD — Backend API
+# MedCore BD Backend API
 
-Express.js REST API for the MedCore BD medical equipment e-commerce platform.
+Production-ready Express.js backend for MedCore BD medical equipment e-commerce platform.
 
-## Tech Stack
+---
 
-- **Runtime**: Node.js 18+
-- **Framework**: Express.js 4.18
-- **Database**: MongoDB 7+ (Mongoose ODM)
-- **Cache**: Redis (ioredis) with in-memory fallback
-- **Auth**: JWT (access: 15 min, refresh: 7 d)
-- **Logging**: Winston + DailyRotateFile
-- **Monitoring**: Sentry
-- **Docs**: Swagger UI at `/api-docs`
+## 🚀 Deployment
 
-## Quick Start
+### Railway.app (Recommended - No Card Required)
+
+**Quick Deploy:**
+```bash
+# 1. Sign up: https://railway.app (use GitHub)
+# 2. New Project → Deploy from GitHub → Health_Care_E-commerce
+# 3. Settings → Root Directory: health-care/backend
+# 4. Variables → RAW EDITOR → Paste from RAILWAY_ENV_VARIABLES.env
+# 5. Settings → Generate Domain
+# 6. Done! 🎉
+```
+
+**Guides:**
+- 📖 Quick Start: `RAILWAY_QUICK_START.md`
+- 📖 Full Guide: `RAILWAY_DEPLOYMENT_GUIDE.md`
+- 📖 Simple Guide: `DEPLOY.md`
+
+**Free Tier:** $5 credit/month (runs 24/7, no card required)
+
+---
+
+## 🛠️ Tech Stack
+
+- **Runtime:** Node.js 18+
+- **Framework:** Express.js 4.22
+- **Database:** MongoDB with Mongoose ODM
+- **Cache:** Redis (ioredis) with in-memory fallback
+- **Auth:** Passport.js (JWT + Google OAuth 2.0)
+- **Security:** Helmet, CORS, Rate Limiting, XSS Protection
+- **File Upload:** Multer + Cloudinary
+- **Email:** Nodemailer
+- **SMS:** Twilio
+- **Testing:** Jest + Supertest
+- **Logging:** Winston + Morgan
+- **Error Tracking:** Sentry
+
+---
+
+## 📦 Installation
+
+### Local Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Copy environment variables
+# Copy environment file
 cp .env.example .env
+
+# Update .env with your credentials
 
 # Start development server
 npm run dev
-
-# Run tests
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
 ```
 
-## Environment Variables
+Server runs on: http://localhost:5001
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `MONGODB_URI` | ✅ | MongoDB connection string | `mongodb+srv://...` |
-| `JWT_SECRET` | ✅ | JWT signing secret (≥32 chars) | `your-secret-key` |
-| `JWT_REFRESH_SECRET` | ✅ | Refresh token secret | `your-refresh-secret` |
-| `REDIS_HOST` | ⚠️ | Redis host | `localhost` |
-| `REDIS_PORT` | ⚠️ | Redis port | `6379` |
-| `REDIS_PASSWORD` | ⚠️ | Redis password | `your-password` |
-| `FRONTEND_URL` | ✅ | Frontend URL for CORS | `http://localhost:3000` |
-| `PORT` | ❌ | Server port (default: 5000) | `5000` |
-| `NODE_ENV` | ❌ | Environment | `development` |
-| `SENTRY_DSN` | ⚠️ | Sentry DSN for error tracking | `https://...@sentry.io/...` |
-| `CLOUDINARY_CLOUD_NAME` | ⚠️ | Cloudinary for image uploads | `your-cloud` |
-| `CLOUDINARY_API_KEY` | ⚠️ | Cloudinary API key | `123456789` |
-| `CLOUDINARY_API_SECRET` | ⚠️ | Cloudinary API secret | `your-secret` |
+---
 
-✅ Required  ⚠️ Recommended  ❌ Optional
+## 🔐 Environment Variables
 
-## API Documentation
+Required variables in `.env`:
 
-Swagger UI is available at: `http://localhost:5000/api-docs`
-
-## Key Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/health` | GET | Health check (DB + Redis status) |
-| `/api/monitoring/metrics` | GET | Performance metrics (Admin) |
-| `/api/products` | GET | List products with filtering |
-| `/api/products/:id` | GET | Get product by ID or slug |
-| `/api/categories` | GET | List all categories |
-| `/api/auth/register` | POST | Register new user |
-| `/api/auth/login` | POST | Login (returns JWT) |
-| `/api/auth/refresh` | POST | Refresh access token |
-| `/api/orders` | GET | List orders (authenticated) |
-| `/api/cart` | GET | Get cart |
-
-## Architecture
-
-```
-src/
-├── config/         # Database, Passport, Sentry, Swagger config
-├── controllers/    # Route handler logic
-├── middleware/     # Auth, rate limiting, error handling, caching
-├── models/         # Mongoose schemas with indexes
-├── routes/         # Express route definitions
-├── services/       # Business logic (Redis, email, SMS, WhatsApp)
-└── utils/          # Helpers (logger, email, cron jobs)
+```bash
+NODE_ENV=development
+PORT=5001
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret
 ```
 
-## Security Features
+**Generate secrets:**
+```bash
+node ../generate-secrets.js
+```
 
-- Helmet.js (CSP, HSTS, X-Frame-Options)
-- Rate limiting: 5 req/15 min (auth), 100 req/15 min (API)
-- JWT with 15 min access tokens + 7 d refresh tokens (httpOnly cookie)
-- MongoDB injection prevention (express-mongo-sanitize)
-- XSS protection (xss-clean)
-- HTTP Parameter Pollution prevention (hpp)
-- CORS with whitelist validation
+See `.env.example` for all variables.
 
-## Performance Features
+---
 
-- Redis caching with TTLs (products: 1 h, categories: 24 h)
-- Cache warming on startup (featured products, categories)
-- ETag middleware for conditional GET responses
-- Response compression (gzip, >1 KB threshold)
-- MongoDB compound indexes on all query patterns
-- Connection pooling (min: 10, max: 50)
-- Slow query logging (>100 ms)
-- Performance metrics at `/api/monitoring/metrics`
+## 📋 Available Scripts
 
-## Testing
+```bash
+npm start              # Start production server
+npm run dev            # Start with nodemon (development)
+npm test               # Run tests with coverage
+npm run test:watch     # Run tests in watch mode
+npm run lint           # Run ESLint
+npm run lint:fix       # Fix ESLint issues
+npm run seed           # Seed database with sample data
+npm run diagnose       # Check MongoDB connection
+```
+
+---
+
+## 🌐 API Endpoints
+
+### Health Check
+```
+GET /api/health
+```
+
+### Authentication
+```
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/refresh-token
+POST /api/auth/logout
+GET  /api/auth/google
+```
+
+### Products
+```
+GET    /api/products
+GET    /api/products/:id
+POST   /api/products (admin)
+PUT    /api/products/:id (admin)
+DELETE /api/products/:id (admin)
+```
+
+### Orders
+```
+GET    /api/orders (authenticated)
+GET    /api/orders/:id (authenticated)
+POST   /api/orders (authenticated)
+PUT    /api/orders/:id/status (admin)
+```
+
+**Full API Documentation:** `/api-docs` (Swagger UI)
+
+---
+
+## 🗄️ Database
+
+### MongoDB Collections
+
+- **users** - User accounts (B2C, B2B, Admin)
+- **products** - Product catalog
+- **categories** - Product categories
+- **brands** - Product brands
+- **orders** - Customer orders
+- **carts** - Shopping carts
+- **quotes** - B2B quote requests
+- **reviews** - Product reviews
+- **wishlist** - User wishlists
+- **notifications** - User notifications
+- **settings** - System settings
+
+---
+
+## 🔒 Security Features
+
+- ✅ JWT authentication with refresh tokens
+- ✅ Rate limiting (900 requests per 15 min)
+- ✅ Helmet security headers
+- ✅ CORS protection
+- ✅ XSS protection
+- ✅ MongoDB injection prevention
+- ✅ HPP (HTTP Parameter Pollution) prevention
+- ✅ CSRF protection
+- ✅ Input validation (express-validator)
+- ✅ Password hashing (bcrypt)
+- ✅ Two-factor authentication (2FA)
+
+---
+
+## 📊 Monitoring
+
+### Health Check Endpoint
+```
+GET /api/health
+```
+
+Returns:
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "uptime": 12345.67,
+  "mongodb": "connected",
+  "redis": "connected"
+}
+```
+
+### Logs
+
+- **Development:** Console output
+- **Production:** Winston (file + console)
+- **HTTP Logs:** Morgan
+
+### Error Tracking
+
+- Sentry integration for error monitoring
+- Automatic error reporting in production
+
+---
+
+## 🧪 Testing
 
 ```bash
 # Run all tests
 npm test
 
+# Run with coverage
+npm run test:coverage
+
 # Watch mode
 npm run test:watch
-
-# Coverage report
-npm test -- --coverage
-
-# Load testing
-npm run load-test
 ```
 
-## Deployment
+**Coverage Thresholds:**
+- Branches: 60%
+- Functions: 60%
+- Lines: 60%
 
-The backend is deployed on **Render**. See `render.yaml` for configuration.
+---
 
-```bash
-# Production start
-npm start
+## 📁 Project Structure
+
 ```
+backend/
+├── src/
+│   ├── config/          # Configuration files
+│   ├── controllers/     # Route controllers
+│   ├── middleware/      # Express middleware
+│   ├── models/          # Mongoose models
+│   ├── routes/          # API routes
+│   ├── services/        # Business logic
+│   ├── utils/           # Utility functions
+│   └── server.js        # Express app entry point
+├── tests/               # Test files
+├── .env.example         # Environment template
+├── package.json         # Dependencies
+├── railway.toml         # Railway configuration
+└── nixpacks.toml        # Build configuration
+```
+
+---
+
+## 🔄 Deployment Files
+
+- **Railway:** `railway.toml`, `nixpacks.toml`, `.railwayignore`
+- **Environment:** `RAILWAY_ENV_VARIABLES.env`
+- **Guides:** `DEPLOY.md`, `RAILWAY_QUICK_START.md`
+
+---
+
+## 📞 Support
+
+### Documentation
+- Quick Start: `RAILWAY_QUICK_START.md`
+- Full Guide: `RAILWAY_DEPLOYMENT_GUIDE.md`
+- Comparison: `DEPLOYMENT_COMPARISON.md`
+
+### External Resources
+- Railway Docs: https://docs.railway.app
+- MongoDB Atlas: https://www.mongodb.com/docs/atlas/
+- Express.js: https://expressjs.com
+
+---
+
+## 📄 License
+
+MIT License - MedCore BD
+
+---
+
+## 👨‍💻 Author
+
+MedCore BD Team
+- Email: mahimrahman07@gmail.com
+- Phone: +880 1646-886795
+
+---
+
+**Ready to deploy? Open `DEPLOY.md` for quick start! 🚀**
