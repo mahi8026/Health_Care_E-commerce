@@ -1,0 +1,17 @@
+# Railway Configuration File
+# https://docs.railway.app/deploy/railway-up
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[env]
+# Environment variables are managed in Railway Dashboard
+# Go to: Variables tab → Add variables

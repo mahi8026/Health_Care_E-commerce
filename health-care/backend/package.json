@@ -35,6 +35,10 @@
   ],
   "author": "MedCore BD",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "dependencies": {
     "@sentry/node": "^10.63.0",
     "@sentry/profiling-node": "^10.63.0",
