@@ -2,13 +2,10 @@
 # https://nixpacks.com/docs/configuration
 
 [phases.setup]
-nixPkgs = ["nodejs-18_x", "npm-9_x"]
+nixPkgs = ["nodejs-18_x"]
 
 [phases.install]
-cmds = ["npm ci --production=false"]
-
-[phases.build]
-cmds = []
+cmds = ["npm install --production=false"]
 
 [start]
 cmd = "npm start"
