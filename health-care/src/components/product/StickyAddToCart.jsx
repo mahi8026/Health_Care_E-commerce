@@ -22,15 +22,25 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
   const { addToCart } = useCart();
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
       const scrolled = window.scrollY > scrollThreshold;
       setVisible(scrolled);
+      ticking = false;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(handleScroll);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll, { passive: true });
     handleScroll(); // Check initial scroll position
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', throttledScroll);
   }, [scrollThreshold]);
 
   const handleAddToCart = async () => {

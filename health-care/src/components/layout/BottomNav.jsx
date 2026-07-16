@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -26,7 +27,7 @@ const INACTIVE_COLOR = '#9CA3AF';
 const ADMIN_COLOR    = '#7C3AED';
 const B2B_COLOR      = '#0E8A6E';
 
-export default function BottomNav() {
+const BottomNav = memo(function BottomNav() {
   const pathname = usePathname();
   const router   = useRouter();
   const { getCartCount }                                = useCart();
@@ -203,5 +204,7 @@ export default function BottomNav() {
       </nav>
     </>
   );
-}
+});
+
+export default BottomNav;
 

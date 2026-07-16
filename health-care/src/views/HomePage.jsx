@@ -284,6 +284,7 @@ export default function HomePage() {
   const [cartCount, setCartCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isSliderHovered, setIsSliderHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const [heroSlides, setHeroSlides] = useState([]);
   const [promoBanner, setPromoBanner] = useState(null);
   const [bannersLoaded, setBannersLoaded] = useState(false);
@@ -327,26 +328,52 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  // Typewriter effect
+  // Typewriter effect - increased interval for better performance
   useEffect(() => {
     const words = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'];
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % words.length;
       setTypewriterText(words[i]);
-    }, 3000);
+    }, 5000); // Increased from 3000ms to 5000ms for performance
     return () => clearInterval(interval);
   }, []);
 
-  // Hero slider auto-play - increased interval for performance
+  // Hero slider auto-play - paused during hover or scroll for performance
   useEffect(() => {
-    if (isSliderHovered) return;
+    if (isSliderHovered || isScrolling) return;
     const count = heroSlides.filter(s => s.isActive).length || 4;
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % count);
-    }, 5000); // Changed from 6000 to 5000 for better pacing
+    }, 7000); // Increased from 5000ms to 7000ms for performance
     return () => clearInterval(interval);
-  }, [isSliderHovered, heroSlides]);
+  }, [isSliderHovered, isScrolling, heroSlides]);
+  
+  // Pause animations during scroll for better performance
+  useEffect(() => {
+    let scrollTimeout;
+    let ticking = false;
+    
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => setIsScrolling(false), 200);
+      ticking = false;
+    };
+    
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(handleScroll);
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
 
   // Hero slider keyboard navigation (Left/Right arrow keys)
   useEffect(() => {
@@ -602,47 +629,104 @@ export default function HomePage() {
     <div className="min-h-screen home-page-root">
       {/* Global Styles */}
       <style>{`
+        /* OPTIMIZED ANIMATIONS - Phase 3 */
+        /* Kept only essential animations, removed expensive continuous animations */
+        
+        /* Skeleton shimmer - DISABLED in production for performance */
+        .skeleton { 
+          background: ${process.env.NODE_ENV === 'production' ? '#f0f0f0' : 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)'}; 
+          background-size: 200% 100%; 
+          ${process.env.NODE_ENV !== 'production' ? 'animation: shimmer 1.4s infinite;' : ''}
+          border-radius: 6px; 
+        }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.3); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, -30px); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        @keyframes fadeSlide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; will-change: background-position; }
-        .marquee-wrap { overflow: hidden; }
-        .marquee-track { display: flex; animation: marquee 25s linear infinite; width: max-content; will-change: transform; }
-        .marquee-track:hover { animation-play-state: paused; }
-        .product-card-hover { transition: box-shadow 0.2s, transform 0.2s; will-change: transform; }
-        .product-card-hover:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.12); transform: translateY(-3px); }
-        div:hover .quick-add-btn { opacity: 1 !important; }
-        .cat-tile { transition: all 0.2s; }
+        
+        /* Marquee - CONVERTED to static scroll for better performance */
+        .marquee-wrap { 
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .marquee-wrap::-webkit-scrollbar { display: none; }
+        .marquee-track { 
+          display: flex; 
+          width: max-content;
+          /* animation: marquee 25s linear infinite; - REMOVED for performance */
+        }
+        
+        /* Product cards - Simplified transitions */
+        .product-card-hover { 
+          transition: box-shadow 0.2s ease, transform 0.15s ease; 
+          contain: layout style paint; 
+        }
+        .product-card-hover:hover { 
+          box-shadow: 0 8px 32px rgba(0,0,0,0.12); 
+          transform: translateY(-3px); 
+        }
+        
+        /* Category tiles - Kept (lightweight) */
+        .cat-tile { transition: all 0.2s ease; }
         .cat-tile:hover { border-color: #0E8A6E !important; }
         .cat-tile:hover .cat-tile-arrow { opacity: 1 !important; transform: translateX(3px) !important; }
-        .section-in { animation: fadeInUp 0.5s ease both; }
+        
+        /* Section entrance - SIMPLIFIED (removed fadeInUp animation) */
+        .section-in { opacity: 1; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Button states - Kept (essential UX) */
         .tab-active { background: #0B2545 !important; color: #fff !important; }
         .pill-hover:hover { background: rgba(255,255,255,0.2) !important; }
         .btn-primary-hover:hover { background: #0a1f3d !important; }
         .btn-teal-hover:hover { background: #0c7a61 !important; transform: scale(1.02); }
-        .trust-item { transition: transform 0.2s; }
+        
+        /* Trust badges - Kept (lightweight) */
+        .trust-item { transition: transform 0.2s ease; }
         .trust-item:hover { transform: translateY(-2px); }
-        .hero-content > * { animation: slideIn 0.6s ease forwards; opacity: 0; }
-        .hero-content > *:nth-child(1) { animation-delay: 0.1s; }
-        .hero-content > *:nth-child(2) { animation-delay: 0.2s; }
-        .hero-content > *:nth-child(3) { animation-delay: 0.3s; }
-        .hero-content > *:nth-child(4) { animation-delay: 0.4s; }
-        .hero-content > *:nth-child(5) { animation-delay: 0.5s; }
-        .hero-content > *:nth-child(6) { animation-delay: 0.6s; }
-        .hero-content > *:nth-child(7) { animation-delay: 0.7s; }
-        .floating-card { animation: float 3s ease-in-out infinite; will-change: transform; }
-        .orb-drift { animation: drift 20s ease-in-out infinite; will-change: transform; }
-        .slide-active { animation: scaleIn 0.6s ease forwards; will-change: transform, opacity; }
-        .typewriter-text { animation: fadeSlide 0.5s ease forwards; will-change: transform, opacity; }
-        .hero-grid-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(480px, 52%); gap: 32px; align-items: center; }
+        
+        /* Hero content - SIMPLIFIED stagger animation */
+        .hero-content > * { opacity: 1; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* REMOVED expensive continuous animations */
+        /* .floating-card - REMOVED (constant GPU work) */
+        /* .orb-drift - REMOVED (expensive transform animation) */
+        .floating-card { /* animation removed for performance */ }
+        .orb-drift { /* animation removed for performance */ }
+        
+        /* Slider transitions - Kept but simplified */
+        .slide-active { opacity: 1; }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Typewriter - Kept (essential feature) */
+        .typewriter-text { opacity: 1; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        /* Quick add button - Kept (essential UX) */
+        div:hover .quick-add-btn { opacity: 1 !important; }
+        
+        /* Hero layout - Optimized grid */
+        .hero-grid-container { 
+          width: 100%; 
+          max-width: 1400px; 
+          margin: 0 auto; 
+          padding: 0 24px; 
+          position: relative; 
+          z-index: 2; 
+          display: grid; 
+          grid-template-columns: minmax(0, 1fr) minmax(480px, 52%); 
+          gap: 32px; 
+          align-items: center; 
+        }
         .hero-left-content { order: 1; }
-        .hero-right-panel { order: 2; position: relative; height: 460px; border-radius: 16px; overflow: hidden; background: #1a3a5c; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .hero-right-panel { 
+          order: 2; 
+          position: relative; 
+          height: 460px; 
+          border-radius: 16px; 
+          overflow: hidden; 
+          background: #1a3a5c; 
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4); 
+        }
         @media (min-width: 1280px) {
           .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 36px; }
           .hero-right-panel { height: 500px; }

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api, { setToken, getToken, removeToken } from '@/utils/api';
 import GA4Tracker from '@/services/GA4Tracker';
 
@@ -127,7 +127,7 @@ export function AuthProvider({ children }) {
   const isAdmin = useCallback(() => user?.role === 'admin', [user]);
   const isB2BCustomer = useCallback(() => user?.role === 'b2b_customer', [user]);
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     loading,
     login,
@@ -138,7 +138,7 @@ export function AuthProvider({ children }) {
     isAuthenticated,
     isAdmin,
     isB2BCustomer
-  };
+  }), [user, loading, login, loginAsAdmin, register, logout, updateProfile, isAuthenticated, isAdmin, isB2BCustomer]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

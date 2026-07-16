@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
@@ -13,6 +13,30 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
   const t = useT();
   const [addingToCart, setAddingToCart] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef(null);
+  
+  // IntersectionObserver for lazy rendering
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Stop observing once visible
+        }
+      },
+      { 
+        rootMargin: '150px', // Load 150px before entering viewport
+        threshold: 0.01 
+      }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
   const primaryImage = imageData ? {
@@ -80,19 +104,22 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
 
   return (
     <div 
-      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer"
+      ref={cardRef}
+      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 ease-out cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Image Container - Responsive Height with hover zoom */}
       <div className="h-[140px] sm:h-[160px] md:h-[130px] bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
-        {primaryImage ? (
+        {isVisible && primaryImage ? (
           <>
             <Image
               src={primaryImage.url}
               alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
-              className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+              className="object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+              loading="lazy"
+              decoding="async"
               unoptimized={!primaryImage.url.includes('res.cloudinary.com')}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -108,6 +135,9 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
               🏥
             </div>
           </>
+        ) : !isVisible ? (
+          /* Skeleton placeholder while not in viewport */
+          <div className="w-full h-full bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse" />
         ) : (
           /* Fallback shown when no image exists */
           <div className="flex items-center justify-center w-full h-full text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">

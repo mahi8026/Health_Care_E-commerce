@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -42,7 +42,7 @@ const NAV_LINKS = [
   { label: 'trackOrder', href: '/track' },
 ];
 
-export default function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate }) {
+const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate }) {
   const router = useRouter();
   const pathname = usePathname();
   const t = useT();
@@ -377,4 +377,6 @@ export default function Header({ onLoginClick, onRegisterClick, onLogout, onCart
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
     </>
   );
-}
+});
+
+export default Header;

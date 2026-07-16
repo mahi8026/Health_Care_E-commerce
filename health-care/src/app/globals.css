@@ -57,9 +57,9 @@
   --site-header-height: 3.625rem;
   --site-nav-height: calc(var(--site-topbar-height) + var(--site-header-height));
 
-  /* Glassmorphism tokens */
-  --glass-blur: 48px;
-  --glass-saturate: 220%;
+  /* Glassmorphism tokens - OPTIMIZED for performance */
+  --glass-blur: 12px; /* Reduced from 48px for better scroll performance */
+  --glass-saturate: 150%; /* Reduced from 220% */
   --glass-navy: 11, 37, 69;
   --glass-nav-alpha: 0.28;
   --glass-nav-alpha-hero: 0.15;
@@ -175,6 +175,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Disable all animations for users who prefer reduced motion */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
   .skeleton,
   .skeleton-card {
     animation: none;
@@ -357,6 +367,8 @@ html.topbar-hidden .site-topbar {
     border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     -webkit-backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* CSS Containment for performance isolation */
+  contain: layout style;
 }
 
 /* Home hero: ultra-clear glass over dark gradient */
@@ -450,7 +462,7 @@ html.nav-scrolled .site-nav-shell::after {
   z-index: 1;
 }
 
-/* Unified nav controls — Apple Liquid Glass style */
+/* Unified nav controls — Apple Liquid Glass style - OPTIMIZED */
 .nav-glass-control {
   position: relative;
   display: inline-flex;
@@ -459,8 +471,9 @@ html.nav-scrolled .site-nav-shell::after {
   height: 2.25rem;
   border-radius: 0.875rem;
   background: rgba(255, 255, 255, 0.10);
-  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
-  backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  /* Reduced blur from 20px to 10px and saturate from 180% to 150% for better performance */
+  -webkit-backdrop-filter: blur(10px) saturate(150%) brightness(1.05);
+  backdrop-filter: blur(10px) saturate(150%) brightness(1.05);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.30),
@@ -475,6 +488,7 @@ html.nav-scrolled .site-nav-shell::after {
     box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  /* Removed will-change - only use on active animations */
 }
 
 .nav-glass-control:hover {
@@ -1693,7 +1707,7 @@ html.home-page {
   }
 }
 
-/* ── Scroll To Top Button ───────────────────────────────────────────────────── */
+/* ── Scroll To Top Button - OPTIMIZED ───────────────────────────────────────── */
 .scroll-top-btn {
   position: fixed;
   /* Mobile: left side, above bottom nav */
@@ -1717,7 +1731,8 @@ html.home-page {
   opacity: 0;
   transform: translateY(12px);
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  /* Optimized transition - reduced duration */
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .scroll-top-btn--visible {

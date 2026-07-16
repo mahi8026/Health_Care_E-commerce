@@ -198,14 +198,14 @@ export default function RootLayout({ children }) {
         {/* PWA Install Prompt */}
         <InstallPWA />
 
-        {/* Google Analytics 4 — loaded after interactive to avoid blocking */}
+        {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              strategy="afterInteractive"
+              strategy="lazyOnload"
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="lazyOnload">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}

@@ -13,6 +13,7 @@ export default function NavScrollEffect() {
     const html = document.documentElement;
     const isHome = pathname === '/';
     let lastY = window.scrollY;
+    let ticking = false;
 
     const update = () => {
       const y = window.scrollY;
@@ -31,12 +32,20 @@ export default function NavScrollEffect() {
       }
 
       lastY = y;
+      ticking = false;
+    };
+
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
     };
 
     update();
-    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('scroll', throttledScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', update);
+      window.removeEventListener('scroll', throttledScroll);
       html.classList.remove('nav-scrolled', 'nav-over-hero', 'home-page', 'topbar-hidden');
     };
   }, [pathname]);
