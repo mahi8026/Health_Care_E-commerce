@@ -231,7 +231,6 @@
   position: relative;
   z-index: 1;
   flex-shrink: 0;
-  height: var(--site-topbar-height);
   min-height: var(--site-topbar-height);
   overflow: hidden;
   background: rgba(var(--glass-navy), 0.25) !important;
@@ -244,6 +243,21 @@
     transform 0.28s ease,
     opacity 0.22s ease,
     visibility 0.28s ease;
+}
+
+/* On mobile, allow topbar to wrap if needed */
+@media (max-width: 640px) {
+  .site-topbar {
+    height: auto;
+    min-height: 2.75rem;
+  }
+}
+
+/* On desktop, maintain fixed height */
+@media (min-width: 641px) {
+  .site-topbar {
+    height: var(--site-topbar-height);
+  }
 }
 
 .glass-nav {

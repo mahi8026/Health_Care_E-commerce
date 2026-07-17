@@ -7,9 +7,21 @@ import { API } from '@/constants/api';
 
 // Fallback announcements used before settings load
 const DEFAULT_ANNOUNCEMENTS = [
-  { icon: <FaTruck size={11} />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
-  { icon: <FaSnowflake size={11} />, text: 'Cold chain delivery for temperature-sensitive reagents — door to door' },
-  { icon: <FaTag size={11} />, text: 'B2B institutions get up to 10% bulk discount — Register today' },
+  { 
+    icon: <FaTruck size={11} />, 
+    text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet',
+    shortText: 'Free delivery over ৳50,000'
+  },
+  { 
+    icon: <FaSnowflake size={11} />, 
+    text: 'Cold chain delivery for temperature-sensitive reagents — door to door',
+    shortText: 'Cold chain delivery available'
+  },
+  { 
+    icon: <FaTag size={11} />, 
+    text: 'B2B institutions get up to 10% bulk discount — Register today',
+    shortText: 'B2B bulk discount up to 10%'
+  },
 ];
 
 function buildAnnouncements(settings) {
@@ -19,9 +31,21 @@ function buildAnnouncements(settings) {
     : '৳50,000';
   const maxDiscount = settings.b2bMaxDiscount ?? 30;
   return [
-    { icon: <FaTruck size={11} />, text: `Free delivery on orders over ${threshold} — Dhaka, Chittagong & Sylhet` },
-    { icon: <FaSnowflake size={11} />, text: 'Cold chain delivery for temperature-sensitive reagents — door to door' },
-    { icon: <FaTag size={11} />, text: `B2B institutions get up to ${maxDiscount}% bulk discount — Register today` },
+    { 
+      icon: <FaTruck size={11} />, 
+      text: `Free delivery on orders over ${threshold} — Dhaka, Chittagong & Sylhet`,
+      shortText: `Free delivery over ${threshold}`
+    },
+    { 
+      icon: <FaSnowflake size={11} />, 
+      text: 'Cold chain delivery for temperature-sensitive reagents — door to door',
+      shortText: 'Cold chain delivery available'
+    },
+    { 
+      icon: <FaTag size={11} />, 
+      text: `B2B institutions get up to ${maxDiscount}% bulk discount — Register today`,
+      shortText: `B2B bulk discount up to ${maxDiscount}%`
+    },
   ];
 }
 
@@ -45,13 +69,8 @@ export default function TopBar() {
 
   const announcements = buildAnnouncements(settings);
 
-  // Reset index if it's out of bounds after settings load
-  useEffect(() => {
-    if (index >= announcements.length) {
-      setIndex(0);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [announcements.length]);
+  // Ensure index stays within bounds
+  const safeIndex = index >= announcements.length ? 0 : index;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,29 +83,30 @@ export default function TopBar() {
     return () => clearInterval(interval);
   }, [announcements.length]);
 
-  const { icon, text } = announcements[index] || announcements[0];
+  const { icon, text, shortText } = announcements[safeIndex] || announcements[0];
 
   return (
-    <div className="site-topbar flex items-center justify-between px-4 md:px-6 text-[11px] select-none">
+    <div className="site-topbar flex items-center justify-between px-3 sm:px-4 md:px-6 text-[10px] sm:text-[11px] select-none py-1.5 sm:py-0">
       {/* Rotating announcement */}
       <div
-        className="flex items-center gap-2 min-w-0 flex-1"
+        className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-hidden"
         style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease' }}
         aria-live="polite"
         aria-atomic="true"
       >
         <span className="text-[#0E8A6E] flex-shrink-0">{icon}</span>
-        <span className="text-white/75 truncate">{text}</span>
+        <span className="text-white/75 truncate leading-tight hidden sm:inline">{text}</span>
+        <span className="text-white/75 truncate leading-tight sm:hidden">{shortText || text}</span>
       </div>
 
       {/* Right links */}
-      <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2 sm:ml-4">
         <Link
           href="/track"
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden sm:flex items-center gap-1.5"
         >
           <FaTruck size={10} />
-          Track Order
+          <span className="hidden lg:inline">Track Order</span>
         </Link>
 
         <span className="text-white/20 hidden sm:block">|</span>
@@ -96,20 +116,20 @@ export default function TopBar() {
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5"
         >
           <FaShieldAlt size={10} />
-          DGDA Info
+          <span className="hidden lg:inline">DGDA Info</span>
         </Link>
 
         <span className="text-white/20 hidden md:block">|</span>
 
         <Link
           href="/support"
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5"
+          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5"
         >
           <FaHeadset size={10} />
-          Support
+          <span className="hidden xs:inline">Support</span>
         </Link>
 
-        <span className="text-white/20">|</span>
+        <span className="text-white/20 hidden xs:block">|</span>
 
         <a
           href={`tel:${contactPhone.replace(/[\s\-]/g, '')}`}
