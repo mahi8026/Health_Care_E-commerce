@@ -336,7 +336,9 @@ router.get('/test-categories', async (req, res) => {
         },
         allCategories,
         activeCategories,
-        activeCategoryNames: activeCategories.map(c => c.name)
+        activeCategoryNames: activeCategories.map(c => c.name),
+        timestamp: new Date().toISOString(),
+        note: 'This endpoint bypasses all caching and middleware to show raw database data'
       }
     });
   } catch (error) {
@@ -406,6 +408,115 @@ router.post('/clear-cache', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to clear cache',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route   POST /api/utils/fix-all-categories
+ * @desc    Comprehensive fix for all category issues
+ * @access  Protected by secret key
+ */
+router.post('/fix-all-categories', async (req, res) => {
+  try {
+    // Security check
+    const secretKey = req.body.secret;
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    
+    if (secretKey !== expectedSecret) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or missing secret key'
+      });
+    }
+
+    console.log('🔧 Starting comprehensive category fix...');
+
+    // Step 1: Get all categories
+    const allCategories = await Category.find({}).sort({ name: 1 });
+    const activeCategories = allCategories.filter(c => c.isActive);
+    
+    console.log(`   Found: ${allCategories.length} total, ${activeCategories.length} active`);
+
+    // Step 2: Get all products
+    const allProducts = await Product.find({ isActive: true });
+    console.log(`   Found: ${allProducts.length} active products`);
+
+    // Step 3: Count products per category
+    const categoryProductCounts = {};
+    
+    for (const product of allProducts) {
+      if (product.category) {
+        const categoryId = product.category.toString();
+        categoryProductCounts[categoryId] = (categoryProductCounts[categoryId] || 0) + 1;
+      }
+    }
+
+    // Step 4: Update all category product counts
+    const updates = [];
+    let fixed = 0;
+
+    for (const category of allCategories) {
+      const categoryId = category._id.toString();
+      const actualCount = categoryProductCounts[categoryId] || 0;
+      const savedCount = category.productCount || 0;
+
+      if (savedCount !== actualCount) {
+        await Category.updateOne(
+          { _id: category._id },
+          { $set: { productCount: actualCount } }
+        );
+        
+        updates.push({
+          name: category.name,
+          oldCount: savedCount,
+          newCount: actualCount
+        });
+        
+        fixed++;
+        console.log(`   ✅ ${category.name}: ${savedCount} → ${actualCount}`);
+      }
+    }
+
+    // Step 5: Get updated categories
+    const updatedCategories = await Category.find({ isActive: true })
+      .sort({ name: 1 })
+      .select('name slug productCount')
+      .lean();
+
+    // Step 6: Calculate statistics
+    const totalProducts = updatedCategories.reduce((sum, cat) => sum + (cat.productCount || 0), 0);
+    const categoriesWithProducts = updatedCategories.filter(c => c.productCount > 0).length;
+    const emptyCategories = updatedCategories.filter(c => !c.productCount || c.productCount === 0).length;
+
+    console.log('✅ Category fix complete!');
+
+    res.json({
+      success: true,
+      message: 'All category issues fixed successfully',
+      data: {
+        summary: {
+          totalCategories: updatedCategories.length,
+          activeCategories: updatedCategories.length,
+          categoriesWithProducts,
+          emptyCategories,
+          totalProducts,
+          updatedCounts: fixed
+        },
+        updates,
+        categories: updatedCategories.map(c => ({
+          name: c.name,
+          slug: c.slug,
+          productCount: c.productCount || 0
+        }))
+      }
+    });
+  } catch (error) {
+    console.error('❌ Fix all categories error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fix categories',
       error: error.message
     });
   }
