@@ -31,6 +31,7 @@ import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
 import RecentlyViewed from '@/components/product/RecentlyViewed';
 import FlashDealsSection from '@/components/home/FlashDealsSection';
+import CategoryProductSections from '@/components/home/CategoryProductSections';
 
 // Lazy load heavy components for better performance
 const SupportResources = lazy(() => import('@/components/home/SupportResources'));
@@ -1382,6 +1383,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 8.5: CATEGORY PRODUCT SECTIONS (horizontal scrolls per category) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <CategoryProductSections categories={categories} />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}
