@@ -26,6 +26,7 @@ import {
   FaShoppingCart,
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
 import RecentlyViewed from '@/components/product/RecentlyViewed';
@@ -947,37 +948,79 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Horizontal scrollable category circles */}
+          {/* Horizontal scrollable category circles - Dynamic from API */}
           <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
-            {[
-              { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', path: '/products/category/laboratory-reagents' },
-              { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', path: '/products/category/hospital-machines' },
-              { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', path: '/products/category/lab-equipment' },
-              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', path: '/products/category/ppe-safety' },
-              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', path: '/products/category/implants-ortho' },
-              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', path: '/products/category/diagnostic-equipment' },
-              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', path: '/products/category/surgical-instruments' },
-            ].map(cat => (
-              <div key={cat.name} onClick={() => router.push(cat.path)}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                {/* Circular icon */}
-                <div style={{ width: 80, height: 80, borderRadius: '50%', background: cat.color,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 36, marginBottom: 10, border: '2px solid #E5E7EB',
-                  transition: 'all 0.2s' }}>
-                  {cat.emoji}
+            {/* Show first 16 categories from API, or fallback to hardcoded if loading */}
+            {(categories.length > 0 ? categories.slice(0, 16) : [
+              { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
+              { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', slug: 'hospital-machines' },
+              { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', slug: 'lab-equipment' },
+              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', slug: 'ppe-safety' },
+              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', slug: 'implants-ortho' },
+              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', slug: 'diagnostic-equipment' },
+              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', slug: 'surgical-instruments' },
+            ]).map((cat, index) => {
+              const categoryName = cat.name || cat;
+              const categorySlug = cat.slug || CATEGORY_NAME_TO_SLUG[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
+              const categoryPath = `/products/category/${categorySlug}`;
+              const productCount = cat.productCount || categoryCounts[categoryName] || 0;
+              
+              // Category icons mapping
+              const iconMap = {
+                'Lab Reagents': '🧪', 'Laboratory Reagents': '🧪',
+                'Hospital Machines': '🏥',
+                'Lab Equipment': '🔬', 'Laboratory Equipment': '🔬',
+                'PPE & Safety': '🛡️',
+                'Implants': '🦴', 'Implants & Ortho': '🦴',
+                'Diagnostic': '🩺', 'Diagnostic Equipment': '🩺', 'Diagnostic Devices': '🩺',
+                'Surgical': '💉', 'Surgical Instruments': '💉', 'Surgical & Wound Care': '🩹',
+                'Medical Devices': '🏥',
+                'Medical Supplies': '🏥',
+                'Consumables': '📦',
+                'Orthopedic Supports': '🦴',
+                'Diabetes Care': '💊',
+                'Blood Bank Supplies': '🩸',
+                'IV & Infusion Therapy': '💧',
+                'Ophthalmology & ENT Equipment': '👁️',
+                'Physiotherapy & Rehabilitation': '🏃',
+                'Respiratory Equipment': '😷',
+                'Compression Garments': '👕',
+              };
+              
+              const emoji = cat.emoji || iconMap[categoryName] || '🏥';
+              const colors = ['#FAF5FF', '#FFF7ED', '#F0FDFA', '#FFF1F2', '#F8FAFC', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
+              const color = cat.color || colors[index % colors.length];
+              
+              return (
+                <div key={categoryName} onClick={() => router.push(categoryPath)}
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                  {/* Circular icon */}
+                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: color,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 36, marginBottom: 10, border: '2px solid #E5E7EB',
+                    transition: 'all 0.2s' }}>
+                    {emoji}
+                  </div>
+                  {/* Category name */}
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#374151',
+                    textAlign: 'center', lineHeight: 1.3, maxWidth: 100, overflow: 'hidden',
+                    textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical' }}>
+                    {categoryName}
+                  </span>
+                  {/* Product count */}
+                  {productCount > 0 && (
+                    <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
+                      {productCount} items
+                    </span>
+                  )}
                 </div>
-                {/* Category name */}
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#374151',
-                  textAlign: 'center', lineHeight: 1.3 }}>
-                  {cat.name}
-                </span>
-              </div>
-            ))}
+              );
+            })}
             
             {/* View All button */}
             <div onClick={() => router.push('/products')}
