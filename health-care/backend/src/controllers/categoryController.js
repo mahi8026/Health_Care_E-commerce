@@ -125,6 +125,43 @@ exports.getCategory = async (req, res) => {
   }
 };
 
+// @desc    Get single category by ID (Admin only)
+// @route   GET /api/categories/by-id/:id
+// @access  Private/Admin
+exports.getCategoryById = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id)
+      .populate('parentCategory', 'name slug')
+      .lean();
+    
+    if (!category) {
+      return errorResponse(res, 'Category not found', null, 404);
+    }
+    
+    // Get product count
+    const productCount = await Product.countDocuments({ 
+      category: category._id, 
+      isActive: true 
+    });
+    
+    // Get subcategories
+    const subcategories = await Category.find({ 
+      parentCategory: category._id 
+    }).limit(100).lean();
+    
+    return successResponse(res, {
+      category: {
+        ...category,
+        productCount,
+        subcategories
+      }
+    });
+  } catch (error) {
+    logger.error(`[getCategoryById] ${error.message}`);
+    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+  }
+};
+
 // @desc    Create category
 // @route   POST /api/categories
 // @access  Private/Admin

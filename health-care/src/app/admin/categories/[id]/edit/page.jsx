@@ -39,7 +39,7 @@ export default function EditCategoryPage() {
   const fetchCategory = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/categories/${categoryId}`);
+      const response = await api.get(`/categories/by-id/${categoryId}`);
       const cat = response.data.category;
       
       setFormData({
@@ -69,9 +69,12 @@ export default function EditCategoryPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.get('/categories');
+      const response = await api.get('/categories?includeInactive=true');
+      // Handle different response structures
+      const categoriesData = response.categories || response.data?.categories || response.data || [];
+      
       // Exclude current category and its children from parent selection
-      setCategories(response.data.categories.filter(c => 
+      setCategories(categoriesData.filter(c => 
         c._id !== categoryId && !c.parentCategory
       ));
     } catch (err) {

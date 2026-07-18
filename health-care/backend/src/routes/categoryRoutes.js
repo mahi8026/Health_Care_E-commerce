@@ -8,6 +8,7 @@ const {
   getCategories,
   getCategoryTree,
   getCategory,
+  getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
@@ -44,12 +45,15 @@ const upload = multer({
 // Public routes with caching — 24h TTL per CACHE_TTL.CATEGORIES_LIST
 router.get('/', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategories);
 router.get('/tree', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategoryTree);
-router.get('/:slug', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategory);
 
-// Admin routes
+// Admin routes (must come before /:slug to avoid route conflicts)
+router.get('/by-id/:id', protect, authorize('admin'), getCategoryById);
 router.post('/', protect, authorize('admin'), createCategory);
 router.put('/:id', protect, authorize('admin'), updateCategory);
 router.delete('/:id', protect, authorize('admin'), deleteCategory);
 router.post('/:id/image', protect, authorize('admin'), upload.single('image'), uploadCategoryImage);
+
+// Public slug route (must be last to avoid conflicts with specific routes)
+router.get('/:slug', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: `${CACHE_KEYS.CATEGORIES_LIST}:` }), getCategory);
 
 module.exports = router;
