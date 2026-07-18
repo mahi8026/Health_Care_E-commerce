@@ -5,13 +5,23 @@ const Category = require('../models/Category');
 const { protect, authorize } = require('../middleware/auth');
 
 /**
- * @route   POST /api/admin/utils/fix-category-counts
+ * @route   POST /api/utils/fix-category-counts
  * @desc    Recalculate and fix all category product counts
- * @access  Public (temporary - for production fix)
- * @note    Should be protected by auth in normal circumstances
+ * @access  Protected by secret key in request body
  */
 router.post('/fix-category-counts', async (req, res) => {
   try {
+    // Security: Require secret key in request body (avoid CORS issues with headers)
+    const secretKey = req.body.secret;
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    
+    if (secretKey !== expectedSecret) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or missing secret key. Send { "secret": "your-secret" } in request body.'
+      });
+    }
+    
     console.log('🔄 Starting category count fix...');
 
     // Get all categories
