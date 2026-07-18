@@ -23,8 +23,9 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
  * @param {Object} categoryCounts - Object mapping category names to product counts
  */
 export default function CategoryGrid({ categories, categoryCounts }) {
-  const displayCategories = categories?.length > 0 
-    ? categories 
+  // Always use API categories if available, only use fallback if API returns empty
+  const displayCategories = (categories && categories.length > 0) 
+    ? categories.filter(cat => cat.isActive !== false) // Filter out inactive categories
     : FALLBACK_CATEGORIES;
 
   return (
