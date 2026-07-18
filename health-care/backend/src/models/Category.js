@@ -43,6 +43,10 @@ const categorySchema = new mongoose.Schema({
   displayOrder: {
     type: Number,
     default: 0
+  },
+  productCount: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true,
@@ -76,13 +80,13 @@ categorySchema.virtual('subcategories', {
   foreignField: 'parentCategory'
 });
 
-// Virtual for product count
-categorySchema.virtual('productCount', {
-  ref: 'Product',
-  localField: '_id',
-  foreignField: 'category',
-  count: true
-});
+// Virtual for product count (replaced with actual field for performance)
+// categorySchema.virtual('productCount', {
+//   ref: 'Product',
+//   localField: '_id',
+//   foreignField: 'category',
+//   count: true
+// });
 
 // Indexes for performance
 categorySchema.index({ slug: 1 }, { unique: true });
