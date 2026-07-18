@@ -722,13 +722,16 @@ async function invalidateCategories() {
 
     logger.info('[Redis] Invalidating categories cache...');
 
-    // Delete categories list cache
-    await del(CACHE_KEYS.CATEGORIES_LIST);
+    // Delete categories list cache with wildcard to catch all query variations
+    // This will delete: categories:list:/api/categories?includeInactive=true
+    //                   categories:list:/api/categories?includeInactive=false
+    //                   categories:list:/api/categories, etc.
+    const categoryDeleted = await delPattern(`${CACHE_KEYS.CATEGORIES_LIST}*`);
 
     // Also invalidate product lists since they include category data
-    const deletedCount = await delPattern('products:list:*');
+    const productListDeleted = await delPattern('products:list:*');
 
-    logger.info(`[Redis] Invalidated categories cache and ${deletedCount} product list caches`);
+    logger.info(`[Redis] Invalidated ${categoryDeleted} category caches and ${productListDeleted} product list caches`);
     return true;
   } catch (error) {
     logger.error(`[Redis] Categories cache invalidation error: ${error.message}`);

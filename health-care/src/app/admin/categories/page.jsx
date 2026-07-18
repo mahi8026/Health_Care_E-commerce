@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import api from '@/utils/api';
 import AdminShell from '@/components/admin/AdminShell';
 
@@ -20,27 +21,14 @@ export default function CategoriesPage() {
   const [error, setError] = useState(null);
   const [includeInactive, setIncludeInactive] = useState(false);
 
-  // Check authentication on mount
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      process.env.NODE_ENV !== "production" && console.warn('[Categories] No authentication token found');
-      setError('Please log in to access the admin panel');
-      setLoading(false);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      fetchCategories();
-    }
-  }, [includeInactive]);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async (bypassCache = false) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await api.get(`/categories?includeInactive=${includeInactive}`);
+      // Add cache busting parameter when needed
+      const cacheBuster = bypassCache ? `&_t=${Date.now()}` : '';
+      const response = await api.get(`/categories?includeInactive=${includeInactive}${cacheBuster}`);
       
       // Handle different response structures
       const categoriesData = response.categories || response.data?.categories || response.data || [];
@@ -65,15 +53,37 @@ export default function CategoriesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [includeInactive]);
+
+  // Check authentication on mount
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      process.env.NODE_ENV !== "production" && console.warn('[Categories] No authentication token found');
+      router.push('/login');
+      return;
+    }
+    
+    // Fetch categories on mount or when includeInactive changes
+    fetchCategories();
+  }, [router, includeInactive, fetchCategories]);
 
   const handleDelete = async (id, name) => {
     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;
 
     try {
       await api.delete(`/categories/${id}`);
+      
+      // Remove the deactivated category from state immediately for better UX
+      setCategories(prevCategories => 
+        prevCategories.map(cat => 
+          cat._id === id ? { ...cat, isActive: false } : cat
+        )
+      );
+      
       alert('Category deactivated successfully');
-      fetchCategories();
+      
+      // Bypass cache to get fresh data from backend
+      fetchCategories(true);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete category');
     }
@@ -127,7 +137,7 @@ export default function CategoriesPage() {
             <span className="text-[13px] text-[var(--color-text-primary)]">Show inactive categories</span>
           </label>
           <button
-            onClick={fetchCategories}
+            onClick={() => fetchCategories(true)}
             className="text-[12px] md:text-[13px] text-[#0E8A6E] hover:text-[#0a6b55] font-medium underline"
           >
             Refresh
@@ -186,10 +196,12 @@ export default function CategoriesPage() {
                     <tr key={category._id} className="hover:bg-[var(--color-background-tertiary)]">
                       <td className="px-4 py-3">
                         {category.image?.url ? (
-                          <img
+                          <Image
                             src={category.image.url}
                             alt={`${category.name} supplier Bangladesh — MedCore BD`}
-                            className="w-12 h-12 object-cover rounded"
+                            width={48}
+                            height={48}
+                            className="object-cover rounded"
                           />
                         ) : (
                           <div className="w-12 h-12 bg-[var(--color-background-secondary)] rounded flex items-center justify-center text-[var(--color-text-secondary)] text-[10px]">
@@ -257,10 +269,12 @@ export default function CategoriesPage() {
                   {/* Header with Image and Name */}
                   <div className="flex items-start gap-3">
                     {category.image?.url ? (
-                      <img
+                      <Image
                         src={category.image.url}
                         alt={`${category.name} supplier Bangladesh — MedCore BD`}
-                        className="w-16 h-16 object-cover rounded flex-shrink-0"
+                        width={64}
+                        height={64}
+                        className="object-cover rounded flex-shrink-0"
                       />
                     ) : (
                       <div className="w-16 h-16 bg-white rounded flex items-center justify-center text-[var(--color-text-secondary)] text-[10px] flex-shrink-0 border border-[var(--color-border-tertiary)]">
