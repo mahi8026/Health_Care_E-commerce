@@ -24,16 +24,19 @@ exports.getCategories = async (req, res) => {
       .limit(100)
       .lean();
     
-    // Get product counts for each category
-    const categoriesWithCounts = await Promise.all(
-      categories.map(async (cat) => {
-        const productCount = await Product.countDocuments({ 
-          category: cat._id, 
-          isActive: true 
-        });
-        return { ...cat, productCount };
-      })
-    );
+    // Log the query results for debugging
+    logger.info(`[getCategories] Found ${categories.length} categories (includeInactive: ${includeInactive}, isAdmin: ${req.user?.role === 'admin'})`);
+    
+    // Get product counts for each category (use saved productCount field instead of counting)
+    const categoriesWithCounts = categories.map((cat) => {
+      return { ...cat, productCount: cat.productCount || 0 };
+    });
+    
+    // Set Last-Modified header to invalidate old ETags
+    const lastModified = categories.length > 0 
+      ? new Date(Math.max(...categories.map(c => new Date(c.updatedAt).getTime())))
+      : new Date();
+    res.setHeader('Last-Modified', lastModified.toUTCString());
     
     return successResponse(res, {
       count: categoriesWithCounts.length,
