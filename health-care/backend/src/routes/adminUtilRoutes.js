@@ -169,6 +169,188 @@ router.get('/verify-category-counts', async (req, res) => {
 });
 
 /**
+ * @route   POST /api/utils/sync-missing-categories
+ * @desc    Create the 6 missing categories in production
+ * @access  Protected by secret key
+ */
+router.post('/sync-missing-categories', async (req, res) => {
+  try {
+    // Security check
+    const secretKey = req.body.secret;
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    
+    if (secretKey !== expectedSecret) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or missing secret key'
+      });
+    }
+
+    console.log('🔄 Starting category sync...');
+
+    // The 6 categories that are missing in production
+    const MISSING_CATEGORIES = [
+      {
+        name: 'Blood Bank Supplies',
+        slug: 'blood-bank-supplies',
+        description: 'Blood bags, blood collection equipment, transfusion supplies',
+        isActive: true,
+        displayOrder: 0,
+        productCount: 3
+      },
+      {
+        name: 'IV & Infusion Therapy',
+        slug: 'iv-and-infusion-therapy',
+        description: 'IV cannulas, infusion sets, burette sets, extension lines',
+        isActive: true,
+        displayOrder: 0,
+        productCount: 8
+      },
+      {
+        name: 'Surgical & Wound Care',
+        slug: 'surgical-and-wound-care',
+        description: 'Surgical tapes, wound dressings, ostomy supplies, surgical consumables',
+        isActive: true,
+        displayOrder: 0,
+        productCount: 28
+      },
+      {
+        name: 'Diabetes Care',
+        slug: 'diabetes-care',
+        description: 'Blood glucose meters, test strips, CGM systems, diabetes management',
+        isActive: true,
+        displayOrder: 0,
+        productCount: 13
+      },
+      {
+        name: 'Physiotherapy & Rehabilitation',
+        slug: 'physiotherapy-and-rehabilitation',
+        description: 'TENS units, heating pads, infrared lamps, physical therapy equipment',
+        isActive: true,
+        displayOrder: 0,
+        productCount: 4
+      },
+      {
+        name: 'Ophthalmology & ENT Equipment',
+        slug: 'ophthalmology-and-ent-equipment',
+        description: 'Ophthalmoscopes, otoscopes, retinoscopes, ENT examination equipment',
+        isActive: true,
+        displayOrder: 0,
+        productCount: 12
+      }
+    ];
+
+    let created = 0;
+    let skipped = 0;
+    const createdCategories = [];
+    const skippedCategories = [];
+
+    for (const categoryData of MISSING_CATEGORIES) {
+      // Check if category already exists
+      const existing = await Category.findOne({ slug: categoryData.slug });
+      
+      if (existing) {
+        console.log(`  ⏭️  Skipped: "${categoryData.name}" (already exists)`);
+        skipped++;
+        skippedCategories.push(categoryData.name);
+        continue;
+      }
+      
+      // Create new category
+      const category = await Category.create(categoryData);
+      console.log(`  ✅ Created: "${categoryData.name}"`);
+      created++;
+      createdCategories.push({
+        name: category.name,
+        slug: category.slug,
+        id: category._id
+      });
+    }
+
+    // Get final count
+    const totalCategories = await Category.countDocuments();
+    const activeCategories = await Category.countDocuments({ isActive: true });
+
+    console.log('✅ Category sync complete!');
+
+    res.json({
+      success: true,
+      message: 'Missing categories synced successfully',
+      data: {
+        summary: {
+          created,
+          skipped,
+          totalCategories,
+          activeCategories
+        },
+        createdCategories,
+        skippedCategories
+      }
+    });
+  } catch (error) {
+    console.error('❌ Sync categories error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to sync categories',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route   GET /api/utils/test-categories
+ * @desc    Test category query without any middleware
+ * @access  Public (for debugging)
+ */
+router.get('/test-categories', async (req, res) => {
+  try {
+    const mongoose = require('mongoose');
+    
+    // Get raw count
+    const totalCount = await Category.countDocuments();
+    const activeCount = await Category.countDocuments({ isActive: true });
+    
+    // Get all categories (no limit, no filter)
+    const allCategories = await Category.find({})
+      .select('name slug isActive productCount createdAt')
+      .sort({ name: 1 })
+      .lean();
+    
+    // Get only active
+    const activeCategories = await Category.find({ isActive: true })
+      .select('name slug productCount createdAt')
+      .sort({ name: 1 })
+      .lean();
+    
+    res.json({
+      success: true,
+      data: {
+        database: {
+          connected: mongoose.connection.readyState === 1,
+          dbName: mongoose.connection.name
+        },
+        counts: {
+          total: totalCount,
+          active: activeCount,
+          inactive: totalCount - activeCount
+        },
+        allCategories,
+        activeCategories,
+        activeCategoryNames: activeCategories.map(c => c.name)
+      }
+    });
+  } catch (error) {
+    console.error('❌ Test categories error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to test categories',
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
+/**
  * @route   POST /api/utils/clear-cache
  * @desc    Clear all Redis cache (or specific keys)
  * @access  Protected by secret key
