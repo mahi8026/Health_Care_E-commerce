@@ -7,7 +7,8 @@ const { protect, authorize } = require('../middleware/auth');
 /**
  * @route   POST /api/admin/utils/fix-category-counts
  * @desc    Recalculate and fix all category product counts
- * @access  Admin only
+ * @access  Public (temporary - for production fix)
+ * @note    Should be protected by auth in normal circumstances
  */
 router.post('/fix-category-counts', async (req, res) => {
   try {
