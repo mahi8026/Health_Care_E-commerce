@@ -114,13 +114,14 @@ router.post('/fix-category-counts', async (req, res) => {
 });
 
 /**
- * @route   GET /api/admin/utils/verify-category-counts
+ * @route   GET /api/utils/verify-category-counts
  * @desc    Verify category product counts without fixing
  * @access  Public (for debugging)
  */
 router.get('/verify-category-counts', async (req, res) => {
   try {
-    const categories = await Category.find({ isActive: true }).sort({ name: 1 });
+    const categories = await Category.find({}).sort({ name: 1 });
+    const activeCategories = categories.filter(c => c.isActive);
     
     const verification = [];
     let mismatches = 0;
@@ -137,7 +138,10 @@ router.get('/verify-category-counts', async (req, res) => {
       if (!isMatch) mismatches++;
       
       verification.push({
+        id: category._id,
         name: category.name,
+        slug: category.slug,
+        isActive: category.isActive,
         savedCount,
         actualCount,
         status: isMatch ? 'OK' : 'MISMATCH'
@@ -148,6 +152,8 @@ router.get('/verify-category-counts', async (req, res) => {
       success: true,
       data: {
         totalCategories: categories.length,
+        activeCategories: activeCategories.length,
+        inactiveCategories: categories.length - activeCategories.length,
         mismatches,
         verification
       }
