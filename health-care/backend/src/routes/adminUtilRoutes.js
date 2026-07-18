@@ -168,4 +168,65 @@ router.get('/verify-category-counts', async (req, res) => {
   }
 });
 
+/**
+ * @route   POST /api/utils/clear-cache
+ * @desc    Clear all Redis cache (or specific keys)
+ * @access  Protected by secret key
+ */
+router.post('/clear-cache', async (req, res) => {
+  try {
+    // Security check
+    const secretKey = req.body.secret;
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    
+    if (secretKey !== expectedSecret) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or missing secret key'
+      });
+    }
+
+    const redisCache = require('../services/redisCache');
+    
+    if (!redisCache.isRedisConnected()) {
+      return res.json({
+        success: true,
+        message: 'Redis not connected - no cache to clear',
+        data: { cleared: 0 }
+      });
+    }
+
+    // Clear all cache or specific pattern
+    const pattern = req.body.pattern || '*';
+    
+    if (pattern === '*') {
+      await redisCache.flushAll();
+      console.log('✅ Cleared all Redis cache');
+    } else {
+      await redisCache.delPattern(pattern);
+      console.log(`✅ Cleared Redis cache pattern: ${pattern}`);
+    }
+
+    // Warm up important caches
+    await redisCache.warmCategories();
+    await redisCache.warmFeaturedProducts();
+    
+    res.json({
+      success: true,
+      message: 'Cache cleared and warmed successfully',
+      data: {
+        pattern,
+        warmedCaches: ['categories', 'featuredProducts']
+      }
+    });
+  } catch (error) {
+    console.error('❌ Clear cache error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to clear cache',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
