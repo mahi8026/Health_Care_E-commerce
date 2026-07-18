@@ -1,0 +1,197 @@
+{
+  "results": [
+    {
+      "id": 1780,
+      "name": "Tanita HD-378 Digital Scale",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Tanita_HD378_mqSsPH.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Tanita_HD378.webp"
+        }
+      },
+      "variant": {
+        "old_price": 2150,
+        "price": 2150,
+        "quantity": 0,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-hd-378-digital-scale"
+    },
+    {
+      "id": 1786,
+      "name": "Tanita HA-650 Personal Weight Scale",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Tanita_650_oWagXrR.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Tanita_650.webp"
+        }
+      },
+      "variant": {
+        "old_price": 2250,
+        "price": 2250,
+        "quantity": 199,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-ha-650-personal-weight-scale"
+    },
+    {
+      "id": 1785,
+      "name": "Tanita HA-880 Personal Weight Scale",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Products_2_qj5UE4q.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Products_2.png"
+        }
+      },
+      "variant": {
+        "old_price": 2450,
+        "price": 2450,
+        "quantity": 200,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-ha-880-personal-weight-scale"
+    },
+    {
+      "id": 1783,
+      "name": "Tanita Mechanical Scale HA-680",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Products_1_OPD7kXF.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Products_1.png"
+        }
+      },
+      "variant": {
+        "old_price": 2450,
+        "price": 2450,
+        "quantity": 21,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-mechanical-scale-ha-680"
+    },
+    {
+      "id": 1784,
+      "name": "Tanita HA-801 Personal Weight Scale",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Tanita_881_tsZzSwT.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Tanita_881.webp"
+        }
+      },
+      "variant": {
+        "old_price": 2650,
+        "price": 2650,
+        "quantity": 9,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-ha-801-personal-weight-scale"
+    },
+    {
+      "id": 1781,
+      "name": "Tanita Digital Bathroom Scale HD-661",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Tanita_HD-661_Mf9oo.original.jpegquality-60.format-webp.webp",
+          "width": 640,
+          "height": 640,
+          "alt": "Tanita_HD-661.jpg"
+        }
+      },
+      "variant": {
+        "old_price": 3950,
+        "price": 3950,
+        "quantity": 200,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-digital-bathroom-scale-hd-661"
+    },
+    {
+      "id": 1782,
+      "name": "Tanita Digital Bathroom Scale HD-662",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Tanita_HD662_wLS0SL.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Tanita_HD662.webp"
+        }
+      },
+      "variant": {
+        "old_price": 3950,
+        "price": 3950,
+        "quantity": 199,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-digital-bathroom-scale-hd-662"
+    },
+    {
+      "id": 1226,
+      "name": "TANITA UM-070 Body Weight and Fat Analyzer",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/Tanita_UM-070_Body__Fg23IsS.original.jpegquality-60.format-webp.webp",
+          "width": 1000,
+          "height": 1000,
+          "alt": "Tanita_UM-070_Body_weight_and_fat_analyzer_3.png"
+        }
+      },
+      "variant": {
+        "old_price": 9000,
+        "price": 9000,
+        "quantity": 10,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-um-070-body-weight-and-fat-analyzer"
+    },
+    {
+      "id": 1232,
+      "name": "TANITA BF-680W Multi-Frequency Body Fat/Water Monitor Scale",
+      "product_type": 1,
+      "default_image": {
+        "original": {
+          "src": "/media/images/tanita_bf-680w_01_4_lalcrPO.original.jpegquality-60.format-webp.webp",
+          "width": 2048,
+          "height": 2048,
+          "alt": "tanita_bf-680w_01.jpg"
+        }
+      },
+      "variant": {
+        "old_price": 10500,
+        "price": 10500,
+        "quantity": 10,
+        "has_offer": false,
+        "discount_percent": 0
+      },
+      "slug": "tanita-bf-680w-multi-frequency-body-fatwater-monit"
+    }
+  ],
+  "count": 9,
+  "fetchedAt": "2026-07-17T14:33:10.321Z",
+  "source": "healthway.com.bd",
+  "brand": "tanita"
+}

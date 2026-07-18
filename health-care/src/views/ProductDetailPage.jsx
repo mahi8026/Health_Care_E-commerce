@@ -94,31 +94,50 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
   useEffect(() => {
     if (!product) return;
 
-    // Fetch all products for recommendations
+    // Fetch AI-powered recommendations from backend
     const fetchRecs = async () => {
       setLoadingRecommendations(true);
       try {
-        const res = await fetch(`${API}/products?limit=100`);
+        const productId = product._id || product.id;
+        
+        // Use new hybrid recommendation API (combines content-based + collaborative)
+        const res = await fetch(`${API}/recommendations/hybrid/${productId}?limit=6`);
         const data = await res.json();
-        const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
-        setAllProducts(products);
-
-        // Get cart items from context (if available)
-        const cartData = localStorage.getItem('cart');
-        const cartItems = cartData ? JSON.parse(cartData).items || [] : [];
-
-        // Generate AI recommendations
-        const recommendations = getRecommendations(
-          product,
-          products,
-          recentlyViewed,
-          cartItems,
-          6 // limit to 6 recommendations
-        );
-
-        setRecommendedProducts(recommendations);
+        
+        if (data.success && data.data?.recommendations) {
+          setRecommendedProducts(data.data.recommendations);
+        } else {
+          // Fallback to similar products API
+          const fallbackRes = await fetch(`${API}/recommendations/similar/${productId}?limit=6`);
+          const fallbackData = await fallbackRes.json();
+          
+          if (fallbackData.success && fallbackData.data?.recommendations) {
+            setRecommendedProducts(fallbackData.data.recommendations);
+          }
+        }
       } catch (err) {
-        if (process.env.NODE_ENV !== 'production') console.error('Failed to fetch recommendations:', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Failed to fetch recommendations:', err);
+        }
+        
+        // Final fallback: use client-side algorithm
+        try {
+          const res = await fetch(`${API}/products?limit=50`);
+          const data = await res.json();
+          const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
+          
+          if (products.length > 0) {
+            // Simple client-side filtering as last resort
+            const cartData = localStorage.getItem('cart');
+            const cartItems = cartData ? JSON.parse(cartData).items || [] : [];
+            const recommendations = getRecommendations(product, products, recentlyViewed, cartItems, 6);
+            setRecommendedProducts(recommendations);
+          }
+        } catch (fallbackErr) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('Fallback recommendations also failed:', fallbackErr);
+          }
+        }
       } finally {
         setLoadingRecommendations(false);
       }

@@ -1,0 +1,130 @@
+{
+  "products": [
+    {
+      "name": "Tanita HD-378 Digital Scale",
+      "price": 2150,
+      "compareAtPrice": null,
+      "description": "Tanita HD-378 Digital Scale - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 100,
+      "sku": "tanita-hd-378-digital-scale",
+      "images": [
+        "https://healthway.com.bd/media/images/Tanita_HD378_mqSsPH.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "Tanita HA-650 Personal Weight Scale",
+      "price": 2250,
+      "compareAtPrice": null,
+      "description": "Tanita HA-650 Personal Weight Scale - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 199,
+      "sku": "tanita-ha-650-personal-weight-scale",
+      "images": [
+        "https://healthway.com.bd/media/images/Tanita_650_oWagXrR.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "Tanita HA-880 Personal Weight Scale",
+      "price": 2450,
+      "compareAtPrice": null,
+      "description": "Tanita HA-880 Personal Weight Scale - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 200,
+      "sku": "tanita-ha-880-personal-weight-scale",
+      "images": [
+        "https://healthway.com.bd/media/images/Products_2_qj5UE4q.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "Tanita Mechanical Scale HA-680",
+      "price": 2450,
+      "compareAtPrice": null,
+      "description": "Tanita Mechanical Scale HA-680 - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 21,
+      "sku": "tanita-mechanical-scale-ha-680",
+      "images": [
+        "https://healthway.com.bd/media/images/Products_1_OPD7kXF.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "Tanita HA-801 Personal Weight Scale",
+      "price": 2650,
+      "compareAtPrice": null,
+      "description": "Tanita HA-801 Personal Weight Scale - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 9,
+      "sku": "tanita-ha-801-personal-weight-scale",
+      "images": [
+        "https://healthway.com.bd/media/images/Tanita_881_tsZzSwT.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "Tanita Digital Bathroom Scale HD-661",
+      "price": 3950,
+      "compareAtPrice": null,
+      "description": "Tanita Digital Bathroom Scale HD-661 - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 200,
+      "sku": "tanita-digital-bathroom-scale-hd-661",
+      "images": [
+        "https://healthway.com.bd/media/images/Tanita_HD-661_Mf9oo.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "Tanita Digital Bathroom Scale HD-662",
+      "price": 3950,
+      "compareAtPrice": null,
+      "description": "Tanita Digital Bathroom Scale HD-662 - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 199,
+      "sku": "tanita-digital-bathroom-scale-hd-662",
+      "images": [
+        "https://healthway.com.bd/media/images/Tanita_HD662_wLS0SL.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "TANITA UM-070 Body Weight and Fat Analyzer",
+      "price": 9000,
+      "compareAtPrice": null,
+      "description": "TANITA UM-070 Body Weight and Fat Analyzer - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 10,
+      "sku": "tanita-um-070-body-weight-and-fat-analyzer",
+      "images": [
+        "https://healthway.com.bd/media/images/Tanita_UM-070_Body__Fg23IsS.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    },
+    {
+      "name": "TANITA BF-680W Multi-Frequency Body Fat/Water Monitor Scale",
+      "price": 10500,
+      "compareAtPrice": null,
+      "description": "TANITA BF-680W Multi-Frequency Body Fat/Water Monitor Scale - High quality product from Tanita",
+      "brand": "Tanita",
+      "category": "Orthopedic Supports",
+      "stock": 10,
+      "sku": "tanita-bf-680w-multi-frequency-body-fatwater-monit",
+      "images": [
+        "https://healthway.com.bd/media/images/tanita_bf-680w_01_4_lalcrPO.original.jpegquality-60.format-webp.webp"
+      ],
+      "specifications": {}
+    }
+  ]
+}

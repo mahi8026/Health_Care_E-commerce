@@ -25,29 +25,51 @@ export default function CustomersAlsoViewed({ productId, category }) {
   const scrollContainerRef = useRef(null);
 
   useEffect(() => {
-    if (category) {
-      fetchSimilarProducts();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, productId]);
+    if (!category) return;
 
-  const fetchSimilarProducts = async () => {
+    const fetchSimilarProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/products?category=${category}&limit=12`);
+      
+      // Use new recommendation API (collaborative filtering with fallback)
+      const res = await fetch(`${API}/recommendations/also-viewed/${productId}?limit=8`);
       const data = await res.json();
       
-      if (data.success) {
-        // Exclude current product
-        const filtered = data.data.filter(p => p._id !== productId && p.id !== productId);
-        setProducts(filtered.slice(0, 8));
+      if (data.success && data.data?.recommendations) {
+        setProducts(data.data.recommendations);
+      } else {
+        // Fallback to category filtering if API fails
+        const fallbackRes = await fetch(`${API}/products?category=${category}&limit=12`);
+        const fallbackData = await fallbackRes.json();
+        
+        if (fallbackData.success) {
+          // Exclude current product
+          const filtered = fallbackData.data.filter(p => p._id !== productId && p.id !== productId);
+          setProducts(filtered.slice(0, 8));
+        }
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Fetch similar products error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      process.env.NODE_ENV !== "production" && console.error('Fetch recommendations error:', error);
+      
+      // Fallback to category filtering on error
+      try {
+        const fallbackRes = await fetch(`${API}/products?category=${category}&limit=12`);
+        const fallbackData = await fallbackRes.json();
+        
+        if (fallbackData.success) {
+          const filtered = fallbackData.data.filter(p => p._id !== productId && p.id !== productId);
+          setProducts(filtered.slice(0, 8));
+        }
+      } catch (fallbackError) {
+        process.env.NODE_ENV !== "production" && console.error('Fallback also failed:', fallbackError);
+      }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSimilarProducts();
+  }, [category, productId]);
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {

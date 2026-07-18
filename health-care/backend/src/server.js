@@ -261,6 +261,7 @@ app.use('/api/activity-logs', dbHealthCheck, require('./routes/activityLogRoutes
 app.use('/api/sms', dbHealthCheck, require('./routes/smsRoutes'));
 app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site settings
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
+app.use('/api/recommendations', dbHealthCheck, require('./routes/recommendationRoutes')); // AI-powered recommendations
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
 app.use('/api/product-sync', dbHealthCheck, require('./routes/productSyncRoutes')); // Product import/sync
 app.use('/api/whatsapp', require('./routes/whatsappRoutes')); // WhatsApp automation (webhook is public, others protected)

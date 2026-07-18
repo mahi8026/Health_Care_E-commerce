@@ -1,0 +1,176 @@
+{
+  "products": [
+    {
+      "name": "Tynor Ankle Binder - Small",
+      "price": 850,
+      "compareAtPrice": 1200,
+      "description": "Provides firm compression and support to the ankle joint. Helps in faster recovery from ankle injuries and sprains. Made with high-quality elastic material.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 50,
+      "sku": "A-09-S",
+      "images": [],
+      "specifications": {
+        "Size": "Small",
+        "Material": "Elastic with cotton lining",
+        "Color": "Beige",
+        "Features": "4-way stretch, Breathable fabric"
+      }
+    },
+    {
+      "name": "Tynor Knee Cap - Medium",
+      "price": 450,
+      "compareAtPrice": 650,
+      "description": "Provides mild compression, warmth and support to the knee joint. Useful in knee pain, arthritis, and sports injuries.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 100,
+      "sku": "D-01-M",
+      "images": [],
+      "specifications": {
+        "Size": "Medium",
+        "Material": "Neoprene",
+        "Color": "Black",
+        "Features": "Comfortable, Adjustable"
+      }
+    },
+    {
+      "name": "Tynor Lumbar Belt - Large",
+      "price": 1200,
+      "compareAtPrice": 1800,
+      "description": "Provides firm support and compression to the lower back. Useful in lower back pain, sciatica, and post-surgery recovery.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 75,
+      "sku": "B-01-L",
+      "images": [],
+      "specifications": {
+        "Size": "Large",
+        "Material": "Elastic with rigid splints",
+        "Color": "Grey",
+        "Features": "Dual compression, Breathable"
+      }
+    },
+    {
+      "name": "Tynor Cervical Collar - Soft",
+      "price": 650,
+      "compareAtPrice": 900,
+      "description": "Provides cervical traction and restricts neck movements. Useful in cervical spondylosis, neck pain, and whiplash injuries.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 60,
+      "sku": "C-01-S",
+      "images": [],
+      "specifications": {
+        "Type": "Soft Collar",
+        "Material": "PU Foam",
+        "Color": "Skin",
+        "Height": "3 inches"
+      }
+    },
+    {
+      "name": "Tynor Wrist Brace with Thumb - Universal",
+      "price": 950,
+      "compareAtPrice": 1400,
+      "description": "Immobilizes and supports the wrist and thumb. Useful in wrist sprains, carpal tunnel syndrome, and de Quervain's tenosynovitis.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 40,
+      "sku": "E-41-U",
+      "images": [],
+      "specifications": {
+        "Size": "Universal",
+        "Material": "Cotton with metal splints",
+        "Color": "Grey",
+        "Features": "Removable splints, Thumb support"
+      }
+    },
+    {
+      "name": "Tynor Shoulder Immobilizer - Medium",
+      "price": 1800,
+      "compareAtPrice": 2500,
+      "description": "Immobilizes the shoulder, arm and forearm. Useful post-surgery, fractures, and dislocation of shoulder.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 30,
+      "sku": "A-25-M",
+      "images": [],
+      "specifications": {
+        "Size": "Medium",
+        "Material": "Soft fabric with adjustable straps",
+        "Color": "Navy Blue",
+        "Features": "Adjustable pouch, Waist strap"
+      }
+    },
+    {
+      "name": "Tynor Abdominal Belt - 9 inch",
+      "price": 850,
+      "compareAtPrice": 1200,
+      "description": "Provides firm compression to the abdominal muscles. Useful post-surgery, pregnancy, and obesity.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 80,
+      "sku": "B-06-9",
+      "images": [],
+      "specifications": {
+        "Width": "9 inches",
+        "Material": "Elastic with velcro",
+        "Color": "White",
+        "Features": "Double layered, Breathable"
+      }
+    },
+    {
+      "name": "Tynor Compression Stockings Below Knee - Class I",
+      "price": 1500,
+      "compareAtPrice": 2200,
+      "description": "Graduated compression stockings for varicose veins, DVT prevention, and leg swelling.",
+      "brand": "Tynor",
+      "category": "Compression Garments",
+      "stock": 50,
+      "sku": "K-01-C1",
+      "images": [],
+      "specifications": {
+        "Compression": "Class I (18-21 mmHg)",
+        "Length": "Below Knee",
+        "Material": "Nylon and Spandex",
+        "Color": "Beige",
+        "Features": "Anti-microbial, Moisture wicking"
+      }
+    },
+    {
+      "name": "Tynor Elbow Support - Large",
+      "price": 550,
+      "compareAtPrice": 800,
+      "description": "Provides compression and warmth to the elbow joint. Useful in tennis elbow, golfer's elbow, and arthritis.",
+      "brand": "Tynor",
+      "category": "Orthopedic Supports",
+      "stock": 70,
+      "sku": "E-01-L",
+      "images": [],
+      "specifications": {
+        "Size": "Large",
+        "Material": "Neoprene",
+        "Color": "Black",
+        "Features": "4-way stretch, Anti-slip"
+      }
+    },
+    {
+      "name": "Tynor Walking Stick Aluminium",
+      "price": 1200,
+      "compareAtPrice": 1800,
+      "description": "Lightweight aluminium walking stick with adjustable height. Provides support and balance while walking.",
+      "brand": "Tynor",
+      "category": "Mobility Aids",
+      "stock": 25,
+      "sku": "I-01-AL",
+      "images": [],
+      "specifications": {
+        "Material": "Aluminium",
+        "Color": "Silver",
+        "Height": "Adjustable 75-95 cm",
+        "Weight Capacity": "100 kg",
+        "Features": "Rubber grip, Non-slip base"
+      }
+    }
+  ]
+}

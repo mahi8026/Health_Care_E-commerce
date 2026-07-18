@@ -26,7 +26,18 @@
     "load-test:report": "cd load-tests && artillery run basic-load-test.yml --output report.json && artillery report report.json",
     "load-test:quick": "artillery quick --count 100 --num 10 http://localhost:5000/api/products",
     "load-test:create-users": "node load-tests/create-test-users.js",
-    "load-test:diagnostic": "cd load-tests && artillery run diagnostic-test.yml"
+    "load-test:diagnostic": "cd load-tests && artillery run diagnostic-test.yml",
+    "scrape": "node scripts/scrape-products.js",
+    "import:manual": "node scripts/manual-product-import.js",
+    "import:healthway": "node scripts/scrape-healthway-tynor.js",
+    "import:tynor-sample": "node scripts/import-tynor-sample.js",
+    "import:auto": "node scripts/import-products-auto.js",
+    "format:healthway": "node scripts/format-healthway-json.js",
+    "fetch:healthway": "node scripts/fetch-healthway-tynor.js",
+    "fetch:healthway-all": "node scripts/fetch-healthway-tynor.js --all",
+    "upload:cloudinary": "node scripts/upload-images-to-cloudinary.js",
+    "upload:cloudinary-tynor": "node scripts/upload-images-to-cloudinary.js --brand=Tynor",
+    "upload:cloudinary-dry": "node scripts/upload-images-to-cloudinary.js --dry-run"
   },
   "keywords": [
     "medical",
@@ -43,6 +54,7 @@
     "@sentry/profiling-node": "^10.63.0",
     "axios": "^1.16.1",
     "bcryptjs": "^2.4.3",
+    "cheerio": "^1.2.0",
     "cloudinary": "^2.10.0",
     "compression": "^1.8.1",
     "cookie-parser": "1.4.7",
