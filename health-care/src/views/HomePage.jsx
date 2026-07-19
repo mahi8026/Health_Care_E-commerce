@@ -474,7 +474,7 @@ export default function HomePage() {
 
     // ── STAGE 1: Critical above-fold data (4 requests vs previous 16) ─────
     Promise.all([
-      safe(fetch(`${API}/products?isFeatured=true&limit=12`)),
+      safe(fetch(`${API}/products?isFeatured=true&limit=25`)),
       safe(fetch(`${API}/categories`)),
       safe(fetch(`${API}/products/category-counts`)),
       safe(fetch(`${API}/stats`)),
@@ -486,7 +486,7 @@ export default function HomePage() {
         setFeaturedLoading(false);
         setIsLoadingData(false);
       } else {
-        safe(fetch(`${API}/products?limit=12`)).then((allProducts) => {
+        safe(fetch(`${API}/products?limit=25`)).then((allProducts) => {
           const ap = extractProducts(allProducts);
           setFeaturedProducts(ap.length > 0 ? ap : []);
           setFeaturedLoading(false);
