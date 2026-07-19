@@ -67,30 +67,38 @@ export default function CategoryProductSections({ categories = [] }) {
     const fetchCategoryProducts = async () => {
       setLoading(true);
       
-      // Fetch products for each category (limit to first 8 categories)
-      const categoriesToFetch = categories.slice(0, 8);
+      // Sort categories by product count and filter those with products
+      const sortedCategories = categories
+        .map(cat => ({
+          ...cat,
+          name: typeof cat === 'string' ? cat : cat.name,
+          productCount: cat.productCount || 0
+        }))
+        .filter(cat => cat.productCount >= 4) // Only show categories with at least 4 products
+        .sort((a, b) => b.productCount - a.productCount) // Sort by product count descending
+        .slice(0, 6); // Show top 6 categories only
       
-      const productsPromises = categoriesToFetch.map(async (cat) => {
-        const categoryName = typeof cat === 'string' ? cat : cat.name;
+      const productsPromises = sortedCategories.map(async (cat) => {
+        const categoryName = cat.name;
         try {
           const response = await fetch(
             `${API}/products?category=${encodeURIComponent(categoryName)}&limit=10&sortBy=popular`
           );
           const data = await response.json();
           const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);
-          return { categoryName, products };
+          return { categoryName, products, cat };
         } catch (error) {
           console.error(`Error fetching products for ${categoryName}:`, error);
-          return { categoryName, products: [] };
+          return { categoryName, products: [], cat };
         }
       });
 
       const results = await Promise.all(productsPromises);
       
-      // Convert array to object keyed by category name
+      // Convert array to object keyed by category name, preserve original category data
       const productsObj = {};
-      results.forEach(({ categoryName, products }) => {
-        productsObj[categoryName] = products;
+      results.forEach(({ categoryName, products, cat }) => {
+        productsObj[categoryName] = { products, categoryData: cat };
       });
       
       setCategoryProducts(productsObj);
@@ -119,16 +127,15 @@ export default function CategoryProductSections({ categories = [] }) {
 
   return (
     <>
-      {categories.slice(0, 8).map((cat) => {
-        const categoryName = typeof cat === 'string' ? cat : cat.name;
-        const categoryData = typeof cat === 'object' ? cat : { name: categoryName };
-        const slug = CATEGORY_NAME_TO_SLUG[categoryName];
-        const catProducts = categoryProducts[categoryName] || [];
-        
-        // Skip if no products for this category
-        if (catProducts.length === 0) return null;
+      {Object.keys(categoryProducts)
+        .map((categoryName) => {
+          const { products: catProducts, categoryData } = categoryProducts[categoryName];
+          const slug = CATEGORY_NAME_TO_SLUG[categoryName];
+          
+          // Skip if no products for this category
+          if (!catProducts || catProducts.length === 0) return null;
 
-        return (
+          return (
           <section key={categoryName} className="py-10 bg-white border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4">
               {/* Section Header - Matches image design with || bars */}
@@ -139,7 +146,12 @@ export default function CategoryProductSections({ categories = [] }) {
                     <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
                     <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
                   </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">{categoryName}</h2>
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                    {categoryName}
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      ({categoryData?.productCount || catProducts.length} products)
+                    </span>
+                  </h2>
                 </div>
                 <Link
                   href={slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(categoryName)}`}
