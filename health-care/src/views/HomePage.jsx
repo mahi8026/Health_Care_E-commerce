@@ -1304,7 +1304,7 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* Tabs */}
+          {/* Tabs - Dynamic based on top categories */}
           <div role="tablist" aria-label="Product categories" style={{ 
             display: 'flex', 
             gap: 8, 
@@ -1314,40 +1314,85 @@ export default function HomePage() {
             padding: 0,
             margin: '0 0 24px 0'
           }}>
-            {[
-              { key: 'all', label: 'All Products' },
-              { key: 'Diagnostic Equipment', label: '🩺 Diagnostic' },
-              { key: 'Surgical Instruments', label: '💉 Surgical' },
-              { key: 'Laboratory Reagents', label: '🧪 Reagents' },
-              { key: 'Hospital Machines', label: '🏥 Machines' },
-            ].map((tab, index) => (
-              <button key={tab.key}
-                onClick={() => handleTabChange(tab.key)}
-                role="tab"
-                aria-selected={activeTab === tab.key}
-                aria-controls="featured-products-panel"
-                aria-label={`View ${tab.label}`}
-                className={activeTab === tab.key ? 'tab-active' : ''}
-                style={{ 
-                  padding: '10px 20px', 
-                  borderRadius: 8, 
-                  border: '1.5px solid #E5E7EB',
-                  background: activeTab === tab.key ? '#0B2545' : '#fff',
-                  color: activeTab === tab.key ? '#fff' : '#374151',
-                  fontSize: 14, 
-                  fontWeight: 600, 
-                  cursor: 'pointer', 
-                  transition: 'all 0.2s',
-                  boxShadow: activeTab === tab.key ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
-                  transform: activeTab === tab.key ? 'translateY(-1px)' : 'none',
-                  listStyle: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                {tab.label}
-              </button>
-            ))}
+            {/* Always show "All Products" first */}
+            <button
+              onClick={() => handleTabChange('all')}
+              role="tab"
+              aria-selected={activeTab === 'all'}
+              aria-controls="featured-products-panel"
+              aria-label="View All Products"
+              className={activeTab === 'all' ? 'tab-active' : ''}
+              style={{ 
+                padding: '10px 20px', 
+                borderRadius: 8, 
+                border: '1.5px solid #E5E7EB',
+                background: activeTab === 'all' ? '#0B2545' : '#fff',
+                color: activeTab === 'all' ? '#fff' : '#374151',
+                fontSize: 14, 
+                fontWeight: 600, 
+                cursor: 'pointer', 
+                transition: 'all 0.2s',
+                boxShadow: activeTab === 'all' ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
+                transform: activeTab === 'all' ? 'translateY(-1px)' : 'none',
+                listStyle: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+              All Products
+            </button>
+
+            {/* Dynamic category tabs - top 5 by product count */}
+            {categories
+              .filter(cat => cat.productCount && cat.productCount > 0)
+              .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
+              .slice(0, 5)
+              .map((cat, index) => {
+                const categoryName = typeof cat === 'string' ? cat : cat.name;
+                // Map category names to icons
+                const iconMap = {
+                  'Orthopedic Supports': '🦴',
+                  'Diagnostic Equipment': '🩺',
+                  'Surgical & Wound Care': '💉',
+                  'Hospital Machines': '🏥',
+                  'Consumables': '📦',
+                  'Diabetes Care': '💉',
+                  'Laboratory Reagents': '🧪',
+                  'Surgical Instruments': '💉',
+                };
+                const icon = iconMap[categoryName] || '📦';
+                
+                return (
+                  <button
+                    key={categoryName}
+                    onClick={() => handleTabChange(categoryName)}
+                    role="tab"
+                    aria-selected={activeTab === categoryName}
+                    aria-controls="featured-products-panel"
+                    aria-label={`View ${categoryName}`}
+                    className={activeTab === categoryName ? 'tab-active' : ''}
+                    style={{ 
+                      padding: '10px 20px', 
+                      borderRadius: 8, 
+                      border: '1.5px solid #E5E7EB',
+                      background: activeTab === categoryName ? '#0B2545' : '#fff',
+                      color: activeTab === categoryName ? '#fff' : '#374151',
+                      fontSize: 14, 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      transition: 'all 0.2s',
+                      boxShadow: activeTab === categoryName ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
+                      transform: activeTab === categoryName ? 'translateY(-1px)' : 'none',
+                      listStyle: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}>
+                    {icon} {categoryName.length > 20 ? categoryName.substring(0, 17) + '...' : categoryName}
+                  </button>
+                );
+              })
+            }
           </div>
 
           {/* Products grid */}
