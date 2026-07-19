@@ -129,27 +129,21 @@ export default function CategoryProductSections({ categories = [] }) {
         if (catProducts.length === 0) return null;
 
         return (
-          <section key={categoryName} className="py-8 bg-gray-50 border-b border-gray-100">
+          <section key={categoryName} className="py-10 bg-white border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4">
-              {/* Section Header */}
+              {/* Section Header - Matches image design with || bars */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl text-teal-600"
-                    style={{ backgroundColor: categoryData.color || '#F0FDFA' }}
-                  >
-                    {getCategoryIcon(categoryName)}
+                  {/* Double vertical bars - key design element from image */}
+                  <div className="flex gap-1">
+                    <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
+                    <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{categoryName}</h2>
-                    <p className="text-sm text-gray-500">
-                      {categoryData.description || categoryData.desc || 'Quality medical products'}
-                    </p>
-                  </div>
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">{categoryName}</h2>
                 </div>
                 <Link
                   href={slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(categoryName)}`}
-                  className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium text-sm transition-colors"
+                  className="flex items-center gap-1 text-teal-600 hover:text-teal-700 font-semibold text-sm transition-colors"
                 >
                   View All Items →
                 </Link>
@@ -177,17 +171,17 @@ export default function CategoryProductSections({ categories = [] }) {
                     return (
                       <div
                         key={product._id}
-                        className="snap-start flex-shrink-0 w-[280px] bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
+                        className="snap-start flex-shrink-0 w-[240px] bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
                         onClick={() => router.push(`/products/${product._id}`)}
                       >
                         {/* Product Image */}
-                        <div className="relative h-48 bg-gray-50 overflow-hidden">
+                        <div className="relative h-56 bg-gray-50 overflow-hidden">
                           {optimizedImg ? (
                             <Image
                               src={optimizedImg}
-                              alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
+                              alt={`${product.name}${brandName ? ` — ${brandName}` : ''}`}
                               fill
-                              sizes="280px"
+                              sizes="240px"
                               style={{ objectFit: 'cover' }}
                               className="group-hover:scale-105 transition-transform duration-300"
                             />
@@ -203,44 +197,44 @@ export default function CategoryProductSections({ categories = [] }) {
                               -{discount}%
                             </div>
                           )}
+                        </div>
 
-                          {/* Add to Cart Button */}
+                        {/* Product Info */}
+                        <div className="p-4">
+                          {/* Brand - matches image style */}
+                          {brandName && (
+                            <div className="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-2">
+                              {brandName}
+                            </div>
+                          )}
+                          
+                          {/* Product Name - 2 lines max */}
+                          <h3 className="font-semibold text-gray-900 text-sm mb-3 line-clamp-2 min-h-[40px]">
+                            {product.name}
+                          </h3>
+
+                          {/* Price - large and bold like in image */}
+                          <div className="mb-3">
+                            <div className="text-xl font-bold text-gray-900">
+                              ৳{price > 0 ? price.toLocaleString() : 'Call'}
+                            </div>
+                            {hasDiscount && (
+                              <div className="text-sm text-gray-400 line-through">
+                                ৳{oldPrice.toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Add to Cart Button - ALWAYS VISIBLE (not on hover) to match image */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               addToCart(product, 1);
                             }}
-                            className="absolute bottom-3 right-3 bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all hover:bg-teal-700 flex items-center gap-2"
+                            className="w-full bg-teal-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
                           >
                             + Cart
                           </button>
-                        </div>
-
-                        {/* Product Info */}
-                        <div className="p-4">
-                          {/* Brand */}
-                          {brandName && (
-                            <div className="text-xs font-bold text-teal-600 uppercase tracking-wide mb-1">
-                              {brandName}
-                            </div>
-                          )}
-                          
-                          {/* Product Name */}
-                          <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2 h-10">
-                            {product.name}
-                          </h3>
-
-                          {/* Price */}
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-bold text-gray-900">
-                              ৳{price > 0 ? price.toLocaleString() : 'Call'}
-                            </span>
-                            {hasDiscount && (
-                              <span className="text-sm text-gray-400 line-through">
-                                ৳{oldPrice.toLocaleString()}
-                              </span>
-                            )}
-                          </div>
                         </div>
                       </div>
                     );
