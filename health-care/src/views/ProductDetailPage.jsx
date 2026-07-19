@@ -272,7 +272,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
       <StickyAddToCart product={product} scrollThreshold={500} />
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-white border-b border-gray-100 mt-16 md:mt-20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] text-gray-500 flex-wrap">
             <Link href="/" className="hover:text-[#0E8A6E] transition-colors">Home</Link>
