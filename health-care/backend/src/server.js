@@ -274,10 +274,13 @@ app.use('/api/utils', dbHealthCheck, require('./routes/adminUtilRoutes')); // Ut
 // ── One-time slug migration endpoint (admin, secret-protected) ───────────────
 // Regenerates all product slugs using the clean name-only format.
 // Hit once after deploy: GET /api/fix-slugs?secret=<ADMIN_SECRET>
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'medcore-test-2026';
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
+if (!ADMIN_SECRET) {
+  console.warn('⚠️  ADMIN_SECRET not set - admin utility routes will not work');
+}
 app.get('/api/fix-slugs', async (req, res) => {
-  if (req.query.secret !== ADMIN_SECRET) {
-    return res.status(401).json({ success: false, message: 'Invalid secret' });
+  if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
+    return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
   }
   try {
     const Product = require('./models/Product');
@@ -335,8 +338,8 @@ app.get('/api/test-email', async (req, res) => {
 
 // ── Email Status Debug (admin only) ──────────────────────────────────────────
 app.get('/api/email-debug', async (req, res) => {
-  if (req.query.secret !== 'medcore-test-2026') {
-    return res.status(401).json({ success: false, message: 'Invalid secret' });
+  if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
+    return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
   }
   res.json({
     success: true,

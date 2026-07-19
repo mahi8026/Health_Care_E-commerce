@@ -92,6 +92,15 @@ SECRETS.md
 .secrets.txt
 **/.secrets.txt
 
+# ── Temporary Admin Scripts (DO NOT COMMIT) ──────────────────────────────────
+COPY_PASTE_THIS.js
+FIX_ALL_PRODUCTION_ISSUES.js
+FINAL_ONE_LINE_FIX.js
+FORCE_REFRESH_FRONTEND.js
+DO_THIS_NOW.txt
+SIMPLE_FIX.txt
+quick-test-categories.js
+
 # ── Lighthouse Reports ──────────────────────────────────────────────────────
 **/.lighthouseci/
 

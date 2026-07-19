@@ -13,7 +13,14 @@ router.post('/fix-category-counts', async (req, res) => {
   try {
     // Security: Require secret key in request body (avoid CORS issues with headers)
     const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
+    
+    if (!expectedSecret) {
+      return res.status(500).json({
+        success: false,
+        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
+      });
+    }
     
     if (secretKey !== expectedSecret) {
       return res.status(403).json({
@@ -177,7 +184,14 @@ router.post('/sync-missing-categories', async (req, res) => {
   try {
     // Security check
     const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
+    
+    if (!expectedSecret) {
+      return res.status(500).json({
+        success: false,
+        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
+      });
+    }
     
     if (secretKey !== expectedSecret) {
       return res.status(403).json({
@@ -361,7 +375,14 @@ router.post('/clear-cache', async (req, res) => {
   try {
     // Security check
     const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
+    
+    if (!expectedSecret) {
+      return res.status(500).json({
+        success: false,
+        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
+      });
+    }
     
     if (secretKey !== expectedSecret) {
       return res.status(403).json({
@@ -422,7 +443,14 @@ router.post('/fix-all-categories', async (req, res) => {
   try {
     // Security check
     const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
+    
+    if (!expectedSecret) {
+      return res.status(500).json({
+        success: false,
+        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
+      });
+    }
     
     if (secretKey !== expectedSecret) {
       return res.status(403).json({
