@@ -18,7 +18,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   const barClass =
     variant === 'embedded'
       ? 'py-0'
-      : 'px-3 sm:px-5 md:px-7 py-2.5 sm:py-3 bg-[var(--color-background-primary)] border-b border-[var(--color-border-tertiary)]';
+      : 'px-3 sm:px-5 md:px-7 py-3 sm:py-3.5 bg-[var(--color-background-primary)] border-b border-[var(--color-border-tertiary)]';
 
   return (
     <nav aria-label="Breadcrumb" className={`${barClass} ${className}`.trim()}>
