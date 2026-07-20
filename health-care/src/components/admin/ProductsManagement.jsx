@@ -1734,7 +1734,7 @@ export default function ProductsManagement({ openCreateRef }) {
           <table className="w-full">
             <thead>
               <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                {['SKU', 'Product Name', 'Category', 'Stock', 'Price', 'Status', 'Actions'].map(h => (
+                {['Image', 'SKU', 'Product Name', 'Category', 'Stock', 'Price', 'Status', 'Actions'].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                     {h}
                   </th>
@@ -1747,8 +1747,27 @@ export default function ProductsManagement({ openCreateRef }) {
                 const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
                 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
                 
+                // Handle different image structures
+                let img = null;
+                if (product.images && product.images.length > 0) {
+                  const imgRaw = product.images[0];
+                  img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
+                } else if (product.image) {
+                  img = typeof product.image === 'string' ? product.image : product.image?.url;
+                }
+                
                 return (
                   <tr key={product._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
+                    <td className="px-4 py-3">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-[var(--color-background-secondary)] flex-shrink-0 border-[0.5px] border-[var(--color-border-tertiary)]">
+                        {img ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={img} alt={product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xl">🏥</div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-[11px] font-mono text-[var(--color-text-secondary)]">{product.sku}</td>
                     <td className="px-4 py-3 text-[12px] font-medium">{product.name}</td>
                     <td className="px-4 py-3 text-[12px]">{categoryName || '—'}</td>
