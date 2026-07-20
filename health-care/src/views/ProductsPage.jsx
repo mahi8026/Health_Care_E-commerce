@@ -22,28 +22,6 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   const [searchCategory, setSearchCategory] = useState(
     initialCategory || searchParams.get('category') || ''
   );
-
-  // Sync URL search params back to state when URL changes (e.g. Header search navigation)
-  useEffect(() => {
-    const urlQuery = searchParams.get('q') || '';
-    const urlCategory = searchParams.get('category') || '';
-    const urlBrand = searchParams.get('brand') || '';
-    if (urlQuery !== searchQuery) {
-      setSearchQuery(urlQuery);
-      setSearchInput(urlQuery);
-      setPage(1);
-    }
-    if (urlCategory !== searchCategory) {
-      setSearchCategory(urlCategory);
-      setPage(1);
-    }
-    const currentBrand = filters.brands?.[0] || '';
-    if (urlBrand !== currentBrand) {
-      setFilters((f) => ({ ...f, brands: urlBrand ? [urlBrand] : [] }));
-      setPage(1);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
   const [filters, setFilters] = useState(() => {
     const brand = searchParams.get('brand');
     return {
@@ -56,6 +34,35 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
   const [page, setPage] = useState(1);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Sync URL search params back to state when URL changes (e.g. Header search navigation)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    const isOnCategoryPage = pathname?.startsWith('/products/category/');
+    const urlQuery = searchParams.get('q') || '';
+    const urlCategory = searchParams.get('category') || '';
+    const urlBrand = searchParams.get('brand') || '';
+    
+    if (urlQuery !== searchQuery) {
+      setSearchQuery(urlQuery);
+      setSearchInput(urlQuery);
+      setPage(1);
+    }
+    
+    // Only sync category from URL params if NOT on a category page route
+    // (category pages get their category from initialCategory prop, not query params)
+    if (!isOnCategoryPage && urlCategory !== searchCategory) {
+      setSearchCategory(urlCategory);
+      setPage(1);
+    }
+    
+    const currentBrand = filters.brands?.[0] || '';
+    if (urlBrand !== currentBrand) {
+      setFilters((f) => ({ ...f, brands: urlBrand ? [urlBrand] : [] }));
+      setPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, pathname]);
 
   // Use custom hooks for data fetching
   const { categories, loading: categoriesLoading } = useCategories();
@@ -122,12 +129,12 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     }
     setFilters(newFilters);
     setPage(1);
-  }, []);
+  }, [setFilters, setPage]);
 
   const handleSortChange = useCallback((newSort) => {
     setSortBy(newSort);
     setPage(1);
-  }, []);
+  }, [setSortBy, setPage]);
 
   const handlePageChange = useCallback((newPage) => {
     setPage(newPage);
@@ -140,7 +147,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       top: y,
       behavior: 'smooth'
     });
-  }, []);
+  }, [setPage]);
 
   const clearAllFilters = () => {
     setSearchQuery('');
