@@ -6,6 +6,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
 import { useBrands } from '@/hooks/useBrands';
 import { useT } from '@/hooks/useT';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 import SearchResults from '@/components/search/SearchResults';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
@@ -170,6 +171,14 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
   return (
     <div className="min-h-screen bg-page">
+      {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
+      <Breadcrumb 
+        items={[
+          { label: 'Home', href: '/' },
+          { label: searchCategory || 'Products' }
+        ]}
+        className="mt-16 md:mt-20"
+      />
 
       {/* ── Active filters + category pills bar ─────────────────────────── */}
       {(hasActiveFilters || true) && (

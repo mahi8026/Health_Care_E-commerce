@@ -18,7 +18,7 @@ import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
-// SEO Structured Data Components
+import Breadcrumb from '@/components/ui/Breadcrumb';
 import ProductSchema from '@/components/seo/ProductSchema';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -272,30 +272,18 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
       <StickyAddToCart product={product} scrollThreshold={500} />
 
       {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-100 mt-16 md:mt-20">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] text-gray-500 flex-wrap">
-            <Link href="/" className="hover:text-[#0E8A6E] transition-colors">Home</Link>
-            <span className="text-gray-300" aria-hidden="true">/</span>
-            <Link href="/products" className="hover:text-[#0E8A6E] transition-colors">Products</Link>
-            {categoryName && categorySlug && (
-              <>
-                <span className="text-gray-300" aria-hidden="true">/</span>
-                <Link
-                  href={`/products/category/${categorySlug}`}
-                  className="hover:text-[#0E8A6E] transition-colors"
-                >
-                  {categoryName}
-                </Link>
-              </>
-            )}
-            <span className="text-gray-300" aria-hidden="true">/</span>
-            <span className="text-gray-700 font-medium line-clamp-1 max-w-[200px]" aria-current="page">
-              {product.name}
-            </span>
-          </nav>
-        </div>
-      </div>
+      <Breadcrumb 
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Products', href: '/products' },
+          ...(categoryName && categorySlug ? [{
+            label: categoryName,
+            href: `/products/category/${categorySlug}`
+          }] : []),
+          { label: product.name }
+        ]}
+        className="mt-16 md:mt-20"
+      />
 
       {/* ── Main Content ───────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
