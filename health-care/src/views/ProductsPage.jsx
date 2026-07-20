@@ -177,7 +177,6 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
           { label: 'Home', href: '/' },
           { label: searchCategory || 'Products' }
         ]}
-        className="mt-16 md:mt-20"
       />
 
       {/* ── Active filters + category pills bar ─────────────────────────── */}

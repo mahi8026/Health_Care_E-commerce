@@ -282,7 +282,6 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
           }] : []),
           { label: product.name }
         ]}
-        className="mt-16 md:mt-20"
       />
 
       {/* ── Main Content ───────────────────────────────────────────────── */}

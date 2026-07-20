@@ -101,9 +101,7 @@ export default function SearchPage({ onProductClick }) {
         <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
       </div>
 
-      <div className="mt-16 md:mt-20">
-        <Breadcrumb items={breadcrumbs} />
-      </div>
+      <Breadcrumb items={breadcrumbs} />
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
 
