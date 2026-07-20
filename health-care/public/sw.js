@@ -5,15 +5,17 @@
  * - Static assets (_next/static, images, fonts): Cache-first (long TTL)
  * - API calls (/api/*): Network-first with 5s timeout, then stale cache
  * - HTML pages: Network-first, then offline fallback
- * - Cloudinary images: Stale-while-revalidate (serve cache instantly, update in background)
+ * - Cloudinary images: SKIP (let browser fetch directly — Cloudinary has own CDN)
+ * - YouTube thumbnails: Cache-first with 24h TTL
  *
  * This gives users:
  * - Near-instant repeat visits (cached assets load immediately)
  * - Offline product browsing (cached pages still work)
  * - Always-fresh data (API responses refresh in background)
+ * - Cloudinary images load without CSP conflicts in SW context
  */
 
-const CACHE_VERSION = 'medcore-v1';
+const CACHE_VERSION = 'medcore-v2'; // v2: Skip Cloudinary (CSP fix)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const API_CACHE = `${CACHE_VERSION}-api`;
@@ -71,10 +73,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ── Cloudinary images: Stale-while-revalidate ─────────────────────────────
+  // ── Cloudinary images: SKIP service worker (let browser fetch directly) ───
+  // Cloudinary has its own CDN + caching. Service worker fetch context blocks
+  // these requests due to CSP restrictions in SW scope. Skipping SW interception
+  // allows browser to fetch images directly with proper CSP headers from the page.
   if (url.hostname === 'res.cloudinary.com') {
-    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE));
-    return;
+    return; // Don't intercept — browser handles it directly
   }
 
   // ── YouTube thumbnails: Cache-first with 24h TTL ──────────────────────────
@@ -113,23 +117,6 @@ async function cacheFirst(request, cacheName) {
   } catch {
     return new Response('Offline', { status: 503 });
   }
-}
-
-/** Stale-while-revalidate: return cache immediately, update in background */
-async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-
-  const fetchPromise = fetch(request)
-    .then((response) => {
-      if (response.ok) {
-        cache.put(request, response.clone());
-      }
-      return response;
-    })
-    .catch(() => null);
-
-  return cached || fetchPromise;
 }
 
 /** Network-first with timeout: try network, fall back to cache */
