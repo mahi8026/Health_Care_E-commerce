@@ -1652,8 +1652,26 @@ export default function ProductsManagement({ openCreateRef }) {
               const stockStatus = getStockStatus(product);
               const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
               const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-              const imgRaw = product.images?.[0];
-              const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
+              
+              // Handle different image structures more robustly
+              let img = null;
+              if (product.images && product.images.length > 0) {
+                const imgRaw = product.images[0];
+                // Handle both string URLs and object {url: '...'} formats
+                img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
+              } else if (product.image) {
+                // Fallback to single 'image' field if it exists
+                img = typeof product.image === 'string' ? product.image : product.image?.url;
+              }
+              
+              // Debug logging (remove after fix)
+              if (!img && process.env.NODE_ENV !== 'production') {
+                console.log('Product without image:', {
+                  name: product.name,
+                  images: product.images,
+                  image: product.image
+                });
+              }
 
               return (
                 <div key={product._id} className="p-4 flex gap-3">
