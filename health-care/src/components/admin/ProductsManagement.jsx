@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import Image from 'next/image';
 import { API } from '@/constants/api';
 
 // ── SKU generation helpers ────────────────────────────────────────────────────
@@ -1677,15 +1676,16 @@ export default function ProductsManagement({ openCreateRef }) {
               return (
                 <div key={product._id} className="p-4 flex gap-3">
                   {/* Product image */}
-                  <div className="w-14 h-14 rounded-lg overflow-hidden bg-[var(--color-background-secondary)] flex-shrink-0 border-[0.5px] border-[var(--color-border-tertiary)] relative">
+                  <div className="w-14 h-14 rounded-lg overflow-hidden bg-[var(--color-background-secondary)] flex-shrink-0 border-[0.5px] border-[var(--color-border-tertiary)]">
                     {img ? (
-                      <Image 
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img 
                         src={img} 
                         alt={product.name} 
-                        fill
-                        sizes="56px"
-                        className="object-cover"
-                        unoptimized
+                        className="w-full h-full object-cover"
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-2xl">🏥</div>
@@ -1766,15 +1766,16 @@ export default function ProductsManagement({ openCreateRef }) {
                 return (
                   <tr key={product._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
                     <td className="px-4 py-3">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-[var(--color-background-secondary)] flex-shrink-0 border-[0.5px] border-[var(--color-border-tertiary)] relative">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-[var(--color-background-secondary)] flex-shrink-0 border-[0.5px] border-[var(--color-border-tertiary)]">
                         {img ? (
-                          <Image 
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img 
                             src={img} 
                             alt={product.name} 
-                            fill
-                            sizes="48px"
-                            className="object-cover"
-                            unoptimized
+                            className="w-full h-full object-cover"
+                            crossOrigin="anonymous"
+                            referrerPolicy="no-referrer"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-xl">🏥</div>
