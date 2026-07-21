@@ -3,13 +3,16 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useCompare } from '@/context/CompareContext';
+import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
 import WishlistButton from './wishlist/WishlistButton';
+import { getProductPriceDisplay } from '@/utils/pricing';
 
 const ProductCard = React.memo(function ProductCard({ product, onProductClick }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const { toggleCompare, isInCompare } = useCompare();
+  const { user } = useAuth();
   const t = useT();
   const [addingToCart, setAddingToCart] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
@@ -44,11 +47,23 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
     alt: typeof imageData === 'object' ? imageData.alt : product.name
   } : null;
 
-  // Calculate savings and discount percentage
-  const price = product.price || 0;
+  // Calculate B2B pricing if user is eligible
+  const category = typeof product.category === 'object' ? product.category : null;
+  const priceDisplay = getProductPriceDisplay(product, user, category);
+
+  // Calculate savings and discount percentage (from oldPrice or B2B discount)
+  const price = priceDisplay.price || 0;
   const oldPrice = product.oldPrice || 0;
-  const savings = oldPrice > price ? oldPrice - price : 0;
-  const discountPercent = oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0;
+  
+  // Show B2B savings if applicable, otherwise show regular discount
+  const savings = priceDisplay.isB2BPrice 
+    ? priceDisplay.savings 
+    : (oldPrice > price ? oldPrice - price : 0);
+  
+  const discountPercent = priceDisplay.isB2BPrice
+    ? priceDisplay.discountPct
+    : (oldPrice > 0 ? Math.round((savings / oldPrice) * 100) : 0);
+  
   const hasDiscount = savings > 0 && discountPercent > 0;
 
   // Check if product is in compare list
@@ -149,7 +164,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
         {hasDiscount && (
           <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-[#7C3AED] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md shadow-md animate-bounce-in">
             <span className="text-[9px] sm:text-[11px] font-semibold">
-              Save: {savings.toLocaleString()}৳ (-{discountPercent}%)
+              {priceDisplay.isB2BPrice ? 'B2B Save' : 'Save'}: {savings.toLocaleString()}৳ (-{discountPercent}%)
             </span>
           </div>
         )}
@@ -211,19 +226,35 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
           <span className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)]">({product.reviews})</span>
         </div>
         
-        {/* Price - Responsive Font */}
-        <div className="flex items-baseline gap-[6px] mb-[10px]">
-          <span className="font-[family-name:var(--font-lora)] text-[15px] sm:text-[16px] text-[#0B2545] font-semibold">
-            {product.price}
-          </span>
-          {product.oldPrice && (
-            <span className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] line-through">
-              {product.oldPrice}
+        {/* Price - Responsive Font with B2B indicator */}
+        <div className="flex flex-col gap-1 mb-[10px]">
+          <div className="flex items-baseline gap-[6px]">
+            <span className="font-[family-name:var(--font-lora)] text-[15px] sm:text-[16px] text-[#0B2545] font-semibold">
+              {priceDisplay.formatted}
             </span>
-          )}
-          {product.discount && (
-            <span className="text-[9px] sm:text-[10px] text-[#0E8A6E] font-medium">
-              {product.discount}
+            {priceDisplay.showOriginalPrice && (
+              <span className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] line-through">
+                {priceDisplay.originalPriceFormatted}
+              </span>
+            )}
+            {!priceDisplay.isB2BPrice && product.oldPrice && (
+              <span className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] line-through">
+                {product.oldPrice}
+              </span>
+            )}
+            {product.discount && !priceDisplay.isB2BPrice && (
+              <span className="text-[9px] sm:text-[10px] text-[#0E8A6E] font-medium">
+                {product.discount}
+              </span>
+            )}
+          </div>
+          {/* B2B Price Badge */}
+          {priceDisplay.isB2BPrice && (
+            <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] text-[#7C3AED] font-semibold bg-purple-50 px-2 py-0.5 rounded-full w-fit">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
+              </svg>
+              B2B Price
             </span>
           )}
         </div>

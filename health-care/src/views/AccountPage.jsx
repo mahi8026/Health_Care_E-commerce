@@ -7,6 +7,7 @@ import { useT } from '@/hooks/useT';
 import { API } from '@/constants/api';
 import Spinner from '@/components/ui/Spinner';
 import LoyaltyPointsCard from '@/components/account/LoyaltyPointsCard';
+import B2BStatusCard from '@/components/account/B2BStatusCard';
 import { 
   FaUser, 
   FaShoppingBag, 
@@ -181,6 +182,9 @@ export default function AccountPage() {
 
       {/* Stats Cards */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        {/* B2B Status Card - Shows approval status and pricing eligibility */}
+        <B2BStatusCard user={user} />
+
         {/* Loyalty Points Card - Full Width */}
         {user?.loyaltyPoints > 0 && (
           <div className="mb-4">

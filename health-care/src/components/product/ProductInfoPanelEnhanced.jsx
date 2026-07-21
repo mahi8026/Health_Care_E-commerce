@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { CONTACT } from '@/constants/api';
 import SizeSelector from './SizeSelector';
+import { getProductPriceDisplay } from '@/utils/pricing';
 import { 
   FaShoppingCart, 
   FaWhatsapp, 
@@ -42,25 +44,40 @@ export default function ProductInfoPanelEnhanced({
 }) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const [addingToCart, setAddingToCart] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
+  const category = typeof product.category === 'object' ? product.category : null;
   
   // Determine stock based on size selection
   const productStock = selectedSize ? selectedSize.stock : product.stock;
   const inStock = productStock > 0;
   const lowStock = productStock > 0 && productStock < 10;
   
-  // Calculate price with size adjustment
-  const basePrice = product.price || 0;
+  // Calculate B2B pricing
+  const priceDisplay = getProductPriceDisplay(product, user, category);
+  
+  // Calculate final price with size adjustment
+  const basePrice = priceDisplay.price;
   const sizeAdjustment = selectedSize?.priceAdjustment || 0;
   const finalPrice = basePrice + sizeAdjustment;
   
-  const hasDiscount = product.oldPrice && product.oldPrice > finalPrice;
-  const savings = hasDiscount ? product.oldPrice - finalPrice : 0;
-  const discountPercent = hasDiscount ? Math.round((savings / product.oldPrice) * 100) : 0;
+  // For B2B users showing discount from original price
+  const hasB2BDiscount = priceDisplay.isB2BPrice && priceDisplay.savings > 0;
+  
+  // For regular discount from oldPrice
+  const hasRegularDiscount = !priceDisplay.isB2BPrice && product.oldPrice && product.oldPrice > finalPrice;
+  
+  const displayOldPrice = hasB2BDiscount ? priceDisplay.originalPrice : (hasRegularDiscount ? product.oldPrice : null);
+  const savings = hasB2BDiscount ? priceDisplay.savings : (hasRegularDiscount ? product.oldPrice - finalPrice : 0);
+  const discountPercent = hasB2BDiscount 
+    ? priceDisplay.discountPct 
+    : (hasRegularDiscount ? Math.round((savings / product.oldPrice) * 100) : 0);
+  
+  const hasDiscount = hasB2BDiscount || hasRegularDiscount;
 
   const handleAddToCart = async () => {
     setAddingToCart(true);
@@ -152,10 +169,10 @@ export default function ProductInfoPanelEnhanced({
         {hasDiscount && (
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg text-gray-500 line-through">
-              ৳{product.oldPrice?.toLocaleString()}
+              ৳{displayOldPrice?.toLocaleString()}
             </span>
-            <span className="px-3 py-1 bg-red-500 text-white rounded-full text-sm font-bold">
-              Save {discountPercent}%
+            <span className={`px-3 py-1 ${hasB2BDiscount ? 'bg-purple-500' : 'bg-red-500'} text-white rounded-full text-sm font-bold`}>
+              {hasB2BDiscount ? 'B2B' : 'Save'} {discountPercent}%
             </span>
           </div>
         )}
@@ -165,13 +182,25 @@ export default function ProductInfoPanelEnhanced({
             {finalPrice > 0 ? `৳${finalPrice?.toLocaleString()}` : 'Contact for Price'}
           </span>
           {hasDiscount && (
-            <span className="text-green-600 text-lg font-bold">
+            <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-green-600'} text-lg font-bold`}>
               -৳{savings.toLocaleString()}
             </span>
           )}
         </div>
 
-        {finalPrice > 0 && (
+        {/* B2B Badge */}
+        {priceDisplay.isB2BPrice && (
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1 text-sm text-purple-700 font-semibold bg-purple-100 px-3 py-1 rounded-full">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
+              </svg>
+              B2B Price Applied
+            </span>
+          </div>
+        )}
+
+        {finalPrice > 0 && !priceDisplay.isB2BPrice && (
           <p className="text-sm text-gray-600">
             B2B pricing available for bulk orders (8-30% off)
           </p>
