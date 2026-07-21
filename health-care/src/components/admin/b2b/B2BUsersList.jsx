@@ -1,0 +1,317 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { FaCheck, FaTimes, FaToggleOn, FaToggleOff, FaSearch, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { API } from '@/constants';
+
+export default function B2BUsersList() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // all, pending, approved, rejected
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('medcore_token');
+      const params = new URLSearchParams({
+        page,
+        limit: 20,
+        ...(filter !== 'all' && { status: filter }),
+        ...(search && { search })
+      });
+
+      const res = await fetch(`${API}/admin/b2b/users?${params}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setUsers(data.data || []);
+        setPagination(data.pagination);
+      }
+    } catch (error) {
+      console.error('Failed to fetch B2B users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, search, page]);
+
+  const handleApprove = async (userId) => {
+    if (!confirm('Are you sure you want to approve this B2B application?')) return;
+
+    try {
+      setActionLoading(userId);
+      const token = localStorage.getItem('medcore_token');
+      const res = await fetch(`${API}/admin/b2b/users/${userId}/approve`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('B2B application approved successfully');
+        fetchUsers();
+      } else {
+        alert(data.message || 'Failed to approve');
+      }
+    } catch (error) {
+      alert('Error approving user');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async (userId) => {
+    const reason = prompt('Enter rejection reason (min 10 characters):');
+    if (!reason || reason.trim().length < 10) {
+      alert('Rejection reason is required (min 10 characters)');
+      return;
+    }
+
+    try {
+      setActionLoading(userId);
+      const token = localStorage.getItem('medcore_token');
+      const res = await fetch(`${API}/admin/b2b/users/${userId}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ reason })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('B2B application rejected');
+        fetchUsers();
+      } else {
+        alert(data.message || 'Failed to reject');
+      }
+    } catch (error) {
+      alert('Error rejecting user');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleToggleDiscount = async (userId) => {
+    try {
+      setActionLoading(userId);
+      const token = localStorage.getItem('medcore_token');
+      const res = await fetch(`${API}/admin/b2b/users/${userId}/toggle-discount`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        fetchUsers();
+      } else {
+        alert(data.message || 'Failed to toggle discount');
+      }
+    } catch (error) {
+      alert('Error toggling discount');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const styles = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      approved: 'bg-green-100 text-green-800',
+      rejected: 'bg-red-100 text-red-800'
+    };
+
+    return (
+      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status]}`}>
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
+
+  if (loading && !users.length) {
+    return <div className="text-center py-12">Loading B2B users...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <FaSearch className="absolute left-3 top-3 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, email, company..."
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+          />
+        </div>
+
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+        >
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      {/* Users Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">B2B Pricing</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applied</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                    No B2B users found
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900">{user.name}</div>
+                        <div className="text-sm text-gray-500 flex items-center gap-1">
+                          <FaEnvelope className="w-3 h-3" />
+                          {user.email}
+                        </div>
+                        {user.b2bId && (
+                          <div className="text-xs text-gray-400 mt-1">ID: {user.b2bId}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <FaBuilding className="text-gray-400" />
+                        <div>
+                          <div className="font-medium text-sm">{user.companyName || 'N/A'}</div>
+                          {user.institutionType && (
+                            <div className="text-xs text-gray-500">{user.institutionType}</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        {user.phone && (
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <FaPhone className="w-3 h-3" />
+                            {user.phone}
+                          </div>
+                        )}
+                        {user.tradeLicense && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            License: {user.tradeLicense}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {getStatusBadge(user.b2bApprovalStatus)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => handleToggleDiscount(user._id)}
+                        disabled={actionLoading === user._id || user.b2bApprovalStatus !== 'approved'}
+                        className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm ${
+                          user.b2bDiscountEnabled
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-gray-100 text-gray-600'
+                        } ${user.b2bApprovalStatus !== 'approved' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {user.b2bDiscountEnabled ? <FaToggleOn /> : <FaToggleOff />}
+                        {user.b2bDiscountEnabled ? 'Enabled' : 'Disabled'}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-2">
+                      {user.b2bApprovalStatus === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(user._id)}
+                            disabled={actionLoading === user._id}
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50"
+                          >
+                            <FaCheck /> Approve
+                          </button>
+                          <button
+                            onClick={() => handleReject(user._id)}
+                            disabled={actionLoading === user._id}
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 disabled:opacity-50"
+                          >
+                            <FaTimes /> Reject
+                          </button>
+                        </>
+                      )}
+                      {user.b2bApprovalStatus === 'approved' && (
+                        <span className="text-green-600 text-sm">✓ Approved</span>
+                      )}
+                      {user.b2bApprovalStatus === 'rejected' && (
+                        <span className="text-red-600 text-sm">✗ Rejected</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="px-6 py-4 border-t flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} users
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={!pagination.hasPrev}
+                className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setPage(p => p + 1)}
+                disabled={!pagination.hasNext}
+                className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
