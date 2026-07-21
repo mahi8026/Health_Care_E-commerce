@@ -90,7 +90,8 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
     if (order.status === 'refunded' || order.status === 'cancelled') return false;
     
     const deliveryDate = new Date(order.deliveredAt || order.createdAt);
-    const daysSince = Math.floor((Date.now() - deliveryDate) / (1000 * 60 * 60 * 24));
+    const now = new Date();
+    const daysSince = Math.floor((now.getTime() - deliveryDate.getTime()) / (1000 * 60 * 60 * 24));
     return daysSince <= 7;
   };
 
@@ -157,7 +158,17 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                       {order.items?.length || 0} {(order.items?.length || 0) !== 1 ? t('orders.items') : t('orders.items')}
                     </td>
                     <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                      ৳{(order.totalAmount || order.total || 0).toLocaleString()}
+                      <div className="flex flex-col gap-0.5">
+                        <span>৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
+                        {order.isB2BOrder && order.b2bDiscount > 0 && (
+                          <span className="text-[10px] text-[#7C3AED] font-medium flex items-center gap-1">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
+                            </svg>
+                            B2B saved ৳{order.b2bDiscount.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
@@ -234,8 +245,18 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
                   <div className="text-[11px] text-[var(--color-text-secondary)]">
                     {order.items?.length || 0} {t('orders.items')}
                   </div>
-                  <div className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    ৳{(order.totalAmount || order.total || 0).toLocaleString()}
+                  <div className="flex flex-col items-end gap-0.5">
+                    <div className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      ৳{(order.totalAmount || order.total || 0).toLocaleString()}
+                    </div>
+                    {order.isB2BOrder && order.b2bDiscount > 0 && (
+                      <div className="text-[10px] text-[#7C3AED] font-medium flex items-center gap-1">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
+                        </svg>
+                        B2B saved ৳{order.b2bDiscount.toLocaleString()}
+                      </div>
+                    )}
                   </div>
                 </div>
 

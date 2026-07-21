@@ -401,6 +401,15 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                     <span className="text-gray-600">Subtotal</span>
                     <span>৳{(order.subtotal || 0).toLocaleString()}</span>
                   </div>
+                  {order.isB2BOrder && order.b2bDiscount > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="flex items-center gap-1 text-purple-700">
+                        <span>🛡️</span>
+                        <span>B2B Discount ({order.b2bDiscountPct || 0}%)</span>
+                      </span>
+                      <span className="font-semibold text-purple-700">-৳{order.b2bDiscount.toLocaleString()}</span>
+                    </div>
+                  )}
                   {order.deliveryFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Delivery Fee</span>
@@ -417,6 +426,14 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                     <span>Total</span>
                     <span className="text-[#0E8A6E]">৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                   </div>
+                  {order.isB2BOrder && order.b2bDiscount > 0 && (
+                    <div className="flex justify-center pt-2">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">
+                        <span>🛡️</span>
+                        <span>You saved ৳{order.b2bDiscount.toLocaleString()} with B2B pricing!</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
