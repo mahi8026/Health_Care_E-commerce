@@ -18,7 +18,8 @@ const productSchema = new mongoose.Schema({
   subcategory: { type: String },
   barcode: { type: String },
   price: { type: Number, required: [true, 'Please provide a price'], min: 0 },
-  b2bPrice: { type: Number, min: 0 },
+  b2bPrice: { type: Number, min: 0 }, // Manual B2B price override (Option 3: Hybrid)
+  b2bPriceEnabled: { type: Boolean, default: false }, // Whether manual B2B price is active
   discountPct: { type: Number, default: 0 },
   oldPrice: { type: Number, min: 0 },
   stock: { type: Number, required: true, min: 0, default: 0 },

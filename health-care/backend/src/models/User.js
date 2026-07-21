@@ -74,7 +74,18 @@ const userSchema = new mongoose.Schema({
   companyName: { type: String },
   company: { type: String }, // alias kept for backward compat
   institutionType: { type: String },
+  tradeLicense: { type: String }, // Trade license number
+  taxId: { type: String }, // Tax identification number
   b2bAccount: { type: Boolean, default: false },
+  b2bApprovalStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
+  b2bApprovedAt: { type: Date },
+  b2bApprovedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  b2bRejectedAt: { type: Date },
+  b2bRejectionReason: { type: String },
   b2bTier: {
     type: String,
     enum: ['Silver', 'Gold', 'Platinum'],

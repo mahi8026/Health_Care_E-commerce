@@ -47,6 +47,17 @@ const categorySchema = new mongoose.Schema({
   productCount: {
     type: Number,
     default: 0
+  },
+  // B2B Discount Settings
+  b2bDiscountEnabled: {
+    type: Boolean,
+    default: true
+  },
+  b2bDiscountPct: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100
   }
 }, {
   timestamps: true,
