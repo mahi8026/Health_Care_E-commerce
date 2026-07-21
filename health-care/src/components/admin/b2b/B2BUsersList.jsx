@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaCheck, FaTimes, FaToggleOn, FaToggleOff, FaSearch, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { API } from '@/constants';
+import { API } from '@/constants/api';
 
 export default function B2BUsersList() {
   const [users, setUsers] = useState([]);

@@ -7,7 +7,7 @@ import {
   FaBuilding, FaEnvelope, FaPhone, FaLock, FaUser, 
   FaIdCard, FaFileAlt, FaCheckCircle, FaArrowRight 
 } from 'react-icons/fa';
-import { API } from '@/constants';
+import { API } from '@/constants/api';
 
 export default function B2BRegisterPage() {
   const router = useRouter();

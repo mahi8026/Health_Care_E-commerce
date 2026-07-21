@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaSave, FaToggleOn, FaToggleOff } from 'react-icons/fa';
-import { API } from '@/constants';
+import { API } from '@/constants/api';
 
 export default function CategoryDiscounts() {
   const [categories, setCategories] = useState([]);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FaUsers, FaCheckCircle, FaTimesCircle, FaClock, FaChartLine } from 'react-icons/fa';
-import { API } from '@/constants';
+import { API } from '@/constants/api';
 
 export default function B2BStatistics() {
   const [stats, setStats] = useState(null);
