@@ -735,6 +735,50 @@ exports.cancelOrder = async (req, res) => {
       });
     }
 
+    // Roll back loyalty points
+    try {
+      const LoyaltyTransaction = require('../models/LoyaltyTransaction');
+      let pointsAdjustment = 0;
+      let adjustmentDescription = '';
+
+      // Deduct points that were earned from this order
+      if (order.loyaltyPointsEarned && order.loyaltyPointsEarned > 0) {
+        pointsAdjustment -= order.loyaltyPointsEarned;
+        adjustmentDescription += `Deducted ${order.loyaltyPointsEarned} pts earned from cancelled order`;
+      }
+
+      // Restore points that were redeemed for this order
+      if (order.loyaltyPointsRedeemed && order.loyaltyPointsRedeemed > 0) {
+        pointsAdjustment += order.loyaltyPointsRedeemed;
+        if (adjustmentDescription) adjustmentDescription += ' | ';
+        adjustmentDescription += `Restored ${order.loyaltyPointsRedeemed} pts redeemed on cancelled order`;
+      }
+
+      // Apply points adjustment if needed
+      if (pointsAdjustment !== 0) {
+        const updatedUser = await User.findByIdAndUpdate(
+          order.user._id,
+          { $inc: { loyaltyPoints: pointsAdjustment } },
+          { new: true }
+        );
+
+        // Create adjustment transaction
+        await LoyaltyTransaction.create({
+          user: order.user._id,
+          type: 'adjust',
+          points: pointsAdjustment,
+          balance: updatedUser.loyaltyPoints,
+          description: adjustmentDescription,
+          order: order._id,
+          createdBy: req.user.id
+        });
+
+        logger.info(`[cancelOrder] Loyalty points adjusted by ${pointsAdjustment} for order ${order.orderNumber}`);
+      }
+    } catch (loyaltyErr) {
+      logger.error(`[cancelOrder] loyalty points rollback error (non-fatal): ${loyaltyErr.message}`);
+    }
+
     order.status = 'cancelled';
     if (!order.statusTimestamps) order.statusTimestamps = {};
     order.statusTimestamps = { ...order.statusTimestamps, cancelled: new Date() };

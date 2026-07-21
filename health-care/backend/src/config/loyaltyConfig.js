@@ -14,7 +14,7 @@ module.exports = {
   BONUS_REFERRAL_REFEREE: 200,     // Points for being referred
 
   // Redemption rules
-  POINTS_TO_TAKA: 0.10,           // 100 points = ৳10 (0.10 taka per point)
+  POINTS_TO_TAKA: 0.01,           // 1000 points = ৳10 (0.01 taka per point)
   MIN_REDEEM_POINTS: 500,          // Minimum points to redeem
   MAX_REDEEM_PERCENT: 20,          // Max 20% of order total can be paid with points
 
