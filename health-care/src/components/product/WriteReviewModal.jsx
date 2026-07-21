@@ -16,30 +16,29 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
   const [eligibleLoading, setEligibleLoading] = useState(true);
 
   useEffect(() => {
-    fetchEligibleOrder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productId]);
-
-  const fetchEligibleOrder = async () => {
-    try {
-      const token = localStorage.getItem('medcore_token');
-      const res = await fetch(`${API}/reviews/eligible-products`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      
-      if (data.success) {
-        const product = data.data.find(p => p._id === productId);
-        if (product) {
-          setOrderId(product.orderId);
+    const fetchEligibleOrder = async () => {
+      try {
+        const token = localStorage.getItem('medcore_token');
+        const res = await fetch(`${API}/reviews/eligible-products`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          const product = data.data.find(p => p._id === productId);
+          if (product) {
+            setOrderId(product.orderId);
+          }
         }
+      } catch (error) {
+        process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Fetch eligible order error:', error);
+      } finally {
+        setEligibleLoading(false);
       }
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Fetch eligible order error:', error);
-    } finally {
-      setEligibleLoading(false);
-    }
-  };
+    };
+
+    fetchEligibleOrder();
+  }, [productId]);
 
   const handleUploadSuccess = (result) => {
     if (!result?.info || typeof result.info === 'string') return;
@@ -72,12 +71,12 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
       setError('Please select a rating');
       return;
     }
-    if (title.trim().length < 10) {
-      setError('Title must be at least 10 characters');
+    if (!title || title.trim().length === 0) {
+      setError('Title is required');
       return;
     }
-    if (comment.trim().length < 50) {
-      setError('Comment must be at least 50 characters');
+    if (!comment || comment.trim().length === 0) {
+      setError('Comment is required');
       return;
     }
     // orderId is optional — backend auto-detects verified purchase status
@@ -219,7 +218,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="Summarize your experience (min 10 characters)"
+              placeholder="Summarize your experience"
               maxLength={100}
               className="w-full px-4 py-3 min-h-[48px] text-[16px] sm:text-[14px] border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E]"
             />
@@ -236,7 +235,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
             <textarea
               value={comment}
               onChange={e => setComment(e.target.value)}
-              placeholder="Share your experience with this product (min 50 characters)"
+              placeholder="Share your experience with this product"
               maxLength={1000}
               rows={6}
               className="w-full px-4 py-3 text-[16px] sm:text-[14px] border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
