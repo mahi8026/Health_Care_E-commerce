@@ -1,7 +1,7 @@
 /**
  * Loyalty Program Configuration
  * ৳100 spent = 1 point earned
- * 100 points = ৳10 discount (redeemable)
+ * 1000 points = ৳10 discount (redeemable)
  * Minimum 500 points to redeem
  */
 

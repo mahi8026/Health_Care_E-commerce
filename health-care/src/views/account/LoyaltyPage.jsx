@@ -188,7 +188,7 @@ export default function LoyaltyPage() {
             <FaInfoCircle className="text-amber-500 w-4 h-4 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-amber-800">
               <p className="font-semibold mb-1">How to Redeem</p>
-              <p>100 points = ৳10 discount · Minimum 500 points to redeem · Max 20% of order total · Redeem at checkout</p>
+              <p>1000 points = ৳10 discount · Minimum 500 points to redeem · Max 20% of order total · Redeem at checkout</p>
             </div>
           </div>
 
