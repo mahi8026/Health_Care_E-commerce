@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
 import api from '@/utils/api';
 import GA4Tracker from '@/services/GA4Tracker';
+import { calculateCartItemPrice, isEligibleForB2BPricing } from '@/utils/pricing';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 import DeliveryAddress from '@/components/checkout/DeliveryAddress';
 import DeliveryOptions from '@/components/checkout/DeliveryOptions';
@@ -61,6 +62,7 @@ export default function CheckoutPage({ onBackToCart }) {
     try {
       const saved = sessionStorage.getItem('medcore_checkout_address');
       if (saved) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDeliveryAddress(JSON.parse(saved));
         sessionStorage.removeItem('medcore_checkout_address');
       }
@@ -72,6 +74,7 @@ export default function CheckoutPage({ onBackToCart }) {
   // Pre-fill delivery address from user profile
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDeliveryAddress(prev => ({
         ...prev,
         fullName: prev.fullName || user.name || '',
@@ -98,12 +101,46 @@ export default function CheckoutPage({ onBackToCart }) {
     [deliveryAddress?.district]
   );
 
+  // Calculate B2B pricing for cart items
+  const { b2bSavings, itemsWithB2BPricing } = useMemo(() => {
+    const isB2BEligible = isEligibleForB2BPricing(user);
+    if (!isB2BEligible) {
+      return {
+        b2bSavings: 0,
+        itemsWithB2BPricing: cart.map(item => ({
+          ...item,
+          finalPrice: item.price,
+          isB2BPrice: false,
+        })),
+      };
+    }
+
+    let totalSavings = 0;
+    const pricedItems = cart.map((item) => {
+      const b2bPricing = calculateCartItemPrice(item, user, item.category);
+      totalSavings += b2bPricing.savings;
+      
+      return {
+        ...item,
+        finalPrice: b2bPricing.unitPrice,
+        isB2BPrice: b2bPricing.isB2BPrice,
+        b2bSavings: b2bPricing.savings,
+      };
+    });
+
+    return {
+      b2bSavings: totalSavings,
+      itemsWithB2BPricing: pricedItems,
+    };
+  }, [cart, user]);
+
   const orderTotal = useMemo(() => {
-    const sub = getCartTotal();
+    // Use B2B-adjusted prices for subtotal
+    const sub = itemsWithB2BPricing.reduce((sum, item) => sum + item.finalPrice * item.quantity, 0);
     const discount = appliedCoupon?.discountAmount || 0;
     const pointsDiscount = redeemedPoints || 0;
     return Math.round((sub - discount - pointsDiscount + deliveryFee) * 100) / 100;
-  }, [getCartTotal, appliedCoupon, redeemedPoints, deliveryFee]);
+  }, [itemsWithB2BPricing, appliedCoupon, redeemedPoints, deliveryFee]);
 
   const handlePlaceOrder = useCallback(async () => {
     if (!isAuthenticated()) {
@@ -146,11 +183,13 @@ export default function CheckoutPage({ onBackToCart }) {
 
     try {
       const orderData = {
-        items: cart.map((item) => ({
+        items: itemsWithB2BPricing.map((item) => ({
           product: item.id || item._id,
           qty: item.quantity,
           quantity: item.quantity,
-          price: item.price || 0,
+          price: item.finalPrice || item.price || 0, // Use B2B price if available
+          isB2BPrice: item.isB2BPrice || false,
+          b2bSavings: item.b2bSavings || 0,
         })),
         deliveryType: selectedDelivery,
         deliveryMethod: selectedDelivery,
@@ -164,6 +203,9 @@ export default function CheckoutPage({ onBackToCart }) {
           postcode: deliveryAddress.postcode,
           instructions: deliveryAddress.instructions,
         },
+        // B2B discount metadata
+        b2bDiscount: b2bSavings || 0,
+        isB2BOrder: isEligibleForB2BPricing(user),
         // ✅ Security Fix #4: Include idempotency key to prevent duplicate orders
         idempotencyKey,
         ...(appliedCoupon && { promoCode: appliedCoupon.code }),
@@ -238,6 +280,15 @@ export default function CheckoutPage({ onBackToCart }) {
     selectedPayment,
     deliveryAddress,
     appliedCoupon,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [
+    // Intentionally minimal deps - we want control over when this runs
+    cart.length,
+    selectedDelivery,
+    selectedPayment,
+    deliveryAddress.fullName,
+    deliveryAddress.phone,
+    deliveryAddress.street,
   ]);
 
   const handlePaymentSuccess = useCallback(() => {

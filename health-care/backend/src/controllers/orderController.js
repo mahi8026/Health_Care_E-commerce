@@ -65,7 +65,7 @@ exports.createOrder = async (req, res) => {
 
 
   try {
-    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey } = req.body;
+    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey, b2bDiscount: clientB2BDiscount, isB2BOrder } = req.body;
 
     // ✅ Security Fix #4: Validate idempotency key to prevent double charging
     if (!idempotencyKey || typeof idempotencyKey !== 'string') {
@@ -93,6 +93,7 @@ exports.createOrder = async (req, res) => {
     }
 
     let subtotal = 0;
+    let totalB2BSavings = 0; // Track total B2B savings across all items
     const orderItems = [];
 
     // Validate all items and check stock atomically
@@ -102,6 +103,12 @@ exports.createOrder = async (req, res) => {
         return abortAndError(res, `Product not found: ${item.product}`, 404);
       }
       const qty = item.qty || item.quantity || 1;
+      
+      // Use B2B price if provided from frontend
+      const itemPrice = item.price || product.price;
+      const isItemB2BPrice = item.isB2BPrice || false;
+      const itemB2BSavings = item.b2bSavings || 0;
+      totalB2BSavings += itemB2BSavings * qty;
       
       // Check if product has size variants
       if (product.variants?.sizes && product.variants.sizes.length > 0) {
@@ -121,16 +128,17 @@ exports.createOrder = async (req, res) => {
           return abortAndError(res, `Insufficient stock for ${product.name} (Size: ${item.selectedSize.name}). Available: ${sizeVariant.stock}, Requested: ${qty}`, 400);
         }
         
-        // Calculate price with size adjustment
-        const finalPrice = product.price + (item.selectedSize.priceAdjustment || 0);
-        subtotal += finalPrice * qty;
+        // Use price from frontend (already includes size adjustment and B2B discount)
+        subtotal += itemPrice * qty;
         
         orderItems.push({ 
           product: product._id, 
           name: product.name, 
           sku: product.sku, 
           brand: product.brand, 
-          price: finalPrice, 
+          price: itemPrice, 
+          isB2BPrice: isItemB2BPrice,
+          b2bSavings: itemB2BSavings,
           qty, 
           quantity: qty,
           variant: {
@@ -142,30 +150,31 @@ exports.createOrder = async (req, res) => {
         if (product.stock < qty) {
           return abortAndError(res, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${qty}`, 400);
         }
-        subtotal += product.price * qty;
+        subtotal += itemPrice * qty;
         orderItems.push({ 
           product: product._id, 
           name: product.name, 
           sku: product.sku, 
           brand: product.brand, 
-          price: product.price, 
+          price: itemPrice, 
+          isB2BPrice: isItemB2BPrice,
+          b2bSavings: itemB2BSavings,
           qty, 
           quantity: qty 
         });
       }
     }
 
-    // B2B discount — only apply if admin has explicitly enabled it for this user
+    // B2B discount — use the discount calculated on frontend (already includes per-item B2B pricing)
+    // This section is kept for backwards compatibility with old orders that didn't calculate B2B on frontend
     const user = await withSession(User.findById(req.user.id));
     if (!user) {
       return abortAndError(res, 'User not found', 404);
     }
-    let b2bDiscountPct = 0;
-    let b2bDiscount = 0;
-    if (user.role === 'b2b_customer' && user.b2bDiscountEnabled === true && user.b2bDiscountPct > 0) {
-      b2bDiscountPct = user.b2bDiscountPct;
-      b2bDiscount = subtotal * (b2bDiscountPct / 100);
-    }
+    
+    // Use client-calculated B2B discount (more accurate as it's calculated with category discounts)
+    const b2bDiscount = clientB2BDiscount || totalB2BSavings || 0;
+    const b2bDiscountPct = subtotal > 0 ? Math.round((b2bDiscount / (subtotal + b2bDiscount)) * 10000) / 100 : 0;
 
     // Promo code discount (Coupon validation and application)
     let couponDiscount = 0;
@@ -294,6 +303,7 @@ exports.createOrder = async (req, res) => {
       subtotal,
       b2bDiscount,
       b2bDiscountPct,
+      isB2BOrder: isB2BOrder || false,
       discount: b2bDiscount,
       promoDiscount: couponDiscount,
       couponDiscount,

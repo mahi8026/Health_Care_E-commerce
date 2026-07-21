@@ -11,6 +11,8 @@ const orderItemSchema = new mongoose.Schema({
   brand: String,
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 },
+  isB2BPrice: { type: Boolean, default: false }, // Flag if B2B price was applied
+  b2bSavings: { type: Number, default: 0 }, // Per-item B2B savings
   qty: { type: Number, required: true, min: 1 },
   // legacy field alias
   quantity: { type: Number },
@@ -36,6 +38,7 @@ const orderSchema = new mongoose.Schema({
   subtotal: { type: Number, required: true },
   b2bDiscount: { type: Number, default: 0 },
   b2bDiscountPct: { type: Number, default: 0 },
+  isB2BOrder: { type: Boolean, default: false }, // Flag if order used B2B pricing
   // legacy alias
   discount: { type: Number, default: 0 },
   promoDiscount: { type: Number, default: 0 },

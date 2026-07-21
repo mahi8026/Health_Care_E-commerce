@@ -8,18 +8,18 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/product#offer
  */
 
-import { useMemo } from 'react';
-
 export default function OfferSchema({ product, offer }) {
   if (!product || !offer) return null;
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com';
   const productUrl = `${baseUrl}/products/${product._id || product.slug}`;
   
-  // Memoize default validity date to avoid impurity issues
-  const defaultValidUntil = useMemo(() => {
-    return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  }, []);
+  // Calculate default validity date (30 days from now) - use server-side timestamp if available
+  const defaultValidUntil = offer.validUntil || (() => {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 30);
+    return futureDate.toISOString().split('T')[0];
+  })();
 
   // Calculate discount percentage if not provided
   const discountPercentage = offer.discountPercentage || 
@@ -38,7 +38,7 @@ export default function OfferSchema({ product, offer }) {
       url: productUrl,
       priceCurrency: 'BDT',
       price: (offer.discountedPrice || offer.price || product.price).toString(),
-      priceValidUntil: offer.validUntil || defaultValidUntil,
+      priceValidUntil: defaultValidUntil,
       availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       itemCondition: 'https://schema.org/NewCondition',
       seller: {
@@ -167,10 +167,15 @@ export function generateOfferFromProduct(product) {
   // Only return offer if there's an actual discount
   if (originalPrice <= discountedPrice) return null;
 
+  // Calculate future date (30 days from now)
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + 30);
+  const validUntil = product.offerValidUntil || futureDate.toISOString().split('T')[0];
+
   return {
     originalPrice,
     discountedPrice,
     discountPercentage: Math.round(((originalPrice - discountedPrice) / originalPrice) * 100),
-    validUntil: product.offerValidUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    validUntil
   };
 }

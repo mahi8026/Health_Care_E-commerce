@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
-import { FaLock, FaTag } from 'react-icons/fa';
+import { FaLock, FaTag, FaShieldAlt } from 'react-icons/fa';
+import { calculateCartItemPrice, isEligibleForB2BPricing } from '@/utils/pricing';
 
 import { getDeliveryZone, DELIVERY_ZONE_INFO } from './DeliveryOptions';
 
@@ -47,16 +48,61 @@ export default function OrderSummary({
 
   const availablePoints = loyaltyPoints || user?.loyaltyPoints || 0;
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Calculate B2B pricing for cart items
+  const {subtotal, b2bSavings, itemsWithPricing} = useMemo(() => {
+    const isB2BEligible = isEligibleForB2BPricing(user);
+    
+    const pricedItems = items.map((item) => {
+      const regularTotal = item.price * item.quantity;
+      
+      if (isB2BEligible && item.category) {
+        // Calculate B2B price for this item
+        const b2bPricing = calculateCartItemPrice(item, user, item.category);
+        
+        return {
+          ...item,
+          displayPrice: b2bPricing.unitPrice,
+          isB2BPrice: b2bPricing.isB2BPrice,
+          b2bSavings: b2bPricing.savings,
+          regularTotal,
+        };
+      }
+      
+      return {
+        ...item,
+        displayPrice: item.price,
+        isB2BPrice: false,
+        b2bSavings: 0,
+        regularTotal,
+      };
+    });
+    
+    // Calculate totals using reduce (no mutation)
+    const regularSubtotalCalc = pricedItems.reduce((sum, item) => sum + item.regularTotal, 0);
+    const b2bSubtotalCalc = pricedItems.reduce((sum, item) => sum + item.displayPrice * item.quantity, 0);
+    
+    return {
+      subtotal: b2bSubtotalCalc,
+      b2bSavings: regularSubtotalCalc - b2bSubtotalCalc,
+      itemsWithPricing: pricedItems,
+    };
+  }, [items, user]);
+
   const deliveryFee = getDeliveryFee(district);
   const couponDiscount = appliedCoupon?.discountAmount || 0;
   const pointsDiscount = redeemedPoints || 0;
   const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount + deliveryFee) * 100) / 100;
   const displayTotal = total ?? computedTotal;
 
+  // Clear coupon error when coupon code changes (intentionally direct for UX)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    if (couponError) setCouponError('');
-  }, [couponCode, couponError]);
+    if (couponError) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCouponError('');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [couponCode]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
@@ -137,13 +183,13 @@ export default function OrderSummary({
         </div>
 
         <div className="px-4 py-4 sm:px-5 max-h-[240px] overflow-y-auto space-y-3">
-          {items.map((item) => {
+          {itemsWithPricing.map((item) => {
             const img = getItemImage(item);
             return (
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
+                    <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <span className="text-lg">📦</span>
                   )}
@@ -155,10 +201,16 @@ export default function OrderSummary({
                   {item.brand && (
                     <p className="text-[11px] text-[#9CA3AF] m-0 mt-0.5">{item.brand}</p>
                   )}
+                  {item.isB2BPrice && (
+                    <span className="inline-flex items-center gap-1 text-[8px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full mt-1">
+                      <FaShieldAlt size={7} />
+                      B2B
+                    </span>
+                  )}
                   <div className="flex justify-between items-center mt-1.5">
                     <span className="text-[11px] text-[#6B7280]">×{item.quantity}</span>
                     <span className="text-[13px] font-bold text-[#0B2545]">
-                      ৳{(item.price * item.quantity).toLocaleString()}
+                      ৳{(item.displayPrice * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -285,9 +337,18 @@ export default function OrderSummary({
             <span>Subtotal</span>
             <span className="font-medium text-[#0B2545]">৳{subtotal.toLocaleString()}</span>
           </div>
+          {b2bSavings > 0 && (
+            <div className="flex justify-between text-[#7C3AED]">
+              <div className="flex items-center gap-1">
+                <FaShieldAlt size={11} />
+                <span>B2B discount</span>
+              </div>
+              <span className="font-medium">−৳{b2bSavings.toLocaleString()}</span>
+            </div>
+          )}
           {couponDiscount > 0 && (
             <div className="flex justify-between text-[#0E8A6E]">
-              <span>Discount</span>
+              <span>Coupon discount</span>
               <span className="font-medium">−৳{couponDiscount.toLocaleString()}</span>
             </div>
           )}
