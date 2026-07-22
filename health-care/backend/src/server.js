@@ -506,8 +506,10 @@ async function warmCache() {
 // Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
-  httpServer.listen(PORT, () => {
-    logger.info(`MedCore BD API v2.0 running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+  const HOST = process.env.HOST || '0.0.0.0'; // Railway requires 0.0.0.0
+  
+  httpServer.listen(PORT, HOST, () => {
+    logger.info(`MedCore BD API v2.0 running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
     
     // Initialize Socket.IO
     chatSocketService.initialize(httpServer);
