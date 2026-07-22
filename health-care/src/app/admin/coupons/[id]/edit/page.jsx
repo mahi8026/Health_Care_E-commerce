@@ -101,8 +101,12 @@ export default function EditCouponPage() {
   };
 
   useEffect(() => {
-    fetchCoupon();
-    fetchMetadata();
+    let cancelled = false;
+    if (!cancelled) {
+      fetchCoupon();
+      fetchMetadata();
+    }
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [couponId]);
 

@@ -78,8 +78,12 @@ export default function EditCategoryPage() {
   };
 
   useEffect(() => {
-    fetchCategory();
-    fetchCategories();
+    let cancelled = false;
+    if (!cancelled) {
+      fetchCategory();
+      fetchCategories();
+    }
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId]);
 

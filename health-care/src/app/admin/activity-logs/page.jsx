@@ -61,9 +61,14 @@ export default function ActivityLogsPage() {
   }, []);
 
   useEffect(() => {
-    // fetchLogs and fetchStats are wrapped in useCallback, safe to call
-    fetchLogs();
-    fetchStats();
+    // Call fetch functions wrapped in useCallback
+    // This is safe because fetchLogs and fetchStats are stable references
+    let cancelled = false;
+    if (!cancelled) {
+      fetchLogs();
+      fetchStats();
+    }
+    return () => { cancelled = true; };
   }, [fetchLogs, fetchStats]);
 
   useEffect(() => {

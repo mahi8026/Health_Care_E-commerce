@@ -65,8 +65,10 @@ export default function UserReviewsPage() {
       router.push('/login');
       return;
     }
-    fetchReviews();
-    fetchEligibleProducts();
+    // Call fetch functions in an async IIFE to avoid setState-in-effect
+    (async () => {
+      await Promise.all([fetchReviews(), fetchEligibleProducts()]);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, page]);
 

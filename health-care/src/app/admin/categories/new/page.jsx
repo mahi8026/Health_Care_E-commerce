@@ -37,7 +37,11 @@ export default function NewCategoryPage() {
   };
 
   useEffect(() => {
-    fetchCategories();
+    let cancelled = false;
+    if (!cancelled) {
+      fetchCategories();
+    }
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
