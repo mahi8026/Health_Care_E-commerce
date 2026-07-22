@@ -152,8 +152,8 @@ export const pageMetadata = {
 
 export const CATEGORY_SEO = {
   'Diagnostic Equipment': {
-    title:       'Diagnostic Equipment Bangladesh — ECG, Ultrasound, Patient Monitors | MedCore BD',
-    description: 'Buy diagnostic equipment in Bangladesh. ECG machines, ultrasound machines, patient monitors, pulse oximeters from Siemens, Mindray, GE. DGDA certified. Free installation Dhaka.',
+    title:       'Diagnostic Equipment Bangladesh — Blood Pressure Monitors, Scales, Stethoscopes | MedCore BD',
+    description: 'Buy diagnostic equipment in Bangladesh. Blood pressure monitors, weighing scales, thermometers, pulse oximeters, stethoscopes, fetal dopplers from Rossmax, Omron, Microlife, Beurer. DGDA certified.',
     h1:          'Diagnostic Equipment in Bangladesh',
   },
   'Surgical Instruments': {
@@ -162,24 +162,94 @@ export const CATEGORY_SEO = {
     h1:          'Surgical Instruments in Bangladesh',
   },
   'Laboratory Reagents': {
-    title:       'Laboratory Reagents Bangladesh — Diagnostic Kits & Analyser Reagents | MedCore BD',
-    description: 'Laboratory reagents and diagnostic kits in Bangladesh. HbA1c, CBC, liver function, cardiac markers, immunoassay. Roche, Abbott, Beckman Coulter. Cold chain delivery.',
+    title:       'Laboratory Reagents Bangladesh — TSH, Dengue, Thyroid Rapid Test Kits | MedCore BD',
+    description: 'Laboratory reagents and rapid test kits in Bangladesh. TSH, T3, T4, FT3, Vitamin B12, Dengue NS1, RF/RA latex tests from Finecare, Biopanda. Cold chain delivery.',
     h1:          'Laboratory Reagents in Bangladesh',
   },
-  'Hospital Machines': {
-    title:       'Hospital Equipment Bangladesh — Ventilators, Dialysis, ICU Machines | MedCore BD',
-    description: 'Hospital equipment and ICU machines in Bangladesh. Ventilators, dialysis machines, infusion pumps, defibrillators. CE certified, free installation.',
-    h1:          'Hospital Machines & ICU Equipment in Bangladesh',
-  },
-  'Lab Equipment': {
-    title:       'Lab Equipment Bangladesh — Centrifuges, Microscopes, Autoclaves | MedCore BD',
-    description: 'Laboratory equipment in Bangladesh. Centrifuges, microscopes, autoclaves, incubators, spectrophotometers. Eppendorf, Beckman Coulter, Grant Instruments.',
+  'Laboratory Equipment': {
+    title:       'Laboratory Equipment Bangladesh — Hematology Analyzers, ESR Machines | MedCore BD',
+    description: 'Laboratory equipment in Bangladesh. Hematology analyzers, ESR machines, calibration systems from STEL, Bio-Max, THERMA, Rossmax. B2B bulk pricing for labs.',
     h1:          'Laboratory Equipment in Bangladesh',
+  },
+  'Hospital Machines': {
+    title:       'Hospital Machines Bangladesh — Nebulizers, Suction Units, CPAP | MedCore BD',
+    description: 'Hospital equipment in Bangladesh. Nebulizers, suction units, CPAP/BiPAP machines from Rossmax, Beurer, Yuwell, Omron, Microlife. CE certified. B2B pricing.',
+    h1:          'Hospital Machines & Equipment in Bangladesh',
   },
   'PPE & Safety': {
     title:       'PPE Bangladesh — Surgical Gloves, N95 Masks, Gowns | MedCore BD',
-    description: 'Personal protective equipment in Bangladesh. Surgical gloves, N95 respirators, surgical masks, protective gowns. Ansell, 3M, Cardinal Health. Bulk orders welcome.',
+    description: 'Personal protective equipment in Bangladesh. Surgical gloves, N95 respirators, surgical masks, protective gowns. Bulk orders welcome. DGDA registered.',
     h1:          'PPE & Safety Equipment in Bangladesh',
+  },
+  'Orthopedic Supports': {
+    title:       'Orthopedic Supports Bangladesh — Braces, Belts, Splints, Collars | MedCore BD',
+    description: 'Buy orthopedic supports in Bangladesh. Knee braces, lumbar belts, cervical collars, splints, wrist supports, crutches from Tynor. Free delivery Dhaka.',
+    h1:          'Orthopedic Supports in Bangladesh',
+  },
+  'Surgical & Wound Care': {
+    title:       'Surgical & Wound Care Bangladesh — Ostomy Bags, Dressings, Tape | MedCore BD',
+    description: 'Surgical and wound care supplies in Bangladesh. Ostomy bags, colostomy sets, wound dressings, surgical tapes, drain kits from ConvaTec, B-Braun, JMS.',
+    h1:          'Surgical & Wound Care Supplies in Bangladesh',
+  },
+  'Consumables': {
+    title:       'Medical Consumables Bangladesh — Needles, Catheters, Syringes | MedCore BD',
+    description: 'Medical consumables in Bangladesh. Spinal needles, catheters, urinary bags, stop cocks, HME filters, adult diapers from Romsons, B-Braun. Bulk B2B pricing.',
+    h1:          'Medical Consumables in Bangladesh',
+  },
+  'Diabetes Care': {
+    title:       'Diabetes Care Bangladesh — Glucose Meters, Test Strips | MedCore BD',
+    description: 'Diabetes care products in Bangladesh. Blood glucose meters, test strips from Accu-Chek, Omnitest, Yuwell, PCL Care, eBcare. DGDA registered.',
+    h1:          'Diabetes Care Products in Bangladesh',
+  },
+  'Ophthalmology & ENT Equipment': {
+    title:       'Ophthalmology & ENT Equipment Bangladesh — Ophthalmoscopes, Otoscopes | MedCore BD',
+    description: 'Ophthalmology and ENT equipment in Bangladesh. Ophthalmoscopes, retinoscopes, otoscopes, hearing amplifiers from Heine, Beurer. Genuine products, fast delivery.',
+    h1:          'Ophthalmology & ENT Equipment in Bangladesh',
+  },
+  'IV & Infusion Therapy': {
+    title:       'IV & Infusion Therapy Bangladesh — IV Cannulas, Infusion Sets | MedCore BD',
+    description: 'IV and infusion therapy supplies in Bangladesh. IV cannulas, infusion sets, scalp vein sets, central venous catheters, burette sets from Vasofix, JMS, Romsons.',
+    h1:          'IV & Infusion Therapy Supplies in Bangladesh',
+  },
+  'Physiotherapy & Rehabilitation': {
+    title:       'Physiotherapy Equipment Bangladesh — TENS, Heating Pads, Infrared | MedCore BD',
+    description: 'Physiotherapy and rehabilitation equipment in Bangladesh. TENS therapy devices, heating pads, infrared lamps from Jumper, Rossmax, Beurer.',
+    h1:          'Physiotherapy & Rehabilitation Equipment in Bangladesh',
+  },
+  'Medical Supplies': {
+    title:       'Medical Supplies Bangladesh — Anti-Decubitus Mattresses, Tapes | MedCore BD',
+    description: 'Medical supplies in Bangladesh. Anti-decubitus mattresses, medical tapes from Rossmax, PCL Care, JMS. Quality healthcare supplies at competitive prices.',
+    h1:          'Medical Supplies in Bangladesh',
+  },
+  'Blood Bank Supplies': {
+    title:       'Blood Bank Supplies Bangladesh — Blood Bags, Transfusion Sets | MedCore BD',
+    description: 'Blood bank supplies in Bangladesh. Blood collection bags, transfusion sets, triple blood bags, CPDA blood bags from JMS. DGDA registered. Hospital B2B pricing.',
+    h1:          'Blood Bank Supplies in Bangladesh',
+  },
+  'Respiratory Equipment': {
+    title:       'Respiratory Equipment Bangladesh — Respirometers, CPAP Supplies | MedCore BD',
+    description: 'Respiratory equipment and supplies in Bangladesh. Respirometers, 3-in-1 respiratory solutions from Rossmax, Romsons. CE certified.',
+    h1:          'Respiratory Equipment in Bangladesh',
+  },
+  'Compression Garments': {
+    title:       'Compression Garments Bangladesh — DVT Stockings | MedCore BD',
+    description: 'Compression garments in Bangladesh. DVT stockings and anti-embolism stockings from Tynor. Post-surgical and hospital use. B2B bulk pricing.',
+    h1:          'Compression Garments in Bangladesh',
+  },
+  'Diagnostic Devices': {
+    title:       'Diagnostic Devices Bangladesh — Blood Glucose Meters | MedCore BD',
+    description: 'Diagnostic devices in Bangladesh. Blood glucose meters, monitoring devices from Accu-Chek and other leading brands. DGDA registered.',
+    h1:          'Diagnostic Devices in Bangladesh',
+  },
+  'Medical Devices': {
+    title:       'Medical Devices Bangladesh — Monitors, Analyzers | MedCore BD',
+    description: 'Medical devices in Bangladesh. Body composition analyzers, monitoring equipment from leading global brands. CE certified, DGDA registered.',
+    h1:          'Medical Devices in Bangladesh',
+  },
+  'Mobility Aids': {
+    title:       'Mobility Aids Bangladesh — Wheelchairs, Walkers, Crutches | MedCore BD',
+    description: 'Mobility aids in Bangladesh. Wheelchairs, walkers, crutches and mobility equipment. Quality brands, competitive prices.',
+    h1:          'Mobility Aids in Bangladesh',
   },
 };
 

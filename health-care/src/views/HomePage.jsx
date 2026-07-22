@@ -968,7 +968,7 @@ export default function HomePage() {
               { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
               { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', slug: 'hospital-machines' },
               { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', slug: 'lab-equipment' },
-              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', slug: 'ppe-safety' },
+              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', slug: 'ppe-and-safety' },
               { name: 'Implants', emoji: '🦴', color: '#F8FAFC', slug: 'implants-ortho' },
               { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', slug: 'diagnostic-equipment' },
               { name: 'Surgical', emoji: '💉', color: '#F0FDF4', slug: 'surgical-instruments' },
