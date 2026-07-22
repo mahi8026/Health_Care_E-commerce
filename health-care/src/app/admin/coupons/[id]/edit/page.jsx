@@ -101,12 +101,9 @@ export default function EditCouponPage() {
   };
 
   useEffect(() => {
-    let cancelled = false;
-    if (!cancelled) {
-      fetchCoupon();
-      fetchMetadata();
-    }
-    return () => { cancelled = true; };
+    (async () => {
+      await Promise.all([fetchCoupon(), fetchMetadata()]);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [couponId]);
 

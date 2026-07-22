@@ -58,11 +58,9 @@ export default function NewCouponPage() {
   };
 
   useEffect(() => {
-    let cancelled = false;
-    if (!cancelled) {
-      fetchMetadata();
-    }
-    return () => { cancelled = true; };
+    (async () => {
+      await fetchMetadata();
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

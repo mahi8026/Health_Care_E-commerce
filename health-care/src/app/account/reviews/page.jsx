@@ -208,7 +208,7 @@ export default function UserReviewsPage() {
                 No reviews yet
               </h3>
               <p className="text-[13px] text-[var(--color-text-secondary)] mb-4">
-                Share your experience with products you've purchased
+                Share your experience with products you&apos;ve purchased
               </p>
               {eligibleProducts.length > 0 && (
                 <button

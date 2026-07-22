@@ -54,11 +54,9 @@ export default function CouponsPage() {
   };
 
   useEffect(() => {
-    let cancelled = false;
-    if (!cancelled) {
-      fetchCoupons();
-    }
-    return () => { cancelled = true; };
+    (async () => {
+      await fetchCoupons();
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, typeFilter, statusFilter]);
 

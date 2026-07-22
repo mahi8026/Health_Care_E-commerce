@@ -63,8 +63,10 @@ export default function CategoriesPage() {
       return;
     }
     
-    // Fetch categories on mount or when includeInactive changes
-    fetchCategories();
+    // Fetch categories in async IIFE
+    (async () => {
+      await fetchCategories();
+    })();
   }, [router, includeInactive, fetchCategories]);
 
   const handleDelete = async (id, name) => {

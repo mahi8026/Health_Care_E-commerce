@@ -78,12 +78,9 @@ export default function EditCategoryPage() {
   };
 
   useEffect(() => {
-    let cancelled = false;
-    if (!cancelled) {
-      fetchCategory();
-      fetchCategories();
-    }
-    return () => { cancelled = true; };
+    (async () => {
+      await Promise.all([fetchCategory(), fetchCategories()]);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId]);
 

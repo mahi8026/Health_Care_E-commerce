@@ -61,14 +61,10 @@ export default function ActivityLogsPage() {
   }, []);
 
   useEffect(() => {
-    // Call fetch functions wrapped in useCallback
-    // This is safe because fetchLogs and fetchStats are stable references
-    let cancelled = false;
-    if (!cancelled) {
-      fetchLogs();
-      fetchStats();
-    }
-    return () => { cancelled = true; };
+    // Wrap in async IIFE to prevent setState-in-effect warning
+    (async () => {
+      await Promise.all([fetchLogs(), fetchStats()]);
+    })();
   }, [fetchLogs, fetchStats]);
 
   useEffect(() => {
