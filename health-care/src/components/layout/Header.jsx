@@ -10,6 +10,8 @@ import WishlistButton from '../wishlist/WishlistButton';
 import MobileMenu from './MobileMenu';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
 import EnhancedSearchBox from '../search/EnhancedSearchBox';
+import { API } from '@/constants/api';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import {
   FaSearch,
   FaShoppingCart,
@@ -24,18 +26,60 @@ import {
   FaTooth,
   FaBone,
   FaTimes,
+  FaTools,
 } from 'react-icons/fa';
 
-const PRODUCT_CATEGORIES = [
-  { label: 'Diagnostic Equipment', href: '/products/category/diagnostic-equipment', icon: <FaStethoscope size={14} />, desc: 'ECG, ultrasound, monitors' },
-  { label: 'Surgical Instruments', href: '/products/category/surgical-instruments', icon: <FaSyringe size={14} />, desc: 'Scalpels, forceps, retractors' },
-  { label: 'Laboratory Reagents', href: '/reagent-store', icon: <FaFlask size={14} />, desc: 'HbA1c, CBC, chemistry kits' },
-  { label: 'Hospital Machines', href: '/products/category/hospital-machines', icon: <FaHospital size={14} />, desc: 'Ventilators, infusion pumps' },
-  { label: 'Lab Equipment', href: '/products/category/lab-equipment', icon: <FaMicroscope size={14} />, desc: 'Centrifuges, analyzers' },
-  { label: 'PPE & Safety', href: '/products/category/ppe-safety', icon: <FaShieldAlt size={14} />, desc: 'Gloves, masks, gowns' },
-  { label: 'Dental Equipment', href: '/products/category/dental-equipment', icon: <FaTooth size={14} />, desc: 'Chairs, handpieces, X-ray' },
-  { label: 'Implants & Ortho', href: '/products/category/implants-ortho', icon: <FaBone size={14} />, desc: 'Orthopedic implants, fixators' },
-];
+// Icon mapping for categories
+const CATEGORY_ICONS = {
+  'Diagnostic Equipment': <FaStethoscope size={14} />,
+  'Surgical Instruments': <FaSyringe size={14} />,
+  'Laboratory Reagents': <FaFlask size={14} />,
+  'Hospital Machines': <FaHospital size={14} />,
+  'Lab Equipment': <FaMicroscope size={14} />,
+  'Laboratory Equipment': <FaMicroscope size={14} />,
+  'PPE & Safety': <FaShieldAlt size={14} />,
+  'Dental Equipment': <FaTooth size={14} />,
+  'Implants & Ortho': <FaBone size={14} />,
+  'Surgical & Wound Care': <FaSyringe size={14} />,
+  'Diabetes Care': <FaFlask size={14} />,
+  'Physiotherapy & Rehabilitation': <FaTools size={14} />,
+  'Ophthalmology & ENT Equipment': <FaStethoscope size={14} />,
+  'IV & Infusion Therapy': <FaSyringe size={14} />,
+  'Blood Bank Supplies': <FaFlask size={14} />,
+  'Respiratory Equipment': <FaHospital size={14} />,
+  'Medical Supplies': <FaShoppingCart size={14} />,
+  'Compression Garments': <FaShieldAlt size={14} />,
+  'Consumables': <FaShoppingCart size={14} />,
+  'Medical Devices': <FaStethoscope size={14} />,
+  'Diagnostic Devices': <FaStethoscope size={14} />,
+  'Orthopedic Supports': <FaBone size={14} />,
+};
+
+// Short descriptions for categories
+const CATEGORY_DESC = {
+  'Diagnostic Equipment': 'ECG, ultrasound, monitors',
+  'Surgical Instruments': 'Scalpels, forceps, retractors',
+  'Laboratory Reagents': 'HbA1c, CBC, chemistry kits',
+  'Hospital Machines': 'Ventilators, infusion pumps',
+  'Lab Equipment': 'Centrifuges, analyzers',
+  'Laboratory Equipment': 'Centrifuges, analyzers',
+  'PPE & Safety': 'Gloves, masks, gowns',
+  'Dental Equipment': 'Chairs, handpieces, X-ray',
+  'Implants & Ortho': 'Orthopedic implants, fixators',
+  'Surgical & Wound Care': 'Dressings, tapes, ostomy',
+  'Diabetes Care': 'Glucose meters, test strips',
+  'Physiotherapy & Rehabilitation': 'TENS, heating pads',
+  'Ophthalmology & ENT Equipment': 'Ophthalmoscopes, otoscopes',
+  'IV & Infusion Therapy': 'IV cannulas, infusion sets',
+  'Blood Bank Supplies': 'Blood bags, collection sets',
+  'Respiratory Equipment': 'Nebulizers, oxygen therapy',
+  'Medical Supplies': 'General medical supplies',
+  'Compression Garments': 'Compression stockings',
+  'Consumables': 'Medical consumables',
+  'Medical Devices': 'Medical devices',
+  'Diagnostic Devices': 'Diagnostic tools',
+  'Orthopedic Supports': 'Orthopedic supports',
+};
 
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
@@ -54,6 +98,8 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartBounce, setCartBounce] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   const megaMenuRef = useRef(null);
   const searchRef = useRef(null);
@@ -61,6 +107,38 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
   const isActive = (href) => pathname === href || pathname?.startsWith(href + '/');
   const authed = isAuthenticated();
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${API}/categories`);
+        const data = await response.json();
+        if (data.success && data.data?.categories) {
+          // Map categories to the format expected by the dropdown
+          const mappedCategories = data.data.categories.map(cat => {
+            const slug = CATEGORY_NAME_TO_SLUG[cat.name] || cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-');
+            // Special case: Laboratory Reagents goes to reagent-store
+            const href = cat.name === 'Laboratory Reagents' 
+              ? '/reagent-store'
+              : `/products/category/${slug}`;
+            return {
+              label: cat.name,
+              href,
+              icon: CATEGORY_ICONS[cat.name] || <FaStethoscope size={14} />,
+              desc: CATEGORY_DESC[cat.name] || '',
+            };
+          });
+          setCategories(mappedCategories);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Cart bounce animation on count change
   useEffect(() => {
@@ -174,24 +252,37 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                   role="menu"
                 >
                   <div className="grid grid-cols-2 gap-1">
-                    {PRODUCT_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat.href}
-                        onClick={() => { router.push(cat.href); setMegaMenuOpen(false); }}
-                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F0FBF8] transition-colors text-left group"
-                        role="menuitem"
-                      >
-                        <span className="mt-0.5 text-[#0E8A6E] flex-shrink-0 group-hover:scale-110 transition-transform">
-                          {cat.icon}
-                        </span>
-                        <div>
-                          <div className="text-[13px] font-semibold text-[#111827] group-hover:text-[#0E8A6E] transition-colors">
-                            {cat.label}
+                    {categoriesLoading ? (
+                      // Loading skeleton
+                      Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="flex items-start gap-3 p-3 rounded-lg animate-pulse">
+                          <div className="w-4 h-4 bg-gray-200 rounded mt-0.5" />
+                          <div className="flex-1">
+                            <div className="h-3 bg-gray-200 rounded w-3/4 mb-2" />
+                            <div className="h-2 bg-gray-100 rounded w-full" />
                           </div>
-                          <div className="text-[11px] text-[#6B7280] mt-0.5">{cat.desc}</div>
                         </div>
-                      </button>
-                    ))}
+                      ))
+                    ) : (
+                      categories.map((cat) => (
+                        <button
+                          key={cat.href}
+                          onClick={() => { router.push(cat.href); setMegaMenuOpen(false); }}
+                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F0FBF8] transition-colors text-left group"
+                          role="menuitem"
+                        >
+                          <span className="mt-0.5 text-[#0E8A6E] flex-shrink-0 group-hover:scale-110 transition-transform">
+                            {cat.icon}
+                          </span>
+                          <div>
+                            <div className="text-[13px] font-semibold text-[#111827] group-hover:text-[#0E8A6E] transition-colors">
+                              {cat.label}
+                            </div>
+                            <div className="text-[11px] text-[#6B7280] mt-0.5">{cat.desc}</div>
+                          </div>
+                        </button>
+                      ))
+                    )}
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-100">
                     <button
