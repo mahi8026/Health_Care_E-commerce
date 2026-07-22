@@ -4,12 +4,16 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState('en');
+  // Initialize from localStorage if available
+  const [lang, setLang] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('medcore_lang');
+      if (saved === 'bn' || saved === 'en') return saved;
+    }
+    return 'en';
+  });
 
-  useEffect(() => {
-    const saved = localStorage.getItem('medcore_lang');
-    if (saved === 'bn' || saved === 'en') setLang(saved);
-  }, []);
+  // No useEffect needed - initialization happens in useState
 
   const switchLang = (l) => {
     setLang(l);

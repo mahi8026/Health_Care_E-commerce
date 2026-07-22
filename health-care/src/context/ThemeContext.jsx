@@ -22,27 +22,28 @@ const ThemeContext = createContext({
 });
 
 export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState('light');
-  const [mounted, setMounted] = useState(false);
-
-  // Initialize theme on mount
-  useEffect(() => {
-    // Check localStorage first
+  // Initialize theme from localStorage or system preference
+  const [theme, setThemeState] = useState(() => {
+    if (typeof window === 'undefined') return 'light';
+    
     const stored = localStorage.getItem('theme');
     if (stored === 'dark' || stored === 'light') {
-      setThemeState(stored);
-      document.documentElement.classList.toggle('dark', stored === 'dark');
-    } else {
-      // Fall back to system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const systemTheme = prefersDark ? 'dark' : 'light';
-      setThemeState(systemTheme);
-      document.documentElement.classList.toggle('dark', prefersDark);
+      return stored;
     }
     
-    // Mark as mounted after theme initialization
+    // Fall back to system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? 'dark' : 'light';
+  });
+  
+  const [mounted, setMounted] = useState(false);
+
+  // Apply theme class to document on mount and theme changes
+  useEffect(() => {
+    // Apply initial theme
+    document.documentElement.classList.toggle('dark', theme === 'dark');
     setMounted(true);
-  }, []);
+  }, [theme]);
 
   // Listen for system theme changes
   useEffect(() => {
