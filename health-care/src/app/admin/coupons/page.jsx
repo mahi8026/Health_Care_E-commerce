@@ -18,6 +18,11 @@ export default function CouponsPage() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
   const fetchCoupons = async () => {
     try {
       setLoading(true);
@@ -50,12 +55,8 @@ export default function CouponsPage() {
 
   useEffect(() => {
     fetchCoupons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, typeFilter, statusFilter]);
-
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
-  };
 
   const toggleActive = async (couponId, currentStatus) => {
     try {

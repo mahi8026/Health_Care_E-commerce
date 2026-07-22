@@ -31,11 +31,6 @@ export default function EditCategoryPage() {
   const [imagePreview, setImagePreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
 
-  useEffect(() => {
-    fetchCategory();
-    fetchCategories();
-  }, [categoryId]);
-
   const fetchCategory = async () => {
     try {
       setLoading(true);
@@ -81,6 +76,12 @@ export default function EditCategoryPage() {
       process.env.NODE_ENV !== "production" && console.error('Failed to load categories:', err);
     }
   };
+
+  useEffect(() => {
+    fetchCategory();
+    fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryId]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

@@ -36,11 +36,6 @@ export default function EditCouponPage() {
     description: ''
   });
 
-  useEffect(() => {
-    fetchCoupon();
-    fetchMetadata();
-  }, [couponId]);
-
   const fetchCoupon = async () => {
     try {
       setFetching(true);
@@ -104,6 +99,12 @@ export default function EditCouponPage() {
     setMessage({ text, type });
     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
   };
+
+  useEffect(() => {
+    fetchCoupon();
+    fetchMetadata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [couponId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -61,7 +61,7 @@ export default function ActivityLogsPage() {
   }, []);
 
   useEffect(() => {
-    // Don't call fetch functions directly in useEffect - they're wrapped in useCallback
+    // fetchLogs and fetchStats are wrapped in useCallback, safe to call
     fetchLogs();
     fetchStats();
   }, [fetchLogs, fetchStats]);

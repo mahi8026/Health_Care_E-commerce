@@ -18,6 +18,12 @@ export default function UserReviewsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [message, setMessage] = useState({ text: '', type: '' });
 
+  // Move showMessage before handleDelete to avoid hoisting issues
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
   const fetchReviews = async () => {
     try {
       setLoading(true);
@@ -92,11 +98,6 @@ export default function UserReviewsPage() {
   const handleWriteReview = (product) => {
     setSelectedProduct(product);
     setShowWriteModal(true);
-  };
-
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
   };
 
   const renderStars = (rating) => {

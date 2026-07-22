@@ -32,10 +32,6 @@ export default function NewCouponPage() {
     description: ''
   });
 
-  useEffect(() => {
-    fetchMetadata();
-  }, []);
-
   const fetchMetadata = async () => {
     try {
       const token = localStorage.getItem('medcore_token');
@@ -60,6 +56,11 @@ export default function NewCouponPage() {
     setMessage({ text, type });
     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
   };
+
+  useEffect(() => {
+    fetchMetadata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
