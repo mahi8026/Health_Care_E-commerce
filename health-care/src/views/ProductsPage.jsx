@@ -107,7 +107,8 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
   const productFilters = useMemo(() => ({
     search: searchQuery,
-    category: searchCategory || filters.categories?.[0] || '',
+    // Send slug to API — avoids & encoding issues with names like "IV & Infusion Therapy"
+    category: CATEGORY_NAME_TO_SLUG[searchCategory] || searchCategory || filters.categories?.[0] || '',
     brand: filters.brands?.[0] || '',
     minPrice: filters.minPrice,
     maxPrice: filters.maxPrice,

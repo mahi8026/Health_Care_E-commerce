@@ -89,16 +89,25 @@ exports.getProducts = async (req, res) => {
       matchConditions.isFeatured = true;
     }
 
-    // Category filter
+    // Category filter — accepts: MongoDB ObjectId, category slug, or category name
     if (category && category !== 'undefined' && category.trim() !== '') {
       if (mongoose.isValidObjectId(category)) {
+        // Direct ObjectId
         matchConditions.category = new mongoose.Types.ObjectId(category);
       } else {
-        // Decode URL-encoded category name and normalize spaces
-        const categoryName = decodeURIComponent(category.trim()).replace(/\+/g, ' ');
-        const categoryDoc = await Category.findOne({
-          name: { $regex: new RegExp('^' + escapeRegex(categoryName) + '$', 'i') }
-        }).lean();
+        // Decode URL-encoded value and normalize spaces
+        const categoryValue = decodeURIComponent(category.trim()).replace(/\+/g, ' ');
+
+        // Try slug first (safer — no special chars like &)
+        let categoryDoc = await Category.findOne({ slug: categoryValue }).lean();
+
+        // Fallback: match by name (case-insensitive)
+        if (!categoryDoc) {
+          categoryDoc = await Category.findOne({
+            name: { $regex: new RegExp('^' + escapeRegex(categoryValue) + '$', 'i') }
+          }).lean();
+        }
+
         if (categoryDoc) {
           matchConditions.category = categoryDoc._id;
         } else {
