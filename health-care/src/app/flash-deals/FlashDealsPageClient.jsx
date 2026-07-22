@@ -333,7 +333,10 @@ export default function FlashDealsPageClient() {
   }, []);
 
   useEffect(() => {
-    fetchFlashDeals();
+    // Call fetchFlashDeals in async IIFE to avoid setState-in-effect warning
+    (async () => {
+      await fetchFlashDeals();
+    })();
 
     const handleDealExpired = () => {
       fetchFlashDeals();

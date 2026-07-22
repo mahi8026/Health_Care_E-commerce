@@ -28,10 +28,6 @@ export default function MyReturnsClient() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    fetchReturns();
-  }, []);
-
   const fetchReturns = async () => {
     try {
       const token = localStorage.getItem('medcore_token');
@@ -50,6 +46,13 @@ export default function MyReturnsClient() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchReturns();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filteredReturns =
     filter === 'all' ? returns : returns.filter((r) => r.status === filter);

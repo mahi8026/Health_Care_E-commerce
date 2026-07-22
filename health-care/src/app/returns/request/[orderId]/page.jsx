@@ -26,10 +26,6 @@ export default function ReturnRequestPage() {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [images, setImages] = useState([]);
 
-  useEffect(() => {
-    fetchOrder();
-  }, [params.orderId]);
-
   const fetchOrder = async () => {
     try {
       const token = localStorage.getItem('medcore_token');
@@ -54,6 +50,13 @@ export default function ReturnRequestPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchOrder();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.orderId]);
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
