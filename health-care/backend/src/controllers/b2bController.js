@@ -316,12 +316,12 @@ exports.getB2BStats = async (req, res) => {
 };
 
 module.exports = {
-  getB2BUsers,
-  approveB2BUser,
-  rejectB2BUser,
-  toggleB2BDiscount,
-  getCategoryDiscounts,
-  updateCategoryDiscount,
-  bulkUpdateCategoryDiscounts,
-  getB2BStats
+  getB2BUsers: exports.getB2BUsers,
+  approveB2BUser: exports.approveB2BUser,
+  rejectB2BUser: exports.rejectB2BUser,
+  toggleB2BDiscount: exports.toggleB2BDiscount,
+  getCategoryDiscounts: exports.getCategoryDiscounts,
+  updateCategoryDiscount: exports.updateCategoryDiscount,
+  bulkUpdateCategoryDiscounts: exports.bulkUpdateCategoryDiscounts,
+  getB2BStats: exports.getB2BStats
 };
