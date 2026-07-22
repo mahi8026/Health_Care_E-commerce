@@ -368,7 +368,9 @@ app.get('/api/health', (req, res) => {
     3: 'disconnecting'
   }[dbState] || 'unknown';
 
-  const isHealthy = dbState === 1;
+  // Health check passes if API is running, even if DB is still connecting
+  // This prevents Railway deployment failures during startup
+  const isHealthy = dbState === 1 || dbState === 2;
 
   res.status(isHealthy ? 200 : 503).json({
     success: true,
