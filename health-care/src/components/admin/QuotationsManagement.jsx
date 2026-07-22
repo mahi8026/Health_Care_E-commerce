@@ -12,6 +12,11 @@ export default function QuotationsManagement() {
   const [actionLoading, setActionLoading] = useState({});
   const [message, setMessage] = useState({ text: '', type: '' });
 
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
     try {
@@ -30,7 +35,11 @@ export default function QuotationsManagement() {
     }
   }, [statusFilter]);
 
-  useEffect(() => { fetchQuotes(); }, [fetchQuotes]);
+  useEffect(() => { 
+    (async () => {
+      await fetchQuotes();
+    })();
+  }, [fetchQuotes]);
 
   const handleUpdateStatus = async (quoteId, newStatus) => {
     setActionLoading(prev => ({ ...prev, [`status-${quoteId}`]: true }));

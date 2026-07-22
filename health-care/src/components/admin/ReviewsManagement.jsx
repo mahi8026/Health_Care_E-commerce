@@ -22,6 +22,11 @@ export default function ReviewsManagement() {
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
   const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
@@ -56,7 +61,9 @@ export default function ReviewsManagement() {
   }, [page, statusFilter, ratingFilter]);
 
   useEffect(() => {
-    fetchReviews();
+    (async () => {
+      await fetchReviews();
+    })();
   }, [fetchReviews]);
 
   const handleOpenModal = (review, action) => {

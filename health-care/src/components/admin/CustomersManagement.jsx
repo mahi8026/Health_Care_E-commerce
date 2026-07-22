@@ -29,6 +29,11 @@ export default function CustomersManagement() {
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { id: string, name: string } or 'bulk'
   const [editingCustomer, setEditingCustomer] = useState(null);
 
+  const showMessage = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+  };
+
   const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
@@ -52,7 +57,11 @@ export default function CustomersManagement() {
     }
   }, [page, tierFilter, roleFilter, search]);
 
-  useEffect(() => { fetchCustomers(); }, [fetchCustomers]);
+  useEffect(() => { 
+    (async () => {
+      await fetchCustomers();
+    })();
+  }, [fetchCustomers]);
 
   const handleUpdateTier = async (customerId, newTier) => {
     try {
