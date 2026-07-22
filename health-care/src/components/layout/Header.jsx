@@ -247,14 +247,14 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
               {megaMenuOpen && (
                 <div
-                  className="absolute top-[calc(100%+10px)] left-0 w-[560px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-50 p-4 nav-dropdown-enter"
+                  className="absolute top-[calc(100%+10px)] left-0 w-[720px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-50 p-4 nav-dropdown-enter"
                   onMouseLeave={() => setMegaMenuOpen(false)}
                   role="menu"
                 >
-                  <div className="grid grid-cols-2 gap-1">
+                  <div className="grid grid-cols-3 gap-1">
                     {categoriesLoading ? (
                       // Loading skeleton
-                      Array.from({ length: 8 }).map((_, i) => (
+                      Array.from({ length: 9 }).map((_, i) => (
                         <div key={i} className="flex items-start gap-3 p-3 rounded-lg animate-pulse">
                           <div className="w-4 h-4 bg-gray-200 rounded mt-0.5" />
                           <div className="flex-1">
