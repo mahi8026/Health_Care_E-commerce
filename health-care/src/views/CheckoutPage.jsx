@@ -138,7 +138,8 @@ export default function CheckoutPage({ onBackToCart }) {
     // Use B2B-adjusted prices for subtotal
     const sub = itemsWithB2BPricing.reduce((sum, item) => sum + item.finalPrice * item.quantity, 0);
     const discount = appliedCoupon?.discountAmount || 0;
-    const pointsDiscount = redeemedPoints || 0;
+    // Convert points to taka: 100 points = ৳10, so multiply by 0.1
+    const pointsDiscount = (redeemedPoints || 0) * 0.1;
     return Math.round((sub - discount - pointsDiscount + deliveryFee) * 100) / 100;
   }, [itemsWithB2BPricing, appliedCoupon, redeemedPoints, deliveryFee]);
 
@@ -280,15 +281,10 @@ export default function CheckoutPage({ onBackToCart }) {
     selectedPayment,
     deliveryAddress,
     appliedCoupon,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [
-    // Intentionally minimal deps - we want control over when this runs
-    cart.length,
-    selectedDelivery,
-    selectedPayment,
-    deliveryAddress.fullName,
-    deliveryAddress.phone,
-    deliveryAddress.street,
+    b2bSavings,
+    idempotencyKey,
+    itemsWithB2BPricing,
+    user,
   ]);
 
   const handlePaymentSuccess = useCallback(() => {
