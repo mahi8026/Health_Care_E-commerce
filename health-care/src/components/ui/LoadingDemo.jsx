@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Spinner, { ButtonLoader, ProductCardSkeleton, PageLoadingSkeleton, LoadingOverlay } from './Spinner';
+import Spinner, { ButtonLoader, ProductCardSkeleton, LoadingOverlay } from './Spinner';
 
 export default function LoadingDemo() {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -31,9 +31,9 @@ export default function LoadingDemo() {
         <h2 className="text-2xl font-semibold mb-6 text-gray-800 font-[family-name:var(--font-lora)]">
           Spinner Variants
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {/* Medical Cross */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border-2 border-[#0E8A6E]/20 text-center hover:shadow-2xl transition-shadow">
             <Spinner size="xl" variant="medical" />
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Medical Cross</h3>
             <p className="text-sm text-gray-500">Pulsing healthcare icon</p>
@@ -43,7 +43,7 @@ export default function LoadingDemo() {
           </div>
 
           {/* Heartbeat */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border-2 border-[#0E8A6E]/20 text-center hover:shadow-2xl transition-shadow">
             <Spinner size="xl" variant="heartbeat" />
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Heartbeat ECG</h3>
             <p className="text-sm text-gray-500">Animated pulse bars</p>
@@ -53,7 +53,7 @@ export default function LoadingDemo() {
           </div>
 
           {/* DNA Helix */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border-2 border-[#0E8A6E]/20 text-center hover:shadow-2xl transition-shadow">
             <Spinner size="xl" variant="dna" />
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">DNA Helix</h3>
             <p className="text-sm text-gray-500">Rotating strands</p>
@@ -63,12 +63,22 @@ export default function LoadingDemo() {
           </div>
 
           {/* Pills */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border-2 border-[#0E8A6E]/20 text-center hover:shadow-2xl transition-shadow">
             <Spinner size="xl" variant="pills" />
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Pills</h3>
             <p className="text-sm text-gray-500">Rotating capsule</p>
             <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
               variant="pills"
+            </code>
+          </div>
+
+          {/* Dots - NEW */}
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border-2 border-[#0E8A6E]/20 text-center hover:shadow-2xl transition-shadow">
+            <Spinner size="xl" variant="dots" />
+            <h3 className="mt-6 font-semibold text-gray-800 mb-1">Pulsing Dots</h3>
+            <p className="text-sm text-gray-500">Bouncing gradient</p>
+            <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
+              variant="dots"
             </code>
           </div>
         </div>
@@ -152,9 +162,9 @@ export default function LoadingDemo() {
         <h2 className="text-2xl font-semibold mb-6 text-gray-800 font-[family-name:var(--font-lora)]">
           Full Screen Overlay
         </h2>
-        <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {['medical', 'heartbeat', 'dna', 'pills'].map((variant) => (
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+            {['medical', 'heartbeat', 'dna', 'pills', 'dots'].map((variant) => (
               <button
                 key={variant}
                 onClick={() => {
@@ -162,7 +172,7 @@ export default function LoadingDemo() {
                   setShowOverlay(true);
                   setTimeout(() => setShowOverlay(false), 3000);
                 }}
-                className="px-4 py-3 bg-gradient-to-r from-[#0E8A6E] to-[#0a6b56] text-white rounded-xl font-semibold hover:shadow-lg transition-all capitalize"
+                className="px-4 py-3 bg-gradient-to-r from-[#0E8A6E] to-[#0a6b56] text-white rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all capitalize"
               >
                 Show {variant}
               </button>
@@ -186,7 +196,7 @@ export default function LoadingDemo() {
               <pre className="bg-black/30 rounded-lg p-4 text-sm overflow-x-auto">
 {`import Spinner from '@/components/ui/Spinner';
 
-<Spinner size="lg" variant="medical" />`}
+<Spinner size=&quot;lg&quot; variant=&quot;medical&quot; />`}
               </pre>
             </div>
 
@@ -212,7 +222,7 @@ export default function LoadingDemo() {
 {`import { ProductCardSkeleton } from '@/components/ui/Spinner';
 
 {loading ? (
-  <div className="grid grid-cols-4 gap-4">
+  <div className=&quot;grid grid-cols-4 gap-4&quot;>
     {[...Array(8)].map((_, i) => (
       <ProductCardSkeleton key={i} />
     ))}
@@ -230,8 +240,8 @@ export default function LoadingDemo() {
 
 {isProcessing && (
   <LoadingOverlay 
-    message="Processing your order..." 
-    variant="medical"
+    message=&quot;Processing your order...&quot; 
+    variant=&quot;medical&quot;
   />
 )}`}
               </pre>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 import { CONTACT } from '@/constants/api';
+import { ButtonLoader } from '@/components/ui/Spinner';
 
 const TRACKING_STEPS = [
   { key: 'placed', icon: '📋', label: 'Order Placed', desc: 'Your order has been received' },
@@ -260,7 +261,14 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
               disabled={loading}
               className="w-full sm:w-auto px-8 py-3 bg-[#0E8A6E] text-white rounded-lg font-semibold hover:bg-[#0c7a5f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Tracking...' : 'Track Order'}
+              {loading ? (
+                <>
+                  <ButtonLoader />
+                  Tracking...
+                </>
+              ) : (
+                'Track Order'
+              )}
             </button>
           </form>
           
@@ -445,7 +453,14 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 disabled={downloading}
                 className="w-full sm:w-auto px-6 py-3 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg font-semibold hover:bg-[#E1F5EE] transition-colors disabled:opacity-50"
               >
-                {downloading ? 'Downloading...' : '📄 Download Invoice'}
+                {downloading ? (
+                  <>
+                    <ButtonLoader />
+                    Downloading...
+                  </>
+                ) : (
+                  '📄 Download Invoice'
+                )}
               </button>
               <button
                 onClick={() => router.push('/')}

@@ -112,8 +112,35 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spinner />
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
+          {/* Header skeleton */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full animate-shimmer" />
+              <div className="flex-1 space-y-3">
+                <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 animate-shimmer" />
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-64 animate-shimmer" />
+              </div>
+            </div>
+          </div>
+          
+          {/* Stats cards skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 animate-pulse">
+                <div className="h-10 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+              </div>
+            ))}
+          </div>
+          
+          {/* Menu items skeleton */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-16 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

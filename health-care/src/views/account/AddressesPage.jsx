@@ -149,7 +149,17 @@ export default function AddressesPage() {
       )}
 
       {loading ? (
-        <p className="text-[13px] text-[var(--color-text-secondary)]">Loading addresses…</p>
+        <div className="space-y-4 animate-fade-in">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 animate-pulse">
+              <div className="space-y-3">
+                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-32 animate-shimmer" />
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-full animate-shimmer" />
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-3/4 animate-shimmer" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <>
           {addresses.length > 0 && (

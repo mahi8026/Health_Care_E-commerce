@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { API } from '@/constants/api';
+import { ButtonLoader } from '@/components/ui/Spinner';
 
 export default function ResetPasswordPage({ onNavigateToLogin }) {
   const searchParams = useSearchParams();
@@ -131,7 +132,14 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
                 disabled={loading}
                 className="w-full py-3 bg-[#0B2545] text-white rounded-lg text-[12px] sm:text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2d52] transition-colors min-h-[48px]"
               >
-                {loading ? 'Resetting…' : 'Reset Password'}
+                {loading ? (
+                  <>
+                    <ButtonLoader />
+                    Resetting…
+                  </>
+                ) : (
+                  'Reset Password'
+                )}
               </button>
             </form>
           )}

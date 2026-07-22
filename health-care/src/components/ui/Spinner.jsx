@@ -6,23 +6,35 @@ export default function Spinner({ size = 'md', className = '', variant = 'medica
     xl: 'w-16 h-16'
   };
 
-  // Medical heartbeat pulse loader (default)
+  // Medical heartbeat pulse loader (default) - ENHANCED
   if (variant === 'medical') {
     return (
       <div className={`flex items-center justify-center ${className}`}>
         <div className="relative">
-          {/* Pulsing medical cross */}
+          {/* Multiple pulsing rings for depth */}
           <div className={`${sizes[size]} relative`}>
-            {/* Outer pulse ring */}
-            <div className="absolute inset-0 rounded-full bg-[#0E8A6E]/20 animate-ping" />
+            {/* Outer pulse ring 1 */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0E8A6E]/30 to-[#0B2545]/30 animate-ping" />
             
-            {/* Medical cross icon */}
+            {/* Outer pulse ring 2 - delayed */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0B2545]/20 to-[#0E8A6E]/20 animate-ping" style={{ animationDelay: '0.5s' }} />
+            
+            {/* Inner rotating glow */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#0E8A6E]/40 via-transparent to-[#0B2545]/40 animate-spin-slow" />
+            
+            {/* Medical cross icon with gradient */}
             <div className="absolute inset-0 flex items-center justify-center">
               <svg 
-                className={`${sizes[size]} text-[#0E8A6E] animate-pulse`}
+                className={`${sizes[size]} drop-shadow-lg animate-pulse`}
                 viewBox="0 0 24 24" 
-                fill="currentColor"
+                fill="url(#medicalGradient)"
               >
+                <defs>
+                  <linearGradient id="medicalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0E8A6E" />
+                    <stop offset="100%" stopColor="#0B2545" />
+                  </linearGradient>
+                </defs>
                 <path d="M20 6h-4V2h-8v4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7 11h-2v-3H8v-2h3v-3h2v3h3v2h-3v3z"/>
               </svg>
             </div>
@@ -32,33 +44,43 @@ export default function Spinner({ size = 'md', className = '', variant = 'medica
     );
   }
 
-  // Heartbeat ECG line loader
+  // Heartbeat ECG line loader - ENHANCED
   if (variant === 'heartbeat') {
     return (
       <div className={`flex items-center justify-center gap-1 ${className}`}>
         <div className="flex items-end space-x-1">
-          <div className="w-1 bg-[#0E8A6E] rounded-full animate-heartbeat-1" style={{ height: '8px' }} />
-          <div className="w-1 bg-[#0E8A6E] rounded-full animate-heartbeat-2" style={{ height: '16px' }} />
-          <div className="w-1 bg-[#0E8A6E] rounded-full animate-heartbeat-3" style={{ height: '24px' }} />
-          <div className="w-1 bg-[#0E8A6E] rounded-full animate-heartbeat-4" style={{ height: '16px' }} />
-          <div className="w-1 bg-[#0E8A6E] rounded-full animate-heartbeat-5" style={{ height: '8px' }} />
+          <div className="w-1.5 bg-gradient-to-t from-[#0E8A6E] to-[#0B2545] rounded-full animate-heartbeat-1 shadow-lg" style={{ height: '8px' }} />
+          <div className="w-1.5 bg-gradient-to-t from-[#0E8A6E] to-[#0B2545] rounded-full animate-heartbeat-2 shadow-lg" style={{ height: '16px' }} />
+          <div className="w-1.5 bg-gradient-to-t from-[#0B2545] to-[#0E8A6E] rounded-full animate-heartbeat-3 shadow-lg" style={{ height: '28px' }} />
+          <div className="w-1.5 bg-gradient-to-t from-[#0E8A6E] to-[#0B2545] rounded-full animate-heartbeat-4 shadow-lg" style={{ height: '16px' }} />
+          <div className="w-1.5 bg-gradient-to-t from-[#0E8A6E] to-[#0B2545] rounded-full animate-heartbeat-5 shadow-lg" style={{ height: '8px' }} />
         </div>
       </div>
     );
   }
 
-  // DNA helix loader
+  // DNA helix loader - ENHANCED
   if (variant === 'dna') {
     return (
       <div className={`flex items-center justify-center ${className}`}>
         <div className="relative">
-          <div className={`${sizes[size]} relative animate-spin-slow`}>
-            {/* DNA strands */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-full h-1 bg-gradient-to-r from-[#0E8A6E] via-[#0B2545] to-[#0E8A6E] rounded-full animate-pulse" />
+          <div className={`${sizes[size]} relative`}>
+            {/* Outer glow ring */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0E8A6E]/30 to-[#0B2545]/30 animate-pulse" />
+            
+            {/* DNA strand 1 - horizontal with gradient */}
+            <div className="absolute inset-0 flex items-center justify-center animate-spin-slow">
+              <div className="w-full h-1.5 bg-gradient-to-r from-transparent via-[#0E8A6E] to-transparent rounded-full shadow-lg" />
             </div>
-            <div className="absolute inset-0 flex items-center justify-center rotate-90">
-              <div className="w-full h-1 bg-gradient-to-r from-[#0B2545] via-[#0E8A6E] to-[#0B2545] rounded-full animate-pulse" />
+            
+            {/* DNA strand 2 - vertical with gradient */}
+            <div className="absolute inset-0 flex items-center justify-center rotate-90 animate-spin-slow">
+              <div className="w-full h-1.5 bg-gradient-to-r from-transparent via-[#0B2545] to-transparent rounded-full shadow-lg" />
+            </div>
+            
+            {/* Center dot */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-2 h-2 bg-gradient-to-br from-[#0E8A6E] to-[#0B2545] rounded-full shadow-lg animate-pulse" />
             </div>
           </div>
         </div>
@@ -66,69 +88,126 @@ export default function Spinner({ size = 'md', className = '', variant = 'medica
     );
   }
 
-  // Pills rotating loader
+  // Pills rotating loader - ENHANCED
   if (variant === 'pills') {
     return (
       <div className={`flex items-center justify-center ${className}`}>
-        <div className={`${sizes[size]} relative animate-spin`}>
+        <div className={`${sizes[size]} relative`}>
+          {/* Rotating pill with gradient and shadow */}
+          <div className="absolute inset-0 flex items-center justify-center animate-spin">
+            <div className="w-full h-1/3 bg-gradient-to-r from-[#0E8A6E] via-[#0a7560] to-[#0B2545] rounded-full shadow-xl" />
+          </div>
+          
+          {/* Center line */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-1/3 bg-gradient-to-r from-[#0E8A6E] to-[#0B2545] rounded-full" />
+            <div className="w-full h-0.5 bg-white/40 rounded-full" />
           </div>
         </div>
       </div>
     );
   }
 
-  // Default modern spinner
+  // Pulsing dots loader
+  if (variant === 'dots') {
+    const dotSize = size === 'sm' ? 'w-1.5 h-1.5' : size === 'md' ? 'w-2 h-2' : size === 'lg' ? 'w-3 h-3' : 'w-4 h-4';
+    return (
+      <div className={`flex items-center justify-center gap-2 ${className}`}>
+        <div className={`${dotSize} bg-gradient-to-br from-[#0E8A6E] to-[#0a7560] rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0s' }} />
+        <div className={`${dotSize} bg-gradient-to-br from-[#0a7560] to-[#0B2545] rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0.2s' }} />
+        <div className={`${dotSize} bg-gradient-to-br from-[#0B2545] to-[#0E8A6E] rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0.4s' }} />
+      </div>
+    );
+  }
+
+  // Default modern spinner - ENHANCED
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <svg
-        className={`animate-spin ${sizes[size]} text-[#0E8A6E]`}
-        viewBox="0 0 24 24"
-        fill="none"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="3"
-        />
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        />
-      </svg>
+      <div className="relative">
+        {/* Outer glow ring */}
+        <div className={`absolute inset-0 ${sizes[size]} rounded-full bg-gradient-to-r from-[#0E8A6E]/20 to-[#0B2545]/20 animate-ping`} />
+        
+        {/* Main spinner */}
+        <svg
+          className={`animate-spin ${sizes[size]} drop-shadow-lg`}
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <defs>
+            <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#0E8A6E" />
+              <stop offset="100%" stopColor="#0B2545" />
+            </linearGradient>
+          </defs>
+          <circle
+            className="opacity-20"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="url(#spinnerGradient)"
+            strokeWidth="3"
+          />
+          <path
+            className="opacity-90"
+            fill="url(#spinnerGradient)"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+      </div>
     </div>
   );
 }
 
 export function LoadingOverlay({ message = 'Loading...', variant = 'medical' }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-xs mx-4 animate-scale-in">
-        <Spinner size="xl" variant={variant} className="mb-4" />
-        <p className="text-sm text-gray-600 font-medium animate-pulse">
-          {message}
-        </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-black/50 to-gray-900/60 backdrop-blur-md">
+      <div className="bg-white rounded-3xl p-10 shadow-2xl text-center max-w-sm mx-4 animate-scale-in border-2 border-gray-100">
+        {/* Decorative gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0E8A6E]/5 to-[#0B2545]/5 rounded-3xl" />
+        
+        {/* Content */}
+        <div className="relative">
+          <Spinner size="xl" variant={variant} className="mb-6" />
+          <p className="text-base text-gray-700 font-semibold mb-2 animate-pulse">
+            {message}
+          </p>
+          <div className="flex items-center justify-center gap-1 mt-4">
+            <div className="w-2 h-2 bg-[#0E8A6E] rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+            <div className="w-2 h-2 bg-[#0E8A6E] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+            <div className="w-2 h-2 bg-[#0E8A6E] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-// Product card skeleton loader
+// Product card skeleton loader - ENHANCED
 export function ProductCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 animate-pulse">
-      <div className="relative aspect-square bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer" />
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 animate-fade-in">
+      {/* Image skeleton with animated gradient background */}
+      <div className="relative aspect-square bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 overflow-hidden">
+        {/* Animated shimmer overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+        
+        {/* Pulse icon in center */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0E8A6E]/20 to-[#0B2545]/20 flex items-center justify-center animate-pulse">
+            <svg className="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+            </svg>
+          </div>
+        </div>
       </div>
+      
+      {/* Content skeleton with staggered animations */}
       <div className="p-4 space-y-3">
-        <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-3/4 animate-shimmer" />
-        <div className="h-3 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-1/2 animate-shimmer" />
-        <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg w-full animate-shimmer" />
+        <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-3/4 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDelay: '0.1s' }} />
+        <div className="h-3 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-1/2 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDelay: '0.2s' }} />
+        <div className="flex items-center justify-between pt-2">
+          <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg w-24 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDelay: '0.3s' }} />
+          <div className="h-8 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg w-20 animate-shimmer" style={{ backgroundSize: '200% 100%', animationDelay: '0.4s' }} />
+        </div>
       </div>
     </div>
   );

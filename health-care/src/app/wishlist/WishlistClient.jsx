@@ -7,7 +7,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import WishlistButton from '@/components/wishlist/WishlistButton';
-import Spinner from '@/components/ui/Spinner';
+import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
 
 export default function WishlistClient() {
   const router = useRouter();
@@ -36,8 +36,16 @@ export default function WishlistClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner />
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
+        <div className="mb-8">
+          <div className="h-8 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-64 mb-2 animate-shimmer" />
+          <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 animate-shimmer" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+          {[...Array(10)].map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
   }

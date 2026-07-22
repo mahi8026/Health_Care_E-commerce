@@ -16,7 +16,7 @@ import PaymentMethods from '@/components/checkout/PaymentMethods';
 import OrderSummary, { getDeliveryFee } from '@/components/checkout/OrderSummary';
 import OrderConfirmation from '@/components/checkout/OrderConfirmation';
 import PaymentModal from '@/components/payment/PaymentModal';
-import Spinner from '@/components/ui/Spinner';
+import Spinner, { ButtonLoader } from '@/components/ui/Spinner';
 import { FaArrowLeft } from 'react-icons/fa';
 import CheckoutAuthGate from '@/components/checkout/CheckoutAuthGate';
 
@@ -478,7 +478,7 @@ export default function CheckoutPage({ onBackToCart }) {
           >
             {loading ? (
               <>
-                <Spinner size="small" />
+                <ButtonLoader />
                 {t('checkout.processing')}
               </>
             ) : (

@@ -62,14 +62,19 @@ export default {
         'progress-bar': 'progress-bar 1s ease-out',
         'cart-bounce': 'cart-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'shimmer': 'shimmer 2s linear infinite',
+        'shimmer': 'shimmer 2.5s ease-in-out infinite',
+        'shimmer-fast': 'shimmer 1.5s ease-in-out infinite',
         'float': 'float 3s ease-in-out infinite',
+        'float-slow': 'float 5s ease-in-out infinite',
         // Medical themed loaders
         'heartbeat-1': 'heartbeat 1.2s ease-in-out infinite',
         'heartbeat-2': 'heartbeat 1.2s ease-in-out 0.1s infinite',
         'heartbeat-3': 'heartbeat 1.2s ease-in-out 0.2s infinite',
         'heartbeat-4': 'heartbeat 1.2s ease-in-out 0.3s infinite',
         'heartbeat-5': 'heartbeat 1.2s ease-in-out 0.4s infinite',
+        // Enhanced loaders
+        'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
+        'rotate-slow': 'rotate-slow 8s linear infinite',
       },
       keyframes: {
         'button-glow': {
@@ -151,6 +156,20 @@ export default {
         'heartbeat': {
           '0%, 100%': { transform: 'scaleY(1)', opacity: '0.7' },
           '50%': { transform: 'scaleY(1.5)', opacity: '1' },
+        },
+        'glow-pulse': {
+          '0%, 100%': { 
+            boxShadow: '0 0 20px rgba(14, 138, 110, 0.4), 0 0 40px rgba(14, 138, 110, 0.2)',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            boxShadow: '0 0 30px rgba(14, 138, 110, 0.6), 0 0 60px rgba(14, 138, 110, 0.3)',
+            transform: 'scale(1.02)'
+          },
+        },
+        'rotate-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
         },
       },
     },

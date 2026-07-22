@@ -8,6 +8,7 @@ import {
   FaIdCard, FaFileAlt, FaCheckCircle, FaArrowRight 
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { ButtonLoader } from '@/components/ui/Spinner';
 
 export default function B2BRegisterPage() {
   const router = useRouter();
@@ -546,7 +547,14 @@ export default function B2BRegisterPage() {
                     disabled={loading}
                     className="flex-1 bg-[#0E8A6E] text-white py-3 rounded-lg hover:bg-[#0c7a5f] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'Submitting...' : 'Submit Application'}
+                    {loading ? (
+                      <>
+                        <ButtonLoader />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Application'
+                    )}
                   </button>
                 </div>
               </div>
