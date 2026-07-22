@@ -36,6 +36,19 @@ const app = express();
 // Create HTTP server (needed for Socket.IO)
 const httpServer = http.createServer(app);
 
+// ── EARLY HEALTH CHECK (Railway) ─────────────────────────────────────────────
+// This MUST be before all middleware to ensure Railway healthcheck passes
+// Returns 200 immediately if server is running, regardless of DB/Redis status
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: 'healthy',
+    message: 'MedCore BD API is running',
+    version: '2.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Initialize Sentry (must be before other middleware)
 initSentry(app);
 
@@ -358,8 +371,9 @@ app.get('/api/email-debug', async (req, res) => {
   });
 });
 
-// ── Health Check ─────────────────────────────────────────────────────────────
-app.get('/api/health', (req, res) => {
+// ── Detailed Health Check (with DB status) ───────────────────────────────────
+// This provides detailed status info but is not used by Railway healthcheck
+app.get('/api/health/detailed', (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = {
     0: 'disconnected',
