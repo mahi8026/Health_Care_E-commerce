@@ -13,6 +13,7 @@
  */
 
 const axios = require('axios');
+const logger = require('../utils/logger');
 
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
@@ -29,7 +30,7 @@ function getConfig() {
 function isConfigured() {
   const { apiKey } = getConfig();
   if (!apiKey) {
-    console.warn('[EmailService] ⚠️  BREVO_API_KEY not set — emails will be skipped');
+    logger.warn('[EmailService] ⚠️  BREVO_API_KEY not set — emails will be skipped');
     return false;
   }
   return true;
@@ -60,7 +61,7 @@ async function sendEmail({ to, subject, html, attachments }) {
   }
 
   try {
-    console.log('[EmailService] 📧 Sending to %s — %s', to, subject);
+    logger.info('[EmailService] 📧 Sending to %s — %s', to, subject);
     const response = await axios.post(BREVO_API_URL, payload, {
       headers: {
         'api-key':      cfg.apiKey,
@@ -71,12 +72,12 @@ async function sendEmail({ to, subject, html, attachments }) {
     });
 
     const messageId = response.data?.messageId;
-    console.log('[EmailService] ✅ Sent to %s (ID: %s)', to, messageId);
+    logger.info('[EmailService] ✅ Sent to %s (ID: %s)', to, messageId);
     return { success: true, messageId };
   } catch (error) {
     const errMsg = error.response?.data?.message || error.message;
     const errCode = error.response?.status;
-    console.error('[EmailService] ❌ Failed to send to %s: [%s] %s', to, errCode, errMsg);
+    logger.error('[EmailService] ❌ Failed to send to %s: [%s] %s', to, errCode, errMsg);
     return { error: errMsg, code: errCode };
   }
 }

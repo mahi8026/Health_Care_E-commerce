@@ -29,7 +29,7 @@ router.post('/fix-category-counts', async (req, res) => {
       });
     }
     
-    console.log('🔄 Starting category count fix...');
+    logger.info('🔄 Starting category count fix...');
 
     // Get all categories
     const categories = await Category.find({});
