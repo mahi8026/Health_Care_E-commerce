@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { API } from '@/constants/api';
-import { ButtonLoader } from '@/components/ui/Spinner';
+import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
 
 export default function ForgotPasswordPage({ onNavigateToLogin }) {
   const [email, setEmail] = useState('');
@@ -43,6 +43,14 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
 
   return (
     <div className="min-h-screen bg-page flex items-center justify-center p-4 sm:p-6">
+      {/* Loading Overlay */}
+      {loading && (
+        <LoadingOverlay 
+          message="Sending reset link..." 
+          variant="medical"
+        />
+      )}
+      
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">

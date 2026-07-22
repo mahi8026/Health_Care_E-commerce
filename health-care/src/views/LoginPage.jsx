@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
-import { ButtonLoader } from '@/components/ui/Spinner';
+import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
 
 export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const [email, setEmail] = useState('');
@@ -83,6 +83,14 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
 
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
+      {/* Loading Overlay */}
+      {loading && (
+        <LoadingOverlay 
+          message="Signing you in..." 
+          variant="medical"
+        />
+      )}
+      
       {/* Full-width form panel */}
       <div className="w-full flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">

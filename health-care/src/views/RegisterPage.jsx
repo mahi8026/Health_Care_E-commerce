@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
-import { ButtonLoader } from '@/components/ui/Spinner';
+import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
 
 export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -79,6 +79,14 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
 
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
+      {/* Loading Overlay */}
+      {loading && (
+        <LoadingOverlay 
+          message="Creating your account..." 
+          variant="medical"
+        />
+      )}
+      
       {/* Full-width form panel */}
       <div className="w-full flex items-center justify-center p-6 sm:p-10 overflow-y-auto">
         <div className="w-full max-w-lg py-6">
