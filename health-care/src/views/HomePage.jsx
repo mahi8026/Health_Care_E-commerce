@@ -41,6 +41,7 @@ const VideoSection = lazy(() => import('@/components/home/VideoSection'));
 // FALLBACK DATA & CONSTANTS
 // ══════════════════════════════════════════════════════════════════════════════
 
+// All 18 categories - matches database (fallback only if API fails)
 const FALLBACK_CATEGORIES = [
   { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: '#EFF6FF' },
   { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: '#F0FDF4' },
@@ -50,6 +51,16 @@ const FALLBACK_CATEGORIES = [
   { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: '#FFF1F2' },
   { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: '#FFFBEB' },
   { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: '#F8FAFC' },
+  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings · Tapes · Ostomy', color: '#F0FDF4' },
+  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters · Test Strips', color: '#FAF5FF' },
+  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS · Heating Pads', color: '#FFF7ED' },
+  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes · Otoscopes', color: '#EFF6FF' },
+  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas · Infusion Sets', color: '#F0FDFA' },
+  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags · Collection Sets', color: '#FFF1F2' },
+  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers · Oxygen Therapy', color: '#EFF6FF' },
+  { name: 'Medical Supplies', icon: <FaShoppingCart />, desc: 'General Medical Supplies', color: '#F8FAFC' },
+  { name: 'Compression Garments', icon: <FaShieldAlt />, desc: 'Compression Stockings', color: '#FFF1F2' },
+  { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: '#FFFBEB' },
 ];
 
 const ANNOUNCEMENTS = [
