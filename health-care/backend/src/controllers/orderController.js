@@ -491,7 +491,7 @@ exports.createOrder = async (req, res) => {
     if (error.code === 11000 && error.keyPattern?.['metadata.idempotencyKey']) {
       const existingOrder = await Order.findOne({
         'metadata.idempotencyKey': req.body.idempotencyKey
-      });
+      }).lean();
       return res.status(200).json({
         success: true,
         message: 'Order already created',
@@ -565,13 +565,16 @@ exports.getOrder = async (req, res) => {
     const order = await Order.findById(req.params.id)
       .populate('user', 'name email phone company')
       .populate('items.product', 'name sku brand')
-      .populate('notesHistory.addedBy', 'name email');
+      .populate('notesHistory.addedBy', 'name email')
+      .lean();
 
     if (!order) {
       return errorResponse(res, 'Order not found', null, 404);
     }
 
-    if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
+    // When using .lean(), _id is already a string (no need for .toString())
+    const orderUserId = typeof order.user._id === 'string' ? order.user._id : order.user._id.toString();
+    if (orderUserId !== req.user.id && req.user.role !== 'admin') {
       return errorResponse(res, 'Not authorized to access this order', null, 403);
     }
 
