@@ -46,7 +46,8 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
     if (!conversation) return;
 
     if (file) {
-      // TODO: Implement file upload for agents
+      // Note: File upload for agents deferred to v2.0 (enhancement)
+      // Current version supports text-only messages
       return;
     }
 

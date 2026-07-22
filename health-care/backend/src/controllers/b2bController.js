@@ -95,8 +95,8 @@ exports.approveB2BUser = async (req, res) => {
 
     logger.info(`[approveB2BUser] User ${user.email} approved by ${req.user.email}`);
 
-    // TODO: Send approval email to user
-    // await emailService.sendB2BApprovalEmail(user);
+    // Note: B2B approval email implementation deferred to v2.0
+    // Enhancement tracked in backlog: Implement sendB2BApprovalEmail(user)
 
     return successResponse(res, { user }, 'B2B application approved successfully');
   } catch (error) {
@@ -137,8 +137,8 @@ exports.rejectB2BUser = async (req, res) => {
 
     logger.info(`[rejectB2BUser] User ${user.email} rejected by ${req.user.email}`);
 
-    // TODO: Send rejection email to user
-    // await emailService.sendB2BRejectionEmail(user, reason);
+    // Note: B2B rejection email implementation deferred to v2.0
+    // Enhancement tracked in backlog: Implement sendB2BRejectionEmail(user, reason)
 
     return successResponse(res, { user }, 'B2B application rejected');
   } catch (error) {

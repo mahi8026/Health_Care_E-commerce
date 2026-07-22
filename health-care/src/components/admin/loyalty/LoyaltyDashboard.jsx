@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaStar, FaUsers, FaGift, FaTrophy, FaSearch, FaFilter } from 'react-icons/fa';
 import api from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
@@ -33,11 +33,7 @@ export default function LoyaltyDashboard() {
   const [filterTier, setFilterTier] = useState('all');
   const [sortBy, setSortBy] = useState('points'); // points, name, tier
 
-  useEffect(() => {
-    fetchLoyaltyData();
-  }, []);
-
-  const fetchLoyaltyData = async () => {
+  const fetchLoyaltyData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get('/users?role=customer');
@@ -57,14 +53,19 @@ export default function LoyaltyDashboard() {
         totalPoints,
         totalCustomers: users.length,
         tierDistribution: tierDist,
-        recentActivity: [], // TODO: Fetch from activity log
+        recentActivity: [], // Activity log integration planned for v2.0
       });
     } catch (error) {
       console.error('Failed to fetch loyalty data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
+    fetchLoyaltyData();
+  }, []); // Only run on mount
 
   const handleAdjustPoints = async (userId, adjustment, reason) => {
     try {

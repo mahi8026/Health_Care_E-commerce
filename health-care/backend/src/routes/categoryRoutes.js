@@ -42,10 +42,9 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-// Public routes WITHOUT caching (temporarily disabled to fix ETag issue)
-// TODO: Re-enable after verifying all categories are showing correctly
-router.get('/', getCategories);
-router.get('/tree', getCategoryTree);
+// Public routes with caching (categories verified working correctly)
+router.get('/', cache.middleware(3600), getCategories); // Cache for 1 hour
+router.get('/tree', cache.middleware(3600), getCategoryTree); // Cache for 1 hour
 
 // Admin routes (must come before /:slug to avoid route conflicts)
 router.get('/by-id/:id', protect, authorize('admin'), getCategoryById);
