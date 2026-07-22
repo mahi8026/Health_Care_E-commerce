@@ -60,7 +60,11 @@ export default function ActivityLogsPage() {
     } catch { /* silent */ }
   }, []);
 
-  useEffect(() => { fetchLogs(); fetchStats(); }, [fetchLogs, fetchStats]);
+  useEffect(() => {
+    // Don't call fetch functions directly in useEffect - they're wrapped in useCallback
+    fetchLogs();
+    fetchStats();
+  }, [fetchLogs, fetchStats]);
 
   useEffect(() => {
     if (!autoRefresh) return;

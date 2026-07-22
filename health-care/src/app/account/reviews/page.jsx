@@ -18,15 +18,6 @@ export default function UserReviewsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [message, setMessage] = useState({ text: '', type: '' });
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    fetchReviews();
-    fetchEligibleProducts();
-  }, [user, page]);
-
   const fetchReviews = async () => {
     try {
       setLoading(true);
@@ -62,6 +53,16 @@ export default function UserReviewsPage() {
       process.env.NODE_ENV !== "production" && console.error('Fetch eligible products error:', error);
     }
   };
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    fetchReviews();
+    fetchEligibleProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, page]);
 
   const handleDelete = async (reviewId) => {
     if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
