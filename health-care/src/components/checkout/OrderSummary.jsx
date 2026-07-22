@@ -95,7 +95,7 @@ export default function OrderSummary({
   const displayTotal = total ?? computedTotal;
 
   // Clear coupon error when coupon code changes (intentionally direct for UX)
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+   
   useEffect(() => {
     if (couponError) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -271,7 +271,7 @@ export default function OrderSummary({
                 <div className="flex justify-between items-center p-2.5 rounded-lg bg-[#FFF7ED] border border-[#F59E0B]/30">
                   <div>
                     <span className="text-[12px] font-semibold text-[#92400E]">⭐ {pointsDiscount} pts redeemed</span>
-                    <p className="text-[10px] text-[#92400E] mt-0.5">−৳{pointsDiscount.toLocaleString()} discount</p>
+                    <p className="text-[10px] text-[#92400E] mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
                     type="button"
@@ -292,26 +292,34 @@ export default function OrderSummary({
               ) : (
                 <div>
                   <p className="text-[11px] text-[#6B7280] mb-1.5">
-                    You have <strong>{availablePoints}</strong> points (= ৳{availablePoints.toLocaleString()} discount)
+                    You have <strong>{availablePoints} points</strong> = ৳{(availablePoints * 0.1).toFixed(2)} discount value
+                  </p>
+                  <p className="text-[10px] text-[#9CA3AF] mb-2">
+                    100 points = ৳10 • Minimum 50 points to redeem • Max 20% of order
                   </p>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       value={pointsInput}
                       onChange={(e) => setPointsInput(e.target.value)}
-                      placeholder={`Max ${Math.min(availablePoints, subtotal)}`}
-                      min="1"
-                      max={Math.min(availablePoints, subtotal)}
+                      placeholder={`Min 50, Max ${Math.min(availablePoints, Math.floor(subtotal * 0.2 / 0.1))}`}
+                      min="50"
+                      max={Math.min(availablePoints, Math.floor(subtotal * 0.2 / 0.1))}
                       className="flex-1 px-3 py-2 min-h-[44px] text-[13px] border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/15"
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        const pts = Math.min(
-                          parseInt(pointsInput) || 0,
-                          availablePoints,
-                          Math.floor(subtotal)
-                        );
+                        const pts = parseInt(pointsInput) || 0;
+                        const maxPoints = Math.min(availablePoints, Math.floor(subtotal * 0.2 / 0.1));
+                        if (pts < 50) {
+                          alert('Minimum 50 points required to redeem');
+                          return;
+                        }
+                        if (pts > maxPoints) {
+                          alert(`Maximum ${maxPoints} points can be redeemed for this order`);
+                          return;
+                        }
                         if (pts > 0) { onRedeemPoints(pts); setShowPointsInput(false); }
                       }}
                       className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-[#F59E0B] text-white rounded-lg hover:bg-[#D97706]"
@@ -355,7 +363,7 @@ export default function OrderSummary({
           {pointsDiscount > 0 && (
             <div className="flex justify-between text-[#F59E0B]">
               <span>⭐ Points discount</span>
-              <span className="font-medium">−৳{pointsDiscount.toLocaleString()}</span>
+              <span className="font-medium">−৳{(pointsDiscount * 0.1).toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between text-[#6B7280]">
