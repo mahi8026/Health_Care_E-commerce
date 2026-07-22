@@ -3,6 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const { protect, authorize } = require('../middleware/auth');
+const logger = require('../utils/logger');
 
 /**
  * @route   POST /api/utils/fix-category-counts
@@ -63,21 +64,21 @@ router.post('/fix-category-counts', async (req, res) => {
             newCount: actualCount
           });
           
-          console.log(`  ✅ Updated: ${category.name} (${oldCount} → ${actualCount})`);
+          logger.info(`  ✅ Updated: ${category.name} (${oldCount} → ${actualCount})`);
         } else {
           results.unchanged.push({
             name: category.name,
             count: actualCount
           });
           
-          console.log(`  ✓ Correct: ${category.name} (${actualCount})`);
+          logger.info(`  ✓ Correct: ${category.name} (${actualCount})`);
         }
       } catch (error) {
         results.errors.push({
           name: category.name,
           error: error.message
         });
-        console.error(`  ❌ Error: ${category.name} - ${error.message}`);
+        logger.error(`  ❌ Error: ${category.name} - ${error.message}`);
       }
     }
 
@@ -88,7 +89,7 @@ router.post('/fix-category-counts', async (req, res) => {
     
     const totalProducts = finalCategories.reduce((sum, cat) => sum + (cat.productCount || 0), 0);
 
-    console.log('✅ Category count fix complete!');
+    logger.info('✅ Category count fix complete!');
 
     res.json({
       success: true,
@@ -111,7 +112,7 @@ router.post('/fix-category-counts', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Fix category counts error:', error);
+    logger.error('❌ Fix category counts error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fix category counts',
@@ -166,7 +167,7 @@ router.get('/verify-category-counts', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Verify category counts error:', error);
+    logger.error('❌ Verify category counts error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to verify category counts',
@@ -264,7 +265,7 @@ router.post('/sync-missing-categories', async (req, res) => {
       const existing = await Category.findOne({ slug: categoryData.slug });
       
       if (existing) {
-        console.log(`  ⏭️  Skipped: "${categoryData.name}" (already exists)`);
+      logger.info(`  ⏭️  Skipped: "${categoryData.name}" (already exists)`);
         skipped++;
         skippedCategories.push(categoryData.name);
         continue;
@@ -272,7 +273,7 @@ router.post('/sync-missing-categories', async (req, res) => {
       
       // Create new category
       const category = await Category.create(categoryData);
-      console.log(`  ✅ Created: "${categoryData.name}"`);
+      logger.info(`  ✅ Created: "${categoryData.name}"`);
       created++;
       createdCategories.push({
         name: category.name,
@@ -285,7 +286,7 @@ router.post('/sync-missing-categories', async (req, res) => {
     const totalCategories = await Category.countDocuments();
     const activeCategories = await Category.countDocuments({ isActive: true });
 
-    console.log('✅ Category sync complete!');
+    logger.info('✅ Category sync complete!');
 
     res.json({
       success: true,
@@ -302,7 +303,7 @@ router.post('/sync-missing-categories', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Sync categories error:', error);
+    logger.error('❌ Sync categories error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to sync categories',
@@ -356,7 +357,7 @@ router.get('/test-categories', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Test categories error:', error);
+    logger.error('❌ Test categories error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to test categories',
@@ -406,10 +407,10 @@ router.post('/clear-cache', async (req, res) => {
     
     if (pattern === '*') {
       await redisCache.flushAll();
-      console.log('✅ Cleared all Redis cache');
+      logger.info('✅ Cleared all Redis cache');
     } else {
       await redisCache.delPattern(pattern);
-      console.log(`✅ Cleared Redis cache pattern: ${pattern}`);
+      logger.info(`✅ Cleared Redis cache pattern: ${pattern}`);
     }
 
     // Warm up important caches
@@ -425,7 +426,7 @@ router.post('/clear-cache', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Clear cache error:', error);
+    logger.error('❌ Clear cache error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to clear cache',
@@ -459,17 +460,17 @@ router.post('/fix-all-categories', async (req, res) => {
       });
     }
 
-    console.log('🔧 Starting comprehensive category fix...');
+    logger.info('🔧 Starting comprehensive category fix...');
 
     // Step 1: Get all categories
     const allCategories = await Category.find({}).sort({ name: 1 });
     const activeCategories = allCategories.filter(c => c.isActive);
     
-    console.log(`   Found: ${allCategories.length} total, ${activeCategories.length} active`);
+    logger.info(`   Found: ${allCategories.length} total, ${activeCategories.length} active`);
 
     // Step 2: Get all products
     const allProducts = await Product.find({ isActive: true });
-    console.log(`   Found: ${allProducts.length} active products`);
+    logger.info(`   Found: ${allProducts.length} active products`);
 
     // Step 3: Count products per category
     const categoryProductCounts = {};
@@ -503,7 +504,7 @@ router.post('/fix-all-categories', async (req, res) => {
         });
         
         fixed++;
-        console.log(`   ✅ ${category.name}: ${savedCount} → ${actualCount}`);
+        logger.info(`   ✅ ${category.name}: ${savedCount} → ${actualCount}`);
       }
     }
 
@@ -518,7 +519,7 @@ router.post('/fix-all-categories', async (req, res) => {
     const categoriesWithProducts = updatedCategories.filter(c => c.productCount > 0).length;
     const emptyCategories = updatedCategories.filter(c => !c.productCount || c.productCount === 0).length;
 
-    console.log('✅ Category fix complete!');
+    logger.info('✅ Category fix complete!');
 
     res.json({
       success: true,
@@ -541,7 +542,7 @@ router.post('/fix-all-categories', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Fix all categories error:', error);
+    logger.error('❌ Fix all categories error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fix categories',
