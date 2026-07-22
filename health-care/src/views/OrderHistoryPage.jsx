@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
-import Spinner from '@/components/ui/Spinner';
+import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
 import WriteReviewModal from '@/components/product/WriteReviewModal';
 import { API } from '@/constants/api';
 const PAGE_SIZE = 10;
@@ -112,8 +112,17 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
       </h1>
 
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner />
+        <div className="space-y-4 animate-fade-in">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 animate-pulse">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-32 animate-shimmer" />
+                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-24 animate-shimmer" />
+              </div>
+              <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 mb-3 animate-shimmer" />
+              <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg w-full animate-shimmer" />
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="text-center py-12 text-[13px] text-[#E24B4A]">{error}</div>

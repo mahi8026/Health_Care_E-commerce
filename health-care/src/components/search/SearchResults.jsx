@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
-import Spinner from '@/components/ui/Spinner';
+import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
 import WishlistButton from '@/components/wishlist/WishlistButton';
 import Pagination from '@/components/ui/Pagination';
 import { smartSearch } from '@/utils/smartSearch';
@@ -218,9 +218,10 @@ export default function SearchResults({
 
   if (loading && displayedProducts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <Spinner />
-        <p className="text-[13px] text-gray-400">Loading products...</p>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+        {[...Array(8)].map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
       </div>
     );
   }
@@ -289,9 +290,9 @@ export default function SearchResults({
       <div className="relative">
         {loading && displayedProducts.length > 0 && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
-            <div className="bg-white shadow-2xl rounded-2xl px-8 py-6 flex flex-col items-center gap-3 border border-gray-100">
-              <Spinner />
-              <p className="text-[13px] text-gray-600 font-medium">Loading page {currentPage}...</p>
+            <div className="bg-white shadow-2xl rounded-2xl px-8 py-6 flex flex-col items-center gap-3 border border-gray-100 animate-scale-in">
+              <Spinner size="lg" variant="medical" />
+              <p className="text-sm text-gray-600 font-medium">Loading page {currentPage}...</p>
             </div>
           </div>
         )}

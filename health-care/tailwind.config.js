@@ -45,6 +45,7 @@ export default {
       animation: {
         // Existing
         'spin': 'spin 1s linear infinite',
+        'spin-slow': 'spin 3s linear infinite',
         // Micro-interactions
         'button-glow': 'button-glow 2s ease-in-out infinite',
         'heart-beat': 'heart-beat 0.5s ease-in-out',
@@ -55,12 +56,20 @@ export default {
         'slide-up': 'slide-up 0.4s ease-out',
         'slide-down': 'slide-down 0.4s ease-out',
         'fade-in-scale': 'fade-in-scale 0.3s ease-out',
+        'fade-in': 'fade-in 0.5s ease-out',
+        'scale-in': 'scale-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
         'count-up': 'count-up 0.3s ease-out',
         'progress-bar': 'progress-bar 1s ease-out',
         'cart-bounce': 'cart-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
         'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'shimmer': 'shimmer 2s linear infinite',
         'float': 'float 3s ease-in-out infinite',
+        // Medical themed loaders
+        'heartbeat-1': 'heartbeat 1.2s ease-in-out infinite',
+        'heartbeat-2': 'heartbeat 1.2s ease-in-out 0.1s infinite',
+        'heartbeat-3': 'heartbeat 1.2s ease-in-out 0.2s infinite',
+        'heartbeat-4': 'heartbeat 1.2s ease-in-out 0.3s infinite',
+        'heartbeat-5': 'heartbeat 1.2s ease-in-out 0.4s infinite',
       },
       keyframes: {
         'button-glow': {
@@ -104,6 +113,14 @@ export default {
           'from': { transform: 'scale(0.95)', opacity: '0' },
           'to': { transform: 'scale(1)', opacity: '1' },
         },
+        'fade-in': {
+          'from': { opacity: '0' },
+          'to': { opacity: '1' },
+        },
+        'scale-in': {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
         'count-up': {
           'from': { opacity: '0', transform: 'translateY(10px)' },
           'to': { opacity: '1', transform: 'translateY(0)' },
@@ -130,6 +147,10 @@ export default {
         'float': {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
+        },
+        'heartbeat': {
+          '0%, 100%': { transform: 'scaleY(1)', opacity: '0.7' },
+          '50%': { transform: 'scaleY(1.5)', opacity: '1' },
         },
       },
     },

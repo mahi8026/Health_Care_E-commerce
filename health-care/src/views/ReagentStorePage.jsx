@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import ReagentFilters from '@/components/reagent/ReagentFilters';
 import ReagentToolbar from '@/components/reagent/ReagentToolbar';
 import ReagentGrid from '@/components/reagent/ReagentGrid';
-import Spinner from '@/components/ui/Spinner';
+import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API as API_BASE } from '@/constants/api';
 import { FaSnowflake, FaTint } from 'react-icons/fa';
@@ -240,8 +240,10 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
             />
 
             {loading ? (
-              <div className="flex justify-center py-24">
-                <Spinner size="lg" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {[...Array(8)].map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
               </div>
             ) : fetchError ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-gray-100 shadow-sm">
