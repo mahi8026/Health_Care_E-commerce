@@ -11,11 +11,6 @@ export default function SMSSettingsPage() {
   const [testLoading, setTestLoading] = useState(false);
   const [testResult, setTestResult] = useState(null);
 
-  useEffect(() => {
-    fetchConfig();
-    fetchStats();
-  }, []);
-
   const fetchConfig = async () => {
     try {
       const token = localStorage.getItem('medcore_token');
@@ -53,6 +48,13 @@ export default function SMSSettingsPage() {
       process.env.NODE_ENV !== "production" && console.error('Failed to fetch SMS stats:', error);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await Promise.all([fetchConfig(), fetchStats()]);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTestSMS = async (e) => {
     e.preventDefault();

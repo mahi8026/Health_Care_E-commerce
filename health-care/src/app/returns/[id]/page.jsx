@@ -21,10 +21,6 @@ export default function ReturnDetailPage() {
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
 
-  useEffect(() => {
-    fetchReturnDetails();
-  }, [params.id]);
-
   const fetchReturnDetails = async () => {
     try {
       const token = localStorage.getItem('medcore_token');
@@ -50,6 +46,13 @@ export default function ReturnDetailPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchReturnDetails();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
 
   const handleCancelReturn = async () => {
     if (!confirm('Are you sure you want to cancel this return request?')) {

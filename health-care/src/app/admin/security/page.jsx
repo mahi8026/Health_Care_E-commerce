@@ -38,17 +38,6 @@ export default function SecuritySettingsPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    fetchTwoFactorStatus();
-  }, []);
-
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!user && !loading) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
-
   const fetchTwoFactorStatus = async () => {
     try {
       const token = getToken();
@@ -76,6 +65,20 @@ export default function SecuritySettingsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchTwoFactorStatus();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
   const handleSetup2FA = async () => {
     try {

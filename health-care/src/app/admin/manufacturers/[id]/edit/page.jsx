@@ -29,10 +29,6 @@ export default function EditManufacturerPage() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
 
-  useEffect(() => {
-    fetchManufacturer();
-  }, [manufacturerId]);
-
   const fetchManufacturer = async () => {
     try {
       setLoading(true);
@@ -68,6 +64,13 @@ export default function EditManufacturerPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      await fetchManufacturer();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [manufacturerId]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

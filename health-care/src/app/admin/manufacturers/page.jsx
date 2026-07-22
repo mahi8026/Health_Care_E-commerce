@@ -29,20 +29,6 @@ export default function ManufacturersPage() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      process.env.NODE_ENV !== "production" && console.warn('[Manufacturers] No authentication token found');
-      setError('Please log in to access the admin panel');
-      setLoading(false);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      fetchManufacturers();
-    }
-  }, [includeInactive, searchTerm, countryFilter]);
-
   const fetchManufacturers = async () => {
     try {
       setLoading(true);
@@ -92,6 +78,23 @@ export default function ManufacturersPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      process.env.NODE_ENV !== "production" && console.warn('[Manufacturers] No authentication token found');
+      setError('Please log in to access the admin panel');
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      (async () => {
+        await fetchManufacturers();
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [includeInactive, searchTerm, countryFilter]);
 
   const handleDelete = async (id, name) => {
     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;
