@@ -13,7 +13,8 @@ exports.trackOrder = async (req, res) => {
       ]
     })
       .populate('items.product', 'name sku brand images')
-      .select('-paymentDetails -__v');
+      .select('-paymentDetails -__v')
+      .lean();
 
     if (!order) {
       return errorResponse(res, 'Order not found. Please check your order number.', null, 404);

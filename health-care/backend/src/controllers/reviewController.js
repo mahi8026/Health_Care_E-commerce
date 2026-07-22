@@ -43,7 +43,7 @@ exports.createReview = async (req, res) => {
         user: req.user._id,
         status: 'delivered',
         'items.product': productId
-      });
+      }).lean();
       if (order) {
         verifiedPurchase = true;
         resolvedOrderId = order._id;
@@ -56,7 +56,7 @@ exports.createReview = async (req, res) => {
         user: req.user._id,
         status: 'delivered',
         'items.product': productId
-      }).sort({ createdAt: -1 });
+      }).sort({ createdAt: -1 }).lean();
       if (anyOrder) {
         verifiedPurchase = true;
         resolvedOrderId = anyOrder._id;
@@ -369,7 +369,7 @@ exports.getEligibleProducts = async (req, res) => {
       user: req.user._id,
       status: 'delivered',
       deliveredAt: { $gte: ninetyDaysAgo }
-    }).populate('items.product', 'name images sku');
+    }).populate('items.product', 'name images sku').lean();
     
     // Get all product IDs from orders
     const productIds = [];

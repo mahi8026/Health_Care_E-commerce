@@ -23,12 +23,14 @@ exports.createReturn = async (req, res) => {
     }
 
     // Validate order exists and belongs to user
-    const order = await Order.findById(orderId).populate('items.product');
+    const order = await Order.findById(orderId).populate('items.product').lean();
     if (!order) {
       return errorResponse(res, 'Order not found', null, 404);
     }
 
-    if (order.user.toString() !== req.user._id.toString()) {
+    // When using .lean(), need to handle ObjectId comparison properly
+    const orderUserId = typeof order.user === 'string' ? order.user : order.user.toString();
+    if (orderUserId !== req.user._id.toString()) {
       return errorResponse(res, 'Not authorized to request return for this order', null, 403);
     }
 

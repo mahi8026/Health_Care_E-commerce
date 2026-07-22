@@ -22,7 +22,7 @@ exports.sendOrderConfirmation = async (req, res) => {
       return errorResponse(res, 'Order ID is required', null, 400);
     }
 
-    const order = await Order.findById(orderId).populate('items.product', 'name sku brand');
+    const order = await Order.findById(orderId).populate('items.product', 'name sku brand').lean();
     if (!order) {
       return errorResponse(res, 'Order not found', null, 404);
     }
@@ -49,7 +49,7 @@ exports.sendPaymentReceipt = async (req, res) => {
       return errorResponse(res, 'Order ID is required', null, 400);
     }
 
-    const order = await Order.findById(orderId).populate('items.product', 'name sku brand');
+    const order = await Order.findById(orderId).populate('items.product', 'name sku brand').lean();
     if (!order) {
       return errorResponse(res, 'Order not found', null, 404);
     }
@@ -85,7 +85,7 @@ exports.sendShipping = async (req, res) => {
       return errorResponse(res, 'Order ID is required', null, 400);
     }
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).lean();
     if (!order) {
       return errorResponse(res, 'Order not found', null, 404);
     }
@@ -107,7 +107,7 @@ exports.sendShipping = async (req, res) => {
 exports.sendDelivered = async (req, res) => {
   try {
     const { orderId } = req.body;
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).lean();
     if (!order) return errorResponse(res, 'Order not found', null, 404);
 
     const user = await User.findById(order.user);
