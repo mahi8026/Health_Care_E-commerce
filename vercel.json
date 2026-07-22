@@ -19,7 +19,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://health-care-e-commerce.onrender.com/api/:path*"
+      "destination": "https://healthcaree-commerce-production.up.railway.app/api/:path*"
     }
   ]
 }

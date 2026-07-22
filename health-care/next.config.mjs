@@ -259,7 +259,10 @@ const nextConfig = {
   },
 
   // Turbopack config — required in Next.js 16 to silence warning
-  turbopack: {},
+  turbopack: {
+    // Set explicit root to avoid multiple lockfile warning
+    root: process.cwd(),
+  },
 
   // TypeScript is installed only for ESLint (eslint-config-next dependency)
   // Skip build-time type checking — this is a JS codebase with no tsconfig.json
