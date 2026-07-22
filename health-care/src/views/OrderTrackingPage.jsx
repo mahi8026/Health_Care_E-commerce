@@ -122,12 +122,6 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
     }
   };
 
-  useEffect(() => {
-    if (initialOrderNumber) {
-      handleTrack(initialOrderNumber);
-    }
-  }, [initialOrderNumber]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleTrack = async (orderNum = orderNumber) => {
     if (!orderNum.trim()) {
       setError('Please enter an order number');
@@ -152,6 +146,13 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (initialOrderNumber) {
+      handleTrack(initialOrderNumber);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialOrderNumber]);
 
   const handleDownloadInvoice = async () => {
     if (!order?._id) return;

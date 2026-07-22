@@ -14,6 +14,8 @@ export function useApi(endpoint, options = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
+  // Stringify options for stable dependency
+  const optionsStr = JSON.stringify(options);
 
   const fetchData = useCallback(async () => {
     abortRef.current = new AbortController();
@@ -21,8 +23,10 @@ export function useApi(endpoint, options = {}) {
     setError(null);
 
     try {
+      // Parse options back from string
+      const opts = JSON.parse(optionsStr);
       const response = await fetch(`${API}${endpoint}`, {
-        ...options,
+        ...opts,
         signal: abortRef.current.signal,
       });
 
@@ -39,7 +43,7 @@ export function useApi(endpoint, options = {}) {
     } finally {
       setLoading(false);
     }
-  }, [endpoint, JSON.stringify(options)]);
+  }, [endpoint, optionsStr]);
 
   useEffect(() => {
     fetchData();
