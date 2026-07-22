@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { redisCacheMiddleware } = require('../middleware/cache');
+const { redisCacheMiddleware, cacheMiddleware } = require('../middleware/cache');
 const { CACHE_KEYS, CACHE_TTL } = require('../services/redisCache');
 const { etagMiddleware } = require('../middleware/etag');
 const {
@@ -43,8 +43,8 @@ const upload = multer({
 });
 
 // Public routes with caching (categories verified working correctly)
-router.get('/', cache.middleware(3600), getCategories); // Cache for 1 hour
-router.get('/tree', cache.middleware(3600), getCategoryTree); // Cache for 1 hour
+router.get('/', redisCacheMiddleware({ ttl: 3600, keyPrefix: 'categories:' }), getCategories); // Cache for 1 hour
+router.get('/tree', redisCacheMiddleware({ ttl: 3600, keyPrefix: 'categories:tree:' }), getCategoryTree); // Cache for 1 hour
 
 // Admin routes (must come before /:slug to avoid route conflicts)
 router.get('/by-id/:id', protect, authorize('admin'), getCategoryById);
