@@ -38,10 +38,6 @@ export default function FlashDealsManagement() {
   const [selectedDeals, setSelectedDeals] = useState([]); // For bulk delete
   const [showRemoveProductModal, setShowRemoveProductModal] = useState(null); // {dealId, productId, productName}
 
-  useEffect(() => {
-    fetchFlashDeals();
-  }, []);
-
   const fetchFlashDeals = async () => {
     try {
       setLoading(true);
@@ -60,6 +56,11 @@ export default function FlashDealsManagement() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchFlashDeals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Filtered and searched deals
   const filteredDeals = useMemo(() => {

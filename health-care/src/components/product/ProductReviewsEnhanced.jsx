@@ -31,24 +31,6 @@ export default function ProductReviewsEnhanced({ productId }) {
   const [hasEligibleOrder, setHasEligibleOrder] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
-  useEffect(() => {
-    fetchReviews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productId, page, ratingFilter, sortBy]);
-
-  useEffect(() => {
-    if (user) {
-      // Any logged-in user can write a review
-      setCanReview(true);
-      // Check if they have an eligible order (determines verified vs unverified)
-      checkEligibility();
-    } else {
-      setCanReview(false);
-      setHasEligibleOrder(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, productId]);
-
   const fetchReviews = async () => {
     try {
       setLoading(true);
@@ -99,6 +81,24 @@ export default function ProductReviewsEnhanced({ productId }) {
       process.env.NODE_ENV !== "production" && console.error('Check eligibility error:', error);
     }
   };
+
+  useEffect(() => {
+    fetchReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId, page, ratingFilter, sortBy]);
+
+  useEffect(() => {
+    if (user) {
+      // Any logged-in user can write a review - intentional state sync
+      setCanReview(true);
+      // Check if they have an eligible order (determines verified vs unverified)
+      checkEligibility();
+    } else {
+      setCanReview(false);
+      setHasEligibleOrder(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, productId]);
 
   const handleHelpful = async (reviewId) => {
     if (!user) {

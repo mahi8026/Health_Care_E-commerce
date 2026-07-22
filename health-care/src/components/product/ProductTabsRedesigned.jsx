@@ -13,13 +13,6 @@ export default function ProductTabsRedesigned({ product }) {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewsError, setReviewsError] = useState(null);
 
-  // Fetch reviews when component mounts or product changes
-  useEffect(() => {
-    if (product?._id) {
-      fetchReviews();
-    }
-  }, [product?._id]);
-
   const fetchReviews = async () => {
     setReviewsLoading(true);
     setReviewsError(null);
@@ -32,6 +25,14 @@ export default function ProductTabsRedesigned({ product }) {
       setReviewsLoading(false);
     }
   };
+
+  // Fetch reviews when component mounts or product changes
+  useEffect(() => {
+    if (product?._id) {
+      fetchReviews();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?._id]);
 
   const tabs = [
     { id: 'specifications', label: 'Specifications' },

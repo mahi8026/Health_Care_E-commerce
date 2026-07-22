@@ -21,32 +21,37 @@ export default function WhatsAppConversationDetail({ conversationId }) {
   const [loadingAdmins, setLoadingAdmins] = useState(false);
   const [assigningAgent, setAssigningAgent] = useState(false);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const fetchConversation = async () => {
+    try {
+      setError(null);
+      const response = await api.get(`/whatsapp/conversations/${conversationId}`);
+      
+      if (response.data.success) {
+        setConversation(response.data.conversation);
+        setMessages(response.data.messages);
+        
+        // Scroll to bottom on initial load
+        setTimeout(() => scrollToBottom(), 100);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load conversation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch conversation details
   useEffect(() => {
-    const fetchConversation = async () => {
-      try {
-        setError(null);
-        const response = await api.get(`/whatsapp/conversations/${conversationId}`);
-        
-        if (response.data.success) {
-          setConversation(response.data.conversation);
-          setMessages(response.data.messages);
-          
-          // Scroll to bottom on initial load
-          setTimeout(() => scrollToBottom(), 100);
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load conversation');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchConversation();
     
     // Poll for new messages every 10 seconds
     const interval = setInterval(fetchConversation, 10000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId]);
 
   // Fetch admin users for assignment
@@ -68,10 +73,6 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
     fetchAdminUsers();
   }, []);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
