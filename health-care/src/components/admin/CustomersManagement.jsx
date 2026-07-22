@@ -211,11 +211,6 @@ export default function CustomersManagement() {
     setPage(1);
   };
 
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
-  };
-
   const getTierColor = (tier) => {
     const colors = {
       Platinum: 'bg-[#E0E7FF] text-[#3730A3]',

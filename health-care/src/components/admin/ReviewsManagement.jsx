@@ -124,11 +124,6 @@ export default function ReviewsManagement() {
     }
   };
 
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
-  };
-
   const renderStars = (rating) => {
     return (
       <div className="flex gap-[2px] text-[14px]">

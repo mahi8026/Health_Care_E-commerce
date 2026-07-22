@@ -79,11 +79,6 @@ export default function QuotationsManagement() {
     }
   };
 
-  const showMessage = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: '', type: '' }), 3000);
-  };
-
   const getStatusColor = (status) => {
     const colors = {
       pending: 'bg-[#FEF3C7] text-[#92400E]',
