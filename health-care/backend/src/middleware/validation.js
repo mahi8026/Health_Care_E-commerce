@@ -1,4 +1,4 @@
-﻿const { body, param, query, validationResult, checkExact } = require('express-validator');
+﻿const { body, param, query, validationResult } = require('express-validator');
 
 // Accepts: 01XXXXXXXXX  |  +8801XXXXXXXXX  |  8801XXXXXXXXX  (digit after country prefix must be 3-9)
 const BD_PHONE_REGEX = /^(\+880|880|0)?1[3-9]\d{8}$/;
@@ -28,7 +28,7 @@ const validateProduct = [
   body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('stock').isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
   body('sku').trim().notEmpty().withMessage('SKU is required')
-    .matches(/^[A-Z0-9\-\/\.]+$/).withMessage('SKU must contain only uppercase letters, numbers, hyphens, slashes, and dots'),
+    .matches(/^[A-Z0-9\-/.]+$/).withMessage('SKU must contain only uppercase letters, numbers, hyphens, slashes, and dots'),
   body('category').isMongoId().withMessage('Invalid category ID'),
   body('brand').isMongoId().withMessage('Invalid brand ID'),
   body('oldPrice').optional().isFloat({ min: 0 }).withMessage('Old price must be a positive number'),
@@ -155,7 +155,12 @@ const validateProductCreate = [
   // Images can be either a plain URL string or an object with a url property
   body('images.*').optional().custom((img) => {
     if (typeof img === 'string') {
-      try { new URL(img); return true; } catch { throw new Error('Each image must be a valid URL'); }
+      try {
+        new URL(img);
+        return true;
+      } catch {
+        throw new Error('Each image must be a valid URL');
+      }
     }
     if (typeof img === 'object' && img !== null && typeof img.url === 'string') {
       return true; // object with url property (uploaded image)
@@ -178,7 +183,7 @@ const validateProductUpdate = [
   body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('stock').optional().isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
   body('sku').optional().trim().notEmpty().withMessage('SKU cannot be empty')
-    .matches(/^[A-Z0-9\-\/\.]+$/).withMessage('SKU must contain only uppercase letters, numbers, hyphens, slashes, and dots'),
+    .matches(/^[A-Z0-9\-/.]+$/).withMessage('SKU must contain only uppercase letters, numbers, hyphens, slashes, and dots'),
   body('category').optional().isMongoId().withMessage('Invalid category ID'),
   body('brand').optional().isMongoId().withMessage('Invalid brand ID'),
   body('oldPrice').optional().isFloat({ min: 0 }).withMessage('Old price must be a positive number'),
@@ -187,7 +192,12 @@ const validateProductUpdate = [
   body('images').optional().isArray().withMessage('Images must be an array'),
   body('images.*').optional().custom((img) => {
     if (typeof img === 'string') {
-      try { new URL(img); return true; } catch { throw new Error('Each image must be a valid URL'); }
+      try {
+        new URL(img);
+        return true;
+      } catch {
+        throw new Error('Each image must be a valid URL');
+      }
     }
     if (typeof img === 'object' && img !== null && typeof img.url === 'string') {
       return true;
