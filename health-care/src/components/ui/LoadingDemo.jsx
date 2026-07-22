@@ -196,7 +196,7 @@ export default function LoadingDemo() {
               <pre className="bg-black/30 rounded-lg p-4 text-sm overflow-x-auto">
 {`import Spinner from '@/components/ui/Spinner';
 
-<Spinner size=&quot;lg&quot; variant=&quot;medical&quot; />`}
+<Spinner size="lg" variant="medical" />`}
               </pre>
             </div>
 
@@ -222,7 +222,7 @@ export default function LoadingDemo() {
 {`import { ProductCardSkeleton } from '@/components/ui/Spinner';
 
 {loading ? (
-  <div className=&quot;grid grid-cols-4 gap-4&quot;>
+  <div className="grid grid-cols-4 gap-4">
     {[...Array(8)].map((_, i) => (
       <ProductCardSkeleton key={i} />
     ))}
@@ -240,8 +240,8 @@ export default function LoadingDemo() {
 
 {isProcessing && (
   <LoadingOverlay 
-    message=&quot;Processing your order...&quot; 
-    variant=&quot;medical&quot;
+    message="Processing your order..." 
+    variant="medical"
   />
 )}`}
               </pre>

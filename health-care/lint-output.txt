@@ -1,0 +1,2034 @@
+﻿
+> health-care@0.1.3 lint
+> eslint --config eslint.config.mjs src/
+
+
+C:\Projects\Health Care\health-care\src\__tests__\productMetadata.test.js
+  28:12  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+C:\Projects\Health Care\health-care\src\app\account\reviews\page.jsx
+   26:5   error    Error: Cannot access variable before it is declared
+
+`fetchReviews` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  24 |       return;
+  25 |     }
+> 26 |     fetchReviews();
+     |     ^^^^^^^^^^^^ `fetchReviews` accessed before it is declared
+  27 |     fetchEligibleProducts();
+  28 |   }, [user, page]);
+  29 |
+
+  28 |   }, [user, page]);
+  29 |
+> 30 |   const fetchReviews = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |     try {
+     | ^^^^^^^^^
+> 32 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 47 |     }
+     | ^^^^^^^^^
+> 48 |   };
+     | ^^^^^ `fetchReviews` is declared here
+  49 |
+  50 |   const fetchEligibleProducts = async () => {
+  51 |     try {                                                                                                                                                                                          react-hooks/immutability
+   27:5   error    Error: Cannot access variable before it is declared
+
+`fetchEligibleProducts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  25 |     }
+  26 |     fetchReviews();
+> 27 |     fetchEligibleProducts();
+     |     ^^^^^^^^^^^^^^^^^^^^^ `fetchEligibleProducts` accessed before it is declared
+  28 |   }, [user, page]);
+  29 |
+  30 |   const fetchReviews = async () => {
+
+  48 |   };
+  49 |
+> 50 |   const fetchEligibleProducts = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 51 |     try {
+     | ^^^^^^^^^
+> 52 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 63 |     }
+     | ^^^^^^^^^
+> 64 |   };
+     | ^^^^^ `fetchEligibleProducts` is declared here
+  65 |
+  66 |   const handleDelete = async (reviewId) => {
+  67 |     if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {  react-hooks/immutability
+   28:6   warning  React Hook useEffect has missing dependencies: 'fetchReviews' and 'router'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  155:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @next/next/no-img-element
+  207:56  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+  224:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @next/next/no-img-element
+  263:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\app\admin\activity-logs\page.jsx
+  63:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  61 |   }, []);
+  62 |
+> 63 |   useEffect(() => { fetchLogs(); fetchStats(); }, [fetchLogs, fetchStats]);
+     |                     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  64 |
+  65 |   useEffect(() => {
+  66 |     if (!autoRefresh) return;  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\app\admin\categories\[id]\edit\page.jsx
+   35:5   error    Error: Cannot access variable before it is declared
+
+`fetchCategory` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  33 |
+  34 |   useEffect(() => {
+> 35 |     fetchCategory();
+     |     ^^^^^^^^^^^^^ `fetchCategory` accessed before it is declared
+  36 |     fetchCategories();
+  37 |   }, [categoryId]);
+  38 |
+
+  37 |   }, [categoryId]);
+  38 |
+> 39 |   const fetchCategory = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     try {
+     | ^^^^^^^^^
+> 41 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 67 |     }
+     | ^^^^^^^^^
+> 68 |   };
+     | ^^^^^ `fetchCategory` is declared here
+  69 |
+  70 |   const fetchCategories = async () => {
+  71 |     try {                                                                                                                          react-hooks/immutability
+   36:5   error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  34 |   useEffect(() => {
+  35 |     fetchCategory();
+> 36 |     fetchCategories();
+     |     ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  37 |   }, [categoryId]);
+  38 |
+  39 |   const fetchCategory = async () => {
+
+  68 |   };
+  69 |
+> 70 |   const fetchCategories = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |     try {
+     | ^^^^^^^^^
+> 72 |       const response = await api.get('/categories?includeInactive=true');
+     ΓÇª
+     | ^^^^^^^^^
+> 82 |     }
+     | ^^^^^^^^^
+> 83 |   };
+     | ^^^^^ `fetchCategories` is declared here
+  84 |
+  85 |   const handleChange = (e) => {
+  86 |     const { name, value, type, checked } = e.target;  react-hooks/immutability
+   37:6   warning  React Hook useEffect has missing dependencies: 'fetchCategories' and 'fetchCategory'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+  268:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @next/next/no-img-element
+  279:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @next/next/no-img-element
+  290:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @next/next/no-img-element
+  301:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\app\admin\categories\new\page.jsx
+   30:5   error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  28 |
+  29 |   useEffect(() => {
+> 30 |     fetchCategories();
+     |     ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  31 |   }, []);
+  32 |
+  33 |   const fetchCategories = async () => {
+
+  31 |   }, []);
+  32 |
+> 33 |   const fetchCategories = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |     try {
+     | ^^^^^^^^^
+> 35 |       const response = await api.get('/categories');
+     | ^^^^^^^^^
+> 36 |       // Only show root categories (no parent) for parent selection
+     | ^^^^^^^^^
+> 37 |       setCategories(response.data.categories.filter(c => !c.parentCategory));
+     | ^^^^^^^^^
+> 38 |     } catch (err) {
+     | ^^^^^^^^^
+> 39 |       process.env.NODE_ENV !== "production" && console.error('Failed to load categories:', err);
+     | ^^^^^^^^^
+> 40 |     }
+     | ^^^^^^^^^
+> 41 |   };
+     | ^^^^^ `fetchCategories` is declared here
+  42 |
+  43 |   const handleChange = (e) => {
+  44 |     const { name, value, type, checked } = e.target;  react-hooks/immutability
+  224:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @next/next/no-img-element
+  240:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\app\admin\categories\page.jsx
+  67:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  65 |     
+  66 |     // Fetch categories on mount or when includeInactive changes
+> 67 |     fetchCategories();
+     |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  68 |   }, [router, includeInactive, fetchCategories]);
+  69 |
+  70 |   const handleDelete = async (id, name) => {  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\app\admin\coupons\[id]\edit\page.jsx
+  40:5  error    Error: Cannot access variable before it is declared
+
+`fetchCoupon` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  38 |
+  39 |   useEffect(() => {
+> 40 |     fetchCoupon();
+     |     ^^^^^^^^^^^ `fetchCoupon` accessed before it is declared
+  41 |     fetchMetadata();
+  42 |   }, [couponId]);
+  43 |
+
+  42 |   }, [couponId]);
+  43 |
+> 44 |   const fetchCoupon = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     try {
+     | ^^^^^^^^^
+> 46 |       setFetching(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 80 |     }
+     | ^^^^^^^^^
+> 81 |   };
+     | ^^^^^ `fetchCoupon` is declared here
+  82 |
+  83 |   const fetchMetadata = async () => {
+  84 |     try {                                                                                                               react-hooks/immutability
+  41:5  error    Error: Cannot access variable before it is declared
+
+`fetchMetadata` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  39 |   useEffect(() => {
+  40 |     fetchCoupon();
+> 41 |     fetchMetadata();
+     |     ^^^^^^^^^^^^^ `fetchMetadata` accessed before it is declared
+  42 |   }, [couponId]);
+  43 |
+  44 |   const fetchCoupon = async () => {
+
+   81 |   };
+   82 |
+>  83 |   const fetchMetadata = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  84 |     try {
+      | ^^^^^^^^^
+>  85 |       const token = localStorage.getItem('medcore_token');
+      ΓÇª
+      | ^^^^^^^^^
+> 100 |     }
+      | ^^^^^^^^^
+> 101 |   };
+      | ^^^^^ `fetchMetadata` is declared here
+  102 |
+  103 |   const showMessage = (text, type) => {
+  104 |     setMessage({ text, type });  react-hooks/immutability
+  42:6  warning  React Hook useEffect has a missing dependency: 'fetchCoupon'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\app\admin\coupons\new\page.jsx
+  36:5  error  Error: Cannot access variable before it is declared
+
+`fetchMetadata` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  34 |
+  35 |   useEffect(() => {
+> 36 |     fetchMetadata();
+     |     ^^^^^^^^^^^^^ `fetchMetadata` accessed before it is declared
+  37 |   }, []);
+  38 |
+  39 |   const fetchMetadata = async () => {
+
+  37 |   }, []);
+  38 |
+> 39 |   const fetchMetadata = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     try {
+     | ^^^^^^^^^
+> 41 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 56 |     }
+     | ^^^^^^^^^
+> 57 |   };
+     | ^^^^^ `fetchMetadata` is declared here
+  58 |
+  59 |   const showMessage = (text, type) => {
+  60 |     setMessage({ text, type });  react-hooks/immutability
+
+C:\Projects\Health Care\health-care\src\app\admin\coupons\page.jsx
+  42:9  error    Error: Cannot access variable before it is declared
+
+`showMessage` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  40 |         setTotal(data.pagination.total);
+  41 |       } else {
+> 42 |         showMessage('Failed to load coupons', 'error');
+     |         ^^^^^^^^^^^ `showMessage` accessed before it is declared
+  43 |       }
+  44 |     } catch (error) {
+  45 |       showMessage('Failed to load coupons', 'error');
+
+  53 |   }, [page, search, typeFilter, statusFilter]);
+  54 |
+> 55 |   const showMessage = (text, type) => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |     setMessage({ text, type });
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 57 |     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 58 |   };
+     | ^^^^^ `showMessage` is declared here
+  59 |
+  60 |   const toggleActive = async (couponId, currentStatus) => {
+  61 |     try {  react-hooks/immutability
+  52:5  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  50 |
+  51 |   useEffect(() => {
+> 52 |     fetchCoupons();
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  53 |   }, [page, search, typeFilter, statusFilter]);
+  54 |
+  55 |   const showMessage = (text, type) => {                                                      react-hooks/set-state-in-effect
+  53:6  warning  React Hook useEffect has a missing dependency: 'fetchCoupons'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\app\admin\layout.jsx
+  20:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  18 |     }
+  19 |
+> 20 |     setIsChecking(false);
+     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  21 |
+  22 |     // Check authentication after loading is complete
+  23 |     if (!isAuthenticated()) {  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\app\admin\manufacturers\[id]\edit\page.jsx
+   33:5   error    Error: Cannot access variable before it is declared
+
+`fetchManufacturer` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  31 |
+  32 |   useEffect(() => {
+> 33 |     fetchManufacturer();
+     |     ^^^^^^^^^^^^^^^^^ `fetchManufacturer` accessed before it is declared
+  34 |   }, [manufacturerId]);
+  35 |
+  36 |   const fetchManufacturer = async () => {
+
+  34 |   }, [manufacturerId]);
+  35 |
+> 36 |   const fetchManufacturer = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |     try {
+     | ^^^^^^^^^
+> 38 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 69 |     }
+     | ^^^^^^^^^
+> 70 |   };
+     | ^^^^^ `fetchManufacturer` is declared here
+  71 |
+  72 |   const handleChange = (e) => {
+  73 |     const { name, value, type, checked } = e.target;  react-hooks/immutability
+   34:6   warning  React Hook useEffect has a missing dependency: 'fetchManufacturer'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  216:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @next/next/no-img-element
+  227:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\app\admin\manufacturers\new\page.jsx
+  166:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\app\admin\manufacturers\page.jsx
+   35:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  33 |     if (!isAuthenticated()) {
+  34 |       process.env.NODE_ENV !== "production" && console.warn('[Manufacturers] No authentication token found');
+> 35 |       setError('Please log in to access the admin panel');
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  36 |       setLoading(false);
+  37 |     }
+  38 |   }, [router]);                                                                                                                                                                                               react-hooks/set-state-in-effect
+   42:7   error    Error: Cannot access variable before it is declared
+
+`fetchManufacturers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  40 |   useEffect(() => {
+  41 |     if (isAuthenticated()) {
+> 42 |       fetchManufacturers();
+     |       ^^^^^^^^^^^^^^^^^^ `fetchManufacturers` accessed before it is declared
+  43 |     }
+  44 |   }, [includeInactive, searchTerm, countryFilter]);
+  45 |
+
+  44 |   }, [includeInactive, searchTerm, countryFilter]);
+  45 |
+> 46 |   const fetchManufacturers = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |     try {
+     | ^^^^^^^^^
+> 48 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 93 |     }
+     | ^^^^^^^^^
+> 94 |   };
+     | ^^^^^ `fetchManufacturers` is declared here
+  95 |
+  96 |   const handleDelete = async (id, name) => {
+  97 |     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;                                                                                                                                                                                                                                                                                                          react-hooks/immutability
+   44:6   warning  React Hook useEffect has a missing dependency: 'fetchManufacturers'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  385:20  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  383 |                     Logo
+  384 |                   </th>
+> 385 |                   <SortHeader field="name" label="Name" />
+      |                    ^^^^^^^^^^ This component is created during render
+  386 |                   <SortHeader field="slug" label="Slug" />
+  387 |                   <SortHeader field="country" label="Country" />
+  388 |                   <SortHeader field="productCount" label="Products" />
+
+  191 |   };
+  192 |
+> 193 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 194 |     <th 
+      | ^^^^^^^^
+> 195 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-100 cursor-pointer hover:bg-gray-150 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 206 |     </th>
+      | ^^^^^^^^
+> 207 |   );
+      | ^^^^ The component is created during render here
+  208 |
+  209 |   if (loading) {
+  210 |     return (                                                                                                                                       react-hooks/static-components
+  386:20  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  384 |                   </th>
+  385 |                   <SortHeader field="name" label="Name" />
+> 386 |                   <SortHeader field="slug" label="Slug" />
+      |                    ^^^^^^^^^^ This component is created during render
+  387 |                   <SortHeader field="country" label="Country" />
+  388 |                   <SortHeader field="productCount" label="Products" />
+  389 |                   <SortHeader field="isActive" label="Status" />
+
+  191 |   };
+  192 |
+> 193 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 194 |     <th 
+      | ^^^^^^^^
+> 195 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-100 cursor-pointer hover:bg-gray-150 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 206 |     </th>
+      | ^^^^^^^^
+> 207 |   );
+      | ^^^^ The component is created during render here
+  208 |
+  209 |   if (loading) {
+  210 |     return (                                                                                               react-hooks/static-components
+  387:20  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  385 |                   <SortHeader field="name" label="Name" />
+  386 |                   <SortHeader field="slug" label="Slug" />
+> 387 |                   <SortHeader field="country" label="Country" />
+      |                    ^^^^^^^^^^ This component is created during render
+  388 |                   <SortHeader field="productCount" label="Products" />
+  389 |                   <SortHeader field="isActive" label="Status" />
+  390 |                   <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+
+  191 |   };
+  192 |
+> 193 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 194 |     <th 
+      | ^^^^^^^^
+> 195 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-100 cursor-pointer hover:bg-gray-150 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 206 |     </th>
+      | ^^^^^^^^
+> 207 |   );
+      | ^^^^ The component is created during render here
+  208 |
+  209 |   if (loading) {
+  210 |     return (  react-hooks/static-components
+  388:20  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  386 |                   <SortHeader field="slug" label="Slug" />
+  387 |                   <SortHeader field="country" label="Country" />
+> 388 |                   <SortHeader field="productCount" label="Products" />
+      |                    ^^^^^^^^^^ This component is created during render
+  389 |                   <SortHeader field="isActive" label="Status" />
+  390 |                   <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+  391 |                     Actions
+
+  191 |   };
+  192 |
+> 193 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 194 |     <th 
+      | ^^^^^^^^
+> 195 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-100 cursor-pointer hover:bg-gray-150 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 206 |     </th>
+      | ^^^^^^^^
+> 207 |   );
+      | ^^^^ The component is created during render here
+  208 |
+  209 |   if (loading) {
+  210 |     return (                                 react-hooks/static-components
+  389:20  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  387 |                   <SortHeader field="country" label="Country" />
+  388 |                   <SortHeader field="productCount" label="Products" />
+> 389 |                   <SortHeader field="isActive" label="Status" />
+      |                    ^^^^^^^^^^ This component is created during render
+  390 |                   <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+  391 |                     Actions
+  392 |                   </th>
+
+  191 |   };
+  192 |
+> 193 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 194 |     <th 
+      | ^^^^^^^^
+> 195 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-100 cursor-pointer hover:bg-gray-150 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 206 |     </th>
+      | ^^^^^^^^
+> 207 |   );
+      | ^^^^ The component is created during render here
+  208 |
+  209 |   if (loading) {
+  210 |     return (                                                                    react-hooks/static-components
+  422:27  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @next/next/no-img-element
+  514:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\app\admin\security\page.jsx
+   42:5   error    Error: Cannot access variable before it is declared
+
+`fetchTwoFactorStatus` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  40 |
+  41 |   useEffect(() => {
+> 42 |     fetchTwoFactorStatus();
+     |     ^^^^^^^^^^^^^^^^^^^^ `fetchTwoFactorStatus` accessed before it is declared
+  43 |   }, []);
+  44 |
+  45 |   // Redirect if not logged in
+
+  50 |   }, [user, loading, router]);
+  51 |
+> 52 |   const fetchTwoFactorStatus = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |     try {
+     | ^^^^^^^^^
+> 54 |       const token = getToken();
+     ΓÇª
+     | ^^^^^^^^^
+> 77 |     }
+     | ^^^^^^^^^
+> 78 |   };
+     | ^^^^^ `fetchTwoFactorStatus` is declared here
+  79 |
+  80 |   const handleSetup2FA = async () => {
+  81 |     try {  react-hooks/immutability
+  217:24  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+  220:71  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+  248:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @next/next/no-img-element
+  253:34  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+  315:64  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+  348:74  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\app\admin\sms-settings\page.jsx
+  15:5  error  Error: Cannot access variable before it is declared
+
+`fetchConfig` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  13 |
+  14 |   useEffect(() => {
+> 15 |     fetchConfig();
+     |     ^^^^^^^^^^^ `fetchConfig` accessed before it is declared
+  16 |     fetchStats();
+  17 |   }, []);
+  18 |
+
+  17 |   }, []);
+  18 |
+> 19 |   const fetchConfig = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |     try {
+     | ^^^^^^^^^
+> 21 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 36 |     }
+     | ^^^^^^^^^
+> 37 |   };
+     | ^^^^^ `fetchConfig` is declared here
+  38 |
+  39 |   const fetchStats = async () => {
+  40 |     try {                                             react-hooks/immutability
+  16:5  error  Error: Cannot access variable before it is declared
+
+`fetchStats` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  14 |   useEffect(() => {
+  15 |     fetchConfig();
+> 16 |     fetchStats();
+     |     ^^^^^^^^^^ `fetchStats` accessed before it is declared
+  17 |   }, []);
+  18 |
+  19 |   const fetchConfig = async () => {
+
+  37 |   };
+  38 |
+> 39 |   const fetchStats = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     try {
+     | ^^^^^^^^^
+> 41 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 54 |     }
+     | ^^^^^^^^^
+> 55 |   };
+     | ^^^^^ `fetchStats` is declared here
+  56 |
+  57 |   const handleTestSMS = async (e) => {
+  58 |     e.preventDefault();  react-hooks/immutability
+
+C:\Projects\Health Care\health-care\src\app\flash-deals\FlashDealsPageClient.jsx
+  336:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  334 |
+  335 |   useEffect(() => {
+> 336 |     fetchFlashDeals();
+      |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  337 |
+  338 |     const handleDealExpired = () => {
+  339 |       fetchFlashDeals();  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\app\offline\page.jsx
+  26:14  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  38:74  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  38:91  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\app\returns\[id]\page.jsx
+   25:5   error    Error: Cannot access variable before it is declared
+
+`fetchReturnDetails` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  23 |
+  24 |   useEffect(() => {
+> 25 |     fetchReturnDetails();
+     |     ^^^^^^^^^^^^^^^^^^ `fetchReturnDetails` accessed before it is declared
+  26 |   }, [params.id]);
+  27 |
+  28 |   const fetchReturnDetails = async () => {
+
+  26 |   }, [params.id]);
+  27 |
+> 28 |   const fetchReturnDetails = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |     try {
+     | ^^^^^^^^^
+> 30 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 51 |     }
+     | ^^^^^^^^^
+> 52 |   };
+     | ^^^^^ `fetchReturnDetails` is declared here
+  53 |
+  54 |   const handleCancelReturn = async () => {
+  55 |     if (!confirm('Are you sure you want to cancel this return request?')) {  react-hooks/immutability
+   26:6   warning  React Hook useEffect has a missing dependency: 'fetchReturnDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  313:58  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\app\returns\my-returns\MyReturnsClient.jsx
+  32:5  error    Error: Cannot access variable before it is declared
+
+`fetchReturns` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  30 |
+  31 |   useEffect(() => {
+> 32 |     fetchReturns();
+     |     ^^^^^^^^^^^^ `fetchReturns` accessed before it is declared
+  33 |   }, []);
+  34 |
+  35 |   const fetchReturns = async () => {
+
+  33 |   }, []);
+  34 |
+> 35 |   const fetchReturns = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |     try {
+     | ^^^^^^^^^
+> 37 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 51 |     }
+     | ^^^^^^^^^
+> 52 |   };
+     | ^^^^^ `fetchReturns` is declared here
+  53 |
+  54 |   const filteredReturns =
+  55 |     filter === 'all' ? returns : returns.filter((r) => r.status === filter);  react-hooks/immutability
+  33:6  warning  React Hook useEffect has a missing dependency: 'fetchReturns'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\app\returns\request\[orderId]\page.jsx
+  30:5  error    Error: Cannot access variable before it is declared
+
+`fetchOrder` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  28 |
+  29 |   useEffect(() => {
+> 30 |     fetchOrder();
+     |     ^^^^^^^^^^ `fetchOrder` accessed before it is declared
+  31 |   }, [params.orderId]);
+  32 |
+  33 |   const fetchOrder = async () => {
+
+  31 |   }, [params.orderId]);
+  32 |
+> 33 |   const fetchOrder = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |     try {
+     | ^^^^^^^^^
+> 35 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 55 |     }
+     | ^^^^^^^^^
+> 56 |   };
+     | ^^^^^ `fetchOrder` is declared here
+  57 |
+  58 |   const handleImageUpload = async (e) => {
+  59 |     const files = Array.from(e.target.files);  react-hooks/immutability
+  31:6  warning  React Hook useEffect has a missing dependency: 'fetchOrder'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\components\PhoneVerification.jsx
+  25:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  23 |       return () => clearTimeout(timer);
+  24 |     } else if (resendCountdown === 0 && !canResend) {
+> 25 |       setCanResend(true);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  26 |     }
+  27 |   }, [resendCountdown, canResend]);
+  28 |  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\CategoriesManagement.jsx
+   15:5   error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  13 |
+  14 |   useEffect(() => {
+> 15 |     fetchCategories();
+     |     ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  16 |   }, [includeInactive]);
+  17 |
+  18 |   const fetchCategories = async () => {
+
+  16 |   }, [includeInactive]);
+  17 |
+> 18 |   const fetchCategories = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |     try {
+     | ^^^^^^^^^
+> 20 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 41 |     }
+     | ^^^^^^^^^
+> 42 |   };
+     | ^^^^^ `fetchCategories` is declared here
+  43 |
+  44 |   const handleDelete = async (id, name) => {
+  45 |     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;  react-hooks/immutability
+   16:6   warning  React Hook useEffect has a missing dependency: 'fetchCategories'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+  146:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @next/next/no-img-element
+  184:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\admin\CustomersManagement.jsx
+  49:7   error  Error: Cannot access variable before it is declared
+
+`showMessage` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  47 |     } catch (err) {
+  48 |       process.env.NODE_ENV !== "production" && console.error('Failed to load customers:', err);
+> 49 |       showMessage('Failed to load customers', 'error');
+     |       ^^^^^^^^^^^ `showMessage` accessed before it is declared
+  50 |     } finally {
+  51 |       setLoading(false);
+  52 |     }
+
+  203 |   };
+  204 |
+> 205 |   const showMessage = (text, type) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 206 |     setMessage({ text, type });
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 207 |     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 208 |   };
+      | ^^^^^ `showMessage` is declared here
+  209 |
+  210 |   const getTierColor = (tier) => {
+  211 |     const colors = {                                       react-hooks/immutability
+  55:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  53 |   }, [page, tierFilter, roleFilter, search]);
+  54 |
+> 55 |   useEffect(() => { fetchCustomers(); }, [fetchCustomers]);
+     |                     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  56 |
+  57 |   const handleUpdateTier = async (customerId, newTier) => {
+  58 |     try {  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\DashboardOverview.jsx
+  81:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  79 |
+  80 |   useEffect(() => {
+> 81 |     fetchDashboard();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  82 |     const interval = setInterval(fetchDashboard, 60_000);
+  83 |     return () => clearInterval(interval);
+  84 |   }, [fetchDashboard]);  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\ManufacturersManagement.jsx
+   25:5   error  Error: Cannot access variable before it is declared
+
+`fetchManufacturers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  23 |
+  24 |   useEffect(() => {
+> 25 |     fetchManufacturers();
+     |     ^^^^^^^^^^^^^^^^^^ `fetchManufacturers` accessed before it is declared
+  26 |   // eslint-disable-next-line react-hooks/exhaustive-deps
+  27 |   }, [includeInactive, searchTerm, countryFilter]);
+  28 |
+
+  27 |   }, [includeInactive, searchTerm, countryFilter]);
+  28 |
+> 29 |   const fetchManufacturers = useCallback(async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |     try {
+     | ^^^^^^^^^
+> 31 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 67 |     }
+     | ^^^^^^^^^
+> 68 |   }, [includeInactive, searchTerm, countryFilter]);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `fetchManufacturers` is declared here
+  69 |
+  70 |   const handleDelete = async (id, name) => {
+  71 |     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;                                                                                                                                               react-hooks/immutability
+   29:42  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+  27 |   }, [includeInactive, searchTerm, countryFilter]);
+  28 |
+> 29 |   const fetchManufacturers = useCallback(async () => {
+     |                                          ^^^^^^^^^^^^^
+> 30 |     try {
+     | ^^^^^^^^^
+> 31 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 67 |     }
+     | ^^^^^^^^^
+> 68 |   }, [includeInactive, searchTerm, countryFilter]);
+     | ^^^^ Could not preserve existing memoization
+  69 |
+  70 |   const handleDelete = async (id, name) => {
+  71 |     if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/preserve-manual-memoization
+  314:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  312 |                 </th>
+  313 |                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Logo</th>
+> 314 |                 <SortHeader field="name" label="Name" />
+      |                  ^^^^^^^^^^ This component is created during render
+  315 |                 <SortHeader field="slug" label="Slug" />
+  316 |                 <SortHeader field="country" label="Country" />
+  317 |                 <SortHeader field="productCount" label="Products" />
+
+  178 |   };
+  179 |
+> 180 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 181 |     <th 
+      | ^^^^^^^^
+> 182 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 cursor-pointer hover:bg-gray-100 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 193 |     </th>
+      | ^^^^^^^^
+> 194 |   );
+      | ^^^^ The component is created during render here
+  195 |
+  196 |   if (loading) {
+  197 |     return (                                               react-hooks/static-components
+  315:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  313 |                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Logo</th>
+  314 |                 <SortHeader field="name" label="Name" />
+> 315 |                 <SortHeader field="slug" label="Slug" />
+      |                  ^^^^^^^^^^ This component is created during render
+  316 |                 <SortHeader field="country" label="Country" />
+  317 |                 <SortHeader field="productCount" label="Products" />
+  318 |                 <SortHeader field="isActive" label="Status" />
+
+  178 |   };
+  179 |
+> 180 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 181 |     <th 
+      | ^^^^^^^^
+> 182 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 cursor-pointer hover:bg-gray-100 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 193 |     </th>
+      | ^^^^^^^^
+> 194 |   );
+      | ^^^^ The component is created during render here
+  195 |
+  196 |   if (loading) {
+  197 |     return (      react-hooks/static-components
+  316:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  314 |                 <SortHeader field="name" label="Name" />
+  315 |                 <SortHeader field="slug" label="Slug" />
+> 316 |                 <SortHeader field="country" label="Country" />
+      |                  ^^^^^^^^^^ This component is created during render
+  317 |                 <SortHeader field="productCount" label="Products" />
+  318 |                 <SortHeader field="isActive" label="Status" />
+  319 |                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Actions</th>
+
+  178 |   };
+  179 |
+> 180 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 181 |     <th 
+      | ^^^^^^^^
+> 182 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 cursor-pointer hover:bg-gray-100 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 193 |     </th>
+      | ^^^^^^^^
+> 194 |   );
+      | ^^^^ The component is created during render here
+  195 |
+  196 |   if (loading) {
+  197 |     return (  react-hooks/static-components
+  317:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  315 |                 <SortHeader field="slug" label="Slug" />
+  316 |                 <SortHeader field="country" label="Country" />
+> 317 |                 <SortHeader field="productCount" label="Products" />
+      |                  ^^^^^^^^^^ This component is created during render
+  318 |                 <SortHeader field="isActive" label="Status" />
+  319 |                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Actions</th>
+  320 |               </tr>
+
+  178 |   };
+  179 |
+> 180 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 181 |     <th 
+      | ^^^^^^^^
+> 182 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 cursor-pointer hover:bg-gray-100 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 193 |     </th>
+      | ^^^^^^^^
+> 194 |   );
+      | ^^^^ The component is created during render here
+  195 |
+  196 |   if (loading) {
+  197 |     return (                                       react-hooks/static-components
+  318:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  316 |                 <SortHeader field="country" label="Country" />
+  317 |                 <SortHeader field="productCount" label="Products" />
+> 318 |                 <SortHeader field="isActive" label="Status" />
+      |                  ^^^^^^^^^^ This component is created during render
+  319 |                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase">Actions</th>
+  320 |               </tr>
+  321 |             </thead>
+
+  178 |   };
+  179 |
+> 180 |   const SortHeader = ({ field, label }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^
+> 181 |     <th 
+      | ^^^^^^^^
+> 182 |       className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 cursor-pointer hover:bg-gray-100 transition"
+      ΓÇª
+      | ^^^^^^^^
+> 193 |     </th>
+      | ^^^^^^^^
+> 194 |   );
+      | ^^^^ The component is created during render here
+  195 |
+  196 |   if (loading) {
+  197 |     return (                                                                           react-hooks/static-components
+
+C:\Projects\Health Care\health-care\src\components\admin\NewsletterManagement.jsx
+  72:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  70 |
+  71 |   useEffect(() => {
+> 72 |     fetchStats();
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  73 |     fetchSubscribers();
+  74 |   }, [fetchStats, fetchSubscribers]);
+  75 |  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\QuotationsManagement.jsx
+  27:7   error  Error: Cannot access variable before it is declared
+
+`showMessage` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  25 |       setQuotes(data.data?.quotes || data.quotes || []);
+  26 |     } catch {
+> 27 |       showMessage('Failed to load quotations', 'error');
+     |       ^^^^^^^^^^^ `showMessage` accessed before it is declared
+  28 |     } finally {
+  29 |       setLoading(false);
+  30 |     }
+
+  71 |   };
+  72 |
+> 73 |   const showMessage = (text, type) => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |     setMessage({ text, type });
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 76 |   };
+     | ^^^^^ `showMessage` is declared here
+  77 |
+  78 |   const getStatusColor = (status) => {
+  79 |     const colors = {                                                                                                                            react-hooks/immutability
+  33:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  31 |   }, [statusFilter]);
+  32 |
+> 33 |   useEffect(() => { fetchQuotes(); }, [fetchQuotes]);
+     |                     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |
+  35 |   const handleUpdateStatus = async (quoteId, newStatus) => {
+  36 |     setActionLoading(prev => ({ ...prev, [`status-${quoteId}`]: true }));  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\ReturnsManagement.jsx
+   37:5   error    Error: Cannot access variable before it is declared
+
+`fetchReturns` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  35 |
+  36 |   useEffect(() => {
+> 37 |     fetchReturns();
+     |     ^^^^^^^^^^^^ `fetchReturns` accessed before it is declared
+  38 |     fetchStats();
+  39 |   }, [filter, page]);
+  40 |
+
+  39 |   }, [filter, page]);
+  40 |
+> 41 |   const fetchReturns = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |     try {
+     | ^^^^^^^^^
+> 43 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 59 |     }
+     | ^^^^^^^^^
+> 60 |   };
+     | ^^^^^ `fetchReturns` is declared here
+  61 |
+  62 |   const fetchStats = async () => {
+  63 |     try {                              react-hooks/immutability
+   38:5   error    Error: Cannot access variable before it is declared
+
+`fetchStats` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  36 |   useEffect(() => {
+  37 |     fetchReturns();
+> 38 |     fetchStats();
+     |     ^^^^^^^^^^ `fetchStats` accessed before it is declared
+  39 |   }, [filter, page]);
+  40 |
+  41 |   const fetchReturns = async () => {
+
+  60 |   };
+  61 |
+> 62 |   const fetchStats = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 63 |     try {
+     | ^^^^^^^^^
+> 64 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 74 |     }
+     | ^^^^^^^^^
+> 75 |   };
+     | ^^^^^ `fetchStats` is declared here
+  76 |
+  77 |   const handleUpdateStatus = async () => {
+  78 |     if (!newStatus) {  react-hooks/immutability
+   39:6   warning  React Hook useEffect has a missing dependency: 'fetchReturns'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+  357:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @next/next/no-img-element
+  402:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\admin\ReviewsManagement.jsx
+   52:7   error    Error: Cannot access variable before it is declared
+
+`showMessage` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  50 |     } catch (error) {
+  51 |       process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);
+> 52 |       showMessage('Failed to load reviews', 'error');
+     |       ^^^^^^^^^^^ `showMessage` accessed before it is declared
+  53 |     } finally {
+  54 |       setLoading(false);
+  55 |     }
+
+  118 |   };
+  119 |
+> 120 |   const showMessage = (text, type) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 121 |     setMessage({ text, type });
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |     setTimeout(() => setMessage({ text: '', type: '' }), 3000);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |   };
+      | ^^^^^ `showMessage` is declared here
+  124 |
+  125 |   const renderStars = (rating) => {
+  126 |     return (  react-hooks/immutability
+   59:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  57 |
+  58 |   useEffect(() => {
+> 59 |     fetchReviews();
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  60 |   }, [fetchReviews]);
+  61 |
+  62 |   const handleOpenModal = (review, action) => {                                       react-hooks/set-state-in-effect
+  236:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @next/next/no-img-element
+  282:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @next/next/no-img-element
+  354:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @next/next/no-img-element
+  399:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\admin\SystemMonitoring.jsx
+  212:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  210 |   useEffect(() => {
+  211 |     const controller = new AbortController();
+> 212 |     fetchDashboard(false, controller.signal);
+      |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  213 |     if (!autoRefresh) return () => controller.abort();
+  214 |     const interval = setInterval(() => fetchDashboard(true, controller.signal), 30_000);
+  215 |     return () => {  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\WhatsAppAnalytics.jsx
+  53:5  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  51 |
+  52 |   useEffect(() => {
+> 53 |     fetchAnalytics();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  54 |   }, [dateRange, customDates]);
+  55 |
+  56 |   const formatNumber = (num) => {  react-hooks/set-state-in-effect
+  54:6  warning  React Hook useEffect has a missing dependency: 'fetchAnalytics'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\components\admin\WhatsAppConversationDetail.jsx
+  36:28  error  Error: Cannot access variable before it is declared
+
+`scrollToBottom` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  34 |           
+  35 |           // Scroll to bottom on initial load
+> 36 |           setTimeout(() => scrollToBottom(), 100);
+     |                            ^^^^^^^^^^^^^^ `scrollToBottom` accessed before it is declared
+  37 |         }
+  38 |       } catch (err) {
+  39 |         setError(err.response?.data?.message || 'Failed to load conversation');
+
+  70 |   }, []);
+  71 |
+> 72 |   const scrollToBottom = () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 73 |     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |   };
+     | ^^^^^ `scrollToBottom` is declared here
+  75 |
+  76 |   const handleSendMessage = async (e) => {
+  77 |     e.preventDefault();  react-hooks/immutability
+
+C:\Projects\Health Care\health-care\src\components\admin\WhatsAppManager.jsx
+  51:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  49 |
+  50 |   useEffect(() => {
+> 51 |     fetchConversations();
+     |     ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  52 |     
+  53 |     // Poll for updates every 30 seconds
+  54 |     const interval = setInterval(fetchConversations, 30000);  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\admin\loyalty\LoyaltyDashboard.jsx
+  66:5  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  68:6  warning  React Hook useEffect has a missing dependency: 'fetchLoyaltyData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\components\b2b\QuickActions.jsx
+  18:20  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  16 |       // Create a mock quotation object for tracking
+  17 |       const quotation = {
+> 18 |         id: `QUO-${Date.now()}`,
+     |                    ^^^^^^^^^^ Cannot call impure function
+  19 |         total: 0,
+  20 |         items: []
+  21 |       };  react-hooks/purity
+
+C:\Projects\Health Care\health-care\src\components\chat\ChatButton.jsx
+  11:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   9 |   useEffect(() => {
+  10 |     if (unreadCount > 0) {
+> 11 |       setPulse(true);
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  12 |       const timer = setTimeout(() => setPulse(false), 1000);
+  13 |       return () => clearTimeout(timer);
+  14 |     }  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\chat\ChatMessages.jsx
+  68:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\chat\ChatWidget.jsx
+  79:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  77 |     } else {
+  78 |       // No existing conversation ΓÇö show empty state, wait for first message
+> 79 |       setIsLoading(false);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  80 |     }
+  81 |
+  82 |     return () => clearInterval(pollRef.current);  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\checkout\OrderConfirmation.jsx
+  121:37  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  160:18  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\components\home\FlashDealsSection.jsx
+  133:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  131 |
+  132 |   useEffect(() => {
+> 133 |     fetchFlashDeals();
+      |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  134 |
+  135 |     const handleDealExpired = () => {
+  136 |       fetchFlashDeals();  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\payment\BkashPaymentForm.jsx
+  161:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\product\ProductReviews.jsx
+   22:5   error    Error: Cannot access variable before it is declared
+
+`fetchReviews` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  20 |
+  21 |   useEffect(() => {
+> 22 |     fetchReviews();
+     |     ^^^^^^^^^^^^ `fetchReviews` accessed before it is declared
+  23 |   }, [productId, page, ratingFilter, sortBy]);
+  24 |
+  25 |   useEffect(() => {
+
+  29 |   }, [user, productId]);
+  30 |
+> 31 |   const fetchReviews = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |     try {
+     | ^^^^^^^^^
+> 33 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 54 |     }
+     | ^^^^^^^^^
+> 55 |   };
+     | ^^^^^ `fetchReviews` is declared here
+  56 |
+  57 |   const checkEligibility = async () => {
+  58 |     try {                                         react-hooks/immutability
+   23:6   warning  React Hook useEffect has a missing dependency: 'fetchReviews'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+   27:7   error    Error: Cannot access variable before it is declared
+
+`checkEligibility` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  25 |   useEffect(() => {
+  26 |     if (user) {
+> 27 |       checkEligibility();
+     |       ^^^^^^^^^^^^^^^^ `checkEligibility` accessed before it is declared
+  28 |     }
+  29 |   }, [user, productId]);
+  30 |
+
+  55 |   };
+  56 |
+> 57 |   const checkEligibility = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 58 |     try {
+     | ^^^^^^^^^
+> 59 |       const token = localStorage.getItem('medcore_token');
+     ΓÇª
+     | ^^^^^^^^^
+> 71 |     }
+     | ^^^^^^^^^
+> 72 |   };
+     | ^^^^^ `checkEligibility` is declared here
+  73 |
+  74 |   const handleHelpful = async (reviewId) => {
+  75 |     if (!user) {  react-hooks/immutability
+   29:6   warning  React Hook useEffect has a missing dependency: 'checkEligibility'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+  357:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\product\ProductReviewsEnhanced.jsx
+  35:5  error  Error: Cannot access variable before it is declared
+
+`fetchReviews` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  33 |
+  34 |   useEffect(() => {
+> 35 |     fetchReviews();
+     |     ^^^^^^^^^^^^ `fetchReviews` accessed before it is declared
+  36 |     // eslint-disable-next-line react-hooks/exhaustive-deps
+  37 |   }, [productId, page, ratingFilter, sortBy]);
+  38 |
+
+  50 |   }, [user, productId]);
+  51 |
+> 52 |   const fetchReviews = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |     try {
+     | ^^^^^^^^^
+> 54 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 83 |     }
+     | ^^^^^^^^^
+> 84 |   };
+     | ^^^^^ `fetchReviews` is declared here
+  85 |
+  86 |   const checkEligibility = async () => {
+  87 |     try {                                                                                                                                                                                                        react-hooks/immutability
+  42:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  40 |     if (user) {
+  41 |       // Any logged-in user can write a review
+> 42 |       setCanReview(true);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  43 |       // Check if they have an eligible order (determines verified vs unverified)
+  44 |       checkEligibility();
+  45 |     } else {  react-hooks/set-state-in-effect
+  44:7  error  Error: Cannot access variable before it is declared
+
+`checkEligibility` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  42 |       setCanReview(true);
+  43 |       // Check if they have an eligible order (determines verified vs unverified)
+> 44 |       checkEligibility();
+     |       ^^^^^^^^^^^^^^^^ `checkEligibility` accessed before it is declared
+  45 |     } else {
+  46 |       setCanReview(false);
+  47 |       setHasEligibleOrder(false);
+
+   84 |   };
+   85 |
+>  86 |   const checkEligibility = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  87 |     try {
+      | ^^^^^^^^^
+>  88 |       const token = localStorage.getItem('medcore_token');
+      ΓÇª
+      | ^^^^^^^^^
+> 100 |     }
+      | ^^^^^^^^^
+> 101 |   };
+      | ^^^^^ `checkEligibility` is declared here
+  102 |
+  103 |   const handleHelpful = async (reviewId) => {
+  104 |     if (!user) {                                                                      react-hooks/immutability
+
+C:\Projects\Health Care\health-care\src\components\product\ProductTabsRedesigned.jsx
+  19:7  error    Error: Cannot access variable before it is declared
+
+`fetchReviews` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  17 |   useEffect(() => {
+  18 |     if (product?._id) {
+> 19 |       fetchReviews();
+     |       ^^^^^^^^^^^^ `fetchReviews` accessed before it is declared
+  20 |     }
+  21 |   }, [product?._id]);
+  22 |
+
+  21 |   }, [product?._id]);
+  22 |
+> 23 |   const fetchReviews = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     setReviewsLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     setReviewsError(null);
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |   };
+     | ^^^^^ `fetchReviews` is declared here
+  35 |
+  36 |   const tabs = [
+  37 |     { id: 'specifications', label: 'Specifications' },  react-hooks/immutability
+  21:6  warning  React Hook useEffect has a missing dependency: 'fetchReviews'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\components\product\ProductVideo.jsx
+   53:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  213:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\search\EnhancedSearchBox.jsx
+  52:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  50 |   useEffect(() => {
+  51 |     const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+> 52 |     setRecentSearches(recent.slice(0, 5));
+     |     ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  53 |   }, []);
+  54 |
+  55 |   // Fetch suggestions  react-hooks/set-state-in-effect
+  58:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  56 |   useEffect(() => {
+  57 |     if (debouncedQuery.trim().length < 2) {
+> 58 |       setSuggestions([]);
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  59 |       return;
+  60 |     }
+  61 |                                                                    react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\seo\ProductSchema.jsx
+  21:27  error  React Hook "useMemo" is called conditionally. React Hooks must be called in the exact same order in every component render                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/rules-of-hooks
+  22:21  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  20 |   // Calculate price valid until date (30 days from now) - memoized to avoid impurity
+  21 |   const priceValidUntil = useMemo(() => {
+> 22 |     return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+     |                     ^^^^^^^^^^ Cannot call impure function
+  23 |   }, []);
+  24 |
+  25 |   // Extract product data safely  react-hooks/purity
+
+C:\Projects\Health Care\health-care\src\components\ui\CODPromoBanner.jsx
+  70:25  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\components\ui\Confetti.jsx
+  43:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  41 |     }));
+  42 |
+> 43 |     setParticles(newParticles);
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |
+  45 |     // Clear after animation
+  46 |     const timeout = setTimeout(() => {  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\ui\FloatingCartButton.jsx
+  18:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  16 |   useEffect(() => {
+  17 |     if (cartCount > prevCount && cartCount > 0) {
+> 18 |       setBounce(true);
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  19 |       setTimeout(() => setBounce(false), 600);
+  20 |     }
+  21 |     setPrevCount(cartCount);  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\components\ui\FlyToCart.jsx
+  125:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Projects\Health Care\health-care\src\components\ui\LoadingDemo.jsx
+  41:23  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  41:31  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  51:23  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  51:33  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  61:23  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  61:27  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  71:23  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  71:29  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  81:23  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  81:28  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\components\ui\ServiceWorkerRegistration.jsx
+  33:11  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\Projects\Health Care\health-care\src\components\ui\__tests__\OptimizedImage.test.jsx
+  22:7  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+C:\Projects\Health Care\health-care\src\context\LanguageContext.jsx
+  11:43  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   9 |   useEffect(() => {
+  10 |     const saved = localStorage.getItem('medcore_lang');
+> 11 |     if (saved === 'bn' || saved === 'en') setLang(saved);
+     |                                           ^^^^^^^ Avoid calling setState() directly within an effect
+  12 |   }, []);
+  13 |
+  14 |   const switchLang = (l) => {  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\context\ThemeContext.jsx
+  33:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  31 |     const stored = localStorage.getItem('theme');
+  32 |     if (stored === 'dark' || stored === 'light') {
+> 33 |       setThemeState(stored);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |       document.documentElement.classList.toggle('dark', stored === 'dark');
+  35 |     } else {
+  36 |       // Fall back to system preference  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\context\WishlistContext.jsx
+  18:7  error  Error: Cannot access variable before it is declared
+
+`fetchWishlist` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  16 |   useEffect(() => {
+  17 |     if (isAuthenticated()) {
+> 18 |       fetchWishlist();
+     |       ^^^^^^^^^^^^^ `fetchWishlist` accessed before it is declared
+  19 |     } else {
+  20 |       setWishlist([]);
+  21 |     }
+
+  23 |   }, [user]);
+  24 |
+> 25 |   const fetchWishlist = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |     try {
+     | ^^^^^^^^^
+> 27 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 41 |     }
+     | ^^^^^^^^^
+> 42 |   };
+     | ^^^^^ `fetchWishlist` is declared here
+  43 |
+  44 |   const toggleWishlist = async (productId) => {
+  45 |     if (!isAuthenticated()) {                                                                                                                                         react-hooks/immutability
+  20:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  18 |       fetchWishlist();
+  19 |     } else {
+> 20 |       setWishlist([]);
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  21 |     }
+  22 |     // eslint-disable-next-line react-hooks/exhaustive-deps
+  23 |   }, [user]);  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\hooks\useApi.js
+  42:6   warning  React Hook useCallback has a missing dependency: 'options'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  42:17  error    Error: Expected the dependency list to be an array of simple expressions (e.g. `x`, `x.y.z`, `x?.y?.z`)
+
+Expected the dependency list to be an array of simple expressions (e.g. `x`, `x.y.z`, `x?.y?.z`).
+
+  40 |       setLoading(false);
+  41 |     }
+> 42 |   }, [endpoint, JSON.stringify(options)]);
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^ Expected the dependency list to be an array of simple expressions (e.g. `x`, `x.y.z`, `x?.y?.z`)
+  43 |
+  44 |   useEffect(() => {
+  45 |     fetchData();                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/use-memo
+  42:17  warning  React Hook useCallback has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  45:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  43 |
+  44 |   useEffect(() => {
+> 45 |     fetchData();
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |     return () => abortRef.current?.abort();
+  47 |   }, [fetchData]);
+  48 |  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\hooks\useFeaturedProducts.js
+  63:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  61 |
+  62 |   useEffect(() => {
+> 63 |     fetchProducts();
+     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  64 |   }, [fetchProducts]);
+  65 |
+  66 |   return {   react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\hooks\useOrders.js
+  37:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  35 |
+  36 |   useEffect(() => {
+> 37 |     fetchOrders();
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |   }, [fetchOrders]);
+  39 |
+  40 |   const createOrder = useCallback(async (orderData) => {  react-hooks/set-state-in-effect
+  92:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  90 |
+  91 |   useEffect(() => {
+> 92 |     fetchOrder();
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  93 |   }, [fetchOrder]);
+  94 |
+  95 |   return { order, loading, error, refetch: fetchOrder };     react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\hooks\useProductDetail.js
+  38:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  36 |     
+  37 |     if (!productId) {
+> 38 |       setError('No product selected.');
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |       setLoading(false);
+  40 |       return;
+  41 |     }  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\hooks\useProductList.js
+  91:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  89 |
+  90 |   useEffect(() => {
+> 91 |     fetchProducts();
+     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  92 |   }, [fetchProducts]);
+  93 |
+  94 |   const hasMore = pagination.page < pagination.pages;  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\hooks\useRecentlyViewed.js
+  27:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  25 |         const parsed = JSON.parse(stored);
+  26 |         // Use callback form to avoid the setState warning
+> 27 |         setRecentlyViewed(() => Array.isArray(parsed) ? parsed : []);
+     |         ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |       }
+  29 |     } catch (error) {
+  30 |       console.error('Failed to load recently viewed:', error);  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\utils\test-lint-hook.js
+  10:6  warning  React Hook React.useEffect has a missing dependency: 'count'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Projects\Health Care\health-care\src\views\ForgotPasswordPage.jsx
+  76:21  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  89:50  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\views\OrderTrackingPage.jsx
+  127:7  error  Error: Cannot access variable before it is declared
+
+`handleTrack` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  125 |   useEffect(() => {
+  126 |     if (initialOrderNumber) {
+> 127 |       handleTrack(initialOrderNumber);
+      |       ^^^^^^^^^^^ `handleTrack` accessed before it is declared
+  128 |     }
+  129 |   }, [initialOrderNumber]); // eslint-disable-line react-hooks/exhaustive-deps
+  130 |
+
+  129 |   }, [initialOrderNumber]); // eslint-disable-line react-hooks/exhaustive-deps
+  130 |
+> 131 |   const handleTrack = async (orderNum = orderNumber) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 132 |     if (!orderNum.trim()) {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 133 |       setError('Please enter an order number');
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 153 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 154 |   };
+      | ^^^^^ `handleTrack` is declared here
+  155 |
+  156 |   const handleDownloadInvoice = async () => {
+  157 |     if (!order?._id) return;  react-hooks/immutability
+
+C:\Projects\Health Care\health-care\src\views\ProductsPage.jsx
+  40:3  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+  48:7  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  46 |     
+  47 |     if (urlQuery !== searchQuery) {
+> 48 |       setSearchQuery(urlQuery);
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  49 |       setSearchInput(urlQuery);
+  50 |       setPage(1);
+  51 |     }  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\views\ReagentStorePage.jsx
+  156:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  154 |
+  155 |   useEffect(() => {
+> 156 |     fetchReagents();
+      |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  157 |   }, [fetchReagents]);
+  158 |
+  159 |   return (  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\views\RegisterPage.jsx
+  100:65  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Projects\Health Care\health-care\src\views\account\NotificationsPage.jsx
+  70:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  68 |   useEffect(() => {
+  69 |     if (user?.notificationPreferences) {
+> 70 |       setPrefs({ ...DEFAULT_PREFS, ...user.notificationPreferences });
+     |       ^^^^^^^^ Avoid calling setState() directly within an effect
+  71 |     }
+  72 |   }, [user]);
+  73 |  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\views\account\ProfilePage.jsx
+  19:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  17 |   useEffect(() => {
+  18 |     if (user) {
+> 19 |       setForm({
+     |       ^^^^^^^ Avoid calling setState() directly within an effect
+  20 |         name: user.name || '',
+  21 |         phone: user.phone || '',
+  22 |         companyName: user.companyName || user.company || '',  react-hooks/set-state-in-effect
+
+C:\Projects\Health Care\health-care\src\views\admin\FlashDealsManagement.jsx
+  42:5  error  Error: Cannot access variable before it is declared
+
+`fetchFlashDeals` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  40 |
+  41 |   useEffect(() => {
+> 42 |     fetchFlashDeals();
+     |     ^^^^^^^^^^^^^^^ `fetchFlashDeals` accessed before it is declared
+  43 |   }, []);
+  44 |
+  45 |   const fetchFlashDeals = async () => {
+
+  43 |   }, []);
+  44 |
+> 45 |   const fetchFlashDeals = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |     try {
+     | ^^^^^^^^^
+> 47 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 61 |     }
+     | ^^^^^^^^^
+> 62 |   };
+     | ^^^^^ `fetchFlashDeals` is declared here
+  63 |
+  64 |   // Filtered and searched deals
+  65 |   const filteredDeals = useMemo(() => {  react-hooks/immutability
+
+Γ£û 164 problems (111 errors, 53 warnings)
+  0 errors and 3 warnings potentially fixable with the `--fix` option.
+

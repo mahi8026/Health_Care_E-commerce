@@ -30,7 +30,7 @@ export default function ServiceWorkerRegistration() {
 
         // Log successful registration in development only
         if (process.env.NODE_ENV === 'development') {
-          // eslint-disable-next-line no-console
+           
           console.log('[SW] Registered:', registration.scope);
         }
 

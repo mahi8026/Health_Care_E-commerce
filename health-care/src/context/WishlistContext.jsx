@@ -12,16 +12,6 @@ export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch wishlist when user logs in
-  useEffect(() => {
-    if (isAuthenticated()) {
-      fetchWishlist();
-    } else {
-      setWishlist([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
   const fetchWishlist = async () => {
     try {
       setLoading(true);
@@ -40,6 +30,17 @@ export function WishlistProvider({ children }) {
       setLoading(false);
     }
   };
+
+  // Fetch wishlist when user logs in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      fetchWishlist();
+    } else {
+      // Reset wishlist when user logs out - this is intentional state sync
+      setWishlist([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const toggleWishlist = async (productId) => {
     if (!isAuthenticated()) {

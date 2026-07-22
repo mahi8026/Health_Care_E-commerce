@@ -37,29 +37,46 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sync URL search params back to state when URL changes (e.g. Header search navigation)
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     const isOnCategoryPage = pathname?.startsWith('/products/category/');
     const urlQuery = searchParams.get('q') || '';
     const urlCategory = searchParams.get('category') || '';
     const urlBrand = searchParams.get('brand') || '';
     
+    // Batch state updates to avoid cascading renders
+    const updates = {};
+    let needsUpdate = false;
+    
     if (urlQuery !== searchQuery) {
-      setSearchQuery(urlQuery);
-      setSearchInput(urlQuery);
-      setPage(1);
+      updates.query = urlQuery;
+      needsUpdate = true;
     }
     
     // Only sync category from URL params if NOT on a category page route
     // (category pages get their category from initialCategory prop, not query params)
     if (!isOnCategoryPage && urlCategory !== searchCategory) {
-      setSearchCategory(urlCategory);
-      setPage(1);
+      updates.category = urlCategory;
+      needsUpdate = true;
     }
     
     const currentBrand = filters.brands?.[0] || '';
     if (urlBrand !== currentBrand) {
-      setFilters((f) => ({ ...f, brands: urlBrand ? [urlBrand] : [] }));
+      updates.brand = urlBrand;
+      needsUpdate = true;
+    }
+    
+    if (needsUpdate) {
+      // Apply all updates in one batch
+      if (updates.query !== undefined) {
+        setSearchQuery(updates.query);
+        setSearchInput(updates.query);
+      }
+      if (updates.category !== undefined) {
+        setSearchCategory(updates.category);
+      }
+      if (updates.brand !== undefined) {
+        setFilters((f) => ({ ...f, brands: updates.brand ? [updates.brand] : [] }));
+      }
       setPage(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

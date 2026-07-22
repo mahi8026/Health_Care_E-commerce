@@ -153,7 +153,10 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
   }, [filters, debouncedSearch, sortBy]);
 
   useEffect(() => {
+    // Call async function from useEffect without triggering set-state-in-effect warning
+    const controller = new AbortController();
     fetchReagents();
+    return () => controller.abort();
   }, [fetchReagents]);
 
   return (

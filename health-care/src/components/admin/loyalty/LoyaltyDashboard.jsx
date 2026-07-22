@@ -63,7 +63,7 @@ export default function LoyaltyDashboard() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLoyaltyData();
   }, []); // Only run on mount
 
