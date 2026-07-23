@@ -23,23 +23,21 @@ export async function GET(request) {
   }
 
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL;
+    const backendUrl = process.env.BACKEND_URL;
     
     if (!backendUrl) {
       return Response.json(
         { 
           success: false, 
-          error: 'NEXT_PUBLIC_API_URL not configured',
+          error: 'BACKEND_URL not configured',
           timestamp: new Date().toISOString()
         },
         { status: 500 }
       );
     }
 
-
-    
     const startTime = Date.now();
-    const response = await fetch(`${backendUrl}/products?limit=1`, {
+    const response = await fetch(`${backendUrl}/api/products?limit=1`, {
       signal: AbortSignal.timeout(10000), // 10 second timeout
       headers: {
         'Accept': 'application/json',

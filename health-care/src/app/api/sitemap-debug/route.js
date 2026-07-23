@@ -3,19 +3,17 @@
  */
 
 export async function GET() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const backendUrl = apiUrl?.startsWith('http') ? apiUrl : 'http://localhost:5001/api';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:5001';
   
   const debug = {
-    env_NEXT_PUBLIC_API_URL: apiUrl,
-    resolved_backend_url: backendUrl,
-    test_url: `${backendUrl}/products?limit=2&fields=slug,_id`,
+    env_BACKEND_URL: backendUrl,
+    test_url: `${backendUrl}/api/products?limit=2&fields=slug,_id`,
     timestamp: new Date().toISOString(),
   };
   
   try {
     const startTime = Date.now();
-    const res = await fetch(`${backendUrl}/products?limit=2&fields=slug,_id`, {
+    const res = await fetch(`${backendUrl}/api/products?limit=2&fields=slug,_id`, {
       signal: AbortSignal.timeout(15000),
       headers: {
         'Accept': 'application/json',
