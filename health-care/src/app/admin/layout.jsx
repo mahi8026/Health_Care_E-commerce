@@ -17,14 +17,16 @@ export default function AdminLayout({ children }) {
       return;
     }
 
-    setIsChecking(false);
+    // Check authentication after loading is complete using async IIFE
+    (async () => {
+      setIsChecking(false);
 
-    // Check authentication after loading is complete
-    if (!isAuthenticated()) {
-      router.push('/login?redirect=/admin');
-    } else if (user?.role !== 'admin') {
-      router.push('/');
-    }
+      if (!isAuthenticated()) {
+        router.push('/login?redirect=/admin');
+      } else if (user?.role !== 'admin') {
+        router.push('/');
+      }
+    })();
   }, [loading, isAuthenticated, user, router]);
 
   // Show loading while checking auth

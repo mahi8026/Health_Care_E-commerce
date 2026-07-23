@@ -73,7 +73,7 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
                 If an account exists with <strong className="break-all">{email}</strong>, you will receive a password reset link shortly.
               </p>
               <p className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] mb-3 sm:mb-4">
-                Didn't receive the email? Check your spam folder or try again.
+                Didn&apos;t receive the email? Check your spam folder or try again.
               </p>
               <button
                 onClick={onNavigateToLogin}
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
             <form onSubmit={handleSubmit}>
               <div className="mb-4 sm:mb-6">
                 <p className="text-[12px] sm:text-[13px] text-[var(--color-text-secondary)] mb-3 sm:mb-4">
-                  Enter your email address and we'll send you a link to reset your password.
+                  Enter your email address and we&apos;ll send you a link to reset your password.
                 </p>
               </div>
 

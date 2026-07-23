@@ -15,12 +15,12 @@
 import { useMemo } from 'react';
 
 export default function ProductSchema({ product }) {
-  if (!product) return null;
-
   // Calculate price valid until date (30 days from now) - memoized to avoid impurity
   const priceValidUntil = useMemo(() => {
     return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   }, []);
+
+  if (!product) return null;
 
   // Extract product data safely
   const name = product.name || 'Medical Equipment';

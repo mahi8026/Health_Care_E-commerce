@@ -97,7 +97,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                 MedCore<span className="text-[#0E8A6E]">BD</span>
               </span>
             </Link>
-            <p className="text-gray-400 text-xs mt-1">Bangladesh's trusted medical equipment platform</p>
+            <p className="text-gray-400 text-xs mt-1">Bangladesh&apos;s trusted medical equipment platform</p>
           </div>
 
           {/* Heading */}

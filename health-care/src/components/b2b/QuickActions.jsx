@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from 'react';
 import GA4Tracker from '@/services/GA4Tracker';
 
 export default function QuickActions() {
+  // Use useState to generate ID once on mount (avoid impurity)
+  const [quotationIdPrefix] = useState(() => `QUO-${Date.now()}`);
+  
   const actions = [
     { icon: '📦', label: 'New Order', desc: 'Place a new order', action: 'new_order' },
     { icon: '📋', label: 'Request Quote', desc: 'Get a quotation', action: 'request_quote' },
@@ -15,7 +19,7 @@ export default function QuickActions() {
     if (action === 'request_quote') {
       // Create a mock quotation object for tracking
       const quotation = {
-        id: `QUO-${Date.now()}`,
+        id: quotationIdPrefix,
         total: 0,
         items: []
       };
