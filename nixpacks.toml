@@ -1,5 +1,5 @@
-# Nixpacks configuration for monorepo Next.js app
-# App location: ./health-care/
+# Nixpacks configuration for Next.js app in monorepo
+# The actual app is in ./health-care/ subdirectory
 
 [variables]
 NODE_ENV = "production"
@@ -9,14 +9,12 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "cd health-care",
-  "npm ci"
+  "cd health-care && npm ci --legacy-peer-deps"
 ]
 
 [phases.build]  
 cmds = [
-  "cd health-care",
-  "npm run build"
+  "cd health-care && npm run build"
 ]
 
 [start]

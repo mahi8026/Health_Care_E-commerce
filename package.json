@@ -2,9 +2,12 @@
   "name": "mediport-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "MediportBD Monorepo",
+  "description": "MediportBD Monorepo - Frontend app is in health-care/ subdirectory",
+  "workspaces": [
+    "health-care"
+  ],
   "scripts": {
-    "prepare": "node -e \"if (process.env.CI || process.env.VERCEL || process.env.HUSKY === '0') process.exit(0)\" && husky || true"
+    "prepare": "node -e \"if (process.env.CI || process.env.VERCEL || process.env.RAILWAY || process.env.HUSKY === '0') process.exit(0)\" && husky || true"
   },
   "devDependencies": {
     "husky": "^9.1.7",
