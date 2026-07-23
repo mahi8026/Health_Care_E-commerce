@@ -6,6 +6,73 @@ const devLog = {
   error: (...args) => { if (process.env.NODE_ENV === 'development') process.env.NODE_ENV !== "production" && console.error('[API Error]', ...args); },  
 };
 
+// ══════════════════════════════════════════════════════════════════════════════
+// REQUEST DEDUPLICATION & CACHING
+// ══════════════════════════════════════════════════════════════════════════════
+
+// In-memory cache for GET requests (prevents 429 rate limiting)
+const requestCache = new Map();
+const pendingRequests = new Map();
+
+// Cache configuration
+const CACHE_TTL = {
+  products: 5 * 60 * 1000,      // 5 minutes
+  categories: 30 * 60 * 1000,   // 30 minutes
+  settings: 30 * 60 * 1000,     // 30 minutes
+  stats: 5 * 60 * 1000,         // 5 minutes
+  default: 2 * 60 * 1000,       // 2 minutes
+};
+
+function getCacheKey(url, options = {}) {
+  const method = options.method || 'GET';
+  const body = options.body || '';
+  return `${method}:${url}:${body}`;
+}
+
+function getCacheTTL(url) {
+  if (url.includes('/products')) return CACHE_TTL.products;
+  if (url.includes('/categories')) return CACHE_TTL.categories;
+  if (url.includes('/settings')) return CACHE_TTL.settings;
+  if (url.includes('/stats')) return CACHE_TTL.stats;
+  return CACHE_TTL.default;
+}
+
+function getCachedResponse(cacheKey) {
+  const cached = requestCache.get(cacheKey);
+  if (!cached) return null;
+  
+  const now = Date.now();
+  if (now - cached.timestamp > cached.ttl) {
+    requestCache.delete(cacheKey);
+    return null;
+  }
+  
+  return cached.data;
+}
+
+function setCachedResponse(cacheKey, data, ttl) {
+  requestCache.set(cacheKey, {
+    data,
+    timestamp: Date.now(),
+    ttl
+  });
+  
+  // Clean up old cache entries (simple LRU)
+  if (requestCache.size > 100) {
+    const oldestKey = requestCache.keys().next().value;
+    requestCache.delete(oldestKey);
+  }
+}
+
+// Clear cache for specific URL patterns
+function clearCache(urlPattern) {
+  for (const [key] of requestCache.entries()) {
+    if (key.includes(urlPattern)) {
+      requestCache.delete(key);
+    }
+  }
+}
+
 // Get token from localStorage
 const getToken = () => {
   if (typeof window !== 'undefined') {
@@ -121,32 +188,77 @@ async function handleResponse(response) {
   }
 }
 
-// Enhanced fetch with auto-retry on 401, 503, and timeout
+// Enhanced fetch with auto-retry on 401, 503, 429, and timeout
+// Includes request deduplication and caching to prevent rate limiting
 async function fetchWithAuth(url, options = {}, retryCount = 0) {
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000; // 2 seconds
+  const method = options.method || 'GET';
+  
+  // ── Request Deduplication ──────────────────────────────────────────────────
+  // For GET requests, check cache first
+  if (method === 'GET') {
+    const cacheKey = getCacheKey(url, options);
+    
+    // Check cache
+    const cached = getCachedResponse(cacheKey);
+    if (cached) {
+      return new Response(JSON.stringify(cached), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Check if request is already pending (deduplication)
+    if (pendingRequests.has(cacheKey)) {
+      // Wait for the pending request to complete
+      return pendingRequests.get(cacheKey);
+    }
+  }
   
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
   
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    
-    // Handle 503 (Service Unavailable - Render backend sleeping)
-    if (response.status === 503 && retryCount < MAX_RETRIES) {
+  // Create the fetch promise
+  const fetchPromise = (async () => {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      
       clearTimeout(timeoutId);
-      // Backend is sleeping, retry with delay
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
-      return fetchWithAuth(url, options, retryCount + 1);
-    }
-    
-    // If 401 and we have a refresh token, try to refresh
-    if (response.status === 401 && getRefreshToken()) {
+      
+      // Handle 429 (Too Many Requests - Rate Limited)
+      if (response.status === 429 && retryCount < MAX_RETRIES) {
+        clearTimeout(timeoutId);
+        // Get retry-after header or use exponential backoff
+        const retryAfter = response.headers.get('Retry-After');
+        const delay = retryAfter ? parseInt(retryAfter) * 1000 : RETRY_DELAY * Math.pow(2, retryCount);
+        devLog.error(`[API] Rate limited. Retrying after ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithAuth(url, options, retryCount + 1);
+      }
+      
+      // Handle 503 (Service Unavailable - Backend sleeping)
+      if (response.status === 503 && retryCount < MAX_RETRIES) {
+        clearTimeout(timeoutId);
+        // Backend is sleeping, retry with delay
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+        return fetchWithAuth(url, options, retryCount + 1);
+      }
+      
+      // Cache successful GET responses
+      if (method === 'GET' && response.ok) {
+        const cacheKey = getCacheKey(url, options);
+        const clone = response.clone();
+        const data = await clone.json();
+        const ttl = getCacheTTL(url);
+        setCachedResponse(cacheKey, data, ttl);
+      }
+      
+      // If 401 and we have a refresh token, try to refresh
+      if (response.status === 401 && getRefreshToken()) {
       if (!isRefreshing) {
         isRefreshing = true;
         
@@ -232,7 +344,22 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
       );
     }
     throw error;
+  } finally {
+    // Clean up pending request tracking
+    if (method === 'GET') {
+      const cacheKey = getCacheKey(url, options);
+      pendingRequests.delete(cacheKey);
+    }
   }
+  })();
+  
+  // Store pending request for deduplication
+  if (method === 'GET') {
+    const cacheKey = getCacheKey(url, options);
+    pendingRequests.set(cacheKey, fetchPromise);
+  }
+  
+  return fetchPromise;
 }
 
 // Get auth headers
@@ -245,6 +372,9 @@ function getAuthHeaders() {
 }
 
 export const api = {
+  // Cache management
+  clearCache,
+  
   // Products
   async getProducts(filters = {}) {
     const controller = new AbortController();
@@ -329,6 +459,8 @@ export const api = {
       body: JSON.stringify(orderData),
       credentials: 'include'
     });
+    // Clear orders cache after creating new order
+    clearCache('/orders');
     return handleResponse(response);
   },
 
@@ -339,6 +471,8 @@ export const api = {
       body: JSON.stringify(updates),
       credentials: 'include'
     });
+    // Clear orders cache after update
+    clearCache('/orders');
     return handleResponse(response);
   },
 
@@ -348,6 +482,8 @@ export const api = {
       headers: getAuthHeaders(),
       credentials: 'include'
     });
+    // Clear orders cache after cancellation
+    clearCache('/orders');
     return handleResponse(response);
   },
 
