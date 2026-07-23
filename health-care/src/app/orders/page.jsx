@@ -1,5 +1,5 @@
 import { SITE_CONFIG } from '@/config/seo';
-import OrdersClient from './OrdersClient';
+import OrderHistoryPage from '@/views/OrderHistoryPage';
 
 export const metadata = {
   title: 'My Orders | MediportBD',
@@ -9,5 +9,5 @@ export const metadata = {
 };
 
 export default function OrdersPage() {
-  return <OrdersClient />;
+  return <OrderHistoryPage />;
 }

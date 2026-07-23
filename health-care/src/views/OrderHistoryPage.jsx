@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
 import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
@@ -19,7 +20,8 @@ const STATUS_COLORS = {
   cancelled: 'bg-[#FEE2E2] text-[#991B1B]',
 };
 
-export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
+export default function OrderHistoryPage() {
+  const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const t = useT();
   const [orders, setOrders] = useState([]);
@@ -33,9 +35,9 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated || !isAuthenticated()) {
-      if (onLoginClick) onLoginClick();
+      router.push('/login');
     }
-  }, [isAuthenticated, onLoginClick]);
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     if (!isAuthenticated || !isAuthenticated()) return;
@@ -64,7 +66,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   }, [page, isAuthenticated]);
 
   const handleTrack = (orderNumber) => {
-    if (onNavigate) onNavigate('track', { orderNumber });
+    router.push(`/track?order=${orderNumber}`);
   };
 
   const handleInvoice = (order) => {
@@ -74,11 +76,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
   };
 
   const handleRequestReturn = (orderId) => {
-    if (onNavigate) {
-      onNavigate('return-request', { orderId });
-    } else {
-      window.location.href = `/returns/request/${orderId}`;
-    }
+    router.push(`/returns/request/${orderId}`);
   };
 
   const canRequestReturn = (order) => {
@@ -134,7 +132,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
             {t('orders.noOrdersDesc')}
           </p>
           <button
-            onClick={() => onNavigate && onNavigate('reagent')}
+            onClick={() => router.push('/reagent-store')}
             className="px-6 py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2d52]"
           >
             {t('orders.browseCatalog')}
