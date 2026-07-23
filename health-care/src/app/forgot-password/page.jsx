@@ -1,5 +1,5 @@
 import { SITE_CONFIG } from '@/config/seo';
-import ForgotPasswordClient from './ForgotPasswordClient';
+import ForgotPasswordPage from '@/views/ForgotPasswordPage';
 
 export const metadata = {
   title: 'Forgot Password | MediportBD',
@@ -8,6 +8,6 @@ export const metadata = {
   alternates: { canonical: `${SITE_CONFIG.url}/forgot-password` },
 };
 
-export default function ForgotPasswordPage() {
-  return <ForgotPasswordClient />;
+export default function ForgotPassword() {
+  return <ForgotPasswordPage />;
 }

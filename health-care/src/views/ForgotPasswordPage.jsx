@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { API } from '@/constants/api';
 import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
 
-export default function ForgotPasswordPage({ onNavigateToLogin }) {
+export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -76,7 +78,7 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
                 Didn&apos;t receive the email? Check your spam folder or try again.
               </p>
               <button
-                onClick={onNavigateToLogin}
+                onClick={() => router.push('/login')}
                 className="text-[11px] sm:text-[12px] text-[#0E8A6E] font-medium hover:underline"
               >
                 ← Back to login
@@ -135,7 +137,7 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
           <div className="mt-4 sm:mt-6 text-center">
             <button
               type="button"
-              onClick={onNavigateToLogin}
+              onClick={() => router.push('/login')}
               className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] hover:text-[#0E8A6E]"
             >
               ← Back to login
@@ -146,3 +148,4 @@ export default function ForgotPasswordPage({ onNavigateToLogin }) {
     </div>
   );
 }
+

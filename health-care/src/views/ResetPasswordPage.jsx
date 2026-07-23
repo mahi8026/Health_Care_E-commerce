@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { API } from '@/constants/api';
 import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
 
-export default function ResetPasswordPage({ onNavigateToLogin }) {
+export default function ResetPasswordPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams?.get('token') || '';
 
@@ -44,7 +45,7 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
       setSuccess(true);
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        if (onNavigateToLogin) onNavigateToLogin();
+        router.push('/login');
       }, 2000);
     } catch (err) {
       setError(err.message || 'Failed to reset password. The link may have expired.');
@@ -85,7 +86,7 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
                 Redirecting you to login…
               </p>
               <button
-                onClick={onNavigateToLogin}
+                onClick={() => router.push('/login')}
                 className="text-[11px] sm:text-[12px] text-[#0E8A6E] font-medium hover:underline"
               >
                 Go to login →
@@ -155,7 +156,7 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
           <div className="mt-4 sm:mt-6 text-center">
             <button
               type="button"
-              onClick={onNavigateToLogin}
+              onClick={() => router.push('/login')}
               className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] hover:text-[#0E8A6E]"
             >
               ← Back to login
@@ -166,3 +167,5 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
     </div>
   );
 }
+
+

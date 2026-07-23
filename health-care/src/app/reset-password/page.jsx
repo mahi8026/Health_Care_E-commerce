@@ -1,5 +1,5 @@
 import { SITE_CONFIG } from '@/config/seo';
-import ResetPasswordClient from './ResetPasswordClient';
+import ResetPasswordPage from '@/views/ResetPasswordPage';
 
 export const metadata = {
   title: 'Reset Password | MediportBD',
@@ -8,6 +8,6 @@ export const metadata = {
   alternates: { canonical: `${SITE_CONFIG.url}/reset-password` },
 };
 
-export default function ResetPasswordPage() {
-  return <ResetPasswordClient />;
+export default function ResetPassword() {
+  return <ResetPasswordPage />;
 }
