@@ -1,4 +1,4 @@
-import HomeClient from './HomeClient';
+import HomePage from '@/views/HomePage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import StructuredData, {
   generateOrganizationSchema,
@@ -26,14 +26,14 @@ export const metadata = {
 
 /**
  * Homepage — Server Component.
- * Schema injected server-side; data fetched client-side via HomeClient.
+ * Schema injected server-side; data fetched client-side via HomePage.
  */
 export default function Home() {
   return (
     <>
       <StructuredData schema={generateOrganizationSchema()} />
       <StructuredData schema={generateWebSiteSchema()} />
-      <HomeClient initialFeaturedProducts={[]} />
+      <HomePage />
     </>
   );
 }
