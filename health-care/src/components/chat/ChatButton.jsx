@@ -7,11 +7,13 @@ export default function ChatButton({ onClick, unreadCount = 0 }) {
   const [pulse, setPulse] = useState(false);
 
   useEffect(() => {
-    if (unreadCount > 0) {
-      setPulse(true);
-      const timer = setTimeout(() => setPulse(false), 1000);
-      return () => clearTimeout(timer);
-    }
+    (async () => {
+      if (unreadCount > 0) {
+        setPulse(true);
+        const timer = setTimeout(() => setPulse(false), 1000);
+        return () => clearTimeout(timer);
+      }
+    })();
   }, [unreadCount]);
 
   return (

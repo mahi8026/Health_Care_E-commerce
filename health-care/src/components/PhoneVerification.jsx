@@ -18,12 +18,14 @@ export default function PhoneVerification({ onVerified }) {
 
   // Resend countdown timer
   useEffect(() => {
-    if (resendCountdown > 0) {
-      const timer = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (resendCountdown === 0 && !canResend) {
-      setCanResend(true);
-    }
+    (async () => {
+      if (resendCountdown > 0) {
+        const timer = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
+        return () => clearTimeout(timer);
+      } else if (resendCountdown === 0 && !canResend) {
+        setCanResend(true);
+      }
+    })();
   }, [resendCountdown, canResend]);
 
   const handleSendOTP = async () => {

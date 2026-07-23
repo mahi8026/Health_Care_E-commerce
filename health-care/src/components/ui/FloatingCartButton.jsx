@@ -14,11 +14,13 @@ export default function FloatingCartButton({ onClick }) {
   const cartTotal = getCartTotal();
 
   useEffect(() => {
-    if (cartCount > prevCount && cartCount > 0) {
-      setBounce(true);
-      setTimeout(() => setBounce(false), 600);
-    }
-    setPrevCount(cartCount);
+    (async () => {
+      if (cartCount > prevCount && cartCount > 0) {
+        setBounce(true);
+        setTimeout(() => setBounce(false), 600);
+      }
+      setPrevCount(cartCount);
+    })();
   }, [cartCount, prevCount]);
 
   if (cartCount === 0) return null;

@@ -16,38 +16,40 @@ export default function Confetti({ active = false, duration = 3000, particleCoun
   const [particles, setParticles] = useState([]);
 
   useEffect(() => {
-    if (!active) return;
+    (async () => {
+      if (!active) return;
 
-    // Generate confetti particles
-    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: -10,
-      rotation: Math.random() * 360,
-      scale: 0.5 + Math.random() * 0.5,
-      endX: Math.random() * 200 - 100, // Pre-calculate horizontal drift
-      color: [
-        '#FF6B6B', // Red
-        '#4ECDC4', // Teal
-        '#45B7D1', // Blue
-        '#FFA07A', // Orange
-        '#98D8C8', // Mint
-        '#F7DC6F', // Yellow
-        '#BB8FCE', // Purple
-        '#85C1E2', // Sky blue
-      ][Math.floor(Math.random() * 8)],
-      delay: Math.random() * 0.5,
-      duration: 2 + Math.random() * 1,
-    }));
+      // Generate confetti particles
+      const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: -10,
+        rotation: Math.random() * 360,
+        scale: 0.5 + Math.random() * 0.5,
+        endX: Math.random() * 200 - 100, // Pre-calculate horizontal drift
+        color: [
+          '#FF6B6B', // Red
+          '#4ECDC4', // Teal
+          '#45B7D1', // Blue
+          '#FFA07A', // Orange
+          '#98D8C8', // Mint
+          '#F7DC6F', // Yellow
+          '#BB8FCE', // Purple
+          '#85C1E2', // Sky blue
+        ][Math.floor(Math.random() * 8)],
+        delay: Math.random() * 0.5,
+        duration: 2 + Math.random() * 1,
+      }));
 
-    setParticles(newParticles);
+      setParticles(newParticles);
 
-    // Clear after animation
-    const timeout = setTimeout(() => {
-      setParticles([]);
-    }, duration);
+      // Clear after animation
+      const timeout = setTimeout(() => {
+        setParticles([]);
+      }, duration);
 
-    return () => clearTimeout(timeout);
+      return () => clearTimeout(timeout);
+    })();
   }, [active, duration, particleCount]);
 
   if (particles.length === 0) return null;
