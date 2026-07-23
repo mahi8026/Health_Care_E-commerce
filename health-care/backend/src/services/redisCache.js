@@ -111,6 +111,7 @@ function initRedis() {
     const redisPort = parseInt(process.env.REDIS_PORT) || 6379;
     
     // Auto-detect if TLS is needed (Redis Cloud uses non-standard ports and requires TLS)
+    // Only enable TLS for Redis Cloud hosts (redislabs.com or cloud.redislabs.com)
     const needsTLS = process.env.REDIS_TLS === 'true' || 
                      (redisHost.includes('redislabs.com') || redisHost.includes('redis.cloud'));
     
@@ -120,10 +121,14 @@ function initRedis() {
       password: process.env.REDIS_PASSWORD || undefined,
       db: parseInt(process.env.REDIS_DB) || 0,
       // Redis Cloud requires TLS on non-local connections
+      // Fixed: Use proper TLS configuration for Redis Cloud
       tls: needsTLS ? {
+        // Don't reject self-signed certificates (Redis Cloud uses valid certs but this avoids cert chain issues)
         rejectUnauthorized: false,
-        requestCert: true,
-        agent: false
+        // Don't request client certificate
+        requestCert: false,
+        // servername needed for SNI (Server Name Indication)
+        servername: redisHost
       } : undefined,
       retryStrategy: (times) => {
         // Stop retrying after 3 attempts

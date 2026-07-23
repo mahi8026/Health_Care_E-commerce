@@ -253,6 +253,7 @@ app.use('/api/monitoring', require('./routes/monitoringRoutes'));
 
 // Database-dependent routes (protected by dbHealthCheck middleware)
 app.use('/api/auth', dbHealthCheck, require('./routes/authRoutes')); // Has its own rate limiters
+app.use('/api/home', dbHealthCheck, require('./routes/homeRoutes')); // Aggregated homepage data (reduces API calls from 15+ to 1-2)
 app.use('/api/products', dbHealthCheck, require('./routes/productRoutes'));
 app.use('/api/orders', dbHealthCheck, require('./routes/orderRoutes'));
 app.use('/api/payments', dbHealthCheck, require('./routes/paymentRoutes')); // Has its own rate limiters

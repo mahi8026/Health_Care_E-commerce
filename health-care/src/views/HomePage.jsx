@@ -462,143 +462,135 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  // Fetch data — STAGED LOADING for better TBT/TTI
-  // Stage 1 (critical, above-fold): featured products, categories, settings
-  // Stage 2 (deferred, below-fold): deals, new arrivals, category products, reviews
+  // ══════════════════════════════════════════════════════════════════════════════
+  // OPTIMIZED DATA FETCHING - Single aggregated endpoint instead of 15+ calls
+  // ══════════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    const safe = async (p) => {
+    let isMounted = true;
+
+    const fetchHomeData = async () => {
       try {
-        const response = await p;
-        const data = await response.json();
-        return data;
-      } catch {
-        return { success: false, data: null };
-      }
-    };
-
-    const extractProducts = (d) => {
-      if (Array.isArray(d?.data)) return d.data;
-      if (Array.isArray(d?.data?.products)) return d.data.products;
-      if (Array.isArray(d?.products)) return d.products;
-      return [];
-    };
-
-    // ── STAGE 1: Critical above-fold data (4 requests vs previous 16) ─────
-    Promise.all([
-      safe(fetch(`${API}/products?isFeatured=true&limit=25`)),
-      safe(fetch(`${API}/categories`)),
-      safe(fetch(`${API}/products/category-counts`)),
-      safe(fetch(`${API}/stats`)),
-    ]).then(([featured, cats, counts, statsData]) => {
-      const fp = extractProducts(featured);
-      // If no featured products, fetch general products as fallback
-      if (fp.length >= 4) {
-        setFeaturedProducts(fp);
-        setFeaturedLoading(false);
-        setIsLoadingData(false);
-      } else {
-        safe(fetch(`${API}/products?limit=25`)).then((allProducts) => {
-          const ap = extractProducts(allProducts);
-          setFeaturedProducts(ap.length > 0 ? ap : []);
+        // SINGLE AGGREGATED REQUEST - Replaces 10+ separate API calls
+        const response = await fetch(`${API}/home/data`, {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const { success, data } = await response.json();
+        
+        if (!isMounted) return;
+        
+        if (success && data) {
+          // Unpack all data from single response
+          setFeaturedProducts(Array.isArray(data.featuredProducts) ? data.featuredProducts : []);
+          setCategories(Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : FALLBACK_CATEGORIES);
+          setCategoryCounts(data.categoryCounts || {});
+          setDealProducts(Array.isArray(data.dealProducts) ? data.dealProducts : []);
+          setNewArrivals(Array.isArray(data.newArrivals) ? data.newArrivals : []);
+          setTopSellingProducts(Array.isArray(data.topSellingProducts) ? data.topSellingProducts : []);
+          setLabEquipmentProducts(Array.isArray(data.labEquipmentProducts) ? data.labEquipmentProducts : []);
+          setTestimonials(Array.isArray(data.testimonials) ? data.testimonials : []);
+          setPromo(data.activePromo || null);
+          setStats(data.stats || { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+          
+          // Update all loading states
           setFeaturedLoading(false);
           setIsLoadingData(false);
-        });
+          setDealLoading(false);
+          setNewArrivalsLoading(false);
+          setTopSellingLoading(false);
+        } else {
+          throw new Error('Invalid response format');
+        }
+      } catch (error) {
+        if (!isMounted) return;
+        
+        console.error('[HomePage] Failed to load data:', error);
+        
+        // Set fallback data on error
+        setCategories(FALLBACK_CATEGORIES);
+        setFeaturedProducts([]);
+        setDealProducts([]);
+        setNewArrivals([]);
+        setTopSellingProducts([]);
+        setLabEquipmentProducts([]);
+        
+        // Update loading states
+        setFeaturedLoading(false);
+        setIsLoadingData(false);
+        setDealLoading(false);
+        setNewArrivalsLoading(false);
+        setTopSellingLoading(false);
       }
-
-      const catList = cats.data?.categories || cats.categories || [];
-      setCategories(catList.length > 0 ? catList : FALLBACK_CATEGORIES);
-      setCategoryCounts(counts.data || {});
-      if (statsData.data) setStats(statsData.data);
-    }).catch(() => {
-      setFeaturedLoading(false);
-      setIsLoadingData(false);
-      setCategories(FALLBACK_CATEGORIES);
-    });
-
-    // ── STAGE 2: Below-fold data — deferred until browser is idle ─────────
-    const loadDeferredData = () => {
-      Promise.all([
-        safe(fetch(`${API}/products?hasDiscount=true&limit=4&sortBy=discountPct`)),
-        safe(fetch(`${API}/products?sortBy=newest&limit=10`)),
-        safe(fetch(`${API}/reviews?isApproved=true&limit=3`)),
-        safe(fetch(`${API}/coupons/active-promo`)),
-        safe(fetch(`${API}/products?sortBy=popular&limit=4`)),
-        safe(fetch(`${API}/products?category=Lab+Equipment&limit=4`)),
-      ]).then(([deals, newest, reviews, promoData, topSelling, labEquip]) => {
-        const dealList = extractProducts(deals);
-        setDealProducts(dealList);
-        setDealLoading(false);
-
-        const na = extractProducts(newest);
-        setNewArrivals(na);
-        setNewArrivalsLoading(false);
-
-        const reviewList = reviews.data?.reviews || reviews.reviews || [];
-        setTestimonials(Array.isArray(reviewList) ? reviewList : []);
-
-        setPromo(promoData.data?.coupon || null);
-
-        const topSellingList = extractProducts(topSelling);
-        setTopSellingProducts(topSellingList);
-        setTopSellingLoading(false);
-
-        const labEquipList = extractProducts(labEquip);
-        setLabEquipmentProducts(labEquipList);
-      }).catch(() => {
-        setDealLoading(false);
-        setNewArrivalsLoading(false);
-        setTopSellingLoading(false);
-      });
-
-      // ── STAGE 3: Category product tabs — lowest priority ───────────────
-      Promise.all([
-        safe(fetch(`${API}/products?category=Diagnostic+Equipment&limit=10`)),
-        safe(fetch(`${API}/products?category=Laboratory+Reagents&limit=10`)),
-        safe(fetch(`${API}/products?category=Hospital+Machines&limit=10`)),
-        safe(fetch(`${API}/products?category=PPE&limit=10`)),
-        safe(fetch(`${API}/products?category=Lab+Equipment&limit=10`)),
-      ]).then(([diagnostic, reagents, machines, ppe, labEquipCat]) => {
-        setCategoryProducts({
-          diagnostic: extractProducts(diagnostic),
-          reagents: extractProducts(reagents),
-          machines: extractProducts(machines),
-          ppe: extractProducts(ppe),
-          labEquipment: extractProducts(labEquipCat),
-        });
-        setCategoryProductsLoading(false);
-      }).catch(() => setCategoryProductsLoading(false));
     };
 
-    // Use requestIdleCallback if available, otherwise setTimeout with 300ms delay
-    // This ensures Stage 1 data is rendered before we start Stage 2 fetching
+    // DEFERRED: Category products (only loaded when user scrolls to category tabs)
+    const fetchCategoryProducts = async () => {
+      try {
+        const response = await fetch(
+          `${API}/home/category-products?category=Diagnostic Equipment,Laboratory Reagents,Hospital Machines,PPE & Safety,Lab Equipment&limit=10`,
+          { credentials: 'include' }
+        );
+        
+        if (!isMounted) return;
+        
+        if (response.ok) {
+          const { success, data } = await response.json();
+          if (success && data) {
+            setCategoryProducts({
+              diagnostic: data['Diagnostic Equipment'] || [],
+              reagents: data['Laboratory Reagents'] || [],
+              machines: data['Hospital Machines'] || [],
+              ppe: data['PPE & Safety'] || [],
+              labEquipment: data['Lab Equipment'] || [],
+            });
+          }
+        }
+      } catch (error) {
+        console.error('[HomePage] Failed to load category products:', error);
+      } finally {
+        if (isMounted) setCategoryProductsLoading(false);
+      }
+    };
+
+    // Execute main data fetch immediately
+    fetchHomeData();
+
+    // Defer category products until idle
     if (typeof window !== 'undefined') {
       if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(loadDeferredData, { timeout: 2000 });
+        window.requestIdleCallback(() => fetchCategoryProducts(), { timeout: 2000 });
       } else {
-        setTimeout(loadDeferredData, 300);
+        setTimeout(fetchCategoryProducts, 500);
       }
     }
 
-    // Check user auth
+    // Check user auth (separate lightweight call)
     const token = localStorage.getItem('Mediport_token');
     if (token) {
-      fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${API}/auth/me`, { 
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include'
+      })
         .then(r => r.json())
         .then(data => {
-          if (data.user) setUser(data.user);
+          if (isMounted && data.user) setUser(data.user);
         })
         .catch(() => {});
     }
 
-    // Get cart count
+    // Get cart count from localStorage (instant, no API call)
     const cartData = localStorage.getItem('cart');
     if (cartData) {
       try {
         const cart = JSON.parse(cartData);
         const count = cart.items?.length || 0;
-        setTimeout(() => setCartCount(count), 0);
+        setCartCount(count);
       } catch {}
     }
+
+    return () => { isMounted = false; };
   }, []);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
