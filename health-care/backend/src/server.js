@@ -341,9 +341,6 @@ app.get('/api/fix-slugs', async (req, res) => {
 
 // ── Fix Product Visibility ─────────────────────────────────────────────────────
 app.get('/api/fix-product-visibility', async (req, res) => {
-  if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
-    return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
-  }
   try {
     const Product = require('./models/Product');
     const Manufacturer = require('./models/Manufacturer');
