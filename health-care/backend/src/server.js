@@ -253,7 +253,7 @@ app.use('/api/monitoring', require('./routes/monitoringRoutes'));
 
 // Database-dependent routes (protected by dbHealthCheck middleware)
 app.use('/api/auth', dbHealthCheck, require('./routes/authRoutes')); // Has its own rate limiters
-app.use('/api/home', dbHealthCheck, require('./routes/homeRoutes')); // Aggregated homepage data (reduces API calls from 15+ to 1-2)
+app.use('/api/home', require('./routes/homeRoutes')); // Aggregated homepage data - handles DB errors gracefully
 app.use('/api/products', dbHealthCheck, require('./routes/productRoutes'));
 app.use('/api/orders', dbHealthCheck, require('./routes/orderRoutes'));
 app.use('/api/payments', dbHealthCheck, require('./routes/paymentRoutes')); // Has its own rate limiters
@@ -273,7 +273,7 @@ app.use('/api/cart', dbHealthCheck, require('./routes/cartRoutes'));
 app.use('/api/newsletter', dbHealthCheck, require('./routes/newsletterRoutes'));
 app.use('/api/activity-logs', dbHealthCheck, require('./routes/activityLogRoutes'));
 app.use('/api/sms', dbHealthCheck, require('./routes/smsRoutes'));
-app.use('/api/settings', dbHealthCheck, require('./routes/settings')); // Site settings
+app.use('/api/settings', require('./routes/settings')); // Site settings - handles DB errors gracefully
 app.use('/api/search', dbHealthCheck, require('./routes/search')); // Search and trending
 app.use('/api/recommendations', dbHealthCheck, require('./routes/recommendationRoutes')); // AI-powered recommendations
 app.use('/api/data-sync', dbHealthCheck, require('./routes/dataSyncRoutes')); // Data synchronization
@@ -282,7 +282,7 @@ app.use('/api/whatsapp', require('./routes/whatsappRoutes')); // WhatsApp automa
 app.use('/api/chat', require('./routes/chatRoutes')); // Live chat integration
 app.use('/api/loyalty', dbHealthCheck, require('./routes/loyaltyRoutes')); // Loyalty program
 app.use('/api/admin/b2b', dbHealthCheck, require('./routes/b2bRoutes')); // B2B management (admin only)
-app.use('/api/flash-deals', dbHealthCheck, require('./routes/flashDealRoutes')); // Flash deals management
+app.use('/api/flash-deals', require('./routes/flashDealRoutes')); // Flash deals - handles DB errors gracefully
 app.use('/api/test', dbHealthCheck, require('./routes/testRoutes')); // Test and debugging endpoints (admin only)
 app.use('/api/utils', dbHealthCheck, require('./routes/adminUtilRoutes')); // Utility endpoints (fix category counts, etc.)
 
