@@ -177,8 +177,9 @@ const connectDB = async () => {
 
   } catch (error) {
     logger.error(`✗ MongoDB Connection Error: ${error.message}`);
-    // Only exit on initial connection failure
-    process.exit(1);
+    logger.warn('⚠️  Server will continue without database. Only health-check and cached endpoints will work.');
+    logger.warn('⚠️  The server will automatically reconnect when MongoDB becomes available.');
+    attemptReconnection();
   }
 };
 

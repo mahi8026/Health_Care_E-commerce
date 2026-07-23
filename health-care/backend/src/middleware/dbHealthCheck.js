@@ -10,17 +10,8 @@ const dbHealthCheck = (req, res, next) => {
   // Mongoose connection states:
   // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
   if (mongoose.connection.readyState !== 1) {
-    // Properly set CORS headers for 503 response
     const origin = req.headers.origin;
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
-      process.env.ADMIN_URL,
-    ].filter(Boolean);
-
-    // Allow Vercel preview URLs
-    const isVercelPreview = origin && origin.includes('.vercel.app');
-    
-    if (origin && (allowedOrigins.includes(origin) || isVercelPreview)) {
+    if (origin) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');

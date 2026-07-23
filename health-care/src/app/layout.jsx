@@ -133,6 +133,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-128x128.png" />
         
         {/* iOS Meta Tags */}
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="MediportBD" />
@@ -145,13 +146,7 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileColor" content="#0B2545" />
         <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
-        {/* Preload LCP hero image from Cloudinary CDN */}
-        <link
-          rel="preload"
-          as="image"
-          href="https://res.cloudinary.com/dm8eqxwlz/image/upload/f_auto,q_auto,w_1200,c_limit/MediportBD/hero-banner"
-          fetchPriority="high"
-        />
+
       </head>
       <body className="min-h-screen antialiased text-[var(--color-text-primary)]">
         {/* Skip to main content — keyboard/screen-reader accessibility */}
