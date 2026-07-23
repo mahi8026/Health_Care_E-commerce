@@ -1,4 +1,5 @@
 import { SITE_CONFIG } from '@/config/seo';
+import { Suspense } from 'react';
 import ResetPasswordPage from '@/views/ResetPasswordPage';
 
 export const metadata = {
@@ -8,6 +9,14 @@ export const metadata = {
   alternates: { canonical: `${SITE_CONFIG.url}/reset-password` },
 };
 
+function LoadingFallback() {
+  return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
+}
+
 export default function ResetPassword() {
-  return <ResetPasswordPage />;
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ResetPasswordPage />
+    </Suspense>
+  );
 }
