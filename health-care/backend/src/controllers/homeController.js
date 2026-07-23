@@ -36,6 +36,29 @@ exports.getHomeData = async (req, res) => {
   const cacheKey = 'homepage:aggregated:v1';
   
   try {
+    // Check MongoDB connection status first
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      logger.warn('[homeController] MongoDB not connected yet, returning empty data');
+      return res.json({
+        success: true,
+        data: {
+          featuredProducts: [],
+          categories: [],
+          categoryCounts: {},
+          dealProducts: [],
+          newArrivals: [],
+          topSellingProducts: [],
+          labEquipmentProducts: [],
+          testimonials: [],
+          activePromo: null,
+          stats: { totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 }
+        },
+        cached: false,
+        dbConnecting: true
+      });
+    }
+
     // Try cache first
     const cached = await get(cacheKey);
     if (cached) {
@@ -265,6 +288,18 @@ exports.getCategoryProducts = async (req, res) => {
   const { category, limit = 10 } = req.query;
   
   try {
+    // Check MongoDB connection status first
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      logger.warn('[homeController] MongoDB not connected yet, returning empty category products');
+      return res.json({
+        success: true,
+        data: {},
+        cached: false,
+        dbConnecting: true
+      });
+    }
+
     if (!category) {
       return res.status(400).json({
         success: false,
