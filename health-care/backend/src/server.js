@@ -339,23 +339,71 @@ app.get('/api/fix-slugs', async (req, res) => {
   }
 });
 
-// ── Fix Product Visibility ─────────────────────────────────────────────────────
-app.get('/api/fix-product-visibility', async (req, res) => {
+// ── Seed Sample Products ───────────────────────────────────────────────────────
+app.get('/api/seed-products', async (req, res) => {
   try {
     const Product = require('./models/Product');
     const Manufacturer = require('./models/Manufacturer');
+    const Category = require('./models/Category');
 
-    const [prodResult, mfrResult] = await Promise.all([
-      Product.updateMany({}, { $set: { isActive: true } }),
-      Manufacturer.updateMany({}, { $set: { isActive: true } }),
-    ]);
+    async function ensureManufacturer(name) {
+      let m = await Manufacturer.findOne({ name });
+      if (!m) m = await Manufacturer.create({ name, slug: name.toLowerCase().replace(/\s+/g, '-'), description: `${name} - Medical equipment manufacturer`, isActive: true });
+      return m._id;
+    }
+    async function ensureCategory(name) {
+      let c = await Category.findOne({ name });
+      if (!c) c = await Category.create({ name, slug: name.toLowerCase().replace(/\s+/g, '-'), description: `${name} category`, isActive: true });
+      return c._id;
+    }
 
-    res.json({
-      success: true,
-      message: 'Products and manufacturers set to active',
-      productsModified: prodResult.modifiedCount,
-      manufacturersModified: mfrResult.modifiedCount,
-    });
+    const productData = [
+      { name: 'Siemens Cardiostat ECG 12-lead', brand: 'Siemens Healthineers', category: 'Diagnostic Equipment', sku: 'SIE-ECG-001', price: 95000, oldPrice: 110000, stock: 45, description: 'Professional 12-lead ECG machine', isFeatured: true, badge: 'sale' },
+      { name: 'GE Vivid E95 Ultrasound System', brand: 'GE Healthcare', category: 'Diagnostic Equipment', sku: 'GE-US-002', price: 2850000, stock: 3, description: 'Premium cardiovascular ultrasound system', isFeatured: true, badge: 'new' },
+      { name: 'Philips IntelliVue MX40 Monitor', brand: 'Philips', category: 'Diagnostic Equipment', sku: 'PHI-MON-003', price: 185000, stock: 28, description: 'Portable patient monitoring system' },
+      { name: 'Omron Digital Blood Pressure Monitor', brand: 'Omron', category: 'Diagnostic Equipment', sku: 'OMR-BP-004', price: 3500, oldPrice: 4200, stock: 150, description: 'Automatic upper arm BP monitor', isFeatured: true, badge: 'bestseller' },
+      { name: 'Beurer Infrared Thermometer', brand: 'Beurer', category: 'Diagnostic Equipment', sku: 'BEU-TH-005', price: 2800, stock: 95, description: 'Non-contact infrared thermometer' },
+      { name: 'Surgical Scissor Set 5-pc', brand: 'Aesculap', category: 'Surgical Instruments', sku: 'AES-SCI-006', price: 12500, stock: 65, description: 'Premium surgical scissors set' },
+      { name: 'Disposable Surgical Blade Box 100', brand: 'Swann-Morton', category: 'Surgical Instruments', sku: 'SWA-BLA-007', price: 4500, stock: 8, minOrderQty: 10, description: 'Sterile surgical blades, box of 100' },
+      { name: 'Surgical Forceps Set 8-pc', brand: 'KLS Martin', category: 'Surgical Instruments', sku: 'KLS-FOR-008', price: 18500, stock: 42, description: 'Precision titanium forceps set' },
+      { name: 'Electrosurgical Pencil', brand: 'Medtronic', category: 'Surgical Instruments', sku: 'MED-ESP-009', price: 8500, stock: 55, description: 'Reusable electrosurgical pencil' },
+      { name: 'Surgical Suture Kit Absorbable', brand: 'Ethicon', category: 'Surgical Instruments', sku: 'ETH-SUT-010', price: 6500, stock: 120, description: 'Absorbable sutures assorted', badge: 'bestseller' },
+      { name: 'Roche Cobas HbA1c Reagent Kit', brand: 'Roche Diagnostics', category: 'Laboratory Reagents', sku: 'ROC-HBA-011', price: 8500, stock: 8, minOrderQty: 5, description: 'HbA1c testing reagent', isFeatured: true, badge: 'new' },
+      { name: 'Abbott Troponin I Reagent', brand: 'Abbott Laboratories', category: 'Laboratory Reagents', sku: 'ABB-TRO-012', price: 22000, stock: 15, minOrderQty: 2, description: 'Cardiac marker reagent', isFeatured: true },
+      { name: 'Beckman CBC Reagent Pack', brand: 'Beckman Coulter', category: 'Laboratory Reagents', sku: 'BEC-CBC-013', price: 18000, stock: 62, description: 'CBC reagent pack' },
+      { name: 'Siemens Liver Function Panel', brand: 'Siemens Healthineers', category: 'Laboratory Reagents', sku: 'SIE-LFP-014', price: 14500, stock: 30, description: 'Liver function testing panel' },
+      { name: 'Bio-Rad Lipid Profile Reagent', brand: 'Bio-Rad', category: 'Laboratory Reagents', sku: 'BIO-LIP-015', price: 16500, stock: 35, description: 'Lipid profile testing reagent' },
+      { name: 'Sysmex Hematology Reagent', brand: 'Sysmex', category: 'Laboratory Reagents', sku: 'SYS-HEM-016', price: 19500, stock: 28, description: 'Hematology analyzer reagent' },
+      { name: 'Ortho Immunoassay Reagent', brand: 'Ortho Clinical', category: 'Laboratory Reagents', sku: 'ORT-IMM-017', price: 24500, stock: 18, minOrderQty: 2, description: 'Immunoassay reagent' },
+      { name: 'Randox Creatinine Reagent', brand: 'Randox', category: 'Laboratory Reagents', sku: 'RAN-CRE-018', price: 9500, stock: 48, description: 'Creatinine testing reagent' },
+      { name: 'Mindray BeneVision N12 Monitor', brand: 'Mindray', category: 'Hospital Machines', sku: 'MIN-PM-019', price: 285000, stock: 12, description: 'Multi-parameter patient monitor' },
+      { name: 'Dräger Savina 300 Ventilator', brand: 'Dräger', category: 'Hospital Machines', sku: 'DRA-VEN-020', price: 1850000, stock: 5, description: 'ICU ventilator', badge: 'new' },
+      { name: 'Fresenius 4008S Dialysis Machine', brand: 'Fresenius', category: 'Hospital Machines', sku: 'FRE-DIA-021', price: 1250000, stock: 8, description: 'Hemodialysis machine' },
+      { name: 'Medtronic PB 980 Ventilator', brand: 'Medtronic', category: 'Hospital Machines', sku: 'MED-VEN-022', price: 2150000, stock: 4, description: 'Advanced ICU ventilator' },
+      { name: 'Eppendorf Centrifuge 5810R', brand: 'Eppendorf', category: 'Lab Equipment', sku: 'EPP-CEN-023', price: 485000, stock: 6, description: 'Refrigerated benchtop centrifuge' },
+      { name: 'Thermo Fisher PCR Cycler', brand: 'Thermo Fisher', category: 'Lab Equipment', sku: 'THE-PCR-024', price: 625000, stock: 4, description: 'PCR thermal cycler', badge: 'new' },
+      { name: 'Mettler Toledo Analytical Balance', brand: 'Mettler Toledo', category: 'Lab Equipment', sku: 'MET-BAL-025', price: 185000, stock: 15, description: 'Precision analytical balance' },
+      { name: 'Labconco Biosafety Cabinet II', brand: 'Labconco', category: 'Lab Equipment', sku: 'LAB-BSC-026', price: 725000, stock: 3, description: 'Class II biosafety cabinet' },
+      { name: '3M N95 Respirator Mask Box 20', brand: '3M', category: 'PPE', sku: '3M-N95-027', price: 2500, stock: 250, minOrderQty: 10, description: 'N95 respirator masks', badge: 'bestseller' },
+      { name: 'Ansell Surgical Gloves Sterile 50pr', brand: 'Ansell', category: 'PPE', sku: 'ANS-GLV-028', price: 3500, stock: 180, minOrderQty: 5, description: 'Sterile latex surgical gloves' },
+      { name: 'Stryker Hip Implant System', brand: 'Stryker', category: 'Implants', sku: 'STR-HIP-029', price: 385000, stock: 12, description: 'Total hip replacement system' },
+      { name: 'Zimmer Knee Implant', brand: 'Zimmer Biomet', category: 'Implants', sku: 'ZIM-KNE-030', price: 425000, stock: 8, description: 'Total knee replacement implant' },
+    ];
+
+    let created = 0;
+    for (const data of productData) {
+      const [brandId, categoryId] = await Promise.all([
+        ensureManufacturer(data.brand),
+        ensureCategory(data.category),
+      ]);
+      const exists = await Product.findOne({ sku: data.sku });
+      if (!exists) {
+        await Product.create({ ...data, brand: brandId, category: categoryId, isActive: true });
+        created++;
+      }
+    }
+
+    res.json({ success: true, productsCreated: created, total: await Product.countDocuments() });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
