@@ -732,6 +732,15 @@ export default function HomePage() {
           background: #1a3a5c; 
           box-shadow: 0 20px 60px rgba(0,0,0,0.4); 
         }
+        /* Tablet breakpoint: prevent horizontal overflow */
+        @media (max-width: 1279px) and (min-width: 769px) {
+          .hero-grid-container { 
+            grid-template-columns: minmax(0, 1fr) minmax(0, 48%); 
+            gap: 20px; 
+            padding: 0 16px; 
+          }
+          .hero-right-panel { height: 380px; }
+        }
         @media (min-width: 1280px) {
           .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 36px; }
           .hero-right-panel { height: 500px; }
@@ -756,8 +765,8 @@ export default function HomePage() {
         .top-selling-card { display: flex; gap: 16px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
         .top-selling-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .best-selling-badge { position: absolute; top: -1px; right: -1px; background: #F97316; color: #fff; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 0 12px 0 8px; }
-        @media (max-width: 1024px) {
-          .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; }
+        @media (max-width: 768px) {
+          .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; padding: 0 16px; }
           .hero-left-content { order: 2; }
           .hero-right-panel { order: 1; display: block !important; height: 260px !important; border-radius: 14px !important; }
           .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }

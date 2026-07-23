@@ -1053,6 +1053,8 @@ html {
   background-color: var(--color-background-page);
   background-image: var(--page-gradient-wash);
   background-attachment: fixed;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -1064,6 +1066,7 @@ body {
   font-size: 14px;
   min-width: 320px;
   overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Page-level background utility (use on view wrappers) */
@@ -1137,6 +1140,7 @@ img, video {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  overflow-x: hidden;
 }
 
 @media (min-width: 640px) {
