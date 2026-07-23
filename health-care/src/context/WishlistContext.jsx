@@ -33,12 +33,14 @@ export function WishlistProvider({ children }) {
 
   // Fetch wishlist when user logs in
   useEffect(() => {
-    if (isAuthenticated()) {
-      fetchWishlist();
-    } else {
-      // Reset wishlist when user logs out - this is intentional state sync
-      setWishlist([]);
-    }
+    (async () => {
+      if (isAuthenticated()) {
+        fetchWishlist();
+      } else {
+        // Reset wishlist when user logs out - this is intentional state sync
+        setWishlist([]);
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

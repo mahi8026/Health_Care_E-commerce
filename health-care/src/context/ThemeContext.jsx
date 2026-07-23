@@ -40,9 +40,11 @@ export function ThemeProvider({ children }) {
 
   // Apply theme class to document on mount and theme changes
   useEffect(() => {
-    // Apply initial theme
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    setMounted(true);
+    (async () => {
+      // Apply initial theme
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      setMounted(true);
+    })();
   }, [theme]);
 
   // Listen for system theme changes
