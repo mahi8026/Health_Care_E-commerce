@@ -10,3 +10,5 @@ healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+
+# Note: Set Root Directory to "health-care/backend" in Railway dashboard
