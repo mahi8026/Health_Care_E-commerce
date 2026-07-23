@@ -339,6 +339,31 @@ app.get('/api/fix-slugs', async (req, res) => {
   }
 });
 
+// ── Fix Product Visibility ─────────────────────────────────────────────────────
+app.get('/api/fix-product-visibility', async (req, res) => {
+  if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
+    return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
+  }
+  try {
+    const Product = require('./models/Product');
+    const Manufacturer = require('./models/Manufacturer');
+
+    const [prodResult, mfrResult] = await Promise.all([
+      Product.updateMany({}, { $set: { isActive: true } }),
+      Manufacturer.updateMany({}, { $set: { isActive: true } }),
+    ]);
+
+    res.json({
+      success: true,
+      message: 'Products and manufacturers set to active',
+      productsModified: prodResult.modifiedCount,
+      manufacturersModified: mfrResult.modifiedCount,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ── Admin Email Test ──────────────────────────────────────────────────────────
 app.get('/api/test-email', async (req, res) => {
   if (req.query.secret !== ADMIN_SECRET) {
