@@ -110,24 +110,20 @@ function initRedis() {
     const redisHost = process.env.REDIS_HOST || 'localhost';
     const redisPort = parseInt(process.env.REDIS_PORT) || 6379;
     
-    // Auto-detect if TLS is needed (Redis Cloud uses non-standard ports and requires TLS)
-    // Only enable TLS for Redis Cloud hosts (redislabs.com or cloud.redislabs.com)
-    const needsTLS = process.env.REDIS_TLS === 'true' || 
-                     (redisHost.includes('redislabs.com') || redisHost.includes('redis.cloud'));
+    // Check if TLS should be explicitly enabled via environment variable
+    // Set REDIS_TLS=false in Railway to disable TLS (Redis Cloud with non-standard port may not need TLS)
+    const tlsEnabled = process.env.REDIS_TLS === 'true';
     
     const redisConfig = {
       host: redisHost,
       port: redisPort,
       password: process.env.REDIS_PASSWORD || undefined,
       db: parseInt(process.env.REDIS_DB) || 0,
-      // Redis Cloud requires TLS on non-local connections
-      // Fixed: Use proper TLS configuration for Redis Cloud
-      tls: needsTLS ? {
-        // Don't reject self-signed certificates (Redis Cloud uses valid certs but this avoids cert chain issues)
+      // Only use TLS if explicitly enabled
+      // Redis Cloud on non-standard ports may work without TLS
+      tls: tlsEnabled ? {
         rejectUnauthorized: false,
-        // Don't request client certificate
         requestCert: false,
-        // servername needed for SNI (Server Name Indication)
         servername: redisHost
       } : undefined,
       retryStrategy: (times) => {
@@ -143,7 +139,6 @@ function initRedis() {
       enableReadyCheck: true,
       lazyConnect: false,
       connectTimeout: 10000,
-      // Disable auto-pipelining to avoid connection issues
       enableAutoPipelining: false
     };
 
