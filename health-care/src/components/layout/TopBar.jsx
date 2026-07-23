@@ -101,19 +101,23 @@ export default function TopBar() {
 
       {/* Right links */}
       <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2 sm:ml-4">
+        {/* Track Order - Always visible, icon only on mobile */}
         <Link
           href="/track"
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden sm:flex items-center gap-1.5"
+          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5"
+          title="Track Order"
         >
-          <FaTruck size={10} />
-          <span className="hidden lg:inline">Track Order</span>
+          <FaTruck size={11} />
+          <span className="hidden md:inline">Track Order</span>
         </Link>
 
-        <span className="text-white/20 hidden sm:block">|</span>
+        <span className="text-white/20 hidden xs:block">|</span>
 
+        {/* DGDA Info - Hidden on mobile */}
         <Link
           href="/dgda-info"
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5"
+          title="DGDA Info"
         >
           <FaShieldAlt size={10} />
           <span className="hidden lg:inline">DGDA Info</span>
@@ -121,22 +125,14 @@ export default function TopBar() {
 
         <span className="text-white/20 hidden md:block">|</span>
 
-        <Link
-          href="/support"
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5"
-        >
-          <FaHeadset size={10} />
-          <span className="hidden xs:inline">Support</span>
-        </Link>
-
-        <span className="text-white/20 hidden xs:block">|</span>
-
+        {/* Phone Number - Always visible, icon only on mobile */}
         <a
           href={`tel:${contactPhone.replace(/[\s\-]/g, '')}`}
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5 font-medium"
+          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5 font-medium"
+          title={`Call ${contactPhone}`}
         >
           <FaPhone size={10} />
-          {contactPhone}
+          <span className="hidden sm:inline text-[10px]">{contactPhone}</span>
         </a>
       </div>
     </div>
