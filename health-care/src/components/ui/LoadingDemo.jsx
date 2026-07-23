@@ -38,7 +38,7 @@ export default function LoadingDemo() {
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Medical Cross</h3>
             <p className="text-sm text-gray-500">Pulsing healthcare icon</p>
             <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
-              variant="medical"
+              variant=&quot;medical&quot;
             </code>
           </div>
 
@@ -48,7 +48,7 @@ export default function LoadingDemo() {
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Heartbeat ECG</h3>
             <p className="text-sm text-gray-500">Animated pulse bars</p>
             <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
-              variant="heartbeat"
+              variant=&quot;heartbeat&quot;
             </code>
           </div>
 
@@ -58,7 +58,7 @@ export default function LoadingDemo() {
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">DNA Helix</h3>
             <p className="text-sm text-gray-500">Rotating strands</p>
             <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
-              variant="dna"
+              variant=&quot;dna&quot;
             </code>
           </div>
 
@@ -68,7 +68,7 @@ export default function LoadingDemo() {
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Pills</h3>
             <p className="text-sm text-gray-500">Rotating capsule</p>
             <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
-              variant="pills"
+              variant=&quot;pills&quot;
             </code>
           </div>
 
@@ -78,7 +78,7 @@ export default function LoadingDemo() {
             <h3 className="mt-6 font-semibold text-gray-800 mb-1">Pulsing Dots</h3>
             <p className="text-sm text-gray-500">Bouncing gradient</p>
             <code className="mt-3 text-xs bg-gray-100 px-3 py-1 rounded inline-block">
-              variant="dots"
+              variant=&quot;dots&quot;
             </code>
           </div>
         </div>

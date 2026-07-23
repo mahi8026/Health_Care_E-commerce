@@ -23,7 +23,7 @@ export default function OfflinePage() {
 
         {/* Heading */}
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          You're Offline
+          You&apos;re Offline
         </h1>
 
         {/* Message */}
@@ -35,7 +35,7 @@ export default function OfflinePage() {
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 text-sm text-gray-700">
           <p className="font-medium mb-2">📦 Cached Content Available</p>
           <p className="text-xs text-gray-600">
-            You can still browse recently viewed pages and products. They'll sync once you're back online.
+            You can still browse recently viewed pages and products. They&apos;ll sync once you&apos;re back online.
           </p>
         </div>
 

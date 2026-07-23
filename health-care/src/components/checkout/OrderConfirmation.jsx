@@ -118,7 +118,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
       </h2>
       
       <p className="text-[13px] text-[var(--color-text-secondary)] mb-6 font-[family-name:var(--font-plus-jakarta)]">
-        Thank you for your order. We've sent a confirmation email with your order details.
+        Thank you for your order. We&apos;ve sent a confirmation email with your order details.
       </p>
 
       {/* Order Details */}

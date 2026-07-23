@@ -67,7 +67,7 @@ export default function CODPromoBanner({ variant = 'default', className = '' }) 
               Cash on Delivery Available
             </h3>
             <p className="text-sm text-emerald-800 leading-relaxed">
-              Bangladesh's most trusted payment method. Pay with cash when you receive your order.
+              Bangladesh&apos;s most trusted payment method. Pay with cash when you receive your order.
             </p>
           </div>
         </div>
