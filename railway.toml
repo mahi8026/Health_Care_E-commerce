@@ -1,0 +1,8 @@
+# Railway Configuration - Redirect to Backend
+# This file is at the root but tells Railway to build from health-care/backend
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd health-care/backend && npm start"

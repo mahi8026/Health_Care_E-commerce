@@ -1,0 +1,17 @@
+# Nixpacks configuration for Railway Backend
+# Railway is not respecting Root Directory setting, so we configure at root level
+
+[variables]
+NODE_ENV = "production"
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["cd health-care/backend && npm ci --production=false"]
+
+[phases.build]
+# No build phase needed for backend
+
+[start]
+cmd = "cd health-care/backend && npm start"
