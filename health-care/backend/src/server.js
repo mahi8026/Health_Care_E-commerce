@@ -30,6 +30,12 @@ const chatSocketService = require('./services/chatSocketService');
 const chatRoutingService = require('./services/chatRoutingService');
 const { etagMiddleware } = require('./middleware/etag');
 
+// ── Global unhandled rejection handler ─────────────────────────────────────────
+// Prevents the process from crashing on unhandled promise rejections (Node.js default)
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason?.message || reason}`);
+});
+
 // Initialize express app
 const app = express();
 
@@ -53,7 +59,9 @@ app.get('/api/health', (req, res) => {
 initSentry(app);
 
 // Connect to database
-connectDB();
+connectDB().catch((err) => {
+  logger.error(`Unhandled error in connectDB: ${err.message}`);
+});
 
 // Initialize Redis cache
 (async () => {
