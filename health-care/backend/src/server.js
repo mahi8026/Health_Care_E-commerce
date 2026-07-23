@@ -155,49 +155,10 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma'],
   exposedHeaders: ['X-Total-Count', 'X-Page', 'X-Per-Page'],
-  maxAge: 86400,
+  maxAge: 600,
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
-
-// ── CRITICAL: Handle CORS preflight OPTIONS requests FIRST ──────────────────
-// OPTIONS requests MUST be handled before any other middleware (including dbHealthCheck)
-// This ensures preflight requests always get proper CORS headers, even if DB is down
-app.options('*', (req, res) => {
-  const origin = req.headers.origin;
-  const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    process.env.ADMIN_URL,
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://127.0.0.1:3000',
-  ].filter(Boolean);
-
-  // Allow all Vercel preview URLs
-  const isVercelPreview = origin && origin.includes('.vercel.app');
-
-  // Allow all Cloudflare Workers/Pages preview URLs
-  const isCloudflarePreview = origin && (
-    origin.includes('.workers.dev') ||
-    origin.includes('.pages.dev')
-  );
-
-  // In development, allow all localhost origins
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-  const isLocalhost = origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'));
-
-  if (!origin || allowedOrigins.includes(origin) || isVercelPreview || isCloudflarePreview || (isDevelopment && isLocalhost)) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Cache-Control, Pragma');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-  }
-
-  // OPTIONS requests should always return 204 No Content
-  res.status(204).end();
-});
 
 app.use(cors(corsOptions));
 
