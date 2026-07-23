@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* ══════════════════════════════════════════════════════════════════════════════
    RESPONSIVE DESIGN SYSTEM - MediportBD
@@ -69,20 +71,6 @@
   --glass-highlight: rgba(255, 255, 255, 0.45);
   --glass-teal: #4ddbb8;
   --glass-teal-dim: rgba(77, 219, 184, 0.35);
-}
-
-
-
-/* Tailwind v4 semantic colors (sync with :root above) */
-@theme {
-  --color-page: var(--color-background-page);
-  --color-page-top: var(--color-background-page-top);
-  --color-surface: var(--color-background-primary);
-  --color-surface-subtle: var(--color-background-secondary);
-  --color-surface-muted: var(--color-background-muted);
-  --color-surface-inset: var(--color-background-inset);
-  --color-brand: var(--color-brand-navy);
-  --color-brand-teal: var(--color-brand-teal);
 }
 
 /* ── PWA Install Prompt Animation ────────────────────────────────────────── */
