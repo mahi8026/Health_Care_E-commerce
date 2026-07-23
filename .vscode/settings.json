@@ -1,4 +1,4 @@
-{
+﻿{
     "javascript.autoClosingTags": false,
     "tailwindCSS.experimental.configFile": "health-care/tailwind.config.js",
     "tailwindCSS.experimental.classRegex": [

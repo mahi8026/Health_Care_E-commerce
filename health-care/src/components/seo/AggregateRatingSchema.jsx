@@ -74,7 +74,7 @@ export function ReviewSchema({ review, product }) {
     datePublished: review.createdAt || new Date().toISOString(),
     publisher: {
       '@type': 'Organization',
-      name: 'MedCore BD'
+      name: 'MediportBD'
     }
   };
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Script to show Cloudinary image naming patterns
  * 
  * Run: node scripts/show-cloudinary-names.js
@@ -20,7 +20,7 @@ async function showImageNames() {
     
     const result = await cloudinary.api.resources({
       type: 'upload',
-      prefix: 'medcorebd/products',
+      prefix: 'MediportBD/products',
       max_results: 50, // Get 50 samples
     });
     

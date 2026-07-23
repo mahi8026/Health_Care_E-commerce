@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Recommendation System Test Script
  * Tests all 6 recommendation API endpoints and verifies functionality

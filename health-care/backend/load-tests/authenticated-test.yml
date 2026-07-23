@@ -1,4 +1,4 @@
-config:
+﻿config:
   target: "http://localhost:5000"
   phases:
     - duration: 60
@@ -12,7 +12,7 @@ config:
       Content-Type: "application/json"
   processor: "./test-helpers.js"
   variables:
-    testEmail: "loadtest@medcorebd.com"
+    testEmail: "loadtest@MediportBD.com"
     testPassword: "LoadTest123!"
 
 scenarios:

@@ -8,7 +8,7 @@ export default function LocalBusinessSchema() {
   const schema = {
     '@context': 'https://schema.org',
     '@type':    'MedicalBusiness',
-    name:       'MedCore Bangladesh Ltd.',
+    name:       'Mediport Bangladesh Ltd.',
     image:      `${SITE_CONFIG.url}/images/logo.png`,
     url:        SITE_CONFIG.url,
     telephone:  SITE_CONFIG.phone,
@@ -34,8 +34,8 @@ export default function LocalBusinessSchema() {
     areaServed:         'Bangladesh',
     description:        'Medical equipment and surgical instruments supplier in Bangladesh. DGDA registered. Serving hospitals and clinics since 2020.',
     sameAs: [
-      'https://www.facebook.com/medcorebd',
-      'https://www.linkedin.com/company/medcorebd',
+      'https://www.facebook.com/MediportBD',
+      'https://www.linkedin.com/company/MediportBD',
     ],
   };
 

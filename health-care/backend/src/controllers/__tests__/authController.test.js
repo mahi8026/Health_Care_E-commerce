@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Auth Controller Tests
  * Covers: register, login, refreshToken, getMe, updateProfile,
  *         logout, forgotPassword, resetPassword, updateNotificationPreferences

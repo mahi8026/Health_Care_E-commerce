@@ -34,7 +34,7 @@ export default function NewCouponPage() {
 
   const fetchMetadata = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const headers = { Authorization: `Bearer ${token}` };
       
       const [categoriesRes, productsRes] = await Promise.all([
@@ -91,7 +91,7 @@ export default function NewCouponPage() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const payload = {
         ...form,
         code: form.code.toUpperCase(),

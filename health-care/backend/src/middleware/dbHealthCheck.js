@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Database health check middleware.
  * Checks MongoDB connection status before processing requests.
  * Returns 503 Service Unavailable when database is disconnected.

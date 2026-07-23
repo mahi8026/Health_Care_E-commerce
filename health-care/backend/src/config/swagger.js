@@ -1,14 +1,14 @@
-const swaggerJsdoc = require('swagger-jsdoc');
+﻿const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'MedCore BD API',
+      title: 'MediportBD API',
       version: '2.0.0',
-      description: 'Comprehensive API documentation for MedCore BD medical equipment e-commerce platform',
+      description: 'Comprehensive API documentation for MediportBD medical equipment e-commerce platform',
       contact: {
-        name: 'MedCore BD',
+        name: 'MediportBD',
         email: 'mahimrahman07@gmail.com',
         url: 'https://health-care-e-commerce-murex.vercel.app'
       },
@@ -23,7 +23,7 @@ const options = {
         description: 'Development server'
       },
       {
-        url: 'https://api.medcorebd.com/api',
+        url: 'https://api.MediportBD.com/api',
         description: 'Production server'
       }
     ],
@@ -89,7 +89,7 @@ const options = {
             },
             image: {
               type: 'string',
-              example: 'https://res.cloudinary.com/medcore/image/upload/v1/products/ecg.jpg'
+              example: 'https://res.cloudinary.com/Mediport/image/upload/v1/products/ecg.jpg'
             },
             images: {
               type: 'array',

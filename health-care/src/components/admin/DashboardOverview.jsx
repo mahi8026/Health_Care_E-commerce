@@ -61,7 +61,7 @@ export default function DashboardOverview() {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
         cache: 'no-store',

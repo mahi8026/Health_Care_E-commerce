@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tests for cache.js middleware (cacheMiddleware, redisCacheMiddleware, noStore, staticAssets).
  *
  * Redis interactions are fully mocked — no real Redis connection needed.

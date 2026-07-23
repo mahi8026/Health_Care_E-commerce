@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Script to link existing Cloudinary images to products
  * 
  * This script fetches all assets from Cloudinary media library and matches them
@@ -18,7 +18,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
 
 // Product model
 const Product = mongoose.model('Product', new mongoose.Schema({}, { strict: false }));
@@ -36,7 +36,7 @@ function normalize(str) {
 /**
  * Fetch all images from Cloudinary folder
  */
-async function fetchCloudinaryImages(folder = 'medcorebd/products') {
+async function fetchCloudinaryImages(folder = 'MediportBD/products') {
   console.log(`\n📡 Fetching images from Cloudinary folder: ${folder}`);
   
   const allResources = [];
@@ -147,7 +147,7 @@ async function linkImages() {
     console.log(`✅ Found ${products.length} products\n`);
     
     // Fetch all Cloudinary images
-    const images = await fetchCloudinaryImages('medcorebd/products');
+    const images = await fetchCloudinaryImages('MediportBD/products');
     
     // Match and link images
     console.log('\n🔗 Matching images to products...\n');

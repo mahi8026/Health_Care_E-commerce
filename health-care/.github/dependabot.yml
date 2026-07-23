@@ -1,4 +1,4 @@
-version: 2
+﻿version: 2
 updates:
   # Frontend (Next.js) dependencies
   - package-ecosystem: "npm"

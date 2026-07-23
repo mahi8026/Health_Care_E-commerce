@@ -580,7 +580,7 @@ export default function HomePage() {
     }
 
     // Check user auth
-    const token = localStorage.getItem('medcore_token');
+    const token = localStorage.getItem('Mediport_token');
     if (token) {
       fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
@@ -837,7 +837,7 @@ export default function HomePage() {
                 <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
                   <Image 
                     src={slide.imageUrl} 
-                    alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MedCore BD`}
+                    alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
                     fill
                     sizes="(max-width: 768px) 100vw, 52vw"
                     style={{ objectFit: 'cover' }}
@@ -850,7 +850,7 @@ export default function HomePage() {
                 {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
                   <Image 
                     src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" 
-                    alt="Diagnostic medical equipment Bangladesh — ECG machines and patient monitors — MedCore BD"
+                    alt="Diagnostic medical equipment Bangladesh — ECG machines and patient monitors — MediportBD"
                     fill
                     sizes="(max-width: 768px) 100vw, 52vw"
                     style={{ objectFit: 'cover' }}
@@ -860,7 +860,7 @@ export default function HomePage() {
                 {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
                   <Image 
                     src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" 
-                    alt="Laboratory reagents Bangladesh — HbA1c CBC diagnostic kits — MedCore BD"
+                    alt="Laboratory reagents Bangladesh — HbA1c CBC diagnostic kits — MediportBD"
                     fill
                     sizes="(max-width: 768px) 100vw, 52vw"
                     style={{ objectFit: 'cover' }}
@@ -869,7 +869,7 @@ export default function HomePage() {
                 {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
                   <Image 
                     src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" 
-                    alt="Hospital equipment Bangladesh — ICU ventilators and infusion pumps — MedCore BD"
+                    alt="Hospital equipment Bangladesh — ICU ventilators and infusion pumps — MediportBD"
                     fill
                     sizes="(max-width: 768px) 100vw, 52vw"
                     style={{ objectFit: 'cover' }}
@@ -878,7 +878,7 @@ export default function HomePage() {
                 {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
                   <Image 
                     src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" 
-                    alt="Surgical instruments Bangladesh — scissors forceps trocar sets — MedCore BD"
+                    alt="Surgical instruments Bangladesh — scissors forceps trocar sets — MediportBD"
                     fill
                     sizes="(max-width: 768px) 100vw, 52vw"
                     style={{ objectFit: 'cover' }}
@@ -1184,7 +1184,7 @@ export default function HomePage() {
                       {imgUrl ? (
                         <Image 
                           src={imgUrl} 
-                          alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Top selling product #${rank} — MedCore BD Bangladesh`}
+                          alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Top selling product #${rank} — MediportBD Bangladesh`}
                           fill
                           sizes="140px"
                           style={{ objectFit: 'cover' }}
@@ -1483,7 +1483,7 @@ export default function HomePage() {
                       {img ? (
                         <Image 
                           src={img} 
-                          alt={`${p.name}${typeof p.brand === 'object' ? ` — ${p.brand?.name}` : p.brand ? ` — ${p.brand}` : ''} — new arrival Bangladesh — MedCore BD`}
+                          alt={`${p.name}${typeof p.brand === 'object' ? ` — ${p.brand?.name}` : p.brand ? ` — ${p.brand}` : ''} — new arrival Bangladesh — MediportBD`}
                           fill
                           sizes="180px"
                           style={{ objectFit: 'cover' }}
@@ -1524,14 +1524,14 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* WHY MEDCORE BD */}
+      {/* WHY MediportBD */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#0B2545' }}>
-              {t('home.whyMedcore')}
+              {t('home.whyMediport')}
             </h2>
           </div>
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
@@ -1733,7 +1733,7 @@ export default function HomePage() {
             {
               _id: 'fallback-1',
               rating: 5,
-              comment: 'Excellent service and genuine products. We have been purchasing diagnostic equipment from MedCore BD for our hospital for over 2 years. Their technical support team is very responsive.',
+              comment: 'Excellent service and genuine products. We have been purchasing diagnostic equipment from MediportBD for our hospital for over 2 years. Their technical support team is very responsive.',
               userName: 'Dr. Kamal Hossain',
               companyName: 'Dhaka Medical Center',
               user: { name: 'Dr. Kamal Hossain', companyName: 'Dhaka Medical Center' }

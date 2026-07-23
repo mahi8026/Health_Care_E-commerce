@@ -188,7 +188,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
-                          alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MedCore BD`}
+                          alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MediportBD`}
                           fill
                           sizes="(max-width: 768px) 112px, 144px"
                           style={{ objectFit: 'contain', padding: '12px' }}

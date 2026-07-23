@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const { redisCacheMiddleware } = require('../middleware/cache');
@@ -28,7 +28,7 @@ cloudinary.config({
 const storage = CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'medcore/manufacturers',
+    folder: 'Mediport/manufacturers',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'svg'],
     transformation: [{ width: 400, height: 400, crop: 'limit' }]
   }

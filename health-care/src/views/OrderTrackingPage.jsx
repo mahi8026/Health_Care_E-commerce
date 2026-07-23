@@ -112,7 +112,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
     if (navigator.share) {
       navigator.share({
         title: `Track Order ${order.orderNumber}`,
-        text: `Track my MedCore BD order`,
+        text: `Track my MediportBD order`,
         url,
       }).catch(() => {});
     } else {

@@ -67,7 +67,7 @@ export default function ResetPasswordPage({ onNavigateToLogin }) {
         {/* Logo */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="font-[family-name:var(--font-lora)] text-[28px] sm:text-[32px] font-semibold text-[#0B2545] mb-2">
-            MedCore<span className="text-[#0E8A6E]">BD</span>
+            Mediport<span className="text-[#0E8A6E]">BD</span>
           </div>
           <p className="text-[12px] sm:text-[13px] text-[var(--color-text-secondary)]">
             Set your new password

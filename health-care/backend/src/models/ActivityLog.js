@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const activityLogSchema = new mongoose.Schema({
   // User information (snapshot for historical accuracy)

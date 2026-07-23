@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Product Controller Tests
  * Covers: getProducts, getProduct, createProduct, updateProduct,
  *         deleteProduct, getFeaturedProducts, generateSku

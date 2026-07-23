@@ -23,7 +23,7 @@ describe('validateEnv', () => {
   describe('validateEnv()', () => {
     it('should pass validation when all required variables are present', () => {
       process.env.NEXT_PUBLIC_API_URL = '/api';
-      process.env.NEXT_PUBLIC_SITE_URL = 'https://medcorebd.com';
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://MediportBD.com';
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = 'test_cloud';
 
       expect(() => validateEnv()).not.toThrow();
@@ -41,7 +41,7 @@ describe('validateEnv', () => {
 
     it('should throw error when NEXT_PUBLIC_API_URL is missing', () => {
       delete process.env.NEXT_PUBLIC_API_URL;
-      process.env.NEXT_PUBLIC_SITE_URL = 'https://medcorebd.com';
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://MediportBD.com';
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = 'test_cloud';
 
       expect(() => validateEnv()).toThrow(/NEXT_PUBLIC_API_URL/);
@@ -57,7 +57,7 @@ describe('validateEnv', () => {
 
     it('should throw error when NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is missing', () => {
       process.env.NEXT_PUBLIC_API_URL = '/api';
-      process.env.NEXT_PUBLIC_SITE_URL = 'https://medcorebd.com';
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://MediportBD.com';
       delete process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
       expect(() => validateEnv()).toThrow(/NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME/);
@@ -83,7 +83,7 @@ describe('validateEnv', () => {
   describe('getEnvStatus()', () => {
     it('should return valid status when all variables are present', () => {
       process.env.NEXT_PUBLIC_API_URL = '/api';
-      process.env.NEXT_PUBLIC_SITE_URL = 'https://medcorebd.com';
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://MediportBD.com';
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = 'test_cloud';
 
       const status = getEnvStatus();
@@ -99,7 +99,7 @@ describe('validateEnv', () => {
 
     it('should return invalid status when variables are missing', () => {
       delete process.env.NEXT_PUBLIC_API_URL;
-      process.env.NEXT_PUBLIC_SITE_URL = 'https://medcorebd.com';
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://MediportBD.com';
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = 'test_cloud';
 
       const status = getEnvStatus();

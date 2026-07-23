@@ -126,7 +126,7 @@ export default function ProductTabsEnhanced({ product }) {
                   and medical laboratories.
                 </p>
                 <p>
-                  MedCore BD is an authorized distributor offering genuine products with full manufacturer warranty and after-sales support. 
+                  MediportBD is an authorized distributor offering genuine products with full manufacturer warranty and after-sales support. 
                   All products are DGDA registered and comply with local regulatory requirements.
                 </p>
               </div>

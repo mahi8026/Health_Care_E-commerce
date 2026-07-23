@@ -1,6 +1,6 @@
-# Artillery Load Testing for MedCore BD
+﻿# Artillery Load Testing for MediportBD
 
-This directory contains Artillery load testing configurations for the MedCore BD backend API.
+This directory contains Artillery load testing configurations for the MediportBD backend API.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Load Test User",
-    "email": "loadtest@medcorebd.com",
+    "email": "loadtest@MediportBD.com",
     "password": "LoadTest123!",
     "phone": "+8801700000000"
   }'
@@ -175,7 +175,7 @@ This creates an HTML report with detailed metrics and charts.
 ### Run with Custom Target
 
 ```bash
-artillery run basic-load-test.yml --target https://api.medcorebd.com
+artillery run basic-load-test.yml --target https://api.MediportBD.com
 ```
 
 ### Run Specific Scenario

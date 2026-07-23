@@ -36,7 +36,7 @@ export default function AnalyticsReports() {
       setLoading(true);
       setError(null);
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const headers = { Authorization: `Bearer ${token}` };
 
         // Build date range from period

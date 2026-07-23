@@ -15,13 +15,13 @@
 **Issues:**
 ```javascript
 // server.js line 277
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'medcore-test-2026';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'Mediport-test-2026';
 
 // server.js line 338
-if (req.query.secret !== 'medcore-test-2026') {
+if (req.query.secret !== 'Mediport-test-2026') {
 
 // adminUtilRoutes.js lines 16, 180, 364, 425
-const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'Mediport-fix-2024';
 ```
 
 **Risk:** Anyone can access admin utility endpoints with these hardcoded secrets.
@@ -29,7 +29,7 @@ const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
 **Fix Required:**
 1. Remove fallback secrets completely
 2. Require environment variables to be set
-3. Remove hardcoded 'medcore-test-2026' on line 338
+3. Remove hardcoded 'Mediport-test-2026' on line 338
 
 ---
 
@@ -79,7 +79,7 @@ const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
 Change line 277:
 ```javascript
 // ❌ BEFORE
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'medcore-test-2026';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'Mediport-test-2026';
 
 // ✅ AFTER
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -91,7 +91,7 @@ if (!ADMIN_SECRET) {
 Change line 338:
 ```javascript
 // ❌ BEFORE
-if (req.query.secret !== 'medcore-test-2026') {
+if (req.query.secret !== 'Mediport-test-2026') {
 
 // ✅ AFTER
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -103,7 +103,7 @@ if (req.query.secret !== ADMIN_SECRET) {
 Change lines 16, 180, 364, 425:
 ```javascript
 // ❌ BEFORE
-const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'medcore-fix-2024';
+const expectedSecret = process.env.ADMIN_UTILITY_SECRET || 'Mediport-fix-2024';
 
 // ✅ AFTER
 const expectedSecret = process.env.ADMIN_UTILITY_SECRET;

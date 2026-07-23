@@ -1,4 +1,4 @@
-/**
+﻿/**
  * uploadController.js
  * POST /api/upload/image  — upload a single product image
  * POST /api/upload/images — upload up to 5 product images at once
@@ -32,7 +32,7 @@ function uploadBufferToCloudinary(buffer, originalname) {
     // For PNG files, preserve the format and alpha channel
     // For other formats, apply standard transformations
     const transformationOptions = {
-      folder: 'medcorebd/products',
+      folder: 'MediportBD/products',
       public_id: publicId,
       resource_type: 'auto',
       overwrite: false,

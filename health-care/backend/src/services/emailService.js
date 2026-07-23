@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * Email Service — Brevo (HTTP API, works on Render.com free tier)
@@ -9,7 +9,7 @@
  * Required env vars on Render.com:
  *   BREVO_API_KEY   — get from app.brevo.com → Settings → API Keys
  *   BREVO_FROM_EMAIL — your verified sender email (e.g. mahimrahman07@gmail.com)
- *   BREVO_FROM_NAME  — (optional) sender name, defaults to "MedCore BD"
+ *   BREVO_FROM_NAME  — (optional) sender name, defaults to "MediportBD"
  */
 
 const axios = require('axios');
@@ -21,7 +21,7 @@ function getConfig() {
   return {
     apiKey:    process.env.BREVO_API_KEY,
     fromEmail: process.env.BREVO_FROM_EMAIL || process.env.SMTP_USER || 'mahimrahman07@gmail.com',
-    fromName:  process.env.BREVO_FROM_NAME  || process.env.EMAIL_FROM_NAME || 'MedCore BD',
+    fromName:  process.env.BREVO_FROM_NAME  || process.env.EMAIL_FROM_NAME || 'MediportBD',
     adminEmail: process.env.ADMIN_EMAIL     || process.env.BREVO_FROM_EMAIL || 'mahimrahman07@gmail.com',
     siteUrl:   process.env.FRONTEND_URL     || 'https://health-care-e-commerce-murex.vercel.app',
   };
@@ -98,7 +98,7 @@ function emailLayout(title, bodyHtml) {
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
       <tr><td style="background:#0B2545;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
         <div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;">
-          MedCore<span style="color:#0E8A6E;">BD</span>
+          Mediport<span style="color:#0E8A6E;">BD</span>
         </div>
         <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:1px;text-transform:uppercase;">
           Healthcare &amp; Medical Supplies · Bangladesh
@@ -109,7 +109,7 @@ function emailLayout(title, bodyHtml) {
       </td></tr>
       <tr><td style="background:#F9FAFB;border-radius:0 0 12px 12px;border:1px solid #E5E7EB;border-top:none;padding:20px 32px;text-align:center;">
         <p style="margin:0;font-size:11px;color:#9CA3AF;">
-          © ${new Date().getFullYear()} MedCore BD · Dhaka, Bangladesh<br/>
+          © ${new Date().getFullYear()} MediportBD · Dhaka, Bangladesh<br/>
           <a href="${siteUrl}" style="color:#0E8A6E;text-decoration:none;">Visit our store</a>
           &nbsp;·&nbsp;
           <a href="${siteUrl}/track" style="color:#0E8A6E;text-decoration:none;">Track order</a>
@@ -223,7 +223,7 @@ async function sendOrderConfirmation(order, customer) {
 
   return sendEmail({
     to:      customer.email,
-    subject: `Order Confirmed - ${order.orderNumber} | MedCore BD`,
+    subject: `Order Confirmed - ${order.orderNumber} | MediportBD`,
     html:    emailLayout(`Order Confirmed - ${order.orderNumber}`, body),
   });
 }
@@ -251,7 +251,7 @@ async function sendPaymentReceipt(order, customer, pdfBuffer) {
 
   return sendEmail({
     to:          customer.email,
-    subject:     `Payment Receipt - ${order.orderNumber} | MedCore BD`,
+    subject:     `Payment Receipt - ${order.orderNumber} | MediportBD`,
     html:        emailLayout(`Payment Receipt - ${order.orderNumber}`, body),
     attachments: pdfBuffer ? [{ filename: `Invoice-${order.orderNumber}.pdf`, content: pdfBuffer, contentType: 'application/pdf' }] : undefined,
   });
@@ -283,7 +283,7 @@ async function sendShippingNotification(order, customer) {
 
   return sendEmail({
     to:      customer.email,
-    subject: `Shipped - ${order.orderNumber} | MedCore BD`,
+    subject: `Shipped - ${order.orderNumber} | MediportBD`,
     html:    emailLayout(`Your Order Has Shipped - ${order.orderNumber}`, body),
   });
 }
@@ -311,7 +311,7 @@ async function sendDeliveryConfirmation(order, customer) {
 
   return sendEmail({
     to:      customer.email,
-    subject: `Delivered - ${order.orderNumber} | MedCore BD`,
+    subject: `Delivered - ${order.orderNumber} | MediportBD`,
     html:    emailLayout(`Order Delivered - ${order.orderNumber}`, body),
   });
 }
@@ -358,7 +358,7 @@ async function sendQuotationReady(quote, user) {
 
   return sendEmail({
     to:      user.email,
-    subject: `Quotation Ready - ${quote.quoteId || quote._id} | MedCore BD`,
+    subject: `Quotation Ready - ${quote.quoteId || quote._id} | MediportBD`,
     html:    emailLayout(`Quotation Ready - ${quote.quoteId || quote._id}`, body),
   });
 }
@@ -403,7 +403,7 @@ async function sendLowStockAlert(products) {
 
   return sendEmail({
     to:      adminEmail,
-    subject: `Stock Alert - ${products.length} Product(s) Need Restocking | MedCore BD`,
+    subject: `Stock Alert - ${products.length} Product(s) Need Restocking | MediportBD`,
     html:    emailLayout('Stock Alert', body),
   });
 }
@@ -415,10 +415,10 @@ async function sendNewOrderEmail(order, customer) {
 async function sendTestEmail(to) {
   return sendEmail({
     to,
-    subject: `Email Test - ${new Date().toLocaleTimeString('en-BD')} | MedCore BD`,
+    subject: `Email Test - ${new Date().toLocaleTimeString('en-BD')} | MediportBD`,
     html: emailLayout('Email Test', `
       <h2 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#0B2545;">Email is Working!</h2>
-      <p style="font-size:14px;color:#6B7280;">This is a test email from MedCore BD via Brevo API.</p>
+      <p style="font-size:14px;color:#6B7280;">This is a test email from MediportBD via Brevo API.</p>
       <p style="font-size:12px;color:#9CA3AF;margin-top:16px;">
         Provider: Brevo HTTP API<br/>
         Sent at: ${new Date().toISOString()}<br/>

@@ -1,4 +1,4 @@
-name: Test
+﻿name: Test
 
 on:
   # Disabled temporarily - runs on pull requests only
@@ -113,7 +113,7 @@ jobs:
         working-directory: health-care/backend
         run: npm test
         env:
-          MONGODB_URI: mongodb://localhost:27017/medcore-test
+          MONGODB_URI: mongodb://localhost:27017/Mediport-test
           JWT_SECRET: test_jwt_secret_for_ci_cd_pipeline
           JWT_REFRESH_SECRET: test_refresh_secret_for_ci_cd_pipeline
           NODE_ENV: test

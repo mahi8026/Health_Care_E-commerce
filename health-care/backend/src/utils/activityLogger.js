@@ -1,4 +1,4 @@
-const ActivityLog = require('../models/ActivityLog');
+﻿const ActivityLog = require('../models/ActivityLog');
 const logger = require('./logger');
 
 // Action constants organized by category

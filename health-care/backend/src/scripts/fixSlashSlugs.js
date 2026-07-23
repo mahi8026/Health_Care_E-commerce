@@ -1,4 +1,4 @@
-/**
+﻿/**
  * One-time migration: regenerate ALL product slugs using the new
  * name-only slug format.
  *

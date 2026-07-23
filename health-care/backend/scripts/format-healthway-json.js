@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 /**
  * Healthway JSON Formatter
@@ -97,7 +97,7 @@ try {
   }
 
   console.log(`✅ Found ${products.length} products\n`);
-  console.log('🔄 Converting to MedCore format...\n');
+  console.log('🔄 Converting to Mediport format...\n');
 
   // Convert to our format
   const converted = products.map((product, index) => {

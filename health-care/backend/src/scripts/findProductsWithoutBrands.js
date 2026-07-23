@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Find products without brands
  * 
  * This script identifies products that don't have a manufacturer/brand assigned.

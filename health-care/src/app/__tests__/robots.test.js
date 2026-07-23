@@ -83,7 +83,7 @@ describe('robots()', () => {
     })
 
     it('points to the correct sitemap URL', () => {
-      expect(result.sitemap).toBe('https://medcorebd.com/sitemap.xml')
+      expect(result.sitemap).toBe('https://MediportBD.com/sitemap.xml')
     })
 
     it('sitemap URL is a valid HTTPS URL', () => {

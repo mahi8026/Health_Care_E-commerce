@@ -1,4 +1,4 @@
-const { Server } = require('socket.io');
+﻿const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');

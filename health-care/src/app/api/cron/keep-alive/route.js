@@ -43,7 +43,7 @@ export async function GET(request) {
       signal: AbortSignal.timeout(10000), // 10 second timeout
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'MedCore-KeepAlive-Cron',
+        'User-Agent': 'Mediport-KeepAlive-Cron',
       },
     });
     const duration = Date.now() - startTime;

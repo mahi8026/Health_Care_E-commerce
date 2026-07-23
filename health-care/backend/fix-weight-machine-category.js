@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Fix Weight Machine Categories
  * Move body weight/fat analyzers from Laboratory Equipment to correct category

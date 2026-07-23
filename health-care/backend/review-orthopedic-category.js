@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Review Orthopedic Supports Category
  * Check if 102 products are correctly categorized

@@ -15,7 +15,7 @@ export function WishlistProvider({ children }) {
   const fetchWishlist = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -51,7 +51,7 @@ export function WishlistProvider({ children }) {
     }
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/wishlist/${productId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
@@ -81,7 +81,7 @@ export function WishlistProvider({ children }) {
     }
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/wishlist/${productId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }

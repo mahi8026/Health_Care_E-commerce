@@ -72,7 +72,7 @@ export function validateEnv() {
       '',
       'Example configuration:',
       '  NEXT_PUBLIC_API_URL=/api',
-      '  NEXT_PUBLIC_SITE_URL=https://medcorebd.com',
+      '  NEXT_PUBLIC_SITE_URL=https://mediportbd.com',
       '  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name',
       '',
     ].join('\n');

@@ -5,8 +5,8 @@ import FAQSchema from '../FAQSchema';
 jest.mock('@/config/seo', () => ({
   SITE_CONFIG: {
     phone: '+8801646886795',
-    email: 'info@medcorebd.com',
-    url: 'https://medcorebd.com',
+    email: 'info@MediportBD.com',
+    url: 'https://MediportBD.com',
   },
 }));
 
@@ -63,7 +63,7 @@ describe('FAQSchema', () => {
     const schema = JSON.parse(script.innerHTML);
     
     const priceQuestion = schema.mainEntity[0];
-    expect(priceQuestion.acceptedAnswer.text).toContain('contact MedCore BD');
+    expect(priceQuestion.acceptedAnswer.text).toContain('contact MediportBD');
     expect(priceQuestion.acceptedAnswer.text).not.toContain('৳0');
   });
 
@@ -77,7 +77,7 @@ describe('FAQSchema', () => {
     const schema = JSON.parse(script.innerHTML);
     
     const priceQuestion = schema.mainEntity[0];
-    expect(priceQuestion.acceptedAnswer.text).toContain('contact MedCore BD');
+    expect(priceQuestion.acceptedAnswer.text).toContain('contact MediportBD');
   });
 
   it('should include DGDA registration question', () => {
@@ -160,7 +160,7 @@ describe('FAQSchema', () => {
     expect(warrantyQuestion.acceptedAnswer.text).toContain('3 years comprehensive warranty');
   });
 
-  it('should include where to buy question with MedCore BD and delivery info', () => {
+  it('should include where to buy question with MediportBD and delivery info', () => {
     const product = {
       name: 'Siemens ECG Machine',
       price: 150000,
@@ -172,7 +172,7 @@ describe('FAQSchema', () => {
     
     const buyQuestion = schema.mainEntity[3];
     expect(buyQuestion.name).toBe('Where can I buy Siemens ECG Machine in Bangladesh?');
-    expect(buyQuestion.acceptedAnswer.text).toContain('MedCore BD');
+    expect(buyQuestion.acceptedAnswer.text).toContain('MediportBD');
     expect(buyQuestion.acceptedAnswer.text).toContain('Dhaka');
     expect(buyQuestion.acceptedAnswer.text).toContain('Chittagong');
     expect(buyQuestion.acceptedAnswer.text).toContain('Sylhet');

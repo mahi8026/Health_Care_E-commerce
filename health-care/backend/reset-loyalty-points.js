@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Reset All Loyalty Points to Zero
  * This script resets all user loyalty points to 0 and optionally clears transaction history
  * 
@@ -12,7 +12,7 @@ const User = require('./src/models/User');
 const LoyaltyTransaction = require('./src/models/LoyaltyTransaction');
 const Order = require('./src/models/Order');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
 
 async function resetLoyaltyPoints() {
   try {

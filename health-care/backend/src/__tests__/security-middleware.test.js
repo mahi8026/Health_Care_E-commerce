@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Security Middleware Integration Tests
  * Tests helmet, express-mongo-sanitize, xss-clean, and hpp middleware
  * Validates: Requirements 10.5, 10.6, 10.7, 10.8

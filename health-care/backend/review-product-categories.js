@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Review and Fix Product Categories
  * Interactive tool to review products and move them to correct categories

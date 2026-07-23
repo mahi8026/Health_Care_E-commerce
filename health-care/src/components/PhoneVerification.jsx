@@ -34,7 +34,7 @@ export default function PhoneVerification({ onVerified }) {
       setError('');
       setSuccess('');
 
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-phone-otp`, {
         method: 'POST',
         headers: {
@@ -108,7 +108,7 @@ export default function PhoneVerification({ onVerified }) {
         return;
       }
 
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-phone-otp`, {
         method: 'POST',
         headers: {

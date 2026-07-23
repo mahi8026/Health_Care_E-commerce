@@ -1,6 +1,6 @@
 {
-  "name": "MedCore BD — Medical Equipment Bangladesh",
-  "short_name": "MedCore BD",
+  "name": "MediportBD — Medical Equipment Bangladesh",
+  "short_name": "MediportBD",
   "description": "Bangladesh's leading medical equipment e-commerce platform. Buy ECG machines, surgical instruments, lab reagents and more.",
   "start_url": "/?utm_source=pwa",
   "display": "standalone",
@@ -133,7 +133,7 @@
       "sizes": "640x1280",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "MedCore BD Homepage"
+      "label": "MediportBD Homepage"
     },
     {
       "src": "/screenshots/products-mobile.png",
@@ -147,7 +147,7 @@
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "MedCore BD Desktop View"
+      "label": "MediportBD Desktop View"
     }
   ],
   "related_applications": [],

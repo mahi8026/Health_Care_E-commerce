@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Invalidate All Product Caches
  * Use after direct database updates to force cache refresh

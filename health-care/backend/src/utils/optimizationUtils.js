@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Optimization Utilities
  * Performance optimization helpers and best practices
  */

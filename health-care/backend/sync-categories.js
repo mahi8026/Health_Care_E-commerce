@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Sync Categories Script
  * Adds missing categories that are referenced in frontend code but don't exist in database

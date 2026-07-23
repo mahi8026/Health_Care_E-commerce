@@ -30,7 +30,7 @@ fi
 
 # Step 2: Format the data
 echo ""
-echo "🔄 Step 2: Converting to MedCore format..."
+echo "🔄 Step 2: Converting to MediportBD format..."
 echo ""
 npm run format:healthway
 

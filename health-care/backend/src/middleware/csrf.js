@@ -1,4 +1,4 @@
-const { doubleCsrf } = require('csrf-csrf');
+﻿const { doubleCsrf } = require('csrf-csrf');
 
 // CSRF protection using double submit cookie pattern
 const {

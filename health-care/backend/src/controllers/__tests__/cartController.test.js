@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cart Controller Tests
  * Covers: getCart, syncCart, addItem, updateItem, removeItem, clearCart
  */

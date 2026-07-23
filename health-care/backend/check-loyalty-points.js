@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Check User Loyalty Points
  * Diagnoses loyalty points calculation for a specific user

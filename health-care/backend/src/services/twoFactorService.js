@@ -1,4 +1,4 @@
-const speakeasy = require('speakeasy');
+﻿const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 const TwoFactorAuth = require('../models/TwoFactorAuth');
 const logger = require('../utils/logger');
@@ -12,8 +12,8 @@ async function generateTwoFactorSecret(user) {
   try {
     // Generate secret
     const secret = speakeasy.generateSecret({
-      name: `MedCore BD (${user.email})`,
-      issuer: 'MedCore BD',
+      name: `MediportBD (${user.email})`,
+      issuer: 'MediportBD',
       length: 32
     });
 

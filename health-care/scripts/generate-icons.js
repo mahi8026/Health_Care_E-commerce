@@ -47,7 +47,7 @@ function generatePlaceholderIcon(size, filename) {
         font-size="${size*0.12}" 
         font-weight="bold" 
         fill="white" 
-        text-anchor="middle">MedCore</text>
+        text-anchor="middle">Mediport</text>
 </svg>`;
 
   fs.writeFileSync(path.join(iconsDir, filename), svg);
@@ -74,7 +74,7 @@ function generateMaskableIcon(size, filename) {
         font-size="${size*0.1}" 
         font-weight="bold" 
         fill="white" 
-        text-anchor="middle">MedCore</text>
+        text-anchor="middle">Mediport</text>
 </svg>`;
 
   fs.writeFileSync(path.join(iconsDir, filename), svg);

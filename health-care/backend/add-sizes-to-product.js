@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Add size variants to a specific product
  * 
  * Usage:
@@ -38,7 +38,7 @@ async function addSizesToProduct() {
     }
 
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport');
     console.log('✅ Connected to MongoDB\n');
 
     // Find the product

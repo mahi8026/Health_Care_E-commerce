@@ -4,7 +4,7 @@ import QuotationsManagement from '@/components/admin/QuotationsManagement';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Quotation Requests - MedCore BD Admin',
+  title: 'Quotation Requests - MediportBD Admin',
   description: 'Review and manage B2B quotation requests',
 };
 

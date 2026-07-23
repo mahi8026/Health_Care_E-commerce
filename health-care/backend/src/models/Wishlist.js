@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const wishlistSchema = new mongoose.Schema({
   user: {

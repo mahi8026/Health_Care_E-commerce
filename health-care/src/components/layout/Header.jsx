@@ -217,10 +217,10 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           <button
             onClick={() => router.push('/')}
             className="flex-shrink-0 cursor-pointer group"
-            aria-label="MedCoreBD home"
+            aria-label="MediportBD home"
           >
             <span className="nav-logo font-[family-name:var(--font-lora)] text-[22px] font-bold group-hover:opacity-85 transition-opacity">
-              MedCore<span className="nav-logo-accent">BD</span>
+              Mediport<span className="nav-logo-accent">BD</span>
             </span>
           </button>
 

@@ -94,7 +94,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
           <div className="text-center mb-8">
             <Link href="/">
               <span className="font-[family-name:var(--font-lora)] text-3xl font-semibold text-[#0B2545]">
-                MedCore<span className="text-[#0E8A6E]">BD</span>
+                Mediport<span className="text-[#0E8A6E]">BD</span>
               </span>
             </Link>
             <p className="text-gray-400 text-xs mt-1">Bangladesh&apos;s trusted medical equipment platform</p>

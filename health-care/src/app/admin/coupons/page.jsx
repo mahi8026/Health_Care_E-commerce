@@ -26,7 +26,7 @@ export default function CouponsPage() {
   const fetchCoupons = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const params = new URLSearchParams({
         page,
         limit: 20,
@@ -62,7 +62,7 @@ export default function CouponsPage() {
 
   const toggleActive = async (couponId, currentStatus) => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/coupons/${couponId}`, {
         method: 'PUT',
         headers: {
@@ -88,7 +88,7 @@ export default function CouponsPage() {
     if (!confirm('Deactivate this coupon?')) return;
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/coupons/${couponId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }

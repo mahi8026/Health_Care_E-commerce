@@ -2,7 +2,7 @@ import AdminShell from '@/components/admin/AdminShell';
 import WhatsAppAnalytics from '@/components/admin/WhatsAppAnalytics';
 
 export const metadata = {
-  title: 'WhatsApp Analytics — Admin | MedCore BD',
+  title: 'WhatsApp Analytics — Admin | MediportBD',
   description: 'View WhatsApp conversation analytics and metrics',
 };
 

@@ -4,7 +4,7 @@ import AnalyticsReports from '@/components/admin/AnalyticsReports';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Analytics & Reports - MedCore BD Admin',
+  title: 'Analytics & Reports - MediportBD Admin',
   description: 'View sales analytics, revenue reports, and business insights',
 };
 

@@ -54,7 +54,7 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
       const response = await fetchImpl(url, {
         headers: {
           'Accept': 'application/json',
-          'User-Agent': 'MedCore-Sitemap-Generator',
+          'User-Agent': 'Mediport-Sitemap-Generator',
         },
         signal: controller.signal,
       });
@@ -162,7 +162,7 @@ ${urls}
 // Main execution
 async function main() {
   console.log('=================================================');
-  console.log('  MedCore BD - Build-Time Sitemap Generator');
+  console.log('  MediportBD - Build-Time Sitemap Generator');
   console.log('=================================================');
   console.log(`Site URL: ${SITE_URL}`);
   console.log(`Backend API: ${BACKEND_URL}`);

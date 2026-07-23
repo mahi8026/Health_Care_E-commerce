@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Clear Redis Cache
  * Clear all product and category caches after database updates

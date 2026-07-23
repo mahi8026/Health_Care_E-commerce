@@ -1,5 +1,5 @@
-/**
- * MedCore BD Backend API Server
+﻿/**
+ * MediportBD Backend API Server
  * Production-ready Express.js server with MongoDB, Redis, and comprehensive security
  */
 require('dotenv').config();
@@ -43,7 +43,7 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
     status: 'healthy',
-    message: 'MedCore BD API is running',
+    message: 'MediportBD API is running',
     version: '2.0.0',
     timestamp: new Date().toISOString()
   });
@@ -226,7 +226,7 @@ app.use(performanceMonitor);
 // ── API Documentation (Swagger) ───────────────────────────────────────────────
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'MedCore BD API Documentation',
+  customSiteTitle: 'MediportBD API Documentation',
   customfavIcon: '/favicon.ico'
 }));
 
@@ -360,7 +360,7 @@ app.get('/api/email-debug', async (req, res) => {
     email: {
       resendApiKey: process.env.RESEND_API_KEY ? `✓ Configured (${process.env.RESEND_API_KEY.substring(0, 10)}...)` : '✗ MISSING',
       resendFromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev (default)',
-      emailFromName: process.env.EMAIL_FROM_NAME || 'MedCore BD',
+      emailFromName: process.env.EMAIL_FROM_NAME || 'MediportBD',
       frontendUrl: process.env.FRONTEND_URL || 'https://health-care-e-commerce-murex.vercel.app'
     },
     environment: {
@@ -389,7 +389,7 @@ app.get('/api/health/detailed', (req, res) => {
   res.status(isHealthy ? 200 : 503).json({
     success: true,
     status: isHealthy ? 'healthy' : 'degraded',
-    message: 'MedCore BD API is running',
+    message: 'MediportBD API is running',
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     services: {
@@ -440,7 +440,7 @@ app.get('/api/stats', async (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'MedCore BD API Server',
+    message: 'MediportBD API Server',
     version: '2.0.0',
     status: 'operational',
     documentation: '/api-docs',
@@ -509,7 +509,7 @@ if (process.env.NODE_ENV !== 'test') {
   const HOST = process.env.HOST || '0.0.0.0'; // Railway requires 0.0.0.0
   
   httpServer.listen(PORT, HOST, () => {
-    logger.info(`MedCore BD API v2.0 running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    logger.info(`MediportBD API v2.0 running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
     
     // Initialize Socket.IO
     chatSocketService.initialize(httpServer);

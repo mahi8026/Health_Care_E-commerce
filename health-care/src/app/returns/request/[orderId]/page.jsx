@@ -28,7 +28,7 @@ export default function ReturnRequestPage() {
 
   const fetchOrder = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       const res = await fetch(`${API}/orders/${params.orderId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -69,7 +69,7 @@ export default function ReturnRequestPage() {
 
     setUploadingImages(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       const uploadedImages = [];
 
       for (const file of files) {
@@ -125,7 +125,7 @@ export default function ReturnRequestPage() {
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       
       // Prepare products array - handle both populated and non-populated product references
       const products = order.items.map(item => {
@@ -242,7 +242,7 @@ export default function ReturnRequestPage() {
                   <div className="relative w-20 h-20 flex-shrink-0">
                     <Image 
                       src={productImage} 
-                      alt={`${productName} — Return request — MedCore BD Bangladesh`}
+                      alt={`${productName} — Return request — MediportBD Bangladesh`}
                       fill
                       sizes="80px"
                       style={{ objectFit: 'cover' }}
@@ -339,7 +339,7 @@ export default function ReturnRequestPage() {
                   <div key={idx} className="relative group h-24">
                     <Image
                       src={img.url}
-                      alt={`Return evidence photo ${idx + 1} — MedCore BD`}
+                      alt={`Return evidence photo ${idx + 1} — MediportBD`}
                       fill
                       sizes="(max-width: 768px) 20vw, 15vw"
                       style={{ objectFit: 'cover' }}

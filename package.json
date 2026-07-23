@@ -1,8 +1,8 @@
 {
-  "name": "medcore-monorepo",
+  "name": "mediport-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "MedCore BD Monorepo",
+  "description": "MediportBD Monorepo",
   "scripts": {
     "prepare": "node -e \"if (process.env.CI || process.env.VERCEL || process.env.HUSKY === '0') process.exit(0)\" && husky || true"
   },

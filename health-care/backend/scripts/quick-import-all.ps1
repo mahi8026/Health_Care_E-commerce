@@ -28,7 +28,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # Step 2: Format the data
 Write-Host ""
-Write-Host "🔄 Step 2: Converting to MedCore format..." -ForegroundColor Yellow
+Write-Host "🔄 Step 2: Converting to MediportBD format..." -ForegroundColor Yellow
 Write-Host ""
 npm run format:healthway
 

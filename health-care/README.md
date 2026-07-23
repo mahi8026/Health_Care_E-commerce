@@ -1,6 +1,6 @@
-# MedCore BD — Frontend
+# MediportBD — Frontend
 
-Next.js 16 storefront for the MedCore BD medical equipment e-commerce platform serving the Bangladesh healthcare sector.
+Next.js 16 storefront for the MediportBD medical equipment e-commerce platform serving the Bangladesh healthcare sector.
 
 ## Tech Stack
 
@@ -39,7 +39,7 @@ ANALYZE=true npm run build
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | ✅ | Backend API URL (e.g. `https://api.medcorebd.com/api`) |
+| `NEXT_PUBLIC_API_URL` | ✅ | Backend API URL (e.g. `https://api.mediportbd.com/api`) |
 | `NEXT_PUBLIC_GA_ID` | ⚠️ | Google Analytics 4 Measurement ID |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | ⚠️ | Cloudinary cloud for image transforms |
 

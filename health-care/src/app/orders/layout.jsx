@@ -1,8 +1,8 @@
 export const metadata = {
-  title: 'Order History - MedCore BD',
+  title: 'Order History - MediportBD',
   description: 'View and track your medical equipment orders. Access invoices, track shipments, and manage returns.',
   openGraph: {
-    title: 'Order History - MedCore BD',
+    title: 'Order History - MediportBD',
     description: 'View and track your medical equipment orders',
   },
 };

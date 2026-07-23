@@ -260,7 +260,7 @@ export default function LoadingDemo() {
             <div className="text-2xl mb-2">🎨</div>
             <h3 className="font-semibold text-gray-800 mb-2">Brand Colors</h3>
             <p className="text-sm text-gray-700">
-              Uses MedCore BD brand colors (#0E8A6E teal, #0B2545 navy) for consistent design
+              Uses MediportBD brand colors (#0E8A6E teal, #0B2545 navy) for consistent design
             </p>
           </div>
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 /**
  * Upload Product Images to Cloudinary
@@ -40,7 +40,7 @@ async function uploadImageToCloudinary(imageUrl, productName) {
     console.log(`  📤 Uploading: ${imgUrl.substring(0, 60)}...`);
     
     const result = await cloudinary.uploader.upload(imgUrl, {
-      folder: 'medcorebd/products',
+      folder: 'MediportBD/products',
       use_filename: true,
       unique_filename: true,
       resource_type: 'image',

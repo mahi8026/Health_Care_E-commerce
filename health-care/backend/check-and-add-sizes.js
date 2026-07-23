@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Quick script to check if products have sizes and add them to specific products
  * 
  * Usage:
@@ -26,7 +26,7 @@ async function checkAndAddSizes() {
 
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport');
     console.log('✅ Connected to MongoDB\n');
 
     // Parse command line arguments

@@ -377,7 +377,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
                       {recImageUrl ? (
                         <Image
                           src={recImageUrl}
-                          alt={`${recProduct.name}${recProduct.brand ? ` — ${typeof recProduct.brand === 'object' ? recProduct.brand.name : recProduct.brand}` : ''} — Related product Bangladesh — MedCore BD`}
+                          alt={`${recProduct.name}${recProduct.brand ? ` — ${typeof recProduct.brand === 'object' ? recProduct.brand.name : recProduct.brand}` : ''} — Related product Bangladesh — MediportBD`}
                           fill
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
                           style={{ objectFit: 'cover' }}
@@ -424,13 +424,13 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
             The retail price of {product.name} in Bangladesh is{' '}
             {product.price && product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Contact for Price'}.
             {' '}B2B institutions (hospitals, clinics, diagnostic centres) receive 8–30% bulk discount depending on order volume.
-            Contact MedCore BD for institutional pricing and credit terms.
+            Contact MediportBD for institutional pricing and credit terms.
           </p>
           <h3 className="text-[14px] font-semibold text-[#0B2545] mb-2">
             Buy {product.name} in Bangladesh
           </h3>
           <p className="text-[13px] text-gray-500 leading-relaxed">
-            MedCore BD is an authorised distributor{brandName ? ` of ${brandName}` : ''} in Bangladesh.
+            MediportBD is an authorised distributor{brandName ? ` of ${brandName}` : ''} in Bangladesh.
             {' '}All products are DGDA registered and come with full manufacturer warranty.
             {' '}Enjoy free delivery in Dhaka for orders over ৳50,000 and nationwide shipping to all major cities.
           </p>

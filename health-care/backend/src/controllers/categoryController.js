@@ -1,4 +1,4 @@
-const Category = require('../models/Category');
+﻿const Category = require('../models/Category');
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');

@@ -9,7 +9,7 @@ const devLog = {
 // Get token from localStorage
 const getToken = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('medcore_token');
+    return localStorage.getItem('Mediport_token');
   }
   return null;
 };
@@ -17,7 +17,7 @@ const getToken = () => {
 // Get refresh token from localStorage
 const getRefreshToken = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('medcore_refresh_token');
+    return localStorage.getItem('Mediport_refresh_token');
   }
   return null;
 };
@@ -25,22 +25,22 @@ const getRefreshToken = () => {
 // Set token in localStorage
 const setToken = (token) => {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('medcore_token', token);
+    localStorage.setItem('Mediport_token', token);
   }
 };
 
 // Set refresh token in localStorage
 const setRefreshToken = (refreshToken) => {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('medcore_refresh_token', refreshToken);
+    localStorage.setItem('Mediport_refresh_token', refreshToken);
   }
 };
 
 // Remove token from localStorage
 const removeToken = () => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('medcore_token');
-    localStorage.removeItem('medcore_refresh_token');
+    localStorage.removeItem('Mediport_token');
+    localStorage.removeItem('Mediport_refresh_token');
   }
 };
 

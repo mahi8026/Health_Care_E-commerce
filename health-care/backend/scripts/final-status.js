@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 const mongoose = require('mongoose');
 const Product = require('../src/models/Product');
@@ -21,7 +21,7 @@ async function showFinalStatus() {
     });
     
     console.log('\n┌─────────────────────────────────────────────────────┐');
-    console.log('│         MedCore BD — Final Status Report           │');
+    console.log('│         MediportBD — Final Status Report           │');
     console.log('└─────────────────────────────────────────────────────┘\n');
     
     console.log('📦 Product Catalog:');

@@ -29,7 +29,7 @@ function CopyBtn({ text }) {
 function BankTransferConfirmation({ orderId }) {
   const BANK_ROWS = [
     { label: 'Bank', value: 'Dutch-Bangla Bank Ltd', mono: false },
-    { label: 'Account Name', value: 'MedCore Bangladesh Ltd', mono: false },
+    { label: 'Account Name', value: 'Mediport Bangladesh Ltd', mono: false },
     { label: 'Account No.', value: '1721 2030 5678', mono: true },
     { label: 'Routing No.', value: '090261450', mono: true },
   ];

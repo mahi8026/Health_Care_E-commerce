@@ -1,7 +1,7 @@
-// Quick script to check if products have images in the database
+﻿// Quick script to check if products have images in the database
 const mongoose = require('mongoose');
 
-const MONGODB_URI = 'mongodb://localhost:27017/medcore';
+const MONGODB_URI = 'mongodb://localhost:27017/Mediport';
 
 async function checkImages() {
   try {

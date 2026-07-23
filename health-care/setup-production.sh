@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# MedCore BD - Production Setup Script
+# MediportBD - Production Setup Script
 # This script helps you configure production environment variables
 
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║   MedCore BD - Production Environment Setup               ║"
+echo "║   MediportBD - Production Environment Setup               ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -29,12 +29,12 @@ echo -e "${GREEN}Creating .env.production.local...${NC}"
 echo ""
 
 # API URL
-read -p "Enter your API URL (e.g., https://api.medcorebd.com/api): " API_URL
-API_URL=${API_URL:-https://api.medcorebd.com/api}
+read -p "Enter your API URL (e.g., https://api.mediportbd.com/api): " API_URL
+API_URL=${API_URL:-https://api.mediportbd.com/api}
 
 # Site URL
-read -p "Enter your site URL (e.g., https://medcorebd.com): " SITE_URL
-SITE_URL=${SITE_URL:-https://medcorebd.com}
+read -p "Enter your site URL (e.g., https://mediportbd.com): " SITE_URL
+SITE_URL=${SITE_URL:-https://mediportbd.com}
 
 # Google Analytics
 read -p "Enter your Google Analytics Measurement ID (G-XXXXXXXXXX): " GA_ID
@@ -46,7 +46,7 @@ STRIPE_KEY=${STRIPE_KEY:-pk_live_REPLACE_WITH_YOUR_KEY}
 
 # Create .env.production.local
 cat > .env.production.local << EOF
-# MedCore BD - Production Environment Variables
+# MediportBD - Production Environment Variables
 # Generated: $(date)
 
 # API Configuration
@@ -57,8 +57,8 @@ NEXT_PUBLIC_GA4_MEASUREMENT_ID=$GA_ID
 
 # Site Configuration
 NEXT_PUBLIC_SITE_URL=$SITE_URL
-NEXT_PUBLIC_SITE_NAME=MedCore BD
-NEXT_PUBLIC_APP_NAME=MedCore BD
+NEXT_PUBLIC_SITE_NAME=MediportBD
+NEXT_PUBLIC_APP_NAME=MediportBD
 
 # Stripe Payment Gateway
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$STRIPE_KEY

@@ -11,7 +11,7 @@
 export default function BreadcrumbSchema({ items }) {
   if (!items || !Array.isArray(items) || items.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
 
   // Build breadcrumb list
   const schema = {

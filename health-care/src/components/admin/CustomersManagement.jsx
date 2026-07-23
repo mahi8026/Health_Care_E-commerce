@@ -37,7 +37,7 @@ export default function CustomersManagement() {
   const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const params = new URLSearchParams({ page, limit: 10 });
       if (tierFilter !== 'all') params.set('tier', tierFilter);
       if (roleFilter !== 'all') params.set('role', roleFilter);
@@ -65,7 +65,7 @@ export default function CustomersManagement() {
 
   const handleUpdateTier = async (customerId, newTier) => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'PATCH',
@@ -99,7 +99,7 @@ export default function CustomersManagement() {
 
   const handleUpdateRole = async (customerId, newRole) => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'PATCH',
@@ -133,7 +133,7 @@ export default function CustomersManagement() {
 
   const handleUpdateDiscount = async (customerId, enabled, pct) => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -150,7 +150,7 @@ export default function CustomersManagement() {
 
   const handleDeleteCustomer = async (customerId) => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/customers/${customerId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
@@ -171,7 +171,7 @@ export default function CustomersManagement() {
   const handleBulkDelete = async () => {
     if (!selectedCustomers.length) return;
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       await Promise.all(
         selectedCustomers.map(id =>
           fetch(`${API}/admin/customers/${id}`, {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ETag middleware for HTTP conditional requests.
  * Injects an ETag header into JSON responses and short-circuits with
  * 304 Not Modified when the client already has the same version.

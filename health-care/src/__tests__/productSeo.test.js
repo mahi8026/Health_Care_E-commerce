@@ -17,18 +17,18 @@ import FAQSchema from '@/components/seo/FAQSchema';
 // Mock the SEO config
 jest.mock('@/config/seo', () => ({
   SITE_CONFIG: {
-    name: 'MedCore BD',
-    url: 'https://medcorebd.com',
+    name: 'MediportBD',
+    url: 'https://MediportBD.com',
     phone: '+8801646886795',
-    email: 'info@medcorebd.com',
+    email: 'info@MediportBD.com',
   },
   siteConfig: {
-    name: 'MedCore BD',
-    url: 'https://medcorebd.com',
+    name: 'MediportBD',
+    url: 'https://MediportBD.com',
   },
   organization: {
-    name: 'MedCore BD',
-    url: 'https://medcorebd.com',
+    name: 'MediportBD',
+    url: 'https://MediportBD.com',
   },
 }));
 
@@ -170,7 +170,7 @@ describe('generateAltText', () => {
 
       const altText = generateAltText(product, 1);
 
-      expect(altText).toBe('Siemens ECG Machine view 1 — MedCore BD');
+      expect(altText).toBe('Siemens ECG Machine view 1 — MediportBD');
     });
 
     it('should use correct index in secondary image alt text', () => {
@@ -181,8 +181,8 @@ describe('generateAltText', () => {
       const altText2 = generateAltText(product, 2);
       const altText3 = generateAltText(product, 3);
 
-      expect(altText2).toBe('Ultrasound Machine view 2 — MedCore BD');
-      expect(altText3).toBe('Ultrasound Machine view 3 — MedCore BD');
+      expect(altText2).toBe('Ultrasound Machine view 2 — MediportBD');
+      expect(altText3).toBe('Ultrasound Machine view 3 — MediportBD');
     });
 
     it('should truncate secondary image alt text to 125 characters', () => {
@@ -221,7 +221,7 @@ describe('generateProductSchema', () => {
       name: 'Siemens ECG Machine',
       description: 'Professional 12-lead ECG machine',
       sku: 'ECG-SIE-001',
-      url: 'https://medcorebd.com/products/siemens-ecg-machine',
+      url: 'https://MediportBD.com/products/siemens-ecg-machine',
     });
 
     expect(schema.brand).toEqual({
@@ -244,8 +244,8 @@ describe('generateProductSchema', () => {
 
     expect(schema.offers.seller).toEqual({
       '@type': 'Organization',
-      name: 'MedCore BD',
-      url: 'https://medcorebd.com',
+      name: 'MediportBD',
+      url: 'https://MediportBD.com',
     });
   });
 
@@ -366,7 +366,7 @@ describe('generateProductSchema', () => {
 
     const schema = generateProductSchema(product);
 
-    expect(schema.url).toBe('https://medcorebd.com/products/ecg-machine-pro');
+    expect(schema.url).toBe('https://MediportBD.com/products/ecg-machine-pro');
   });
 
   it('should fallback to _id in URL when slug is missing', () => {
@@ -379,7 +379,7 @@ describe('generateProductSchema', () => {
 
     const schema = generateProductSchema(product);
 
-    expect(schema.url).toBe('https://medcorebd.com/products/507f1f77bcf86cd799439011');
+    expect(schema.url).toBe('https://MediportBD.com/products/507f1f77bcf86cd799439011');
   });
 
   it('should set availability to OutOfStock when inStock is false', () => {
@@ -421,9 +421,9 @@ describe('generateProductSchema', () => {
 describe('generateBreadcrumbSchema', () => {
   it('should generate 3 ListItems with correct positions and URLs', () => {
     const breadcrumbs = [
-      { name: 'Home', url: 'https://medcorebd.com/' },
-      { name: 'Diagnostic Equipment', url: 'https://medcorebd.com/products?category=diagnostic' },
-      { name: 'Siemens ECG Machine', url: 'https://medcorebd.com/products/siemens-ecg-machine' },
+      { name: 'Home', url: 'https://MediportBD.com/' },
+      { name: 'Diagnostic Equipment', url: 'https://MediportBD.com/products?category=diagnostic' },
+      { name: 'Siemens ECG Machine', url: 'https://MediportBD.com/products/siemens-ecg-machine' },
     ];
 
     const schema = generateBreadcrumbSchema(breadcrumbs);
@@ -439,29 +439,29 @@ describe('generateBreadcrumbSchema', () => {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: 'https://medcorebd.com/',
+      item: 'https://MediportBD.com/',
     });
 
     expect(schema.itemListElement[1]).toEqual({
       '@type': 'ListItem',
       position: 2,
       name: 'Diagnostic Equipment',
-      item: 'https://medcorebd.com/products?category=diagnostic',
+      item: 'https://MediportBD.com/products?category=diagnostic',
     });
 
     expect(schema.itemListElement[2]).toEqual({
       '@type': 'ListItem',
       position: 3,
       name: 'Siemens ECG Machine',
-      item: 'https://medcorebd.com/products/siemens-ecg-machine',
+      item: 'https://MediportBD.com/products/siemens-ecg-machine',
     });
   });
 
   it('should use "Products" as fallback category name', () => {
     const breadcrumbs = [
-      { name: 'Home', url: 'https://medcorebd.com/' },
-      { name: 'Products', url: 'https://medcorebd.com/products' },
-      { name: 'ECG Machine', url: 'https://medcorebd.com/products/ecg-machine' },
+      { name: 'Home', url: 'https://MediportBD.com/' },
+      { name: 'Products', url: 'https://MediportBD.com/products' },
+      { name: 'ECG Machine', url: 'https://MediportBD.com/products/ecg-machine' },
     ];
 
     const schema = generateBreadcrumbSchema(breadcrumbs);
@@ -495,10 +495,10 @@ describe('generateBreadcrumbSchema', () => {
 
   it('should handle any number of breadcrumb items', () => {
     const breadcrumbs = [
-      { name: 'Home', url: 'https://medcorebd.com/' },
-      { name: 'Category', url: 'https://medcorebd.com/category' },
-      { name: 'Subcategory', url: 'https://medcorebd.com/subcategory' },
-      { name: 'Product', url: 'https://medcorebd.com/product' },
+      { name: 'Home', url: 'https://MediportBD.com/' },
+      { name: 'Category', url: 'https://MediportBD.com/category' },
+      { name: 'Subcategory', url: 'https://MediportBD.com/subcategory' },
+      { name: 'Product', url: 'https://MediportBD.com/product' },
     ];
 
     const schema = generateBreadcrumbSchema(breadcrumbs);
@@ -544,7 +544,7 @@ describe('FAQSchema Component', () => {
 
     // Check where to buy question
     expect(schema.mainEntity[3].name).toContain('Where can I buy');
-    expect(schema.mainEntity[3].acceptedAnswer.text).toContain('MedCore BD');
+    expect(schema.mainEntity[3].acceptedAnswer.text).toContain('MediportBD');
   });
 
   it('should return null when product is null', () => {

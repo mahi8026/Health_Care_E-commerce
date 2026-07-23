@@ -2,7 +2,7 @@ import AdminShell from '@/components/admin/AdminShell';
 import WhatsAppConversationDetail from '@/components/admin/WhatsAppConversationDetail';
 
 export const metadata = {
-  title: 'Conversation Detail — WhatsApp | MedCore BD',
+  title: 'Conversation Detail — WhatsApp | MediportBD',
   description: 'View and manage WhatsApp conversation details',
 };
 

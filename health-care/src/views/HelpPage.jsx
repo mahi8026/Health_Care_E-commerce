@@ -73,11 +73,11 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: 'Are all products DGDA registered?',
-        a: 'Yes. Every product listed on MedCore BD carries a valid DGDA registration number. You can view the registration details on each product page or contact our regulatory team for documentation.',
+        a: 'Yes. Every product listed on MediportBD carries a valid DGDA registration number. You can view the registration details on each product page or contact our regulatory team for documentation.',
       },
       {
         q: 'Can I request a product not listed on the site?',
-        a: 'Absolutely. Use the B2B portal to submit a custom quote request, or email us at procurement@medcorebd.com with the product name, manufacturer, and quantity required.',
+        a: 'Absolutely. Use the B2B portal to submit a custom quote request, or email us at procurement@MediportBD.com with the product name, manufacturer, and quantity required.',
       },
       {
         q: 'How are temperature-sensitive reagents handled?',

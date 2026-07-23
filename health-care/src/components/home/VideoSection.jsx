@@ -49,7 +49,7 @@ export default function VideoSection() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={youtubeThumbnail}
-                  alt="MedCore BD — Leading medical equipment supplier in Bangladesh"
+                  alt="MediportBD — Leading medical equipment supplier in Bangladesh"
                   style={{ 
                     position: 'absolute', 
                     inset: 0, 
@@ -128,7 +128,7 @@ export default function VideoSection() {
           {/* Right: Content */}
           <div style={{ color: '#fff' }}>
             <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>
-              Why Choose MedCore BD?
+              Why Choose MediportBD?
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginBottom: 24, lineHeight: 1.6 }}>
               Bangladesh&apos;s trusted partner for medical equipment, serving hospitals and diagnostic centers nationwide.

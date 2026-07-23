@@ -52,13 +52,13 @@ export const metadata = {
 
   title: {
     default:  SITE_CONFIG.fullName,
-    template: '%s | MedCore BD',
+    template: '%s | MediportBD',
   },
   description: SITE_CONFIG.description,
   keywords:    SITE_CONFIG.keywords,
-  authors:     [{ name: 'MedCore Bangladesh Ltd.' }],
-  creator:     'MedCore Bangladesh Ltd.',
-  publisher:   'MedCore Bangladesh Ltd.',
+  authors:     [{ name: 'Mediport Bangladesh Ltd.' }],
+  creator:     'Mediport Bangladesh Ltd.',
+  publisher:   'Mediport Bangladesh Ltd.',
 
   openGraph: {
     type:        'website',
@@ -71,7 +71,7 @@ export const metadata = {
       url:    '/og-default.png',
       width:  1200,
       height: 630,
-      alt:    'MedCore BD — Medical Equipment Supplier Bangladesh',
+      alt:    'MediportBD — Medical Equipment Supplier Bangladesh',
     }],
   },
 
@@ -135,7 +135,7 @@ export default function RootLayout({ children }) {
         {/* iOS Meta Tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="MedCore BD" />
+        <meta name="apple-mobile-web-app-title" content="MediportBD" />
         
         {/* Favicon */}
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-72x72.png" />
@@ -149,7 +149,7 @@ export default function RootLayout({ children }) {
         <link
           rel="preload"
           as="image"
-          href="https://res.cloudinary.com/dm8eqxwlz/image/upload/f_auto,q_auto,w_1200,c_limit/medcorebd/hero-banner"
+          href="https://res.cloudinary.com/dm8eqxwlz/image/upload/f_auto,q_auto,w_1200,c_limit/MediportBD/hero-banner"
           fetchPriority="high"
         />
       </head>

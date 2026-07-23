@@ -1,5 +1,5 @@
 /**
- * Browser invoice (print / preview) — matches MedCore BD PDF branding
+ * Browser invoice (print / preview) — matches MediportBD PDF branding
  */
 
 function formatBdt(n) {
@@ -218,7 +218,7 @@ export class InvoiceGenerator {
   <div class="sheet">
     <header class="head">
       <div>
-        <div class="logo">MedCore<span>BD</span></div>
+        <div class="logo">Mediport<span>BD</span></div>
         <p class="tagline">Medical Equipment & Laboratory Supplies<br />Dhaka, Bangladesh · mahimrahman07@gmail.com</p>
       </div>
       <div class="inv-title">
@@ -269,11 +269,11 @@ export class InvoiceGenerator {
       </div>
       <div class="pay-box">
         <strong>Payment instructions</strong><br />
-        Dutch-Bangla Bank Ltd · MedCore Bangladesh Ltd · A/C 1721 2030 5678<br />
+        Dutch-Bangla Bank Ltd · Mediport Bangladesh Ltd · A/C 1721 2030 5678<br />
         Reference: ${invoiceNo} · ${escapeHtml(paymentLabel(order.paymentMethod))}
       </div>
       <footer class="foot">
-        <p><strong>MedCore Bangladesh Ltd</strong> · DGDA Reg. DA-2024-0891 · www.medcorebd.com</p>
+        <p><strong>Mediport Bangladesh Ltd</strong> · DGDA Reg. DA-2024-0891 · www.MediportBD.com</p>
         <p>Computer-generated invoice — no signature required.</p>
       </footer>
     </div>

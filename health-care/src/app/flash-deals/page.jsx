@@ -3,19 +3,19 @@ import FlashDealsPageClient from './FlashDealsPageClient';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
-  title: '🔥 Flash Deals — Limited Time Offers | MedCore BD',
+  title: '🔥 Flash Deals — Limited Time Offers | MediportBD',
   description: 'Grab amazing deals on medical equipment, diagnostic tools, laboratory reagents, and hospital supplies. Limited stock, limited time — Bangladesh\'s best medical equipment deals.',
   keywords: 'flash deals Bangladesh, medical equipment deals, diagnostic equipment discount, laboratory reagents sale, hospital supplies offers, medical equipment Bangladesh discount',
   alternates: { canonical: `${SITE_CONFIG.url}/flash-deals` },
   openGraph: {
-    title: '🔥 Flash Deals — Limited Time Offers | MedCore BD',
+    title: '🔥 Flash Deals — Limited Time Offers | MediportBD',
     description: 'Grab amazing deals on medical equipment. Limited stock, limited time!',
     url: `${SITE_CONFIG.url}/flash-deals`,
-    images: [{ url: '/og-flash-deals.png', width: 1200, height: 630, alt: 'Flash Deals — MedCore BD' }],
+    images: [{ url: '/og-flash-deals.png', width: 1200, height: 630, alt: 'Flash Deals — MediportBD' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: '🔥 Flash Deals — Limited Time Offers | MedCore BD',
+    title: '🔥 Flash Deals — Limited Time Offers | MediportBD',
     description: 'Grab amazing deals on medical equipment. Limited stock, limited time!',
     images: ['/og-flash-deals.png'],
   },

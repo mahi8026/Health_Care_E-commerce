@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const newsletterController = require('../controllers/newsletterController');
 const { protect, adminOnly } = require('../middleware/auth');

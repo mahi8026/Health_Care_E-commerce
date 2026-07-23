@@ -174,7 +174,7 @@
 
 ## 🎊 What You've Built
 
-### **MedCore BD - Production-Ready E-Commerce Platform**
+### **MediportBD - Production-Ready E-Commerce Platform**
 
 **Features**:
 - ✅ Full e-commerce (products, cart, checkout, orders)
@@ -355,7 +355,7 @@
 
 ## 📞 Status: READY TO LAUNCH! 🚀
 
-**Your MedCore BD platform is**:
+**Your MediportBD platform is**:
 - ✅ **100% production-ready**
 - ✅ **Deployed and operational**
 - ✅ **Optimized for performance**
@@ -382,4 +382,4 @@ From 74% to 100% in one day. From good to exceptional. From almost-there to prod
 
 ---
 
-**Ready to go live?** The world is waiting for MedCore BD! 🌍
+**Ready to go live?** The world is waiting for MediportBD! 🌍

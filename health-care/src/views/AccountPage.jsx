@@ -43,7 +43,7 @@ export default function AccountPage() {
     // Fetch user stats
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         
         // Fetch each endpoint separately to handle errors individually
         let orders = [];

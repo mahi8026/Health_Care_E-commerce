@@ -13,7 +13,7 @@ export default function SMSSettingsPage() {
 
   const fetchConfig = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sms/config`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -33,7 +33,7 @@ export default function SMSSettingsPage() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sms/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -62,7 +62,7 @@ export default function SMSSettingsPage() {
     setTestResult(null);
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sms/test`, {
         method: 'POST',
         headers: {

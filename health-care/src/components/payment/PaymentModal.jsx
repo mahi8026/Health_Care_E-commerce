@@ -149,7 +149,7 @@ export default function PaymentModal({
                 Please send your company cheque to:
               </p>
               <div className="bg-white rounded-lg p-3 text-[12px] text-left space-y-1">
-                <div><strong>MedCore Bangladesh Ltd</strong></div>
+                <div><strong>Mediport Bangladesh Ltd</strong></div>
                 <div>17/2/A Azad Tower, Shop-08, Topkhana Road</div>
                 <div>Dhaka-1000, Bangladesh</div>
               </div>

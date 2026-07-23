@@ -1,5 +1,5 @@
 /**
- * Color Constants for MedCore BD
+ * Color Constants for MediportBD
  * Centralized color palette — sync with globals.css :root tokens
  */
 

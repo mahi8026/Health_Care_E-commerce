@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Create Test Users for Load Testing
  * Run this script before running authenticated or B2B load tests
  *
@@ -13,7 +13,7 @@ const API_URL = process.env.API_URL || 'http://localhost:5000';
 const testUsers = [
   {
     name: 'Load Test User',
-    email: 'loadtest@medcorebd.com',
+    email: 'loadtest@MediportBD.com',
     password: 'LoadTest123!',
     phone: '+8801700000000',
     accountType: 'retail',
@@ -122,7 +122,7 @@ async function main() {
     console.log('\n🎉 Test users are ready!');
     console.log('\n📝 User Credentials:');
     console.log('\n   Regular User:');
-    console.log('   Email: loadtest@medcorebd.com');
+    console.log('   Email: loadtest@MediportBD.com');
     console.log('   Password: LoadTest123!');
     console.log('\n   B2B User:');
     console.log('   Email: b2b@hospital.com');

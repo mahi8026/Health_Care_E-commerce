@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Final Category Audit
  * Comprehensive check for any remaining miscategorized products

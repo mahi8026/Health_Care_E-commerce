@@ -13,7 +13,7 @@ export default function CategoryDiscounts() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/b2b/categories/discounts`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -62,7 +62,7 @@ export default function CategoryDiscounts() {
 
     try {
       setSaving(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
 
       const updates = Object.entries(changes).map(([categoryId, change]) => ({
         categoryId,

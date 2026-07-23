@@ -1,5 +1,5 @@
 /**
- * Structured Data (JSON-LD) Generator for MedCore BD
+ * Structured Data (JSON-LD) Generator for MediportBD
  *
  * Generates Schema.org JSON-LD structured data for rich search results.
  * Supports Product, Organization, BreadcrumbList, and WebSite schemas.
@@ -198,7 +198,7 @@ export function generateProductSchema(product) {
       itemCondition: 'https://schema.org/NewCondition',
       seller: {
         '@type': 'Organization',
-        name: 'MedCore BD',
+        name: 'MediportBD',
         url: siteConfig.url,
       },
     },

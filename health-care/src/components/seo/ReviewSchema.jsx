@@ -37,7 +37,7 @@ export default function ReviewSchema({ reviews, productName, productId }) {
     datePublished: review.createdAt ? new Date(review.createdAt).toISOString() : new Date().toISOString(),
     publisher: {
       '@type': 'Organization',
-      name: 'MedCore BD',
+      name: 'MediportBD',
     },
   }));
 

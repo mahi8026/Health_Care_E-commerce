@@ -10,12 +10,12 @@ NODE_ENV=production
 PORT=5000
 
 # ── Frontend URL (Your Cloudflare Pages deployment) ──────────────────────────
-FRONTEND_URL=https://medcorebd.pages.dev
-CORS_ORIGINS=https://medcorebd.pages.dev
+FRONTEND_URL=https://mediportbd.pages.dev
+CORS_ORIGINS=https://mediportbd.pages.dev
 
 # ── Database (MongoDB Atlas) ─────────────────────────────────────────────────
 # Get from: https://www.mongodb.com/cloud/atlas
-# Format: mongodb+srv://username:password@cluster.mongodb.net/medcore
+# Format: mongodb+srv://username:password@cluster.mongodb.net/mediport
 MONGODB_URI=<your-mongodb-connection-string>
 
 # ── JWT Secrets (Generate with: node generate-secrets.js) ───────────────────
@@ -34,8 +34,8 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=<your-email@gmail.com>
 SMTP_PASS=<your-gmail-app-password>
-EMAIL_FROM=noreply@medcorebd.com
-EMAIL_FROM_NAME=MedCore BD
+EMAIL_FROM=noreply@mediportbd.com
+EMAIL_FROM_NAME=MediportBD
 
 # ── Google OAuth (Social Login) ──────────────────────────────────────────────
 # Get from: https://console.cloud.google.com/apis/credentials
@@ -60,7 +60,7 @@ STRIPE_WEBHOOK_SECRET=<whsec_...>
 # ── SMS Service (Optional) ───────────────────────────────────────────────────
 SMS_PROVIDER=ssl_wireless
 SMS_API_URL=https://smsplus.sslwireless.com/api/v3/send-sms
-SMS_SENDER_ID=MedCoreBD
+SMS_SENDER_ID=MediportBD
 SMS_API_KEY=<your-sms-api-key>
 ADMIN_PHONE=<+8801646886795>
 

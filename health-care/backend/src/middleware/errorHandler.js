@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Centralised error handler middleware.
  * Must be registered AFTER all routes in server.js.
  *

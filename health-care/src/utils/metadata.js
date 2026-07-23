@@ -1,5 +1,5 @@
 /**
- * Metadata Generator Utility for MedCore BD
+ * Metadata Generator Utility for MediportBD
  *
  * Centralized metadata generation for all pages using the Next.js Metadata API.
  * Includes Open Graph tags, Twitter Card tags, canonical URLs, and robots directives.
@@ -141,7 +141,7 @@ export function generateProductMetadata(product) {
   if (!product) {
     return generatePageMetadata({
       title: 'Product Not Found',
-      description: 'The requested product could not be found on MedCore BD.',
+      description: 'The requested product could not be found on MediportBD.',
       path: '/products',
       noindex: true,
     })

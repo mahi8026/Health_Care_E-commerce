@@ -55,7 +55,7 @@ export default function LoyaltyPage() {
   const [txLoading, setTxLoading]     = useState(true);
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('Mediport_token') : null;
     if (!token) return;
 
     const headers = { Authorization: `Bearer ${token}` };

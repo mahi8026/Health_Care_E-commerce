@@ -1,4 +1,4 @@
-// Mock mongoose before importing anything
+﻿// Mock mongoose before importing anything
 const mockSchema = jest.fn().mockImplementation(function() {
   return this;
 });

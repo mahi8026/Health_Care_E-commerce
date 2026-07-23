@@ -1,4 +1,4 @@
-const logger = require('../utils/logger');
+﻿const logger = require('../utils/logger');
 const { sendTestSMS, maskPhoneNumber } = require('../services/smsService');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
@@ -11,7 +11,7 @@ exports.getSMSConfig = async (req, res) => {
   try {
     const config = {
       provider: 'SSL Wireless',
-      senderId: process.env.SMS_SENDER_ID || 'MedCoreBD',
+      senderId: process.env.SMS_SENDER_ID || 'MediportBD',
       isConfigured: !!process.env.SMS_API_KEY,
       adminPhone: process.env.ADMIN_PHONE ? maskPhoneNumber(process.env.ADMIN_PHONE) : null
     };
@@ -98,7 +98,7 @@ exports.getSMSStats = async (req, res) => {
     const stats = {
       isConfigured: !!process.env.SMS_API_KEY,
       provider: 'SSL Wireless',
-      senderId: process.env.SMS_SENDER_ID || 'MedCoreBD',
+      senderId: process.env.SMS_SENDER_ID || 'MediportBD',
       // These would come from a tracking collection in production
       totalSent: 0,
       totalFailed: 0,

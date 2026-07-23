@@ -18,7 +18,7 @@ export function CartProvider({ children }) {
   // Check if user is logged in on mount
   useEffect(() => {
     const checkAuth = () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('Mediport_token') : null;
       setIsLoggedIn(!!token);
     };
     checkAuth();
@@ -29,7 +29,7 @@ export function CartProvider({ children }) {
     if (!isLoggedIn) return;
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       let url = `${API}/cart/items`;
       let method = 'POST';
       let body = {};
@@ -71,7 +71,7 @@ export function CartProvider({ children }) {
 
     setSyncPending(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${API}/cart/sync`, {
         method: 'POST',
         headers: {
@@ -126,7 +126,7 @@ export function CartProvider({ children }) {
   useEffect(() => {
     const loadCart = () => {
       try {
-        const savedCart = localStorage.getItem('medcore_cart');
+        const savedCart = localStorage.getItem('Mediport_cart');
         if (savedCart) {
           const parsed = JSON.parse(savedCart);
           // Sanitize stale items that may have populated objects stored
@@ -146,12 +146,12 @@ export function CartProvider({ children }) {
 
   // Persist cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('medcore_cart', JSON.stringify(cart));
+    localStorage.setItem('Mediport_cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = useCallback((product, quantity = 1, options = {}) => {
     // ── Auth gate: guests must log in before adding to cart ──────────────────
-    const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('Mediport_token') : null;
     if (!token) {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('require-login-for-cart', {

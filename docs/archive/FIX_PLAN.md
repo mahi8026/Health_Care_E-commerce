@@ -1,4 +1,4 @@
-# MedCore BD — Comprehensive Fix Plan
+﻿# MediportBD — Comprehensive Fix Plan
 
 **Goal:** Take the project from 74% → 95%+ readiness  
 **Total estimated effort:** 40–60 hours across 5 phases  
@@ -179,7 +179,7 @@ Current: Cookie parser is configured but CSRF is noted as "handled by SameSite c
 | File | Action |
 |------|--------|
 | `LoginPage.jsx` | ✅ Already fixed (removed admin123). Wrap remaining Quick Login in `process.env.NODE_ENV !== 'production'` |
-| `server.js` | Check `/api/fix-slugs` and `/api/test-email` — require secret but the secret `medcore-test-2026` is hardcoded. Move to env var `SLUG_FIX_SECRET` |
+| `server.js` | Check `/api/fix-slugs` and `/api/test-email` — require secret but the secret `Mediport-test-2026` is hardcoded. Move to env var `SLUG_FIX_SECRET` |
 
 ### 3.3 Add Rate Limiting to All Auth Routes
 

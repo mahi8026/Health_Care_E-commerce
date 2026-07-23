@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Comprehensive Category Fix Script
  * 
  * This script fixes ALL category-related issues:
@@ -18,7 +18,7 @@ const Product = require('./src/models/Product');
 // Database connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore', {
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

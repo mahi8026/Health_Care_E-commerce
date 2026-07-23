@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const mongoose = require('mongoose');
 const connectDB = require('../config/database');
 const Product = require('../models/Product');
@@ -7,7 +7,7 @@ const Order = require('../models/Order');
 const Quote = require('../models/Quote');
 const logger = require('./logger');
 
-// Comprehensive seed data for MedCore BD
+// Comprehensive seed data for MediportBD
 const seedDatabase = async () => {
   try {
     await connectDB();
@@ -25,36 +25,36 @@ const seedDatabase = async () => {
     // 3 Admin users
     const admin1 = await User.create({
       name: 'Shahid Admin',
-      email: 'admin@medcorebd.com',
+      email: 'admin@MediportBD.com',
       password: 'admin123',
       phone: '+880 1812-345678',
       role: 'admin',
       accountType: 'B2B',
-      companyName: 'MedCore BD',
+      companyName: 'MediportBD',
       isActive: true,
       isVerified: true
     });
 
     const admin2 = await User.create({
       name: 'Fatima Manager',
-      email: 'manager@medcorebd.com',
+      email: 'manager@MediportBD.com',
       password: 'manager123',
       phone: '+880 1813-456789',
       role: 'admin',
       accountType: 'B2B',
-      companyName: 'MedCore BD',
+      companyName: 'MediportBD',
       isActive: true,
       isVerified: true
     });
 
     const admin3 = await User.create({
       name: 'Karim Support',
-      email: 'karim.support@medcorebd.com',
+      email: 'karim.support@MediportBD.com',
       password: 'support123',
       phone: '+880 1814-567890',
       role: 'admin',
       accountType: 'B2B',
-      companyName: 'MedCore BD',
+      companyName: 'MediportBD',
       isActive: true,
       isVerified: true
     });

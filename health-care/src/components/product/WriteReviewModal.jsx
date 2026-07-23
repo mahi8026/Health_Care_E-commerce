@@ -18,7 +18,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
   useEffect(() => {
     const fetchEligibleOrder = async () => {
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const res = await fetch(`${API}/reviews/eligible-products`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -84,7 +84,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews`, {
         method: 'POST',
         headers: {
@@ -252,7 +252,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
             </label>
             
             <CldUploadWidget
-              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'medcorebd_products'}
+              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'MediportBD_products'}
               options={{
                 cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
                 maxFiles: 5 - images.length,
@@ -260,7 +260,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
                 resourceType: 'image',
                 clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
                 maxFileSize: 5242880, // 5 MB
-                folder: 'medcorebd/reviews',
+                folder: 'MediportBD/reviews',
                 transformation: [{ width: 800, height: 800, crop: 'limit', quality: 'auto' }]
               }}
               onSuccess={handleUploadSuccess}

@@ -6,7 +6,7 @@ import Spinner from '@/components/ui/Spinner';
 
 const BANK_DETAILS = {
   bankName: 'Dutch-Bangla Bank Ltd',
-  accountName: 'MedCore Bangladesh Ltd',
+  accountName: 'Mediport Bangladesh Ltd',
   accountNo: '1721-2030-5678',
   branch: 'Gulshan Branch, Dhaka',
   routing: '090260123',
@@ -108,7 +108,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Account Name:</span>
-            <span className="font-semibold">MedCore Bangladesh Ltd</span>
+            <span className="font-semibold">Mediport Bangladesh Ltd</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Branch:</span>

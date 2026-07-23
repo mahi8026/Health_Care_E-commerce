@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Show product SKUs to compare with image names
  */
 
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
 
 async function showSKUs() {
   try {

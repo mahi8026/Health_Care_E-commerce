@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cache middleware for Express backend
  * Sets appropriate Cache-Control headers and implements Redis caching
  *

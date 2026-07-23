@@ -19,7 +19,7 @@ export default function NewsletterManagement() {
   const [successMsg, setSuccessMsg] = useState('');
 
   const getToken = () => {
-    try { return localStorage.getItem('medcore_token') || ''; } catch { return ''; }
+    try { return localStorage.getItem('Mediport_token') || ''; } catch { return ''; }
   };
 
   const fetchStats = useCallback(async () => {

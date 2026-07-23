@@ -1,4 +1,4 @@
-const request = require('supertest');
+﻿const request = require('supertest');
 
 // Mock mongoose connection with full Schema support
 jest.mock('mongoose', () => {
@@ -84,7 +84,7 @@ describe('Health Check Endpoint', () => {
       expect(response.body).toMatchObject({
         success: true,
         status: 'healthy',
-        message: 'MedCore BD API is running',
+        message: 'MediportBD API is running',
         version: '2.0.0',
         services: {
           api: 'operational',

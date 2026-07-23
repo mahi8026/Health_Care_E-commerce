@@ -66,7 +66,7 @@ describe('Product Metadata Generation', () => {
   });
 
   describe('Title Generation', () => {
-    it('should generate title in format "{name} — Price in Bangladesh | MedCore BD" with valid product', async () => {
+    it('should generate title in format "{name} — Price in Bangladesh | MediportBD" with valid product', async () => {
       const mockProduct = {
         name: 'Siemens ECG Machine',
         price: 150000,
@@ -81,7 +81,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'siemens-ecg-machine' }) });
 
-      expect(metadata.title).toBe('Siemens ECG Machine — Price in Bangladesh | MedCore BD');
+      expect(metadata.title).toBe('Siemens ECG Machine — Price in Bangladesh | MediportBD');
     });
 
     it('should use "Product" as fallback when name is missing', async () => {
@@ -97,17 +97,17 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'test-product' }) });
 
-      expect(metadata.title).toBe('Product — Price in Bangladesh | MedCore BD');
+      expect(metadata.title).toBe('Product — Price in Bangladesh | MediportBD');
     });
 
-    it('should return "Product Not Found | MedCore BD" title when product is null', async () => {
+    it('should return "Product Not Found | MediportBD" title when product is null', async () => {
       global.fetch.mockResolvedValueOnce({
         ok: false,
       });
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'nonexistent' }) });
 
-      expect(metadata.title).toBe('Product Not Found | MedCore BD');
+      expect(metadata.title).toBe('Product Not Found | MediportBD');
     });
 
     it('should set robots noindex when product is not found', async () => {
@@ -493,7 +493,7 @@ describe('Product Metadata Generation', () => {
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'siemens-ecg-machine' }) });
 
       expect(metadata.openGraph).toBeDefined();
-      expect(metadata.openGraph.title).toBe('Siemens ECG Machine — Price in Bangladesh | MedCore BD');
+      expect(metadata.openGraph.title).toBe('Siemens ECG Machine — Price in Bangladesh | MediportBD');
       expect(metadata.openGraph.description).toContain('Siemens ECG Machine');
       expect(metadata.openGraph.url).toBe(`${SITE_CONFIG.url}/products/siemens-ecg-machine`);
       expect(metadata.openGraph.type).toBe('website');
@@ -519,7 +519,7 @@ describe('Product Metadata Generation', () => {
 
       expect(metadata.twitter).toBeDefined();
       expect(metadata.twitter.card).toBe('summary_large_image');
-      expect(metadata.twitter.title).toBe('Test Product — Price in Bangladesh | MedCore BD');
+      expect(metadata.twitter.title).toBe('Test Product — Price in Bangladesh | MediportBD');
       expect(metadata.twitter.description).toContain('Test Product');
       expect(metadata.twitter.images).toHaveLength(1);
     });
@@ -556,7 +556,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'test-product' }) });
 
-      expect(metadata.title).toBe('Product Not Found | MedCore BD');
+      expect(metadata.title).toBe('Product Not Found | MediportBD');
       expect(metadata.robots).toEqual({ index: false });
     });
 
@@ -574,7 +574,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'test-product' }) });
 
-      expect(metadata.title).toBe('Test Product — Price in Bangladesh | MedCore BD');
+      expect(metadata.title).toBe('Test Product — Price in Bangladesh | MediportBD');
     });
 
     it('should handle image as string instead of object', async () => {

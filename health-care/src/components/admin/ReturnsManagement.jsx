@@ -40,7 +40,7 @@ export default function ReturnsManagement() {
 
   const fetchReturns = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const statusParam = filter === 'all' ? '' : `status=${filter}&`;
       const url = `${API}/returns?${statusParam}page=${page}&limit=20`;
       
@@ -61,7 +61,7 @@ export default function ReturnsManagement() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/returns/stats/summary`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -87,7 +87,7 @@ export default function ReturnsManagement() {
 
     setUpdating(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const payload = {
         status: newStatus,
         adminNotes: adminNotes.trim(),

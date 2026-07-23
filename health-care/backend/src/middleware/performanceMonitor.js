@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Performance Monitoring Middleware
  * Tracks API response times, memory usage, and request metrics
  */

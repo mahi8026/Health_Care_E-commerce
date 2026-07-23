@@ -39,7 +39,7 @@ describe('generatePageMetadata', () => {
 
   it('includes the site name in the title', () => {
     const meta = generatePageMetadata(baseParams)
-    expect(meta.title).toContain('MedCore BD')
+    expect(meta.title).toContain('MediportBD')
     expect(meta.title).toContain('Reagent Store')
   })
 
@@ -66,7 +66,7 @@ describe('generatePageMetadata', () => {
 
   it('includes og:site_name', () => {
     const meta = generatePageMetadata(baseParams)
-    expect(meta.openGraph.siteName).toBe('MedCore BD')
+    expect(meta.openGraph.siteName).toBe('MediportBD')
   })
 
   it('includes og:locale', () => {
@@ -152,7 +152,7 @@ describe('generatePageMetadata', () => {
 
   it('falls back to site name when no title provided', () => {
     const meta = generatePageMetadata({})
-    expect(meta.title).toBe('MedCore BD')
+    expect(meta.title).toBe('MediportBD')
   })
 
   it('handles missing path gracefully', () => {
@@ -182,7 +182,7 @@ describe('generateProductMetadata', () => {
 
   it('includes the site name in the title', () => {
     const meta = generateProductMetadata(validProduct)
-    expect(meta.title).toContain('MedCore BD')
+    expect(meta.title).toContain('MediportBD')
   })
 
   it('includes the brand in the title', () => {
@@ -224,7 +224,7 @@ describe('generateProductMetadata', () => {
 
   it('includes og:site_name', () => {
     const meta = generateProductMetadata(validProduct)
-    expect(meta.openGraph.siteName).toBe('MedCore BD')
+    expect(meta.openGraph.siteName).toBe('MediportBD')
   })
 
   it('includes og:locale', () => {
@@ -268,7 +268,7 @@ describe('generateProductMetadata', () => {
   it('handles product with missing name gracefully', () => {
     const product = { ...validProduct, name: undefined }
     const meta = generateProductMetadata(product)
-    expect(meta.title).toContain('MedCore BD')
+    expect(meta.title).toContain('MediportBD')
   })
 
   it('handles product with missing description gracefully', () => {
@@ -285,7 +285,7 @@ describe('generateProductMetadata', () => {
     }
     const meta = generateProductMetadata(product)
     expect(meta.title).toContain('Stethoscope')
-    expect(meta.title).toContain('MedCore BD')
+    expect(meta.title).toContain('MediportBD')
   })
 
   it('handles product without _id (no canonical product path)', () => {

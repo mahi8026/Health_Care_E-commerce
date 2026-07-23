@@ -33,9 +33,9 @@ export default function ProductSchema({ product }) {
     ? product.images.map(img => {
         const url = typeof img === 'string' ? img : img?.url;
         // Ensure absolute URLs for schema
-        return url?.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'}${url}`;
+        return url?.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}${url}`;
       })
-    : [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'}/images/placeholder-product.jpg`];
+    : [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}/images/placeholder-product.jpg`];
 
   // Price and availability
   const price = product.price || product.sellingPrice || 0;
@@ -68,14 +68,14 @@ export default function ProductSchema({ product }) {
     gtin,
     offers: {
       '@type': 'Offer',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'}/products/${product._id || product.slug}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}/products/${product._id || product.slug}`,
       priceCurrency: 'BDT',
       price: price.toString(),
       availability,
       seller: {
         '@type': 'Organization',
-        name: 'MedCore BD',
-        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com'
+        name: 'MediportBD',
+        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'
       },
       priceValidUntil, // 30 days from now
       itemCondition: 'https://schema.org/NewCondition',

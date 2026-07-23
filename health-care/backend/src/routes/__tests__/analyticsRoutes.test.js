@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Analytics Routes Configuration Tests
  * 
  * These tests verify that:

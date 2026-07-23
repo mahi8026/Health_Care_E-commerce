@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Test Script for Size Variants Feature
  * 
  * This script tests the complete size variants implementation:
@@ -213,7 +213,7 @@ async function runTests() {
   
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore', {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

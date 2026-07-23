@@ -1,4 +1,4 @@
-const whatsappService = require('./whatsappService');
+﻿const whatsappService = require('./whatsappService');
 const WhatsAppConversation = require('../models/WhatsAppConversation');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
@@ -108,7 +108,7 @@ class WhatsAppBot {
    * Handle greeting
    */
   async handleGreeting(conversation, from) {
-    const message = `👋 Welcome to MedCore BD!
+    const message = `👋 Welcome to MediportBD!
 
 I'm your virtual assistant. How can I help you today?
 
@@ -197,7 +197,7 @@ ${order.trackingNumber ? `*Tracking:* ${order.trackingNumber}` : ''}
 ${order.status === 'shipped' ? '🚚 Your order is on the way!' : ''}
 ${order.status === 'delivered' ? '✅ Your order has been delivered!' : ''}
 
-Track online: https://medcorebd.com/track/${orderNumber}
+Track online: https://MediportBD.com/track/${orderNumber}
 
 Need help? Reply "support" or call +8801646886795`;
 
@@ -239,7 +239,7 @@ Examples:
 • Surgical gloves
 
 Or browse categories:
-https://medcorebd.com/products`;
+https://MediportBD.com/products`;
 
         await whatsappService.sendMessage(from, message, {
           isBot: true,
@@ -266,7 +266,7 @@ https://medcorebd.com/products`;
         const message = `❌ No products found for "${searchTerms}"
 
 Try different keywords or browse all products:
-https://medcorebd.com/products
+https://MediportBD.com/products
 
 Need help? Reply "support" or call +8801646886795`;
 
@@ -284,7 +284,7 @@ Need help? Reply "support" or call +8801646886795`;
         message += `   Brand: ${product.brand || 'N/A'}\n`;
         message += `   Price: ৳${price}\n`;
         message += `   ${stock}\n`;
-        message += `   View: https://medcorebd.com/products/${product._id}\n\n`;
+        message += `   View: https://MediportBD.com/products/${product._id}\n\n`;
       });
 
       message += `\n💬 Reply with product number for details or "quote" to request a quotation.`;
@@ -319,7 +319,7 @@ To get a customized quote, please provide:
 4. Delivery location
 
 Or submit online:
-https://medcorebd.com/b2b
+https://MediportBD.com/b2b
 
 Our team will respond within 24 hours!
 
@@ -488,7 +488,7 @@ Thank you for your order, ${user.name}!
 We'll notify you when your order ships.
 
 Track your order:
-https://medcorebd.com/track/${order.orderNumber}
+https://MediportBD.com/track/${order.orderNumber}
 
 Questions? Reply to this message or call +8801646886795`;
 
@@ -529,7 +529,7 @@ ${statusMessages[newStatus] || `Status updated to: ${newStatus}`}
 ${order.trackingNumber ? `*Tracking Number:* ${order.trackingNumber}` : ''}
 
 Track your order:
-https://medcorebd.com/track/${order.orderNumber}
+https://MediportBD.com/track/${order.orderNumber}
 
 Questions? Reply to this message!`;
 
@@ -565,7 +565,7 @@ Your quotation #${quote.quoteNumber} is ready for review.
 *Valid Until:* ${quote.validUntil ? new Date(quote.validUntil).toLocaleDateString('en-BD') : 'N/A'}
 
 View your quote:
-https://medcorebd.com/account/quotes/${quote._id}
+https://MediportBD.com/account/quotes/${quote._id}
 
 Questions? Reply to this message or call +8801646886795`;
 

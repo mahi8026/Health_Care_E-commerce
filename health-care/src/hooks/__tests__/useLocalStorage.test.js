@@ -51,7 +51,7 @@ describe('useLocalStorage', () => {
 
   it('stores and retrieves object values', () => {
     const { result } = renderHook(() => useLocalStorage('obj', null));
-    const data = { name: 'MedCore', items: [1, 2, 3] };
+    const data = { name: 'Mediport', items: [1, 2, 3] };
     act(() => { result.current[1](data); });
     expect(result.current[0]).toEqual(data);
   });

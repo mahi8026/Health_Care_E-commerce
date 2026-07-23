@@ -1,5 +1,5 @@
 /**
- * Category Pages Sitemap for MedCore BD
+ * Category Pages Sitemap for MediportBD
  * Contains all category landing pages.
  * Slugs must match MongoDB Category.slug field exactly.
  */

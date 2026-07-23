@@ -107,10 +107,10 @@ export default function Footer() {
             ))}
           </nav>
 
-          {/* MedCoreBD column — only logo + description + newsletter */}
+          {/* MediportBD column — only logo + description + newsletter */}
           <div>
             <div className="font-[family-name:var(--font-lora)] text-[22px] font-semibold mb-2">
-              MedCore<span className="text-[#0E8A6E]">BD</span>
+              Mediport<span className="text-[#0E8A6E]">BD</span>
             </div>
             <p className="text-[12px] text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
@@ -161,7 +161,7 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <div className="font-[family-name:var(--font-lora)] text-[24px] font-semibold mb-1">
-              MedCore<span className="text-[#0E8A6E]">BD</span>
+              Mediport<span className="text-[#0E8A6E]">BD</span>
             </div>
             <p className="text-[12px] text-white/70 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
@@ -213,7 +213,7 @@ export default function Footer() {
           {/* Desktop: Single row with all items */}
           <div className="hidden md:flex items-center justify-between gap-4">
             <p className="text-[11px] text-white/50 whitespace-nowrap">
-              © {currentYear} MedCore Bangladesh Ltd. All rights reserved.
+              © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-[11px] text-white/50">
               <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
@@ -237,7 +237,7 @@ export default function Footer() {
           <div className="hidden sm:flex md:hidden flex-col gap-3">
             <div className="flex items-center justify-between">
               <p className="text-[11px] text-white/50">
-                © {currentYear} MedCore Bangladesh Ltd. All rights reserved.
+                © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">DGDA Registered</span>
@@ -265,7 +265,7 @@ export default function Footer() {
           {/* Mobile: Three rows, centered */}
           <div className="flex sm:hidden flex-col gap-3 text-center">
             <p className="text-[10px] text-white/50">
-              © {currentYear} MedCore Bangladesh Ltd.
+              © {currentYear} Mediport Bangladesh Ltd.
             </p>
             <div className="flex flex-col gap-2 text-[11px] text-white/50">
               <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"

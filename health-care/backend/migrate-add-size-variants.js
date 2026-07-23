@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Migration script to add size variants to existing products
  * 
  * Usage:
@@ -47,7 +47,7 @@ async function migrate() {
 
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore', {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

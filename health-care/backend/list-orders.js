@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * List Orders Script
  * 
@@ -13,7 +13,7 @@ const logger = require('./src/utils/logger');
 async function listOrders() {
   try {
     // Connect to MongoDB
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
     logger.info(`Connecting to MongoDB...`);
     
     await mongoose.connect(mongoUri);

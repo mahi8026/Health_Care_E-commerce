@@ -53,7 +53,7 @@ C:\Projects\Health Care\health-care\src\app\account\reviews\page.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 51 |     try {
      | ^^^^^^^^^
-> 52 |       const token = localStorage.getItem('medcore_token');
+> 52 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 63 |     }
@@ -252,7 +252,7 @@ C:\Projects\Health Care\health-care\src\app\admin\coupons\[id]\edit\page.jsx
       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 >  84 |     try {
       | ^^^^^^^^^
->  85 |       const token = localStorage.getItem('medcore_token');
+>  85 |       const token = localStorage.getItem('mediport_token');
       ΓÇª
       | ^^^^^^^^^
 > 100 |     }
@@ -283,7 +283,7 @@ C:\Projects\Health Care\health-care\src\app\admin\coupons\new\page.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 40 |     try {
      | ^^^^^^^^^
-> 41 |       const token = localStorage.getItem('medcore_token');
+> 41 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 56 |     }
@@ -633,7 +633,7 @@ C:\Projects\Health Care\health-care\src\app\admin\sms-settings\page.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 20 |     try {
      | ^^^^^^^^^
-> 21 |       const token = localStorage.getItem('medcore_token');
+> 21 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 36 |     }
@@ -661,7 +661,7 @@ C:\Projects\Health Care\health-care\src\app\admin\sms-settings\page.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 40 |     try {
      | ^^^^^^^^^
-> 41 |       const token = localStorage.getItem('medcore_token');
+> 41 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 54 |     }
@@ -713,7 +713,7 @@ C:\Projects\Health Care\health-care\src\app\returns\[id]\page.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 29 |     try {
      | ^^^^^^^^^
-> 30 |       const token = localStorage.getItem('medcore_token');
+> 30 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 51 |     }
@@ -745,7 +745,7 @@ C:\Projects\Health Care\health-care\src\app\returns\my-returns\MyReturnsClient.j
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 36 |     try {
      | ^^^^^^^^^
-> 37 |       const token = localStorage.getItem('medcore_token');
+> 37 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 51 |     }
@@ -776,7 +776,7 @@ C:\Projects\Health Care\health-care\src\app\returns\request\[orderId]\page.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 34 |     try {
      | ^^^^^^^^^
-> 35 |       const token = localStorage.getItem('medcore_token');
+> 35 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 55 |     }
@@ -1165,7 +1165,7 @@ C:\Projects\Health Care\health-care\src\components\admin\ReturnsManagement.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 42 |     try {
      | ^^^^^^^^^
-> 43 |       const token = localStorage.getItem('medcore_token');
+> 43 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 59 |     }
@@ -1193,7 +1193,7 @@ C:\Projects\Health Care\health-care\src\components\admin\ReturnsManagement.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 63 |     try {
      | ^^^^^^^^^
-> 64 |       const token = localStorage.getItem('medcore_token');
+> 64 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 74 |     }
@@ -1456,7 +1456,7 @@ C:\Projects\Health Care\health-care\src\components\product\ProductReviews.jsx
      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 > 58 |     try {
      | ^^^^^^^^^
-> 59 |       const token = localStorage.getItem('medcore_token');
+> 59 |       const token = localStorage.getItem('mediport_token');
      ΓÇª
      | ^^^^^^^^^
 > 71 |     }
@@ -1531,7 +1531,7 @@ Calling setState synchronously within an effect body causes cascading renders th
       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 >  87 |     try {
       | ^^^^^^^^^
->  88 |       const token = localStorage.getItem('medcore_token');
+>  88 |       const token = localStorage.getItem('mediport_token');
       ΓÇª
       | ^^^^^^^^^
 > 100 |     }
@@ -1691,7 +1691,7 @@ Effects are intended to synchronize state between React and external systems suc
 Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
 
    9 |   useEffect(() => {
-  10 |     const saved = localStorage.getItem('medcore_lang');
+  10 |     const saved = localStorage.getItem('mediport_lang');
 > 11 |     if (saved === 'bn' || saved === 'en') setLang(saved);
      |                                           ^^^^^^^ Avoid calling setState() directly within an effect
   12 |   }, []);

@@ -1,4 +1,4 @@
-# MedCore BD — Agent Guide
+# MediportBD — Agent Guide
 
 ## Monorepo Layout
 
@@ -62,7 +62,7 @@ Run from the subdirectory (`health-care/` or `health-care/backend/`), **not** ro
 ## Testing Quirks
 
 - Backend tests suppress all console output (setup in `src/tests/setup.js`)
-- Backend tests require MongoDB at `mongodb://localhost:27017/medcore-test`
+- Backend tests require MongoDB at `mongodb://localhost:27017/mediport-test`
 - Backend tests must import `app` from `server.js` (already exported) — server won't start listening in `NODE_ENV=test`
 - Tests co-located in `__tests__/` dirs or `*.test.js`
 - Frontend jest.setup.js polyfills TextEncoder/TextDecoder

@@ -17,7 +17,7 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
       {/* Logo */}
       <div className="p-4 md:p-5 border-b border-white/10 bg-gradient-to-r from-blue-600/30 to-cyan-500/30">
         <div className="font-[family-name:var(--font-lora)] text-[16px] md:text-[18px] font-semibold">
-          MedCore<span className="text-cyan-400 drop-shadow-lg">BD</span>
+          Mediport<span className="text-cyan-400 drop-shadow-lg">BD</span>
         </div>
         <div className="text-[10px] text-white/60 mt-1">Admin Panel</div>
       </div>

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const settingsSchema = new mongoose.Schema({
   freeDeliveryThreshold: {
@@ -41,7 +41,7 @@ const settingsSchema = new mongoose.Schema({
   },
   companyName: {
     type: String,
-    default: 'MedCore BD',
+    default: 'MediportBD',
   },
   tagline: {
     type: String,

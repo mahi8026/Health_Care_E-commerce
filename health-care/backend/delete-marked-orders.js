@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Delete Marked Orders Script
  * 
@@ -142,7 +142,7 @@ async function deleteOrder(identifier) {
 async function main() {
   try {
     // Connect to MongoDB
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
     console.log('Connecting to MongoDB...');
     
     await mongoose.connect(mongoUri);

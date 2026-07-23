@@ -14,7 +14,7 @@ export const metadata = {
     title:       PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
     url:         SITE_CONFIG.url,
-    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'MedCore BD — Bangladesh Medical Equipment Supplier' }],
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'MediportBD — Bangladesh Medical Equipment Supplier' }],
   },
   twitter: {
     card:        'summary_large_image',

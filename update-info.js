@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Automated Real Information Updater for MedCore BD
+ * Automated Real Information Updater for MediportBD
  * 
  * This script helps update placeholder information across the entire project.
  * 
@@ -109,7 +109,7 @@ function updateSeoConfig(data) {
   // Update SITE_CONFIG
   if (data.companyName) {
     content = content.replace(
-      /name:\s+'[^']+',\s+\/\/ MedCore BD/,
+      /name:\s+'[^']+',\s+\/\/ MediportBD/,
       `name:         '${data.companyName}',`
     );
   }
@@ -157,19 +157,19 @@ function updateSeoConfig(data) {
   }
   if (data.facebook) {
     content = content.replace(
-      /https:\/\/www\.facebook\.com\/medcorebd/,
+      /https:\/\/www\.facebook\.com\/mediportbd/,
       data.facebook
     );
   }
   if (data.linkedin) {
     content = content.replace(
-      /https:\/\/www\.linkedin\.com\/company\/medcorebd/,
+      /https:\/\/www\.linkedin\.com\/company\/mediportbd/,
       data.linkedin
     );
   }
   if (data.twitter) {
     content = content.replace(
-      /twitterHandle: '@medcorebd'/,
+      /twitterHandle: '@mediportbd'/,
       `twitterHandle: '${data.twitter}'`
     );
   }
@@ -188,10 +188,10 @@ function updateEnvFile(filePath, data, isProduction = false) {
   }
 
   const updates = {
-    'NEXT_PUBLIC_SITE_URL': data.siteUrl || 'https://medcorebd.com',
+    'NEXT_PUBLIC_SITE_URL': data.siteUrl || 'https://mediportbd.com',
     'NEXT_PUBLIC_WHATSAPP_NUMBER': data.whatsapp || '8801646886795',
     'NEXT_PUBLIC_PHONE': data.phone || '+880 1646-886795',
-    'NEXT_PUBLIC_EMAIL': data.email || 'info@medcorebd.com',
+    'NEXT_PUBLIC_EMAIL': data.email || 'info@mediportbd.com',
   };
 
   if (isProduction && data.apiUrl) {
@@ -249,7 +249,7 @@ function updateBackendEnv(data) {
 // Main interactive flow
 async function main() {
   log('\n╔════════════════════════════════════════════════════════╗', 'bright');
-  log('║   MedCore BD - Real Information Updater              ║', 'bright');
+  log('║   MediportBD - Real Information Updater              ║', 'bright');
   log('╚════════════════════════════════════════════════════════╝\n', 'bright');
 
   log('This script will update placeholder information across your project.', 'cyan');
@@ -269,7 +269,7 @@ async function main() {
   log('\n🏢 COMPANY INFORMATION', 'bright');
   log('═══════════════════════\n', 'bright');
 
-  data.companyName = await question('Company short name (e.g., MedCore BD): ');
+  data.companyName = await question('Company short name (e.g., MediportBD): ');
   data.companyFullName = await question('Company full name: ');
   
   log('\n📍 ADDRESS', 'bright');

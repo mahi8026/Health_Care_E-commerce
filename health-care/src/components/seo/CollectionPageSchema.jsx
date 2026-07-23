@@ -17,14 +17,14 @@ export default function CollectionPageSchema({
 }) {
   if (!name) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
   const collectionUrl = url || `${baseUrl}/products?category=${category || ''}`;
 
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name,
-    description: description || `Browse ${name} at MedCore BD. Wide selection of medical equipment and supplies in Bangladesh.`,
+    description: description || `Browse ${name} at MediportBD. Wide selection of medical equipment and supplies in Bangladesh.`,
     url: collectionUrl,
     mainEntity: {
       '@type': 'ItemList',
@@ -72,7 +72,7 @@ export default function CollectionPageSchema({
 export function ItemListSchema({ items, listName, numberOfItems }) {
   if (!items || items.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
 
   const schema = {
     '@context': 'https://schema.org',

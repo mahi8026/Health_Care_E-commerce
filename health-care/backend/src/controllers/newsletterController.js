@@ -1,4 +1,4 @@
-const Newsletter = require('../models/Newsletter');
+﻿const Newsletter = require('../models/Newsletter');
 const { sendNewsletterWelcomeEmail, sendNewsletterBroadcast } = require('../utils/emailService');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
@@ -72,7 +72,7 @@ exports.unsubscribe = async (req, res) => {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Invalid Link - MedCore BD</title>
+          <title>Invalid Link - MediportBD</title>
           <style>
             body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
             .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -99,7 +99,7 @@ exports.unsubscribe = async (req, res) => {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Not Found - MedCore BD</title>
+          <title>Not Found - MediportBD</title>
           <style>
             body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
             .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -124,7 +124,7 @@ exports.unsubscribe = async (req, res) => {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Already Unsubscribed - MedCore BD</title>
+          <title>Already Unsubscribed - MediportBD</title>
           <style>
             body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
             .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -153,7 +153,7 @@ exports.unsubscribe = async (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Unsubscribed - MedCore BD</title>
+        <title>Unsubscribed - MediportBD</title>
         <style>
           body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
           .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -166,12 +166,12 @@ exports.unsubscribe = async (req, res) => {
       </head>
       <body>
         <div class="container">
-          <div class="logo">🏥 MedCore<sup>BD</sup></div>
+          <div class="logo">🏥 Mediport<sup>BD</sup></div>
           <h1>✓ You have been unsubscribed successfully</h1>
-          <p>We're sorry to see you go! You will no longer receive newsletter emails from MedCore BD.</p>
+          <p>We're sorry to see you go! You will no longer receive newsletter emails from MediportBD.</p>
           <p>If you change your mind, you can always resubscribe from our website.</p>
           <div class="footer">
-            <p>MedCore BD | Medical Equipment & Supplies</p>
+            <p>MediportBD | Medical Equipment & Supplies</p>
             <p>Dhaka, Bangladesh | mahimrahman07@gmail.com</p>
           </div>
         </div>
@@ -186,7 +186,7 @@ exports.unsubscribe = async (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Error - MedCore BD</title>
+        <title>Error - MediportBD</title>
         <style>
           body { margin:0; padding:40px 20px; font-family:'Plus Jakarta Sans',Arial,sans-serif; background:#F1F3F6; color:#1a1a2e; text-align:center; }
           .container { max-width:500px; margin:0 auto; background:#fff; padding:40px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }

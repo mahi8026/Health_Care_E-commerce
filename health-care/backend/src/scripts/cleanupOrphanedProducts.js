@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cleanup orphaned products
  * 
  * Deletes active products that are linked to inactive manufacturers

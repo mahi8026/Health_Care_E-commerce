@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Test SMTP Connection
  * This will verify if the SMTP configuration is working
  */
@@ -43,10 +43,10 @@ async function testSMTP() {
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: process.env.SMTP_USER, // Send to yourself
-      subject: 'Test Email from MedCore BD',
+      subject: 'Test Email from MediportBD',
       html: `
         <h2>✅ SMTP Test Successful!</h2>
-        <p>This is a test email from MedCore BD backend.</p>
+        <p>This is a test email from MediportBD backend.</p>
         <p>If you received this, your SMTP configuration is working correctly.</p>
         <hr>
         <p><small>Sent at: ${new Date().toLocaleString()}</small></p>

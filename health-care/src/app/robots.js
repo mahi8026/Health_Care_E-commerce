@@ -1,5 +1,5 @@
 /**
- * robots.txt Generator for MedCore BD
+ * robots.txt Generator for MediportBD
  *
  * Served at /robots.txt by the Next.js App Router convention.
  * Disallows private/transactional paths and provides Googlebot-specific rules.

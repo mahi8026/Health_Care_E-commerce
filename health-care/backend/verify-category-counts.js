@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Verify Category Product Counts
  * Double-check that counts are correct in database

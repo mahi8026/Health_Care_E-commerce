@@ -1,4 +1,4 @@
-const FlashDeal = require('../models/FlashDeal');
+﻿const FlashDeal = require('../models/FlashDeal');
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');

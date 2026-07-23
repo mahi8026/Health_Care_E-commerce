@@ -1,4 +1,4 @@
-const ActivityLog = require('../models/ActivityLog');
+﻿const ActivityLog = require('../models/ActivityLog');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 

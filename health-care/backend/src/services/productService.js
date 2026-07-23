@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Product Service
  * 
  * Business logic layer for product operations.

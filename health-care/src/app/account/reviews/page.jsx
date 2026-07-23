@@ -27,7 +27,7 @@ export default function UserReviewsPage() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews/user?page=${page}&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -46,7 +46,7 @@ export default function UserReviewsPage() {
 
   const fetchEligibleProducts = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews/eligible-products`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -78,7 +78,7 @@ export default function UserReviewsPage() {
     }
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews/${reviewId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
@@ -279,7 +279,7 @@ export default function UserReviewsPage() {
                   {review.adminResponse && (
                     <div className="bg-[#F0FDF9] border-l-4 border-[#0E8A6E] p-3 mb-3">
                       <div className="text-[11px] font-semibold text-[#0E8A6E] mb-1">
-                        Response from MedCore BD
+                        Response from MediportBD
                       </div>
                       <p className="text-[12px] text-[var(--color-text-primary)]">
                         {review.adminResponse}

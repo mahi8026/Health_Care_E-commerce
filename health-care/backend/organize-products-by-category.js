@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Organize Existing Products by Category
  * Automatically assigns products to correct categories based on product names

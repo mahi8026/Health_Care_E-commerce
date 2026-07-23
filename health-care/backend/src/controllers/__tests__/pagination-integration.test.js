@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Integration tests for pagination across all list endpoints
  */
 
@@ -57,7 +57,7 @@ describe('Pagination Integration Tests', () => {
   beforeAll(async () => {
     // Connect to test database if not already connected
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/medcore-test');
+      await mongoose.connect(process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/Mediport-test');
     }
   });
 

@@ -92,7 +92,7 @@ export default function WishlistClient() {
               : null;
             const brandName =
               typeof product.brand === 'object' ? product.brand?.name : product.brand;
-            const imageAlt = `${product.name}${brandName ? ` — ${brandName}` : ''} — MedCore BD Bangladesh`;
+            const imageAlt = `${product.name}${brandName ? ` — ${brandName}` : ''} — MediportBD Bangladesh`;
 
             return (
               <div

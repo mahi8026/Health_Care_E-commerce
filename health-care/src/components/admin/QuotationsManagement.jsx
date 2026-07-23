@@ -20,7 +20,7 @@ export default function QuotationsManagement() {
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const params = new URLSearchParams({ limit: 20 });
       if (statusFilter !== 'all') params.set('status', statusFilter);
       const res = await fetch(`${API}/admin/quotes?${params}`, {
@@ -44,7 +44,7 @@ export default function QuotationsManagement() {
   const handleUpdateStatus = async (quoteId, newStatus) => {
     setActionLoading(prev => ({ ...prev, [`status-${quoteId}`]: true }));
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/quotes/${quoteId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -64,7 +64,7 @@ export default function QuotationsManagement() {
     if (!confirm('Convert this quotation to an order?')) return;
     setActionLoading(prev => ({ ...prev, [`convert-${quoteId}`]: true }));
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/quotes/${quoteId}/convert`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },

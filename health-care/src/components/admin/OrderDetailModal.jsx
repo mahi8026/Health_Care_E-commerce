@@ -14,7 +14,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const res = await fetch(`${API}/orders/${orderId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });

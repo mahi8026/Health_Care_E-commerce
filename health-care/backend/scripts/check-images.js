@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 const mongoose = require('mongoose');
 const Product = require('../src/models/Product');

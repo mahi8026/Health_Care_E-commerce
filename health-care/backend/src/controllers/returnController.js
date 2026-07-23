@@ -1,4 +1,4 @@
-const Return = require('../models/Return');
+﻿const Return = require('../models/Return');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { sendEmail } = require('../utils/emailService');
@@ -97,7 +97,7 @@ exports.createReturn = async (req, res) => {
     // Send email notification to admin
     try {
       await sendEmail({
-        to: process.env.ADMIN_EMAIL || 'admin@medcorebd.com',
+        to: process.env.ADMIN_EMAIL || 'admin@MediportBD.com',
         subject: `New Return Request - Order #${order.orderNumber}`,
         text: `
 New return request received:
@@ -135,7 +135,7 @@ We will review your request within 24-48 hours and notify you of our decision.
 Thank you for your patience.
 
 Best regards,
-MedCore BD Team
+MediportBD Team
         `.trim()
       });
     } catch (emailErr) {
@@ -302,7 +302,7 @@ Order: #${returnRequest.order.orderNumber}
 ${status === 'rejected' ? 'If you have any questions, please contact our support team.' : 'Thank you for your patience.'}
 
 Best regards,
-MedCore BD Team
+MediportBD Team
           `.trim()
         });
       } catch (emailErr) {

@@ -145,8 +145,8 @@ export default function CODInfo({ orderTotal }) {
             +880 1646886795
           </a>
           {' '}or{' '}
-          <a href="mailto:support@medcorebd.com" className="font-bold text-teal-700 hover:underline">
-            support@medcorebd.com
+          <a href="mailto:support@MediportBD.com" className="font-bold text-teal-700 hover:underline">
+            support@MediportBD.com
           </a>
         </p>
       </div>

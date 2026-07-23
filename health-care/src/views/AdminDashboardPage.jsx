@@ -66,13 +66,13 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex flex-col md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] min-h-screen bg-page-muted">
       <h2 className="absolute w-px h-px overflow-hidden clip-[rect(0,0,0,0)]">
-        MedCore BD Admin Panel — full dashboard with orders, products, customers and analytics
+        MediportBD Admin Panel — full dashboard with orders, products, customers and analytics
       </h2>
 
       {/* Mobile Header - Only visible on mobile */}
       <div className="md:hidden bg-[#0B2545] text-white p-4 flex items-center justify-between">
         <div className="font-[family-name:var(--font-lora)] text-[18px] font-semibold">
-          MedCore<span className="text-[#4DDBB8]">BD</span>
+          Mediport<span className="text-[#4DDBB8]">BD</span>
         </div>
         <div className="text-[10px] text-white/60">Admin Panel</div>
       </div>

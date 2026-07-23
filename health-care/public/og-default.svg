@@ -22,7 +22,7 @@
   <circle cx="210" cy="310" r="110" fill="none" stroke="#0E8A6E" stroke-width="2" opacity="0.2"/>
 
   <!-- Brand name on left panel -->
-  <text x="210" y="450" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="2">MedCore BD</text>
+  <text x="210" y="450" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="2">MediportBD</text>
 
   <!-- Divider line -->
   <rect x="420" y="0" width="4" height="630" fill="#0E8A6E"/>
@@ -52,5 +52,5 @@
   <text x="888" y="481" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#333333">Lab Equipment</text>
 
   <!-- URL -->
-  <text x="780" y="560" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#0E8A6E" text-anchor="middle" font-weight="600">medcorebd.com</text>
+  <text x="780" y="560" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#0E8A6E" text-anchor="middle" font-weight="600">mediportbd.com</text>
 </svg>

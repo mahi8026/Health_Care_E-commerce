@@ -13,7 +13,7 @@ export default function BannersManagement() {
   const [uploadingIndex, setUploadingIndex] = useState(null); // index or 'promo'
   const [message, setMessage] = useState({ text: '', type: '' });
 
-  const token = () => localStorage.getItem('medcore_token');
+  const token = () => localStorage.getItem('Mediport_token');
 
   const showMessage = (text, type = 'success') => {
     setMessage({ text, type });

@@ -9,7 +9,7 @@ import AdminShell from '@/components/admin/AdminShell';
 // Check if user is authenticated
 const isAuthenticated = () => {
   if (typeof window !== 'undefined') {
-    return !!localStorage.getItem('medcore_token');
+    return !!localStorage.getItem('Mediport_token');
   }
   return false;
 };
@@ -200,7 +200,7 @@ export default function CategoriesPage() {
                         {category.image?.url ? (
                           <Image
                             src={category.image.url}
-                            alt={`${category.name} supplier Bangladesh — MedCore BD`}
+                            alt={`${category.name} supplier Bangladesh — MediportBD`}
                             width={48}
                             height={48}
                             className="object-cover rounded"
@@ -273,7 +273,7 @@ export default function CategoriesPage() {
                     {category.image?.url ? (
                       <Image
                         src={category.image.url}
-                        alt={`${category.name} supplier Bangladesh — MedCore BD`}
+                        alt={`${category.name} supplier Bangladesh — MediportBD`}
                         width={64}
                         height={64}
                         className="object-cover rounded flex-shrink-0"

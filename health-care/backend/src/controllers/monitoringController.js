@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 const { getMetrics, getHealthStatus } = require('../middleware/performanceMonitor');
 const redisCache = require('../services/redisCache');
 const logger = require('../utils/logger');

@@ -4,7 +4,7 @@ import LoyaltyManagement from '@/components/admin/loyalty/LoyaltyDashboard';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Loyalty Program - MedCore BD Admin',
+  title: 'Loyalty Program - MediportBD Admin',
   description: 'Manage loyalty points, tiers, and rewards',
 };
 

@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+﻿const nodemailer = require('nodemailer');
 const logger = require('./logger');
 
 // Create transporter — uses SMTP env vars, falls back to Ethereal for dev
@@ -55,8 +55,8 @@ async function getTransporter() {
   return transporter;
 }
 
-const FROM = process.env.SMTP_FROM || 'noreply@medcorebd.com';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@medcorebd.com';
+const FROM = process.env.SMTP_FROM || 'noreply@MediportBD.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@MediportBD.com';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 // ─── Shared HTML wrapper ────────────────────────────────────────────────────
@@ -66,7 +66,7 @@ function wrapHtml(content) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MedCore BD</title>
+  <title>MediportBD</title>
   <style>
     body { margin:0; padding:0; font-family:'Segoe UI',Arial,sans-serif; background:#f5f7fa; color:#1a1a2e; }
     .wrapper { max-width:650px; margin:0 auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
@@ -102,12 +102,12 @@ function wrapHtml(content) {
   <div style="padding:32px 16px;">
     <div class="wrapper">
       <div class="header">
-        <h1>🏥 MedCore BD</h1>
+        <h1>🏥 MediportBD</h1>
         <p>Medical Equipment &amp; Supplies — Bangladesh</p>
       </div>
       <div class="body">${content}</div>
       <div class="footer">
-        <p style="margin:0 0 8px;font-weight:600;color:#495057;">MedCore BD</p>
+        <p style="margin:0 0 8px;font-weight:600;color:#495057;">MediportBD</p>
         <p style="margin:4px 0;">DGDA Reg. No. DA-2024-0891 | BIN: 003456789-0101</p>
         <p style="margin:4px 0;">📍 Dhaka, Bangladesh</p>
         <p style="margin:4px 0;">📞 +880 1646-886795 | 📧 mahimrahman07@gmail.com</p>
@@ -208,11 +208,11 @@ async function sendOrderConfirmation(order, user) {
       <p style="margin:4px 0;font-size:13px;color:#856404;">• Contact us at mahimrahman07@gmail.com for any questions</p>
     </div>
 
-    <p style="margin-top:24px;color:#6c757d;font-size:13px;text-align:center;">Thank you for choosing MedCore BD! 🙏</p>
+    <p style="margin-top:24px;color:#6c757d;font-size:13px;text-align:center;">Thank you for choosing MediportBD! 🙏</p>
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
     subject: `✓ Order Confirmed — ${order.orderNumber || order.orderId}`,
     html
@@ -267,7 +267,7 @@ async function sendPaymentReceipt(order, user, pdfBuffer) {
   `);
 
   const mailOptions = {
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
     subject: `✓ Payment Receipt — ${order.orderNumber || order.orderId}`,
     html
@@ -345,7 +345,7 @@ async function sendShippingNotification(order, user) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
     subject: `🚚 Shipped — ${order.orderNumber || order.orderId}`,
     html
@@ -369,7 +369,7 @@ async function sendDeliveryConfirmation(order, user) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
     subject: `Delivered — ${order.orderNumber || order.orderId}`,
     html
@@ -406,7 +406,7 @@ async function sendQuotationReady(quote, user) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
     subject: `Quotation Ready — ${quote.quoteId}`,
     html
@@ -438,7 +438,7 @@ async function sendLowStockAlert(products) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: ADMIN_EMAIL,
     subject: `⚠️ Stock Alert — ${products.length} product(s) need restocking`,
     html
@@ -460,9 +460,9 @@ async function sendPasswordResetEmail(user, resetUrl) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
-    subject: 'Password Reset Request — MedCore BD',
+    subject: 'Password Reset Request — MediportBD',
     html
   });
   logger.info('Password reset email sent: ' + (nodemailer.getTestMessageUrl(info) || info.messageId));
@@ -523,7 +523,7 @@ async function sendAbandonedCartEmail(cart, user) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: user.email,
     subject: `You left ${cart.items.length} item${cart.items.length > 1 ? 's' : ''} in your cart! 🛒`,
     html
@@ -538,7 +538,7 @@ async function sendNewsletterWelcomeEmail(email, name, unsubscribeToken) {
   const unsubscribeUrl = `${FRONTEND_URL}/api/newsletter/unsubscribe?token=${unsubscribeToken}`;
 
   const html = wrapHtml(`
-    <h2 style="color:#0B2545;margin-top:0;">Welcome to MedCore BD Newsletter! 🏥</h2>
+    <h2 style="color:#0B2545;margin-top:0;">Welcome to MediportBD Newsletter! 🏥</h2>
     <p>Hi ${name || 'there'}, thank you for subscribing to our newsletter!</p>
     
     <div style="background:#E1F5EE;border-left:4px solid #0E8A6E;padding:16px;margin:20px 0;border-radius:4px;">
@@ -559,9 +559,9 @@ async function sendNewsletterWelcomeEmail(email, name, unsubscribeToken) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD" <${FROM}>`,
+    from: `"MediportBD" <${FROM}>`,
     to: email,
-    subject: 'Welcome to MedCore BD Newsletter! 🏥',
+    subject: 'Welcome to MediportBD Newsletter! 🏥',
     html
   });
   logger.info('Newsletter welcome email sent:', nodemailer.getTestMessageUrl(info) || info.messageId);
@@ -579,14 +579,14 @@ async function sendNewsletterBroadcast(email, name, subject, htmlContent, unsubs
     
     <div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E7EB;">
       <p style="font-size:11px;color:#999;margin:0;">
-        You're receiving this email because you subscribed to MedCore BD newsletter.
+        You're receiving this email because you subscribed to MediportBD newsletter.
         <a href="${unsubscribeUrl}" style="color:#0E8A6E;text-decoration:none;">Unsubscribe</a>
       </p>
     </div>
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD Newsletter" <${FROM}>`,
+    from: `"MediportBD Newsletter" <${FROM}>`,
     to: email,
     subject: subject,
     html
@@ -694,7 +694,7 @@ async function sendWhatsAppConversationAlert(conversation, user) {
   `);
 
   const info = await t.sendMail({
-    from: `"MedCore BD WhatsApp Bot" <${FROM}>`,
+    from: `"MediportBD WhatsApp Bot" <${FROM}>`,
     to: ADMIN_EMAIL,
     subject: `🔔 WhatsApp Escalation — ${user?.name || conversation.phoneNumber}`,
     html,

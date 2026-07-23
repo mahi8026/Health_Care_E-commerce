@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Backend Application Constants
  * Shared constants used across the backend
  */

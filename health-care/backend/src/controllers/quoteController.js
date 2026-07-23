@@ -1,4 +1,4 @@
-const Quote = require('../models/Quote');
+﻿const Quote = require('../models/Quote');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const { sendQuotationReady } = require('../utils/emailService');

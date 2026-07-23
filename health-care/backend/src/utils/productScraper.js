@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Product Scraper Utility
- * Fetches product data from external e-commerce sites and imports to MedCore BD
+ * Fetches product data from external e-commerce sites and imports to MediportBD
  */
 
 const axios = require('axios');
@@ -43,7 +43,7 @@ async function uploadImageToCloudinary(imageUrl, productName) {
     logger.info(`Uploading image to Cloudinary: ${imageUrl}`);
 
     const result = await cloudinary.uploader.upload(imageUrl, {
-      folder: 'medcore/products',
+      folder: 'Mediport/products',
       resource_type: 'auto',
       timeout: 60000,
       transformation: [

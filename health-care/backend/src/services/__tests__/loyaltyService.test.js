@@ -1,4 +1,4 @@
-const loyaltyService = require('../loyaltyService');
+﻿const loyaltyService = require('../loyaltyService');
 const User = require('../../models/User');
 const LoyaltyTransaction = require('../../models/LoyaltyTransaction');
 const config = require('../../config/loyaltyConfig');

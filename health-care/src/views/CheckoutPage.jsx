@@ -60,11 +60,11 @@ export default function CheckoutPage({ onBackToCart }) {
   // Restore saved delivery address from sessionStorage (survives auth redirect)
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem('medcore_checkout_address');
+      const saved = sessionStorage.getItem('Mediport_checkout_address');
       if (saved) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDeliveryAddress(JSON.parse(saved));
-        sessionStorage.removeItem('medcore_checkout_address');
+        sessionStorage.removeItem('Mediport_checkout_address');
       }
     } catch {
       // ignore
@@ -147,7 +147,7 @@ export default function CheckoutPage({ onBackToCart }) {
     if (!isAuthenticated()) {
       // Save address so it survives the auth flow
       try {
-        sessionStorage.setItem('medcore_checkout_address', JSON.stringify(deliveryAddress));
+        sessionStorage.setItem('Mediport_checkout_address', JSON.stringify(deliveryAddress));
       } catch {
         // ignore
       }

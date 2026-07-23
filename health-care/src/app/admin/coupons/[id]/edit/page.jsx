@@ -39,7 +39,7 @@ export default function EditCouponPage() {
   const fetchCoupon = async () => {
     try {
       setFetching(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       const res = await fetch(`${API}/coupons/${couponId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -77,7 +77,7 @@ export default function EditCouponPage() {
 
   const fetchMetadata = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       const headers = { Authorization: `Bearer ${token}` };
       
       const [categoriesRes, productsRes] = await Promise.all([
@@ -134,7 +134,7 @@ export default function EditCouponPage() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       const payload = {
         ...form,
         code: form.code.toUpperCase(),

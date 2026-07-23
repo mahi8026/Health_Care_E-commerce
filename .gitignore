@@ -1,5 +1,5 @@
 # ============================================================================
-# MedCore BD - Root Git Ignore Configuration
+# MediportBD - Root Git Ignore Configuration
 # ============================================================================
 # This is the root .gitignore for the entire project
 # Individual folders (health-care/, health-care/backend/) have their own

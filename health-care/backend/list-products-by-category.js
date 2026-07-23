@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * List All Products By Category
  * Simple tool to review what products are in each category

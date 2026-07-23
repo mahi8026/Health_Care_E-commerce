@@ -44,7 +44,7 @@ export default function OrderHistoryPage({ onNavigate, onLoginClick }) {
       setLoading(true);
       setError(null);
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const params = new URLSearchParams({ page, limit: PAGE_SIZE, sort: '-createdAt' });
         const res = await fetch(`${API}/orders?${params}`, {
           headers: { Authorization: `Bearer ${token}` }

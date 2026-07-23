@@ -18,7 +18,7 @@ const DGDA_CATEGORIES = [
     icon: <FaShieldAlt className="text-2xl" />,
     title: 'Medical Devices',
     description:
-      'All medical devices sold on MedCore BD are registered with DGDA under the Medical Device and Cosmetics Act. We maintain up-to-date registration certificates for every product.',
+      'All medical devices sold on MediportBD are registered with DGDA under the Medical Device and Cosmetics Act. We maintain up-to-date registration certificates for every product.',
     color: 'bg-blue-50 text-blue-600',
   },
   {
@@ -67,7 +67,7 @@ export default function AboutPage() {
             DGDA Compliance &amp; Regulatory Information
           </h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
-            MedCore BD operates in full compliance with the Directorate General of Drug Administration (DGDA) of Bangladesh. Every product on our platform meets the regulatory standards required for medical equipment and supplies.
+            MediportBD operates in full compliance with the Directorate General of Drug Administration (DGDA) of Bangladesh. Every product on our platform meets the regulatory standards required for medical equipment and supplies.
           </p>
         </div>
       </section>
@@ -81,7 +81,7 @@ export default function AboutPage() {
               The Directorate General of Drug Administration (DGDA) is the national regulatory authority of Bangladesh responsible for regulating drugs, medical devices, cosmetics, and related products. It operates under the Ministry of Health and Family Welfare.
             </p>
             <p className="text-gray-600 leading-relaxed mb-6">
-              DGDA ensures that all medical products available in Bangladesh are safe, effective, and of acceptable quality. As a licensed distributor, MedCore BD is required to maintain DGDA registration for all regulated products we sell.
+              DGDA ensures that all medical products available in Bangladesh are safe, effective, and of acceptable quality. As a licensed distributor, MediportBD is required to maintain DGDA registration for all regulated products we sell.
             </p>
             <a
               href="https://www.dgda.gov.bd"
@@ -155,13 +155,13 @@ export default function AboutPage() {
                 </div>
               </a>
               <a
-                href="mailto:regulatory@medcorebd.com"
+                href="mailto:regulatory@MediportBD.com"
                 className="flex items-center gap-3 bg-gray-50 rounded-xl px-5 py-4 hover:bg-gray-100 transition-colors"
               >
                 <FaEnvelope className="text-[#0B2545]" />
                 <div>
                   <p className="text-xs text-gray-400">Email</p>
-                  <p className="text-sm font-semibold text-gray-800">regulatory@medcorebd.com</p>
+                  <p className="text-sm font-semibold text-gray-800">regulatory@MediportBD.com</p>
                 </div>
               </a>
               <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-5 py-4">

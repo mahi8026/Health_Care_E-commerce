@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Artillery Test Helper Functions
  * Provides custom functions for load testing scenarios
  */

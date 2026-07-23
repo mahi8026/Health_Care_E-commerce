@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * Unit tests for database health check middleware

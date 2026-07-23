@@ -101,15 +101,15 @@ describe('generateAltText', () => {
         name: 'Siemens ECG Machine',
       };
       const result = generateAltText(product, 1);
-      expect(result).toBe('Siemens ECG Machine view 1 — MedCore BD');
+      expect(result).toBe('Siemens ECG Machine view 1 — MediportBD');
     });
 
     it('should generate alt text for different indices', () => {
       const product = {
         name: 'Ultrasound Machine',
       };
-      expect(generateAltText(product, 2)).toBe('Ultrasound Machine view 2 — MedCore BD');
-      expect(generateAltText(product, 3)).toBe('Ultrasound Machine view 3 — MedCore BD');
+      expect(generateAltText(product, 2)).toBe('Ultrasound Machine view 2 — MediportBD');
+      expect(generateAltText(product, 3)).toBe('Ultrasound Machine view 3 — MediportBD');
     });
 
     it('should truncate secondary image alt text to 125 characters', () => {
@@ -122,7 +122,7 @@ describe('generateAltText', () => {
 
     it('should use "Product" as fallback for secondary images', () => {
       const result = generateAltText(null, 1);
-      expect(result).toBe('Product view 1 — MedCore BD');
+      expect(result).toBe('Product view 1 — MediportBD');
     });
   });
 });

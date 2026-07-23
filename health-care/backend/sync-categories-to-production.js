@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Sync Missing Categories to Production
  * Creates the 6 new categories that exist locally but not in production

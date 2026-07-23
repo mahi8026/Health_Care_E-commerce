@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Fix Category Product Counts
  * Recalculates and updates productCount field for all categories

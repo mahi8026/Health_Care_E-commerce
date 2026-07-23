@@ -1,4 +1,4 @@
-const whatsappService = require('../services/whatsappService');
+﻿const whatsappService = require('../services/whatsappService');
 const whatsappBot = require('../services/whatsappBot');
 const WhatsAppConversation = require('../models/WhatsAppConversation');
 const WhatsAppMessage = require('../models/WhatsAppMessage');
@@ -16,7 +16,7 @@ exports.verifyWebhook = async (req, res) => {
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
-    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'medcore_whatsapp_verify_token';
+    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'Mediport_whatsapp_verify_token';
 
     if (mode === 'subscribe' && token === verifyToken) {
       logger.info('[WhatsApp] Webhook verified successfully');
@@ -520,7 +520,7 @@ exports.testConnection = async (req, res) => {
       return errorResponse(res, 'Phone number is required', null, 400);
     }
 
-    const message = `🧪 *Test Message from MedCore BD*
+    const message = `🧪 *Test Message from MediportBD*
 
 This is a test message to verify your WhatsApp integration is working correctly.
 

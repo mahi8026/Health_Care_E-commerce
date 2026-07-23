@@ -23,7 +23,7 @@ export default function ReturnDetailPage() {
 
   const fetchReturnDetails = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       if (!token) {
         router.push('/login');
         return;
@@ -61,7 +61,7 @@ export default function ReturnDetailPage() {
 
     setCancelling(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('mediport_token');
       const res = await fetch(`${API}/returns/${params.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
@@ -167,7 +167,7 @@ export default function ReturnDetailPage() {
                 <div className="relative w-24 h-24 flex-shrink-0">
                   <Image 
                     src={item.product?.images?.[0]?.url || '/placeholder.png'} 
-                    alt={`${item.product?.name} — Return request #${returnRequest._id?.slice(-6)} — MedCore BD Bangladesh`}
+                    alt={`${item.product?.name} — Return request #${returnRequest._id?.slice(-6)} — MediportBD Bangladesh`}
                     fill
                     sizes="96px"
                     style={{ objectFit: 'cover' }}
@@ -218,7 +218,7 @@ export default function ReturnDetailPage() {
                     >
                       <Image
                         src={img.url}
-                        alt={`${returnRequest.products?.[0]?.product?.name || 'Product'} — Return evidence photo ${idx + 1} — MedCore BD`}
+                        alt={`${returnRequest.products?.[0]?.product?.name || 'Product'} — Return evidence photo ${idx + 1} — MediportBD`}
                         fill
                         sizes="(max-width: 768px) 33vw, 20vw"
                         style={{ objectFit: 'cover' }}

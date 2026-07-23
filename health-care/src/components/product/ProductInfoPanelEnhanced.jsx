@@ -92,7 +92,7 @@ export default function ProductInfoPanelEnhanced({
 
   const handleShare = async (platform) => {
     const url = window.location.href;
-    const text = `Check out ${product.name} on MedCore BD`;
+    const text = `Check out ${product.name} on MediportBD`;
 
     switch (platform) {
       case 'whatsapp':

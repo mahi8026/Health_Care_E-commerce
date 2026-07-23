@@ -160,7 +160,7 @@ export default function PaymentMethodsPage() {
               </p>
               <div className="mt-3 p-3 bg-gray-50 rounded-lg text-[11px] text-[#6B7280] space-y-1">
                 <p><span className="font-medium text-[#0B2545]">Bank:</span> Dutch-Bangla Bank Ltd</p>
-                <p><span className="font-medium text-[#0B2545]">Account:</span> MedCore BD Ltd — 1234567890</p>
+                <p><span className="font-medium text-[#0B2545]">Account:</span> MediportBD Ltd — 1234567890</p>
                 <p><span className="font-medium text-[#0B2545]">Branch:</span> Nawabpur Road, Dhaka</p>
               </div>
             </div>

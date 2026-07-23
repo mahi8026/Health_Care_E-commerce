@@ -128,7 +128,7 @@ export default function MobileMenu({ isOpen, onClose }) {
           boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.06)',
         }}>
           <span style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
-            MedCore<span style={{ color: '#4ddbb8' }}>BD</span>
+            Mediport<span style={{ color: '#4ddbb8' }}>BD</span>
           </span>
           <button
             onClick={onClose}

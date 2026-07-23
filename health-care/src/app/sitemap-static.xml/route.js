@@ -1,5 +1,5 @@
 /**
- * Static Pages Sitemap for MedCore BD
+ * Static Pages Sitemap for MediportBD
  * 
  * Contains all static pages that don't change frequently.
  * Fast generation, no external API calls.

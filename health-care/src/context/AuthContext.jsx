@@ -108,8 +108,8 @@ export function AuthProvider({ children }) {
     removeToken();
     // Clear cart from localStorage on logout
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('medcore_cart');
-      localStorage.removeItem('medcore_wishlist');
+      localStorage.removeItem('Mediport_cart');
+      localStorage.removeItem('Mediport_wishlist');
     }
   }, []);
 

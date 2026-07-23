@@ -4,7 +4,7 @@ export default function MobileNav() {
       <div className="flex items-center gap-3">
         {/* Logo */}
         <div className="font-[family-name:var(--font-lora)] text-[15px] font-semibold text-[#0B2545]">
-          MedCore<span className="text-[#0E8A6E]">BD</span>
+          Mediport<span className="text-[#0E8A6E]">BD</span>
         </div>
 
         {/* Search Bar */}

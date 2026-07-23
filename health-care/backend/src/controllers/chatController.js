@@ -1,4 +1,4 @@
-const Conversation = require('../models/Conversation');
+﻿const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ChatConfig = require('../models/ChatConfig');
 const chatSocketService = require('../services/chatSocketService');

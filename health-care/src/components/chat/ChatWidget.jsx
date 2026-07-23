@@ -7,7 +7,7 @@ import ChatInput from './ChatInput';
 import { useAuth } from '@/context/AuthContext';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
-const STORAGE_KEY = 'medcore_chat_conv_id';
+const STORAGE_KEY = 'Mediport_chat_conv_id';
 
 // Get or clear stored conversation ID
 function getStoredConvId() {
@@ -187,7 +187,7 @@ export default function ChatWidget({ onClose }) {
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
           </div>
           <div>
-            <p className="text-white font-semibold text-sm leading-tight">MedCore Support</p>
+            <p className="text-white font-semibold text-sm leading-tight">Mediport Support</p>
             <p className="text-blue-100 text-xs">
               {isLoading ? 'Loading...' : 'We\'ll reply soon'}
             </p>

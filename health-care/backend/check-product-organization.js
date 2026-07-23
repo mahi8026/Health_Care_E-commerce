@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Check Product Organization Status
  * Shows which products are organized and which need manual assignment

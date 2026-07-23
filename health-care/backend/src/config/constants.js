@@ -1,4 +1,4 @@
-// Application-wide constants
+﻿// Application-wide constants
 
 // Cart configuration
 const CART_CONFIG = {

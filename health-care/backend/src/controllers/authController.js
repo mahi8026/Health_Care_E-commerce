@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+﻿const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');

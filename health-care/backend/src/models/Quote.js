@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const quoteItemSchema = new mongoose.Schema({
   product: {

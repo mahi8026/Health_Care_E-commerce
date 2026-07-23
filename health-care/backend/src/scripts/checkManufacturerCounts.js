@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Check manufacturer product counts
  * 
  * Compares the manufacturer page count vs actual product count

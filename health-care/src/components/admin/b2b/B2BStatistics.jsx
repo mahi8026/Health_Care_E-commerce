@@ -12,7 +12,7 @@ export default function B2BStatistics() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const res = await fetch(`${API}/admin/b2b/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         });

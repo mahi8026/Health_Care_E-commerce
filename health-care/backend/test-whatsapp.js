@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WhatsApp System Test Script
  * Run this to verify WhatsApp automation is properly installed
  * 

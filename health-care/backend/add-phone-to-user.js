@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Add Phone Number to User Account
  * This script adds a phone number to a user so they can receive WhatsApp notifications
  */

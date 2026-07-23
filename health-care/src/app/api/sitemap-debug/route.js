@@ -19,7 +19,7 @@ export async function GET() {
       signal: AbortSignal.timeout(15000),
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'MedCore-Sitemap-Debug',
+        'User-Agent': 'Mediport-Sitemap-Debug',
       },
     });
     

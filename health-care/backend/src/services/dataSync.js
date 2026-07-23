@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Data Synchronization Service
  * Ensures all manufacturers and products are properly synced across environments
  * Runs on server startup to guarantee data consistency

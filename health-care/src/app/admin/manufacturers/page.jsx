@@ -7,7 +7,7 @@ import AdminShell from '@/components/admin/AdminShell';
 // Check if user is authenticated
 const isAuthenticated = () => {
   if (typeof window !== 'undefined') {
-    return !!localStorage.getItem('medcore_token');
+    return !!localStorage.getItem('Mediport_token');
   }
   return false;
 };

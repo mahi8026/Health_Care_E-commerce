@@ -30,7 +30,7 @@ export default function ReviewsManagement() {
   const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const params = new URLSearchParams({ page, limit: 20 });
       
       if (statusFilter !== 'all') params.set('status', statusFilter);
@@ -92,7 +92,7 @@ export default function ReviewsManagement() {
 
     setActionLoading(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const payload = {
         status: modalAction === 'approve' ? 'approved' : 'rejected',
         adminResponse: adminResponse.trim() || undefined,

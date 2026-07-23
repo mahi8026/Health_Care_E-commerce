@@ -7,7 +7,7 @@ export function LanguageProvider({ children }) {
   // Initialize from localStorage if available
   const [lang, setLang] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('medcore_lang');
+      const saved = localStorage.getItem('Mediport_lang');
       if (saved === 'bn' || saved === 'en') return saved;
     }
     return 'en';
@@ -17,7 +17,7 @@ export function LanguageProvider({ children }) {
 
   const switchLang = (l) => {
     setLang(l);
-    localStorage.setItem('medcore_lang', l);
+    localStorage.setItem('Mediport_lang', l);
   };
 
   return (

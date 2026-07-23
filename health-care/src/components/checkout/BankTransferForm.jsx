@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 const BANK_DETAILS = [
   { label: 'Bank Name', value: 'Dutch-Bangla Bank Ltd', icon: '🏦' },
-  { label: 'Account Name', value: 'MedCore Bangladesh Ltd', icon: '🏢' },
+  { label: 'Account Name', value: 'Mediport Bangladesh Ltd', icon: '🏢' },
   { label: 'Account Number', value: '1721 2030 5678', icon: '💳', mono: true },
   { label: 'Branch', value: 'Nawabpur Road, Dhaka', icon: '📍' },
   { label: 'Routing Number', value: '090261450', icon: '#️⃣', mono: true },

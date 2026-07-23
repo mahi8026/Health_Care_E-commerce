@@ -1,4 +1,4 @@
-const Wishlist = require('../models/Wishlist');
+﻿const Wishlist = require('../models/Wishlist');
 const Product = require('../models/Product');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 

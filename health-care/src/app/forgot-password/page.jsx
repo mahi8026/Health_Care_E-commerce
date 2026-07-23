@@ -2,8 +2,8 @@ import { SITE_CONFIG } from '@/config/seo';
 import ForgotPasswordClient from './ForgotPasswordClient';
 
 export const metadata = {
-  title: 'Forgot Password | MedCore BD',
-  description: 'Reset your MedCore BD account password.',
+  title: 'Forgot Password | MediportBD',
+  description: 'Reset your MediportBD account password.',
   robots: { index: false, follow: false },
   alternates: { canonical: `${SITE_CONFIG.url}/forgot-password` },
 };

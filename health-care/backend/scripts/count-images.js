@@ -1,7 +1,7 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore').then(async () => {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport').then(async () => {
   const Product = mongoose.model('Product', new mongoose.Schema({}, { strict: false }));
   const total = await Product.countDocuments();
   const withImages = await Product.countDocuments({ 'images.0': { $exists: true } });

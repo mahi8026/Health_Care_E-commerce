@@ -1,4 +1,4 @@
-const Settings = require('../models/Settings');
+﻿const Settings = require('../models/Settings');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 /**
@@ -21,7 +21,7 @@ exports.getSettings = async (req, res) => {
         supportHours: '24/7',
         contactPhone: '+880 1646-886795',
         contactEmail: 'mahimrahman07@gmail.com',
-        companyName: 'MedCore BD',
+        companyName: 'MediportBD',
         tagline: "Bangladesh's Most Trusted Medical Equipment Supplier",
       });
     }

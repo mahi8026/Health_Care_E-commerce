@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seed script: Creates sample WhatsApp conversations and messages for testing
  * Run from backend directory: node scripts/seedWhatsApp.js
  */
@@ -132,12 +132,12 @@ const sampleMessages = [
 
   // conv_002 - Order Status
   makeMsg('002a', 'conv_002_test', 'inbound',  'Hi, what is the status of my order #ORD-2024-001234?', { status: 'read', createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000) }),
-  makeMsg('002b', 'conv_002_test', 'outbound', 'Hello! I am MedCore Bot. Let me check your order status. Please wait...', { status: 'read', isBot: true, createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000 + 30000) }),
+  makeMsg('002b', 'conv_002_test', 'outbound', 'Hello! I am Mediport Bot. Let me check your order status. Please wait...', { status: 'read', isBot: true, createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000 + 30000) }),
   makeMsg('002c', 'conv_002_test', 'outbound', 'Your order #ORD-2024-001234 is currently In Transit. Expected delivery: Tomorrow by 5 PM.', { status: 'delivered', isBot: true, createdAt: new Date(Date.now() - 45 * 60 * 1000) }),
 
   // conv_003 - B2B Inquiry
   makeMsg('003a', 'conv_003_test', 'inbound',  'We are Dhaka Medical Center. We need to purchase lab equipment in bulk.', { status: 'read', createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000) }),
-  makeMsg('003b', 'conv_003_test', 'outbound', 'Welcome to MedCore BD! We offer special B2B pricing with 15-30% discount for bulk orders. What equipment do you need?', { status: 'read', createdAt: new Date(Date.now() - 4.5 * 60 * 60 * 1000) }),
+  makeMsg('003b', 'conv_003_test', 'outbound', 'Welcome to MediportBD! We offer special B2B pricing with 15-30% discount for bulk orders. What equipment do you need?', { status: 'read', createdAt: new Date(Date.now() - 4.5 * 60 * 60 * 1000) }),
   makeMsg('003c', 'conv_003_test', 'inbound',  'We need 5 hematology analyzers and 3 biochemistry analyzers', { status: 'read', createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000) }),
   makeMsg('003d', 'conv_003_test', 'outbound', 'Excellent! For that quantity, you qualify for our Platinum B2B tier with 25% discount and 60-day credit terms. I will prepare a detailed quotation.', { status: 'read', createdAt: new Date(Date.now() - 3.5 * 60 * 60 * 1000) }),
   makeMsg('003e', 'conv_003_test', 'inbound',  'Please also include installation and training costs', { status: 'read', createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000) }),

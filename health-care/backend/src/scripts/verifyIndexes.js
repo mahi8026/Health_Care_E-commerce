@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Database Index Verification Script
  * Checks if critical indexes exist for optimal query performance
  */

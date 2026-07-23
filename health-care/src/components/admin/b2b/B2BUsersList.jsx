@@ -16,7 +16,7 @@ export default function B2BUsersList() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const params = new URLSearchParams({
         page,
         limit: 20,
@@ -51,7 +51,7 @@ export default function B2BUsersList() {
 
     try {
       setActionLoading(userId);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/b2b/users/${userId}/approve`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }
@@ -80,7 +80,7 @@ export default function B2BUsersList() {
 
     try {
       setActionLoading(userId);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/b2b/users/${userId}/reject`, {
         method: 'PUT',
         headers: {
@@ -107,7 +107,7 @@ export default function B2BUsersList() {
   const handleToggleDiscount = async (userId) => {
     try {
       setActionLoading(userId);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/b2b/users/${userId}/toggle-discount`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` }

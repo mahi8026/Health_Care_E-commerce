@@ -26,7 +26,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
     setError(null);
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       if (!token) throw new Error('Not authenticated. Please log in again.');
 
       const orderId = order._id || order.id;

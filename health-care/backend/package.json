@@ -1,7 +1,7 @@
-{
-  "name": "medcore-backend",
+﻿{
+  "name": "Mediport-backend",
   "version": "1.0.0",
-  "description": "MedCore BD Backend API",
+  "description": "MediportBD Backend API",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -44,7 +44,7 @@
     "ecommerce",
     "api"
   ],
-  "author": "MedCore BD",
+  "author": "MediportBD",
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"

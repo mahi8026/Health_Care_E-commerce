@@ -129,7 +129,7 @@ export default function OrderSummary({
     setCouponError('');
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/coupons/validate`, {
         method: 'POST',
         headers: {

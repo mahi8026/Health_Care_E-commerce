@@ -1,4 +1,4 @@
-const axios = require('axios');
+﻿const axios = require('axios');
 const logger = require('../utils/logger');
 
 /**
@@ -145,7 +145,7 @@ async function sendSSLWirelessSMS(phone, message) {
     // Prepare request payload
     const payload = {
       api_token: process.env.SMS_API_KEY,
-      sid: process.env.SMS_SENDER_ID || 'MedCoreBD',
+      sid: process.env.SMS_SENDER_ID || 'MediportBD',
       msisdn: formattedPhone,
       sms: message,
       csms_id: Date.now().toString()
@@ -266,7 +266,7 @@ async function sendSMS(phone, message) {
  * @returns {Object} { success: boolean, error?: string }
  */
 async function sendOTP(phone, otp) {
-  const message = `Your MedCore BD OTP is: ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
+  const message = `Your MediportBD OTP is: ${otp}. Valid for 5 minutes. Do not share this code with anyone.`;
   
   logger.info(`[SMS] Sending OTP to ${maskPhoneNumber(phone)}`);
   return await sendSMS(phone, message);
@@ -281,7 +281,7 @@ async function sendOTP(phone, otp) {
  */
 async function sendOrderConfirmationSMS(phone, orderNumber, total) {
   const formattedTotal = total.toLocaleString('en-BD');
-  const message = `MedCore BD: Order #${orderNumber} confirmed. Total: ৳${formattedTotal}. Track at medcorebd.com/track`;
+  const message = `MediportBD: Order #${orderNumber} confirmed. Total: ৳${formattedTotal}. Track at MediportBD.com/track`;
   
   logger.info(`[SMS] Sending order confirmation to ${maskPhoneNumber(phone)}`);
   return await sendSMS(phone, message);
@@ -305,7 +305,7 @@ async function sendOrderStatusSMS(phone, orderNumber, status) {
   };
   
   const displayStatus = statusMap[status] || status.toUpperCase();
-  const message = `MedCore BD: Order #${orderNumber} is now ${displayStatus}. Track at medcorebd.com/track`;
+  const message = `MediportBD: Order #${orderNumber} is now ${displayStatus}. Track at MediportBD.com/track`;
   
   logger.info(`[SMS] Sending status update to ${maskPhoneNumber(phone)}`);
   return await sendSMS(phone, message);
@@ -319,7 +319,7 @@ async function sendOrderStatusSMS(phone, orderNumber, status) {
  * @returns {Object} { success: boolean, error?: string }
  */
 async function sendLowStockAlertSMS(adminPhone, productName, stock) {
-  const message = `MedCore BD ALERT: "${productName}" is low on stock (${stock} units remaining). Please restock soon.`;
+  const message = `MediportBD ALERT: "${productName}" is low on stock (${stock} units remaining). Please restock soon.`;
   
   logger.info(`[SMS] Sending low stock alert to admin ${maskPhoneNumber(adminPhone)}`);
   return await sendSMS(adminPhone, message);
@@ -331,7 +331,7 @@ async function sendLowStockAlertSMS(adminPhone, productName, stock) {
  * @returns {Object} { success: boolean, error?: string }
  */
 async function sendTestSMS(phone) {
-  const message = `MedCore BD: This is a test SMS. Your SMS service is working correctly. Sent at ${new Date().toLocaleString('en-BD')}`;
+  const message = `MediportBD: This is a test SMS. Your SMS service is working correctly. Sent at ${new Date().toLocaleString('en-BD')}`;
   
   logger.info(`[SMS] Sending test SMS to ${maskPhoneNumber(phone)}`);
   return await sendSMS(phone, message);

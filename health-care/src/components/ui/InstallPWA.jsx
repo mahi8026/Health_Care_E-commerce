@@ -6,7 +6,7 @@ import { FiDownload, FiX, FiSmartphone } from 'react-icons/fi';
 /**
  * InstallPWA Component
  * 
- * Prompts users to install the MedCore BD app on their device.
+ * Prompts users to install the MediportBD app on their device.
  * - Shows install banner when app is installable
  * - Handles iOS-specific install instructions (Safari share menu)
  * - Dismissible with localStorage persistence
@@ -100,7 +100,7 @@ export default function InstallPWA() {
               <FiSmartphone className="text-white text-xl" />
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm">Install MedCore BD</h3>
+              <h3 className="text-white font-semibold text-sm">Install MediportBD</h3>
               <p className="text-blue-100 text-xs">Get the app experience</p>
             </div>
           </div>

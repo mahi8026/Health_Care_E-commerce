@@ -1,6 +1,6 @@
-# MedCore BD Sales Package
+# MediportBD Sales Package
 
-This folder contains all materials needed to sell the MedCore BD e-commerce platform.
+This folder contains all materials needed to sell the MediportBD e-commerce platform.
 
 ## 📁 Package Contents
 

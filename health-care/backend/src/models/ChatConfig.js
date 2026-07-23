@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
 const chatConfigSchema = new mongoose.Schema({
   // Widget Appearance
@@ -9,7 +9,7 @@ const chatConfigSchema = new mongoose.Schema({
   },
   primaryColor: {
     type: String,
-    default: '#0EA5E9' // MedCore BD brand color
+    default: '#0EA5E9' // MediportBD brand color
   },
   fontFamily: {
     type: String,
@@ -24,7 +24,7 @@ const chatConfigSchema = new mongoose.Schema({
   welcomeMessage: {
     en: {
       type: String,
-      default: 'Welcome to MedCore BD! How can we help you today?'
+      default: 'Welcome to MediportBD! How can we help you today?'
     },
     bn: {
       type: String,

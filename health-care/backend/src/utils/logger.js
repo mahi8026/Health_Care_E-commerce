@@ -1,4 +1,4 @@
-const winston = require('winston');
+﻿const winston = require('winston');
 require('winston-daily-rotate-file');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -72,7 +72,7 @@ if (!isTest) {
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || (isDevelopment ? 'debug' : 'warn'),
   format: jsonFormat,
-  defaultMeta: { service: 'medcore-api' },
+  defaultMeta: { service: 'Mediport-api' },
   transports,
 });
 

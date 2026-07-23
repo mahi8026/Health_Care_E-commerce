@@ -2,8 +2,8 @@ import { SITE_CONFIG } from '@/config/seo';
 import MyReturnsClient from './MyReturnsClient';
 
 export const metadata = {
-  title: 'My Return Requests | MedCore BD',
-  description: 'Track and manage your product return requests on MedCore BD.',
+  title: 'My Return Requests | MediportBD',
+  description: 'Track and manage your product return requests on MediportBD.',
   robots: { index: false, follow: false },
   alternates: { canonical: `${SITE_CONFIG.url}/returns/my-returns` },
 };

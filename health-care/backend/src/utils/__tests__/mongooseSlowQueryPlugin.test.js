@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 const { slowQueryPlugin } = require('../mongooseSlowQueryPlugin');
 const logger = require('../logger');
 

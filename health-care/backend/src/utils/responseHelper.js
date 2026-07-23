@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * @fileoverview Standardized HTTP response helpers for all Express controllers.

@@ -30,7 +30,7 @@ export default function MyReturnsClient() {
 
   const fetchReturns = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       if (!token) {
         router.push('/login?redirect=/returns/my-returns');
         return;

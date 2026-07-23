@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Test WhatsApp Bot with Simulated Messages
  * This simulates customer messages to test bot responses
  */

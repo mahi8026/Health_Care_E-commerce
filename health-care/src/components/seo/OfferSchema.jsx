@@ -11,7 +11,7 @@
 export default function OfferSchema({ product, offer }) {
   if (!product || !offer) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
   const productUrl = `${baseUrl}/products/${product._id || product.slug}`;
   
   // Calculate default validity date (30 days from now) - use server-side timestamp if available
@@ -43,7 +43,7 @@ export default function OfferSchema({ product, offer }) {
       itemCondition: 'https://schema.org/NewCondition',
       seller: {
         '@type': 'Organization',
-        name: 'MedCore BD',
+        name: 'MediportBD',
         url: baseUrl
       }
     }
@@ -81,7 +81,7 @@ export default function OfferSchema({ product, offer }) {
 export function AggregateOfferSchema({ product, offers }) {
   if (!product || !offers || offers.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medcorebd.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
   const productUrl = `${baseUrl}/products/${product._id || product.slug}`;
 
   // Find lowest and highest prices
@@ -109,7 +109,7 @@ export function AggregateOfferSchema({ product, offers }) {
         availability: offer.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         seller: {
           '@type': 'Organization',
-          name: 'MedCore BD'
+          name: 'MediportBD'
         }
       }))
     }

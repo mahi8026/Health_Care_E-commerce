@@ -1,5 +1,5 @@
 /**
- * Sitemap Index for MedCore BD
+ * Sitemap Index for MediportBD
  * 
  * This is the main sitemap that points to sub-sitemaps.
  * Splitting sitemaps improves reliability and allows each sub-sitemap

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Pagination Utility
  * 
  * Provides standardized pagination helper for all list endpoints.

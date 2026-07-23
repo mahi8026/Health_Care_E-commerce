@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Setup B2B Discounts for All Categories
  * Sets the approved discount percentages for each product category
  * 
@@ -9,7 +9,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Category = require('./src/models/Category');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
 
 // Approved B2B discount percentages by category
 const CATEGORY_DISCOUNTS = {

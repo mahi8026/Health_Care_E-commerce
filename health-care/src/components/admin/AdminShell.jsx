@@ -42,7 +42,7 @@ export default function AdminShell({ children, title, action, onAction }) {
   useEffect(() => {
     const fetchBadges = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+        const token = typeof window !== 'undefined' ? localStorage.getItem('Mediport_token') : null;
         if (!token) return;
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/badges`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -147,7 +147,7 @@ export default function AdminShell({ children, title, action, onAction }) {
             onClick={() => router.push('/admin')}
             className="font-[family-name:var(--font-lora)] text-[18px] font-semibold cursor-pointer hover:opacity-80 transition-opacity"
           >
-            MedCore<span className="text-[#4DDBB8]">BD</span>
+            Mediport<span className="text-[#4DDBB8]">BD</span>
           </div>
           <div className="text-[10px] text-white/60 mt-1">Admin Panel</div>
         </div>

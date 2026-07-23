@@ -1,4 +1,4 @@
-const CacheService = require('./cacheService');
+﻿const CacheService = require('./cacheService');
 
 // Shared cache service instance for product cache invalidation
 const cacheService = new CacheService();

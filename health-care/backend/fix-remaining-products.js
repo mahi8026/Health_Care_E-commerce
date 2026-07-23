@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Fix Remaining Product Categories
  * Specifically handles products that are in wrong categories or "Unknown Category"

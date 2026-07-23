@@ -1,4 +1,4 @@
-const Product = require('../models/Product');
+﻿const Product = require('../models/Product');
 const Order = require('../models/Order');
 const logger = require('../utils/logger');
 const redisCache = require('./redisCache');

@@ -1,4 +1,4 @@
-module.exports = {
+﻿module.exports = {
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
   collectCoverageFrom: [

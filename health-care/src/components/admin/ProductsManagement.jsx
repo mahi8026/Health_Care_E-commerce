@@ -135,7 +135,7 @@ export default function ProductsManagement({ openCreateRef }) {
     skuGenRef.current = setTimeout(async () => {
       setSkuGenerating(true);
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const res = await fetch(
           `${API}/products/generate-sku?categoryId=${createForm.category}&brandId=${createForm.brand}`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -168,7 +168,7 @@ export default function ProductsManagement({ openCreateRef }) {
     if (!categoryId || !brandId) return;
     setSkuGenerating(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(
         `${API}/products/generate-sku?categoryId=${categoryId}&brandId=${brandId}`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -214,7 +214,7 @@ export default function ProductsManagement({ openCreateRef }) {
     const fetchMetadata = async () => {
       try {
         setLoadingMeta(true);
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const headers = { Authorization: `Bearer ${token}` };
         
         const [categoriesRes, manufacturersRes] = await Promise.all([
@@ -263,7 +263,7 @@ export default function ProductsManagement({ openCreateRef }) {
         filters._t = Date.now().toString();
         
         // Use the API helper which includes auth headers
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         
         const url = `${API}/products?${new URLSearchParams(filters)}`;
         
@@ -323,7 +323,7 @@ export default function ProductsManagement({ openCreateRef }) {
       filters._t = Date.now().toString();
       
       // Use the API helper which includes auth headers
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       
       const url = `${API}/products?${new URLSearchParams(filters)}`;
       
@@ -361,7 +361,7 @@ export default function ProductsManagement({ openCreateRef }) {
   const handleDelete = async (productId) => {
     if (!confirm('Delete this product? This cannot be undone.')) return;
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/products/${productId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
@@ -439,7 +439,7 @@ export default function ProductsManagement({ openCreateRef }) {
     if (!modalProduct) return;
     setCreating(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const payload = {
         ...createForm,
         price: Number(createForm.price),
@@ -524,7 +524,7 @@ export default function ProductsManagement({ openCreateRef }) {
         const response = await fetch(`${API}/upload/image`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('medcore_token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('Mediport_token')}`,
           },
           body: formData,
         });
@@ -593,7 +593,7 @@ export default function ProductsManagement({ openCreateRef }) {
 
     setCreating(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const url = modalMode === 'edit' ? `${API}/products/${modalProduct._id}` : `${API}/products`;
       const method = modalMode === 'edit' ? 'PUT' : 'POST';
       
@@ -908,7 +908,7 @@ export default function ProductsManagement({ openCreateRef }) {
                             onClick={async () => {
                               const name = brandSearch.trim();
                               try {
-                                const token = localStorage.getItem('medcore_token');
+                                const token = localStorage.getItem('Mediport_token');
                                 const res = await fetch(`${API}/manufacturers`, {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },

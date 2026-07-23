@@ -1,5 +1,5 @@
 /**
- * MedCore BD Service Worker
+ * MediportBD Service Worker
  *
  * Caching strategy:
  * - Static assets (_next/static, images, fonts): Cache-first (long TTL)
@@ -15,7 +15,7 @@
  * - Cloudinary images load without CSP conflicts in SW context
  */
 
-const CACHE_VERSION = 'medcore-v2'; // v2: Skip Cloudinary (CSP fix)
+const CACHE_VERSION = 'Mediport-v2'; // v2: Skip Cloudinary (CSP fix)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const API_CACHE = `${CACHE_VERSION}-api`;
@@ -47,7 +47,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => key.startsWith('medcore-') && !key.startsWith(CACHE_VERSION))
+          .filter((key) => key.startsWith('Mediport-') && !key.startsWith(CACHE_VERSION))
           .map((key) => caches.delete(key))
       )
     )

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Setup Recommended Categories
  * Based on actual product inventory analysis

@@ -128,8 +128,8 @@ function B2BLanding() {
     ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
     : '৳50K';
   const supportHours = settings?.supportHours ?? '24/7';
-  const contactPhone = settings?.contactPhone ?? '+880 1800-MEDCORE';
-  const contactEmail = settings?.contactEmail ?? 'b2b@medcorebd.com';
+  const contactPhone = settings?.contactPhone ?? '+880 1800-Mediport';
+  const contactEmail = settings?.contactEmail ?? 'b2b@MediportBD.com';
   const totalProducts = siteStats?.totalProducts
     ? `${(siteStats.totalProducts / 1000).toFixed(0)}K+`
     : '10,000+';
@@ -231,7 +231,7 @@ function B2BLanding() {
       {/* Benefits */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-[28px] md:text-[32px] font-bold text-[#0B2545] mb-3">Why Choose MedCore B2B?</h2>
+          <h2 className="text-[28px] md:text-[32px] font-bold text-[#0B2545] mb-3">Why Choose Mediport B2B?</h2>
           <p className="text-[14px] text-[#6B7280] max-w-xl mx-auto">Everything your healthcare facility needs, with the pricing and support you deserve.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -369,7 +369,7 @@ function B2BDashboard({ data, onRefresh }) {
 
   const handleDownloadInvoice = async (orderId) => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/orders/${orderId}/invoice`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -554,14 +554,14 @@ function B2BDashboard({ data, onRefresh }) {
               <div className="space-y-2 text-[12px] mb-4">
                 <div className="flex items-center gap-2 text-[#374151]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-                  +880 1800-MEDCORE
+                  +880 1800-Mediport
                 </div>
                 <div className="flex items-center gap-2 text-[#374151]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                  b2b@medcorebd.com
+                  b2b@MediportBD.com
                 </div>
               </div>
-              <a href="mailto:b2b@medcorebd.com"
+              <a href="mailto:b2b@MediportBD.com"
                 className="block w-full py-2.5 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-xl text-[12px] font-bold text-center transition-colors">
                 Contact Manager
               </a>
@@ -592,7 +592,7 @@ function B2BDashboard({ data, onRefresh }) {
               ) : (
                 <div className="text-center py-4">
                   <div className="text-[13px] text-[#9CA3AF] mb-3">No credit line yet</div>
-                  <a href="mailto:b2b@medcorebd.com"
+                  <a href="mailto:b2b@MediportBD.com"
                     className="text-[12px] text-[#0E8A6E] font-semibold hover:underline">
                     Request credit terms →
                   </a>
@@ -632,7 +632,7 @@ export default function B2BDashboardPage() {
       setLoading(true);
       setFetchError(null);
       try {
-        const token = localStorage.getItem('medcore_token');
+        const token = localStorage.getItem('Mediport_token');
         const headers = { Authorization: `Bearer ${token}` };
 
         const [ordersRes, quotesRes, profileRes] = await Promise.all([

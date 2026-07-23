@@ -128,7 +128,7 @@ describe('generateProductSchema', () => {
   })
 
   it('uses the provided url when given', () => {
-    const customUrl = 'https://medcorebd.com/products/custom-slug'
+    const customUrl = 'https://MediportBD.com/products/custom-slug'
     const product = { ...validProduct, url: customUrl }
     const schema = generateProductSchema(product)
     expect(schema.url).toBe(customUrl)
@@ -335,9 +335,9 @@ describe('generateProductSchema', () => {
 
   // --- Enhanced features: Seller organization ---
 
-  it('sets seller name to "MedCore BD"', () => {
+  it('sets seller name to "MediportBD"', () => {
     const schema = generateProductSchema(validProduct)
-    expect(schema.offers.seller.name).toBe('MedCore BD')
+    expect(schema.offers.seller.name).toBe('MediportBD')
   })
 
   it('includes seller url from siteConfig', () => {
@@ -454,9 +454,9 @@ describe('generateOrganizationSchema', () => {
 
 describe('generateBreadcrumbSchema', () => {
   const breadcrumbs = [
-    { name: 'Home', url: 'https://medcorebd.com' },
-    { name: 'Products', url: 'https://medcorebd.com/products' },
-    { name: 'Blood Pressure Monitor', url: 'https://medcorebd.com/products/bp-001' },
+    { name: 'Home', url: 'https://MediportBD.com' },
+    { name: 'Products', url: 'https://MediportBD.com/products' },
+    { name: 'Blood Pressure Monitor', url: 'https://MediportBD.com/products/bp-001' },
   ]
 
   it('sets @context to https://schema.org', () => {
@@ -517,7 +517,7 @@ describe('generateBreadcrumbSchema', () => {
   })
 
   it('handles a single-item breadcrumb (root page)', () => {
-    const single = [{ name: 'Home', url: 'https://medcorebd.com' }]
+    const single = [{ name: 'Home', url: 'https://MediportBD.com' }]
     const schema = generateBreadcrumbSchema(single)
     expect(schema.itemListElement).toHaveLength(1)
     expect(schema.itemListElement[0].position).toBe(1)
@@ -637,8 +637,8 @@ describe('StructuredData component', () => {
 
   it('renders a valid BreadcrumbList schema without errors', () => {
     const schema = generateBreadcrumbSchema([
-      { name: 'Home', url: 'https://medcorebd.com' },
-      { name: 'Products', url: 'https://medcorebd.com/products' },
+      { name: 'Home', url: 'https://MediportBD.com' },
+      { name: 'Products', url: 'https://MediportBD.com/products' },
     ])
     const { container } = render(<StructuredData schema={schema} />)
     const script = container.querySelector('script[type="application/ld+json"]')

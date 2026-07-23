@@ -9,7 +9,7 @@ import sitemap from '../sitemap'
 // Mock the siteConfig so tests are not coupled to the real domain value
 jest.mock('@/config/seo', () => ({
   siteConfig: {
-    url: 'https://medcorebd.com',
+    url: 'https://MediportBD.com',
   },
 }))
 
@@ -24,7 +24,7 @@ import { fetchProducts } from '@/utils/serverFetch'
 // Helpers
 // ---------------------------------------------------------------------------
 
-const BASE = 'https://medcorebd.com'
+const BASE = 'https://MediportBD.com'
 
 /** URLs that must always appear in the sitemap (static public pages). */
 const REQUIRED_STATIC_URLS = [

@@ -26,7 +26,7 @@ function timeAgo(date) {
 }
 
 function getAuthToken() {
-  if (typeof window !== 'undefined') return localStorage.getItem('medcore_token');
+  if (typeof window !== 'undefined') return localStorage.getItem('Mediport_token');
   return null;
 }
 

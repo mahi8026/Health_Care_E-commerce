@@ -31,7 +31,7 @@ export default function FloatingWhatsAppButton() {
 
   // Generate context-aware WhatsApp message
   const getWhatsAppMessage = () => {
-    const baseMessage = "Hello MedCore BD! ";
+    const baseMessage = "Hello MediportBD! ";
     
     // Check if on product page
     if (pathname?.includes('/products/')) {

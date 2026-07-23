@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
  *   - "Contact for Price" used when price is 0, null, or undefined
  *
  * Secondary images (index > 0):
- *   "{Product_Name} view {index} — MedCore BD"
+ *   "{Product_Name} view {index} — MediportBD"
  *   - Truncated to 125 characters maximum
  *
  * @param {Object} product - Product object with name, brand, price
@@ -51,7 +51,7 @@ export function generateAltText(product, index) {
   }
 
   // Secondary images
-  const alt = `${name} view ${index} — MedCore BD`;
+  const alt = `${name} view ${index} — MediportBD`;
   return alt.length > 125 ? alt.slice(0, 125) : alt;
 }
 

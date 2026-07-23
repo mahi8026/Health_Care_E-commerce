@@ -121,7 +121,7 @@ export default function SystemMonitoring() {
       else setRefreshing(true);
       setError(null);
 
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       if (!token) {
         setError('Please sign in again to view monitoring data.');
         return;
@@ -221,7 +221,7 @@ export default function SystemMonitoring() {
   const handleResetMetrics = async () => {
     if (!confirm('Reset all performance counters? This cannot be undone.')) return;
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/monitoring/metrics/reset`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },

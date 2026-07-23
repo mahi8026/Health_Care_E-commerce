@@ -67,7 +67,7 @@ export default function ProductReviewsEnhanced({ productId }) {
 
   const checkEligibility = async () => {
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews/eligible-products`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -107,7 +107,7 @@ export default function ProductReviewsEnhanced({ productId }) {
     }
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews/${reviewId}/helpful`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
@@ -141,7 +141,7 @@ export default function ProductReviewsEnhanced({ productId }) {
     }
 
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/reviews/${reviewId}/report`, {
         method: 'POST',
         headers: {
@@ -489,7 +489,7 @@ export default function ProductReviewsEnhanced({ productId }) {
               {review.adminResponse && (
                 <div className="bg-gradient-to-r from-teal-50 to-blue-50 border-l-4 border-[#0E8A6E] p-4 rounded-lg mb-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-bold text-[#0E8A6E]">MedCore BD Team</span>
+                    <span className="text-sm font-bold text-[#0E8A6E]">MediportBD Team</span>
                     <span className="px-2 py-1 bg-[#0E8A6E] text-white rounded-full text-xs font-bold">
                       Official Response
                     </span>

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Delete ALL Orders Script
  * 
@@ -65,7 +65,7 @@ async function restoreStockForOrder(order) {
 async function deleteAllOrders() {
   try {
     // Connect to MongoDB
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/medcore';
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/Mediport';
     console.log('Connecting to MongoDB...');
     console.log(`URI: ${mongoUri.replace(/\/\/.*@/, '//***@')}\n`);
     

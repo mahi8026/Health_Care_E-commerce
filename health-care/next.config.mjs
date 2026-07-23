@@ -222,11 +222,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'medcorebd.com',
+        hostname: 'mediportbd.com',
       },
       {
         protocol: 'https',
-        hostname: '**.medcorebd.com',
+        hostname: '**.mediportbd.com',
       },
       // Cloudinary — product images uploaded via CldUploadWidget
       {

@@ -1,6 +1,6 @@
-# MedCore BD Backend API
+﻿# MediportBD Backend API
 
-Production-ready Express.js backend for MedCore BD medical equipment e-commerce platform.
+Production-ready Express.js backend for MediportBD medical equipment e-commerce platform.
 
 ---
 
@@ -272,13 +272,13 @@ backend/
 
 ## 📄 License
 
-MIT License - MedCore BD
+MIT License - MediportBD
 
 ---
 
 ## 👨‍💻 Author
 
-MedCore BD Team
+MediportBD Team
 - Email: mahimrahman07@gmail.com
 - Phone: +880 1646-886795
 

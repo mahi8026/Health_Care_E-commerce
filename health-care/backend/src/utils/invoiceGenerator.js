@@ -1,4 +1,4 @@
-const PDFDocument = require('pdfkit');
+﻿const PDFDocument = require('pdfkit');
 
 const NAVY = '#0B2545';
 const TEAL = '#0E8A6E';
@@ -126,7 +126,7 @@ function generateInvoice(order, user) {
       doc.rect(0, 0, PAGE_W, headerH).fill(NAVY);
       doc.rect(0, headerH - 3, PAGE_W, 3).fill(TEAL);
 
-      textAt(doc, 'MedCoreBD', MARGIN, 26, {
+      textAt(doc, 'MediportBD', MARGIN, 26, {
         font: 'Helvetica-Bold',
         fontSize: 18,
         fillColor: WHITE,
@@ -441,7 +441,7 @@ function generateInvoice(order, user) {
       fontSize: 8,
       fillColor: NAVY,
     });
-    textAt(doc, 'Dutch-Bangla Bank Ltd  ·  MedCore Bangladesh Ltd  ·  A/C 1721 2030 5678', MARGIN + 12, y + 22, {
+    textAt(doc, 'Dutch-Bangla Bank Ltd  ·  Mediport Bangladesh Ltd  ·  A/C 1721 2030 5678', MARGIN + 12, y + 22, {
       fontSize: 8,
       fillColor: '#475569',
     });
@@ -457,7 +457,7 @@ function generateInvoice(order, user) {
       const footerY = PAGE_H - 36;
       doc.strokeColor(BORDER).lineWidth(0.5);
       doc.moveTo(MARGIN, footerY).lineTo(MARGIN + CONTENT_W, footerY).stroke();
-      textAt(doc, 'MedCore Bangladesh Ltd  ·  DGDA Reg. DA-2024-0891  ·  www.medcorebd.com', MARGIN, footerY + 6, {
+      textAt(doc, 'Mediport Bangladesh Ltd  ·  DGDA Reg. DA-2024-0891  ·  www.MediportBD.com', MARGIN, footerY + 6, {
         width: CONTENT_W,
         align: 'center',
         fontSize: 7,

@@ -35,7 +35,7 @@ export default function ActivityLogsPage() {
   });
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
-  const getToken = () => { try { return localStorage.getItem('medcore_token') || ''; } catch { return ''; } };
+  const getToken = () => { try { return localStorage.getItem('Mediport_token') || ''; } catch { return ''; } };
 
   const fetchLogs = useCallback(async () => {
     try {

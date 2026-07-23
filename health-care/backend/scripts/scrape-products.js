@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 /**
  * Product Scraper CLI Tool
@@ -69,7 +69,7 @@ function parseArgs() {
 function printHelp() {
   console.log(`
 ┌────────────────────────────────────────────────────────────┐
-│         MedCore BD - Product Scraper CLI Tool             │
+│         MediportBD - Product Scraper CLI Tool             │
 └────────────────────────────────────────────────────────────┘
 
 USAGE:
@@ -118,7 +118,7 @@ async function main() {
 
   console.log(`
 ┌────────────────────────────────────────────────────────────┐
-│         MedCore BD - Product Scraper                       │
+│         MediportBD - Product Scraper                       │
 └────────────────────────────────────────────────────────────┘
   `);
 

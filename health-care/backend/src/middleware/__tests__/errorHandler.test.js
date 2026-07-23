@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tests for centralized error handler middleware.
  * Requirements: 11.1, 11.2, 11.3, 11.9, 11.10
  */

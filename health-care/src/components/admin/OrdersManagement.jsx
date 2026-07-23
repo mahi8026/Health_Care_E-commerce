@@ -25,7 +25,7 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       await fetch(`${API}/orders/${order._id}/status`, {
         method: 'PATCH',
         headers: {
@@ -47,7 +47,7 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
     if (!confirm('Confirm that bank transfer has been received?')) return;
     setSaving(true);
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       await fetch(`${API}/orders/${order._id}/verify-payment`, {
         method: 'PATCH',
         headers: {
@@ -315,7 +315,7 @@ export default function OrdersManagement() {
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const params = new URLSearchParams({ page, limit: 20 });
       if (statusFilter) params.set('status', statusFilter);
       if (search) params.set('search', search);
@@ -346,7 +346,7 @@ export default function OrdersManagement() {
     if (process.env.NODE_ENV !== 'production') console.log('handleStatusChange called:', { orderId, newStatus, API });
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       const url = `${API}/orders/${orderId}/status`;
       if (process.env.NODE_ENV !== 'production') console.log('Making PATCH request to:', url);
       
@@ -437,7 +437,7 @@ export default function OrdersManagement() {
     if (!bulkAction || selectedOrders.length === 0) return;
     
     try {
-      const token = localStorage.getItem('medcore_token');
+      const token = localStorage.getItem('Mediport_token');
       await Promise.all(
         selectedOrders.map(orderId =>
           fetch(`${API}/orders/${orderId}/status`, {

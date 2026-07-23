@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * Clear All Redis Cache & Verify Database
  * Forces complete cache refresh for categories and products
