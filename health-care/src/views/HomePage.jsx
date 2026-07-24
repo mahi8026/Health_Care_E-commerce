@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
+import { testDelay } from '@/utils/testDelay';
 import { 
   FaStethoscope, 
   FaSyringe, 
@@ -470,6 +471,9 @@ export default function HomePage() {
 
     const fetchHomeData = async () => {
       try {
+        // Add test delay to see loading states (development only)
+        await testDelay(2000);
+        
         // SINGLE AGGREGATED REQUEST - Replaces 10+ separate API calls
         const response = await fetch(`${API}/home/data`, {
           credentials: 'include'
@@ -602,28 +606,38 @@ export default function HomePage() {
   const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
     setFeaturedLoading(true);
-    const featuredUrl = tab === 'all' 
-      ? `${API}/products?isFeatured=true&limit=24`
-      : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
-    const fallbackUrl = tab === 'all' 
-      ? `${API}/products?limit=24`
-      : `${API}/products?category=${encodeURIComponent(tab)}&limit=24`;
     
-    // Try featured first, fallback to all products if not enough
-    Promise.all([
-      fetch(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
-      fetch(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
-    ]).then(([featuredData, fallbackData]) => {
-      const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
-      const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
-      const products = featured.length >= 8 ? featured : fallback;
-      // Ensure always an array
-      setFeaturedProducts(Array.isArray(products) ? products : []);
-      setFeaturedLoading(false);
-    }).catch(() => {
-      setFeaturedProducts([]);
-      setFeaturedLoading(false);
-    });
+    const fetchTabData = async () => {
+      // Add test delay to see loading states (development only)
+      await testDelay(1500);
+      
+      const featuredUrl = tab === 'all' 
+        ? `${API}/products?isFeatured=true&limit=24`
+        : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
+      const fallbackUrl = tab === 'all' 
+        ? `${API}/products?limit=24`
+        : `${API}/products?category=${encodeURIComponent(tab)}&limit=24`;
+      
+      try {
+        // Try featured first, fallback to all products if not enough
+        const [featuredData, fallbackData] = await Promise.all([
+          fetch(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
+          fetch(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
+        ]);
+        
+        const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
+        const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
+        const products = featured.length >= 8 ? featured : fallback;
+        // Ensure always an array
+        setFeaturedProducts(Array.isArray(products) ? products : []);
+      } catch (error) {
+        setFeaturedProducts([]);
+      } finally {
+        setFeaturedLoading(false);
+      }
+    };
+    
+    fetchTabData();
   }, []);
 
   // ══════════════════════════════════════════════════════════════════════════════

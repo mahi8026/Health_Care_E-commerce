@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api, { setToken, getToken, removeToken } from '@/utils/api';
 import GA4Tracker from '@/services/GA4Tracker';
+import { testDelay } from '@/utils/testDelay';
 
 const AuthContext = createContext();
 
@@ -50,6 +51,9 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     setLoading(true);
     try {
+      // Add test delay to see loading overlay (development only)
+      await testDelay(2000);
+      
       const response = await api.login(email, password);
       const normalized = normalizeUser(response.user);
       setUser(normalized);
