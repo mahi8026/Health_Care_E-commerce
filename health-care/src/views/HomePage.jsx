@@ -1098,7 +1098,7 @@ export default function HomePage() {
               className="prod-grid-4">
               {topSellingLoading ? (
                 // Show 4 skeleton loaders
-                [...Array(4)].map((_, i) => <TopSellingCardSkeleton key={i} />)
+                [...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)
               ) : (
                 topSellingProducts.slice(0, 4).map((product, idx) => {
                 const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
@@ -1422,7 +1422,7 @@ export default function HomePage() {
               scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {newArrivalsLoading ? (
                 // Show 6 skeleton loaders
-                [...Array(6)].map((_, i) => <ProductCardSkeletonSmall key={i} />)
+                [...Array(6)].map((_, i) => <ProductCardSkeleton key={i} />)
               ) : (
                 newArrivals.map(p => {
                 const img = p.images?.[0]?.url || p.images?.[0];
