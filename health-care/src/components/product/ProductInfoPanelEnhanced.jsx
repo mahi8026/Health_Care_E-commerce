@@ -113,7 +113,7 @@ export default function ProductInfoPanelEnhanced({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Brand & Category */}
       <div className="flex items-center gap-2 flex-wrap">
         {brandName && (
@@ -134,7 +134,7 @@ export default function ProductInfoPanelEnhanced({
       </div>
 
       {/* Product Name */}
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+      <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
         {product.name}
       </h1>
 
@@ -165,24 +165,24 @@ export default function ProductInfoPanelEnhanced({
       </div>
 
       {/* Pricing */}
-      <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-2xl p-6 border border-blue-100">
+      <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl p-4 border border-blue-100">
         {hasDiscount && (
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg text-gray-500 line-through">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-base text-gray-500 line-through">
               ৳{displayOldPrice?.toLocaleString()}
             </span>
-            <span className={`px-3 py-1 ${hasB2BDiscount ? 'bg-purple-500' : 'bg-red-500'} text-white rounded-full text-sm font-bold`}>
+            <span className={`px-2.5 py-0.5 ${hasB2BDiscount ? 'bg-purple-500' : 'bg-red-500'} text-white rounded-full text-xs font-bold`}>
               {hasB2BDiscount ? 'B2B' : 'Save'} {discountPercent}%
             </span>
           </div>
         )}
         
-        <div className="flex items-baseline gap-3 mb-2">
-          <span className="text-4xl font-extrabold text-gray-900">
+        <div className="flex items-baseline gap-2 mb-1.5">
+          <span className="text-3xl font-extrabold text-gray-900">
             {finalPrice > 0 ? `৳${finalPrice?.toLocaleString()}` : 'Contact for Price'}
           </span>
           {hasDiscount && (
-            <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-green-600'} text-lg font-bold`}>
+            <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-green-600'} text-base font-bold`}>
               -৳{savings.toLocaleString()}
             </span>
           )}
@@ -190,9 +190,9 @@ export default function ProductInfoPanelEnhanced({
 
         {/* B2B Badge */}
         {priceDisplay.isB2BPrice && (
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1 text-sm text-purple-700 font-semibold bg-purple-100 px-3 py-1 rounded-full">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center gap-1 text-xs text-purple-700 font-semibold bg-purple-100 px-2.5 py-0.5 rounded-full">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
               B2B Price Applied
@@ -201,51 +201,51 @@ export default function ProductInfoPanelEnhanced({
         )}
 
         {finalPrice > 0 && !priceDisplay.isB2BPrice && (
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-600">
             B2B pricing available for bulk orders (8-30% off)
           </p>
         )}
       </div>
 
       {/* Trust Signals */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
-          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-            <FaTruck className="text-green-600" size={18} />
+      <div className="grid grid-cols-2 gap-2.5">
+        <div className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
+          <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+            <FaTruck className="text-green-600" size={16} />
           </div>
           <div>
-            <div className="text-xs text-gray-500">Free Delivery</div>
-            <div className="text-sm font-semibold text-gray-900">Orders &gt; ৳50k</div>
+            <div className="text-[10px] text-gray-500">Free Delivery</div>
+            <div className="text-xs font-semibold text-gray-900">Orders &gt; ৳50k</div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <FaHeadset className="text-blue-600" size={18} />
+        <div className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
+          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <FaHeadset className="text-blue-600" size={16} />
           </div>
           <div>
-            <div className="text-xs text-gray-500">24/7 Support</div>
-            <div className="text-sm font-semibold text-gray-900">Expert Help</div>
+            <div className="text-[10px] text-gray-500">24/7 Support</div>
+            <div className="text-xs font-semibold text-gray-900">Expert Help</div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
-          <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-            <FaAward className="text-teal-600" size={18} />
+        <div className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
+          <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+            <FaAward className="text-teal-600" size={16} />
           </div>
           <div>
-            <div className="text-xs text-gray-500">DGDA Certified</div>
-            <div className="text-sm font-semibold text-gray-900">Authentic</div>
+            <div className="text-[10px] text-gray-500">DGDA Certified</div>
+            <div className="text-xs font-semibold text-gray-900">Authentic</div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 p-3 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
-          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-            <FaCreditCard className="text-purple-600" size={18} />
+        <div className="flex items-center gap-2 p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#0E8A6E] hover:shadow-md transition-all">
+          <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+            <FaCreditCard className="text-purple-600" size={16} />
           </div>
           <div>
-            <div className="text-xs text-gray-500">Secure Payment</div>
-            <div className="text-sm font-semibold text-gray-900">SSL Protected</div>
+            <div className="text-[10px] text-gray-500">Secure Payment</div>
+            <div className="text-xs font-semibold text-gray-900">SSL Protected</div>
           </div>
         </div>
       </div>
@@ -304,23 +304,23 @@ export default function ProductInfoPanelEnhanced({
       )}
 
       {/* CTA Buttons */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {inStock ? (
           <>
             <button
               onClick={handleAddToCart}
               disabled={addingToCart}
-              className="w-full py-4 px-6 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] disabled:opacity-60 flex items-center justify-center gap-3 relative overflow-hidden group"
+              className="w-full py-3.5 px-6 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.02] disabled:opacity-60 flex items-center justify-center gap-2.5 relative overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
               {addingToCart ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Adding to Cart...</span>
                 </>
               ) : (
                 <>
-                  <FaShoppingCart size={20} />
+                  <FaShoppingCart size={18} />
                   <span>Add to Cart</span>
                 </>
               )}
@@ -328,16 +328,16 @@ export default function ProductInfoPanelEnhanced({
 
             <button
               onClick={handleBuyNow}
-              className="w-full py-4 px-6 bg-[#0B2545] hover:bg-[#0d2d52] text-white rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-3"
+              className="w-full py-3.5 px-6 bg-[#0B2545] hover:bg-[#0d2d52] text-white rounded-xl font-bold text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2.5"
             >
-              <FaBolt size={18} />
+              <FaBolt size={16} />
               <span>Buy Now</span>
             </button>
           </>
         ) : (
           <button
             disabled
-            className="w-full py-4 px-6 bg-gray-300 text-gray-500 rounded-xl font-bold text-lg cursor-not-allowed"
+            className="w-full py-3.5 px-6 bg-gray-300 text-gray-500 rounded-xl font-bold text-base cursor-not-allowed"
           >
             Out of Stock
           </button>
@@ -391,7 +391,7 @@ export default function ProductInfoPanelEnhanced({
       </div>
 
       {/* Ask Product Question via WhatsApp */}
-      <div className="pt-4 border-t border-gray-200">
+      <div className="pt-3 border-t border-gray-200">
         <button
           onClick={() => {
             const message = encodeURIComponent(
@@ -399,12 +399,12 @@ export default function ProductInfoPanelEnhanced({
             );
             window.open(`https://wa.me/${CONTACT.whatsapp}?text=${message}`, '_blank');
           }}
-          className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-3"
+          className="w-full py-2.5 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2.5"
         >
-          <FaWhatsapp size={20} />
+          <FaWhatsapp size={18} />
           <span>Ask a Question on WhatsApp</span>
         </button>
-        <p className="text-xs text-gray-500 text-center mt-2">
+        <p className="text-[10px] text-gray-500 text-center mt-1.5">
           Get instant answers about specifications, pricing, and availability
         </p>
       </div>

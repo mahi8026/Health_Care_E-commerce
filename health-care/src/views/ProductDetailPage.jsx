@@ -286,10 +286,10 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
       />
 
       {/* ── Main Content ───────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
 
         {/* Two-column: image left, info right */}
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-6 xl:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-5 xl:gap-6">
           <div>
             <ProductImageGalleryEnhanced
               images={(product.images || []).map(img =>
@@ -314,7 +314,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
 
         {/* Frequently Bought Together */}
-        <div className="mt-8">
+        <div className="mt-6">
           <FrequentlyBoughtRedesigned
             productId={product._id || product.id}
             category={product.categoryId || (typeof product.category === 'object' ? product.category?._id : product.category)}
@@ -322,17 +322,17 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
 
         {/* Tabs: Specs, Description, Shipping */}
-        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+        <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
           <ProductTabsEnhanced product={product} />
         </div>
 
         {/* Reviews */}
-        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+        <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
           <ProductReviewsEnhanced productId={product._id || product.id} />
         </div>
 
         {/* Customers Also Viewed */}
-        <div className="mt-6">
+        <div className="mt-5">
           <CustomersAlsoViewed
             productId={product._id || product.id}
             category={product.categoryId || (typeof product.category === 'object' ? product.category?._id : product.category)}
@@ -341,8 +341,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
         {/* Product Video (if available) */}
         {product.videoUrl && (
-          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-            <h2 className="text-[15px] font-semibold text-[#0B2545] mb-4">Product Video</h2>
+          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+            <h2 className="text-[14px] font-semibold text-[#0B2545] mb-3">Product Video</h2>
             <ProductVideo
               videoUrl={product.videoUrl}
               thumbnail={product.videoThumbnail}
@@ -353,10 +353,10 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
         {/* AI-Powered Recommendations */}
         {loadingRecommendations && (
-          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🤖</span>
-              <h2 className="text-[15px] font-semibold text-[#0B2545]">Loading Recommendations...</h2>
+          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">🤖</span>
+              <h2 className="text-[14px] font-semibold text-[#0B2545]">Loading Recommendations...</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {[...Array(6)].map((_, i) => (
@@ -367,11 +367,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         )}
         
         {!loadingRecommendations && recommendedProducts.length > 0 && (
-          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🤖</span>
-              <h2 className="text-[15px] font-semibold text-[#0B2545]">You Might Also Like</h2>
-              <span className="text-[11px] text-gray-400 bg-purple-50 px-2 py-0.5 rounded-full font-medium">
+          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">🤖</span>
+              <h2 className="text-[14px] font-semibold text-[#0B2545]">You Might Also Like</h2>
+              <span className="text-[10px] text-gray-400 bg-purple-50 px-2 py-0.5 rounded-full font-medium">
                 AI Recommended
               </span>
             </div>
@@ -418,7 +418,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         )}
 
         {/* Recently Viewed Products */}
-        <div className="mt-6">
+        <div className="mt-5">
           <RecentlyViewed
             currentProductId={product._id || product.id}
             limit={6}
@@ -427,24 +427,24 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
 
         {/* SEO Content */}
-        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-          <h2 className="text-[15px] font-semibold text-[#0B2545] mb-3">About {product.name}</h2>
+        <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+          <h2 className="text-[14px] font-semibold text-[#0B2545] mb-2.5">About {product.name}</h2>
           {product.description && (
-            <p className="text-[13px] text-gray-500 leading-relaxed mb-5">{product.description}</p>
+            <p className="text-[12px] text-gray-500 leading-relaxed mb-4">{product.description}</p>
           )}
-          <h3 className="text-[14px] font-semibold text-[#0B2545] mb-2">
+          <h3 className="text-[13px] font-semibold text-[#0B2545] mb-1.5">
             {product.name} Price in Bangladesh
           </h3>
-          <p className="text-[13px] text-gray-500 leading-relaxed mb-5">
+          <p className="text-[12px] text-gray-500 leading-relaxed mb-4">
             The retail price of {product.name} in Bangladesh is{' '}
             {product.price && product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Contact for Price'}.
             {' '}B2B institutions (hospitals, clinics, diagnostic centres) receive 8–30% bulk discount depending on order volume.
             Contact MediportBD for institutional pricing and credit terms.
           </p>
-          <h3 className="text-[14px] font-semibold text-[#0B2545] mb-2">
+          <h3 className="text-[13px] font-semibold text-[#0B2545] mb-1.5">
             Buy {product.name} in Bangladesh
           </h3>
-          <p className="text-[13px] text-gray-500 leading-relaxed">
+          <p className="text-[12px] text-gray-500 leading-relaxed">
             MediportBD is an authorised distributor{brandName ? ` of ${brandName}` : ''} in Bangladesh.
             {' '}All products are DGDA registered and come with full manufacturer warranty.
             {' '}Enjoy free delivery in Dhaka for orders over ৳50,000 and nationwide shipping to all major cities.
@@ -454,12 +454,12 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
       {/* ── Mobile Sticky Bottom Bar ───────────────────────────────────── */}
       <div
-        className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-[500] shadow-lg flex items-center gap-3"
-        style={{ paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}
+        className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-white border-t border-gray-200 px-4 py-2.5 z-[500] shadow-lg flex items-center gap-2.5"
+        style={{ paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}
       >
         <div className="flex-1">
-          <div className="text-[10px] text-gray-400 font-medium">Price</div>
-          <div className="text-[20px] font-bold text-[#0B2545] leading-tight">
+          <div className="text-[9px] text-gray-400 font-medium">Price</div>
+          <div className="text-[18px] font-bold text-[#0B2545] leading-tight">
             {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
           </div>
         </div>
@@ -475,11 +475,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
             setTimeout(() => setAddingToCart(false), 1200);
           }}
           disabled={addingToCart}
-          className="bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl px-6 py-3 text-[14px] font-bold transition-colors disabled:opacity-60 flex items-center gap-2 min-w-[140px] justify-center"
+          className="bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl px-5 py-2.5 text-[13px] font-bold transition-colors disabled:opacity-60 flex items-center gap-2 min-w-[130px] justify-center"
         >
           {addingToCart ? (
             <>
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
               </svg>
