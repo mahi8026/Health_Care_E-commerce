@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
-import { testDelay } from '@/utils/testDelay';
 import Spinner, { ProductCardSkeleton, LoadingOverlay } from '@/components/ui/Spinner';
 import { 
   FaStethoscope, 
@@ -417,9 +416,6 @@ export default function HomePage() {
 
     const fetchHomeData = async () => {
       try {
-        // Add test delay to see loading states (development only)
-        await testDelay(2000);
-        
         // SINGLE AGGREGATED REQUEST - Replaces 10+ separate API calls
         const response = await fetch(`${API}/home/data`, {
           credentials: 'include'
@@ -554,9 +550,6 @@ export default function HomePage() {
     setFeaturedLoading(true);
     
     const fetchTabData = async () => {
-      // Add test delay to see loading states (development only)
-      await testDelay(1500);
-      
       const featuredUrl = tab === 'all' 
         ? `${API}/products?isFeatured=true&limit=24`
         : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;

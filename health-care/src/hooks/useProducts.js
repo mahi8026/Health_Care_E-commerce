@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '@/utils/api';
-import { testDelay } from '@/utils/testDelay';
 
 /**
  * Fetch and manage a paginated, filterable product listing.
@@ -45,9 +44,6 @@ export function useProducts(filters = {}, initialData = null) {
     setLoading(true);
     setError(null);
     try {
-      // Add test delay to see loading states (development only)
-      await testDelay(2000);
-      
       const response = await api.getProducts(filters);
       
       // Handle different response structures
@@ -138,9 +134,6 @@ export function useProduct(productId) {
     setLoading(true);
     setError(null);
     try {
-      // Add test delay to see loading states (development only)
-      await testDelay(1500);
-      
       const response = await api.getProduct(productId);
       
       const productData = response.product || response.data?.product || response.data || response;
