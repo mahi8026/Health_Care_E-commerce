@@ -1581,20 +1581,8 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <div style={{ padding: '56px 24px', background: '#F8FAFC' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 32 }}>
-              <Skeleton w="180px" h={14} />
-              <div style={{ marginTop: 10 }}><Skeleton w="300px" h={28} /></div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-              {[1,2,3,4,5,6,7,8].map(i => (
-                <div key={i} style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid #E5E7EB' }}>
-                  <Skeleton w={48} h={48} r={12} />
-                  <div style={{ marginTop: 12 }}><Skeleton w="100%" h={16} /></div>
-                  <div style={{ marginTop: 8 }}><Skeleton w="80%" h={12} /></div>
-                </div>
-              ))}
-            </div>
+          <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
+            <Spinner size="lg" variant="medical" />
           </div>
         </div>
       }>
@@ -1645,22 +1633,8 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, #0B2545 0%, #134E7A 100%)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center' }}>
-            <div style={{ flex: '0 0 640px', maxWidth: '640px' }}>
-              <Skeleton w="100%" h={360} r={12} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <Skeleton w="250px" h={28} />
-              <div style={{ marginTop: 16 }}><Skeleton w="100%" h={16} /></div>
-              <div style={{ marginTop: 8 }}><Skeleton w="90%" h={16} /></div>
-              <div style={{ marginTop: 24 }}>
-                {[1,2,3,4].map(i => (
-                  <div key={i} style={{ marginTop: 12 }}>
-                    <Skeleton w="80%" h={14} />
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner size="lg" variant="medical" />
           </div>
         </section>
       }>

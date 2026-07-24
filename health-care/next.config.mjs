@@ -260,8 +260,8 @@ const nextConfig = {
 
   // Turbopack config — required in Next.js 16 to silence warning
   turbopack: {
-    // Set explicit root to avoid multiple lockfile warning
-    root: process.cwd(),
+    // Set explicit root to workspace root (c:\Projects\Health Care) for monorepo
+    root: process.env.VERCEL ? '/vercel/path0' : 'C:/Projects/Health Care',
   },
 
   // TypeScript is installed only for ESLint (eslint-config-next dependency)

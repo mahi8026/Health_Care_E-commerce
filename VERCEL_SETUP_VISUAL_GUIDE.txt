@@ -1,0 +1,266 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    VERCEL ENVIRONMENT VARIABLE SETUP                         ║
+║                          (3 Minute Guide)                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+📍 STEP 1: GO TO VERCEL
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Browser: https://vercel.com/dashboard                                      │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  Vercel Dashboard                                              │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                                                │         │
+│  │  Projects:                                                     │         │
+│  │                                                                │         │
+│  │  📦 health-care-e-commerce-murex  <─── CLICK THIS             │         │
+│  │     https://health-care-e-commerce-murex.vercel.app           │         │
+│  │     ✅ Ready                                                   │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 2: OPEN SETTINGS → ENVIRONMENT VARIABLES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  health-care-e-commerce-murex                                  │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                                                │         │
+│  │  [Overview]  [Deployments]  [Analytics]  [Settings] <─ CLICK  │         │
+│  │                                          ──────────            │         │
+│  │                                                                │         │
+│  │  Left Sidebar:                                                 │         │
+│  │  ├─ General                                                    │         │
+│  │  ├─ Domains                                                    │         │
+│  │  ├─ Environment Variables  <──────────────────── CLICK THIS   │         │
+│  │  ├─ Git                                                        │         │
+│  │  ├─ Functions                                                  │         │
+│  │  └─ Security                                                   │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 3: ADD NEW VARIABLE
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  Environment Variables                                         │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                           [Add New] <─ CLICK   │         │
+│  │                                                                │         │
+│  │  No environment variables found.                               │         │
+│  │  Add your first environment variable.                          │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 4: FILL IN THE FORM
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  Add Environment Variable                                      │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                                                │         │
+│  │  Key (Name):                                                   │         │
+│  │  ┌────────────────────────────────────────────────────┐       │         │
+│  │  │ NEXT_PUBLIC_ENABLE_TEST_DELAYS                     │       │         │
+│  │  └────────────────────────────────────────────────────┘       │         │
+│  │  👆 COPY THIS EXACTLY (no spaces, no typos)                   │         │
+│  │                                                                │         │
+│  │  Value:                                                        │         │
+│  │  ┌────────────────────────────────────────────────────┐       │         │
+│  │  │ true                                               │       │         │
+│  │  └────────────────────────────────────────────────────┘       │         │
+│  │  👆 ENTER: true (lowercase, no quotes)                        │         │
+│  │                                                                │         │
+│  │  Environments:                                                 │         │
+│  │  ☑️ Production   <─── CHECK THIS                              │         │
+│  │  ☑️ Preview      <─── CHECK THIS                              │         │
+│  │  ☑️ Development  <─── CHECK THIS                              │         │
+│  │                                                                │         │
+│  │                              [Cancel]  [Save] <─── CLICK      │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 5: VERIFY IT WAS ADDED
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  Environment Variables                                         │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                           [Add New]            │         │
+│  │                                                                │         │
+│  │  Production:                                                   │         │
+│  │  ┌──────────────────────────────────────────────────────┐     │         │
+│  │  │ NEXT_PUBLIC_ENABLE_TEST_DELAYS = tr*************** ⋯ │     │         │
+│  │  └──────────────────────────────────────────────────────┘     │         │
+│  │  👆 YOU SHOULD SEE THIS (value is hidden for security)        │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 6: REDEPLOY THE APPLICATION
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Go back to top and click: [Deployments] tab                                │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  Deployments                                                   │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                                                │         │
+│  │  ┌────────────────────────────────────────────────────┐ ⋯     │         │
+│  │  │ main  0e9e6df  ✅ Ready  2m ago                    │ │ <─┐ │         │
+│  │  └────────────────────────────────────────────────────┘ │   │ │         │
+│  │                                                          │   │ │         │
+│  │  Click the three dots (⋯) ─────────────────────────────┘   │ │         │
+│  │                                                              │ │         │
+│  │  Then click: [Redeploy] ────────────────────────────────────┘ │         │
+│  │                                                                │         │
+│  │  Confirmation Dialog:                                          │         │
+│  │  ┌──────────────────────────────────────────────────┐         │         │
+│  │  │ Redeploy to Production?                          │         │         │
+│  │  │                                                  │         │         │
+│  │  │ This will redeploy 0e9e6df to production.       │         │         │
+│  │  │                                                  │         │         │
+│  │  │                    [Cancel]  [Redeploy] <─ CLICK│         │         │
+│  │  └──────────────────────────────────────────────────┘         │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 7: WAIT FOR DEPLOYMENT (2-3 minutes)
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────┐         │
+│  │  Deployments                                                   │         │
+│  │  ──────────────────────────────────────────────────────────   │         │
+│  │                                                                │         │
+│  │  ┌────────────────────────────────────────────────────┐       │         │
+│  │  │ main  0e9e6df  🔄 Building...  Just now           │       │         │
+│  │  └────────────────────────────────────────────────────┘       │         │
+│  │                                                                │         │
+│  │  Wait for status to change to: ✅ Ready                       │         │
+│  │                                                                │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+│  ⏳ This usually takes 2-3 minutes...                                        │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📍 STEP 8: TEST THE SITE!
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Open browser and visit:                                                    │
+│                                                                              │
+│  🌐 https://health-care-e-commerce-murex.vercel.app                         │
+│                                                                              │
+│  What you should see:                                                       │
+│                                                                              │
+│  1️⃣ Medical spinner shows for 2 full seconds                               │
+│     ┌─────────────────────────────────┐                                    │
+│     │         🏥                       │                                    │
+│     │     Loading...                   │                                    │
+│     │   (spinning animation)           │                                    │
+│     └─────────────────────────────────┘                                    │
+│                                                                              │
+│  2️⃣ Product card skeletons animate                                         │
+│     ┌───┐ ┌───┐ ┌───┐ ┌───┐                                               │
+│     │▒▒▒│ │▒▒▒│ │▒▒▒│ │▒▒▒│  <─ Gray boxes with shimmer effect            │
+│     │▒▒▒│ │▒▒▒│ │▒▒▒│ │▒▒▒│                                               │
+│     └───┘ └───┘ └───┘ └───┘                                               │
+│                                                                              │
+│  3️⃣ Open browser console (F12) and see:                                    │
+│     [testDelay] Delaying 2000ms to show loading state                       │
+│     [testDelay] Delaying 1500ms to show loading state                       │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+✅ SUCCESS CHECKLIST
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  ☑️  Added NEXT_PUBLIC_ENABLE_TEST_DELAYS environment variable              │
+│  ☑️  Set value to: true                                                     │
+│  ☑️  Selected all 3 environments (Production, Preview, Development)         │
+│  ☑️  Saved the variable                                                     │
+│  ☑️  Triggered redeploy                                                     │
+│  ☑️  Waited for deployment to complete (✅ Ready)                           │
+│  ☑️  Visited the site and saw 2-second loading spinner                     │
+│  ☑️  Saw console logs: [testDelay] Delaying Xms...                         │
+│                                                                              │
+│  🎉 ALL DONE! Loading states are now visible!                               │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+⚠️  IMPORTANT NOTES
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  1. Variable name MUST be exactly: NEXT_PUBLIC_ENABLE_TEST_DELAYS           │
+│     (no spaces, case-sensitive, underscores not hyphens)                    │
+│                                                                              │
+│  2. Value MUST be exactly: true                                             │
+│     (lowercase, no quotes, no capital T)                                    │
+│                                                                              │
+│  3. You MUST check all 3 environments                                       │
+│     (Production, Preview, Development)                                      │
+│                                                                              │
+│  4. You MUST redeploy after adding the variable                             │
+│     (variable won't take effect until redeployed)                           │
+│                                                                              │
+│  5. Clear browser cache if you don't see changes                            │
+│     (Ctrl + Shift + Del or Ctrl + F5 to hard refresh)                      │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+🐛 TROUBLESHOOTING
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  Problem: Can't find "Add New" button                                       │
+│  Solution: Make sure you're on "Environment Variables" page, not "General"  │
+│                                                                              │
+│  Problem: Variable added but loading still not visible                      │
+│  Solution: Did you redeploy? Variable needs redeploy to take effect         │
+│                                                                              │
+│  Problem: Redeployed but still not working                                  │
+│  Solution: Clear browser cache (Ctrl + Shift + Del) and hard refresh (F5)  │
+│                                                                              │
+│  Problem: Deployment failed with errors                                     │
+│  Solution: Click the failed deployment, read logs, try redeploying again    │
+│                                                                              │
+│  Problem: Don't have access to Vercel dashboard                             │
+│  Solution: Ask the project owner to add you or give you the login           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+📞 NEED HELP?
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  If you're stuck, share:                                                    │
+│  • Screenshot of Vercel Environment Variables page                          │
+│  • Screenshot of deployment status                                          │
+│  • Any error messages you see                                               │
+│  • Browser console output (F12 → Console tab)                               │
+│                                                                              │
+│  I'll help you troubleshoot!                                                │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
