@@ -210,6 +210,36 @@ export default function RootLayout({ children }) {
             </Script>
           </>
         )}
+
+        {/* Accessibility fixes for third-party widgets */}
+        <Script id="a11y-fixes" strategy="afterInteractive">
+          {`
+            (function() {
+              function fixThirdPartyA11y() {
+                try {
+                  const hiddenElements = document.querySelectorAll('[aria-hidden="true"]');
+                  hiddenElements.forEach(function(el) {
+                    const focusable = el.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
+                    if (focusable.length > 0) {
+                      const isGoogleWidget = el.classList.contains('wuMMb') || el.hasAttribute('jscontroller');
+                      if (isGoogleWidget) {
+                        focusable.forEach(function(f) {
+                          f.setAttribute('tabindex', '-1');
+                          f.setAttribute('aria-hidden', 'true');
+                        });
+                        if ('inert' in el) el.inert = true;
+                      }
+                    }
+                  });
+                } catch(e) {}
+              }
+              fixThirdPartyA11y();
+              new MutationObserver(fixThirdPartyA11y).observe(document.body, { childList: true, subtree: true });
+              setTimeout(function() { fixThirdPartyA11y(); }, 1000);
+              setTimeout(function() { fixThirdPartyA11y(); }, 3000);
+            })();
+          `}
+        </Script>
       </body>
     </html>
   );
