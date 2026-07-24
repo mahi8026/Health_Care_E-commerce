@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
+import Spinner from '@/components/ui/Spinner';
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -736,8 +737,8 @@ export default function B2BDashboardPage() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-[#0E8A6E] border-t-transparent rounded-full animate-spin mx-auto mb-3"/>
-          <p className="text-[13px] text-[#6B7280]">Loading your dashboard…</p>
+          <Spinner size="xl" variant="medical" />
+          <p className="text-[13px] text-[#6B7280] mt-4">Loading your dashboard…</p>
         </div>
       </div>
     );

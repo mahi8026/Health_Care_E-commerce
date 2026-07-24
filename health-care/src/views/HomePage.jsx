@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
 import { testDelay } from '@/utils/testDelay';
+import Spinner, { ProductCardSkeleton, LoadingOverlay } from '@/components/ui/Spinner';
 import { 
   FaStethoscope, 
   FaSyringe, 
@@ -108,65 +109,10 @@ function buildWhyUs(settings) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// HELPER COMPONENTS
+// HELPER COMPONENTS  
 // ══════════════════════════════════════════════════════════════════════════════
 
-function Skeleton({ w = '100%', h = 20, r = 8 }) {
-  return (
-    <div className="skeleton" style={{ width: w, height: h, borderRadius: r }} />
-  );
-}
-
-// Product Card Skeleton for loading states
-const ProductCardSkeleton = memo(function ProductCardSkeleton() {
-  return (
-    <div style={{ background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
-      {/* Image skeleton */}
-      <div style={{ height: 190, background: '#F8FAFC' }}>
-        <Skeleton w="100%" h="100%" r={0} />
-      </div>
-      {/* Content skeleton */}
-      <div style={{ padding: '12px 14px 14px' }}>
-        <Skeleton w="60%" h={10} />
-        <div style={{ marginTop: 8 }}><Skeleton w="100%" h={14} /></div>
-        <div style={{ marginTop: 6 }}><Skeleton w="90%" h={14} /></div>
-        <div style={{ marginTop: 12 }}><Skeleton w="70%" h={20} /></div>
-      </div>
-    </div>
-  );
-});
-
-// Horizontal scroll product skeleton (smaller)
-const ProductCardSkeletonSmall = memo(function ProductCardSkeletonSmall() {
-  return (
-    <div style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12, border: '1px solid #E5E7EB', overflow: 'hidden', flexShrink: 0 }}>
-      <div style={{ height: 160, background: '#F9FAFB' }}>
-        <Skeleton w="100%" h="100%" r={0} />
-      </div>
-      <div style={{ padding: '10px 12px' }}>
-        <Skeleton w="100%" h={11} />
-        <div style={{ marginTop: 6 }}><Skeleton w="60%" h={14} /></div>
-      </div>
-    </div>
-  );
-});
-
-// Top selling card skeleton (horizontal layout)
-const TopSellingCardSkeleton = memo(function TopSellingCardSkeleton() {
-  return (
-    <div style={{ display: 'flex', gap: 16, padding: 16, background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12 }}>
-      <div style={{ width: 140, height: 140, flexShrink: 0, background: '#F1F5F9', borderRadius: 8 }}>
-        <Skeleton w="100%" h="100%" r={8} />
-      </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <Skeleton w="40px" h={18} />
-        <Skeleton w="100%" h={16} />
-        <Skeleton w="80%" h={16} />
-        <div style={{ marginTop: 'auto' }}>
-          <Skeleton w="90px" h={24} />
-        </div>
-      </div>
-    </div>
+// Using ProductCardSkeleton from @/components/ui/Spinner for consistency
   );
 });
 

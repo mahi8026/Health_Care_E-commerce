@@ -15,6 +15,7 @@ import FrequentlyBoughtRedesigned from '@/components/product/FrequentlyBoughtRed
 import CustomersAlsoViewed from '@/components/product/CustomersAlsoViewed';
 import StickyAddToCart from '@/components/product/StickyAddToCart';
 import { Skeleton, SkeletonText } from '@/components/ui/Skeleton';
+import { ProductCardSkeleton } from '@/components/ui/Spinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
@@ -351,6 +352,20 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         )}
 
         {/* AI-Powered Recommendations */}
+        {loadingRecommendations && (
+          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🤖</span>
+              <h2 className="text-[15px] font-semibold text-[#0B2545]">Loading Recommendations...</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[...Array(6)].map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          </div>
+        )}
+        
         {!loadingRecommendations && recommendedProducts.length > 0 && (
           <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
