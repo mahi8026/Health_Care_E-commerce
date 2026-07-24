@@ -112,8 +112,6 @@ function buildWhyUs(settings) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 // Using ProductCardSkeleton from @/components/ui/Spinner for consistency
-  );
-});
 
 const ProductCard = memo(function ProductCard({ product, onClick }) {
   const { addToCart } = useCart();
