@@ -1,8 +1,8 @@
-# MedCore BD — Medical Equipment E-Commerce Platform
+# Mediport BD — Medical Equipment E-Commerce Platform
 
 <div align="center">
 
-![MedCore BD](https://img.shields.io/badge/MedCore-BD-blue)
+![Mediport BD](https://img.shields.io/badge/Mediport-BD-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black)
 ![React](https://img.shields.io/badge/React-19.2.4-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-green)
@@ -37,7 +37,7 @@ A comprehensive B2B and B2C e-commerce platform for medical equipment, surgical 
 
 ## 🏥 Overview
 
-MedCore BD is a full-stack medical equipment e-commerce platform serving Bangladesh's healthcare sector. The platform connects hospitals, clinics, diagnostic centers, and healthcare professionals with DGDA-certified medical equipment from global brands like Siemens, GE, Roche, Abbott, and Mindray.
+Mediport BD is a full-stack medical equipment e-commerce platform serving Bangladesh's healthcare sector. The platform connects hospitals, clinics, diagnostic centers, and healthcare professionals with DGDA-certified medical equipment from global brands like Siemens, GE, Roche, Abbott, and Mindray.
 
 ### Core Business Model
 
