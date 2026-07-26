@@ -24,23 +24,23 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   if (variant === 'default') {
     return (
       <div className={`bg-white border-b border-gray-100 ${className}`.trim()}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2">
           <nav aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-1.5 text-[11px] sm:text-[12px] leading-none m-0 p-0 list-none">
+            <ol className="flex items-center gap-1 text-[11px] sm:text-[12px] leading-none m-0 p-0 list-none min-w-0 overflow-hidden">
               {items.map((item, idx) => {
                 const current = isCurrent(item, idx);
                 return (
-                  <li key={`${item.label}-${idx}`} className="flex items-center gap-1.5">
+                  <li key={`${item.label}-${idx}`} className="flex items-center gap-1 min-w-0 flex-shrink-0 last:flex-shrink last:min-w-0">
                     {idx > 0 && (
                       <FaChevronRight
-                        size={9}
+                        size={8}
                         className="text-gray-300 flex-shrink-0"
                         aria-hidden
                       />
                     )}
                     {current ? (
                       <span
-                        className="text-gray-700 font-medium truncate max-w-[200px] sm:max-w-[300px] md:max-w-none"
+                        className="text-gray-700 font-medium truncate"
                         aria-current="page"
                       >
                         {item.label}
@@ -48,7 +48,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                     ) : (
                       <Link
                         href={item.href}
-                        className="text-gray-500 hover:text-[#0E8A6E] transition-colors truncate max-w-[200px] sm:max-w-[300px] md:max-w-none"
+                        className="text-gray-500 hover:text-[#0E8A6E] transition-colors whitespace-nowrap flex-shrink-0"
                       >
                         {item.label}
                       </Link>
@@ -66,21 +66,21 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   // Embedded variant (minimal styling)
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol className="flex flex-wrap items-center gap-1.5 text-[11px] sm:text-[12px] leading-none m-0 p-0 list-none">
+      <ol className="flex items-center gap-1 text-[11px] sm:text-[12px] leading-none m-0 p-0 list-none min-w-0 overflow-hidden">
         {items.map((item, idx) => {
           const current = isCurrent(item, idx);
           return (
-            <li key={`${item.label}-${idx}`} className="flex items-center gap-1.5">
+            <li key={`${item.label}-${idx}`} className="flex items-center gap-1 min-w-0 flex-shrink-0 last:flex-shrink last:min-w-0">
               {idx > 0 && (
                 <FaChevronRight
-                  size={9}
+                  size={8}
                   className="text-gray-300 flex-shrink-0"
                   aria-hidden
                 />
               )}
               {current ? (
                 <span
-                  className="text-gray-700 font-medium truncate max-w-[200px] sm:max-w-[300px] md:max-w-none"
+                  className="text-gray-700 font-medium truncate"
                   aria-current="page"
                 >
                   {item.label}
@@ -88,7 +88,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               ) : (
                 <Link
                   href={item.href}
-                  className="text-gray-500 hover:text-[#0E8A6E] transition-colors truncate max-w-[200px] sm:max-w-[300px] md:max-w-none"
+                  className="text-gray-500 hover:text-[#0E8A6E] transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   {item.label}
                 </Link>
