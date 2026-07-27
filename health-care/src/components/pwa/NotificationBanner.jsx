@@ -26,6 +26,9 @@ export default function NotificationBanner() {
     if (result.success) {
       setSubscribed(true);
       setShow(false);
+    } else if (result.reason === 'vapid_key_missing') {
+      alert('Push notifications are not configured. Please contact support.');
+      setShow(false);
     }
   };
 

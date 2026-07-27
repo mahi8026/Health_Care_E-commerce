@@ -66,6 +66,12 @@ export function usePushNotification() {
   const subscribe = useCallback(async (token) => {
     if (!isSupported) return { success: false, reason: 'not_supported' };
 
+    // Check if VAPID key is available
+    if (!VAPID_PUBLIC_KEY) {
+      console.error('[Push] VAPID_PUBLIC_KEY is not defined. Check environment variables.');
+      return { success: false, reason: 'vapid_key_missing' };
+    }
+
     setIsLoading(true);
     try {
       // Request permission
