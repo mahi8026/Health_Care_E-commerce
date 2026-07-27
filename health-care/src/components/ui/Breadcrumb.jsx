@@ -4,46 +4,21 @@ import Link from 'next/link';
 import { FaChevronRight } from 'react-icons/fa';
 
 /**
- * Breadcrumb Navigation Component
- *
- * Single-line horizontal breadcrumb with no wrapping.
+ * Breadcrumb Navigation Component — single line, no wrapping.
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
 
   const isCurrent = (item, idx) => idx === items.length - 1 || item.href === '#';
 
-  const olStyle = {
+  const wrapStyle = {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'nowrap',
     alignItems: 'center',
-    columnGap: '4px',
-    rowGap: 0,
-    margin: 0,
-    padding: 0,
-    listStyle: 'none',
-    listStyleType: 'none',
+    gap: '4px',
     fontSize: '12px',
     lineHeight: '1',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-  };
-
-  const liBaseStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '4px',
-    margin: 0,
-    padding: 0,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  };
-
-  const liLastStyle = {
-    ...liBaseStyle,
-    flexShrink: 1,
     overflow: 'hidden',
   };
 
@@ -51,7 +26,18 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
     items.map((item, idx) => {
       const current = isCurrent(item, idx);
       return (
-        <li key={`${item.label}-${idx}`} style={current ? liLastStyle : liBaseStyle}>
+        <div
+          key={`${item.label}-${idx}`}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '4px',
+            flexShrink: current ? 1 : 0,
+            minWidth: 0,
+            whiteSpace: 'nowrap',
+          }}
+        >
           {idx > 0 && (
             <FaChevronRight
               size={8}
@@ -64,10 +50,9 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               style={{
                 color: '#374151',
                 fontWeight: 500,
+                whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                display: 'block',
               }}
               aria-current="page"
             >
@@ -87,7 +72,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               {item.label}
             </Link>
           )}
-        </li>
+        </div>
       );
     });
 
@@ -97,6 +82,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         style={{
           backgroundColor: '#ffffff',
           borderBottom: '1px solid #f3f4f6',
+          width: '100%',
         }}
         className={className || undefined}
       >
@@ -104,13 +90,11 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           style={{
             maxWidth: '80rem',
             margin: '0 auto',
-            padding: '8px 16px',
+            padding: '6px 16px',
           }}
         >
-          <nav aria-label="Breadcrumb">
-            <ol style={olStyle}>
-              {renderItems()}
-            </ol>
+          <nav aria-label="Breadcrumb" style={wrapStyle}>
+            {renderItems()}
           </nav>
         </div>
       </div>
@@ -118,10 +102,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   }
 
   return (
-    <nav aria-label="Breadcrumb" className={className || undefined}>
-      <ol style={olStyle}>
-        {renderItems()}
-      </ol>
+    <nav aria-label="Breadcrumb" style={wrapStyle} className={className || undefined}>
+      {renderItems()}
     </nav>
   );
 }
