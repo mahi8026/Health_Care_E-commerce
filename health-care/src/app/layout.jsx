@@ -20,6 +20,7 @@ import ServiceWorkerRegistration from "@/components/ui/ServiceWorkerRegistration
 import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
+import NotificationBanner from "@/components/pwa/NotificationBanner";
 
 export const dynamic = 'force-dynamic';
 
@@ -192,6 +193,9 @@ export default function RootLayout({ children }) {
 
         {/* PWA Install Prompt */}
         <InstallPWA />
+
+        {/* Push Notification Permission Banner */}
+        <NotificationBanner />
 
         {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (

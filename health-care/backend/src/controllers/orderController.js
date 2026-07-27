@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const { DELIVERY_FEES } = require('../config/constants');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 const emailService = require('../services/emailService');
+const { sendToUser, sendToAdmins, notifications } = require('../utils/pushService');
 
 const cacheService = new CacheService();
 
@@ -466,6 +467,14 @@ exports.createOrder = async (req, res) => {
       );
     }
 
+    // Send push notifications asynchronously (non-blocking)
+    sendToUser(req.user.id, notifications.orderConfirmed(order[0])).catch(err =>
+      logger.error(`[createOrder] Push notification failed: ${err.message}`)
+    );
+    sendToAdmins(notifications.newOrderAdmin(order[0])).catch(err =>
+      logger.error(`[createOrder] Admin push notification failed: ${err.message}`)
+    );
+
     // Log order placement activity
     logActivityAsync({
       user: req.user,
@@ -673,6 +682,18 @@ exports.updateOrderStatus = async (req, res) => {
           logger.error(`[updateOrderStatus] WhatsApp failed: ${err.message}`)
         );
       }
+    }
+
+    // Send push notifications for status changes (non-blocking)
+    if (status === 'shipped') {
+      sendToUser(order.user._id || order.user, notifications.orderShipped(order)).catch(err =>
+        logger.error(`[updateOrderStatus] Push notification failed: ${err.message}`)
+      );
+    }
+    if (status === 'delivered') {
+      sendToUser(order.user._id || order.user, notifications.orderDelivered(order)).catch(err =>
+        logger.error(`[updateOrderStatus] Push notification failed: ${err.message}`)
+      );
     }
 
     // Log status change activity

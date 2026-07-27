@@ -16,6 +16,7 @@
     "fix:slash-slugs": "node src/scripts/fixSlashSlugs.js",
     "verify-indexes": "node src/scripts/verifyIndexes.js",
     "diagnose": "node diagnose-connection.js",
+    "generate-vapid": "node generate-vapid.js",
     "restart": "powershell -ExecutionPolicy Bypass -File restart-server.ps1",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
@@ -88,6 +89,7 @@
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.1",
+    "web-push": "^3.6.7",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
     "xss-clean": "^0.1.4"

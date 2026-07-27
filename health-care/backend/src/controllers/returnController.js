@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 const { sendEmail } = require('../utils/emailService');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
+const { sendToUser, sendToAdmins, notifications } = require('../utils/pushService');
 
 // @desc    Create return request
 // @route   POST /api/returns
@@ -142,6 +143,15 @@ MediportBD Team
       logger.error(`[createReturn] Failed to send customer email: ${emailErr.message}`);
     }
 
+    // Send push notification to admins for new refund request
+    const orderForNotification = await Order.findById(orderId).populate('user', 'name email').lean();
+    if (orderForNotification) {
+      orderForNotification.refund = { amount: refundAmount };
+      sendToAdmins(notifications.newRefundAdmin(orderForNotification)).catch(err =>
+        logger.error(`[createReturn] Admin push notification failed: ${err.message}`)
+      );
+    }
+
     logger.info(`[createReturn] Return request created: ${returnRequest._id} for order ${order.orderNumber}`);
 
     return successResponse(res, returnRequest, 'Return request submitted successfully', 201);
@@ -274,6 +284,11 @@ exports.updateReturnStatus = async (req, res) => {
       if (order) {
         order.status = 'refunded';
         await order.save();
+        
+        // Send push notification for refund processed
+        sendToUser(returnRequest.user._id, notifications.refundProcessed(order, returnRequest.refundAmount)).catch(err =>
+          logger.error(`[updateReturnStatus] Push notification failed: ${err.message}`)
+        );
       }
     }
 
