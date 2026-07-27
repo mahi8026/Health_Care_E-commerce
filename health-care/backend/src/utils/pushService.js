@@ -2,12 +2,30 @@ const webpush = require('web-push');
 const PushSubscription = require('../models/PushSubscription');
 const logger = require('./logger');
 
+// Validate VAPID configuration on startup
+if (!process.env.VAPID_EMAIL || !process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+  logger.error('[Push] Missing VAPID environment variables:');
+  logger.error(`  VAPID_EMAIL: ${process.env.VAPID_EMAIL ? 'SET' : 'MISSING'}`);
+  logger.error(`  VAPID_PUBLIC_KEY: ${process.env.VAPID_PUBLIC_KEY ? 'SET' : 'MISSING'}`);
+  logger.error(`  VAPID_PRIVATE_KEY: ${process.env.VAPID_PRIVATE_KEY ? 'SET' : 'MISSING'}`);
+  logger.error('[Push] Push notifications will NOT work without these keys!');
+} else {
+  logger.info('[Push] VAPID keys configured successfully');
+  logger.info(`[Push] VAPID_EMAIL: ${process.env.VAPID_EMAIL}`);
+  logger.info(`[Push] VAPID_PUBLIC_KEY: ${process.env.VAPID_PUBLIC_KEY.substring(0, 30)}...`);
+}
+
 // Configure VAPID
-webpush.setVapidDetails(
-  process.env.VAPID_EMAIL,
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY,
-);
+try {
+  webpush.setVapidDetails(
+    process.env.VAPID_EMAIL,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY,
+  );
+  logger.info('[Push] web-push configured with VAPID details');
+} catch (err) {
+  logger.error(`[Push] Failed to configure VAPID: ${err.message}`);
+}
 
 // ── Send to ONE subscription ──────────────────────────────────────────────────
 const sendToSubscription = async (subscription, payload) => {

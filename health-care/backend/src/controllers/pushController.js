@@ -5,11 +5,26 @@ const logger = require('../utils/logger');
 // POST /api/push/subscribe — save subscription
 exports.subscribe = async (req, res) => {
   try {
+    logger.info(`[Push] Subscribe request received from ${req.ip}`);
     const { subscription, preferences, browser, device, os } = req.body;
     
-    if (!subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) {
-      return res.status(400).json({ success: false, message: 'Invalid subscription object' });
+    // Validate subscription object
+    if (!subscription) {
+      logger.error('[Push] Missing subscription object in request body');
+      return res.status(400).json({ success: false, message: 'Missing subscription object' });
     }
+    
+    if (!subscription.endpoint) {
+      logger.error('[Push] Missing endpoint in subscription');
+      return res.status(400).json({ success: false, message: 'Missing subscription endpoint' });
+    }
+    
+    if (!subscription.keys?.p256dh || !subscription.keys?.auth) {
+      logger.error('[Push] Missing keys in subscription');
+      return res.status(400).json({ success: false, message: 'Missing subscription keys (p256dh or auth)' });
+    }
+    
+    logger.info(`[Push] Valid subscription received: ${subscription.endpoint.substring(0, 50)}...`);
     
     // Upsert subscription (update if endpoint exists)
     const saved = await PushSubscription.findOneAndUpdate(
@@ -28,21 +43,31 @@ exports.subscribe = async (req, res) => {
       { upsert: true, new: true }
     );
     
+    logger.info(`[Push] Subscription saved to database: ${saved._id}`);
+    
     // Send welcome notification
     if (req.user?._id) {
-      await sendToUser(req.user._id, {
-        title: '🎉 Notifications Enabled — MediportBD',
-        body:  'You\'ll receive updates on orders, deals, and stock alerts.',
-        icon:  '/icons/icon-192x192.png',
-        tag:   'welcome',
-        url:   '/',
-      });
+      logger.info(`[Push] Sending welcome notification to user ${req.user._id}`);
+      try {
+        await sendToUser(req.user._id, {
+          title: '🎉 Notifications Enabled — MediportBD',
+          body:  'You\'ll receive updates on orders, deals, and stock alerts.',
+          icon:  '/icons/icon-192x192.png',
+          tag:   'welcome',
+          url:   '/',
+        });
+        logger.info(`[Push] Welcome notification sent successfully`);
+      } catch (notifErr) {
+        logger.error(`[Push] Failed to send welcome notification: ${notifErr.message}`);
+        // Don't fail the subscription if welcome notification fails
+      }
     }
     
     res.json({ success: true, message: 'Subscribed successfully', data: { id: saved._id } });
   } catch (err) {
-    logger.error(`[Push] subscribe: ${err.message}`);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(`[Push] subscribe error: ${err.message}`);
+    logger.error(`[Push] subscribe stack: ${err.stack}`);
+    res.status(500).json({ success: false, message: err.message, error: err.toString() });
   }
 };
 
