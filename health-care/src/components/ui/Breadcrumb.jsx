@@ -6,28 +6,52 @@ import { FaChevronRight } from 'react-icons/fa';
 /**
  * Breadcrumb Navigation Component
  *
- * Displays hierarchical navigation on a single line across the entire site.
- * Uses max-w-7xl container to match main content width.
- *
- * @param {Object} props
- * @param {{ label: string, href?: string }[]} props.items — omit href on the current (last) page
- * @param {'default' | 'embedded'} [props.variant] — embedded: no background/border (inside page hero)
- * @param {string} [props.className] — additional CSS classes
+ * Single-line horizontal breadcrumb with no wrapping.
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
 
-  const isCurrent = (item, idx) =>
-    idx === items.length - 1 || item.href === '#';
+  const isCurrent = (item, idx) => idx === items.length - 1 || item.href === '#';
+
+  const olStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    columnGap: '4px',
+    rowGap: 0,
+    margin: 0,
+    padding: 0,
+    listStyle: 'none',
+    listStyleType: 'none',
+    fontSize: '12px',
+    lineHeight: '1',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+  };
+
+  const liBaseStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: '4px',
+    margin: 0,
+    padding: 0,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+  };
+
+  const liLastStyle = {
+    ...liBaseStyle,
+    flexShrink: 1,
+    overflow: 'hidden',
+  };
 
   const renderItems = () =>
     items.map((item, idx) => {
       const current = isCurrent(item, idx);
       return (
-        <li
-          key={`${item.label}-${idx}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: current ? 1 : 0, minWidth: 0 }}
-        >
+        <li key={`${item.label}-${idx}`} style={current ? liLastStyle : liBaseStyle}>
           {idx > 0 && (
             <FaChevronRight
               size={8}
@@ -43,6 +67,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                display: 'block',
               }}
               aria-current="page"
             >
@@ -54,8 +79,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               style={{
                 color: '#6b7280',
                 whiteSpace: 'nowrap',
-                flexShrink: 0,
                 textDecoration: 'none',
+                flexShrink: 0,
               }}
               className="hover:text-[#0E8A6E] transition-colors"
             >
@@ -68,24 +93,22 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   if (variant === 'default') {
     return (
-      <div className={`bg-white border-b border-gray-100 ${className}`.trim()}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6" style={{ paddingTop: '8px', paddingBottom: '8px' }}>
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #f3f4f6',
+        }}
+        className={className || undefined}
+      >
+        <div
+          style={{
+            maxWidth: '80rem',
+            margin: '0 auto',
+            padding: '8px 16px',
+          }}
+        >
           <nav aria-label="Breadcrumb">
-            <ol
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                flexWrap: 'nowrap',
-                alignItems: 'center',
-                gap: '2px',
-                margin: 0,
-                padding: 0,
-                listStyle: 'none',
-                fontSize: '12px',
-                lineHeight: 1,
-                overflow: 'hidden',
-              }}
-            >
+            <ol style={olStyle}>
               {renderItems()}
             </ol>
           </nav>
@@ -94,24 +117,9 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
     );
   }
 
-  // Embedded variant
   return (
-    <nav aria-label="Breadcrumb" className={className}>
-      <ol
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'nowrap',
-          alignItems: 'center',
-          gap: '2px',
-          margin: 0,
-          padding: 0,
-          listStyle: 'none',
-          fontSize: '12px',
-          lineHeight: 1,
-          overflow: 'hidden',
-        }}
-      >
+    <nav aria-label="Breadcrumb" className={className || undefined}>
+      <ol style={olStyle}>
         {renderItems()}
       </ol>
     </nav>
