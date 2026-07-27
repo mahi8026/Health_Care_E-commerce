@@ -820,41 +820,8 @@ export const api = {
   },
 
   // Notifications (Admin)
-  async sendOrderConfirmation(orderId) {
-    try {
-      return await this.post('/notifications/order-confirmation', { orderId });
-    } catch (error) {
-      devLog.error('[API] Send order confirmation failed:', error.message);
-      throw error;
-    }
-  },
-
-  async sendPaymentReceipt(orderId) {
-    try {
-      return await this.post('/notifications/payment-receipt', { orderId });
-    } catch (error) {
-      devLog.error('[API] Send payment receipt failed:', error.message);
-      throw error;
-    }
-  },
-
-  async sendShippingNotification(orderId) {
-    try {
-      return await this.post('/notifications/shipping', { orderId });
-    } catch (error) {
-      devLog.error('[API] Send shipping notification failed:', error.message);
-      throw error;
-    }
-  },
-
-  async sendDeliveryConfirmation(orderId) {
-    try {
-      return await this.post('/notifications/delivered', { orderId });
-    } catch (error) {
-      devLog.error('[API] Send delivery confirmation failed:', error.message);
-      throw error;
-    }
-  },
+  // NOTE: sendOrderConfirmation/sendPaymentReceipt/sendShippingNotification/sendDeliveryConfirmation
+  // are defined earlier in this file and call POST /orders/:id/notify — do not redefine here.
 
   async sendQuotationReady(quoteId) {
     try {
