@@ -458,11 +458,11 @@ app.get('/api/test-email', async (req, res) => {
   try {
     const info = await emailService.sendTestEmail(to);
     if (info.error) {
-      return res.status(400).json({ success: false, error: info.error, resend: { apiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing', fromEmail: process.env.RESEND_FROM_EMAIL } });
+      return res.status(400).json({ success: false, error: info.error, brevo: { apiKey: process.env.BREVO_API_KEY ? '✓ Set' : '✗ Missing', fromEmail: process.env.BREVO_FROM_EMAIL } });
     }
     res.json({ success: true, message: `Test email sent to ${to}`, messageId: info.messageId });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message, resend: { apiKey: process.env.RESEND_API_KEY ? '✓ Set' : '✗ Missing', provider: 'Resend' } });
+    res.status(500).json({ success: false, error: err.message, brevo: { apiKey: process.env.BREVO_API_KEY ? '✓ Set' : '✗ Missing', provider: 'Brevo' } });
   }
 });
 
