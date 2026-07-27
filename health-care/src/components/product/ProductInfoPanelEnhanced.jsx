@@ -69,7 +69,7 @@ export default function ProductInfoPanelEnhanced({
   const hasB2BDiscount = priceDisplay.isB2BPrice && priceDisplay.savings > 0;
   
   // For regular discount from oldPrice
-  const hasRegularDiscount = !priceDisplay.isB2BPrice && product.oldPrice && product.oldPrice > finalPrice;
+  const hasRegularDiscount = !priceDisplay.isB2BPrice && product.oldPrice > 0 && product.oldPrice > finalPrice;
   
   const displayOldPrice = hasB2BDiscount ? priceDisplay.originalPrice : (hasRegularDiscount ? product.oldPrice : null);
   const savings = hasB2BDiscount ? priceDisplay.savings : (hasRegularDiscount ? product.oldPrice - finalPrice : 0);
@@ -181,7 +181,7 @@ export default function ProductInfoPanelEnhanced({
           <span className="text-3xl font-extrabold text-gray-900">
             {finalPrice > 0 ? `৳${finalPrice?.toLocaleString()}` : 'Contact for Price'}
           </span>
-          {hasDiscount && (
+          {hasDiscount && savings > 0 && (
             <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-green-600'} text-base font-bold`}>
               -৳{savings.toLocaleString()}
             </span>
