@@ -1,10 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { usePushNotification } from '@/hooks/usePushNotification';
-import { useAuth } from '@/context/AuthContext';
 
 export default function NotificationBanner() {
-  const { user } = useAuth();
   const { isSupported, isSubscribed, isLoading, permission, subscribe } = usePushNotification();
   const [show, setShow] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
