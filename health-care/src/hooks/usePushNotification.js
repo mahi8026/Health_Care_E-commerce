@@ -35,10 +35,21 @@ function validateVapidKey(key) {
 function subscribeWithRetry(reg, applicationServerKey, retries = 2) {
   return new Promise((resolve, reject) => {
     let attempt = 0;
-    const trySubscribe = () => {
+    const trySubscribe = async () => {
       attempt++;
+
+      // Force unsubscribe any stale subscription first (key mismatch causes AbortError)
+      try {
+        const existing = await reg.pushManager.getSubscription();
+        if (existing) {
+          await existing.unsubscribe();
+        }
+      } catch {
+        // ignore - best effort
+      }
+
       const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new DOMException('Subscription timed out', 'AbortError')), 15000)
+        setTimeout(() => reject(new DOMException('Subscription timed out', 'AbortError')), 20000)
       );
       const sub = reg.pushManager.subscribe({
         userVisibleOnly: true,
@@ -48,7 +59,7 @@ function subscribeWithRetry(reg, applicationServerKey, retries = 2) {
         .then(resolve)
         .catch((err) => {
           if (err.name === 'AbortError' && attempt <= retries) {
-            setTimeout(trySubscribe, 1000 * attempt);
+            setTimeout(trySubscribe, 1500 * attempt);
           } else {
             reject(err);
           }

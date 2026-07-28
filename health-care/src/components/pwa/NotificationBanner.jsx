@@ -6,6 +6,7 @@ export default function NotificationBanner() {
   const { isSupported, isSubscribed, isLoading, permission, subscribe } = usePushNotification();
   const [show, setShow] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!isSupported) return;
@@ -21,6 +22,7 @@ export default function NotificationBanner() {
   if (!show || isSubscribed || subscribed) return null;
 
   const handleEnable = async () => {
+    setError('');
     const token = localStorage.getItem('medcore_token');
     const result = await subscribe(token);
     if (result.success) {
@@ -30,16 +32,19 @@ export default function NotificationBanner() {
       switch (result.reason) {
         case 'vapid_key_missing':
         case 'vapid_key_invalid':
-          alert('Push notifications are not configured. Please contact support.');
-          setShow(false);
+          setError('Notifications not configured. Please contact support.');
           break;
         case 'push_service_unreachable':
-          alert('Could not reach the notification service. Please check your internet connection and try again.');
+          setError('Could not connect to notification service. Please try again in a moment.');
           break;
         case 'permission_denied':
           setShow(false);
           break;
+        case 'server_error':
+          setError('Server error. Please try again later.');
+          break;
         default:
+          setError('Something went wrong. Please try again.');
           break;
       }
     }
@@ -98,6 +103,29 @@ export default function NotificationBanner() {
         ))}
       </div>
 
+      {/* Inline error message — no alert() popups */}
+      {error && (
+        <div style={{
+          marginBottom: 10,
+          padding: '8px 12px',
+          borderRadius: 8,
+          background: 'rgba(226,75,74,0.15)',
+          border: '1px solid rgba(226,75,74,0.3)',
+          color: '#FCA5A5',
+          fontSize: 12,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}>
+          <span>⚠️</span>
+          <span>{error}</span>
+          <button
+            onClick={() => setError('')}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'rgba(252,165,165,0.6)', cursor: 'pointer', fontSize: 14, padding: 0 }}
+          >×</button>
+        </div>
+      )}
+
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={handleDismiss} style={{
           flex: 1, padding: '10px', background: 'rgba(255,255,255,0.07)',
@@ -108,14 +136,25 @@ export default function NotificationBanner() {
           Not now
         </button>
         <button onClick={handleEnable} disabled={isLoading} style={{
-          flex: 2, padding: '10px', background: '#0E8A6E', border: 'none',
-          borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700,
+          flex: 2, padding: '10px', background: isLoading ? 'rgba(14,138,110,0.6)' : '#0E8A6E',
+          border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700,
           cursor: isLoading ? 'wait' : 'pointer', fontFamily: 'inherit',
-          opacity: isLoading ? 0.7 : 1,
+          transition: 'background 0.2s',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
         }}>
-          {isLoading ? 'Enabling...' : '🔔 Enable Notifications'}
+          {isLoading ? (
+            <>
+              <span style={{
+                width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)',
+                borderTopColor: '#fff', borderRadius: '50%',
+                display: 'inline-block', animation: 'spin 0.7s linear infinite',
+              }} />
+              Enabling...
+            </>
+          ) : '🔔 Enable Notifications'}
         </button>
       </div>
+      <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
     </div>
   );
 }
