@@ -128,13 +128,27 @@ export default function MobileMenu({ isOpen, onClose }) {
           borderBottom: '1px solid rgba(255,255,255,0.10)',
           boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.06)',
         }}>
-          <Image
-            src="/Mediport_Logo.png"
-            alt="MediportBD"
-            width={120}
-            height={35}
-            className="h-[32px] w-auto"
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              position: 'relative',
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              border: '2px solid rgba(14,138,110,0.3)',
+            }}>
+              <Image
+                src="/Mediport_Logo.png"
+                alt="MediportBD"
+                fill
+                sizes="36px"
+                style={{ objectFit: 'cover' }}
+              />
+            </div>
+            <span style={{ fontSize: 18, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
+              Mediport<span style={{ color: '#4ddbb8' }}>BD</span>
+            </span>
+          </div>
           <button
             onClick={onClose}
             aria-label="Close menu"

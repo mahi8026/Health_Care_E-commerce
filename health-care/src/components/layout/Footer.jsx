@@ -110,13 +110,20 @@ export default function Footer() {
 
           {/* MediportBD column — only logo + description + newsletter */}
           <div>
-            <Image
-              src="/Mediport_Logo.png"
-              alt="MediportBD"
-              width={140}
-              height={40}
-              className="h-[36px] w-auto mb-3"
-            />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30">
+                <Image
+                  src="/Mediport_Logo.png"
+                  alt="MediportBD"
+                  fill
+                  sizes="48px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="font-[family-name:var(--font-lora)] text-[22px] font-semibold text-white">
+                Mediport<span className="text-[#0E8A6E]">BD</span>
+              </div>
+            </div>
             <p className="text-[12px] text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
@@ -165,13 +172,20 @@ export default function Footer() {
         <div className="md:hidden space-y-8">
           {/* Logo */}
           <div>
-            <Image
-              src="/Mediport_Logo.png"
-              alt="MediportBD"
-              width={160}
-              height={45}
-              className="h-[40px] w-auto mb-2"
-            />
+            <div className="flex items-center gap-3 mb-2">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30">
+                <Image
+                  src="/Mediport_Logo.png"
+                  alt="MediportBD"
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                />
+              </div>
+              <div className="font-[family-name:var(--font-lora)] text-[24px] font-semibold text-white">
+                Mediport<span className="text-[#0E8A6E]">BD</span>
+              </div>
+            </div>
             <p className="text-[12px] text-white/70 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
