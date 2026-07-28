@@ -220,18 +220,18 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             className="flex-shrink-0 cursor-pointer group flex items-center gap-2"
             aria-label="MediportBD home"
           >
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#0E8A6E]/20 group-hover:border-[#0E8A6E]/40 transition-all">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-[#0E8A6E]/60 transition-all bg-white">
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
                 fill
                 sizes="40px"
                 priority
-                className="object-cover"
+                className="object-contain p-0.5"
               />
             </div>
-            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-[20px] font-bold text-[#0B2545] group-hover:text-[#0E8A6E] transition-colors">
-              Mediport<span className="text-[#0E8A6E]">BD</span>
+            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-[20px] font-bold text-white group-hover:text-[#4DDBB8] transition-colors">
+              Mediport<span className="text-[#4DDBB8]">BD</span>
             </span>
           </button>
 

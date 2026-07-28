@@ -110,6 +110,17 @@ export const metadata = {
       'en':    SITE_CONFIG.url,
     },
   },
+
+  icons: {
+    icon: [
+      { url: '/Mediport_Logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/Mediport_Logo.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: { url: '/Mediport_Logo.png', sizes: '180x180', type: 'image/png' },
+    other: [
+      { rel: 'icon', url: '/Mediport_Logo.png' },
+    ],
+  },
 };
 
 export default function RootLayout({ children }) {

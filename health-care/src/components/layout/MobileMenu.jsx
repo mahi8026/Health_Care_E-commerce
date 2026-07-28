@@ -136,13 +136,14 @@ export default function MobileMenu({ isOpen, onClose }) {
               borderRadius: '50%',
               overflow: 'hidden',
               border: '2px solid rgba(14,138,110,0.3)',
+              background: 'white',
             }}>
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
                 fill
                 sizes="36px"
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'contain', padding: '2px' }}
               />
             </div>
             <span style={{ fontSize: 18, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
