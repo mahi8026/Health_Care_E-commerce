@@ -26,9 +26,22 @@ export default function NotificationBanner() {
     if (result.success) {
       setSubscribed(true);
       setShow(false);
-    } else if (result.reason === 'vapid_key_missing') {
-      alert('Push notifications are not configured. Please contact support.');
-      setShow(false);
+    } else {
+      switch (result.reason) {
+        case 'vapid_key_missing':
+        case 'vapid_key_invalid':
+          alert('Push notifications are not configured. Please contact support.');
+          setShow(false);
+          break;
+        case 'push_service_unreachable':
+          alert('Could not reach the notification service. Please check your internet connection and try again.');
+          break;
+        case 'permission_denied':
+          setShow(false);
+          break;
+        default:
+          break;
+      }
     }
   };
 

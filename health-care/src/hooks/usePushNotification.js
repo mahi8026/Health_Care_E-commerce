@@ -16,6 +16,48 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+function validateVapidKey(key) {
+  if (!key) return { valid: false, reason: 'missing' };
+  if (key.length < 85 || key.length > 88) {
+    return { valid: false, reason: `unexpected_length_${key.length}` };
+  }
+  try {
+    const decoded = urlBase64ToUint8Array(key);
+    if (decoded.length !== 65 && decoded.length !== 66) {
+      return { valid: false, reason: `decoded_${decoded.length}_bytes` };
+    }
+    return { valid: true };
+  } catch {
+    return { valid: false, reason: 'decode_failure' };
+  }
+}
+
+function subscribeWithRetry(reg, applicationServerKey, retries = 2) {
+  return new Promise((resolve, reject) => {
+    let attempt = 0;
+    const trySubscribe = () => {
+      attempt++;
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new DOMException('Subscription timed out', 'AbortError')), 15000)
+      );
+      const sub = reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey,
+      });
+      Promise.race([sub, timeout])
+        .then(resolve)
+        .catch((err) => {
+          if (err.name === 'AbortError' && attempt <= retries) {
+            setTimeout(trySubscribe, 1000 * attempt);
+          } else {
+            reject(err);
+          }
+        });
+    };
+    trySubscribe();
+  });
+}
+
 function detectDevice() {
   const ua = navigator.userAgent;
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
@@ -63,13 +105,19 @@ export function usePushNotification() {
     });
   }, [checkSubscription]);
 
-  const subscribe = useCallback(async (token) => {
+const subscribe = useCallback(async (token) => {
     if (!isSupported) return { success: false, reason: 'not_supported' };
 
     // Check if VAPID key is available
     if (!VAPID_PUBLIC_KEY) {
       console.error('[Push] VAPID_PUBLIC_KEY is not defined. Check environment variables.');
       return { success: false, reason: 'vapid_key_missing' };
+    }
+
+    const keyCheck = validateVapidKey(VAPID_PUBLIC_KEY);
+    if (!keyCheck.valid) {
+      console.error(`[Push] Invalid VAPID key: ${keyCheck.reason}`);
+      return { success: false, reason: 'vapid_key_invalid' };
     }
 
     setIsLoading(true);
@@ -84,11 +132,11 @@ export function usePushNotification() {
       // Get service worker registration
       const reg = await navigator.serviceWorker.ready;
 
-      // Subscribe to push
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-      });
+      // Subscribe to push with retry and timeout
+      const sub = await subscribeWithRetry(
+        reg,
+        urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      );
 
       const subJSON = sub.toJSON();
       const { device, browser, os } = detectDevice();
@@ -118,9 +166,12 @@ export function usePushNotification() {
         return { success: true };
       }
       return { success: false, reason: 'server_error' };
-    
+
     } catch (err) {
       console.error('[Push] Subscribe error:', err);
+      if (err.name === 'AbortError') {
+        return { success: false, reason: 'push_service_unreachable' };
+      }
       return { success: false, reason: err.message };
     } finally {
       setIsLoading(false);

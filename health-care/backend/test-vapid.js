@@ -67,8 +67,8 @@ console.log('\n4. Testing subscription format:');
 const testSubscription = {
   endpoint: 'https://fcm.googleapis.com/fcm/send/test123',
   keys: {
-    p256dh: 'BDEe8zM773HcRKN7F8FTDNs5aP3Eal4tItO7V-BE5i0proQIY7_R13lU7XRKM3jenGpCKJ_u6v7BuB6luLMwj_I',
-    auth: 'A56rmQ0TarLaPvUJEinH1yvNjN4slEG7u0AEcqOFfaM'
+    p256dh: 'BNSBo1faqd8Cyw-qCHbxKb1cOjx41OgVdL__IBmrf49qZZNMFHB4g9vvCa5BIeJ0f25Jd7uF9S8s-Vud3hQPiNM',
+    auth: 'St3YSjdgCkUHjR4O2pwfjaGhZCo4ziqS3YrLRMzHAXY'
   }
 };
 

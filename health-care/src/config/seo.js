@@ -51,7 +51,7 @@ export const siteConfig = {
 export const organization = {
   name:  SITE_CONFIG.name,
   url:   SITE_CONFIG.url,
-  logo:  `${SITE_CONFIG.url}/images/logo.png`,
+  logo:  `${SITE_CONFIG.url}/Mediport_Logo.png`,
   contactPoint: {
     telephone:         SITE_CONFIG.phone,
     contactType:       'customer service',

@@ -10,7 +10,7 @@ export const IMAGES = {
   userPlaceholder: '/placeholder.svg',
   
   // Logo
-  logo: '/logo.svg',
+  logo: '/Mediport_Logo.png',
   
   // Default OG image
   ogImage: '/og-default.png',

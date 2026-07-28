@@ -9,7 +9,7 @@ export default function LocalBusinessSchema() {
     '@context': 'https://schema.org',
     '@type':    'MedicalBusiness',
     name:       'Mediport Bangladesh Ltd.',
-    image:      `${SITE_CONFIG.url}/images/logo.png`,
+    image:      `${SITE_CONFIG.url}/Mediport_Logo.png`,
     url:        SITE_CONFIG.url,
     telephone:  SITE_CONFIG.phone,
     email:      SITE_CONFIG.email,

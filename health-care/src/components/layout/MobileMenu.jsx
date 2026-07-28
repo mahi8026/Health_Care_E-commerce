@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   FaTimes, FaChevronRight, FaUser, FaBox, FaHeart, FaSignOutAlt,
   FaCog, FaStethoscope, FaSyringe, FaFlask, FaHospital, FaMicroscope,
@@ -127,9 +128,13 @@ export default function MobileMenu({ isOpen, onClose }) {
           borderBottom: '1px solid rgba(255,255,255,0.10)',
           boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.06)',
         }}>
-          <span style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
-            Mediport<span style={{ color: '#4ddbb8' }}>BD</span>
-          </span>
+          <Image
+            src="/Mediport_Logo.png"
+            alt="MediportBD"
+            width={120}
+            height={35}
+            className="h-[32px] w-auto"
+          />
           <button
             onClick={onClose}
             aria-label="Close menu"

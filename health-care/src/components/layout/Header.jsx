@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, memo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
@@ -219,9 +220,14 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             className="flex-shrink-0 cursor-pointer group"
             aria-label="MediportBD home"
           >
-            <span className="nav-logo font-[family-name:var(--font-lora)] text-[22px] font-bold group-hover:opacity-85 transition-opacity">
-              Mediport<span className="nav-logo-accent">BD</span>
-            </span>
+            <Image
+              src="/Mediport_Logo.png"
+              alt="MediportBD - Medical Equipment Supplier Bangladesh"
+              width={140}
+              height={40}
+              priority
+              className="h-[40px] w-auto group-hover:opacity-85 transition-opacity"
+            />
           </button>
 
           <div className="hidden md:block nav-divider" />
