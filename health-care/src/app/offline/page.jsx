@@ -1,13 +1,7 @@
+'use client';
+
 import Link from 'next/link';
 import { FiWifiOff, FiHome, FiShoppingBag, FiRefreshCw } from 'react-icons/fi';
-
-export const metadata = {
-  title: 'You are Offline',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
 
 export default function OfflinePage() {
   return (
