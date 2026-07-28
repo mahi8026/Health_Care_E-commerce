@@ -111,12 +111,12 @@ export default function Footer() {
           {/* MediportBD column — only logo + description + newsletter */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30 bg-white p-0.5 flex items-center justify-center">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30 bg-white p-1">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
-                  width={52}
-                  height={52}
+                  fill
+                  sizes="56px"
                   className="object-contain"
                 />
               </div>
@@ -173,12 +173,12 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30 bg-white p-1 flex items-center justify-center">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30 bg-white p-1">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
-                  width={56}
-                  height={56}
+                  fill
+                  sizes="64px"
                   className="object-contain"
                 />
               </div>

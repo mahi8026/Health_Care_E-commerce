@@ -6,7 +6,7 @@ const {
 } = require('../controllers/pushController');
 
 // Customer routes (optional auth — guests can also subscribe)
-router.post('/subscribe',    protect, subscribe);
+router.post('/subscribe',    subscribe);  // No auth required - guests can subscribe
 router.delete('/unsubscribe', unsubscribe);
 router.patch('/preferences',  updatePreferences);
 
