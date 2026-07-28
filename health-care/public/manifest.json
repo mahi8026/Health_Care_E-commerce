@@ -13,63 +13,63 @@
   "categories": ["shopping", "medical", "health"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "72x72",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-96x96.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "96x96",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-128x128.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "128x128",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-144x144.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "144x144",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-152x152.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "152x152",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-192x192.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-384x384.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "384x384",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-192x192-maskable.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icons/icon-512x512-maskable.png.svg",
+      "src": "/Mediport_Logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ],
@@ -81,9 +81,9 @@
       "description": "Browse all medical equipment",
       "icons": [
         {
-          "src": "/icons/shortcut-products.png.svg",
+          "src": "/Mediport_Logo.png",
           "sizes": "96x96",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     },
@@ -94,9 +94,9 @@
       "description": "Laboratory reagents and supplies",
       "icons": [
         {
-          "src": "/icons/shortcut-reagents.png.svg",
+          "src": "/Mediport_Logo.png",
           "sizes": "96x96",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     },
@@ -107,9 +107,9 @@
       "description": "B2B pricing and bulk orders",
       "icons": [
         {
-          "src": "/icons/shortcut-b2b.png.svg",
+          "src": "/Mediport_Logo.png",
           "sizes": "96x96",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     },
@@ -120,9 +120,9 @@
       "description": "Track your order status",
       "icons": [
         {
-          "src": "/icons/shortcut-track.png.svg",
+          "src": "/Mediport_Logo.png",
           "sizes": "96x96",
-          "type": "image/svg+xml"
+          "type": "image/png"
         }
       ]
     }

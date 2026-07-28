@@ -115,10 +115,13 @@ export const metadata = {
     icon: [
       { url: '/Mediport_Logo.png', sizes: '32x32', type: 'image/png' },
       { url: '/Mediport_Logo.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
     ],
+    shortcut: '/Mediport_Logo.png',
     apple: { url: '/Mediport_Logo.png', sizes: '180x180', type: 'image/png' },
     other: [
       { rel: 'icon', url: '/Mediport_Logo.png' },
+      { rel: 'apple-touch-icon', url: '/Mediport_Logo.png' },
     ],
   },
 };
