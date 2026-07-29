@@ -70,6 +70,34 @@ exports.updatePreferences = async (req, res) => {
  * POST /api/admin/push/broadcast
  * Admin sends a push notification to all subscribers
  */
+/**
+ * POST /api/admin/push/send-to-user
+ * Admin sends a push notification to a specific user by their _id
+ */
+exports.sendToUser = async (req, res) => {
+  try {
+    const { userId, title, body, url } = req.body;
+    if (!userId || !title || !body) {
+      return res.status(400).json({ success: false, message: 'userId, title, and body are required' });
+    }
+
+    const result = await sendToUser(userId, { title, body, url: url || '/' });
+
+    if (!result) {
+      return res.status(500).json({ success: false, message: 'Failed to send via OneSignal' });
+    }
+
+    res.json({
+      success: true,
+      message: `Notification sent to user ${userId}`,
+      data: { id: result.id },
+    });
+  } catch (err) {
+    logger.error(`[OneSignal] sendToUser error: ${err.message}`);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 exports.broadcast = async (req, res) => {
   try {
     const { title, body, url, image } = req.body;
