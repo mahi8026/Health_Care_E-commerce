@@ -468,12 +468,22 @@ exports.createOrder = async (req, res) => {
     }
 
     // Send push notifications asynchronously (non-blocking)
-    sendToUser(req.user.id, notifications.orderConfirmed(order[0])).catch(err =>
-      logger.error(`[createOrder] Push notification failed: ${err.message}`)
-    );
-    sendToAdmins(notifications.newOrderAdmin(order[0])).catch(err =>
-      logger.error(`[createOrder] Admin push notification failed: ${err.message}`)
-    );
+    try {
+      const userNotif = notifications.orderConfirmed(order[0]);
+      if (userNotif) Promise.resolve(userNotif).catch(err =>
+        logger.error(`[createOrder] Push notification failed: ${err.message}`)
+      );
+    } catch (notifErr) {
+      logger.error(`[createOrder] Push notification error: ${notifErr.message}`);
+    }
+    try {
+      const adminNotif = notifications.newOrderAdmin(order[0]);
+      if (adminNotif) Promise.resolve(adminNotif).catch(err =>
+        logger.error(`[createOrder] Admin push notification failed: ${err.message}`)
+      );
+    } catch (notifErr) {
+      logger.error(`[createOrder] Admin push notification error: ${notifErr.message}`);
+    }
 
     // Log order placement activity
     logActivityAsync({

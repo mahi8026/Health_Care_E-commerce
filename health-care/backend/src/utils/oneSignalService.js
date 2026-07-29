@@ -175,6 +175,22 @@ const notifications = {
       url:   '/',
       data:  { type: 'welcome' },
     }),
+
+  orderConfirmed: (order) =>
+    sendToUser(order.user, {
+      title: '✅ Order Confirmed — MediportBD',
+      body:  `Your order #${order.orderNumber} for ৳${(order.totalAmount || 0).toLocaleString()} has been confirmed.`,
+      url:   `/orders/${order._id}`,
+      data:  { type: 'order_placed', orderId: String(order._id) },
+    }),
+
+  newOrderAdmin: (order) =>
+    sendToAdmins({
+      title: '🆕 New Order — MediportBD',
+      body:  `Order #${order.orderNumber} for ৳${(order.totalAmount || 0).toLocaleString()} has been placed by ${order.deliveryAddress?.name || 'a customer'}.`,
+      url:   `/admin/orders/${order._id}`,
+      data:  { type: 'new_order_admin', orderId: String(order._id) },
+    }),
 };
 
 module.exports = { sendToUser, sendToAll, sendToAdmins, sendToSegment, notifications };
