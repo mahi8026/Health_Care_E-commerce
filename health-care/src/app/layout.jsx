@@ -191,6 +191,9 @@ export default function RootLayout({ children }) {
                 </CompareProvider>
               </WishlistProvider>
             </CartProvider>
+
+            {/* Push Notification Permission Banner */}
+            <NotificationBanner />
           </AuthProvider>
         </LanguageProvider>
 
@@ -208,9 +211,6 @@ export default function RootLayout({ children }) {
 
         {/* PWA Install Prompt */}
         <InstallPWA />
-
-        {/* Push Notification Permission Banner */}
-        <NotificationBanner />
 
         {/* OneSignal Push Notification SDK */}
         <OneSignalProvider />
