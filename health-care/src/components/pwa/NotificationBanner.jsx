@@ -14,9 +14,9 @@ export default function NotificationBanner() {
     if (!isSupported) return;
     if (permission === 'granted') return;
     if (permission === 'denied') return;
-    const dismissed = localStorage.getItem('push-banner-dismissed');
+    const dismissed = localStorage.getItem('push-banner-dismissed-v2');
     if (dismissed) return;
-    const t = setTimeout(() => setShow(true), 8000);
+    const t = setTimeout(() => setShow(true), 100);
     return () => clearTimeout(t);
   }, [isSupported, permission]);
 
@@ -47,7 +47,7 @@ export default function NotificationBanner() {
 
   const handleDismiss = () => {
     setShow(false);
-    localStorage.setItem('push-banner-dismissed', 'true');
+    localStorage.setItem('push-banner-dismissed-v2', 'true');
   };
 
   return (
