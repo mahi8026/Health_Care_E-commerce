@@ -256,15 +256,15 @@ export default function AccountPage() {
 
         {/* Menu Sections */}
         <div className="space-y-4 sm:space-y-6">
-          {menuItems.map((section, idx) => (
-            <div key={idx}>
+          {menuItems.map((section) => (
+            <div key={section.section}>
               <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--color-text-secondary)] mb-2 sm:mb-3 px-1">
                 {section.section}
               </h2>
               <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] divide-y divide-[var(--color-border-tertiary)]">
-                {section.items.map((item, itemIdx) => (
+                {section.items.map((item) => (
                   <button
-                    key={itemIdx}
+                    key={item.href}
                     onClick={() => router.push(item.href)}
                     className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-background-tertiary)] transition-colors text-left"
                   >

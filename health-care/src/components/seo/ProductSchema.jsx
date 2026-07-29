@@ -12,13 +12,11 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/product
  */
 
-import { useMemo } from 'react';
+import { escapeJsonLd } from '@/utils/helpers';
+
+const PRICE_VALID_UNTIL = '2099-12-31';
 
 export default function ProductSchema({ product }) {
-  // Calculate price valid until date (30 days from now) - memoized to avoid impurity
-  const priceValidUntil = useMemo(() => {
-    return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  }, []);
 
   if (!product) return null;
 
@@ -56,12 +54,12 @@ export default function ProductSchema({ product }) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name,
-    description: description.substring(0, 500), // Limit to 500 chars
+    name: escapeJsonLd(name),
+    description: escapeJsonLd(description.substring(0, 500)),
     image: images,
     brand: brand ? {
       '@type': 'Brand',
-      name: brand
+      name: escapeJsonLd(brand)
     } : undefined,
     category,
     sku,
@@ -77,7 +75,7 @@ export default function ProductSchema({ product }) {
         name: 'MediportBD',
         url: process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'
       },
-      priceValidUntil, // 30 days from now
+      priceValidUntil: PRICE_VALID_UNTIL,
       itemCondition: 'https://schema.org/NewCondition',
       shippingDetails: {
         '@type': 'OfferShippingDetails',
@@ -126,10 +124,10 @@ export default function ProductSchema({ product }) {
       '@type': 'Review',
       author: {
         '@type': 'Person',
-        name: review.userName || review.user?.name || 'Customer'
+        name: escapeJsonLd(review.userName || review.user?.name || 'Customer')
       },
       datePublished: review.createdAt || new Date().toISOString(),
-      reviewBody: review.comment || review.review || '',
+      reviewBody: escapeJsonLd(review.comment || review.review || ''),
       reviewRating: {
         '@type': 'Rating',
         ratingValue: (review.rating || 5).toString(),

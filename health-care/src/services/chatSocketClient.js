@@ -18,7 +18,7 @@ class ChatSocketClient {
 
     // Get API URL from environment or use hardcoded fallback
     let socketUrl;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     
     // Remove /api suffix if present
     socketUrl = apiUrl.replace('/api', '');
@@ -50,7 +50,7 @@ class ChatSocketClient {
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('Socket.IO connection error:', error.message);
+      if (process.env.NODE_ENV === 'development') console.error('Socket.IO connection error:', error.message);
       this.emit('error', { error: error.message });
     });
 
@@ -226,7 +226,7 @@ class ChatSocketClient {
       try {
         callback(data);
       } catch (error) {
-        console.error(`Error in event listener for ${event}:`, error);
+        if (process.env.NODE_ENV === 'development') console.error(`Error in event listener for ${event}:`, error);
       }
     });
   }

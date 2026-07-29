@@ -8,10 +8,12 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/review-snippet
  */
 
+import { escapeJsonLd } from '@/utils/helpers';
+
 export default function ReviewSchema({ reviews, productName, productId }) {
   if (!reviews || reviews.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
 
   // Create individual review schemas
   const reviewSchemas = reviews.slice(0, 5).map((review, index) => ({
@@ -20,12 +22,12 @@ export default function ReviewSchema({ reviews, productName, productId }) {
     '@id': `${baseUrl}/products/${productId}#review-${review._id || index}`,
     itemReviewed: {
       '@type': 'Product',
-      name: productName,
+      name: escapeJsonLd(productName),
       url: `${baseUrl}/products/${productId}`,
     },
     author: {
       '@type': 'Person',
-      name: review.userName || review.user?.name || 'Verified Buyer',
+      name: escapeJsonLd(review.userName || review.user?.name || 'Verified Buyer'),
     },
     reviewRating: {
       '@type': 'Rating',
@@ -33,7 +35,7 @@ export default function ReviewSchema({ reviews, productName, productId }) {
       bestRating: 5,
       worstRating: 1,
     },
-    reviewBody: review.comment || review.review,
+    reviewBody: escapeJsonLd(review.comment || review.review),
     datePublished: review.createdAt ? new Date(review.createdAt).toISOString() : new Date().toISOString(),
     publisher: {
       '@type': 'Organization',

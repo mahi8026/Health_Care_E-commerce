@@ -12,6 +12,8 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/review-snippet
  */
 
+import { escapeJsonLd } from '@/utils/helpers';
+
 export default function AggregateRatingSchema({ 
   itemName, 
   ratingValue, 
@@ -25,7 +27,7 @@ export default function AggregateRatingSchema({
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: itemName,
+    name: escapeJsonLd(itemName),
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: ratingValue.toString(),
@@ -57,12 +59,12 @@ export function ReviewSchema({ review, product }) {
     '@type': 'Review',
     itemReviewed: {
       '@type': 'Product',
-      name: product?.name || 'Medical Equipment',
+      name: escapeJsonLd(product?.name || 'Medical Equipment'),
       image: product?.images?.[0] || undefined
     },
     author: {
       '@type': 'Person',
-      name: review.userName || review.user?.name || 'Customer'
+      name: escapeJsonLd(review.userName || review.user?.name || 'Customer')
     },
     reviewRating: {
       '@type': 'Rating',
@@ -70,7 +72,7 @@ export function ReviewSchema({ review, product }) {
       bestRating: '5',
       worstRating: '1'
     },
-    reviewBody: review.comment || review.review || '',
+    reviewBody: escapeJsonLd(review.comment || review.review || ''),
     datePublished: review.createdAt || new Date().toISOString(),
     publisher: {
       '@type': 'Organization',

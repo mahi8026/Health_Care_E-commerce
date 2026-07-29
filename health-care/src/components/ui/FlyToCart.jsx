@@ -13,6 +13,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 let animationQueue = [];
 let isAnimating = false;
@@ -29,7 +30,7 @@ export function useFlyToCart() {
                      document.querySelector('[aria-label*="cart" i]');
     
     if (!cartIcon) {
-      console.warn('Cart icon not found for fly animation');
+      if (process.env.NODE_ENV === 'development') console.warn('Cart icon not found for fly animation');
       return;
     }
 
@@ -122,9 +123,11 @@ export function FlyToCartContainer() {
           }}
         >
           {image.src && (
-            <img
+            <Image
               src={image.src}
               alt="Product added to cart - animation"
+              width={80}
+              height={80}
               className="w-20 h-20 object-cover rounded-lg shadow-2xl"
             />
           )}

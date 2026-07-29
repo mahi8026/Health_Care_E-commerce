@@ -7,7 +7,7 @@ import LoyaltyBadge from '@/components/loyalty/LoyaltyBadge';
 import { FaStar, FaHistory, FaGift, FaArrowUp, FaArrowDown, FaInfoCircle } from 'react-icons/fa';
 import { format } from 'date-fns';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const TIER_PROGRESS = {
   Bronze:   { next: 'Silver',   needed: 1000,  color: 'bg-amber-500' },

@@ -242,7 +242,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           <GoogleLoginButton fullWidth />
 
           {/* Dev quick login */}
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL && (
             <>
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
@@ -254,21 +254,13 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   </span>
                 </div>
               </div>
-              <div className="space-y-2">
-                {[
-                  { label: 'B2B Customer', email: 'shahid@squarehospital.com', pass: 'password123', color: 'from-violet-600 to-violet-700', icon: '🏢' },
-                  { label: 'Customer', email: 'kamal@example.com', pass: 'password123', color: 'from-[#0B2545] to-[#0d2d52]', icon: '👤' },
-                ].map((q) => (
-                  <button
-                    key={q.label}
-                    type="button"
-                    onClick={() => quickLogin(q.email, q.pass)}
-                    className={`w-full py-3 bg-gradient-to-r ${q.color} text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity`}
-                  >
-                    <span>{q.icon}</span> Login as {q.label}
-                  </button>
-                ))}
-              </div>
+              <button
+                type="button"
+                onClick={() => quickLogin(process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL, process.env.NEXT_PUBLIC_DEV_LOGIN_PASSWORD || 'password123')}
+                className="w-full py-3 bg-gradient-to-r from-[#0B2545] to-[#0d2d52] text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              >
+                Login as Dev User
+              </button>
             </>
           )}
 

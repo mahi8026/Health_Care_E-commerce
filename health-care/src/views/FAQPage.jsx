@@ -167,8 +167,8 @@ export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const toggleFAQ = (categoryIndex, faqIndex) => {
-    const key = `${categoryIndex}-${faqIndex}`;
+  const toggleFAQ = (categoryName, faqIndex) => {
+    const key = `${categoryName}-${faqIndex}`;
     setOpenIndex(openIndex === key ? null : key);
   };
 
@@ -244,8 +244,8 @@ export default function FAQPage() {
         {/* FAQ Sections */}
         {displayCategories.length > 0 ? (
           <div className="space-y-8">
-            {displayCategories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            {displayCategories.map((category) => (
+              <div key={category.category} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-[#0E8A6E] to-[#0A6B56] px-6 py-4">
                   <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                     <span className="text-3xl">{category.icon}</span>
@@ -254,12 +254,12 @@ export default function FAQPage() {
                 </div>
                 <div className="divide-y divide-gray-100">
                   {category.faqs.map((faq, faqIndex) => {
-                    const key = `${categoryIndex}-${faqIndex}`;
+                    const key = `${category.category}-${faqIndex}`;
                     const isOpen = openIndex === key;
                     return (
-                      <div key={faqIndex} className="transition-all">
+                      <div key={key} className="transition-all">
                         <button
-                          onClick={() => toggleFAQ(categoryIndex, faqIndex)}
+                          onClick={() => toggleFAQ(category.category, faqIndex)}
                           className="w-full px-6 py-5 flex justify-between items-start gap-4 hover:bg-gray-50 transition-colors text-left"
                         >
                           <span className="font-semibold text-gray-900 flex-1">

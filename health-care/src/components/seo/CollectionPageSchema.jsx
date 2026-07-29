@@ -1,19 +1,11 @@
-/**
- * CollectionPageSchema — Google Rich Results for Category/Collection Pages
- * 
- * Displays collection information in Google search results.
- * Shows the collection of products in a category with metadata.
- * 
- * @see https://schema.org/CollectionPage
- * @see https://developers.google.com/search/docs/appearance/structured-data/breadcrumb
- */
+import { escapeJsonLd } from '@/utils/helpers';
 
-export default function CollectionPageSchema({ 
-  name, 
-  description, 
+export default function CollectionPageSchema({
+  name,
+  description,
   numberOfItems,
   category,
-  url 
+  url
 }) {
   if (!name) return null;
 
@@ -23,13 +15,13 @@ export default function CollectionPageSchema({
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name,
-    description: description || `Browse ${name} at MediportBD. Wide selection of medical equipment and supplies in Bangladesh.`,
+    name: escapeJsonLd(name),
+    description: escapeJsonLd(description || `Browse ${name} at MediportBD. Wide selection of medical equipment and supplies in Bangladesh.`),
     url: collectionUrl,
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: numberOfItems || 0,
-      itemListElement: [] // Products will be added dynamically if needed
+      itemListElement: []
     },
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -49,7 +41,7 @@ export default function CollectionPageSchema({
         {
           '@type': 'ListItem',
           position: 3,
-          name,
+          name: escapeJsonLd(name),
           item: collectionUrl
         }
       ]
@@ -64,11 +56,6 @@ export default function CollectionPageSchema({
   );
 }
 
-/**
- * ItemListSchema — For product listings with specific products
- * 
- * Use this when you want to list specific products in search results
- */
 export function ItemListSchema({ items, listName, numberOfItems }) {
   if (!items || items.length === 0) return null;
 
@@ -84,7 +71,7 @@ export function ItemListSchema({ items, listName, numberOfItems }) {
       position: index + 1,
       item: {
         '@type': 'Product',
-        name: item.name,
+        name: escapeJsonLd(item.name),
         image: item.images?.[0] || item.image,
         url: `${baseUrl}/products/${item._id || item.slug}`,
         offers: item.price ? {
@@ -97,7 +84,6 @@ export function ItemListSchema({ items, listName, numberOfItems }) {
     }))
   };
 
-  // Clean undefined values
   const cleanSchema = JSON.parse(JSON.stringify(schema));
 
   return (

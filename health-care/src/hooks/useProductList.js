@@ -42,7 +42,7 @@ export function useProductList(filters, page) {
     count: 0
   });
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async (signal) => {
     try {
       setLoading(true);
       setError(null);
@@ -60,7 +60,8 @@ export function useProductList(filters, page) {
       params.set('limit', 20);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products?${params.toString()}`
+        `${process.env.NEXT_PUBLIC_API_URL}/products?${params.toString()}`,
+        { signal }
       );
       
       if (!res.ok) throw new Error('Failed to fetch products');
@@ -79,6 +80,7 @@ export function useProductList(filters, page) {
         count: data.count || productsData.length || 0
       });
     } catch (err) {
+      if (err.name === 'AbortError') return;
       setError(err.message || 'Failed to load products');
       setProducts([]);
       setPagination({ total: 0, page: 1, pages: 0, count: 0 });
@@ -88,7 +90,9 @@ export function useProductList(filters, page) {
   }, [filters, page]);
 
   useEffect(() => {
-    fetchProducts();
+    const controller = new AbortController();
+    Promise.resolve().then(() => fetchProducts(controller.signal));
+    return () => controller.abort();
   }, [fetchProducts]);
 
   const hasMore = pagination.page < pagination.pages;

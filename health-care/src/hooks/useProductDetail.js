@@ -31,12 +31,19 @@ export function useProductDetail(productId) {
   const fetchedRef = useRef(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+    
     // Guard against double-fetch in React 18 strict mode
-    if (fetchedRef.current) return;
+    if (fetchedRef.current) {
+      controller.abort();
+      return;
+    }
     
     if (!productId) {
-      setError('No product selected.');
-      setLoading(false);
+      Promise.resolve().then(() => {
+        setError('No product selected.');
+        setLoading(false);
+      });
       return;
     }
 
@@ -54,7 +61,7 @@ export function useProductDetail(productId) {
         } else {
           url = `${API_BASE}/products/${productId}`;
         }
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error('Product not found');
         
         const data = await res.json();
@@ -97,6 +104,7 @@ export function useProductDetail(productId) {
         
         fetchedRef.current = true;
       } catch (err) {
+        if (err.name === 'AbortError') return;
         setError(err.message || 'Failed to load product');
       } finally {
         setLoading(false);
@@ -104,6 +112,8 @@ export function useProductDetail(productId) {
     };
 
     fetchProduct();
+
+    return () => controller.abort();
   }, [productId]);
 
   return { product, loading, error };

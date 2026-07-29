@@ -172,7 +172,7 @@ export default function CheckoutPage({ onBackToCart }) {
       fieldErrors.push('Postcode must be 4 digits');
 
     if (fieldErrors.length > 0) {
-      setError(fieldErrors.map((msg, i) => ({ field: i, message: msg })));
+      setError(fieldErrors.map((msg, i) => ({ field: `field-${i}`, message: msg })));
       // Scroll to error
       document.querySelector('[role="alert"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -217,7 +217,7 @@ export default function CheckoutPage({ onBackToCart }) {
       
       // ✅ Handle duplicate order response
       if (response.data?.isDuplicate) {
-        console.warn('[Checkout] Duplicate order detected, using existing order');
+        if (process.env.NODE_ENV === 'development') console.warn('[Checkout] Duplicate order detected, using existing order');
       }
       
       const orderNumber =
@@ -262,10 +262,11 @@ export default function CheckoutPage({ onBackToCart }) {
         clearCart();
       }
     } catch (err) {
-      // Log full error details to console for debugging
-      console.error('[Checkout] Order failed:', err.message, err.data || err);
-      if (err.data?.errors) {
-        console.error('[Checkout] Validation errors:', err.data.errors);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[Checkout] Order failed:', err.message, err.data || err);
+        if (err.data?.errors) {
+          console.error('[Checkout] Validation errors:', err.data.errors);
+        }
       }
       setError(err.data?.errors?.length ? err.data.errors : err.message || 'Could not place order. Please try again.');
     } finally {
@@ -391,8 +392,8 @@ export default function CheckoutPage({ onBackToCart }) {
                   className="px-4 py-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] text-sm space-y-1"
                 >
                   {Array.isArray(error) ? (
-                    error.map((e, i) => (
-                      <div key={i}>
+                    error.map((e) => (
+                      <div key={e.field}>
                         <span className="font-semibold">{e.field}:</span> {e.message}
                       </div>
                     ))

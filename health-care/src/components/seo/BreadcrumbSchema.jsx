@@ -8,6 +8,8 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/breadcrumb
  */
 
+import { escapeJsonLd } from '@/utils/helpers';
+
 export default function BreadcrumbSchema({ items }) {
   if (!items || !Array.isArray(items) || items.length === 0) return null;
 
@@ -20,7 +22,7 @@ export default function BreadcrumbSchema({ items }) {
     itemListElement: items.map((item, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      name: item.name || item.label,
+      name: escapeJsonLd(item.name || item.label),
       item: item.url?.startsWith('http') 
         ? item.url 
         : `${baseUrl}${item.url || item.path || '/'}`

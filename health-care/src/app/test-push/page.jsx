@@ -22,7 +22,7 @@ export default function TestPushPage() {
   const addLog = (message, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
     setLogs(prev => [...prev, { timestamp, message, type }]);
-    console.log(`[${timestamp}] ${message}`);
+    if (process.env.NODE_ENV === 'development') console.log(`[${timestamp}] ${message}`);
   };
 
   const runDiagnostics = useCallback(async () => {

@@ -8,6 +8,8 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/faqpage
  */
 
+import { escapeJsonLd } from '@/utils/helpers';
+
 export default function FAQSchema({ faqs }) {
   if (!faqs || !Array.isArray(faqs) || faqs.length === 0) return null;
 
@@ -16,10 +18,10 @@ export default function FAQSchema({ faqs }) {
     '@type': 'FAQPage',
     mainEntity: faqs.map(faq => ({
       '@type': 'Question',
-      name: faq.question,
+      name: escapeJsonLd(faq.question),
       acceptedAnswer: {
         '@type': 'Answer',
-        text: faq.answer
+        text: escapeJsonLd(faq.answer)
       }
     }))
   };

@@ -26,12 +26,16 @@ export function useSiteStats() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchStats = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stats`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stats`, {
+          signal: controller.signal,
+        });
         
         if (!res.ok) throw new Error('Failed to fetch stats');
         
@@ -42,6 +46,7 @@ export function useSiteStats() {
           setStats(statsData);
         }
       } catch (err) {
+        if (err.name === 'AbortError') return;
         setError(err.message || 'Failed to load stats');
         // Keep default stats on error
       } finally {
@@ -50,6 +55,8 @@ export function useSiteStats() {
     };
 
     fetchStats();
+
+    return () => controller.abort();
   }, []);
 
   return { stats, loading, error };

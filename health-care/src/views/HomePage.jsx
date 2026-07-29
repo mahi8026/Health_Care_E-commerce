@@ -64,6 +64,21 @@ const FALLBACK_CATEGORIES = [
   { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: '#FFFBEB' },
 ];
 
+const SEARCH_SUGGESTIONS = ['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'];
+
+const B2B_FEATURES = [
+  '8–22% bulk discounts', '30–90 day credit terms',
+  'Dedicated account manager', 'Priority order processing',
+  'Free installation & training', 'Custom quotations',
+];
+
+const B2B_STATS = [
+  { val: '500+', label: 'Active B2B Clients' },
+  { val: '30%', label: 'Max Bulk Discount' },
+  { val: '90 days', label: 'Credit Terms' },
+  { val: '24/7', label: 'Dedicated Support' },
+];
+
 const ANNOUNCEMENTS = [
   { icon: <FaTruck />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
   { icon: <FaSnowflake />, text: 'Cold chain delivery available for temperature-sensitive reagents' },
@@ -530,7 +545,7 @@ export default function HomePage() {
       try {
         const cart = JSON.parse(cartData);
         const count = cart.items?.length || 0;
-        setCartCount(count);
+        Promise.resolve().then(() => setCartCount(count));
       } catch {}
     }
 
@@ -767,7 +782,7 @@ export default function HomePage() {
               <EnhancedSearchBox placeholder={searchPlaceholder} variant="hero" />
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'].map(q => (
+              {SEARCH_SUGGESTIONS.map(q => (
                 <button key={q} onClick={() => router.push(`/products?q=${encodeURIComponent(q)}`)}
                   style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
@@ -786,7 +801,7 @@ export default function HomePage() {
           >
             {heroSlides.length > 0 ? (
               heroSlides.map((slide, i) => currentSlide === i && (
-                <div key={i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+                <div key={slide._id || slide.imageUrl || i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
                   <Image 
                     src={slide.imageUrl} 
                     alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
@@ -847,7 +862,7 @@ export default function HomePage() {
                 <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 10 }}>
                   {Array.from({ length: total }).map((_, i) => (
                     <span 
-                      key={i} 
+                      key={`dot-${i}`} 
                       onClick={() => setCurrentSlide(i)} 
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -1528,9 +1543,7 @@ export default function HomePage() {
                 {t('home.b2bDesc')}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 460, marginBottom: 28 }}>
-                {['8–22% bulk discounts', '30–90 day credit terms',
-                  'Dedicated account manager', 'Priority order processing',
-                  'Free installation & training', 'Custom quotations'].map(f => (
+                {B2B_FEATURES.map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
                     fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
                     <span style={{ color: '#4DDBB8', fontWeight: 700 }}>✓</span> {f}
@@ -1556,12 +1569,12 @@ export default function HomePage() {
             </div>
             {/* Right stat boxes */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                { val: stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '500+', label: 'Active B2B Clients' },
-                { val: '30%', label: 'Max Bulk Discount' },
-                { val: '90 days', label: 'Credit Terms' },
-                { val: '24/7', label: 'Dedicated Support' },
-              ].map(s => (
+              {B2B_STATS.map((s, i) => ({
+                ...s,
+                val: i === 0
+                  ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '500+')
+                  : s.val,
+              })).map(s => (
                 <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
                   border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
                   padding: '14px 18px', display: 'flex', alignItems: 'center',
@@ -1680,13 +1693,13 @@ export default function HomePage() {
               companyName: 'Hospital',
               user: { name: 'Customer', companyName: 'Hospital' }
             }
-          ]).map((review, i) => {
+          ]).map((review) => {
             const userName = review.user?.name || review.userName || 'Anonymous';
             const companyName = review.user?.companyName || review.companyName || '';
             const rating = review.rating || 5;
             
             return (
-              <div key={i} style={{ background: '#fff', borderRadius: 16,
+              <div key={review._id} style={{ background: '#fff', borderRadius: 16,
                 border: '1px solid #E5E7EB', padding: '28px 24px', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>

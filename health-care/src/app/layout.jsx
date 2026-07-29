@@ -192,6 +192,9 @@ export default function RootLayout({ children }) {
               </WishlistProvider>
             </CartProvider>
 
+            {/* OneSignal Push Notification SDK — must render before NotificationBanner */}
+            <OneSignalProvider />
+
             {/* Push Notification Permission Banner */}
             <NotificationBanner />
           </AuthProvider>
@@ -211,9 +214,6 @@ export default function RootLayout({ children }) {
 
         {/* PWA Install Prompt */}
         <InstallPWA />
-
-        {/* OneSignal Push Notification SDK */}
-        <OneSignalProvider />
 
         {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (

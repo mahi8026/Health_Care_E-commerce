@@ -23,12 +23,16 @@ export function useCategories() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchCategories = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
+          signal: controller.signal,
+        });
         
         if (!res.ok) throw new Error('Failed to fetch categories');
         
@@ -37,6 +41,7 @@ export function useCategories() {
         
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       } catch (err) {
+        if (err.name === 'AbortError') return;
         setError(err.message || 'Failed to load categories');
         setCategories([]);
       } finally {
@@ -45,6 +50,8 @@ export function useCategories() {
     };
 
     fetchCategories();
+
+    return () => controller.abort();
   }, []);
 
   return { categories, loading, error };

@@ -162,59 +162,8 @@ async function networkFirstWithOfflineFallback(request, cacheName) {
   }
 }
 
-// ── Push notification handler ───────────────────────────────────────────────
-self.addEventListener('push', (event) => {
-  if (!event.data) return;
-
-  let data;
-  try { data = event.data.json(); }
-  catch { data = { title: 'MediportBD', body: event.data.text() }; }
-
-  const options = {
-    body:    data.body    || '',
-    icon:    data.icon    || '/icons/icon-192x192.png',
-    badge:   data.badge   || '/icons/badge-72x72.png',
-    image:   data.image   || undefined,
-    tag:     data.tag     || 'mediportbd-notification',
-    vibrate: [200, 100, 200],
-    data:    { url: data.url || '/', ...data.data },
-    actions: data.actions || [],
-    requireInteraction: data.urgency === 'high',
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'MediportBD', options)
-  );
-});
-
-// ── Notification click handler ──────────────────────────────────────────────
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  const url = event.notification.data?.url || '/';
-  const action = event.action;
-
-  // Handle action buttons
-  let targetUrl = url;
-  if (action === 'track')   targetUrl = url;
-  if (action === 'review')  targetUrl = '/account/orders';
-  if (action === 'reorder') targetUrl = url;
-  if (action === 'shop')    targetUrl = url;
-  if (action === 'buy')     targetUrl = url;
-  if (action === 'view')    targetUrl = url;
-  if (action === 'dismiss') return; // Just close
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Focus existing window if open
-      for (const client of clientList) {
-        if ('focus' in client) {
-          client.navigate(targetUrl);
-          return client.focus();
-        }
-      }
-      // Open new window
-      if (clients.openWindow) return clients.openWindow(targetUrl);
-    })
-  );
-});
+// ── Push notifications are handled by OneSignalSDKWorker.js ─────────────────
+// OneSignal registers its own service worker at /OneSignalSDKWorker.js which
+// handles push events and notification clicks. The handlers below are kept
+// only as a fallback for the old VAPID approach and are NOT used when
+// OneSignal is active.

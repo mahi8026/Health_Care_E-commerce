@@ -8,6 +8,7 @@
  */
 
 import { organization, siteConfig } from '@/config/seo';
+import { escapeJsonLd } from '@/utils/helpers';
 
 // ---------------------------------------------------------------------------
 // Schema validation (development mode only)
@@ -164,15 +165,15 @@ export function generateProductSchema(product) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: name || '',
-    description: description || '',
+    name: escapeJsonLd(name || ''),
+    description: escapeJsonLd(description || ''),
     // Include all images as array
     ...(imageUrls.length > 0 && { image: imageUrls }),
     // Brand as { "@type": "Brand", "name": brandName }
     ...(brandName && {
       brand: {
         '@type': 'Brand',
-        name: brandName,
+        name: escapeJsonLd(brandName),
       },
     }),
     ...(sku && { sku }),
@@ -206,7 +207,7 @@ export function generateProductSchema(product) {
     ...(certifications?.length > 0 && {
       additionalProperty: certifications.map(cert => ({
         '@type': 'PropertyValue',
-        name: cert,
+        name: escapeJsonLd(cert),
         value: 'Certified',
       })),
     }),
@@ -272,7 +273,7 @@ export function generateBreadcrumbSchema(breadcrumbs) {
   const itemListElement = breadcrumbs.map((crumb, index) => ({
     '@type': 'ListItem',
     position: index + 1,
-    name: crumb.name,
+    name: escapeJsonLd(crumb.name),
     item: crumb.url,
   }));
 

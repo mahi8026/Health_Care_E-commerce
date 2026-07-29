@@ -10,6 +10,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Backend has its own ESLint setup
+    "backend/**",
+    // Third-party scripts
+    "scripts/**",
+    "public/**",
   ]),
   // Relax Next.js-specific image rule in test files —
   // Jest mocks for next/image intentionally use <img> tags.

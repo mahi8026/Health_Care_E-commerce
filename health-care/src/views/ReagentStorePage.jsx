@@ -69,7 +69,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
 
   const debouncedSearch = useDebounce(searchQuery, 400);
 
-  const fetchReagents = useCallback(async () => {
+  const fetchReagents = useCallback(async (signal) => {
     setLoading(true);
     setFetchError(false);
     try {
@@ -116,7 +116,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       }
 
       const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
-        signal: AbortSignal.timeout(15000),
+        signal,
         credentials: 'include',
       });
 
@@ -142,7 +142,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       setTotal(data.data?.total ?? data.total ?? data.pagination?.total ?? (Array.isArray(list) ? list.length : 0));
     } catch (err) {
       if (err.name !== 'AbortError') {
-        console.error('Fetch reagents error:', err);
+        if (process.env.NODE_ENV === 'development') console.error('Fetch reagents error:', err);
         setFetchError(true);
       }
       setReagents([]);
@@ -153,10 +153,13 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
   }, [filters, debouncedSearch, sortBy]);
 
   useEffect(() => {
-    // Call async function from useEffect without triggering set-state-in-effect warning
     const controller = new AbortController();
-    fetchReagents();
-    return () => controller.abort();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    Promise.resolve().then(() => fetchReagents(controller.signal));
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [fetchReagents]);
 
   return (

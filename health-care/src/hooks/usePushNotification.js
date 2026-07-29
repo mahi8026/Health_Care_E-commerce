@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 /**
  * usePushNotification — OneSignal-powered hook
  *
- * Wraps OneSignal SDK. Exposes the same API surface as before
- * so all existing consumers (NotificationBanner, NotificationsPage, etc.) work unchanged.
+ * Uses the global OneSignal object loaded via Script component in OneSignalProvider.
+ * Exposes subscribe/unsubscribe API for NotificationBanner and NotificationsPage.
  */
 export function usePushNotification() {
   const [permission,   setPermission]   = useState('default');
@@ -17,57 +17,88 @@ export function usePushNotification() {
     if (typeof window === 'undefined') return;
     const supported = 'Notification' in window && 'serviceWorker' in navigator;
 
-    // Defer state updates to avoid cascading renders
-    Promise.resolve().then(() => {
+    const checkStatus = async () => {
       setIsSupported(supported);
       if (!supported) return;
       setPermission(Notification.permission);
 
-      // Check if already subscribed via OneSignal
-      import('react-onesignal').then(({ default: OneSignal }) => {
-        const optedIn = OneSignal.User?.PushSubscription?.optedIn;
-        setIsSubscribed(!!optedIn);
-      }).catch(() => {});
-    });
+      // Wait for OneSignal to be ready
+      if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            const optedIn = await OneSignal.User.PushSubscription.optedIn;
+            setIsSubscribed(!!optedIn);
+          } catch {}
+        });
+      }
+    };
+
+    checkStatus();
   }, []);
 
   const subscribe = useCallback(async () => {
     if (!isSupported) return { success: false, reason: 'not_supported' };
     setIsLoading(true);
-    try {
-      const OneSignal = (await import('react-onesignal')).default;
 
-      // Request native browser permission
+    try {
+      // Request native browser permission first
       const perm = await Notification.requestPermission();
       setPermission(perm);
       if (perm !== 'granted') {
+        setIsLoading(false);
         return { success: false, reason: 'permission_denied' };
       }
 
-      // Opt the user into OneSignal push
-      await OneSignal.User.PushSubscription.optIn();
-      setIsSubscribed(true);
-      return { success: true };
+      // Wait for OneSignal to be ready and opt in
+      return await new Promise((resolve) => {
+        if (!window.OneSignalDeferred) {
+          setIsLoading(false);
+          resolve({ success: false, reason: 'onesignal_not_loaded' });
+          return;
+        }
+
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            await OneSignal.Notifications.requestPermission();
+            setIsSubscribed(true);
+            setIsLoading(false);
+            resolve({ success: true });
+          } catch (err) {
+            console.error('[OneSignal] subscribe error:', err);
+            setIsLoading(false);
+            resolve({ success: false, reason: err.message || 'unknown_error' });
+          }
+        });
+      });
     } catch (err) {
-      console.error('[OneSignal] subscribe error:', err);
-      return { success: false, reason: err.message || 'unknown_error' };
-    } finally {
+      console.error('[usePushNotification] subscribe error:', err);
       setIsLoading(false);
+      return { success: false, reason: err.message || 'unknown_error' };
     }
   }, [isSupported]);
 
   const unsubscribe = useCallback(async () => {
     setIsLoading(true);
-    try {
-      const OneSignal = (await import('react-onesignal')).default;
-      await OneSignal.User.PushSubscription.optOut();
-      setIsSubscribed(false);
-      return { success: true };
-    } catch (err) {
-      return { success: false, reason: err.message };
-    } finally {
-      setIsLoading(false);
-    }
+
+    return await new Promise((resolve) => {
+      if (!window.OneSignalDeferred) {
+        setIsLoading(false);
+        resolve({ success: false, reason: 'onesignal_not_loaded' });
+        return;
+      }
+
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.User.PushSubscription.optOut();
+          setIsSubscribed(false);
+          setIsLoading(false);
+          resolve({ success: true });
+        } catch (err) {
+          setIsLoading(false);
+          resolve({ success: false, reason: err.message });
+        }
+      });
+    });
   }, []);
 
   return { permission, isSubscribed, isLoading, isSupported, subscribe, unsubscribe };

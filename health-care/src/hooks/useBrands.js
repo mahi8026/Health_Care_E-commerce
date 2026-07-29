@@ -23,12 +23,16 @@ export function useBrands() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchBrands = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/manufacturers`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/manufacturers`, {
+          signal: controller.signal,
+        });
         
         if (!res.ok) throw new Error('Failed to fetch brands');
         
@@ -37,6 +41,7 @@ export function useBrands() {
         
         setBrands(Array.isArray(brandsData) ? brandsData : []);
       } catch (err) {
+        if (err.name === 'AbortError') return;
         setError(err.message || 'Failed to load brands');
         setBrands([]);
       } finally {
@@ -45,6 +50,8 @@ export function useBrands() {
     };
 
     fetchBrands();
+
+    return () => controller.abort();
   }, []);
 
   return { brands, loading, error };

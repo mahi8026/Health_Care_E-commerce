@@ -49,12 +49,12 @@ function fixGoogleAccountChooser() {
             el.inert = true;
           }
           
-          console.info('[A11Y] Fixed Google widget aria-hidden violation');
+          if (process.env.NODE_ENV === 'development') console.info('[A11Y] Fixed Google widget aria-hidden violation');
         }
       }
     });
   } catch (error) {
-    console.warn('[A11Y] Error fixing Google account chooser:', error);
+    if (process.env.NODE_ENV === 'development') console.warn('[A11Y] Error fixing Google account chooser:', error);
   }
 }
 

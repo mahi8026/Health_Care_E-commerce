@@ -26,12 +26,16 @@ export function useSiteSettings() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchSettings = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+          signal: controller.signal,
+        });
         
         if (!res.ok) throw new Error('Failed to fetch settings');
         
@@ -53,6 +57,7 @@ export function useSiteSettings() {
           setPromoBanner(settingsData.promoBanner);
         }
       } catch (err) {
+        if (err.name === 'AbortError') return;
         setError(err.message || 'Failed to load site settings');
         // Silently fail - components can use fallback data
       } finally {
@@ -61,6 +66,8 @@ export function useSiteSettings() {
     };
 
     fetchSettings();
+
+    return () => controller.abort();
   }, []);
 
   return { settings, heroSlides, promoBanner, loading, error };

@@ -153,6 +153,13 @@ export function getStatusColor(status) {
   return colors[status] || colors.pending;
 }
 
+export function escapeJsonLd(str) {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/<\/script>/gi, '<\\/script>')
+    .replace(/<!--/g, '<\\!--');
+}
+
 export function copyToClipboard(text) {
   if (navigator.clipboard) {
     return navigator.clipboard.writeText(text);

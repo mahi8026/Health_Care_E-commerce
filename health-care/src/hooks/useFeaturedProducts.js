@@ -23,22 +23,22 @@ export function useFeaturedProducts({ category = null, limit = 24 } = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchProducts = useCallback(async (filterCategory = category) => {
+  const fetchProducts = useCallback(async (signal) => {
     try {
       setLoading(true);
       setError(null);
 
       // Build URLs for featured and fallback queries
       const baseParams = `limit=${limit}`;
-      const categoryParam = filterCategory ? `&category=${encodeURIComponent(filterCategory)}` : '';
+      const categoryParam = category ? `&category=${encodeURIComponent(category)}` : '';
       
       const featuredUrl = `${process.env.NEXT_PUBLIC_API_URL}/products?isFeatured=true${categoryParam}&${baseParams}`;
       const fallbackUrl = `${process.env.NEXT_PUBLIC_API_URL}/products?${categoryParam}&${baseParams}`;
 
       // Try featured first, fallback to all products if not enough
       const [featuredRes, fallbackRes] = await Promise.all([
-        fetch(featuredUrl),
-        fetch(fallbackUrl)
+        fetch(featuredUrl, { signal }),
+        fetch(fallbackUrl, { signal })
       ]);
 
       const featuredData = await featuredRes.json();
@@ -52,6 +52,7 @@ export function useFeaturedProducts({ category = null, limit = 24 } = {}) {
       
       setProducts(Array.isArray(productsToShow) ? productsToShow : []);
     } catch (err) {
+      if (err.name === 'AbortError') return;
       setError(err.message || 'Failed to load featured products');
       setProducts([]);
     } finally {
@@ -60,7 +61,9 @@ export function useFeaturedProducts({ category = null, limit = 24 } = {}) {
   }, [category, limit]);
 
   useEffect(() => {
-    fetchProducts();
+    const controller = new AbortController();
+    Promise.resolve().then(() => fetchProducts(controller.signal));
+    return () => controller.abort();
   }, [fetchProducts]);
 
   return { 

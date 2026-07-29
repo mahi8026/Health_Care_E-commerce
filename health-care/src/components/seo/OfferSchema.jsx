@@ -8,6 +8,8 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/product#offer
  */
 
+import { escapeJsonLd } from '@/utils/helpers';
+
 export default function OfferSchema({ product, offer }) {
   if (!product || !offer) return null;
 
@@ -30,9 +32,9 @@ export default function OfferSchema({ product, offer }) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.name,
+    name: escapeJsonLd(product.name),
     image: product.images?.[0] || `${baseUrl}/images/placeholder-product.jpg`,
-    description: product.description || product.shortDescription || product.name,
+    description: escapeJsonLd(product.description || product.shortDescription || product.name),
     offers: {
       '@type': 'Offer',
       url: productUrl,
@@ -92,9 +94,9 @@ export function AggregateOfferSchema({ product, offers }) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.name,
+    name: escapeJsonLd(product.name),
     image: product.images?.[0] || `${baseUrl}/images/placeholder-product.jpg`,
-    description: product.description || product.shortDescription || product.name,
+    description: escapeJsonLd(product.description || product.shortDescription || product.name),
     offers: {
       '@type': 'AggregateOffer',
       url: productUrl,
