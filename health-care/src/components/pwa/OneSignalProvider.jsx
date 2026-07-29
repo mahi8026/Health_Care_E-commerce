@@ -27,7 +27,7 @@ export default function OneSignalProvider() {
           // Don't auto-prompt — we show our own custom banner
           promptOptions: { autoPrompt: false },
           notifyButton: { enable: false },
-          serviceWorkerPath: '/sw.js',
+          serviceWorkerPath: '/OneSignalSDKWorker.js',
           serviceWorkerParam: { scope: '/' },
           // Allow localhost in development
           allowLocalhostAsSecureOrigin: process.env.NODE_ENV === 'development',

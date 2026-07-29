@@ -8,11 +8,9 @@
  * - Cloudinary images: SKIP (let browser fetch directly — Cloudinary has own CDN)
  * - YouTube thumbnails: Cache-first with 24h TTL
  *
- * OneSignal push notifications are handled by importing their service worker script.
+ * OneSignal uses its own dedicated service worker (OneSignalSDKWorker.js)
+ * which is automatically registered by the OneSignal SDK at /OneSignalSDKWorker.js
  */
-
-// ── OneSignal Service Worker (handles push delivery) ─────────────────────────
-importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
 const CACHE_VERSION = 'Mediport-v2'; // v2: Skip Cloudinary (CSP fix)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
