@@ -2,6 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import AdminShell from '@/components/admin/AdminShell';
+import { getToken } from '@/utils/api';
+
+const authHeaders = () => {
+  const token = getToken();
+  return token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+};
 
 export default function PushNotificationsPage() {
   const [tab, setTab] = useState('broadcast');
@@ -17,7 +23,7 @@ export default function PushNotificationsPage() {
   const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    fetch('/api/push/admin/stats')
+    fetch('/api/push/admin/stats', { headers: authHeaders() })
       .then(r => r.json())
       .then(d => { if (d.success) setStats(d.data); })
       .catch(() => {});
@@ -32,7 +38,7 @@ export default function PushNotificationsPage() {
     try {
       const res = await fetch('/api/push/admin/broadcast', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({
           title: title.trim(),
           body: body.trim(),
@@ -63,7 +69,7 @@ export default function PushNotificationsPage() {
     try {
       const res = await fetch('/api/push/admin/send-to-user', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({
           userId: userId.trim(),
           title: title.trim(),
