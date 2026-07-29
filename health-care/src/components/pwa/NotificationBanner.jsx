@@ -16,7 +16,7 @@ export default function NotificationBanner() {
     if (permission === 'denied') return;
     const dismissed = localStorage.getItem('push-banner-dismissed');
     if (dismissed) return;
-    const t = setTimeout(() => setShow(true), 20000);
+    const t = setTimeout(() => setShow(true), 8000);
     return () => clearTimeout(t);
   }, [isSupported, permission]);
 

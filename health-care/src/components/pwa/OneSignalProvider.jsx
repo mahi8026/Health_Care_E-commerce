@@ -20,7 +20,7 @@ export default function OneSignalProvider() {
 
     // Wait for OneSignal script to load, then initialize
     let retries = 0;
-    const MAX_RETRIES = 50;
+    const MAX_RETRIES = 200;
 
     const initOneSignal = () => {
       if (typeof window.OneSignalDeferred === 'undefined') {
