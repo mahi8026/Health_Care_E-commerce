@@ -1,4 +1,4 @@
-﻿const Order = require('../models/Order');
+const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const CacheService = require('../services/cacheService');
@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const { DELIVERY_FEES } = require('../config/constants');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 const emailService = require('../services/emailService');
-const { sendToUser, sendToAdmins, notifications } = require('../utils/pushService');
+const { sendToUser, sendToAdmins, notifications } = require('../utils/oneSignalService');
 
 const cacheService = new CacheService();
 
@@ -23,7 +23,7 @@ async function generateOrderNumber() {
 
   const maxAttempts = 10;
   for (let i = 0; i < maxAttempts; i++) {
-    const rand = Math.floor(Math.random() * 9000) + 1000; // 1000–9999
+    const rand = Math.floor(Math.random() * 9000) + 1000; // 1000�9999
     const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await Order.findOne({ orderNumber }).lean();
     if (!exists) return orderNumber;
@@ -51,7 +51,7 @@ exports.createOrder = async (req, res) => {
     session.startTransaction();
     useTransaction = true;
   } catch {
-    // Standalone MongoDB (no replica set) — proceed without transactions
+    // Standalone MongoDB (no replica set) � proceed without transactions
     session = null;
     useTransaction = false;
   }
@@ -68,12 +68,12 @@ exports.createOrder = async (req, res) => {
   try {
     const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey, b2bDiscount: clientB2BDiscount, isB2BOrder } = req.body;
 
-    // ✅ Security Fix #4: Validate idempotency key to prevent double charging
+    // ? Security Fix #4: Validate idempotency key to prevent double charging
     if (!idempotencyKey || typeof idempotencyKey !== 'string') {
       return abortAndError(res, 'Idempotency key required. Please refresh and try again.', 400);
     }
 
-    // ✅ Check for duplicate order with same idempotency key
+    // ? Check for duplicate order with same idempotency key
     const existingOrder = await Order.findOne({
       user: req.user.id,
       'metadata.idempotencyKey': idempotencyKey
@@ -166,7 +166,7 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // B2B discount — use the discount calculated on frontend (already includes per-item B2B pricing)
+    // B2B discount � use the discount calculated on frontend (already includes per-item B2B pricing)
     // This section is kept for backwards compatibility with old orders that didn't calculate B2B on frontend
     const user = await withSession(User.findById(req.user.id));
     if (!user) {
@@ -239,7 +239,7 @@ exports.createOrder = async (req, res) => {
           if (!isValid) errorMessage = 'This coupon has expired or is not yet valid';
           else if (!hasUsageLeft) errorMessage = 'This coupon has reached its usage limit';
           else if (!notUsedByUser) errorMessage = 'You have already used this coupon';
-          else if (!meetsMinimum) errorMessage = `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`;
+          else if (!meetsMinimum) errorMessage = `Minimum order amount of ?${coupon.minimumOrderAmount.toLocaleString()} required`;
           else if (!roleMatches) errorMessage = 'This coupon is not applicable to your account type';
           else if (!isFirstOrder) errorMessage = 'This coupon is only valid for first-time orders';
           
@@ -251,7 +251,7 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // Delivery fee — Steadfast Courier zone-based pricing from district
+    // Delivery fee � Steadfast Courier zone-based pricing from district
     const SUBURBAN_DISTRICTS = new Set([
       'narayanganj', 'gazipur', 'manikganj', 'munshiganj', 'narsingdi',
     ]);
@@ -321,7 +321,7 @@ exports.createOrder = async (req, res) => {
       notes,
       poNumber,
       statusTimestamps: { placed: new Date() },
-      // ✅ Security Fix #4: Add metadata with idempotency key
+      // ? Security Fix #4: Add metadata with idempotency key
       metadata: {
         idempotencyKey,
         createdVia: 'web',
@@ -425,7 +425,7 @@ exports.createOrder = async (req, res) => {
             type: 'redeem',
             points: -pointsRedeemed,
             balance: (userAfterRedeem?.loyaltyPoints || 0),
-            description: `Redeemed ${pointsRedeemed} pts for ৳${loyaltyDiscount} discount on order ${orderNumber}`,
+            description: `Redeemed ${pointsRedeemed} pts for ?${loyaltyDiscount} discount on order ${orderNumber}`,
             order: order[0]._id
           });
         }
@@ -440,14 +440,14 @@ exports.createOrder = async (req, res) => {
     // Send order confirmation email asynchronously
     emailService.sendNewOrderEmail(order[0], user).then(result => {
       if (result.success) {
-        logger.info(`[createOrder] ✅ Order confirmation email sent to ${user.email}`);
+        logger.info(`[createOrder] ? Order confirmation email sent to ${user.email}`);
       } else if (result.skipped) {
-        logger.warn(`[createOrder] ⚠️ Email skipped: ${result.reason}`);
+        logger.warn(`[createOrder] ?? Email skipped: ${result.reason}`);
       } else {
-        logger.error(`[createOrder] ❌ Email failed: ${result.error}`);
+        logger.error(`[createOrder] ? Email failed: ${result.error}`);
       }
     }).catch(err => {
-      logger.error(`[createOrder] ❌ Email exception: ${err.message}`);
+      logger.error(`[createOrder] ? Email exception: ${err.message}`);
       logger.error(`[createOrder] Email error stack: ${err.stack}`);
     });
 
@@ -496,7 +496,7 @@ exports.createOrder = async (req, res) => {
       try { await session.abortTransaction(); } catch { /* ignore */ }
     }
     
-    // ✅ Security Fix #4: Handle duplicate key error gracefully
+    // ? Security Fix #4: Handle duplicate key error gracefully
     if (error.code === 11000 && error.keyPattern?.['metadata.idempotencyKey']) {
       const existingOrder = await Order.findOne({
         'metadata.idempotencyKey': req.body.idempotencyKey
@@ -636,7 +636,7 @@ exports.updateOrderStatus = async (req, res) => {
     if (status === 'delivered') {
       order.deliveredAt = new Date();
       
-      // ── Update Product soldCount when order is delivered ────────────────────
+      // -- Update Product soldCount when order is delivered --------------------
       // Increment soldCount for all products in the order
       const Product = require('../models/Product');
       for (const item of order.items) {
@@ -915,7 +915,7 @@ exports.addOrderNote = async (req, res) => {
   }
 };
 
-// ─── Admin Notification Handlers ─────────────────────────────────────────────
+// --- Admin Notification Handlers ---------------------------------------------
 // These record the notification action on the order.
 // Plug in your email/SMS service (e.g. Nodemailer, Twilio) inside each case.
 
@@ -953,7 +953,7 @@ exports.sendNotification = async (req, res) => {
 
     logger.info(`[Notification] Admin sent "${NOTIFICATION_LABELS[type]}" for order ${order.orderNumber} to ${order.user?.email || 'unknown'}`);
 
-    // ── Send real email asynchronously (non-blocking) ────────────────────────
+    // -- Send real email asynchronously (non-blocking) ------------------------
     // Don't wait for email to complete - respond immediately to prevent timeout
     if (order.user?.email) {
       const customer = { name: order.user.name, email: order.user.email };
@@ -973,7 +973,7 @@ exports.sendNotification = async (req, res) => {
         }
       });
     }
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
 
     return successResponse(res, {
       type,

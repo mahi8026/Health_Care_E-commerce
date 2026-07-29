@@ -1,140 +1,127 @@
-const PushSubscription = require('../models/PushSubscription');
-const { sendToUser, sendToAll, sendToAdmins, notifications } = require('../utils/pushService');
+const { sendToUser, sendToAll, notifications } = require('../utils/oneSignalService');
 const logger = require('../utils/logger');
 
-// POST /api/push/subscribe — save subscription
+/**
+ * POST /api/push/register-user
+ * Called after OneSignal subscription to link the OneSignal player ID
+ * with the logged-in user's MongoDB ID (sets external_id on OneSignal).
+ * This allows us to send targeted notifications by user ID.
+ *
+ * OneSignal external_id = MongoDB user _id (string)
+ * This is set client-side via OneSignal.login(userId) — no backend call needed.
+ * This endpoint is kept for compatibility / manual overrides.
+ */
+exports.registerUser = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.json({ success: true, message: 'Guest subscription — no user linking needed' });
+    }
+    // OneSignal login() on the client handles this automatically
+    res.json({ success: true, message: 'User registered with OneSignal', userId });
+  } catch (err) {
+    logger.error(`[OneSignal] registerUser error: ${err.message}`);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+/**
+ * POST /api/push/subscribe  (kept for backwards compatibility)
+ * With OneSignal we don't need to store subscriptions ourselves —
+ * OneSignal manages all that. We just send a welcome notification.
+ */
 exports.subscribe = async (req, res) => {
   try {
-    logger.info(`[Push] Subscribe request received from ${req.ip}`);
-    const { subscription, preferences, browser, device, os } = req.body;
-    
-    // Validate subscription object
-    if (!subscription) {
-      logger.error('[Push] Missing subscription object in request body');
-      return res.status(400).json({ success: false, message: 'Missing subscription object' });
-    }
-    
-    if (!subscription.endpoint) {
-      logger.error('[Push] Missing endpoint in subscription');
-      return res.status(400).json({ success: false, message: 'Missing subscription endpoint' });
-    }
-    
-    if (!subscription.keys?.p256dh || !subscription.keys?.auth) {
-      logger.error('[Push] Missing keys in subscription');
-      return res.status(400).json({ success: false, message: 'Missing subscription keys (p256dh or auth)' });
-    }
-    
-    logger.info(`[Push] Valid subscription received: ${subscription.endpoint.substring(0, 50)}...`);
-    
-    // Upsert subscription (update if endpoint exists)
-    const saved = await PushSubscription.findOneAndUpdate(
-      { endpoint: subscription.endpoint },
-      {
-        user:        req.user?._id || null,
-        endpoint:    subscription.endpoint,
-        keys:        subscription.keys,
-        preferences: preferences || {},
-        browser:     browser || '',
-        device:      device || '',
-        os:          os || '',
-        isActive:    true,
-        lastUsed:    new Date(),
-      },
-      { upsert: true, new: true }
-    );
-    
-    logger.info(`[Push] Subscription saved to database: ${saved._id}`);
-    
-    // Send welcome notification
-    if (req.user?._id) {
-      logger.info(`[Push] Sending welcome notification to user ${req.user._id}`);
+    const userId = req.user?._id;
+    logger.info(`[OneSignal] Subscribe called — userId: ${userId || 'guest'}`);
+
+    // Send welcome notification if user is logged in
+    if (userId) {
       try {
-        await sendToUser(req.user._id, {
-          title: '🎉 Notifications Enabled — MediportBD',
-          body:  'You\'ll receive updates on orders, deals, and stock alerts.',
-          icon:  '/icons/icon-192x192.png',
-          tag:   'welcome',
-          url:   '/',
-        });
-        logger.info(`[Push] Welcome notification sent successfully`);
+        await notifications.welcomeNotification(userId);
+        logger.info(`[OneSignal] Welcome notification sent to user ${userId}`);
       } catch (notifErr) {
-        logger.error(`[Push] Failed to send welcome notification: ${notifErr.message}`);
-        // Don't fail the subscription if welcome notification fails
+        logger.error(`[OneSignal] Welcome notification failed: ${notifErr.message}`);
       }
     }
-    
-    res.json({ success: true, message: 'Subscribed successfully', data: { id: saved._id } });
+
+    res.json({ success: true, message: 'Subscribed successfully via OneSignal' });
   } catch (err) {
-    logger.error(`[Push] subscribe error: ${err.message}`);
-    logger.error(`[Push] subscribe stack: ${err.stack}`);
-    res.status(500).json({ success: false, message: err.message, error: err.toString() });
+    logger.error(`[OneSignal] subscribe error: ${err.message}`);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// DELETE /api/push/unsubscribe — remove subscription
+/**
+ * DELETE /api/push/unsubscribe (kept for backwards compatibility)
+ */
 exports.unsubscribe = async (req, res) => {
-  try {
-    const { endpoint } = req.body;
-    await PushSubscription.findOneAndDelete({ endpoint });
-    res.json({ success: true, message: 'Unsubscribed successfully' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+  res.json({ success: true, message: 'Unsubscribed — managed by OneSignal client SDK' });
 };
 
-// PATCH /api/push/preferences — update notification preferences
+/**
+ * PATCH /api/push/preferences
+ */
 exports.updatePreferences = async (req, res) => {
-  try {
-    const { endpoint, preferences } = req.body;
-    await PushSubscription.findOneAndUpdate(
-      { endpoint },
-      { preferences }
-    );
-    res.json({ success: true, message: 'Preferences updated' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+  res.json({ success: true, message: 'Preferences updated — managed by OneSignal tags' });
 };
 
-// POST /api/admin/push/broadcast — admin sends notification to all users
+/**
+ * POST /api/admin/push/broadcast
+ * Admin sends a push notification to all subscribers
+ */
 exports.broadcast = async (req, res) => {
   try {
     const { title, body, url, image } = req.body;
     if (!title || !body) {
       return res.status(400).json({ success: false, message: 'Title and body are required' });
     }
-    
-    const payload = {
-      title,
-      body,
-      icon:  '/icons/icon-192x192.png',
-      badge: '/icons/badge-72x72.png',
-      image: image || null,
-      url:   url || '/',
-      tag:   `broadcast-${Date.now()}`,
-      data:  { type: 'broadcast' },
-    };
-    
-    const sent = await sendToAll(payload);
-    res.json({ success: true, message: `Notification sent to ${sent} devices`, data: { sent } });
+
+    const result = await sendToAll({ title, body, url: url || '/', image });
+
+    if (!result) {
+      return res.status(500).json({ success: false, message: 'Failed to send via OneSignal' });
+    }
+
+    res.json({
+      success: true,
+      message: `Notification sent to ${result.recipients || 0} devices`,
+      data: { sent: result.recipients, id: result.id },
+    });
   } catch (err) {
-    logger.error(`[Push] broadcast: ${err.message}`);
+    logger.error(`[OneSignal] broadcast error: ${err.message}`);
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// GET /api/admin/push/stats — push notification stats
+/**
+ * GET /api/admin/push/stats
+ */
 exports.getStats = async (req, res) => {
   try {
-    const [total, active, withUser, mobile, desktop] = await Promise.all([
-      PushSubscription.countDocuments(),
-      PushSubscription.countDocuments({ isActive: true }),
-      PushSubscription.countDocuments({ user: { $ne: null }, isActive: true }),
-      PushSubscription.countDocuments({ device: 'mobile', isActive: true }),
-      PushSubscription.countDocuments({ device: 'desktop', isActive: true }),
-    ]);
-    res.json({ success: true, data: { total, active, withUser, mobile, desktop } });
+    const ONESIGNAL_APP_ID  = process.env.ONESIGNAL_APP_ID;
+    const ONESIGNAL_API_KEY = process.env.ONESIGNAL_API_KEY;
+
+    if (!ONESIGNAL_APP_ID || !ONESIGNAL_API_KEY) {
+      return res.json({ success: true, data: { total: 0, message: 'OneSignal not configured' } });
+    }
+
+    const response = await fetch(
+      `https://onesignal.com/api/v1/apps/${ONESIGNAL_APP_ID}`,
+      { headers: { Authorization: `Basic ${ONESIGNAL_API_KEY}` } }
+    );
+    const data = await response.json();
+
+    res.json({
+      success: true,
+      data: {
+        total: data.players || 0,
+        messagable: data.messagable_players || 0,
+        appName: data.name,
+      },
+    });
   } catch (err) {
+    logger.error(`[OneSignal] getStats error: ${err.message}`);
     res.status(500).json({ success: false, message: err.message });
   }
 };

@@ -21,6 +21,7 @@ import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
 import NotificationBanner from "@/components/pwa/NotificationBanner";
+import OneSignalProvider from "@/components/pwa/OneSignalProvider";
 
 export const dynamic = 'force-dynamic';
 
@@ -210,6 +211,9 @@ export default function RootLayout({ children }) {
 
         {/* Push Notification Permission Banner */}
         <NotificationBanner />
+
+        {/* OneSignal Push Notification SDK */}
+        <OneSignalProvider />
 
         {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (

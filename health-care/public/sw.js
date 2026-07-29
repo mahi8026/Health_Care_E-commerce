@@ -8,12 +8,11 @@
  * - Cloudinary images: SKIP (let browser fetch directly — Cloudinary has own CDN)
  * - YouTube thumbnails: Cache-first with 24h TTL
  *
- * This gives users:
- * - Near-instant repeat visits (cached assets load immediately)
- * - Offline product browsing (cached pages still work)
- * - Always-fresh data (API responses refresh in background)
- * - Cloudinary images load without CSP conflicts in SW context
+ * OneSignal push notifications are handled by importing their service worker script.
  */
+
+// ── OneSignal Service Worker (handles push delivery) ─────────────────────────
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
 const CACHE_VERSION = 'Mediport-v2'; // v2: Skip Cloudinary (CSP fix)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;

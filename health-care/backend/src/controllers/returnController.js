@@ -1,10 +1,10 @@
-﻿const Return = require('../models/Return');
+const Return = require('../models/Return');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { sendEmail } = require('../utils/emailService');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
-const { sendToUser, sendToAdmins, notifications } = require('../utils/pushService');
+const { sendToUser, sendToAdmins, notifications } = require('../utils/oneSignalService');
 
 // @desc    Create return request
 // @route   POST /api/returns
@@ -107,7 +107,7 @@ Return ID: ${returnRequest._id}
 Order: #${order.orderNumber}
 Customer: ${req.user.name} (${req.user.email})
 Reason: ${reason}
-Amount: ৳${refundAmount}
+Amount: ?${refundAmount}
 
 Please review this request in the admin panel.
         `.trim()
@@ -129,7 +129,7 @@ Your return request for order #${order.orderNumber} has been received.
 Return Details:
 - Return ID: ${returnRequest._id.toString().slice(-8).toUpperCase()}
 - Reason: ${reason}
-- Refund Amount: ৳${refundAmount}
+- Refund Amount: ?${refundAmount}
 
 We will review your request within 24-48 hours and notify you of our decision.
 
@@ -296,9 +296,9 @@ exports.updateReturnStatus = async (req, res) => {
 
     // Send email notification to customer
     const statusMessages = {
-      approved: `Your return request has been approved. Refund of ৳${returnRequest.refundAmount} will be processed within 3-5 business days via ${refundMethod || 'original payment method'}.`,
+      approved: `Your return request has been approved. Refund of ?${returnRequest.refundAmount} will be processed within 3-5 business days via ${refundMethod || 'original payment method'}.`,
       rejected: `Your return request has been rejected. ${adminNotes ? `Reason: ${adminNotes}` : 'Please contact support for more details.'}`,
-      refunded: `Your refund of ৳${returnRequest.refundAmount} has been processed successfully. ${refundTransactionId ? `Transaction ID: ${refundTransactionId}` : ''}`,
+      refunded: `Your refund of ?${returnRequest.refundAmount} has been processed successfully. ${refundTransactionId ? `Transaction ID: ${refundTransactionId}` : ''}`,
     };
 
     if (statusMessages[status]) {

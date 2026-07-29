@@ -1,189 +1,56 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 
-const API = process.env.NEXT_PUBLIC_API_URL;
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-function validateVapidKey(key) {
-  if (!key) return { valid: false, reason: 'missing' };
-  if (key.length < 85 || key.length > 88) {
-    return { valid: false, reason: `unexpected_length_${key.length}` };
-  }
-  try {
-    const decoded = urlBase64ToUint8Array(key);
-    if (decoded.length !== 65 && decoded.length !== 66) {
-      return { valid: false, reason: `decoded_${decoded.length}_bytes` };
-    }
-    return { valid: true };
-  } catch {
-    return { valid: false, reason: 'decode_failure' };
-  }
-}
-
-function subscribeWithRetry(reg, applicationServerKey, retries = 2) {
-  return new Promise((resolve, reject) => {
-    let attempt = 0;
-    const trySubscribe = async () => {
-      attempt++;
-
-      // Force unsubscribe any stale subscription first (key mismatch causes AbortError)
-      try {
-        const existing = await reg.pushManager.getSubscription();
-        if (existing) {
-          await existing.unsubscribe();
-        }
-      } catch {
-        // ignore - best effort
-      }
-
-      const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new DOMException('Subscription timed out', 'AbortError')), 20000)
-      );
-      const sub = reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey,
-      });
-      Promise.race([sub, timeout])
-        .then(resolve)
-        .catch((err) => {
-          if (err.name === 'AbortError' && attempt <= retries) {
-            setTimeout(trySubscribe, 1500 * attempt);
-          } else {
-            reject(err);
-          }
-        });
-    };
-    trySubscribe();
-  });
-}
-
-function detectDevice() {
-  const ua = navigator.userAgent;
-  const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
-  const browser = /Chrome/i.test(ua) ? 'Chrome'
-    : /Firefox/i.test(ua) ? 'Firefox'
-    : /Safari/i.test(ua) ? 'Safari'
-    : /Edge/i.test(ua) ? 'Edge' : 'Other';
-  const os = /Android/i.test(ua) ? 'Android'
-    : /iPhone|iPad|iPod/i.test(ua) ? 'iOS'
-    : /Windows/i.test(ua) ? 'Windows'
-    : /Mac/i.test(ua) ? 'macOS' : 'Other';
-  return { device: isMobile ? 'mobile' : 'desktop', browser, os };
-}
-
+/**
+ * usePushNotification — OneSignal-powered hook
+ *
+ * Wraps OneSignal SDK. Exposes the same API surface as before
+ * so all existing consumers (NotificationBanner, NotificationsPage, etc.) work unchanged.
+ */
 export function usePushNotification() {
   const [permission,   setPermission]   = useState('default');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading,    setIsLoading]    = useState(false);
   const [isSupported,  setIsSupported]  = useState(false);
 
-  const checkSubscription = useCallback(async () => {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      setIsSubscribed(!!sub);
-    } catch (err) {
-      // Silently fail
-      console.error('Check subscription error:', err);
-    }
-  }, []);
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
-    // Initialize support check
-    const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-    
+    const supported = 'Notification' in window && 'serviceWorker' in navigator;
+
     // Defer state updates to avoid cascading renders
     Promise.resolve().then(() => {
       setIsSupported(supported);
-      if (supported) {
-        setPermission(Notification.permission);
-        checkSubscription();
-      }
+      if (!supported) return;
+      setPermission(Notification.permission);
+
+      // Check if already subscribed via OneSignal
+      import('react-onesignal').then(({ default: OneSignal }) => {
+        const optedIn = OneSignal.User?.PushSubscription?.optedIn;
+        setIsSubscribed(!!optedIn);
+      }).catch(() => {});
     });
-  }, [checkSubscription]);
+  }, []);
 
-const subscribe = useCallback(async (token) => {
+  const subscribe = useCallback(async () => {
     if (!isSupported) return { success: false, reason: 'not_supported' };
-
-    // Check if VAPID key is available
-    if (!VAPID_PUBLIC_KEY) {
-      console.error('[Push] VAPID_PUBLIC_KEY is not defined. Check environment variables.');
-      return { success: false, reason: 'vapid_key_missing' };
-    }
-
-    const keyCheck = validateVapidKey(VAPID_PUBLIC_KEY);
-    if (!keyCheck.valid) {
-      console.error(`[Push] Invalid VAPID key: ${keyCheck.reason}`);
-      return { success: false, reason: 'vapid_key_invalid' };
-    }
-
     setIsLoading(true);
     try {
-      // Request permission
+      const OneSignal = (await import('react-onesignal')).default;
+
+      // Request native browser permission
       const perm = await Notification.requestPermission();
       setPermission(perm);
       if (perm !== 'granted') {
         return { success: false, reason: 'permission_denied' };
       }
 
-      // Get service worker registration
-      const reg = await navigator.serviceWorker.ready;
-
-      // Subscribe to push with retry and timeout
-      const sub = await subscribeWithRetry(
-        reg,
-        urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      );
-
-      const subJSON = sub.toJSON();
-      const { device, browser, os } = detectDevice();
-
-      // Send to backend
-      const res = await fetch(`${API}/push/subscribe`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          subscription: {
-            endpoint: subJSON.endpoint,
-            keys: {
-              p256dh: subJSON.keys.p256dh,
-              auth:   subJSON.keys.auth,
-            },
-          },
-          device, browser, os,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        setIsSubscribed(true);
-        return { success: true };
-      }
-      return { success: false, reason: 'server_error' };
-
+      // Opt the user into OneSignal push
+      await OneSignal.User.PushSubscription.optIn();
+      setIsSubscribed(true);
+      return { success: true };
     } catch (err) {
-      console.error('[Push] Subscribe error:', err);
-      if (err.name === 'AbortError') {
-        return { success: false, reason: 'push_service_unreachable' };
-      }
-      return { success: false, reason: err.message };
+      console.error('[OneSignal] subscribe error:', err);
+      return { success: false, reason: err.message || 'unknown_error' };
     } finally {
       setIsLoading(false);
     }
@@ -192,17 +59,8 @@ const subscribe = useCallback(async (token) => {
   const unsubscribe = useCallback(async () => {
     setIsLoading(true);
     try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        const endpoint = sub.endpoint;
-        await sub.unsubscribe();
-        await fetch(`${API}/push/unsubscribe`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ endpoint }),
-        });
-      }
+      const OneSignal = (await import('react-onesignal')).default;
+      await OneSignal.User.PushSubscription.optOut();
       setIsSubscribed(false);
       return { success: true };
     } catch (err) {
