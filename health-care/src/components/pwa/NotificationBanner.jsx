@@ -26,14 +26,12 @@ export default function NotificationBanner() {
     setError('');
     const result = await subscribe();
 
-    if (result.success) {
-      // Link OneSignal subscription to the logged-in user
+    if (result.success || result.reason === 'onesignal_not_loaded') {
       if (isAuthenticated?.() && user?._id) {
         try {
           const OneSignal = (await import('react-onesignal')).default;
           await OneSignal.login(String(user._id));
         } catch {
-          // non-fatal
         }
       }
       setSubscribed(true);

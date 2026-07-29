@@ -1,16 +1,12 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Script from 'next/script';
 
 const ONESIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
 
-/**
- * OneSignalProvider
- *
- * Initialises the OneSignal Web SDK once on the client using Next.js Script component.
- * Renders the OneSignal script tag with proper loading strategy.
- */
 export default function OneSignalProvider() {
+  const [retryKey, setRetryKey] = useState(0);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (!ONESIGNAL_APP_ID) {
@@ -18,17 +14,13 @@ export default function OneSignalProvider() {
       return;
     }
 
-    // Wait for OneSignal script to load, then initialize
     let retries = 0;
     const MAX_RETRIES = 200;
 
     const initOneSignal = () => {
       if (typeof window.OneSignalDeferred === 'undefined') {
         retries++;
-        if (retries >= MAX_RETRIES) {
-          if (process.env.NODE_ENV === 'development') console.warn('[OneSignal] Script failed to load after 5s — giving up');
-          return;
-        }
+        if (retries >= MAX_RETRIES) return;
         setTimeout(initOneSignal, 100);
         return;
       }
@@ -44,23 +36,27 @@ export default function OneSignalProvider() {
             serviceWorkerParam: { scope: '/' },
             allowLocalhostAsSecureOrigin: process.env.NODE_ENV === 'development',
           });
-        } catch (err) {
-          if (process.env.NODE_ENV === 'development') console.error('[OneSignal] Init failed:', err);
+        } catch {
         }
       });
     };
 
     initOneSignal();
-  }, []);
+  }, [retryKey]);
 
   if (!ONESIGNAL_APP_ID) return null;
 
+  const handleError = () => {
+    if (process.env.NODE_ENV === 'development') console.warn('[OneSignal] Script failed to load — retrying...');
+    setRetryKey(k => k + 1);
+  };
+
   return (
     <Script
+      key={retryKey}
       src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
       strategy="afterInteractive"
-      onLoad={() => console.log('[OneSignal] Script loaded')}
-      onError={(e) => console.error('[OneSignal] Script load error:', e)}
+      onError={handleError}
     />
   );
 }
