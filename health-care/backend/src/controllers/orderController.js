@@ -23,7 +23,7 @@ async function generateOrderNumber() {
 
   const maxAttempts = 10;
   for (let i = 0; i < maxAttempts; i++) {
-    const rand = Math.floor(Math.random() * 9000) + 1000; // 1000–9999
+    const rand = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
     const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await Order.findOne({ orderNumber }).lean();
     if (!exists) return orderNumber;
@@ -51,7 +51,7 @@ exports.createOrder = async (req, res) => {
     session.startTransaction();
     useTransaction = true;
   } catch {
-    // Standalone MongoDB (no replica set) — proceed without transactions
+    // Standalone MongoDB (no replica set) ï¿½ proceed without transactions
     session = null;
     useTransaction = false;
   }
@@ -166,7 +166,7 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // B2B discount — use the discount calculated on frontend (already includes per-item B2B pricing)
+    // B2B discount ï¿½ use the discount calculated on frontend (already includes per-item B2B pricing)
     // This section is kept for backwards compatibility with old orders that didn't calculate B2B on frontend
     const user = await withSession(User.findById(req.user.id));
     if (!user) {
@@ -251,7 +251,7 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // Delivery fee — Steadfast Courier zone-based pricing from district
+    // Delivery fee ï¿½ Steadfast Courier zone-based pricing from district
     const SUBURBAN_DISTRICTS = new Set([
       'narayanganj', 'gazipur', 'manikganj', 'munshiganj', 'narsingdi',
     ]);
