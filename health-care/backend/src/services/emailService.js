@@ -412,6 +412,60 @@ async function sendNewOrderEmail(order, customer) {
   return sendOrderConfirmation(order, customer);
 }
 
+async function sendNewOrderAdminEmail(order, customer) {
+  const cfg = getConfig();
+  const total = order.totalAmount || order.total || 0;
+  const items = (order.items || []).map(item => {
+    const name = item.name || item.product?.name || 'Product';
+    const qty = item.qty || item.quantity || 1;
+    const price = item.price || 0;
+    return `
+    <tr>
+      <td style="padding:8px 12px;font-size:13px;border-bottom:1px solid #F3F4F6;">${name}</td>
+      <td style="padding:8px 12px;text-align:center;font-size:13px;border-bottom:1px solid #F3F4F6;">${qty}</td>
+      <td style="padding:8px 12px;text-align:right;font-size:13px;border-bottom:1px solid #F3F4F6;">৳${price.toLocaleString('en-BD')}</td>
+    </tr>`;
+  }).join('');
+
+  const body = `
+    <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0B2545;">New Order Received! &#128230;</h2>
+    <p style="margin:0 0 4px;font-size:14px;color:#6B7280;">
+      Customer: <strong>${customer?.name || 'Unknown'}</strong> (${customer?.email || 'No email'})
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#6B7280;">
+      Phone: ${customer?.phone || 'N/A'} &nbsp;|&nbsp;
+      Payment: ${(order.paymentMethod || 'COD').toUpperCase().replace(/_/g, ' ')}
+    </p>
+
+    <div style="background:#E6F4F0;border-radius:8px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Order Number</div>
+      <div style="font-size:22px;font-weight:800;color:#0B2545;letter-spacing:1px;">${order.orderNumber}</div>
+    </div>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:8px;border:1px solid #E5E7EB;margin-bottom:16px;">
+      <thead><tr style="background:#F9FAFB;">
+        <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Item</th>
+        <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Qty</th>
+        <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Price</th>
+      </tr></thead>
+      <tbody>${items}</tbody>
+    </table>
+
+    <div style="text-align:right;font-size:18px;font-weight:700;color:#0B2545;margin-bottom:20px;">
+      Total: ৳${total.toLocaleString('en-BD')}
+    </div>
+
+    ${order.deliveryAddress ? addressBlock(order.deliveryAddress) : ''}
+
+    ${ctaButton('View Order in Admin', `${cfg.siteUrl}/admin/orders`)}`;
+
+  return sendEmail({
+    to:      cfg.adminEmail,
+    subject: `New Order #${order.orderNumber} - ৳${total.toLocaleString('en-BD')} | MediportBD`,
+    html:    emailLayout('New Order', body),
+  });
+}
+
 async function sendPasswordResetEmail(user, resetUrl) {
   const body = `
     <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0B2545;">Password Reset Request</h2>
@@ -504,6 +558,7 @@ module.exports = {
   sendShippingNotification,
   sendDeliveryConfirmation,
   sendNewOrderEmail,
+  sendNewOrderAdminEmail,
   sendTestEmail,
   sendLowStockAlert,
   sendPasswordResetEmail,

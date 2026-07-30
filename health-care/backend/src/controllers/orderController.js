@@ -451,6 +451,17 @@ exports.createOrder = async (req, res) => {
       logger.error(`[createOrder] Email error stack: ${err.stack}`);
     });
 
+    // Send new-order notification to admin email asynchronously
+    emailService.sendNewOrderAdminEmail(order[0], user).then(result => {
+      if (result.success) {
+        logger.info(`[createOrder] ? Admin notification sent for order #${orderNumber}`);
+      } else if (result.skipped) {
+        logger.warn(`[createOrder] ?? Admin email skipped: ${result.reason}`);
+      }
+    }).catch(err => {
+      logger.error(`[createOrder] ? Admin email exception: ${err.message}`);
+    });
+
     // Send order confirmation SMS asynchronously (non-blocking)
     if (user.phone) {
       const { sendOrderConfirmationSMS } = require('../services/smsService');
