@@ -13,7 +13,14 @@ export function LanguageProvider({ children }) {
     return 'en';
   });
 
-  // No useEffect needed - initialization happens in useState
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    if (lang === 'bn') {
+      document.documentElement.classList.add('lang-bn');
+    } else {
+      document.documentElement.classList.remove('lang-bn');
+    }
+  }, [lang]);
 
   const switchLang = (l) => {
     setLang(l);

@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans, Lora } from "next/font/google";
+import { Plus_Jakarta_Sans, Lora, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { AuthProvider } from "@/context/AuthContext";
@@ -37,6 +37,13 @@ const lora = Lora({
   style: ['normal', 'italic'],
   subsets: ["latin"],
   variable: "--font-lora",
+  display: 'swap',
+});
+
+const notoBengali = Noto_Sans_Bengali({
+  weight: ['400', '500', '600'],
+  subsets: ["bengali"],
+  variable: "--font-noto-bengali",
   display: 'swap',
 });
 
@@ -164,7 +171,7 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
       </head>
-      <body className="min-h-screen antialiased text-[var(--color-text-primary)]">
+      <body className={`min-h-screen antialiased text-[var(--color-text-primary)] ${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`}>
         {/* Skip to main content — keyboard/screen-reader accessibility */}
         <a href="#main-content" className="skip-to-content">
           Skip to main content

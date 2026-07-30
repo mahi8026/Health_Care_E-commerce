@@ -2216,3 +2216,13 @@ html.home-page {
     transform: none;
   }
 }
+
+/* ── Bengali Font ─────────────────────────────────────────────────────────── */
+html.lang-bn {
+  font-family: var(--font-noto-bengali), 'Noto Sans Bengali', sans-serif;
+}
+
+html.lang-bn body,
+html.lang-bn .font-primary {
+  font-family: var(--font-noto-bengali), 'Noto Sans Bengali', sans-serif;
+}
