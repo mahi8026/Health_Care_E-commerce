@@ -20,6 +20,17 @@ export default function NotificationBanner() {
     return () => clearTimeout(t);
   }, [isSupported, permission]);
 
+  // Set role tag for already-subscribed admin users
+  useEffect(() => {
+    if (!isAuthenticated?.() || !user || user.role !== 'admin') return;
+    if (!isSubscribed) return;
+    if (window.OneSignalDeferred) {
+      window.OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.User.addTag('role', 'admin');
+      });
+    }
+  }, [isAuthenticated, user, isSubscribed]);
+
   if (!show || isSubscribed || subscribed) return null;
 
   const handleEnable = async () => {
@@ -31,6 +42,11 @@ export default function NotificationBanner() {
         try {
           const OneSignal = (await import('react-onesignal')).default;
           await OneSignal.login(String(user._id));
+          if (user.role === 'admin' && window.OneSignalDeferred) {
+            window.OneSignalDeferred.push(function(OneSignal) {
+              OneSignal.User.addTag('role', 'admin');
+            });
+          }
         } catch {
         }
       }
