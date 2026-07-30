@@ -8,8 +8,12 @@ const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const generateAccessToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 
-const generateRefreshToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET, { expiresIn: '30d' });
+const generateRefreshToken = (id) => {
+  if (!process.env.JWT_REFRESH_SECRET) {
+    throw new Error('JWT_REFRESH_SECRET environment variable is required');
+  }
+  return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
+};
 
 /**
  * Register a new user account (B2B or Retail).
@@ -84,7 +88,7 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[register] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -172,7 +176,7 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[login] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -193,10 +197,12 @@ exports.refreshToken = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Refresh token required' });
     }
 
-    const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+    if (!process.env.JWT_REFRESH_SECRET) {
+      return res.status(500).json({ success: false, message: 'Server configuration error' });
+    }
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, secret);
+      decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     } catch {
       return res.status(401).json({ success: false, message: 'Invalid or expired refresh token' });
     }
@@ -214,7 +220,7 @@ exports.refreshToken = async (req, res) => {
     res.status(200).json({ success: true, token: newToken, refreshToken: newRefreshToken });
   } catch (error) {
     logger.error(`[refreshToken] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -262,7 +268,7 @@ exports.getMe = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getMe] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -295,7 +301,7 @@ exports.updateProfile = async (req, res) => {
     res.status(200).json({ success: true, message: 'Profile updated successfully', user });
   } catch (error) {
     logger.error(`[updateProfile] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -357,7 +363,7 @@ exports.changePassword = async (req, res) => {
     res.status(200).json({ success: true, message: 'Password changed successfully. Please log in again.' });
   } catch (error) {
     logger.error(`[changePassword] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -411,7 +417,7 @@ exports.logout = async (req, res) => {
     res.status(200).json({ success: true, message: 'Logout successful' });
   } catch (error) {
     logger.error(`[logout] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -455,7 +461,7 @@ exports.forgotPassword = async (req, res) => {
     res.status(200).json({ success: true, message: 'If that email exists, a reset link has been sent' });
   } catch (error) {
     logger.error(`[forgotPassword] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -594,7 +600,7 @@ exports.sendPhoneOTP = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[sendPhoneOTP] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -676,7 +682,7 @@ exports.verifyPhoneOTP = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[verifyPhoneOTP] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -716,7 +722,7 @@ exports.setup2FA = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[setup2FA] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -763,7 +769,7 @@ exports.enable2FA = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[enable2FA] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -813,7 +819,7 @@ exports.disable2FA = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[disable2FA] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -892,7 +898,7 @@ exports.verify2FA = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[verify2FA] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 
@@ -918,7 +924,7 @@ exports.get2FAStatus = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[get2FAStatus] ${error.message}`);
-    res.status(500).json({ success: false, message: 'Server error', error: process.env.NODE_ENV === 'development' ? error.message : undefined });
+    res.status(500).json({ success: false, message: 'Server error', error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined });
   }
 };
 

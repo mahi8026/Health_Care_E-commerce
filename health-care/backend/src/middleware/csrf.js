@@ -5,7 +5,7 @@ const {
   generateToken,
   doubleCsrfProtection,
 } = doubleCsrf({
-  getSecret: () => process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production',
+  getSecret: () => process.env.CSRF_SECRET,
   cookieName: '__Host-psifi.x-csrf-token',
   cookieOptions: {
     sameSite: 'strict',

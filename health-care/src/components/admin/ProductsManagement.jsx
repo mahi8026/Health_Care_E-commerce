@@ -1665,18 +1665,6 @@ export default function ProductsManagement({ openCreateRef }) {
                 img = typeof product.image === 'string' ? product.image : product.image?.url;
               }
               
-              // Enhanced debug logging
-              if (process.env.NODE_ENV !== 'production') {
-                console.log(`[MOBILE VIEW] Product: ${product.name}`, {
-                  hasImages: !!product.images?.length,
-                  imagesCount: product.images?.length || 0,
-                  firstImageType: product.images?.[0] ? typeof product.images[0] : 'none',
-                  firstImageRaw: product.images?.[0],
-                  extractedUrl: img,
-                  urlValid: img ? img.startsWith('http') : false
-                });
-              }
-
               return (
                 <div key={product._id} className="p-4 flex gap-3">
                   {/* Product image */}
@@ -1765,18 +1753,6 @@ export default function ProductsManagement({ openCreateRef }) {
                   img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
                 } else if (product.image) {
                   img = typeof product.image === 'string' ? product.image : product.image?.url;
-                }
-                
-                // Enhanced debug logging for desktop view
-                if (process.env.NODE_ENV !== 'production') {
-                  console.log(`[DESKTOP VIEW] Product: ${product.name}`, {
-                    hasImages: !!product.images?.length,
-                    imagesCount: product.images?.length || 0,
-                    firstImageType: product.images?.[0] ? typeof product.images[0] : 'none',
-                    firstImageRaw: product.images?.[0],
-                    extractedUrl: img,
-                    urlValid: img ? img.startsWith('http') : false
-                  });
                 }
                 
                 return (

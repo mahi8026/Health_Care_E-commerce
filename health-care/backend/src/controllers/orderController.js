@@ -239,7 +239,7 @@ exports.createOrder = async (req, res) => {
           if (!isValid) errorMessage = 'This coupon has expired or is not yet valid';
           else if (!hasUsageLeft) errorMessage = 'This coupon has reached its usage limit';
           else if (!notUsedByUser) errorMessage = 'You have already used this coupon';
-          else if (!meetsMinimum) errorMessage = `Minimum order amount of ?${coupon.minimumOrderAmount.toLocaleString()} required`;
+          else if (!meetsMinimum) errorMessage = `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`;
           else if (!roleMatches) errorMessage = 'This coupon is not applicable to your account type';
           else if (!isFirstOrder) errorMessage = 'This coupon is only valid for first-time orders';
           
@@ -333,7 +333,7 @@ exports.createOrder = async (req, res) => {
 
     // Decrement stock atomically within transaction
     for (const item of orderItems) {
-      const product = await Product.findById(item.product);
+      const product = await withSession(Product.findById(item.product));
       
       // Check if this is a size variant order
       if (item.variant?.size) {
@@ -520,7 +520,7 @@ exports.createOrder = async (req, res) => {
     }
     
     logger.error(`[createOrder] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   } finally {
     if (session) session.endSession();
   }
@@ -565,7 +565,7 @@ exports.getOrders = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getOrders] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -600,7 +600,7 @@ exports.getOrder = async (req, res) => {
     return successResponse(res, { order });
   } catch (error) {
     logger.error(`[getOrder] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -633,6 +633,23 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     const oldStatus = order.status;
+
+    // Validate status transitions
+    const validTransitions = {
+      placed:          ['confirmed', 'cancelled'],
+      confirmed:       ['processing', 'cancelled'],
+      processing:      ['shipped', 'cancelled'],
+      shipped:         ['out_for_delivery', 'cancelled'],
+      out_for_delivery: ['delivered'],
+      delivered:       [],
+      cancelled:       [],
+      pending:         ['placed', 'cancelled'],
+    };
+    const allowed = validTransitions[oldStatus];
+    if (!allowed || !allowed.includes(status)) {
+      return errorResponse(res, `Cannot transition order from '${oldStatus}' to '${status}'`, null, 400);
+    }
+
     order.status = status;
     // Update statusTimestamps using $set pattern
     if (!order.statusTimestamps) order.statusTimestamps = {};
@@ -663,6 +680,36 @@ exports.updateOrderStatus = async (req, res) => {
     }
 
     await order.save();
+
+    // -- Restore product stock when order is cancelled --------------------------
+    if (status === 'cancelled' && oldStatus !== 'cancelled') {
+      const Product = require('../models/Product');
+      const restorePromises = order.items.map(item => {
+        if (item.variant?.size) {
+          // Restore size-variant stock
+          return Product.findById(item.product).then(product => {
+            if (product && product.variants?.sizes) {
+              const sizeIndex = product.variants.sizes.findIndex(s => s.name === item.variant.size);
+              if (sizeIndex !== -1) {
+                product.variants.sizes[sizeIndex].stock += (item.qty || item.quantity || 1);
+                product.stock = (product.stock || 0) + (item.qty || item.quantity || 1);
+                return product.save();
+              }
+            }
+            // Fallback: restore main stock only
+            return Product.findByIdAndUpdate(
+              item.product,
+              { $inc: { stock: item.qty || item.quantity || 1 } }
+            );
+          });
+        }
+        return Product.findByIdAndUpdate(
+          item.product,
+          { $inc: { stock: item.qty || item.quantity || 1 } }
+        );
+      });
+      await Promise.all(restorePromises);
+    }
 
     // Send SMS notification for important status changes (non-blocking)
     const smsStatuses = ['confirmed', 'shipped', 'delivered', 'cancelled'];
@@ -736,7 +783,7 @@ exports.updateOrderStatus = async (req, res) => {
       return errorResponse(res, 'Invalid order ID format', null, 400);
     }
     
-    return errorResponse(res, 'Failed to update order status. Please try again.', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update order status. Please try again.', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -765,11 +812,22 @@ exports.cancelOrder = async (req, res) => {
       return errorResponse(res, 'Cannot cancel order in current status', null, 400);
     }
 
-    // Restore product stock
+    // Restore product stock (including size variants)
     await Promise.all(
-      order.items.map(item =>
-        Product.findByIdAndUpdate(item.product, { $inc: { stock: item.qty || item.quantity || 1 } })
-      )
+      order.items.map(async (item) => {
+        if (item.variant?.size) {
+          const product = await Product.findById(item.product);
+          if (product && product.variants?.sizes) {
+            const sizeIndex = product.variants.sizes.findIndex(s => s.name === item.variant.size);
+            if (sizeIndex !== -1) {
+              product.variants.sizes[sizeIndex].stock += (item.qty || item.quantity || 1);
+              product.stock = (product.stock || 0) + (item.qty || item.quantity || 1);
+              return product.save();
+            }
+          }
+        }
+        return Product.findByIdAndUpdate(item.product, { $inc: { stock: item.qty || item.quantity || 1 } });
+      })
     );
 
     // Roll back B2B credit if used
@@ -846,7 +904,7 @@ exports.cancelOrder = async (req, res) => {
     return successResponse(res, { order }, 'Order cancelled successfully');
   } catch (error) {
     logger.error(`[cancelOrder] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -873,7 +931,7 @@ exports.trackOrder = async (req, res) => {
     return successResponse(res, { order });
   } catch (error) {
     logger.error(`[trackOrder] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -921,7 +979,7 @@ exports.addOrderNote = async (req, res) => {
     return successResponse(res, { notesHistory: order.notesHistory }, 'Note added successfully');
   } catch (error) {
     logger.error(`[addOrderNote] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -993,6 +1051,6 @@ exports.sendNotification = async (req, res) => {
     }, `${NOTIFICATION_LABELS[type]} notification queued successfully`);
   } catch (error) {
     logger.error(`[sendNotification] ${error.message}`);
-    return errorResponse(res, 'Failed to send notification', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send notification', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

@@ -56,7 +56,7 @@ exports.subscribe = async (req, res) => {
     return successResponse(res, null, 'Thank you for subscribing! Check your email for confirmation.', 201);
   } catch (error) {
     logger.error('Subscribe error:', error);
-    return errorResponse(res, 'Failed to subscribe', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to subscribe', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -221,9 +221,10 @@ exports.getSubscribers = async (req, res) => {
 
     // Search by email or name
     if (search) {
+      const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
-        { email: { $regex: search, $options: 'i' } },
-        { name: { $regex: search, $options: 'i' } }
+        { email: { $regex: escaped, $options: 'i' } },
+        { name: { $regex: escaped, $options: 'i' } }
       ];
     }
 
@@ -269,7 +270,7 @@ exports.getSubscribers = async (req, res) => {
     });
   } catch (error) {
     logger.error('Get subscribers error:', error);
-    return errorResponse(res, 'Failed to fetch subscribers', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch subscribers', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -287,7 +288,7 @@ exports.deleteSubscriber = async (req, res) => {
     return successResponse(res, null, 'Subscriber deleted successfully');
   } catch (error) {
     logger.error('Delete subscriber error:', error);
-    return errorResponse(res, 'Failed to delete subscriber', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to delete subscriber', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -355,7 +356,7 @@ exports.broadcast = async (req, res) => {
     logger.error('Broadcast error:', error);
     // Only send error response if headers haven't been sent yet
     if (!res.headersSent) {
-      return errorResponse(res, 'Failed to send broadcast', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+      return errorResponse(res, 'Failed to send broadcast', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
     }
   }
 };
@@ -391,6 +392,6 @@ exports.getStats = async (req, res) => {
     });
   } catch (error) {
     logger.error('Get stats error:', error);
-    return errorResponse(res, 'Failed to fetch stats', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch stats', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

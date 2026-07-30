@@ -97,7 +97,7 @@ const {
  */
 // Use optionalAuth for getProducts so admin filters work
 // ETag enables conditional GET (304 Not Modified) for browsers and CDNs
-router.get('/', optionalAuth, validateProductQuery, etagMiddleware, getProducts);
+router.get('/', optionalAuth, validateProductQuery, etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.PRODUCTS_LIST, keyPrefix: `${CACHE_KEYS.PRODUCTS_LIST}:` }), getProducts);
 
 /**
  * @swagger

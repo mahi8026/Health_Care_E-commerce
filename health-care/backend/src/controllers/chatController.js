@@ -68,7 +68,7 @@ exports.createConversation = async (req, res) => {
     return successResponse(res, conversation, null, 201);
   } catch (error) {
     logger.error(`Error creating conversation: ${error.message}`);
-    return errorResponse(res, 'Failed to create conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to create conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -115,7 +115,7 @@ exports.getConversations = async (req, res) => {
     });
   } catch (error) {
     logger.error(`Error fetching conversations: ${error.message}`);
-    return errorResponse(res, 'Failed to fetch conversations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch conversations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -147,7 +147,7 @@ exports.getConversation = async (req, res) => {
     return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error fetching conversation: ${error.message}`);
-    return errorResponse(res, 'Failed to fetch conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -180,7 +180,7 @@ exports.updateConversationStatus = async (req, res) => {
     return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error updating conversation status: ${error.message}`);
-    return errorResponse(res, 'Failed to update status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update status', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -222,7 +222,7 @@ exports.closeConversation = async (req, res) => {
     return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error closing conversation: ${error.message}`);
-    return errorResponse(res, 'Failed to close conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to close conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -266,7 +266,7 @@ exports.transferConversation = async (req, res) => {
     return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error transferring conversation: ${error.message}`);
-    return errorResponse(res, 'Failed to transfer conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to transfer conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -297,7 +297,7 @@ exports.addInternalNote = async (req, res) => {
     return successResponse(res, conversation);
   } catch (error) {
     logger.error(`Error adding note: ${error.message}`);
-    return errorResponse(res, 'Failed to add note', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to add note', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -319,7 +319,7 @@ exports.getConversationMessages = async (req, res) => {
     return successResponse(res, messages);
   } catch (error) {
     logger.error(`Error fetching messages: ${error.message}`);
-    return errorResponse(res, 'Failed to fetch messages', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch messages', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -381,7 +381,7 @@ exports.sendPublicMessage = async (req, res) => {
     return successResponse(res, message, null, 201);
   } catch (error) {
     logger.error(`Error sending public message: ${error.message}`);
-    return errorResponse(res, 'Failed to send message', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send message', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -430,7 +430,7 @@ exports.sendMessage = async (req, res) => {
     return successResponse(res, message, null, 201);
   } catch (error) {
     logger.error(`Error sending message: ${error.message}`);
-    return errorResponse(res, 'Failed to send message', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send message', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -456,7 +456,7 @@ exports.uploadChatFile = async (req, res) => {
     return successResponse(res, fileData);
   } catch (error) {
     logger.error(`Error uploading file: ${error.message}`);
-    return errorResponse(res, 'Failed to upload file', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to upload file', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -522,7 +522,7 @@ exports.getAnalytics = async (req, res) => {
     });
   } catch (error) {
     logger.error(`Error fetching analytics: ${error.message}`);
-    return errorResponse(res, 'Failed to fetch analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -538,7 +538,7 @@ exports.getChatConfig = async (req, res) => {
     return successResponse(res, config);
   } catch (error) {
     logger.error(`Error fetching config: ${error.message}`);
-    return errorResponse(res, 'Failed to fetch configuration', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch configuration', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -564,6 +564,6 @@ exports.updateChatConfig = async (req, res) => {
     return successResponse(res, config);
   } catch (error) {
     logger.error(`Error updating config: ${error.message}`);
-    return errorResponse(res, 'Failed to update configuration', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update configuration', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

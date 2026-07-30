@@ -187,7 +187,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Dr. John Doe"
+                    placeholder="Your Full Name"
                     required
                     autoComplete="name"
                     className={`w-full pl-10 pr-4 py-3 bg-white border rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]/30 focus:border-[#0E8A6E] transition-all ${errors.name ? 'border-red-400' : 'border-gray-200'}`}

@@ -31,7 +31,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
           }
         }
       } catch (error) {
-        process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Fetch eligible order error:', error);
+        process.env.NODE_ENV !== "production" && console.error('Fetch eligible order error:', error);
       } finally {
         setEligibleLoading(false);
       }

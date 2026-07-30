@@ -49,7 +49,7 @@ export default function MobileFeaturedProducts() {
         setAddingToCart(prev => ({ ...prev, [product.id]: false }));
       }, 1000);
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Error adding to cart:', error);
+      process.env.NODE_ENV !== "production" && console.error('Error adding to cart:', error);
       setAddingToCart(prev => ({ ...prev, [product.id]: false }));
     }
   }, [addToCart]);

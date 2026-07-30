@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
           removeToken();
           setUser(null);
         }
-        process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('[AuthContext] Failed to load user:', error.message);
+        process.env.NODE_ENV !== "production" && console.error('[AuthContext] Failed to load user:', error.message);
       } finally {
         setLoading(false);
       }

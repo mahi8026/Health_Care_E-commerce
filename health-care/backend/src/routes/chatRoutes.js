@@ -48,9 +48,9 @@ const { upload } = require('../services/uploadService');
  */
 router.post('/conversations', authLimiter, createConversation);
 
-// Public message routes (no auth required for customers)
-router.get('/messages/:conversationId', getConversationMessages);
-router.post('/messages', authLimiter, sendPublicMessage);
+// Public message routes (protected — auth required to read/send)
+router.get('/messages/:conversationId', protect, getConversationMessages);
+router.post('/messages', protect, authLimiter, sendPublicMessage);
 
 /**
  * @swagger

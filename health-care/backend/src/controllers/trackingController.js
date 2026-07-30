@@ -61,6 +61,6 @@ exports.trackOrder = async (req, res) => {
       timeline
     });
   } catch (error) {
-    return errorResponse(res, 'Failed to track order', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to track order', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

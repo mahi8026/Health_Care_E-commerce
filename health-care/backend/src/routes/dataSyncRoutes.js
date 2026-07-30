@@ -37,7 +37,7 @@ router.post('/sync', protect, authorize('admin'), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Data synchronization failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined
     });
   }
 });
@@ -60,7 +60,7 @@ router.get('/verify', protect, authorize('admin'), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Data integrity verification failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined
     });
   }
 });
@@ -123,7 +123,7 @@ router.get('/status', protect, authorize('admin'), async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to get data sync status',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined
     });
   }
 });

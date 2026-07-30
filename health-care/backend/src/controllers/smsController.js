@@ -19,7 +19,7 @@ exports.getSMSConfig = async (req, res) => {
     return successResponse(res, config);
   } catch (error) {
     logger.error(`[getSMSConfig] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch SMS configuration', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch SMS configuration', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -58,7 +58,7 @@ exports.sendTestSMSHandler = async (req, res) => {
     }
   } catch (error) {
     logger.error(`[sendTestSMS] ${error.message}`);
-    return errorResponse(res, 'Failed to send test SMS', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send test SMS', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -81,7 +81,7 @@ exports.getSMSLogs = async (req, res) => {
     }, 'SMS logs are available in Winston log files');
   } catch (error) {
     logger.error(`[getSMSLogs] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch SMS logs', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch SMS logs', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -108,6 +108,6 @@ exports.getSMSStats = async (req, res) => {
     return successResponse(res, stats);
   } catch (error) {
     logger.error(`[getSMSStats] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch SMS statistics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch SMS statistics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

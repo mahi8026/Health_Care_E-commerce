@@ -26,7 +26,7 @@ const seedDatabase = async () => {
     const admin1 = await User.create({
       name: 'Shahid Admin',
       email: 'admin@MediportBD.com',
-      password: 'admin123',
+      password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123!',
       phone: '+880 1812-345678',
       role: 'admin',
       accountType: 'B2B',
@@ -38,7 +38,7 @@ const seedDatabase = async () => {
     const admin2 = await User.create({
       name: 'Fatima Manager',
       email: 'manager@MediportBD.com',
-      password: 'manager123',
+      password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123!',
       phone: '+880 1813-456789',
       role: 'admin',
       accountType: 'B2B',
@@ -50,7 +50,7 @@ const seedDatabase = async () => {
     const admin3 = await User.create({
       name: 'Karim Support',
       email: 'karim.support@MediportBD.com',
-      password: 'support123',
+      password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123!',
       phone: '+880 1814-567890',
       role: 'admin',
       accountType: 'B2B',
@@ -63,7 +63,7 @@ const seedDatabase = async () => {
     const b2b1 = await User.create({
       name: 'Dr. Shahid Hasan',
       email: 'shahid@squarehospital.com',
-      password: 'password123',
+      password: process.env.SEED_B2B_PASSWORD || 'B2B@Pass123',
       phone: '+880 1712-345678',
       role: 'b2b_customer',
       accountType: 'B2B',
@@ -92,7 +92,7 @@ const seedDatabase = async () => {
     const b2b2 = await User.create({
       name: 'Dr. Ayesha Rahman',
       email: 'ayesha@labaid.com',
-      password: 'password123',
+      password: process.env.SEED_B2B_PASSWORD || 'B2B@Pass123',
       phone: '+880 1713-456789',
       role: 'b2b_customer',
       accountType: 'B2B',
@@ -121,7 +121,7 @@ const seedDatabase = async () => {
     const b2b3 = await User.create({
       name: 'Dr. Mahmud Khan',
       email: 'mahmud@ibnsinahospital.com',
-      password: 'password123',
+      password: process.env.SEED_B2B_PASSWORD || 'B2B@Pass123',
       phone: '+880 1714-567890',
       role: 'b2b_customer',
       accountType: 'B2B',
@@ -150,7 +150,7 @@ const seedDatabase = async () => {
     const b2b4 = await User.create({
       name: 'Dr. Nasrin Akter',
       email: 'nasrin@populardiagnostic.com',
-      password: 'password123',
+      password: process.env.SEED_B2B_PASSWORD || 'B2B@Pass123',
       phone: '+880 1715-678901',
       role: 'b2b_customer',
       accountType: 'B2B',
@@ -179,7 +179,7 @@ const seedDatabase = async () => {
     const b2b5 = await User.create({
       name: 'Dr. Rafiq Ahmed',
       email: 'rafiq@uniteddiagnostic.com',
-      password: 'password123',
+      password: process.env.SEED_B2B_PASSWORD || 'B2B@Pass123',
       phone: '+880 1716-789012',
       role: 'b2b_customer',
       accountType: 'B2B',
@@ -223,7 +223,7 @@ const seedDatabase = async () => {
     for (const data of customerData) {
       const customer = await User.create({
         ...data,
-        password: 'password123',
+        password: process.env.SEED_CUSTOMER_PASSWORD || 'Customer@123',
         role: 'customer',
         accountType: 'Retail',
         loyaltyPoints: Math.floor(Math.random() * 500),
@@ -265,7 +265,7 @@ const seedDatabase = async () => {
 
       // Laboratory Reagents (8)
       { name: 'Roche Cobas HbA1c Reagent Kit', brand: 'Roche Diagnostics', category: 'Laboratory Reagents', sku: 'ROC-HBA-011', price: 8500, stock: 8, lowStockThreshold: 20, minOrderQty: 5, description: 'High-precision HbA1c testing reagent for diabetes monitoring', storageTemp: 'cold', hazardClass: 'biohazard', lotNumber: 'LOT-2025-08841', expiryDate: new Date('2026-08-31'), tests: '100 tests per kit', badge: 'new', rating: 4.9, reviewCount: 89, isFeatured: true, certifications: ['CE', 'ISO'] },
-      { name: 'Abbott Troponin I Reagent', brand: 'Abbott Laboratories', category: 'Laboratory Reagents', sku: 'ABB-TRO-012', price: 22000, stock: 15, lowStockThreshold: 25, minOrderQty: 2, description: 'Cardiac marker testing reagent for acute myocardial infarction', storageTemp: 'cold', hazardClass: 'biohazard', lotNumber: 'LOT-2025-11243', expiryDate: new Date('2025-12-31'), tests: '200 tests per pack', rating: 4.7, reviewCount: 56, isFeatured: true, certifications: ['CE', 'FDA'] },
+      { name: 'Abbott Troponin I Reagent', brand: 'Abbott Laboratories', category: 'Laboratory Reagents', sku: 'ABB-TRO-012', price: 22000, stock: 15, lowStockThreshold: 25, minOrderQty: 2, description: 'Cardiac marker testing reagent for acute myocardial infarction', storageTemp: 'cold', hazardClass: 'biohazard', lotNumber: 'LOT-2025-11243',       expiryDate: new Date('2027-12-31'), tests: '200 tests per pack', rating: 4.7, reviewCount: 56, isFeatured: true, certifications: ['CE', 'FDA'] },
       { name: 'Beckman CBC Reagent Pack', brand: 'Beckman Coulter', category: 'Laboratory Reagents', sku: 'BEC-CBC-013', price: 18000, stock: 62, description: 'Complete blood count reagent pack for DxH series analyzers', storageTemp: 'room', hazardClass: 'safe', lotNumber: 'LOT-2025-07731', expiryDate: new Date('2026-06-30'), tests: '500 tests · Lyse + diluent included', rating: 4.6, reviewCount: 42, certifications: ['CE'] },
       { name: 'Siemens Liver Function Panel Reagent', brand: 'Siemens Healthineers', category: 'Laboratory Reagents', sku: 'SIE-LFP-014', price: 14500, stock: 0, lowStockThreshold: 30, minOrderQty: 3, description: 'Comprehensive liver function testing reagent panel', storageTemp: 'cold', hazardClass: 'chemical', lotNumber: 'LOT-2025-09912', expiryDate: new Date('2026-03-31'), tests: '150 tests · ALT, AST, ALP, Bilirubin', rating: 4.5, reviewCount: 38 },
       { name: 'Bio-Rad Lipid Profile Reagent', brand: 'Bio-Rad', category: 'Laboratory Reagents', sku: 'BIO-LIP-015', price: 16500, stock: 35, description: 'Complete lipid profile testing reagent', storageTemp: 'cold', hazardClass: 'chemical', lotNumber: 'LOT-2025-10234', expiryDate: new Date('2026-05-15'), tests: '200 tests · TC, TG, HDL, LDL', rating: 4.7, reviewCount: 64, certifications: ['CE', 'ISO'] },
@@ -351,6 +351,7 @@ const seedDatabase = async () => {
         vatAmount,
         totalAmount,
         total: totalAmount,
+        isB2BOrder: true,
         deliveryAddress: b2bUser.addresses[0],
         deliveryType: 'standard',
         paymentMethod: 'b2b_credit',
@@ -479,5 +480,7 @@ const seedDatabase = async () => {
   }
 };
 
+// ⚠️ WARNING: This seed script is for development/testing only.
+// NEVER run in production — it clears all existing data.
 // Run seeder
 seedDatabase();

@@ -25,7 +25,7 @@ export default function RecentOrders({ orders = [] }) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Failed to download invoice:', error);
+      process.env.NODE_ENV !== "production" && console.error('Failed to download invoice:', error);
       alert('Failed to download invoice. Please try again.');
     } finally {
       setDownloading(prev => ({ ...prev, [orderId]: false }));

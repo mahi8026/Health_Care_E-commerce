@@ -25,7 +25,8 @@ exports.getManufacturers = async (req, res) => {
     
     // Search by name
     if (search && search.trim()) {
-      query.name = { $regex: search.trim(), $options: 'i' };
+      const escaped = search.trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+      query.name = { $regex: escaped, $options: 'i' };
     }
     
     const manufacturers = await Manufacturer.find(query)
@@ -58,7 +59,7 @@ exports.getManufacturers = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getManufacturers] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -86,7 +87,7 @@ exports.getManufacturer = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getManufacturer] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -103,7 +104,9 @@ exports.createManufacturer = async (req, res) => {
       return errorResponse(res, 'A manufacturer with this name already exists', null, 400);
     }
 
-    const manufacturer = await Manufacturer.create(req.body);
+    const allowedFields = ['name', 'slug', 'description', 'logo', 'country', 'website', 'contactEmail', 'seo', 'isActive'];
+    const manufacturerData = Object.fromEntries(allowedFields.filter(f => req.body[f] !== undefined).map(f => [f, req.body[f]]));
+    const manufacturer = await Manufacturer.create(manufacturerData);
     
     // Invalidate caches using centralized Redis cache service
     await redisCache.invalidateBrands();
@@ -133,7 +136,7 @@ exports.createManufacturer = async (req, res) => {
       return errorResponse(res, 'Manufacturer name already exists', null, 400);
     }
     logger.error(`[createManufacturer] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -188,7 +191,7 @@ exports.updateManufacturer = async (req, res) => {
       return errorResponse(res, 'Manufacturer name already exists', null, 400);
     }
     logger.error(`[updateManufacturer] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -257,7 +260,7 @@ exports.deduplicateManufacturers = async (req, res) => {
     }, `Removed ${totalRemoved} duplicate manufacturer(s) across ${duplicateGroups.length} group(s)`);
   } catch (error) {
     logger.error(`[deduplicateManufacturers] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -358,7 +361,7 @@ exports.deleteManufacturer = async (req, res) => {
     }
   } catch (error) {
     logger.error(`[deleteManufacturer] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -388,6 +391,6 @@ exports.uploadManufacturerLogo = async (req, res) => {
     return successResponse(res, { logo: manufacturer.logo }, 'Manufacturer logo uploaded successfully');
   } catch (error) {
     logger.error(`[uploadManufacturerLogo] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

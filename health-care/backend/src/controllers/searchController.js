@@ -23,7 +23,7 @@ exports.getTrendingSearches = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getTrendingSearches] ${error.message}`);
-    return errorResponse(res, 'Error fetching trending searches', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Error fetching trending searches', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -46,6 +46,6 @@ exports.logSearch = async (req, res) => {
     return successResponse(res, null, 'Search logged successfully');
   } catch (error) {
     logger.error(`[logSearch] ${error.message}`);
-    return errorResponse(res, 'Error logging search', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Error logging search', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

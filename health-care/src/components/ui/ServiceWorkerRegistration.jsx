@@ -28,11 +28,7 @@ export default function ServiceWorkerRegistration() {
           registration.update().catch(() => {});
         }, 60 * 60 * 1000);
 
-        // Log successful registration in development only
-        if (process.env.NODE_ENV === 'development') {
-           
-          console.log('[SW] Registered:', registration.scope);
-        }
+        // Registration logs are only shown in development
 
         return () => clearInterval(updateInterval);
       } catch {

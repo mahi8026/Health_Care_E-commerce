@@ -24,11 +24,12 @@ exports.getB2BUsers = async (req, res) => {
     }
 
     if (search) {
+      const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { companyName: { $regex: search, $options: 'i' } },
-        { b2bId: { $regex: search, $options: 'i' } }
+        { name: { $regex: escaped, $options: 'i' } },
+        { email: { $regex: escaped, $options: 'i' } },
+        { companyName: { $regex: escaped, $options: 'i' } },
+        { b2bId: { $regex: escaped, $options: 'i' } }
       ];
     }
 

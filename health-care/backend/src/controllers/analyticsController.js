@@ -157,7 +157,7 @@ exports.getSalesAnalytics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Sales Analytics Error:', error);
-    return errorResponse(res, 'Failed to fetch sales analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch sales analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -337,7 +337,7 @@ exports.getOrderAnalytics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Order Analytics Error:', error);
-    return errorResponse(res, 'Failed to fetch order analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch order analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -591,7 +591,7 @@ exports.getCustomerAnalytics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Customer Analytics Error:', error);
-    return errorResponse(res, 'Failed to fetch customer analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch customer analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -863,7 +863,7 @@ exports.getProductAnalytics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Product Analytics Error:', error);
-    return errorResponse(res, 'Failed to fetch product analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch product analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -1080,7 +1080,7 @@ exports.getPaymentAnalytics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Payment Analytics Error:', error);
-    return errorResponse(res, 'Failed to fetch payment analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch payment analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -1379,7 +1379,7 @@ exports.getTrafficAnalytics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Traffic Analytics Error:', error);
-    return errorResponse(res, 'Failed to fetch traffic analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch traffic analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -1587,6 +1587,6 @@ exports.getRealTimeMetrics = async (req, res) => {
     return successResponse(res, { ...responseData, cached: false });
   } catch (error) {
     logger.error('Real-Time Metrics Error:', error);
-    return errorResponse(res, 'Failed to fetch real-time metrics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch real-time metrics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

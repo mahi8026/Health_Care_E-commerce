@@ -360,6 +360,7 @@ export default function CheckoutPage({ onBackToCart }) {
 
   // Don't render checkout if not authenticated
   if (!isAuthenticated()) {
+    router.replace('/login');
     return null;
   }
 

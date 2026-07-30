@@ -1,6 +1,7 @@
 ﻿const Review = require('../models/Review');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
+const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
@@ -96,7 +97,7 @@ exports.createReview = async (req, res) => {
     return successResponse(res, review, 'Review submitted successfully', 201);
   } catch (error) {
     console.error('Create review error:', error);
-    return errorResponse(res, 'Failed to create review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to create review', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -149,7 +150,8 @@ exports.getProductReviews = async (req, res) => {
       .populate('user', 'name email')
       .sort(sortOption)
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
     
     // Get total count
     const total = await Review.countDocuments(query);
@@ -167,8 +169,8 @@ exports.getProductReviews = async (req, res) => {
       stats
     });
   } catch (error) {
-    console.error('Get product reviews error:', error);
-    return errorResponse(res, 'Failed to fetch reviews', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    logger.error('Get product reviews error:', error);
+    return errorResponse(res, 'Failed to fetch reviews', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -184,7 +186,8 @@ exports.getUserReviews = async (req, res) => {
       .populate('product', 'name images sku')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
     
     const total = await Review.countDocuments({ user: req.user._id });
     
@@ -198,7 +201,7 @@ exports.getUserReviews = async (req, res) => {
     });
   } catch (error) {
     console.error('Get user reviews error:', error);
-    return errorResponse(res, 'Failed to fetch your reviews', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch your reviews', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -247,7 +250,7 @@ exports.updateReview = async (req, res) => {
     return successResponse(res, review, 'Review updated successfully');
   } catch (error) {
     console.error('Update review error:', error);
-    return errorResponse(res, 'Failed to update review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update review', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -287,7 +290,7 @@ exports.deleteReview = async (req, res) => {
     return successResponse(res, null, 'Review deleted successfully');
   } catch (error) {
     console.error('Delete review error:', error);
-    return errorResponse(res, 'Failed to delete review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to delete review', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -312,7 +315,7 @@ exports.markHelpful = async (req, res) => {
     }, wasAdded ? 'Marked as helpful' : 'Removed helpful mark');
   } catch (error) {
     console.error('Mark helpful error:', error);
-    return errorResponse(res, 'Failed to update helpful status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update helpful status', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -352,7 +355,7 @@ exports.reportReview = async (req, res) => {
     return successResponse(res, null, 'Review reported successfully. Our team will review it.');
   } catch (error) {
     console.error('Report review error:', error);
-    return errorResponse(res, 'Failed to report review', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to report review', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -409,7 +412,7 @@ exports.getEligibleProducts = async (req, res) => {
     return successResponse(res, eligibleProducts);
   } catch (error) {
     console.error('Get eligible products error:', error);
-    return errorResponse(res, 'Failed to fetch eligible products', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch eligible products', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -441,8 +444,9 @@ exports.getAllReviews = async (req, res) => {
       .populate('product', 'name sku images')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
-    
+      .limit(parseInt(limit))
+      .lean();
+
     // Get total count
     const total = await Review.countDocuments(query);
     
@@ -477,7 +481,7 @@ exports.getAllReviews = async (req, res) => {
     });
   } catch (error) {
     console.error('Get all reviews error:', error);
-    return errorResponse(res, 'Failed to fetch reviews', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch reviews', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -543,6 +547,6 @@ exports.updateReviewStatus = async (req, res) => {
     return successResponse(res, review, `Review ${status} successfully`);
   } catch (error) {
     console.error('Update review status error:', error);
-    return errorResponse(res, 'Failed to update review status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update review status', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

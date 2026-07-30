@@ -124,7 +124,7 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
       </button>
 
       <div className="text-center text-[10px] md:text-[11px] text-[var(--color-text-secondary)] flex flex-wrap justify-center gap-1">
-        <span>Account Manager: <span className="font-semibold">Shahid Rahman</span></span>
+        <span>Account Manager: <span className="font-semibold">{user?.accountManager?.name || 'Your Account Manager'}</span></span>
         <span>•</span>
         <a href="tel:+8801712345678" className="text-[#0E8A6E] hover:underline">
           +880 1712-345678

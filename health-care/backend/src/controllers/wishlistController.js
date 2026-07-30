@@ -34,7 +34,7 @@ exports.getWishlist = async (req, res) => {
     });
   } catch (error) {
     console.error('Get wishlist error:', error);
-    return errorResponse(res, 'Failed to fetch wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch wishlist', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -76,7 +76,7 @@ exports.toggleProduct = async (req, res) => {
     }, result.message);
   } catch (error) {
     console.error('Toggle wishlist error:', error);
-    return errorResponse(res, 'Failed to update wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update wishlist', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -102,7 +102,7 @@ exports.removeProduct = async (req, res) => {
     }, 'Removed from wishlist');
   } catch (error) {
     console.error('Remove from wishlist error:', error);
-    return errorResponse(res, 'Failed to remove from wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to remove from wishlist', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -124,6 +124,6 @@ exports.checkProduct = async (req, res) => {
     return successResponse(res, { inWishlist });
   } catch (error) {
     console.error('Check wishlist error:', error);
-    return errorResponse(res, 'Failed to check wishlist', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to check wishlist', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

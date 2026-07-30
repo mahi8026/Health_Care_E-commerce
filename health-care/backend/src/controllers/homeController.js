@@ -206,7 +206,7 @@ exports.getHomeData = async (req, res) => {
       }),
 
       // 8. Testimonials (approved reviews)
-      Review.find({ isApproved: true })
+      Review.find({ status: 'approved' })
         .populate('user', 'name email')
         .populate('product', 'name slug')
         .sort({ createdAt: -1 })
@@ -269,7 +269,7 @@ exports.getHomeData = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to load homepage data',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined
     });
   }
 };
@@ -367,7 +367,7 @@ exports.getCategoryProducts = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to load category products',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.ERROR_DETAIL_ENABLED === 'true' ? error.message : undefined
     });
   }
 };

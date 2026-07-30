@@ -97,8 +97,8 @@ const errorHandler = (err, req, res, next) => {
     success:   false,
     message:   statusCode >= 500 ? 'Internal server error' : message,
     requestId: req.id,
-    // Include stack trace in development for easier debugging
-    ...(process.env.NODE_ENV === 'development' && statusCode >= 500 && { stack: err.stack }),
+    // Include stack trace only when ERROR_DETAIL_ENABLED is explicitly set
+    ...(process.env.ERROR_DETAIL_ENABLED === 'true' && statusCode >= 500 && { stack: err.stack }),
   });
 };
 

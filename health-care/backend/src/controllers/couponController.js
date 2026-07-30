@@ -11,11 +11,11 @@ const { successResponse, errorResponse, paginatedResponse } = require('../utils/
  */
 exports.validateCoupon = async (req, res) => {
   try {
-    const { code, cartTotal, cartItems, userId } = req.body;
+    const { code, cartTotal, cartItems } = req.body;
 
     // Validation — only reject truly malformed requests with 400
-    if (!code || cartTotal === undefined || cartTotal === null || !cartItems || !userId) {
-      return errorResponse(res, 'Missing required fields: code, cartTotal, cartItems, userId', null, 400);
+    if (!code || cartTotal === undefined || cartTotal === null || !cartItems) {
+      return errorResponse(res, 'Missing required fields: code, cartTotal, cartItems', null, 400);
     }
 
     // Find coupon (case-insensitive)
@@ -49,14 +49,14 @@ exports.validateCoupon = async (req, res) => {
     }
 
     // Check if user already used this coupon
-    if (coupon.hasBeenUsedBy(userId)) {
+    if (coupon.hasBeenUsedBy(req.user.id)) {
       return successResponse(res, { valid: false }, 'You have already used this coupon');
     }
 
     // Check if first order only
     if (coupon.isFirstOrderOnly) {
       const orderCount = await Order.countDocuments({ 
-        user: userId,
+        user: req.user.id,
         status: { $ne: 'cancelled' }
       });
       
@@ -156,7 +156,7 @@ exports.validateCoupon = async (req, res) => {
 
   } catch (error) {
     console.error('Validate coupon error:', error);
-    return errorResponse(res, 'Failed to validate coupon', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to validate coupon', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -181,9 +181,10 @@ exports.getCoupons = async (req, res) => {
 
     // Search by code or description
     if (search) {
+      const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
-        { code: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+        { code: { $regex: escaped, $options: 'i' } },
+        { description: { $regex: escaped, $options: 'i' } }
       ];
     }
 
@@ -231,7 +232,7 @@ exports.getCoupons = async (req, res) => {
 
   } catch (error) {
     console.error('Get coupons error:', error);
-    return errorResponse(res, 'Failed to fetch coupons', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch coupons', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -256,7 +257,7 @@ exports.getCouponById = async (req, res) => {
 
   } catch (error) {
     console.error('Get coupon error:', error);
-    return errorResponse(res, 'Failed to fetch coupon', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch coupon', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -314,7 +315,7 @@ exports.createCoupon = async (req, res) => {
       return errorResponse(res, 'A coupon with this code already exists', null, 400);
     }
 
-    return errorResponse(res, 'Failed to create coupon', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to create coupon', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -371,7 +372,7 @@ exports.updateCoupon = async (req, res) => {
       return errorResponse(res, 'A coupon with this code already exists', null, 400);
     }
 
-    return errorResponse(res, 'Failed to update coupon', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update coupon', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -406,7 +407,7 @@ exports.deleteCoupon = async (req, res) => {
 
   } catch (error) {
     console.error('Delete coupon error:', error);
-    return errorResponse(res, 'Failed to delete coupon', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to delete coupon', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -456,6 +457,6 @@ exports.getCouponStats = async (req, res) => {
 
   } catch (error) {
     console.error('Get coupon stats error:', error);
-    return errorResponse(res, 'Failed to fetch coupon statistics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch coupon statistics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

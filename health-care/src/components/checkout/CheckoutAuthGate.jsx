@@ -220,7 +220,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
                   name="name"
                   value={registerData.name}
                   onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                  placeholder="Dr. John Doe"
+                  placeholder="Your Full Name"
                   error={registerErrors.name}
                   required
                 />

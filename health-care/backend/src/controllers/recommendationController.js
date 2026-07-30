@@ -26,7 +26,7 @@ exports.getSimilarProducts = async (req, res) => {
     
   } catch (error) {
     logger.error(`[getSimilarProducts] ${error.message}`);
-    return errorResponse(res, 'Failed to get recommendations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to get recommendations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -54,7 +54,7 @@ exports.getAlsoViewed = async (req, res) => {
     
   } catch (error) {
     logger.error(`[getAlsoViewed] ${error.message}`);
-    return errorResponse(res, 'Failed to get recommendations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to get recommendations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -82,7 +82,7 @@ exports.getBoughtTogether = async (req, res) => {
     
   } catch (error) {
     logger.error(`[getBoughtTogether] ${error.message}`);
-    return errorResponse(res, 'Failed to get recommendations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to get recommendations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -106,7 +106,7 @@ exports.getPersonalized = async (req, res) => {
     
   } catch (error) {
     logger.error(`[getPersonalized] ${error.message}`);
-    return errorResponse(res, 'Failed to get recommendations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to get recommendations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -129,7 +129,7 @@ exports.getTrending = async (req, res) => {
     
   } catch (error) {
     logger.error(`[getTrending] ${error.message}`);
-    return errorResponse(res, 'Failed to get trending products', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to get trending products', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -181,6 +181,6 @@ exports.getHybridRecommendations = async (req, res) => {
     
   } catch (error) {
     logger.error(`[getHybridRecommendations] ${error.message}`);
-    return errorResponse(res, 'Failed to get recommendations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to get recommendations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

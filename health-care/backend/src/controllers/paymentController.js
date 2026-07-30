@@ -118,7 +118,7 @@ exports.initiateBkashPayment = async (req, res) => {
     if (error.message.includes('not configured')) {
       return errorResponse(res, 'bKash payment is not available yet. Please use Bank Transfer or B2B Credit.', { code: 'BKASH_NOT_CONFIGURED' }, 503);
     }
-    return errorResponse(res, 'Failed to initiate bKash payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to initiate bKash payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -153,7 +153,7 @@ exports.executeBkashPayment = async (req, res) => {
     return successResponse(res, { trxID: data.trxID, order }, 'bKash payment successful');
   } catch (error) {
     logger.error(`[executeBkashPayment] ${error.message}`);
-    return errorResponse(res, 'Failed to execute bKash payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to execute bKash payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -195,7 +195,7 @@ exports.verifyBkashPayment = async (req, res) => {
     if (error.message.includes('not configured')) {
       return errorResponse(res, 'bKash not configured', { code: 'BKASH_NOT_CONFIGURED' }, 503);
     }
-    return errorResponse(res, 'Failed to verify bKash payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to verify bKash payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -214,7 +214,7 @@ exports.processBankTransfer = async (req, res) => {
     return successResponse(res, { order }, 'Bank transfer details submitted. Payment will be verified within 2-4 hours.');
   } catch (error) {
     logger.error(`[processBankTransfer] ${error.message}`);
-    return errorResponse(res, 'Failed to process bank transfer', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to process bank transfer', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -325,7 +325,7 @@ exports.processB2BCreditPayment = async (req, res) => {
 
     return successResponse(res, {
       order,
-      remainingCredit: availableCredit - totalAmount,
+      remainingCredit: updatedUser.creditLimit - updatedUser.creditUsed,
       creditInfo: {
         creditLimit: updatedUser.creditLimit,
         creditUsed: updatedUser.creditUsed,
@@ -335,7 +335,7 @@ exports.processB2BCreditPayment = async (req, res) => {
     }, 'Payment processed using B2B credit');
   } catch (error) {
     logger.error(`[processB2BCreditPayment] ${error.message}`);
-    return errorResponse(res, 'Failed to process B2B credit payment', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to process B2B credit payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -358,7 +358,7 @@ exports.initiateNagadPayment = async (req, res) => {
     }, 'Nagad payment initiated (sandbox)');
   } catch (err) {
     logger.error(`[initiateNagadPayment] ${err.message}`);
-    return errorResponse(res, 'Failed to initiate Nagad payment', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to initiate Nagad payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -392,7 +392,7 @@ exports.processCODPayment = async (req, res) => {
     return errorResponse(
       res,
       'Failed to process COD payment',
-      process.env.NODE_ENV === 'development' ? [error.message] : null,
+      process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null,
       500
     );
   }
@@ -411,6 +411,6 @@ exports.submitChequePayment = async (req, res) => {
     return successResponse(res, { order }, 'Cheque payment recorded. Awaiting clearance.');
   } catch (err) {
     logger.error(`[submitChequePayment] ${err.message}`);
-    return errorResponse(res, 'Failed to submit cheque payment', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to submit cheque payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };

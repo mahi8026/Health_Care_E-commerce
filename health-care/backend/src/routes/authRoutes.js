@@ -147,7 +147,7 @@ router.post('/register', authLimiter, registerCaptcha, validateRegistration, reg
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', authLimiter, validateLogin, login); // CAPTCHA temporarily disabled
+router.post('/login', authLimiter, loginCaptcha, validateLogin, login);
 
 /**
  * @swagger

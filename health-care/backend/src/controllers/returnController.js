@@ -53,9 +53,14 @@ exports.createReturn = async (req, res) => {
       return errorResponse(res, 'A return request already exists for this order', null, 400);
     }
 
-    // Calculate refund amount and prepare products array
+    // Calculate refund amount (proportional to order-level discounts)
     let refundAmount = 0;
     const returnProducts = [];
+
+    // Compute effective discount ratio from order-level discounts
+    const orderSubtotal = order.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const orderPaidTotal = order.totalAmount || order.total || orderSubtotal;
+    const discountRatio = orderSubtotal > 0 ? orderPaidTotal / orderSubtotal : 1;
 
     for (const item of products) {
       const orderItem = order.items.find(i => i.product._id.toString() === item.product);
@@ -67,7 +72,8 @@ exports.createReturn = async (req, res) => {
         return errorResponse(res, `Cannot return more than ordered quantity for product ${orderItem.product.name}`, null, 400);
       }
 
-      refundAmount += orderItem.price * item.quantity;
+      const itemTotal = orderItem.price * item.quantity;
+      refundAmount += Math.round(itemTotal * discountRatio);
       returnProducts.push({
         product: item.product,
         quantity: item.quantity,
@@ -100,17 +106,17 @@ exports.createReturn = async (req, res) => {
       await sendEmail({
         to: process.env.ADMIN_EMAIL || 'admin@MediportBD.com',
         subject: `New Return Request - Order #${order.orderNumber}`,
-        text: `
-New return request received:
-
-Return ID: ${returnRequest._id}
-Order: #${order.orderNumber}
-Customer: ${req.user.name} (${req.user.email})
-Reason: ${reason}
-Amount: ?${refundAmount}
-
-Please review this request in the admin panel.
-        `.trim()
+        html: `
+        <h2>New Return Request</h2>
+        <p>
+          Return ID: ${returnRequest._id}<br/>
+          Order: #${order.orderNumber}<br/>
+          Customer: ${req.user.name} (${req.user.email})<br/>
+          Reason: ${reason}<br/>
+          Amount: ৳${refundAmount}
+        </p>
+        <p style="color:#DC2626;font-weight:600;">Please review this request in the admin panel.</p>
+      `
       });
     } catch (emailErr) {
       logger.error(`[createReturn] Failed to send admin email: ${emailErr.message}`);
@@ -121,22 +127,17 @@ Please review this request in the admin panel.
       await sendEmail({
         to: req.user.email,
         subject: `Return Request Received - Order #${order.orderNumber}`,
-        text: `
-Dear ${req.user.name},
-
-Your return request for order #${order.orderNumber} has been received.
-
-Return Details:
-- Return ID: ${returnRequest._id.toString().slice(-8).toUpperCase()}
-- Reason: ${reason}
-- Refund Amount: ?${refundAmount}
-
-We will review your request within 24-48 hours and notify you of our decision.
-
-Thank you for your patience.
-
-Best regards,
-MediportBD Team
+        html: `
+<h2>Return Request Received</h2>
+<p>Dear ${req.user.name},</p>
+<p>Your return request for order #${order.orderNumber} has been received.</p>
+<p>
+  <strong>Return ID:</strong> ${returnRequest._id.toString().slice(-8).toUpperCase()}<br/>
+  <strong>Reason:</strong> ${reason}<br/>
+  <strong>Refund Amount:</strong> ৳${refundAmount}
+</p>
+<p>We will review your request within 24-48 hours and notify you of our decision.</p>
+<p>Thank you for your patience.<br/>Best regards,<br/>MediportBD Team</p>
         `.trim()
       });
     } catch (emailErr) {
@@ -157,7 +158,7 @@ MediportBD Team
     return successResponse(res, returnRequest, 'Return request submitted successfully', 201);
   } catch (err) {
     logger.error(`[createReturn] ${err.message}`);
-    return errorResponse(res, 'Failed to create return request', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to create return request', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -170,12 +171,14 @@ exports.getMyReturns = async (req, res) => {
       .populate('order', 'orderNumber totalAmount createdAt')
       .populate('products.product', 'name sku images')
       .populate('approvedBy', 'name')
-      .sort('-createdAt');
+      .sort('-createdAt')
+      .limit(20)
+      .lean();
 
     return successResponse(res, { returns, count: returns.length });
   } catch (err) {
     logger.error(`[getMyReturns] ${err.message}`);
-    return errorResponse(res, 'Failed to fetch return requests', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch return requests', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -195,7 +198,8 @@ exports.getAllReturns = async (req, res) => {
       .populate('approvedBy', 'name')
       .sort(sort)
       .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .skip((page - 1) * limit)
+      .lean();
 
     const count = await Return.countDocuments(query);
 
@@ -209,7 +213,7 @@ exports.getAllReturns = async (req, res) => {
     });
   } catch (err) {
     logger.error(`[getAllReturns] ${err.message}`);
-    return errorResponse(res, 'Failed to fetch return requests', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch return requests', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -242,7 +246,7 @@ exports.getReturn = async (req, res) => {
     return successResponse(res, returnRequest);
   } catch (err) {
     logger.error(`[getReturn] ${err.message}`);
-    return errorResponse(res, 'Failed to fetch return request', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch return request', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -273,11 +277,19 @@ exports.updateReturnStatus = async (req, res) => {
 
     if (status === 'approved') {
       returnRequest.approvedBy = req.user._id;
-      returnRequest.approvedAt = Date.now();
+      returnRequest.approvedAt = new Date();
+      
+      // Restore product stock
+      for (const product of returnRequest.products) {
+        await Product.findByIdAndUpdate(
+          product.product,
+          { $inc: { stock: product.quantity } }
+        );
+      }
     }
 
     if (status === 'refunded') {
-      returnRequest.refundedAt = Date.now();
+      returnRequest.refundedAt = new Date();
       
       // Update order status
       const order = await Order.findById(returnRequest.order);
@@ -296,9 +308,9 @@ exports.updateReturnStatus = async (req, res) => {
 
     // Send email notification to customer
     const statusMessages = {
-      approved: `Your return request has been approved. Refund of ?${returnRequest.refundAmount} will be processed within 3-5 business days via ${refundMethod || 'original payment method'}.`,
+      approved: `Your return request has been approved. Refund of ৳${returnRequest.refundAmount} will be processed within 3-5 business days via ${refundMethod || 'original payment method'}.`,
       rejected: `Your return request has been rejected. ${adminNotes ? `Reason: ${adminNotes}` : 'Please contact support for more details.'}`,
-      refunded: `Your refund of ?${returnRequest.refundAmount} has been processed successfully. ${refundTransactionId ? `Transaction ID: ${refundTransactionId}` : ''}`,
+      refunded: `Your refund of ৳${returnRequest.refundAmount} has been processed successfully. ${refundTransactionId ? `Transaction ID: ${refundTransactionId}` : ''}`,
     };
 
     if (statusMessages[status]) {
@@ -306,18 +318,16 @@ exports.updateReturnStatus = async (req, res) => {
         await sendEmail({
           to: returnRequest.user.email,
           subject: `Return Request ${status.charAt(0).toUpperCase() + status.slice(1)} - Order #${returnRequest.order.orderNumber}`,
-          text: `
-Dear ${returnRequest.user.name},
-
-${statusMessages[status]}
-
-Return ID: ${returnRequest._id.toString().slice(-8).toUpperCase()}
-Order: #${returnRequest.order.orderNumber}
-
-${status === 'rejected' ? 'If you have any questions, please contact our support team.' : 'Thank you for your patience.'}
-
-Best regards,
-MediportBD Team
+          html: `
+<h2>Return ${status.charAt(0).toUpperCase() + status.slice(1)}</h2>
+<p>Dear ${returnRequest.user.name},</p>
+<p>${statusMessages[status]}</p>
+<p>
+  <strong>Return ID:</strong> ${returnRequest._id.toString().slice(-8).toUpperCase()}<br/>
+  <strong>Order:</strong> #${returnRequest.order.orderNumber}
+</p>
+<p>${status === 'rejected' ? 'If you have any questions, please contact our support team.' : 'Thank you for your patience.'}</p>
+<p>Best regards,<br/>MediportBD Team</p>
           `.trim()
         });
       } catch (emailErr) {
@@ -330,7 +340,7 @@ MediportBD Team
     return successResponse(res, returnRequest, `Return request ${status} successfully`);
   } catch (err) {
     logger.error(`[updateReturnStatus] ${err.message}`);
-    return errorResponse(res, 'Failed to update return status', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to update return status', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -363,7 +373,7 @@ exports.cancelReturn = async (req, res) => {
     return successResponse(res, null, 'Return request cancelled successfully');
   } catch (err) {
     logger.error(`[cancelReturn] ${err.message}`);
-    return errorResponse(res, 'Failed to cancel return request', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to cancel return request', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -404,6 +414,6 @@ exports.getReturnStats = async (req, res) => {
     });
   } catch (err) {
     logger.error(`[getReturnStats] ${err.message}`);
-    return errorResponse(res, 'Failed to fetch return statistics', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch return statistics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };

@@ -44,7 +44,7 @@ exports.getCategories = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getCategories] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -86,7 +86,7 @@ exports.getCategoryTree = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getCategoryTree] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -124,7 +124,7 @@ exports.getCategory = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getCategory] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -161,7 +161,7 @@ exports.getCategoryById = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getCategoryById] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -170,7 +170,9 @@ exports.getCategoryById = async (req, res) => {
 // @access  Private/Admin
 exports.createCategory = async (req, res) => {
   try {
-    const category = await Category.create(req.body);
+    const allowedFields = ['name', 'slug', 'description', 'parentCategory', 'image', 'banner', 'seo', 'isActive', 'displayOrder'];
+    const categoryData = Object.fromEntries(allowedFields.filter(f => req.body[f] !== undefined).map(f => [f, req.body[f]]));
+    const category = await Category.create(categoryData);
     
     // Invalidate caches using centralized Redis cache service
     await redisCache.invalidateCategories();
@@ -204,7 +206,7 @@ exports.createCategory = async (req, res) => {
       return errorResponse(res, error.message, null, 400);
     }
     logger.error(`[createCategory] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -263,7 +265,7 @@ exports.updateCategory = async (req, res) => {
       return errorResponse(res, error.message, null, 400);
     }
     logger.error(`[updateCategory] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -312,7 +314,7 @@ exports.deleteCategory = async (req, res) => {
     return successResponse(res, null, 'Category deactivated successfully');
   } catch (error) {
     logger.error(`[deleteCategory] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -350,6 +352,6 @@ exports.uploadCategoryImage = async (req, res) => {
     return successResponse(res, { [type]: imageData }, `Category ${type} uploaded successfully`);
   } catch (error) {
     logger.error(`[uploadCategoryImage] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

@@ -38,7 +38,7 @@ export default function ProductReviews({ productId }) {
         setPagination(data.pagination);
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Fetch reviews error:', error);
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export default function ProductReviews({ productId }) {
         setCanReview(eligible);
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Check eligibility error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Check eligibility error:', error);
     }
   };
 

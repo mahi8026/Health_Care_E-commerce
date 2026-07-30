@@ -412,6 +412,72 @@ async function sendNewOrderEmail(order, customer) {
   return sendOrderConfirmation(order, customer);
 }
 
+async function sendPasswordResetEmail(user, resetUrl) {
+  const body = `
+    <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0B2545;">Password Reset Request</h2>
+    <p style="margin:0 0 20px;font-size:14px;color:#6B7280;">
+      We received a request to reset your password. Click the button below to proceed.
+    </p>
+    ${ctaButton('Reset Password', resetUrl)}
+    <p style="margin-top:24px;font-size:12px;color:#9CA3AF;">
+      This link will expire in 1 hour.<br/>
+      If you didn't request this, please ignore this email.
+    </p>`;
+
+  return sendEmail({
+    to:      user.email,
+    subject: 'Password Reset | MediportBD',
+    html:    emailLayout('Password Reset', body),
+  });
+}
+
+async function sendAbandonedCartEmail(cart, user) {
+  const cfg   = getConfig();
+  const items = (cart.items || []).map(item => {
+    const p = item.product || {};
+    const img = p.images?.[0] || `${cfg.siteUrl}/images/placeholder.png`;
+    return `
+    <tr>
+      <td style="padding:8px;">
+        <img src="${img}" alt="${p.name}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" />
+      </td>
+      <td style="padding:8px;font-size:13px;color:#0B2545;">${p.name}</td>
+      <td style="padding:8px;text-align:center;font-size:13px;color:#6B7280;">${item.quantity}</td>
+      <td style="padding:8px;text-align:right;font-size:14px;font-weight:600;color:#0B2545;">৳${(item.price || 0).toLocaleString('en-BD')}</td>
+    </tr>`;
+  }).join('');
+
+  const subtotal = (cart.items || []).reduce((s, i) => s + (i.price || 0) * (i.quantity || 0), 0);
+
+  const body = `
+    <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0B2545;">You Left Something Behind!</h2>
+    <p style="margin:0 0 16px;font-size:14px;color:#6B7280;">
+      Hi ${user.name}, your cart is still waiting. Complete your order before items sell out!
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:8px;border:1px solid #E5E7EB;margin-bottom:16px;">
+      <thead><tr style="background:#F9FAFB;">
+        <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Item</th>
+        <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Product</th>
+        <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Qty</th>
+        <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;">Price</th>
+      </tr></thead>
+      <tbody>${items}</tbody>
+    </table>
+    <div style="text-align:right;font-size:16px;font-weight:700;color:#0B2545;margin-bottom:20px;">
+      Subtotal: ৳${subtotal.toLocaleString('en-BD')}
+    </div>
+    ${ctaButton('Complete Order', `${cfg.siteUrl}/cart`)}
+    <p style="margin-top:16px;font-size:12px;color:#9CA3AF;">
+      Your items are reserved, but they may go out of stock if someone else purchases them first.
+    </p>`;
+
+  return sendEmail({
+    to:      user.email,
+    subject: 'Your Cart is Waiting | MediportBD',
+    html:    emailLayout('Abandoned Cart', body),
+  });
+}
+
 async function sendTestEmail(to) {
   return sendEmail({
     to,
@@ -440,6 +506,8 @@ module.exports = {
   sendNewOrderEmail,
   sendTestEmail,
   sendLowStockAlert,
+  sendPasswordResetEmail,
+  sendAbandonedCartEmail,
   sendQuotationReady,
   verifyConnection,
 };

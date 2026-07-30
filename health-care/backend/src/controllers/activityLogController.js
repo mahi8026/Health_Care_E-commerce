@@ -59,9 +59,10 @@ exports.getActivityLogs = async (req, res) => {
 
     // Search by user email or target name
     if (search && search.trim()) {
+      const escaped = search.trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
-        { userEmail: { $regex: search.trim(), $options: 'i' } },
-        { targetName: { $regex: search.trim(), $options: 'i' } }
+        { userEmail: { $regex: escaped, $options: 'i' } },
+        { targetName: { $regex: escaped, $options: 'i' } }
       ];
     }
 
@@ -89,7 +90,7 @@ exports.getActivityLogs = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getActivityLogs] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch activity logs', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch activity logs', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -164,7 +165,7 @@ exports.getActivityStats = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getActivityStats] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch activity statistics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch activity statistics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -230,7 +231,7 @@ exports.exportActivityLogs = async (req, res) => {
     res.status(200).send(csvContent);
   } catch (error) {
     logger.error(`[exportActivityLogs] ${error.message}`);
-    return errorResponse(res, 'Failed to export activity logs', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to export activity logs', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -252,6 +253,6 @@ exports.getActivityLog = async (req, res) => {
     return successResponse(res, log);
   } catch (error) {
     logger.error(`[getActivityLog] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch activity log', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch activity log', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

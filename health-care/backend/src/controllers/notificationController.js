@@ -36,7 +36,7 @@ exports.sendOrderConfirmation = async (req, res) => {
     return successResponse(res, null, 'Order confirmation email sent successfully');
   } catch (error) {
     logger.error(`[sendOrderConfirmation] ${error.message}`);
-    return errorResponse(res, 'Failed to send order confirmation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send order confirmation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -72,7 +72,7 @@ exports.sendPaymentReceipt = async (req, res) => {
     return successResponse(res, null, 'Payment receipt email sent successfully');
   } catch (error) {
     logger.error(`[sendPaymentReceipt] ${error.message}`);
-    return errorResponse(res, 'Failed to send payment receipt', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send payment receipt', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -99,7 +99,7 @@ exports.sendShipping = async (req, res) => {
     return successResponse(res, null, 'Shipping notification sent successfully');
   } catch (error) {
     logger.error(`[sendShipping] ${error.message}`);
-    return errorResponse(res, 'Failed to send shipping notification', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send shipping notification', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -116,7 +116,7 @@ exports.sendDelivered = async (req, res) => {
     await sendDeliveryConfirmation(order, user);
     return successResponse(res, null, 'Delivery confirmation sent');
   } catch (error) {
-    return errorResponse(res, 'Failed to send delivery confirmation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send delivery confirmation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -131,7 +131,7 @@ exports.sendQuotationReady = async (req, res) => {
     await sendQuotationReady(quote, quote.user);
     return successResponse(res, null, 'Quotation ready email sent');
   } catch (error) {
-    return errorResponse(res, 'Failed to send quotation email', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send quotation email', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -150,6 +150,6 @@ exports.sendStockAlert = async (req, res) => {
     await sendLowStockAlert(lowStockProducts);
     return successResponse(res, null, `Stock alert sent for ${lowStockProducts.length} product(s)`);
   } catch (error) {
-    return errorResponse(res, 'Failed to send stock alert', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send stock alert', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

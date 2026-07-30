@@ -115,9 +115,10 @@ exports.getMembers = async (req, res) => {
 
     const query = { loyaltyPoints: { $exists: true } };
     if (search) {
+      const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
+        { name: { $regex: escaped, $options: 'i' } },
+        { email: { $regex: escaped, $options: 'i' } }
       ];
     }
 

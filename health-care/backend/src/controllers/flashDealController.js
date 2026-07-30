@@ -21,7 +21,7 @@ exports.getAllFlashDeals = async (req, res) => {
     return successResponse(res, { flashDeals, total: flashDeals.length }, 'Flash deals retrieved successfully');
   } catch (error) {
     logger.error(`[getAllFlashDeals] ${error.message}`);
-    return errorResponse(res, 'Failed to retrieve flash deals', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to retrieve flash deals', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -46,7 +46,7 @@ exports.getActiveFlashDeals = async (req, res) => {
     return successResponse(res, { flashDeals: activeDeals }, 'Active flash deals retrieved successfully');
   } catch (error) {
     logger.error(`[getActiveFlashDeals] ${error.message}`);
-    return errorResponse(res, 'Failed to retrieve active flash deals', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to retrieve active flash deals', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -67,7 +67,7 @@ exports.getFlashDealById = async (req, res) => {
     return successResponse(res, { flashDeal }, 'Flash deal retrieved successfully');
   } catch (error) {
     logger.error(`[getFlashDealById] ${error.message}`);
-    return errorResponse(res, 'Failed to retrieve flash deal', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to retrieve flash deal', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -134,7 +134,7 @@ exports.createFlashDeal = async (req, res) => {
     return successResponse(res, { flashDeal: populatedDeal }, 'Flash deal created successfully', 201);
   } catch (error) {
     logger.error(`[createFlashDeal] ${error.message}`);
-    return errorResponse(res, 'Failed to create flash deal', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to create flash deal', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -204,7 +204,7 @@ exports.updateFlashDeal = async (req, res) => {
     return successResponse(res, { flashDeal: updatedDeal }, 'Flash deal updated successfully');
   } catch (error) {
     logger.error(`[updateFlashDeal] ${error.message}`);
-    return errorResponse(res, 'Failed to update flash deal', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update flash deal', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -223,7 +223,7 @@ exports.deleteFlashDeal = async (req, res) => {
     return successResponse(res, null, 'Flash deal deleted successfully');
   } catch (error) {
     logger.error(`[deleteFlashDeal] ${error.message}`);
-    return errorResponse(res, 'Failed to delete flash deal', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to delete flash deal', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -246,7 +246,7 @@ exports.toggleFlashDealStatus = async (req, res) => {
     return successResponse(res, { flashDeal }, `Flash deal ${flashDeal.isActive ? 'activated' : 'deactivated'} successfully`);
   } catch (error) {
     logger.error(`[toggleFlashDealStatus] ${error.message}`);
-    return errorResponse(res, 'Failed to toggle flash deal status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to toggle flash deal status', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 

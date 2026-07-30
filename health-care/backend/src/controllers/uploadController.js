@@ -97,7 +97,7 @@ exports.uploadImage = async (req, res) => {
     return successResponse(res, { url, publicId });
   } catch (error) {
     logger.error(`[uploadImage] ${error.message}`);
-    return errorResponse(res, 'Upload failed', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Upload failed', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -126,7 +126,7 @@ exports.uploadImages = async (req, res) => {
     return successResponse(res, { urls });
   } catch (error) {
     logger.error(`[uploadImages] ${error.message}`);
-    return errorResponse(res, 'Upload failed', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Upload failed', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -153,7 +153,7 @@ exports.deleteProductImage = async (req, res) => {
     return successResponse(res, null, 'Image deleted');
   } catch (err) {
     logger.error(`[deleteProductImage] ${err.message}`);
-    return errorResponse(res, 'Failed to delete image', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to delete image', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };
 
@@ -192,6 +192,6 @@ exports.reorderProductImages = async (req, res) => {
     return successResponse(res, { images: product.images });
   } catch (err) {
     logger.error(`[reorderProductImages] ${err.message}`);
-    return errorResponse(res, 'Failed to reorder images', process.env.NODE_ENV === 'development' ? [err.message] : null, 500);
+    return errorResponse(res, 'Failed to reorder images', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };

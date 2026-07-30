@@ -317,7 +317,7 @@ function B2BLanding() {
                   <div>
                     <label className="block text-[11px] font-semibold text-[#374151] mb-1">Full Name <span className="text-red-500">*</span></label>
                     <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                      placeholder="Dr. Ahmed Rahman"
+                      placeholder="Your Full Name"
                       className="w-full px-3 py-2.5 border border-[#E5E7EB] rounded-xl text-[13px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10"/>
                   </div>
                   <div>

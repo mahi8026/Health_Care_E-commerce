@@ -54,7 +54,6 @@ router.delete('/:id', protect, authorize('admin'), deleteCategory);
 router.post('/:id/image', protect, authorize('admin'), upload.single('image'), uploadCategoryImage);
 
 // Public slug route (must be last to avoid conflicts with specific routes)
-// Temporarily without caching
-router.get('/:slug', getCategory);
+router.get('/:slug', redisCacheMiddleware({ ttl: CACHE_TTL.CATEGORIES_LIST, keyPrefix: 'categories:slug:' }), getCategory);
 
 module.exports = router;

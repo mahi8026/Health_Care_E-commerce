@@ -29,6 +29,8 @@ const http = require('http');
 const chatSocketService = require('./services/chatSocketService');
 const chatRoutingService = require('./services/chatRoutingService');
 const { etagMiddleware } = require('./middleware/etag');
+const { protect, authorize } = require('./middleware/auth');
+const { doubleCsrfProtection, csrfTokenMiddleware, getCsrfToken } = require('./middleware/csrf');
 
 // ── Global unhandled rejection handler ─────────────────────────────────────────
 // Prevents the process from crashing on unhandled promise rejections (Node.js default)
@@ -339,7 +341,7 @@ const ADMIN_SECRET = process.env.ADMIN_SECRET;
 if (!ADMIN_SECRET) {
   console.warn('⚠️  ADMIN_SECRET not set - admin utility routes will not work');
 }
-app.get('/api/fix-slugs', async (req, res) => {
+app.get('/api/fix-slugs', protect, authorize('admin'), async (req, res) => {
   if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
     return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
   }
@@ -379,8 +381,8 @@ app.get('/api/fix-slugs', async (req, res) => {
   }
 });
 
-// ── Seed Sample Products ───────────────────────────────────────────────────────
-app.get('/api/seed-products', async (req, res) => {
+// ── Seed Sample Products (admin only) ─────────────────────────────────────────
+app.get('/api/seed-products', protect, authorize('admin'), async (req, res) => {
   try {
     const Product = require('./models/Product');
     const Manufacturer = require('./models/Manufacturer');
@@ -450,7 +452,7 @@ app.get('/api/seed-products', async (req, res) => {
 });
 
 // ── Admin Email Test ──────────────────────────────────────────────────────────
-app.get('/api/test-email', async (req, res) => {
+app.get('/api/test-email', protect, authorize('admin'), async (req, res) => {
   if (req.query.secret !== ADMIN_SECRET) {
     return res.status(401).json({ success: false, message: 'Invalid secret' });
   }
@@ -468,14 +470,14 @@ app.get('/api/test-email', async (req, res) => {
 });
 
 // ── Email Status Debug (admin only) ──────────────────────────────────────────
-app.get('/api/email-debug', async (req, res) => {
+app.get('/api/email-debug', protect, authorize('admin'), async (req, res) => {
   if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
     return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
   }
   res.json({
     success: true,
     email: {
-      resendApiKey: process.env.RESEND_API_KEY ? `✓ Configured (${process.env.RESEND_API_KEY.substring(0, 10)}...)` : '✗ MISSING',
+      resendApiKey: process.env.RESEND_API_KEY ? '✓ Configured' : '✗ MISSING',
       resendFromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev (default)',
       emailFromName: process.env.EMAIL_FROM_NAME || 'MediportBD',
       frontendUrl: process.env.FRONTEND_URL || 'https://health-care-e-commerce-murex.vercel.app'
@@ -618,6 +620,13 @@ async function warmCache() {
     logger.warn(`[Cache Warming] Failed: ${err.message}`);
   }
 }
+
+// ── CSRF Protection ──────────────────────────────────────────────────────────
+// Apply double-submit cookie CSRF protection to all state-changing API routes.
+// CSRF token endpoint for frontend to fetch tokens.
+app.get('/api/csrf-token', csrfTokenMiddleware, getCsrfToken);
+// CSRF protection applies to POST, PUT, PATCH, DELETE routes
+app.use('/api/', doubleCsrfProtection);
 
 // ── Start Server ──────────────────────────────────────────────────────────────
 // Only start server if not in test mode

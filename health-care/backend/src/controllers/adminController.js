@@ -6,6 +6,10 @@ const Cart = require('../models/Cart');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
+function escapeRegex(str) {
+  return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
 function calcMonthGrowth(current, previous) {
   if (previous === 0 && current === 0) return { pct: 0, trend: 'neutral' };
   if (previous === 0) return { pct: null, trend: 'up' };
@@ -129,7 +133,7 @@ exports.getDashboard = async (req, res) => {
       {
         $group: {
           _id: '$productInfo.category',
-          revenue: { $sum: { $multiply: ['$items.price', { $ifNull: ['$items.qty', '$items.quantity', 1] }] } }
+          revenue: { $sum: { $multiply: ['$items.price', { $ifNull: [{ $ifNull: ['$items.qty', '$items.quantity'] }, 1] }] } }
         }
       },
       { $sort: { revenue: -1 } }
@@ -177,7 +181,7 @@ exports.getDashboard = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[adminController] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -274,7 +278,7 @@ exports.getAnalytics = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[adminController] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -286,10 +290,11 @@ exports.getCustomers = async (req, res) => {
     if (role) filter.role = role;
     if (tier) filter.b2bTier = tier;
     if (search) {
+      const escaped = escapeRegex(search);
       filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { companyName: { $regex: search, $options: 'i' } }
+        { name: { $regex: escaped, $options: 'i' } },
+        { email: { $regex: escaped, $options: 'i' } },
+        { companyName: { $regex: escaped, $options: 'i' } }
       ];
     }
 
@@ -324,7 +329,7 @@ exports.getCustomers = async (req, res) => {
     return successResponse(res, { count: enriched.length, total, customers: enriched });
   } catch (error) {
     logger.error(`[adminController] getCustomers error: ${error.message}`, { stack: error.stack });
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -385,7 +390,7 @@ exports.updateCustomer = async (req, res) => {
       return errorResponse(res, 'Invalid customer ID', [error.message], 400);
     }
     
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -424,7 +429,7 @@ exports.deleteCustomer = async (req, res) => {
       return errorResponse(res, 'Invalid customer ID', [error.message], 400);
     }
     
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -445,7 +450,7 @@ exports.manualStockCheck = async (req, res) => {
     return successResponse(res, { count: lowStockProducts.length, products: lowStockProducts }, `Stock alert sent for ${lowStockProducts.length} product(s)`);
   } catch (error) {
     logger.error(`[adminController] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -472,7 +477,7 @@ exports.getBadges = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[adminController] getBadges error: ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -495,7 +500,7 @@ exports.getAdminUsers = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[adminController] getAdminUsers error: ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 

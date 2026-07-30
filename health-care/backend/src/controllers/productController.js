@@ -363,7 +363,7 @@ exports.getProducts = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getProducts] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -406,7 +406,7 @@ exports.getProduct = async (req, res) => {
     return successResponse(res, product);
   } catch (error) {
     logger.error(`[getProduct] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -512,7 +512,7 @@ exports.generateSku = async (req, res) => {
     return successResponse(res, { sku, prefix, sequence: nextSeq });
   } catch (error) {
     logger.error(`[generateSku] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -544,7 +544,9 @@ exports.createProduct = async (req, res) => {
       req.body.stock = stock;
     }
 
-    const product = await Product.create(req.body);
+    const allowedFields = ['name', 'slug', 'description', 'brand', 'category', 'price', 'oldPrice', 'stock', 'lowStockThreshold', 'minOrderQty', 'sku', 'images', 'specifications', 'variants', 'tags', 'badge', 'isActive', 'isFeatured', 'rating', 'reviewCount', 'certifications', 'hasAMC', 'storageTemp', 'hazardClass', 'lotNumber', 'expiryDate', 'tests', 'b2bPrice', 'discountPct', 'soldCount', 'viewCount'];
+    const productData = Object.fromEntries(allowedFields.filter(f => req.body[f] !== undefined).map(f => [f, req.body[f]]));
+    const product = await Product.create(productData);
 
     // ── Send success FIRST, then post-process async ────────────────────
     // Cache invalidation and logging happen after the response is sent
@@ -602,7 +604,7 @@ exports.createProduct = async (req, res) => {
     }
 
     // Everything else → 500
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -639,7 +641,9 @@ exports.updateProduct = async (req, res) => {
       return errorResponse(res, 'Product not found', null, 404);
     }
 
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const allowedFields = ['name', 'slug', 'description', 'brand', 'category', 'price', 'oldPrice', 'stock', 'lowStockThreshold', 'minOrderQty', 'images', 'specifications', 'variants', 'tags', 'badge', 'isActive', 'isFeatured', 'rating', 'reviewCount', 'certifications', 'hasAMC', 'storageTemp', 'hazardClass', 'lotNumber', 'expiryDate', 'tests', 'b2bPrice', 'discountPct'];
+    const updateData = Object.fromEntries(allowedFields.filter(f => req.body[f] !== undefined).map(f => [f, req.body[f]]));
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
     
     // Invalidate caches using centralized Redis cache service
     await redisCache.invalidateProductList();
@@ -678,7 +682,7 @@ exports.updateProduct = async (req, res) => {
     return successResponse(res, product, 'Product updated successfully');
   } catch (error) {
     logger.error(`[updateProduct] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -724,7 +728,7 @@ exports.deleteProduct = async (req, res) => {
     return successResponse(res, null, 'Product deleted successfully');
   } catch (error) {
     logger.error(`[deleteProduct] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -817,7 +821,7 @@ exports.getFeaturedProducts = async (req, res) => {
     return successResponse(res, products);
   } catch (error) {
     logger.error(`[getFeaturedProducts] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -848,6 +852,6 @@ exports.getCategoryCounts = async (req, res) => {
     return successResponse(res, result);
   } catch (error) {
     logger.error(`[getCategoryCounts] ${error.message}`);
-    return errorResponse(res, 'Server error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

@@ -11,8 +11,8 @@ async function verifyRecaptcha(token, action) {
   try {
     if (!process.env.RECAPTCHA_SECRET_KEY) {
       logger.warn('[CAPTCHA] reCAPTCHA secret key not configured');
-      // In development, allow requests without CAPTCHA
-      if (process.env.NODE_ENV === 'development') {
+      // Only skip CAPTCHA when SKIP_CAPTCHA_DEV is explicitly set
+      if (process.env.SKIP_CAPTCHA_DEV === 'true') {
         return { success: true, score: 1.0, bypass: true };
       }
       return { success: false, error: 'CAPTCHA not configured' };
@@ -69,8 +69,8 @@ async function verifyRecaptcha(token, action) {
   } catch (error) {
     logger.error(`[CAPTCHA] Verification error: ${error.message}`);
     
-    // In development, allow requests on error
-    if (process.env.NODE_ENV === 'development') {
+    // Only skip on error when SKIP_CAPTCHA_DEV is explicitly set
+    if (process.env.SKIP_CAPTCHA_DEV === 'true') {
       return { success: true, score: 1.0, bypass: true };
     }
     
@@ -92,9 +92,9 @@ function captchaMiddleware(action) {
       const token = req.headers['x-recaptcha-token'] || req.body.recaptchaToken;
 
       if (!token) {
-        // In development, allow without token
-        if (process.env.NODE_ENV === 'development' && !process.env.RECAPTCHA_SECRET_KEY) {
-          logger.debug('[CAPTCHA] Bypassing in development mode');
+        // Only bypass when SKIP_CAPTCHA_DEV is explicitly set
+        if (process.env.SKIP_CAPTCHA_DEV === 'true') {
+          logger.debug('[CAPTCHA] Bypassing — SKIP_CAPTCHA_DEV is set');
           return next();
         }
 
@@ -122,11 +122,6 @@ function captchaMiddleware(action) {
       next();
     } catch (error) {
       logger.error(`[CAPTCHA] Middleware error: ${error.message}`);
-      
-      // In development, allow on error
-      if (process.env.NODE_ENV === 'development') {
-        return next();
-      }
 
       res.status(500).json({
         success: false,

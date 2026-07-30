@@ -48,7 +48,7 @@ export function CartProvider({ children }) {
         method = 'DELETE';
       }
 
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -56,8 +56,13 @@ export function CartProvider({ children }) {
         },
         body: method !== 'DELETE' ? JSON.stringify(body) : undefined
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `Cart sync failed (${res.status})`);
+      }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Backend cart update error:', error);
+      if (process.env.NODE_ENV !== "production") console.error('Backend cart update error:', error);
+      showToast.error('Cart update failed. Please try again.');
     }
   }, [isLoggedIn]);
 
@@ -81,6 +86,10 @@ export function CartProvider({ children }) {
         body: JSON.stringify({ items: cart })
       });
 
+      if (!response.ok) {
+        throw new Error(`Cart sync failed (${response.status})`);
+      }
+
       const data = await response.json();
       if (data.success && data.data) {
         // Update cart with merged result from backend — normalize populated fields
@@ -100,9 +109,9 @@ export function CartProvider({ children }) {
       }
       setSyncPending(false);
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Cart sync error:', error);
+      if (process.env.NODE_ENV !== "production") console.error('Cart sync error:', error);
       setSyncPending(false);
-      // Note: Retry logic removed to avoid recursion issues
+      showToast.warning('Could not sync cart. Changes saved locally.');
     }
   }, [isLoggedIn, cart, syncPending]);
 
@@ -146,7 +155,11 @@ export function CartProvider({ children }) {
 
   // Persist cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('Mediport_cart', JSON.stringify(cart));
+    try {
+      localStorage.setItem('Mediport_cart', JSON.stringify(cart));
+    } catch {
+      // localStorage may be blocked (Safari private mode, etc.)
+    }
   }, [cart]);
 
   const addToCart = useCallback((product, quantity = 1, options = {}) => {
@@ -167,7 +180,7 @@ export function CartProvider({ children }) {
     const { size } = options;
     
     if (!productId) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Product missing ID:', product);
+      process.env.NODE_ENV !== "production" && console.error('Product missing ID:', product);
       showToast.error('Failed to add product to cart');
       return;
     }

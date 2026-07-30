@@ -29,7 +29,7 @@ exports.getSettings = async (req, res) => {
     return successResponse(res, settings);
   } catch (error) {
     console.error('Error fetching settings:', error);
-    return errorResponse(res, 'Error fetching settings', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Error fetching settings', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -49,6 +49,6 @@ exports.updateSettings = async (req, res) => {
     return successResponse(res, settings, 'Settings updated successfully');
   } catch (error) {
     console.error('Error updating settings:', error);
-    return errorResponse(res, 'Error updating settings', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Error updating settings', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };

@@ -25,7 +25,7 @@ export function WishlistProvider({ children }) {
         setWishlist(data.data.products || []);
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Fetch wishlist error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Fetch wishlist error:', error);
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export function WishlistProvider({ children }) {
       showToast.error(data.message || 'Failed to update wishlist');
       return { success: false, message: data.message };
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Toggle wishlist error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Toggle wishlist error:', error);
       showToast.error('Failed to update wishlist');
       return { success: false, message: 'Failed to update wishlist' };
     }
@@ -98,7 +98,7 @@ export function WishlistProvider({ children }) {
       showToast.error(data.message || 'Failed to remove from wishlist');
       return { success: false, message: data.message };
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Remove from wishlist error:', error);
+      process.env.NODE_ENV !== "production" && console.error('Remove from wishlist error:', error);
       showToast.error('Failed to remove from wishlist');
       return { success: false, message: 'Failed to remove from wishlist' };
     }

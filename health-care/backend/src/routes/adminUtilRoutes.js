@@ -10,26 +10,8 @@ const logger = require('../utils/logger');
  * @desc    Recalculate and fix all category product counts
  * @access  Protected by secret key in request body
  */
-router.post('/fix-category-counts', async (req, res) => {
+router.post('/fix-category-counts', protect, authorize('admin'), async (req, res) => {
   try {
-    // Security: Require secret key in request body (avoid CORS issues with headers)
-    const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
-    
-    if (!expectedSecret) {
-      return res.status(500).json({
-        success: false,
-        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
-      });
-    }
-    
-    if (secretKey !== expectedSecret) {
-      return res.status(403).json({
-        success: false,
-        message: 'Invalid or missing secret key. Send { "secret": "your-secret" } in request body.'
-      });
-    }
-    
     logger.info('🔄 Starting category count fix...');
 
     // Get all categories
@@ -126,7 +108,7 @@ router.post('/fix-category-counts', async (req, res) => {
  * @desc    Verify category product counts without fixing
  * @access  Public (for debugging)
  */
-router.get('/verify-category-counts', async (req, res) => {
+router.get('/verify-category-counts', protect, authorize('admin'), async (req, res) => {
   try {
     const categories = await Category.find({}).sort({ name: 1 });
     const activeCategories = categories.filter(c => c.isActive);
@@ -181,27 +163,9 @@ router.get('/verify-category-counts', async (req, res) => {
  * @desc    Create the 6 missing categories in production
  * @access  Protected by secret key
  */
-router.post('/sync-missing-categories', async (req, res) => {
+router.post('/sync-missing-categories', protect, authorize('admin'), async (req, res) => {
   try {
-    // Security check
-    const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
-    
-    if (!expectedSecret) {
-      return res.status(500).json({
-        success: false,
-        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
-      });
-    }
-    
-    if (secretKey !== expectedSecret) {
-      return res.status(403).json({
-        success: false,
-        message: 'Invalid or missing secret key'
-      });
-    }
-
-    console.log('🔄 Starting category sync...');
+    logger.info('🔄 Starting category sync...');
 
     // The 6 categories that are missing in production
     const MISSING_CATEGORIES = [
@@ -317,7 +281,7 @@ router.post('/sync-missing-categories', async (req, res) => {
  * @desc    Test category query without any middleware
  * @access  Public (for debugging)
  */
-router.get('/test-categories', async (req, res) => {
+router.get('/test-categories', protect, authorize('admin'), async (req, res) => {
   try {
     const mongoose = require('mongoose');
     
@@ -372,26 +336,8 @@ router.get('/test-categories', async (req, res) => {
  * @desc    Clear all Redis cache (or specific keys)
  * @access  Protected by secret key
  */
-router.post('/clear-cache', async (req, res) => {
+router.post('/clear-cache', protect, authorize('admin'), async (req, res) => {
   try {
-    // Security check
-    const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
-    
-    if (!expectedSecret) {
-      return res.status(500).json({
-        success: false,
-        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
-      });
-    }
-    
-    if (secretKey !== expectedSecret) {
-      return res.status(403).json({
-        success: false,
-        message: 'Invalid or missing secret key'
-      });
-    }
-
     const redisCache = require('../services/redisCache');
     
     if (!redisCache.isRedisConnected()) {
@@ -440,26 +386,8 @@ router.post('/clear-cache', async (req, res) => {
  * @desc    Comprehensive fix for all category issues
  * @access  Protected by secret key
  */
-router.post('/fix-all-categories', async (req, res) => {
+router.post('/fix-all-categories', protect, authorize('admin'), async (req, res) => {
   try {
-    // Security check
-    const secretKey = req.body.secret;
-    const expectedSecret = process.env.ADMIN_UTILITY_SECRET;
-    
-    if (!expectedSecret) {
-      return res.status(500).json({
-        success: false,
-        message: 'ADMIN_UTILITY_SECRET environment variable is not configured on server'
-      });
-    }
-    
-    if (secretKey !== expectedSecret) {
-      return res.status(403).json({
-        success: false,
-        message: 'Invalid or missing secret key'
-      });
-    }
-
     logger.info('🔧 Starting comprehensive category fix...');
 
     // Step 1: Get all categories

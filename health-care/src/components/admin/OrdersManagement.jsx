@@ -327,7 +327,6 @@ export default function OrdersManagement() {
       });
       const data = await res.json();
       const ordersList = data.data?.orders || data.orders || [];
-      if (process.env.NODE_ENV !== 'production') console.log('Orders fetched:', ordersList.length, 'First order ID:', ordersList[0]?._id);
       setOrders(ordersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
@@ -343,12 +342,10 @@ export default function OrdersManagement() {
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
-    if (process.env.NODE_ENV !== 'production') console.log('handleStatusChange called:', { orderId, newStatus, API });
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
     try {
       const token = localStorage.getItem('Mediport_token');
       const url = `${API}/orders/${orderId}/status`;
-      if (process.env.NODE_ENV !== 'production') console.log('Making PATCH request to:', url);
       
       const response = await fetch(url, {
         method: 'PATCH',
@@ -356,9 +353,7 @@ export default function OrdersManagement() {
         body: JSON.stringify({ status: newStatus })
       });
       
-      if (process.env.NODE_ENV !== 'production') console.log('Response status:', response.status);
       const data = await response.json();
-      if (process.env.NODE_ENV !== 'production') console.log('Response data:', data);
       
       if (!response.ok) {
         throw new Error(data.message || `Failed with status ${response.status}`);

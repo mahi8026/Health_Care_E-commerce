@@ -114,7 +114,7 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
-            placeholder="Dr. Shahid Hasan"
+            placeholder="e.g., Dr. Abdur Rahman"
             autoComplete="name"
             className={field('fullName')}
           />

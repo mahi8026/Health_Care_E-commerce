@@ -31,7 +31,7 @@ export default function MobileHero() {
     <div className="px-4 py-4 bg-gradient-to-br from-[#0B2545] to-[#0d2d52] text-white">
       <div className="mb-3">
         <div className="text-[13px] font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)]">
-          Welcome back, Dr. Shahid 👋
+          Welcome to MediportBD 👋
         </div>
         <div className="text-[10px] opacity-90">
           Trusted medical equipment supplier

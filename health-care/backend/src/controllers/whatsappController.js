@@ -27,7 +27,7 @@ exports.verifyWebhook = async (req, res) => {
     }
   } catch (error) {
     logger.error(`[verifyWebhook] ${error.message}`);
-    return errorResponse(res, 'Webhook verification error', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Webhook verification error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -235,7 +235,7 @@ exports.sendMessage = async (req, res) => {
     }
   } catch (error) {
     logger.error(`[sendMessage] ${error.message}`);
-    return errorResponse(res, 'Failed to send message', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to send message', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -263,9 +263,10 @@ exports.getConversations = async (req, res) => {
     if (isBot !== undefined) query.isBot = isBot === 'true';
     if (assignedTo) query.assignedTo = assignedTo;
     if (search) {
+      const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
-        { phoneNumber: { $regex: search, $options: 'i' } },
-        { customerName: { $regex: search, $options: 'i' } }
+        { phoneNumber: { $regex: escaped, $options: 'i' } },
+        { customerName: { $regex: escaped, $options: 'i' } }
       ];
     }
 
@@ -290,7 +291,7 @@ exports.getConversations = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getConversations] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch conversations', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch conversations', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -325,7 +326,7 @@ exports.getConversation = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getConversation] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -353,7 +354,7 @@ exports.updateConversation = async (req, res) => {
     return successResponse(res, conversation, 'Conversation updated successfully');
   } catch (error) {
     logger.error(`[updateConversation] ${error.message}`);
-    return errorResponse(res, 'Failed to update conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -377,7 +378,7 @@ exports.assignConversation = async (req, res) => {
     return successResponse(res, conversation, 'Conversation assigned successfully');
   } catch (error) {
     logger.error(`[assignConversation] ${error.message}`);
-    return errorResponse(res, 'Failed to assign conversation', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to assign conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -409,7 +410,7 @@ exports.updateConversationStatus = async (req, res) => {
     return successResponse(res, conversation, 'Conversation status updated');
   } catch (error) {
     logger.error(`[updateConversationStatus] ${error.message}`);
-    return errorResponse(res, 'Failed to update status', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update status', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -437,7 +438,7 @@ exports.addNote = async (req, res) => {
     return successResponse(res, conversation, 'Note added successfully');
   } catch (error) {
     logger.error(`[addNote] ${error.message}`);
-    return errorResponse(res, 'Failed to add note', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to add note', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -503,7 +504,7 @@ exports.getAnalytics = async (req, res) => {
     });
   } catch (error) {
     logger.error(`[getAnalytics] ${error.message}`);
-    return errorResponse(res, 'Failed to fetch analytics', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch analytics', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -542,7 +543,7 @@ If you received this, your WhatsApp automation is ready! 🎉`;
     }
   } catch (error) {
     logger.error(`[testConnection] ${error.message}`);
-    return errorResponse(res, 'Failed to test connection', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to test connection', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 

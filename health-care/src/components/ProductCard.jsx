@@ -78,7 +78,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
       // Show brief success feedback
       setTimeout(() => setAddingToCart(false), 1000);
     } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('Error adding to cart:', error);
+      process.env.NODE_ENV !== "production" && console.error('Error adding to cart:', error);
       setAddingToCart(false);
     }
   }, [addToCart, product]);

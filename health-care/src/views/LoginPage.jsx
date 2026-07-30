@@ -256,7 +256,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               </div>
               <button
                 type="button"
-                onClick={() => quickLogin(process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL, process.env.NEXT_PUBLIC_DEV_LOGIN_PASSWORD || 'password123')}
+                onClick={() => quickLogin(process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL, process.env.NEXT_PUBLIC_DEV_LOGIN_PASSWORD)}
                 className="w-full py-3 bg-gradient-to-r from-[#0B2545] to-[#0d2d52] text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
               >
                 Login as Dev User

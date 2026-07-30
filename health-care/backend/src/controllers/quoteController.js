@@ -65,7 +65,7 @@ exports.createQuote = async (req, res) => {
 
     return successResponse(res, quote, 'Quote request submitted', 201);
   } catch (error) {
-    return errorResponse(res, 'Failed to create quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to create quote', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -78,7 +78,7 @@ exports.getMyQuotes = async (req, res) => {
       .sort('-createdAt');
     return successResponse(res, { count: quotes.length, quotes });
   } catch (error) {
-    return errorResponse(res, 'Failed to fetch quotes', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch quotes', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -98,7 +98,7 @@ exports.getQuote = async (req, res) => {
 
     return successResponse(res, quote);
   } catch (error) {
-    return errorResponse(res, 'Failed to fetch quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch quote', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -129,7 +129,7 @@ exports.getAllQuotes = async (req, res) => {
       count: quotes.length
     });
   } catch (error) {
-    return errorResponse(res, 'Failed to fetch quotes', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to fetch quotes', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -174,7 +174,7 @@ exports.updateQuote = async (req, res) => {
 
     return successResponse(res, quote, 'Quote updated');
   } catch (error) {
-    return errorResponse(res, 'Failed to update quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to update quote', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 
@@ -235,6 +235,6 @@ exports.convertQuoteToOrder = async (req, res) => {
 
     return successResponse(res, { order, quote }, 'Quote converted to order', 201);
   } catch (error) {
-    return errorResponse(res, 'Failed to convert quote', process.env.NODE_ENV === 'development' ? [error.message] : null, 500);
+    return errorResponse(res, 'Failed to convert quote', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
