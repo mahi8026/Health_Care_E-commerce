@@ -299,7 +299,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
                 {images.map((img, idx) => (
                   <div key={idx} className="relative group w-20 h-20 rounded-lg overflow-hidden border border-[var(--color-border-secondary)]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt={`Review image ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img src={img.url} alt={`Review image ${idx + 1}`} className="w-full h-full object-cover" loading="lazy" />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(idx)}

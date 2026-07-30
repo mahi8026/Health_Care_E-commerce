@@ -1,9 +1,49 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
 import { ExportService } from '@/utils/exportService';
 import { formatBdt } from '@/utils/formatBdt';
+import { showToast } from '@/components/ui/Toast';
+
+function useFocusTrap(containerRef, isActive, onClose) {
+  useEffect(() => {
+    if (!isActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') { onClose?.(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, onClose]);
+}
 
 export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, true, onClose);
   const k = kpi.detailStats?.stats || {};
   const handleExport = () => {
     try {
@@ -20,9 +60,9 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
       );
       
       ExportService.exportToJSON(data, filename);
-      alert('Data exported successfully!');
+      showToast.success('Data exported successfully!');
     } catch (error) {
-      alert('Export failed: ' + error.message);
+      showToast.error('Export failed: ' + error.message);
     }
   };
 
@@ -113,7 +153,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
           ],
           actions: [
             { label: 'Manage Inventory', action: () => { onClose(); onNavigate('products'); } },
-            { label: 'Create Purchase Order', action: () => alert('Purchase order feature coming soon!') }
+            { label: 'Create Purchase Order', action: () => showToast.info('Purchase order feature coming soon!') }
           ]
         };
       
@@ -126,7 +166,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
   if (!content) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-lg max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
@@ -144,6 +184,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="w-11 h-11 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

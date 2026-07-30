@@ -1,13 +1,52 @@
 ﻿'use client';
 
+import { useRef, useEffect } from 'react';
 import { useCompare } from '@/context/CompareContext';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
+
+function useFocusTrap(containerRef, isActive, onClose) {
+  useEffect(() => {
+    if (!isActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') { onClose?.(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, onClose]);
+}
 
 /**
  * Full-screen comparison modal — side-by-side product specs table.
  */
 export default function CompareModal({ onClose }) {
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, true, onClose);
   const { compareList, removeFromCompare, clearCompare } = useCompare();
   const { addToCart } = useCart();
   const router = useRouter();
@@ -76,7 +115,7 @@ export default function CompareModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[500] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 z-[500] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}

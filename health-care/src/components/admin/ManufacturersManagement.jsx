@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/utils/api';
+import { showToast } from '@/components/ui/Toast';
 
 export default function ManufacturersManagement() {
   const [manufacturers, setManufacturers] = useState([]);
@@ -77,10 +78,10 @@ export default function ManufacturersManagement() {
         newSet.delete(id);
         return newSet;
       });
-      alert('Manufacturer deactivated successfully');
+      showToast.success('Manufacturer deactivated successfully');
       fetchManufacturers();
     } catch (err) {
-      alert(err.message || err.data?.message || 'Failed to delete manufacturer');
+      showToast.error(err.message || err.data?.message || 'Failed to delete manufacturer');
     }
   };
 
@@ -99,11 +100,11 @@ export default function ManufacturersManagement() {
   const handleSaveEdit = async () => {
     try {
       await api.patch(`/manufacturers/${editingId}`, editForm);
-      alert('Manufacturer updated successfully');
+      showToast.success('Manufacturer updated successfully');
       setEditingId(null);
       fetchManufacturers();
     } catch (err) {
-      alert(err.message || err.data?.message || 'Failed to update manufacturer');
+      showToast.error(err.message || err.data?.message || 'Failed to update manufacturer');
     }
   };
 
@@ -113,10 +114,10 @@ export default function ManufacturersManagement() {
     try {
       const result = await api.post('/manufacturers/deduplicate');
       const msg = result.message || result.data?.message || 'Deduplication complete';
-      alert(msg);
+      showToast.success(msg);
       fetchManufacturers();
     } catch (err) {
-      alert(err.message || err.data?.message || 'Failed to deduplicate manufacturers');
+      showToast.error(err.message || err.data?.message || 'Failed to deduplicate manufacturers');
     } finally {
       setDeduping(false);
     }
@@ -298,7 +299,7 @@ export default function ManufacturersManagement() {
         {selectedIds.size > 0 && (
           <div className="bg-blue-50 border-b border-blue-200 px-4 sm:px-6 py-3 flex items-center justify-between">
             <span className="text-xs font-medium text-blue-900">{selectedIds.size} item(s) selected</span>
-            <button className="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition min-h-[44px]" onClick={() => alert('Bulk delete coming soon')}>Bulk Delete</button>
+            <button className="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition min-h-[44px]" onClick={() => showToast.info('Bulk delete coming soon')}>Bulk Delete</button>
           </div>
         )}
         

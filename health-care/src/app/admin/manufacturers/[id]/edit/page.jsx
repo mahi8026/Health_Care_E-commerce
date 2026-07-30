@@ -216,7 +216,7 @@ export default function EditManufacturerPage() {
             </label>
             {currentLogo && !logoPreview && (
               <div className="mb-2">
-                <img src={currentLogo.url} alt="Current" className="w-32 h-32 object-contain rounded border" />
+                <img src={currentLogo.url} alt="Current" className="w-32 h-32 object-contain rounded border" loading="lazy" />
                 <p className="text-xs text-gray-500 mt-1">Current logo</p>
               </div>
             )}
@@ -227,7 +227,7 @@ export default function EditManufacturerPage() {
               className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {logoPreview && (
-              <img src={logoPreview} alt="Preview" className="mt-2 w-32 h-32 object-contain rounded border" />
+              <img src={logoPreview} alt="Preview" className="mt-2 w-32 h-32 object-contain rounded border" loading="lazy" />
             )}
           </div>
 

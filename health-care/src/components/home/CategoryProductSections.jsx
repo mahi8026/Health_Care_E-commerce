@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -57,6 +57,77 @@ function getCategoryIcon(categoryName) {
  * Displays horizontal scrollable product sections for each category
  * Similar to the image provided by the user
  */
+const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCart }) {
+  const imgRaw = product.images?.[0];
+  const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
+  const optimizedImg = img ? getProductCardImage(img) : null;
+  const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+  const price = product.price || 0;
+  const oldPrice = product.oldPrice || 0;
+  const hasDiscount = oldPrice > 0 && oldPrice > price;
+  const discount = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+
+  return (
+    <div
+      className="snap-start flex-shrink-0 w-[240px] bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+      onClick={onCardClick}
+    >
+      <div className="relative h-56 bg-gray-50 overflow-hidden">
+        {optimizedImg ? (
+          <Image
+            src={optimizedImg}
+            alt={`${product.name}${brandName ? ` — ${brandName}` : ''}`}
+            fill
+            sizes="240px"
+            style={{ objectFit: 'cover' }}
+            className="group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-6xl text-gray-300">
+            🏥
+          </div>
+        )}
+
+        {hasDiscount && (
+          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+            -{discount}%
+          </div>
+        )}
+      </div>
+
+      <div className="p-4">
+        {brandName && (
+          <div className="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-2">
+            {brandName}
+          </div>
+        )}
+
+        <h3 className="font-semibold text-gray-900 text-sm mb-3 line-clamp-2 min-h-[40px]">
+          {product.name}
+        </h3>
+
+        <div className="mb-3">
+          <div className="text-xl font-bold text-gray-900">
+            ৳{price > 0 ? price.toLocaleString() : 'Call'}
+          </div>
+          {hasDiscount && (
+            <div className="text-sm text-gray-400 line-through">
+              ৳{oldPrice.toLocaleString()}
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={onAddToCart}
+          className="w-full bg-teal-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
+        >
+          + Cart
+        </button>
+      </div>
+    </div>
+  );
+});
+
 export default function CategoryProductSections({ categories = [] }) {
   const router = useRouter();
   const { addToCart } = useCart();
@@ -170,87 +241,17 @@ export default function CategoryProductSections({ categories = [] }) {
                     scrollbarColor: '#0E8A6E #f3f4f6',
                   }}
                 >
-                  {catProducts.map((product) => {
-                    const imgRaw = product.images?.[0];
-                    const img = typeof imgRaw === 'string' ? imgRaw : imgRaw?.url;
-                    const optimizedImg = img ? getProductCardImage(img) : null;
-                    const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-                    const price = product.price || 0;
-                    const oldPrice = product.oldPrice || 0;
-                    const hasDiscount = oldPrice > 0 && oldPrice > price;
-                    const discount = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
-
-                    return (
-                      <div
-                        key={product._id}
-                        className="snap-start flex-shrink-0 w-[240px] bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
-                        onClick={() => router.push(`/products/${product._id}`)}
-                      >
-                        {/* Product Image */}
-                        <div className="relative h-56 bg-gray-50 overflow-hidden">
-                          {optimizedImg ? (
-                            <Image
-                              src={optimizedImg}
-                              alt={`${product.name}${brandName ? ` — ${brandName}` : ''}`}
-                              fill
-                              sizes="240px"
-                              style={{ objectFit: 'cover' }}
-                              className="group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-6xl text-gray-300">
-                              🏥
-                            </div>
-                          )}
-                          
-                          {/* Discount Badge */}
-                          {hasDiscount && (
-                            <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                              -{discount}%
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Product Info */}
-                        <div className="p-4">
-                          {/* Brand - matches image style */}
-                          {brandName && (
-                            <div className="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-2">
-                              {brandName}
-                            </div>
-                          )}
-                          
-                          {/* Product Name - 2 lines max */}
-                          <h3 className="font-semibold text-gray-900 text-sm mb-3 line-clamp-2 min-h-[40px]">
-                            {product.name}
-                          </h3>
-
-                          {/* Price - large and bold like in image */}
-                          <div className="mb-3">
-                            <div className="text-xl font-bold text-gray-900">
-                              ৳{price > 0 ? price.toLocaleString() : 'Call'}
-                            </div>
-                            {hasDiscount && (
-                              <div className="text-sm text-gray-400 line-through">
-                                ৳{oldPrice.toLocaleString()}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Add to Cart Button - ALWAYS VISIBLE (not on hover) to match image */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(product, 1);
-                            }}
-                            className="w-full bg-teal-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
-                          >
-                            + Cart
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {catProducts.map((product) => (
+                    <ProductCard
+                      key={product._id}
+                      product={product}
+                      onCardClick={() => router.push(`/products/${product._id}`)}
+                      onAddToCart={(e) => {
+                        e.stopPropagation();
+                        addToCart(product, 1);
+                      }}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

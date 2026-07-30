@@ -29,6 +29,38 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
     if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
   };
 
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+    if (name === 'name') {
+      if (!value || !value.trim()) newErrors.name = 'Name is required';
+      else delete newErrors.name;
+    } else if (name === 'email') {
+      if (!value || !value.trim()) newErrors.email = 'Email is required';
+      else if (!/^\S+@\S+\.\S+$/.test(value)) newErrors.email = 'Invalid email format';
+      else delete newErrors.email;
+    } else if (name === 'password') {
+      if (!value) newErrors.password = 'Password is required';
+      else if (value.length < 8) newErrors.password = 'Minimum 8 characters';
+      else delete newErrors.password;
+    } else if (name === 'confirmPassword') {
+      if (!value) newErrors.confirmPassword = 'Confirm password is required';
+      else if (value !== formData.password) newErrors.confirmPassword = 'Passwords do not match';
+      else delete newErrors.confirmPassword;
+    } else if (name === 'phone') {
+      if (!value || !value.trim()) newErrors.phone = 'Phone number is required';
+      else delete newErrors.phone;
+    } else if (name === 'company') {
+      if (formData.accountType === 'B2B' && (!value || !value.trim())) newErrors.company = 'Company name is required';
+      else delete newErrors.company;
+    }
+    setErrors(newErrors);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Name is required';
@@ -187,6 +219,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Your Full Name"
                     required
                     autoComplete="name"
@@ -212,6 +245,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="your@email.com"
                     required
                     autoComplete="email"
@@ -240,6 +274,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Min. 8 characters"
                     required
                     autoComplete="new-password"
@@ -288,6 +323,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Re-enter password"
                     required
                     autoComplete="new-password"
@@ -328,6 +364,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="+880 1712-345678"
                     required
                     autoComplete="tel"
@@ -352,13 +389,14 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
                       id="register-company"
                       type="text"
                       name="company"
-                      value={formData.company}
-                      onChange={handleChange}
-                      placeholder="Your Hospital/Clinic"
-                      required
-                      autoComplete="organization"
-                      className={`w-full pl-10 pr-4 py-3 bg-white border rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]/30 focus:border-[#0E8A6E] transition-all ${errors.company ? 'border-red-400' : 'border-gray-200'}`}
-                    />
+                    value={formData.company}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Your Hospital/Clinic"
+                    required
+                    autoComplete="organization"
+                    className={`w-full pl-10 pr-4 py-3 bg-white border rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]/30 focus:border-[#0E8A6E] transition-all ${errors.company ? 'border-red-400' : 'border-gray-200'}`}
+                  />
                   </div>
                   {errors.company && <p className="mt-1 text-xs text-red-500" role="alert" aria-live="polite">{errors.company}</p>}
                 </div>

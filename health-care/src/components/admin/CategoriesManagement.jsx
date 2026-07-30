@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
+import { showToast } from '@/components/ui/Toast';
 
 export default function CategoriesManagement() {
   const [categories, setCategories] = useState([]);
@@ -46,10 +47,10 @@ export default function CategoriesManagement() {
 
     try {
       await api.delete(`/categories/${id}`);
-      alert('Category deactivated successfully');
+      showToast.success('Category deactivated successfully');
       fetchCategories();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete category');
+      showToast.error(err.response?.data?.message || 'Failed to delete category');
     }
   };
 
@@ -66,11 +67,11 @@ export default function CategoriesManagement() {
   const handleSaveEdit = async () => {
     try {
       await api.patch(`/categories/${editingId}`, editForm);
-      alert('Category updated successfully');
+      showToast.success('Category updated successfully');
       setEditingId(null);
       fetchCategories();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update category');
+      showToast.error(err.response?.data?.message || 'Failed to update category');
     }
   };
 

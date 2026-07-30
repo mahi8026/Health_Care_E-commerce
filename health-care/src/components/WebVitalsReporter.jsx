@@ -37,7 +37,7 @@ export function WebVitalsReporter() {
         label: metric.id,
         nonInteraction: true,
       })
-    }).catch(() => {})
+    }).catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to send web vitals to GA4'); })
 
     // Send to custom analytics endpoint when metric exceeds threshold
     const threshold = THRESHOLDS[metric.name]

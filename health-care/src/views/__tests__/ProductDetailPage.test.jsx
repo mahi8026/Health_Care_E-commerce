@@ -22,25 +22,25 @@ jest.mock('@/services/GA4Tracker', () => ({
   trackViewItem: jest.fn(),
 }));
 
-jest.mock('@/components/product/ProductImageGallery', () => {
+jest.mock('@/components/product/ProductImageGalleryEnhanced', () => {
   return function MockProductImageGallery() {
     return <div data-testid="product-image-gallery">Image Gallery</div>;
   };
 });
 
-jest.mock('@/components/product/ProductInfoPanel', () => {
+jest.mock('@/components/product/ProductInfoPanelEnhanced', () => {
   return function MockProductInfoPanel() {
     return <div data-testid="product-info-panel">Info Panel</div>;
   };
 });
 
-jest.mock('@/components/product/ProductTabsRedesigned', () => {
-  return function MockProductTabsRedesigned() {
+jest.mock('@/components/product/ProductTabsEnhanced', () => {
+  return function MockProductTabsEnhanced() {
     return <div data-testid="product-tabs">Tabs</div>;
   };
 });
 
-jest.mock('@/components/product/ProductReviews', () => {
+jest.mock('@/components/product/ProductReviewsEnhanced', () => {
   return function MockProductReviews() {
     return <div data-testid="product-reviews">Reviews</div>;
   };

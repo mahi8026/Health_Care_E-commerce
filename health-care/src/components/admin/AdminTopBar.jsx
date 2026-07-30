@@ -1,5 +1,7 @@
 "use client";
 
+import { showToast } from '@/components/ui/Toast';
+
 /**
  * AdminTopBar
  *
@@ -16,7 +18,7 @@ const EXPORT_ACTIONS = new Set(['Export orders', 'Export report']);
 async function handleExportClick(action) {
   // PDF export is not yet implemented — placeholder for future sprint
   console.info(`[AdminTopBar] Export action triggered: ${action}`);
-  alert(`${action} — PDF export coming soon.`);
+  showToast.info(`${action} — PDF export coming soon.`);
 }
 
 export default function AdminTopBar({ title, action, onAction }) {
@@ -47,6 +49,7 @@ export default function AdminTopBar({ title, action, onAction }) {
             <input
               type="text"
               placeholder="Search..."
+              aria-label="Search in admin"
               className="w-[180px] lg:w-[240px] pl-9 pr-3 py-[8px] bg-[var(--color-background-tertiary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:bg-white focus:border-[0.5px] focus:border-[var(--color-border-secondary)]"
             />
             <svg
@@ -65,7 +68,7 @@ export default function AdminTopBar({ title, action, onAction }) {
           </div>
 
           {/* Notifications - 44x44 touch target */}
-          <button className="relative p-2 hover:bg-[var(--color-background-tertiary)] rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center">
+          <button aria-label="Notifications" className="relative p-2 hover:bg-[var(--color-background-tertiary)] rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center">
             <svg className="w-5 h-5 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
@@ -73,7 +76,7 @@ export default function AdminTopBar({ title, action, onAction }) {
           </button>
 
           {/* Profile - Hidden on mobile */}
-          <button className="hidden sm:flex items-center gap-2 p-2 hover:bg-[var(--color-background-tertiary)] rounded-lg min-w-[44px] min-h-[44px]">
+          <button aria-label="Profile" className="hidden sm:flex items-center gap-2 p-2 hover:bg-[var(--color-background-tertiary)] rounded-lg min-w-[44px] min-h-[44px]">
             <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-[11px] shadow-lg">
               SA
             </div>

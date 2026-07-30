@@ -1,7 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { API } from '@/constants/api';
+
+function useFocusTrap(containerRef, isActive, onClose) {
+  useEffect(() => {
+    if (!isActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') { onClose?.(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, onClose]);
+}
 
 const STATUS_OPTIONS = [
   { value: 'placed',           label: 'Placed',           color: 'bg-[#FEF3C7] text-[#92400E]',  icon: '📝' },
@@ -14,6 +50,8 @@ const STATUS_OPTIONS = [
 ];
 
 export default function StatusUpdateModal({ order, onClose, onUpdate }) {
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, true, onClose);
   const [selectedStatus, setSelectedStatus] = useState(order.status);
   const [note, setNote] = useState('');
   const [notifyCustomer, setNotifyCustomer] = useState(true);
@@ -69,7 +107,7 @@ export default function StatusUpdateModal({ order, onClose, onUpdate }) {
   const selectedStatusIndex = STATUS_OPTIONS.findIndex(s => s.value === selectedStatus);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-0 sm:p-4" onClick={onClose}>
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-0 sm:p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-none sm:rounded-lg max-w-md w-full h-full sm:h-auto overflow-y-auto"
         onClick={(e) => e.stopPropagation()}

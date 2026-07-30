@@ -173,6 +173,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             autoFocus={autoFocus}
+            aria-label="Search products"
             className={`flex-1 bg-transparent border-0 focus:outline-none text-[15px] ${
               isHero
                 ? 'text-white placeholder:text-white/50'
@@ -317,7 +318,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                         <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative">
                           {img ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                            <img src={img} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-2xl">
                               🏥

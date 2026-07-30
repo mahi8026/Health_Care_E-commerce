@@ -64,7 +64,7 @@ export default function TopBar() {
         setSettings(s);
         if (s.contactPhone) setContactPhone(s.contactPhone);
       })
-      .catch(() => {});
+      .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to fetch settings'); });
   }, []);
 
   const announcements = buildAnnouncements(settings);

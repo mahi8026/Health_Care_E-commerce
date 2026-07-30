@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FaSave, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { showToast } from '@/components/ui/Toast';
 
 export default function CategoryDiscounts() {
   const [categories, setCategories] = useState([]);
@@ -80,14 +81,14 @@ export default function CategoryDiscounts() {
 
       const data = await res.json();
       if (data.success) {
-        alert('Category discounts updated successfully');
+        showToast.success('Category discounts updated successfully');
         setChanges({});
         fetchCategories();
       } else {
-        alert(data.message || 'Failed to update discounts');
+        showToast.error(data.message || 'Failed to update discounts');
       }
     } catch (error) {
-      alert('Error saving changes');
+      showToast.error('Error saving changes');
     } finally {
       setSaving(false);
     }

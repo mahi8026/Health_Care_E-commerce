@@ -426,6 +426,7 @@ export default function ManufacturersPage() {
                             src={manufacturer.logo.url}
                             alt={manufacturer.name}
                             className="w-12 h-12 object-contain rounded border border-gray-200"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">
@@ -518,6 +519,7 @@ export default function ManufacturersPage() {
                         src={manufacturer.logo.url}
                         alt={manufacturer.name}
                         className="w-16 h-16 object-contain rounded border border-gray-200 flex-shrink-0"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-[10px] border border-gray-300 flex-shrink-0">

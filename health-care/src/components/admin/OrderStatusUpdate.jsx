@@ -1,7 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { API } from '@/constants/api';
+
+function useFocusTrap(containerRef, isActive, onClose) {
+  useEffect(() => {
+    if (!isActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') { onClose?.(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, onClose]);
+}
 
 const STATUS_OPTIONS = [
   { value: 'placed',           label: 'Placed',           color: 'bg-[#FEF3C7] text-[#92400E]',  icon: '📝' },
@@ -14,6 +50,8 @@ const STATUS_OPTIONS = [
 ];
 
 export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, true, onClose);
   const [status, setStatus] = useState(order.status);
   const [trackingNumber, setTrackingNumber] = useState(order.trackingNumber || '');
   const [courier, setCourier] = useState(order.courier || '');
@@ -68,7 +106,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
   const currentStatusOption = STATUS_OPTIONS.find(opt => opt.value === status);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={onClose}>
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-lg max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
@@ -80,6 +118,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
           </h3>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="w-11 h-11 rounded-full hover:bg-[var(--color-background-tertiary)] flex items-center justify-center transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

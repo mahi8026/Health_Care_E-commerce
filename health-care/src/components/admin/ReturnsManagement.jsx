@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { API } from '@/constants/api';
+import { showToast } from '@/components/ui/Toast';
 
 const STATUS_OPTIONS = ['pending', 'approved', 'rejected', 'refunded'];
 const REFUND_METHODS = [
@@ -76,12 +77,12 @@ export default function ReturnsManagement() {
 
   const handleUpdateStatus = async () => {
     if (!newStatus) {
-      alert('Please select a status');
+      showToast.warning('Please select a status');
       return;
     }
 
     if (newStatus === 'rejected' && !adminNotes.trim()) {
-      alert('Please provide a reason for rejection');
+      showToast.warning('Please provide a reason for rejection');
       return;
     }
 
@@ -112,17 +113,17 @@ export default function ReturnsManagement() {
 
       const data = await res.json();
       if (data.success) {
-        alert(`Return request ${newStatus} successfully`);
+        showToast.success(`Return request ${newStatus} successfully`);
         setShowModal(false);
         fetchReturns();
         fetchStats();
         resetModal();
       } else {
-        alert(data.message || 'Failed to update status');
+        showToast.error(data.message || 'Failed to update status');
       }
     } catch (err) {
       process.env.NODE_ENV !== "production" && console.error(err);
-      alert('Error updating status');
+      showToast.error('Error updating status');
     } finally {
       setUpdating(false);
     }

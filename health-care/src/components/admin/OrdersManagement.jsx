@@ -37,7 +37,7 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
       onUpdate();
       onClose();
     } catch (err) {
-      alert('Failed to update order');
+      showToast.error('Failed to update order');
     } finally {
       setSaving(false);
     }
@@ -59,7 +59,7 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
       onUpdate();
       onClose();
     } catch (err) {
-      alert('Failed to verify payment');
+      showToast.error('Failed to verify payment');
     } finally {
       setSaving(false);
     }

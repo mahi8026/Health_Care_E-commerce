@@ -233,6 +233,7 @@ export default function PhoneVerification({ onVerified }) {
                   onChange={(e) => handleOTPChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={index === 0 ? handlePaste : undefined}
+                  aria-label={`Digit ${index + 1} of OTP code`}
                   className="w-11 h-14 sm:w-12 sm:h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
                   autoFocus={index === 0}
                 />

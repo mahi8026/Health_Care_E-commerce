@@ -30,7 +30,7 @@ export function LanguageProvider({ children }) {
 export function useLang() {
   const ctx = useContext(LanguageContext);
   if (!ctx) {
-    console.warn('useLang: LanguageContext not available, using default language');
+    if (process.env.NODE_ENV !== 'production') console.warn('useLang: LanguageContext not available, using default language');
     return { lang: 'en', switchLang: () => {} };
   }
   return ctx;

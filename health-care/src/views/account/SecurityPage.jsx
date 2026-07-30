@@ -342,7 +342,7 @@ export default function SecurityPage() {
               <div className="flex justify-center mb-4">
                 <div className="bg-white p-3 rounded-xl border-2 border-[#DDD6FE]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                  <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" loading="lazy" />
                 </div>
               </div>
               {secret && (

@@ -15,6 +15,7 @@ export default function B2BRegisterPage() {
   const [step, setStep] = useState(1); // 1: Basic Info, 2: Business Details, 3: Success
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
 
   // Form data
   const [formData, setFormData] = useState({
@@ -72,6 +73,43 @@ export default function B2BRegisterPage() {
         [name]: value
       }));
     }
+  };
+
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+    if (name === 'name') {
+      if (!value || value.length < 3) newErrors.name = 'Name must be at least 3 characters';
+      else delete newErrors.name;
+    } else if (name === 'email') {
+      if (!value || !/^\S+@\S+\.\S+$/.test(value)) newErrors.email = 'Please enter a valid email';
+      else delete newErrors.email;
+    } else if (name === 'phone') {
+      if (!value || !/^01[3-9]\d{8}$/.test(value)) newErrors.phone = 'Enter a valid Bangladesh phone number (01XXXXXXXXX)';
+      else delete newErrors.phone;
+    } else if (name === 'password') {
+      if (!value || value.length < 8) newErrors.password = 'Password must be at least 8 characters';
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(value)) newErrors.password = 'Must contain uppercase, lowercase, number, and special character';
+      else delete newErrors.password;
+    } else if (name === 'confirmPassword') {
+      if (!value) newErrors.confirmPassword = 'Please confirm your password';
+      else if (value !== formData.password) newErrors.confirmPassword = 'Passwords do not match';
+      else delete newErrors.confirmPassword;
+    } else if (name === 'companyName') {
+      if (!value || value.length < 3) newErrors.companyName = 'Company name must be at least 3 characters';
+      else delete newErrors.companyName;
+    } else if (name === 'institutionType') {
+      if (!value) newErrors.institutionType = 'Please select institution type';
+      else delete newErrors.institutionType;
+    } else if (name === 'address.district') {
+      if (!value || !value.trim()) newErrors['address.district'] = 'District is required';
+      else delete newErrors['address.district'];
+    }
+    setErrors(newErrors);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const validateStep1 = () => {
@@ -308,10 +346,12 @@ export default function B2BRegisterPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                     placeholder="John Doe"
                   />
+                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
@@ -324,10 +364,12 @@ export default function B2BRegisterPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                     placeholder="john@company.com"
                   />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -340,10 +382,12 @@ export default function B2BRegisterPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                     placeholder="01XXXXXXXXX"
                   />
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                   <p className="text-sm text-gray-500 mt-1">Format: 01XXXXXXXXX</p>
                 </div>
 
@@ -357,10 +401,12 @@ export default function B2BRegisterPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                     placeholder="Min 8 characters"
                   />
+                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                   <p className="text-sm text-gray-500 mt-1">
                     Must contain uppercase, lowercase, number, and special character
                   </p>
@@ -376,10 +422,12 @@ export default function B2BRegisterPage() {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                     placeholder="Re-enter password"
                   />
+                  {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
                 </div>
 
                 <button
@@ -407,10 +455,12 @@ export default function B2BRegisterPage() {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                     placeholder="ABC Hospital"
                   />
+                  {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
                 </div>
 
                 <div>
@@ -421,6 +471,7 @@ export default function B2BRegisterPage() {
                     name="institutionType"
                     value={formData.institutionType}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                   >
@@ -429,6 +480,7 @@ export default function B2BRegisterPage() {
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
+                  {errors.institutionType && <p className="text-red-500 text-xs mt-1">{errors.institutionType}</p>}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -513,10 +565,12 @@ export default function B2BRegisterPage() {
                           name="address.district"
                           value={formData.address.district}
                           onChange={handleChange}
+                          onBlur={handleBlur}
                           required
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
                           placeholder="e.g., Dhaka"
                         />
+                        {errors['address.district'] && <p className="text-red-500 text-xs mt-1">{errors['address.district']}</p>}
                       </div>
                     </div>
 

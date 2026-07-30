@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardSkeleton from './DashboardSkeleton';
 import OrderDetailModal from './OrderDetailModal';
@@ -8,7 +8,7 @@ import KPIDetailModal from './KPIDetailModal';
 import { API } from '@/constants/api';
 import { formatBdt, formatPrice, formatGrowthBadge } from '@/utils/formatBdt';
 
-function KPICard({ label, value, subtitle, badge, trend, icon, accent, onClick }) {
+const KPICard = memo(function KPICard({ label, value, subtitle, badge, trend, icon, accent, onClick }) {
   const badgeStyles = {
     up: 'bg-emerald-50 text-emerald-800 border border-emerald-100',
     down: 'bg-red-50 text-red-800 border border-red-100',
@@ -46,7 +46,7 @@ function KPICard({ label, value, subtitle, badge, trend, icon, accent, onClick }
       )}
     </button>
   );
-}
+});
 
 export default function DashboardOverview() {
   const router = useRouter();
@@ -206,26 +206,29 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        {kpis.map((kpi) => (
-          <KPICard
-            key={kpi.label}
-            label={kpi.label}
-            value={kpi.value}
-            subtitle={kpi.subtitle}
-            badge={kpi.badge}
-            icon={kpi.icon}
-            accent={kpi.accent}
-            onClick={() =>
-              setSelectedKPI({
-                label: kpi.label,
-                value: kpi.value,
-                change: kpi.badge?.text,
-                icon: kpi.icon,
-                detailStats: kpi.detail,
-              })
-            }
-          />
-        ))}
+        {kpis.map((kpi) => {
+          const handleKPIClick = useCallback(() => {
+            setSelectedKPI({
+              label: kpi.label,
+              value: kpi.value,
+              change: kpi.badge?.text,
+              icon: kpi.icon,
+              detailStats: kpi.detail,
+            });
+          }, [kpi.label, kpi.value, kpi.badge, kpi.icon, kpi.detail, setSelectedKPI]);
+          return (
+            <KPICard
+              key={kpi.label}
+              label={kpi.label}
+              value={kpi.value}
+              subtitle={kpi.subtitle}
+              badge={kpi.badge}
+              icon={kpi.icon}
+              accent={kpi.accent}
+              onClick={handleKPIClick}
+            />
+          );
+        })}
       </div>
 
       {selectedOrder && (

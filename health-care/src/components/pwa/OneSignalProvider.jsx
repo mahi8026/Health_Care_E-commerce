@@ -10,7 +10,7 @@ export default function OneSignalProvider() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (!ONESIGNAL_APP_ID) {
-      console.warn('[OneSignal] NEXT_PUBLIC_ONESIGNAL_APP_ID is not set');
+      if (process.env.NODE_ENV !== 'production') console.warn('[OneSignal] NEXT_PUBLIC_ONESIGNAL_APP_ID is not set');
       return;
     }
 

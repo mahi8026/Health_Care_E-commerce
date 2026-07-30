@@ -12,7 +12,7 @@
  * - Real-time statistics
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   FaPlus, FaEdit, FaTrash, FaClock, FaToggleOn, FaToggleOff,
@@ -23,6 +23,42 @@ import api from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
 import AdminShell from '@/components/admin/AdminShell';
 import FlashDealModal from '@/components/admin/FlashDealModal';
+
+function useFocusTrap(containerRef, isActive, onClose) {
+  useEffect(() => {
+    if (!isActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') { onClose?.(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, onClose]);
+}
 
 export default function FlashDealsManagement() {
   const router = useRouter();
@@ -37,6 +73,10 @@ export default function FlashDealsManagement() {
   const [previewDeal, setPreviewDeal] = useState(null);
   const [selectedDeals, setSelectedDeals] = useState([]); // For bulk delete
   const [showRemoveProductModal, setShowRemoveProductModal] = useState(null); // {dealId, productId, productName}
+  const previewRef = useRef(null);
+  const removeRef = useRef(null);
+  useFocusTrap(previewRef, !!previewDeal, () => setPreviewDeal(null));
+  useFocusTrap(removeRef, !!showRemoveProductModal, () => setShowRemoveProductModal(null));
 
   const fetchFlashDeals = async () => {
     try {
@@ -678,11 +718,11 @@ export default function FlashDealsManagement() {
 
       {/* Preview Modal */}
       {previewDeal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4" onClick={() => setPreviewDeal(null)}>
+        <div ref={previewRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4" onClick={() => setPreviewDeal(null)}>
           <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
               <h3 className="text-lg font-bold text-gray-900">Preview: {previewDeal.title}</h3>
-              <button onClick={() => setPreviewDeal(null)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setPreviewDeal(null)} aria-label="Close" className="text-gray-400 hover:text-gray-600">
                 <FaTimes size={20} />
               </button>
             </div>
@@ -737,7 +777,7 @@ export default function FlashDealsManagement() {
 
       {/* Remove Product Confirmation Modal */}
       {showRemoveProductModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-[10000] flex items-center justify-center p-4" onClick={() => setShowRemoveProductModal(null)}>
+        <div ref={removeRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black bg-opacity-50 z-[10000] flex items-center justify-center p-4" onClick={() => setShowRemoveProductModal(null)}>
           <div className="bg-white rounded-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">

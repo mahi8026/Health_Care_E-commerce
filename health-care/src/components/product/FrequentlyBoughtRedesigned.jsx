@@ -26,7 +26,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
         const items = data.products || data.data?.products || [];
         setRelated(items.filter(p => (p._id || p.id) !== productId).slice(0, 3));
       })
-      .catch(() => setRelated([]));
+      .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to fetch related products'); setRelated([]); });
   }, [productId, categoryId]);
 
   if (related.length === 0) return null;

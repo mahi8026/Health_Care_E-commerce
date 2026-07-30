@@ -235,7 +235,7 @@ export default function ReviewsManagement() {
                   <tr key={review._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]" />
+                        <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]" loading="lazy" />
                         <div>
                           <div className="text-[12px] font-semibold line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
                           <div className="text-[10px] text-[var(--color-text-secondary)]">{review.product?.sku}</div>
@@ -281,7 +281,7 @@ export default function ReviewsManagement() {
             {reviews.map(review => (
               <div key={review._id} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
                 <div className="flex items-start gap-3">
-                  <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-12 h-12 object-cover rounded border border-[var(--color-border-secondary)] flex-shrink-0" />
+                  <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-12 h-12 object-cover rounded border border-[var(--color-border-secondary)] flex-shrink-0" loading="lazy" />
                   <div className="flex-1 min-w-0">
                     <div className="text-[13px] font-bold text-[#0B2545] line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
                     <div className="text-[11px] text-[var(--color-text-secondary)]">{review.user?.name}</div>
@@ -357,6 +357,7 @@ export default function ReviewsManagement() {
                       src={selectedReview.product?.images?.[0]?.url || '/placeholder.png'}
                       alt={selectedReview.product?.name}
                       className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded border border-[var(--color-border-secondary)] flex-shrink-0"
+                      loading="lazy"
                     />
                     <div className="min-w-0">
                       <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
@@ -404,6 +405,7 @@ export default function ReviewsManagement() {
                         alt={img.alt}
                         className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded border border-[var(--color-border-secondary)] cursor-pointer hover:opacity-75 transition-opacity"
                         onClick={() => window.open(img.url, '_blank')}
+                        loading="lazy"
                       />
                     ))}
                   </div>

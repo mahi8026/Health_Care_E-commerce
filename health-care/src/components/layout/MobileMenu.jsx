@@ -155,7 +155,7 @@ export default function MobileMenu({ isOpen, onClose }) {
             onClick={onClose}
             aria-label="Close menu"
             style={{
-              width: 36, height: 36, borderRadius: 10, cursor: 'pointer',
+              width: 44, height: 44, borderRadius: 10, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: 'rgba(255,255,255,0.08)',
               border: '1px solid rgba(255,255,255,0.14)',
@@ -186,7 +186,7 @@ export default function MobileMenu({ isOpen, onClose }) {
               aria-label="Search products"
             />
             {searchQuery && (
-              <button type="button" onClick={() => setSearchQuery('')}
+              <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.4)' }}>
                 <FaTimes size={12} />
               </button>

@@ -202,11 +202,11 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
           {/* Mobile filter drawer */}
           {mobileFiltersOpen && (
             <div className="fixed inset-0 z-50 lg:hidden">
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileFiltersOpen(false)} />
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMobileFiltersOpen(false); }} onClick={() => setMobileFiltersOpen(false)} />
               <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white overflow-y-auto shadow-2xl animate-slide-in-left">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 sticky top-0 bg-white z-10">
                   <span className="text-[15px] font-semibold text-[#0B2545]">Filters</span>
-                  <button onClick={() => setMobileFiltersOpen(false)} className="p-1 text-[#6B7280] hover:text-[#0B2545] transition-colors">
+                  <button onClick={() => setMobileFiltersOpen(false)} aria-label="Close filters" className="p-1 text-[#6B7280] hover:text-[#0B2545] transition-colors">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>

@@ -10,7 +10,25 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+    if (!value || !value.trim()) {
+      newErrors[name] = 'Email is required';
+    } else if (!/^\S+@\S+\.\S+$/.test(value)) {
+      newErrors[name] = 'Invalid email format';
+    } else {
+      delete newErrors[name];
+    }
+    setErrors(newErrors);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,18 +121,21 @@ export default function ForgotPasswordPage() {
 
               <div className="mb-4 sm:mb-6">
                 <label htmlFor="forgot-email" className="block text-[11px] sm:text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
-                  Email Address
+                  Email Address <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="forgot-email"
+                  name="email"
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  onBlur={handleBlur}
                   placeholder="your@email.com"
                   required
                   autoComplete="email"
                   className="w-full px-2.5 sm:px-3 py-2.5 sm:py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
                 />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
 
               <button

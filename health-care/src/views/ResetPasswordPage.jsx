@@ -14,7 +14,27 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+    if (name === 'password') {
+      if (!value) newErrors.password = 'Password is required';
+      else if (value.length < 8) newErrors.password = 'Minimum 8 characters';
+      else delete newErrors.password;
+    } else if (name === 'confirmPassword') {
+      if (!value) newErrors.confirmPassword = 'Confirm password is required';
+      else if (value !== password) newErrors.confirmPassword = 'Passwords do not match';
+      else delete newErrors.confirmPassword;
+    }
+    setErrors(newErrors);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,35 +125,41 @@ export default function ResetPasswordPage() {
 
               <div className="mb-3 sm:mb-4">
                 <label htmlFor="reset-password" className="block text-[11px] sm:text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
-                  New Password
+                  New Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="reset-password"
+                  name="password"
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  onBlur={handleBlur}
                   placeholder="At least 8 characters"
                   required
                   minLength={8}
                   autoComplete="new-password"
                   className="w-full px-2.5 sm:px-3 py-2.5 sm:py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
                 />
+                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
               </div>
 
               <div className="mb-4 sm:mb-6">
                 <label htmlFor="reset-confirm-password" className="block text-[11px] sm:text-[12px] font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
-                  Confirm New Password
+                  Confirm New Password <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="reset-confirm-password"
+                  name="confirmPassword"
                   type="password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
+                  onBlur={handleBlur}
                   placeholder="Repeat your new password"
                   required
                   autoComplete="new-password"
                   className="w-full px-2.5 sm:px-3 py-2.5 sm:py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] sm:text-[13px] font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-[#0E8A6E]"
                 />
+                {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
               </div>
 
               <button

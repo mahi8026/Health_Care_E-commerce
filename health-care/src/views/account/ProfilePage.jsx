@@ -13,6 +13,7 @@ export default function ProfilePage() {
   const [form, setForm] = useState({ name: '', phone: '', companyName: '' });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -27,6 +28,27 @@ export default function ProfilePage() {
   const showMessage = (text, type) => {
     setMessage({ text, type });
     setTimeout(() => setMessage({ text: '', type: '' }), 4000);
+  };
+
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+    if (name === 'name') {
+      if (!value || !value.trim()) newErrors.name = 'Name is required';
+      else if (value.trim().length < 2) newErrors.name = 'Name must be at least 2 characters';
+      else delete newErrors.name;
+    } else if (name === 'phone') {
+      if (value && value.trim() && !PHONE_REGEX.test(value.trim().replace(/[\s\-+]/g, ''))) {
+        newErrors.phone = 'Enter a valid Bangladesh phone number';
+      } else {
+        delete newErrors.phone;
+      }
+    }
+    setErrors(newErrors);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const handleSubmit = async (e) => {
@@ -101,6 +123,8 @@ export default function ProfilePage() {
           name="name"
           value={form.name}
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+          onBlur={handleBlur}
+          error={errors.name}
           required
           autoComplete="name"
         />
@@ -111,6 +135,8 @@ export default function ProfilePage() {
           type="tel"
           value={form.phone}
           onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+          onBlur={handleBlur}
+          error={errors.phone}
           placeholder="01XXXXXXXXX"
           autoComplete="tel"
         />

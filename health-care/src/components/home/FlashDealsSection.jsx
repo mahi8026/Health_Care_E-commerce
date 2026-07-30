@@ -84,7 +84,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
             {finalPrice > 0 ? `৳${finalPrice.toLocaleString()}` : 'Contact for price'}
           </span>
           {originalPrice > finalPrice && (
-            <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: 11, color: '#6B7280', textDecoration: 'line-through' }}>
               ৳{originalPrice.toLocaleString()}
             </span>
           )}
@@ -248,17 +248,21 @@ export default function FlashDealsSection() {
         }}
           className="deal-grid"
         >
-          {currentDeal.products.slice(0, 4).map((item, index) => (
-            <FlashDealProductCard
-              key={item.product?._id || index}
-              item={item}
-              onClick={() => {
-                if (item.product?._id) {
-                  router.push(`/products/${item.product._id}`);
-                }
-              }}
-            />
-          ))}
+          {currentDeal.products.slice(0, 4).map((item, index) => {
+            const handleClick = useCallback(() => {
+              if (item.product?._id) {
+                router.push(`/products/${item.product._id}`);
+              }
+            }, [item.product?._id, router]);
+
+            return (
+              <FlashDealProductCard
+                key={item.product?._id || index}
+                item={item}
+                onClick={handleClick}
+              />
+            );
+          })}
         </div>
       </div>
 

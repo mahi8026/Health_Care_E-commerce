@@ -426,7 +426,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
               <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                 <span className="text-[11px] sm:text-[12px] text-gray-500 hidden sm:block">{t('products.sortBy')}</span>
-                <select value={sortBy} onChange={e => handleSortChange(e.target.value)}
+                <select aria-label="Sort products" value={sortBy} onChange={e => handleSortChange(e.target.value)}
                   className="px-2 sm:px-3 py-1.5 border border-gray-200 rounded-xl text-[11px] sm:text-[12px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700 font-medium min-w-0 max-w-[140px] sm:max-w-none">
                   {SORT_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -465,11 +465,11 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       {/* ── Mobile Sidebar Drawer ────────────────────────────────────────── */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <div className="absolute inset-0 bg-black/50" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSidebarOpen(false); }} onClick={() => setSidebarOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl overflow-y-auto">
             <div className="px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d3060] flex items-center justify-between">
               <span className="text-white font-bold text-[14px]">{t('products.filters')}</span>
-              <button onClick={() => setSidebarOpen(false)} className="text-white/70 hover:text-white">
+              <button onClick={() => setSidebarOpen(false)} aria-label="Close sidebar" className="text-white/70 hover:text-white">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18M6 6l12 12"/>
                 </svg>

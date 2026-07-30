@@ -263,6 +263,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                           <button
                             onClick={() => updateQuantity(id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
+                            aria-label="Decrease quantity"
                             className="w-11 h-11 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >−</button>
                           <span className="w-12 text-center text-[14px] font-bold text-[#0B2545] border-x border-[#E5E7EB]">
@@ -271,6 +272,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                           <button
                             onClick={() => updateQuantity(id, item.quantity + 1)}
                             disabled={item.stock !== undefined && item.quantity >= item.stock}
+                            aria-label="Increase quantity"
                             className="w-11 h-11 flex items-center justify-center text-[18px] font-bold text-[#374151] hover:bg-[#F3F4F6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >+</button>
                         </div>

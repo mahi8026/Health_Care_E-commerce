@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { API } from '@/constants/api';
+import { showToast } from '@/components/ui/Toast';
 
 function formatUptime(uptime) {
   if (!uptime) return '—';
@@ -228,9 +229,9 @@ export default function SystemMonitoring() {
       });
       const json = await res.json();
       if (json.success) fetchDashboard(true);
-      else alert(json.message || 'Reset failed');
+      else showToast.error(json.message || 'Reset failed');
     } catch {
-      alert('Failed to reset metrics');
+      showToast.error('Failed to reset metrics');
     }
   };
 

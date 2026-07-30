@@ -63,13 +63,13 @@ export default function LoyaltyPage() {
     fetch(`${API_URL}/loyalty/summary`, { headers })
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.data) setSummary(data.data); })
-      .catch(() => {})
+      .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to fetch loyalty summary'); })
       .finally(() => setLoading(false));
 
     fetch(`${API_URL}/loyalty/transactions?limit=20`, { headers })
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.data) setTransactions(data.data); })
-      .catch(() => {})
+      .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to fetch loyalty transactions'); })
       .finally(() => setTxLoading(false));
   }, []);
 

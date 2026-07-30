@@ -204,6 +204,7 @@ export default function CategoriesPage() {
                             width={48}
                             height={48}
                             className="object-cover rounded"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="w-12 h-12 bg-[var(--color-background-secondary)] rounded flex items-center justify-center text-[var(--color-text-secondary)] text-[10px]">
@@ -277,6 +278,7 @@ export default function CategoriesPage() {
                         width={64}
                         height={64}
                         className="object-cover rounded flex-shrink-0"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-16 h-16 bg-white rounded flex items-center justify-center text-[var(--color-text-secondary)] text-[10px] flex-shrink-0 border border-[var(--color-border-tertiary)]">

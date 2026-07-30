@@ -45,7 +45,7 @@ export default function ChatWidget({ onClose }) {
           setMessages(msgs);
         }
       })
-      .catch(() => {});
+      .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to fetch chat messages'); });
   }, [token]);
 
   // ── On mount: restore existing conversation or show empty state ─────────
@@ -71,6 +71,7 @@ export default function ChatWidget({ onClose }) {
           setIsLoading(false);
         })
         .catch(() => {
+          if (process.env.NODE_ENV !== 'production') console.warn('Failed to verify existing conversation');
           clearConvId();
           setIsLoading(false);
         });

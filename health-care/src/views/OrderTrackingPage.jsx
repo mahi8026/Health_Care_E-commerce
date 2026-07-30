@@ -81,7 +81,7 @@ function TrackingTimeline({ status, timeline }) {
               </div>
               <div style={{ fontSize: 12, color: '#6B7280' }}>{step.desc}</div>
               {timeEntry?.timestamp && (
-                <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 4 }}>
+                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 4 }}>
                   {new Date(timeEntry.timestamp).toLocaleString('en-GB', {
                     day: 'numeric',
                     month: 'short',
@@ -114,7 +114,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
         title: `Track Order ${order.orderNumber}`,
         text: `Track my MediportBD order`,
         url,
-      }).catch(() => {});
+      }).catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to share order link'); });
     } else {
       navigator.clipboard.writeText(url);
       setShareToast(true);

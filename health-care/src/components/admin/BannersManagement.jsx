@@ -206,7 +206,7 @@ export default function BannersManagement() {
                 {slide.imageUrl ? (
                   <div className="relative group rounded-lg overflow-hidden border-[0.5px] border-[var(--color-border-secondary)]" style={{ height: 140 }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={slide.imageUrl} alt={slide.altText} className="w-full h-full object-cover" />
+                    <img src={slide.imageUrl} alt={slide.altText} className="w-full h-full object-cover" loading="lazy" />
                     <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                       <span className="text-white text-[12px] font-medium">Change Image</span>
                       <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
@@ -289,7 +289,7 @@ export default function BannersManagement() {
               {promoBanner.imageUrl ? (
                 <div className="relative group rounded-lg overflow-hidden border-[0.5px] border-[var(--color-border-secondary)]" style={{ height: 140 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={promoBanner.imageUrl} alt={promoBanner.altText} className="w-full h-full object-cover" />
+                  <img src={promoBanner.imageUrl} alt={promoBanner.altText} className="w-full h-full object-cover" loading="lazy" />
                   <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                     <span className="text-white text-[12px] font-medium">Change Image</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"

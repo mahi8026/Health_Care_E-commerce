@@ -69,6 +69,7 @@ export default function ChatMessages({ messages = [], isTyping = false, currentU
                           src={message.content?.fileUrl || message.content}
                           alt="Shared image"
                           className="rounded max-w-full h-auto"
+                          loading="lazy"
                         />
                       </div>
                     )}

@@ -12,6 +12,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const { login, loading, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,6 +47,21 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     if (userData?.role === 'admin') return '/admin';
     if (redirect) return redirect;
     return '/';
+  };
+
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
+    if (!value || !value.trim()) {
+      newErrors[name] = `${name === 'email' ? 'Email' : 'Password'} is required`;
+    } else {
+      delete newErrors[name];
+    }
+    setErrors(newErrors);
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value);
   };
 
   const handleSubmit = async (e) => {
@@ -148,15 +164,18 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                 </div>
                 <input
                   id="login-email"
+                  name="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={handleBlur}
                   placeholder="your@email.com"
                   required
                   autoComplete="email"
                   className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]/30 focus:border-[#0E8A6E] transition-all"
                 />
               </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
             {/* Password */}
@@ -180,9 +199,11 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                 </div>
                 <input
                   id="login-password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onBlur={handleBlur}
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
@@ -207,6 +228,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   )}
                 </button>
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
             {/* Submit */}

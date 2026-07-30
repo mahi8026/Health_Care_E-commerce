@@ -29,7 +29,7 @@ export default function MobileCategories() {
         const list = data.data?.categories || data.categories || [];
         setCategories(list);
       })
-      .catch(() => {})
+      .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Failed to fetch categories'); })
       .finally(() => setLoading(false));
   }, []);
 

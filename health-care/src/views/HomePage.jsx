@@ -147,6 +147,8 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 
   return (
     <div onClick={onClick} className="group"
+      role="button" tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
       style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
         border: '1px solid #E5E7EB', cursor: 'pointer',
         transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
@@ -209,7 +211,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
             {[1,2,3,4,5].map(s => (
               <span key={s} style={{ color: s <= Math.round(ratingVal) ? '#F59E0B' : '#E5E7EB', fontSize: 13 }}>★</span>
             ))}
-            <span style={{ fontSize: 10, color: '#9CA3AF' }}>({reviewCount})</span>
+            <span style={{ fontSize: 10, color: '#6B7280' }}>({reviewCount})</span>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
@@ -217,7 +219,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
             {price > 0 ? `৳${price.toLocaleString()}` : t('common.contactForPrice')}
           </span>
           {hasDiscount && (
-            <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: 11, color: '#6B7280', textDecoration: 'line-through' }}>
               ৳{oldPrice.toLocaleString()}
             </span>
           )}
@@ -281,6 +283,24 @@ export default function HomePage() {
   // ── Memoized Values ────────────────────────────────────────────────────────
   const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
   const announcementItems = useMemo(() => buildAnnouncements(siteSettings), [siteSettings]);
+  const navCategories = useMemo(() => {
+    if (categories.length > 0) return categories.slice(0, 16);
+    return [
+      { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
+      { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', slug: 'hospital-machines' },
+      { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', slug: 'lab-equipment' },
+      { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', slug: 'ppe-and-safety' },
+      { name: 'Implants', emoji: '🦴', color: '#F8FAFC', slug: 'implants-ortho' },
+      { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', slug: 'diagnostic-equipment' },
+      { name: 'Surgical', emoji: '💉', color: '#F0FDF4', slug: 'surgical-instruments' },
+    ];
+  }, [categories]);
+  const topCategories = useMemo(() =>
+    categories.filter(cat => cat.productCount && cat.productCount > 0)
+      .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
+      .slice(0, 5),
+    [categories]
+  );
   
   // ── Effects ────────────────────────────────────────────────────────────────
 
@@ -379,7 +399,7 @@ export default function HomePage() {
         // Store full settings for WHY_US and dynamic announcements
         setSiteSettings(s);
       } catch {
-        // silently fall back to default images
+        if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Failed to load banners');
       } finally {
         setBannersLoaded(true);
       }
@@ -536,7 +556,7 @@ export default function HomePage() {
         .then(data => {
           if (isMounted && data.user) setUser(data.user);
         })
-        .catch(() => {});
+        .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Auth check failed'); });
     }
 
     // Get cart count from localStorage (instant, no API call)
@@ -546,7 +566,7 @@ export default function HomePage() {
         const cart = JSON.parse(cartData);
         const count = cart.items?.length || 0;
         Promise.resolve().then(() => setCartCount(count));
-      } catch {}
+      } catch { if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Failed to parse cart from localStorage'); }
     }
 
     return () => { isMounted = false; };
@@ -931,15 +951,7 @@ export default function HomePage() {
           <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {/* Show first 16 categories from API, or fallback to hardcoded if loading */}
-            {(categories.length > 0 ? categories.slice(0, 16) : [
-              { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
-              { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', slug: 'hospital-machines' },
-              { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', slug: 'lab-equipment' },
-              { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', slug: 'ppe-and-safety' },
-              { name: 'Implants', emoji: '🦴', color: '#F8FAFC', slug: 'implants-ortho' },
-              { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', slug: 'diagnostic-equipment' },
-              { name: 'Surgical', emoji: '💉', color: '#F0FDF4', slug: 'surgical-instruments' },
-            ]).map((cat, index) => {
+            {navCategories.map((cat, index) => {
               const categoryName = cat.name || cat;
               const categorySlug = cat.slug || CATEGORY_NAME_TO_SLUG[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
               const categoryPath = `/products/category/${categorySlug}`;
@@ -973,6 +985,8 @@ export default function HomePage() {
               
               return (
                 <div key={categoryName} onClick={() => router.push(categoryPath)}
+                  role="button" tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(categoryPath); } }}
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
                     minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
@@ -993,7 +1007,7 @@ export default function HomePage() {
                   </span>
                   {/* Product count */}
                   {productCount > 0 && (
-                    <span style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
+                    <span style={{ fontSize: 10, color: '#6B7280', marginTop: 2 }}>
                       {productCount} items
                     </span>
                   )}
@@ -1003,6 +1017,8 @@ export default function HomePage() {
             
             {/* View All button */}
             <div onClick={() => router.push('/products')}
+              role="button" tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push('/products'); } }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
                 minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
@@ -1114,6 +1130,8 @@ export default function HomePage() {
               {topSellingLoading ? (
                 // Show 4 skeleton loaders
                 [...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)
+              ) : topSellingProducts.length === 0 ? (
+                <p className="text-gray-400 text-sm text-center py-8">No top selling products available</p>
               ) : (
                 topSellingProducts.slice(0, 4).map((product, idx) => {
                 const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
@@ -1214,7 +1232,7 @@ export default function HomePage() {
                             {price > 0 ? `৳${price.toLocaleString()}` : 'Contact for Price'}
                           </span>
                           {hasDiscount && (
-                            <span style={{ fontSize: 12, color: '#9CA3AF', textDecoration: 'line-through' }}>
+                            <span style={{ fontSize: 12, color: '#6B7280', textDecoration: 'line-through' }}>
                               ৳{oldPrice.toLocaleString()}
                             </span>
                           )}
@@ -1321,11 +1339,7 @@ export default function HomePage() {
             </button>
 
             {/* Dynamic category tabs - top 5 by product count */}
-            {categories
-              .filter(cat => cat.productCount && cat.productCount > 0)
-              .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
-              .slice(0, 5)
-              .map((cat, index) => {
+            {topCategories.map((cat, index) => {
                 const categoryName = typeof cat === 'string' ? cat : cat.name;
                 // Map category names to icons
                 const iconMap = {
@@ -1438,6 +1452,8 @@ export default function HomePage() {
               {newArrivalsLoading ? (
                 // Show 6 skeleton loaders
                 [...Array(6)].map((_, i) => <ProductCardSkeleton key={i} />)
+              ) : newArrivals.length === 0 ? (
+                <p className="text-gray-400 text-sm text-center py-8">No new arrivals available</p>
               ) : (
                 newArrivals.map(p => {
                 const img = p.images?.[0]?.url || p.images?.[0];
@@ -1526,7 +1542,7 @@ export default function HomePage() {
         <div style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 100%)',
           borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
           {/* Background decoration */}
-          <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 400, height: 400,
+          <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
             background: 'radial-gradient(circle, #0E8A6E, transparent 70%)', opacity: 0.15 }} />
           <div className="b2b-cols" style={{ position: 'relative', display: 'grid',
             gridTemplateColumns: '1fr 220px', gap: 40, alignItems: 'center' }}>
@@ -1668,32 +1684,9 @@ export default function HomePage() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}
           className="testimonials-grid">
-          {(testimonials.length > 0 ? testimonials.slice(0, 3) : [
-            {
-              _id: 'fallback-1',
-              rating: 5,
-              comment: 'Excellent service and genuine products. We have been purchasing diagnostic equipment from MediportBD for our hospital for over 2 years. Their technical support team is very responsive.',
-              userName: 'Dr. Kamal Hossain',
-              companyName: 'Dhaka Medical Center',
-              user: { name: 'Dr. Kamal Hossain', companyName: 'Dhaka Medical Center' }
-            },
-            {
-              _id: 'fallback-2',
-              rating: 5,
-              comment: 'Best prices for laboratory reagents in Bangladesh. Fast delivery and cold chain maintained properly. Highly recommend for diagnostic centers.',
-              userName: 'Customer',
-              companyName: 'Diagnostic Centre',
-              user: { name: 'Customer', companyName: 'Diagnostic Centre' }
-            },
-            {
-              _id: 'fallback-3',
-              rating: 5,
-              comment: 'Professional team with deep knowledge of medical equipment. They helped us set up our entire ICU with quality machines. Free installation and training was very helpful.',
-              userName: 'Customer',
-              companyName: 'Hospital',
-              user: { name: 'Customer', companyName: 'Hospital' }
-            }
-          ]).map((review) => {
+          {testimonials.length === 0 ? (
+            <p className="text-gray-400 text-sm text-center py-8">No testimonials available</p>
+          ) : (testimonials.slice(0, 3).map((review) => {
             const userName = review.user?.name || review.userName || 'Anonymous';
             const companyName = review.user?.companyName || review.companyName || '';
             const rating = review.rating || 5;
@@ -1731,7 +1724,7 @@ export default function HomePage() {
                 </div>
               </div>
             );
-          })}
+          }))}
         </div>
         </div>
       </section>

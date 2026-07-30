@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import api from '@/utils/api';
+import { showToast } from '@/components/ui/Toast';
 
 export default function WhatsAppConversationDetail({ conversationId }) {
   const router = useRouter();
@@ -92,7 +93,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         await fetchConversation();
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to send message');
+      showToast.error(err.response?.data?.message || 'Failed to send message');
     } finally {
       setSending(false);
     }
@@ -108,7 +109,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         setConversation(response.data.conversation);
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update status');
+      showToast.error(err.response?.data?.message || 'Failed to update status');
     }
   };
 
@@ -122,7 +123,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         setConversation(response.data.conversation);
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update category');
+      showToast.error(err.response?.data?.message || 'Failed to update category');
     }
   };
 
@@ -143,7 +144,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         setShowNoteInput(false);
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to add note');
+      showToast.error(err.response?.data?.message || 'Failed to add note');
     } finally {
       setAddingNote(false);
     }
@@ -162,7 +163,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         setConversation(response.data.conversation);
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to assign agent');
+      showToast.error(err.response?.data?.message || 'Failed to assign agent');
     } finally {
       setAssigningAgent(false);
     }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { API } from '@/constants/api';
+import { showToast } from '@/components/ui/Toast';
 
 export default function NewsletterManagement() {
   const [stats, setStats] = useState({ total: 0, active: 0, unsubscribed: 0, thisMonth: 0 });
@@ -85,16 +86,16 @@ export default function NewsletterManagement() {
         fetchSubscribers();
         fetchStats();
       } else {
-        alert(data.message || 'Failed to delete');
+        showToast.error(data.message || 'Failed to delete');
       }
     } catch {
-      alert('Failed to delete subscriber');
+      showToast.error('Failed to delete subscriber');
     }
   };
 
   const handleBroadcast = async () => {
     if (!broadcastData.subject || !broadcastData.htmlContent) {
-      alert('Subject and content are required');
+      showToast.warning('Subject and content are required');
       return;
     }
     if (!confirm(`Send broadcast to ${stats?.active || 0} active subscribers?`)) return;
@@ -113,10 +114,10 @@ export default function NewsletterManagement() {
         setShowBroadcastPanel(false);
         setTimeout(() => setSuccessMsg(''), 5000);
       } else {
-        alert(data.message || 'Failed to send broadcast');
+        showToast.error(data.message || 'Failed to send broadcast');
       }
     } catch {
-      alert('Failed to send broadcast');
+      showToast.error('Failed to send broadcast');
     } finally {
       setBroadcasting(false);
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FaCheck, FaTimes, FaToggleOn, FaToggleOff, FaSearch, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { showToast } from '@/components/ui/Toast';
 
 export default function B2BUsersList() {
   const [users, setUsers] = useState([]);
@@ -59,13 +60,13 @@ export default function B2BUsersList() {
 
       const data = await res.json();
       if (data.success) {
-        alert('B2B application approved successfully');
+        showToast.success('B2B application approved successfully');
         fetchUsers();
       } else {
-        alert(data.message || 'Failed to approve');
+        showToast.error(data.message || 'Failed to approve');
       }
     } catch (error) {
-      alert('Error approving user');
+      showToast.error('Error approving user');
     } finally {
       setActionLoading(null);
     }
@@ -74,7 +75,7 @@ export default function B2BUsersList() {
   const handleReject = async (userId) => {
     const reason = prompt('Enter rejection reason (min 10 characters):');
     if (!reason || reason.trim().length < 10) {
-      alert('Rejection reason is required (min 10 characters)');
+      showToast.warning('Rejection reason is required (min 10 characters)');
       return;
     }
 
@@ -92,13 +93,13 @@ export default function B2BUsersList() {
 
       const data = await res.json();
       if (data.success) {
-        alert('B2B application rejected');
+        showToast.success('B2B application rejected');
         fetchUsers();
       } else {
-        alert(data.message || 'Failed to reject');
+        showToast.error(data.message || 'Failed to reject');
       }
     } catch (error) {
-      alert('Error rejecting user');
+      showToast.error('Error rejecting user');
     } finally {
       setActionLoading(null);
     }
@@ -117,10 +118,10 @@ export default function B2BUsersList() {
       if (data.success) {
         fetchUsers();
       } else {
-        alert(data.message || 'Failed to toggle discount');
+        showToast.error(data.message || 'Failed to toggle discount');
       }
     } catch (error) {
-      alert('Error toggling discount');
+      showToast.error('Error toggling discount');
     } finally {
       setActionLoading(null);
     }

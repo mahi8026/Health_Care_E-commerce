@@ -1,11 +1,50 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import OrderStatusUpdate from './OrderStatusUpdate';
 import { InvoiceGenerator } from '@/utils/invoiceGenerator';
+import { showToast } from '@/components/ui/Toast';
 import { API } from '@/constants/api';
 
+function useFocusTrap(containerRef, isActive, onClose) {
+  useEffect(() => {
+    if (!isActive) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    document.body.style.overflow = 'hidden';
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (first) first.focus();
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') { onClose?.(); return; }
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, onClose]);
+}
+
 export default function OrderDetailModal({ orderId, onClose }) {
+  const containerRef = useRef(null);
+  useFocusTrap(containerRef, true, onClose);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showStatusUpdate, setShowStatusUpdate] = useState(false);
@@ -28,7 +67,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
         setOrder(orderData);
       } catch (err) {
         console.error('Failed to load order:', err);
-        alert('Failed to load order: ' + err.message);
+        showToast.error('Failed to load order: ' + err.message);
       } finally {
         setLoading(false);
       }
@@ -47,7 +86,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
       setGeneratingInvoice(true);
       await InvoiceGenerator.generateInvoice(order);
     } catch (error) {
-      alert('Failed to generate invoice: ' + error.message);
+      showToast.error('Failed to generate invoice: ' + error.message);
     } finally {
       setGeneratingInvoice(false);
     }
@@ -67,7 +106,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -86,6 +125,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="w-11 h-11 rounded-full hover:bg-[var(--color-background-tertiary)] flex items-center justify-center transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

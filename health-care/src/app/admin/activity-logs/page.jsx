@@ -130,6 +130,7 @@ export default function ActivityLogsPage() {
             <input
               type="text"
               placeholder="Search user or target..."
+              aria-label="Search activity logs"
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value, page: 1 })}
               className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B2545]/20 focus:border-[#0B2545] col-span-1 sm:col-span-1"
@@ -137,6 +138,7 @@ export default function ActivityLogsPage() {
             <select
               value={filters.category}
               onChange={(e) => setFilters({ ...filters, category: e.target.value, page: 1 })}
+              aria-label="Filter by category"
               className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
             >
               <option value="">All Categories</option>
@@ -147,6 +149,7 @@ export default function ActivityLogsPage() {
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
+              aria-label="Filter by status"
               className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
             >
               <option value="">All Status</option>
@@ -160,12 +163,14 @@ export default function ActivityLogsPage() {
             <input
               type="date"
               value={filters.startDate}
+              aria-label="Start date"
               onChange={(e) => setFilters({ ...filters, startDate: e.target.value, page: 1 })}
               className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
             />
             <input
               type="date"
               value={filters.endDate}
+              aria-label="End date"
               onChange={(e) => setFilters({ ...filters, endDate: e.target.value, page: 1 })}
               className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
             />

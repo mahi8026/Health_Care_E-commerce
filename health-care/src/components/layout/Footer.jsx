@@ -138,6 +138,7 @@ export default function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Your email"
                   disabled={loading}
+                  aria-label="Email address for newsletter"
                   className="flex-1 px-3 py-2 text-[12px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50"
                 />
                 <button
@@ -157,6 +158,7 @@ export default function Footer() {
               {showNameInput && (
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                   placeholder="Your name (optional)" disabled={loading}
+                  aria-label="Your name for newsletter"
                   className="w-full px-3 py-2 text-[12px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50" />
               )}
               {message && (
@@ -215,6 +217,7 @@ export default function Footer() {
             <form onSubmit={handleSubscribe} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email" disabled={loading}
+                aria-label="Email address for newsletter"
                 className="w-full px-3 py-3 text-[14px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E]" />
               <button type="submit" disabled={loading}
                 className="w-full px-4 py-3 bg-[#0E8A6E] text-white text-[13px] font-medium rounded hover:bg-[#0a6b56] transition-colors disabled:opacity-50">

@@ -5,6 +5,7 @@ import { FaStar, FaUsers, FaGift, FaTrophy, FaSearch, FaFilter } from 'react-ico
 import api from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
 import LoyaltyBadge from '@/components/loyalty/LoyaltyBadge';
+import { showToast } from '@/components/ui/Toast';
 
 const TIERS = {
   Bronze:   { min: 0,     max: 999,   label: 'Bronze',   icon: '🥉', color: '#CD7F32' },
@@ -77,7 +78,7 @@ export default function LoyaltyDashboard() {
       fetchLoyaltyData();
     } catch (error) {
       console.error('Failed to adjust points:', error);
-      alert('Failed to adjust points');
+      showToast.error('Failed to adjust points');
     }
   };
 

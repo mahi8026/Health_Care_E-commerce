@@ -25,7 +25,7 @@ export default function ServiceWorkerRegistration() {
 
         // Check for updates every 60 minutes
         const updateInterval = setInterval(() => {
-          registration.update().catch(() => {});
+          registration.update().catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('Service worker update failed'); });
         }, 60 * 60 * 1000);
 
         // Registration logs are only shown in development
