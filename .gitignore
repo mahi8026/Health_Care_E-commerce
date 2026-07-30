@@ -15,8 +15,7 @@
 **/.env.production.local
 **/.env.*.local
 
-# Keep template files ONLY
-!**/.env.example
+# .env.example files are intentionally excluded — use documentation for reference
 
 # ── Documentation Files (DO NOT COMMIT) ──────────────────────────────────────
 # Exclude all markdown documentation files except essential ones

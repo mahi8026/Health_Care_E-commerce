@@ -21,8 +21,6 @@
 *.env.production
 
 # Keep template files for reference ONLY (no sensitive data)
-!.env.example
-!**/.env.example
 
 # ── Dependencies ─────────────────────────────────────────────────────────────
 node_modules/
@@ -301,8 +299,6 @@ seed-data/
 !tsconfig.json
 !next.config.mjs
 !jest.config.js
-!.env.example
-
 # ============================================================================
 # End of .gitignore
 # ============================================================================
