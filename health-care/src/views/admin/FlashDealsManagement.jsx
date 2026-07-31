@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * FlashDealsManagement â€” Enhanced admin page for managing flash deals
