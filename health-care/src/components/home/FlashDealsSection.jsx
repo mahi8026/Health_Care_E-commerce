@@ -106,7 +106,6 @@ export default function FlashDealsSection() {
 
   const fetchFlashDeals = useCallback(async () => {
     try {
-      setLoading(true);
       const timestamp = new Date().getTime();
       const response = await fetch(`${API}/flash-deals/active?_t=${timestamp}`, {
         cache: 'no-store',

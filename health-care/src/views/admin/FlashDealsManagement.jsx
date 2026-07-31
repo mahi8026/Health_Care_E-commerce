@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 /**
- * FlashDealsManagement — Enhanced admin page for managing flash deals
+ * FlashDealsManagement â€” Enhanced admin page for managing flash deals
  * 
  * Features:
  * - Create/edit/delete flash deals
@@ -57,7 +57,7 @@ function useFocusTrap(containerRef, isActive, onClose) {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isActive, onClose]);
+  }, [isActive, onClose, containerRef]);
 }
 
 export default function FlashDealsManagement() {
@@ -80,7 +80,6 @@ export default function FlashDealsManagement() {
 
   const fetchFlashDeals = async () => {
     try {
-      setLoading(true);
       // api.get returns the full response: { success: true, data: { flashDeals, total }, message }
       const response = await api.get('/flash-deals');
       
@@ -99,7 +98,6 @@ export default function FlashDealsManagement() {
 
   useEffect(() => {
     fetchFlashDeals();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filtered and searched deals
@@ -744,14 +742,14 @@ export default function FlashDealsManagement() {
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium truncate">{item.product?.name || 'Unknown Product'}</div>
                           <div className="text-xs text-gray-500">
-                            {item.discountPercentage}% off • Sold: {item.soldCount || 0}
+                            {item.discountPercentage}% off â€¢ Sold: {item.soldCount || 0}
                             {item.stockLimit && ` / ${item.stockLimit}`}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right ml-2">
-                            <div className="text-sm font-bold text-red-600">৳{item.finalPrice?.toLocaleString()}</div>
-                            <div className="text-xs text-gray-400 line-through">৳{item.product?.price?.toLocaleString()}</div>
+                            <div className="text-sm font-bold text-red-600">à§³{item.finalPrice?.toLocaleString()}</div>
+                            <div className="text-xs text-gray-400 line-through">à§³{item.product?.price?.toLocaleString()}</div>
                           </div>
                           <button
                             onClick={() => setShowRemoveProductModal({

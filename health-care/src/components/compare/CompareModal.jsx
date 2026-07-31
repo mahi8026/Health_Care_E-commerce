@@ -38,7 +38,7 @@ function useFocusTrap(containerRef, isActive, onClose) {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isActive, onClose]);
+  }, [isActive, onClose, containerRef]);
 }
 
 /**

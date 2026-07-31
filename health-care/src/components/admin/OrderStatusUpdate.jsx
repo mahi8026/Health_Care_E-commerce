@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { API } from '@/constants/api';
@@ -36,17 +36,17 @@ function useFocusTrap(containerRef, isActive, onClose) {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isActive, onClose]);
+  }, [isActive, onClose, containerRef]);
 }
 
 const STATUS_OPTIONS = [
-  { value: 'placed',           label: 'Placed',           color: 'bg-[#FEF3C7] text-[#92400E]',  icon: '📝' },
-  { value: 'confirmed',        label: 'Confirmed',        color: 'bg-[#DBEAFE] text-[#1E40AF]',  icon: '✅' },
-  { value: 'processing',       label: 'Processing',       color: 'bg-[#E0E7FF] text-[#3730A3]',  icon: '⚙️' },
-  { value: 'shipped',          label: 'Shipped',          color: 'bg-[#E0E7FF] text-[#3730A3]',  icon: '🚚' },
-  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-[#FEF3C7] text-[#92400E]',  icon: '🛵' },
-  { value: 'delivered',        label: 'Delivered',        color: 'bg-[#D1FAE5] text-[#065F46]',  icon: '✓'  },
-  { value: 'cancelled',        label: 'Cancelled',        color: 'bg-[#FEE2E2] text-[#991B1B]',  icon: '✗'  },
+  { value: 'placed',           label: 'Placed',           color: 'bg-[#FEF3C7] text-[#92400E]',  icon: 'ðŸ“' },
+  { value: 'confirmed',        label: 'Confirmed',        color: 'bg-[#DBEAFE] text-[#1E40AF]',  icon: 'âœ…' },
+  { value: 'processing',       label: 'Processing',       color: 'bg-[#E0E7FF] text-[#3730A3]',  icon: 'âš™ï¸' },
+  { value: 'shipped',          label: 'Shipped',          color: 'bg-[#E0E7FF] text-[#3730A3]',  icon: 'ðŸšš' },
+  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-[#FEF3C7] text-[#92400E]',  icon: 'ðŸ›µ' },
+  { value: 'delivered',        label: 'Delivered',        color: 'bg-[#D1FAE5] text-[#065F46]',  icon: 'âœ“'  },
+  { value: 'cancelled',        label: 'Cancelled',        color: 'bg-[#FEE2E2] text-[#991B1B]',  icon: 'âœ—'  },
 ];
 
 export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
@@ -87,7 +87,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
       try {
         data = await res.json();
       } catch {
-        throw new Error(`Server returned ${res.status} — invalid response`);
+        throw new Error(`Server returned ${res.status} â€” invalid response`);
       }
 
       if (!res.ok) {

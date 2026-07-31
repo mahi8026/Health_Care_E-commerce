@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRef, useEffect } from 'react';
 import { ExportService } from '@/utils/exportService';
@@ -38,7 +38,7 @@ function useFocusTrap(containerRef, isActive, onClose) {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isActive, onClose]);
+  }, [isActive, onClose, containerRef]);
 }
 
 export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
@@ -72,7 +72,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
       case 'Total Revenue':
         return {
           title: 'Revenue Analytics',
-          icon: '💰',
+          icon: 'ðŸ’°',
           stats: [
             { label: 'Year to date', value: formatBdt(k.totalRevenue), trend: kpi.change },
             { label: 'This month', value: formatBdt(k.thisMonthRevenue), trend: '' },
@@ -91,7 +91,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
       case 'Total Orders':
         return {
           title: 'Orders Overview',
-          icon: '📦',
+          icon: 'ðŸ“¦',
           stats: [
             { label: 'All time (excl. cancelled)', value: String(k.totalOrders ?? 0), trend: '' },
             { label: 'This month', value: String(k.ordersThisMonth ?? 0), trend: kpi.change },
@@ -110,7 +110,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
       case 'Active B2B Clients':
         return {
           title: 'B2B Clients',
-          icon: '👥',
+          icon: 'ðŸ‘¥',
           stats: [
             { label: 'Active B2B accounts', value: String(k.activeB2B ?? 0), trend: '' },
             {
@@ -128,7 +128,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
       case 'Abandoned Carts':
         return {
           title: 'Abandoned Carts',
-          icon: '🛒',
+          icon: 'ðŸ›’',
           stats: [
             { label: 'Currently abandoned', value: String(k.abandonedCarts ?? 0), trend: '' },
             { label: 'Value at risk', value: formatBdt(k.abandonedCartValue), trend: '' },
@@ -143,7 +143,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
       case 'Low Stock Items':
         return {
           title: 'Stock Alerts',
-          icon: '⚠️',
+          icon: 'âš ï¸',
           stats: [
             { label: 'Low Stock Items', value: kpi.value, color: 'text-[#92400E]' },
             { label: 'Critical (< 5 units)', value: '2', color: 'text-[#991B1B]' },

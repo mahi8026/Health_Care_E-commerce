@@ -59,8 +59,6 @@ export default function DashboardOverview() {
 
   const fetchDashboard = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
       const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -70,12 +68,28 @@ export default function DashboardOverview() {
       const data = await res.json();
       setStats(data.data);
       setLastUpdated(new Date());
+      setError(null);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchDashboard();
+  };
+
+  const handleKPIClick = useCallback((kpi) => {
+    setSelectedKPI({
+      label: kpi.label,
+      value: kpi.value,
+      change: kpi.badge?.text,
+      icon: kpi.icon,
+      detailStats: kpi.detail,
+    });
+  }, [setSelectedKPI]);
 
   useEffect(() => {
     fetchDashboard();
@@ -183,16 +197,6 @@ export default function DashboardOverview() {
     return colors[status] || colors.placed;
   };
 
-  const handleKPIClick = useCallback((kpi) => {
-    setSelectedKPI({
-      label: kpi.label,
-      value: kpi.value,
-      change: kpi.badge?.text,
-      icon: kpi.icon,
-      detailStats: kpi.detail,
-    });
-  }, [setSelectedKPI]);
-
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -207,7 +211,7 @@ export default function DashboardOverview() {
         </p>
         <button
           type="button"
-          onClick={fetchDashboard}
+          onClick={handleRefresh}
           disabled={loading}
           className="px-3 py-1.5 text-[11px] font-semibold text-[#0B2545] border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
         >
