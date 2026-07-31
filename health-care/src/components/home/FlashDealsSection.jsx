@@ -248,21 +248,17 @@ export default function FlashDealsSection() {
         }}
           className="deal-grid"
         >
-          {currentDeal.products.slice(0, 4).map((item, index) => {
-            const handleClick = useCallback(() => {
-              if (item.product?._id) {
-                router.push(`/products/${item.product._id}`);
-              }
-            }, [item.product?._id, router]);
-
-            return (
-              <FlashDealProductCard
-                key={item.product?._id || index}
-                item={item}
-                onClick={handleClick}
-              />
-            );
-          })}
+          {currentDeal.products.slice(0, 4).map((item, index) => (
+            <FlashDealProductCard
+              key={item.product?._id || index}
+              item={item}
+              onClick={() => {
+                if (item.product?._id) {
+                  router.push(`/products/${item.product._id}`);
+                }
+              }}
+            />
+          ))}
         </div>
       </div>
 

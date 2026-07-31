@@ -183,6 +183,16 @@ export default function DashboardOverview() {
     return colors[status] || colors.placed;
   };
 
+  const handleKPIClick = useCallback((kpi) => {
+    setSelectedKPI({
+      label: kpi.label,
+      value: kpi.value,
+      change: kpi.badge?.text,
+      icon: kpi.icon,
+      detailStats: kpi.detail,
+    });
+  }, [setSelectedKPI]);
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -206,29 +216,18 @@ export default function DashboardOverview() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-        {kpis.map((kpi) => {
-          const handleKPIClick = useCallback(() => {
-            setSelectedKPI({
-              label: kpi.label,
-              value: kpi.value,
-              change: kpi.badge?.text,
-              icon: kpi.icon,
-              detailStats: kpi.detail,
-            });
-          }, [kpi.label, kpi.value, kpi.badge, kpi.icon, kpi.detail, setSelectedKPI]);
-          return (
-            <KPICard
-              key={kpi.label}
-              label={kpi.label}
-              value={kpi.value}
-              subtitle={kpi.subtitle}
-              badge={kpi.badge}
-              icon={kpi.icon}
-              accent={kpi.accent}
-              onClick={handleKPIClick}
-            />
-          );
-        })}
+        {kpis.map((kpi) => (
+          <KPICard
+            key={kpi.label}
+            label={kpi.label}
+            value={kpi.value}
+            subtitle={kpi.subtitle}
+            badge={kpi.badge}
+            icon={kpi.icon}
+            accent={kpi.accent}
+            onClick={() => handleKPIClick(kpi)}
+          />
+        ))}
       </div>
 
       {selectedOrder && (
