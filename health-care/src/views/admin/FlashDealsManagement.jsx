@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * FlashDealsManagement â€” Enhanced admin page for managing flash deals
+ * FlashDealsManagement — Enhanced admin page for managing flash deals
  * 
  * Features:
  * - Create/edit/delete flash deals
@@ -742,14 +742,14 @@ export default function FlashDealsManagement() {
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium truncate">{item.product?.name || 'Unknown Product'}</div>
                           <div className="text-xs text-gray-500">
-                            {item.discountPercentage}% off â€¢ Sold: {item.soldCount || 0}
+                            {item.discountPercentage}% off • Sold: {item.soldCount || 0}
                             {item.stockLimit && ` / ${item.stockLimit}`}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right ml-2">
-                            <div className="text-sm font-bold text-red-600">à§³{item.finalPrice?.toLocaleString()}</div>
-                            <div className="text-xs text-gray-400 line-through">à§³{item.product?.price?.toLocaleString()}</div>
+                            <div className="text-sm font-bold text-red-600">৳{item.finalPrice?.toLocaleString()}</div>
+                            <div className="text-xs text-gray-400 line-through">৳{item.product?.price?.toLocaleString()}</div>
                           </div>
                           <button
                             onClick={() => setShowRemoveProductModal({

@@ -214,18 +214,18 @@ export default function OrderDetailModal({ orderId, onClose }) {
                   {(order.items || []).map((item, index) => (
                     <div key={index} className="flex items-center gap-3 p-3 bg-[var(--color-background-tertiary)] rounded-lg">
                       <div className="w-12 h-12 bg-white rounded flex items-center justify-center text-[20px]">
-                        {item.product?.images?.[0] || 'ðŸ“¦'}
+                        {item.product?.images?.[0] || '📦'}
                       </div>
                       <div className="flex-1">
                         <div className="text-[12px] font-medium mb-1">
                           {item.product?.name || item.name || 'Product'}
                         </div>
                         <div className="text-[11px] text-[var(--color-text-secondary)]">
-                          Qty: {item.quantity} Ã— à§³{(item.price || 0).toLocaleString()}
+                          Qty: {item.quantity} × ৳{(item.price || 0).toLocaleString()}
                         </div>
                       </div>
                       <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                        à§³{((item.quantity || 0) * (item.price || 0)).toLocaleString()}
+                        ৳{((item.quantity || 0) * (item.price || 0)).toLocaleString()}
                       </div>
                     </div>
                   ))}
@@ -237,22 +237,22 @@ export default function OrderDetailModal({ orderId, onClose }) {
                 <div className="space-y-2 text-[12px]">
                   <div className="flex justify-between">
                     <span className="text-[var(--color-text-secondary)]">Subtotal</span>
-                    <span className="font-medium">à§³{(order.subtotal || 0).toLocaleString()}</span>
+                    <span className="font-medium">৳{(order.subtotal || 0).toLocaleString()}</span>
                   </div>
                   {order.discount > 0 && (
                     <div className="flex justify-between text-[#0E8A6E]">
                       <span>Discount</span>
-                      <span className="font-medium">âˆ’à§³{order.discount.toLocaleString()}</span>
+                      <span className="font-medium">−৳{order.discount.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span className="text-[var(--color-text-secondary)]">Shipping</span>
-                    <span className="font-medium">à§³{(order.shippingCost || 0).toLocaleString()}</span>
+                    <span className="font-medium">৳{(order.shippingCost || 0).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-[16px] font-bold pt-2 border-t-[0.5px] border-[var(--color-border-tertiary)]">
                     <span>Total</span>
                     <span className="text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
-                      à§³{(order.totalAmount || order.total || 0).toLocaleString()}
+                      ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </span>
                   </div>
                 </div>
