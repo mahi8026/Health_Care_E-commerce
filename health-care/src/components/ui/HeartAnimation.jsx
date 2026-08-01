@@ -66,7 +66,7 @@ export default function HeartAnimation({
         className={`
           relative transition-all duration-200
           hover:scale-110 active:scale-95
-          focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+          focus:outline-none focus:ring-2 focus:ring-[var(--color-status-danger)] focus:ring-offset-2
           ${isAnimating ? 'animate-heart-beat' : ''}
           ${className}
         `}
@@ -75,18 +75,18 @@ export default function HeartAnimation({
       >
         {isFavorite ? (
           <FaHeart 
-            className={`${size} text-red-500 transition-all duration-300`} 
+            className={`${size} text-[var(--color-status-danger)] transition-all duration-300`} 
           />
         ) : (
           <FiHeart 
-            className={`${size} text-gray-400 hover:text-red-500 transition-colors duration-200`} 
+            className={`${size} text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)] transition-colors duration-200`} 
           />
         )}
       </button>
 
       {/* Particle effects */}
       {showParticles && particles.length > 0 && (
-        <div className="fixed inset-0 pointer-events-none z-[9999]">
+        <div className="fixed inset-0 pointer-events-none z-toast">
           {particles.map((particle) => {
             const distance = 40;
             const radians = (particle.angle * Math.PI) / 180;
@@ -96,7 +96,7 @@ export default function HeartAnimation({
             return (
               <div
                 key={particle.id}
-                className="absolute w-2 h-2 bg-red-500 rounded-full animate-fade-out"
+                className="absolute w-2 h-2 bg-[var(--color-status-danger-tint)] rounded-full animate-fade-out"
                 style={{
                   left: particle.x,
                   top: particle.y,

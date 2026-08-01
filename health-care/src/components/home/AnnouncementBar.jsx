@@ -26,7 +26,7 @@ export default function AnnouncementBar({ settings }) {
   }, [announcements.length]);
 
   return (
-    <div className="bg-gradient-to-r from-teal-600 to-teal-500 text-white py-2 overflow-hidden">
+    <div className="bg-gradient-to-r from-brand-teal to-brand-teal text-white py-2 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-center gap-2 text-sm font-medium">
           {announcements[activeIndex].icon}

@@ -10,38 +10,38 @@ import { format } from 'date-fns';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const TIER_PROGRESS = {
-  Bronze:   { next: 'Silver',   needed: 1000,  color: 'bg-amber-500' },
-  Silver:   { next: 'Gold',     needed: 5000,  color: 'bg-gray-400' },
-  Gold:     { next: 'Platinum', needed: 10000, color: 'bg-yellow-500' },
+  Bronze:   { next: 'Silver',   needed: 1000,  color: 'bg-warning' },
+  Silver:   { next: 'Gold',     needed: 5000,  color: 'bg-[var(--color-background-muted)]' },
+  Gold:     { next: 'Platinum', needed: 10000, color: 'bg-[var(--color-status-warning-tint)]' },
   Platinum: { next: null,       needed: null,  color: 'bg-purple-500' },
 };
 
 function TransactionRow({ tx }) {
   const isEarn = tx.points > 0;
   return (
-    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+    <div className="flex items-center justify-between py-3 border-b border-[var(--color-border-tertiary)] last:border-0">
       <div className="flex items-center gap-3">
         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-          isEarn ? 'bg-green-100' : 'bg-red-100'
+          isEarn ? 'bg-[var(--color-status-success-tint)]' : 'bg-[var(--color-status-danger-tint)]'
         }`}>
           {isEarn
-            ? <FaArrowUp className="w-3 h-3 text-green-600" />
-            : <FaArrowDown className="w-3 h-3 text-red-500" />
+            ? <FaArrowUp className="w-3 h-3 text-[var(--color-status-success)]" />
+            : <FaArrowDown className="w-3 h-3 text-[var(--color-status-danger)]" />
           }
         </div>
         <div>
-          <p className="text-sm font-medium text-gray-800">{tx.description}</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-sm font-medium text-[var(--color-text-primary)]">{tx.description}</p>
+          <p className="text-xs text-[var(--color-text-secondary)]">
             {tx.createdAt ? format(new Date(tx.createdAt), 'dd MMM yyyy, HH:mm') : ''}
             {tx.order?.orderNumber && ` · ${tx.order.orderNumber}`}
           </p>
         </div>
       </div>
       <div className="text-right flex-shrink-0">
-        <p className={`font-bold text-sm ${isEarn ? 'text-green-600' : 'text-red-500'}`}>
+        <p className={`font-semibold text-sm ${isEarn ? 'text-[var(--color-status-success)]' : 'text-[var(--color-status-danger)]'}`}>
           {isEarn ? '+' : ''}{tx.points.toLocaleString()} pts
         </p>
-        <p className="text-xs text-gray-400">Balance: {tx.balance.toLocaleString()}</p>
+        <p className="text-xs text-[var(--color-text-secondary)]">Balance: {tx.balance.toLocaleString()}</p>
       </div>
     </div>
   );
@@ -95,17 +95,17 @@ export default function LoyaltyPage() {
           {/* Grid skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-pulse">
-                <div className="h-16 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+              <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-[var(--color-border-tertiary)] animate-pulse">
+                <div className="h-16 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
               </div>
             ))}
           </div>
           
           {/* Transactions skeleton */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-3">
-            <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 animate-shimmer" />
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[var(--color-border-tertiary)] space-y-3">
+            <div className="h-6 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-48 animate-shimmer" />
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-14 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+              <div key={i} className="h-14 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
             ))}
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function LoyaltyPage() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-blue-200 text-sm font-medium">Available Points</p>
-                <p className="text-5xl font-bold mt-1">
+                <p className="text-5xl font-semibold mt-1">
                   {(summary?.currentPoints || user?.loyaltyPoints || 0).toLocaleString()}
                 </p>
                 <p className="text-blue-200 text-sm mt-1">
@@ -156,8 +156,8 @@ export default function LoyaltyPage() {
           </div>
 
           {/* How to earn */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-xl border border-[var(--color-border-primary)] p-5">
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
               <FaGift className="text-blue-600 w-4 h-4" /> How to Earn Points
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -167,10 +167,10 @@ export default function LoyaltyPage() {
                 { label: 'Leave a product review', pts: '+50 pts', icon: '⭐' },
                 { label: 'Refer a friend',         pts: '+500 pts', icon: '👥' },
               ].map(item => (
-                <div key={item.label} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div key={item.label} className="flex items-center gap-3 p-3 bg-[var(--color-background-secondary)] rounded-lg">
                   <span className="text-xl">{item.icon}</span>
                   <div>
-                    <p className="text-sm font-medium text-gray-800">{item.label}</p>
+                    <p className="text-sm font-medium text-[var(--color-text-primary)]">{item.label}</p>
                     <p className="text-xs text-blue-600 font-semibold">{item.pts}</p>
                   </div>
                 </div>
@@ -179,9 +179,9 @@ export default function LoyaltyPage() {
           </div>
 
           {/* Tier benefits */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <FaStar className="text-yellow-500 w-4 h-4" /> Tier Benefits
+          <div className="bg-white rounded-xl border border-[var(--color-border-primary)] p-5">
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+              <FaStar className="text-[var(--color-status-warning)] w-4 h-4" /> Tier Benefits
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
@@ -195,12 +195,12 @@ export default function LoyaltyPage() {
                   className={`p-3 rounded-xl border text-center ${
                     tier?.label === t.label
                       ? 'border-blue-400 bg-blue-50'
-                      : 'border-gray-200 bg-gray-50'
+                      : 'border-[var(--color-border-primary)] bg-[var(--color-background-secondary)]'
                   }`}
                 >
                   <p className="text-2xl mb-1">{t.icon}</p>
-                  <p className="font-semibold text-sm text-gray-900">{t.label}</p>
-                  <p className="text-xs text-gray-500">{t.pts} pts</p>
+                  <p className="font-semibold text-sm text-[var(--color-text-primary)]">{t.label}</p>
+                  <p className="text-xs text-[var(--color-text-secondary)]">{t.pts} pts</p>
                   <p className="text-xs text-blue-600 mt-1">{t.benefit}</p>
                 </div>
               ))}
@@ -208,27 +208,27 @@ export default function LoyaltyPage() {
           </div>
 
           {/* Redemption info */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
-            <FaInfoCircle className="text-amber-500 w-4 h-4 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-amber-800">
+          <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-xl p-4 flex gap-3">
+            <FaInfoCircle className="text-[var(--color-status-warning)] w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-[var(--color-status-warning)]">
               <p className="font-semibold mb-1">How to Redeem</p>
               <p>1000 points = ৳10 discount · Minimum 500 points to redeem · Max 20% of order total · Redeem at checkout</p>
             </div>
           </div>
 
           {/* Transaction history */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <FaHistory className="text-gray-500 w-4 h-4" /> Transaction History
+          <div className="bg-white rounded-xl border border-[var(--color-border-primary)] p-5">
+            <h3 className="font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+              <FaHistory className="text-[var(--color-text-secondary)] w-4 h-4" /> Transaction History
             </h3>
             {txLoading ? (
               <div className="space-y-3 py-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-14 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+                  <div key={i} className="h-14 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
                 ))}
               </div>
             ) : transactions.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-[var(--color-text-secondary)]">
                 <FaHistory className="w-10 h-10 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">No transactions yet. Place an order to earn points!</p>
               </div>

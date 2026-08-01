@@ -19,7 +19,7 @@ const SUPPORT_OPTIONS = [
     desc: '+880 1646-886795',
     action: 'tel:+8801646886795',
     color: '#0066CC',
-    bgColor: '#EFF6FF'
+    bgColor: 'var(--color-status-info-tint)'
   },
   {
     icon: <FaWhatsapp />,
@@ -27,15 +27,15 @@ const SUPPORT_OPTIONS = [
     desc: 'Chat with our team',
     action: 'https://wa.me/8801646886795',
     color: '#25D366',
-    bgColor: '#F0FDF4'
+    bgColor: 'var(--color-status-success-tint)'
   },
   {
     icon: <FaEnvelope />,
     title: 'Email Us',
     desc: 'mahimrahman07@gmail.com',
     action: 'mailto:mahimrahman07@gmail.com',
-    color: '#DC2626',
-    bgColor: '#FFF1F2'
+    color: 'var(--color-status-danger)',
+    bgColor: 'var(--color-status-danger-tint)'
   },
   {
     icon: <FaQuestionCircle />,
@@ -51,7 +51,7 @@ const SUPPORT_OPTIONS = [
     desc: 'Get B2B pricing',
     action: '/b2b',
     color: '#EA580C',
-    bgColor: '#FFF7ED'
+    bgColor: 'var(--color-status-warning-tint)'
   },
   {
     icon: <FaShippingFast />,
@@ -59,23 +59,23 @@ const SUPPORT_OPTIONS = [
     desc: 'Check delivery status',
     action: '/track',
     color: '#0891B2',
-    bgColor: '#F0FDFA'
+    bgColor: 'var(--color-status-success-tint)'
   },
   {
     icon: <FaCertificate />,
     title: 'Certifications',
     desc: 'DGDA & ISO verified',
     action: '/certifications',
-    color: '#CA8A04',
-    bgColor: '#FFFBEB'
+    color: 'var(--color-status-warning)',
+    bgColor: 'var(--color-status-warning-tint)'
   },
   {
     icon: <FaHeadset />,
     title: '24/7 Support',
     desc: 'Technical assistance',
     action: '/support',
-    color: '#059669',
-    bgColor: '#F0FDF4'
+    color: 'var(--color-status-success)',
+    bgColor: 'var(--color-status-success-tint)'
   },
 ];
 
@@ -95,13 +95,13 @@ export default function SupportResources() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
         <div className="text-center" style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
+          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
             WE&apos;RE HERE TO HELP
           </p>
-          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#0B2545', marginBottom: 10, fontFamily: 'Georgia, serif' }}>
+          <h2 style={{ fontSize: 'var(--text-3xl)', fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 10, fontFamily: 'var(--font-lora), serif' }}>
             Support & Resources
           </h2>
-          <p style={{ fontSize: 14, color: '#64748B', maxWidth: 600, margin: '0 auto', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', maxWidth: 600, margin: '0 auto', lineHeight: 1.5 }}>
             Get instant help, documentation, and expert support for your medical equipment needs
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function SupportResources() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 22,
+                  fontSize: 'var(--text-2xl)',
                   color: option.color,
                   flexShrink: 0,
                 }}
@@ -160,10 +160,10 @@ export default function SupportResources() {
 
               {/* Content */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0B2545', marginBottom: 3, lineHeight: 1.3 }}>
+                <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 3, lineHeight: 1.3 }}>
                   {option.title}
                 </h3>
-                <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.4 }}>
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', margin: 0, lineHeight: 1.4 }}>
                   {option.desc}
                 </p>
               </div>
@@ -171,7 +171,7 @@ export default function SupportResources() {
               {/* Arrow/Indicator */}
               <div
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--text-sm)',
                   color: option.color,
                   opacity: 0.7,
                   transition: 'opacity 0.2s',
@@ -189,15 +189,15 @@ export default function SupportResources() {
           style={{ 
             marginTop: 40, 
             padding: '24px', 
-            background: 'linear-gradient(135deg, #0B2545 0%, #134B70 100%)', 
+            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134B70 100%)', 
             borderRadius: 12,
             textAlign: 'center'
           }}
         >
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
+          <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: '#fff', marginBottom: 8 }}>
             Need Technical Support?
           </h3>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', marginBottom: 16 }}>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'rgba(255,255,255,0.8)', marginBottom: 16 }}>
             Our medical equipment specialists are available 24/7 to assist you
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -205,21 +205,21 @@ export default function SupportResources() {
               onClick={() => handleClick('tel:+8801646886795')}
               style={{
                 padding: '10px 24px',
-                background: '#0E8A6E',
+                background: 'var(--color-brand-teal)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 8,
-                fontSize: 13,
-                fontWeight: 700,
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#0c7a61';
+                e.currentTarget.style.background = 'var(--color-brand-teal-hover)';
                 e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#0E8A6E';
+                e.currentTarget.style.background = 'var(--color-brand-teal)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
@@ -233,8 +233,8 @@ export default function SupportResources() {
                 color: '#fff',
                 border: '2px solid rgba(255,255,255,0.3)',
                 borderRadius: 8,
-                fontSize: 13,
-                fontWeight: 700,
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
               }}

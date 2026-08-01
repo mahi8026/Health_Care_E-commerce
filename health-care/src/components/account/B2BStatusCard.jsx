@@ -29,10 +29,10 @@ export default function B2BStatusCard({ user }) {
     approved: {
       icon: FaCheckCircle,
       color: 'green',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      textColor: 'text-green-700',
-      iconColor: 'text-green-500',
+      bgColor: 'bg-[var(--color-status-success-tint)]',
+      borderColor: 'border-[var(--color-status-success-tint)]',
+      textColor: 'text-[var(--color-status-success)]',
+      iconColor: 'text-[var(--color-status-success)]',
       title: 'B2B Account Approved',
       message: user.b2bDiscountEnabled 
         ? 'You are eligible for B2B pricing on all products!'
@@ -41,10 +41,10 @@ export default function B2BStatusCard({ user }) {
     rejected: {
       icon: FaTimesCircle,
       color: 'red',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      textColor: 'text-red-700',
-      iconColor: 'text-red-500',
+      bgColor: 'bg-[var(--color-status-danger-tint)]',
+      borderColor: 'border-[var(--color-status-danger-tint)]',
+      textColor: 'text-[var(--color-status-danger)]',
+      iconColor: 'text-[var(--color-status-danger)]',
       title: 'B2B Application Rejected',
       message: user.b2bRejectionReason || 'Your B2B application was not approved. Please contact support for more information.',
     },
@@ -63,10 +63,10 @@ export default function B2BStatusCard({ user }) {
 
         {/* Content */}
         <div className="flex-1">
-          <h3 className={`text-lg font-bold ${config.textColor} mb-2`}>
+          <h3 className={`text-lg font-semibold ${config.textColor} mb-2`}>
             {config.title}
           </h3>
-          <p className="text-gray-700 text-sm mb-4">
+          <p className="text-[var(--color-text-primary)] text-sm mb-4">
             {config.message}
           </p>
 
@@ -75,7 +75,7 @@ export default function B2BStatusCard({ user }) {
             <div className="space-y-2">
               {/* Company Info */}
               {user.companyName && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                   <span className="font-semibold">Company:</span>
                   <span>{user.companyName}</span>
                 </div>
@@ -83,7 +83,7 @@ export default function B2BStatusCard({ user }) {
 
               {/* B2B ID */}
               {user.b2bId && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                   <span className="font-semibold">B2B ID:</span>
                   <span className="font-mono bg-white px-2 py-1 rounded">{user.b2bId}</span>
                 </div>
@@ -91,7 +91,7 @@ export default function B2BStatusCard({ user }) {
 
               {/* Approval Date */}
               {user.b2bApprovedAt && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                   <span className="font-semibold">Approved on:</span>
                   <span>{new Date(user.b2bApprovedAt).toLocaleDateString('en-GB')}</span>
                 </div>
@@ -109,9 +109,9 @@ export default function B2BStatusCard({ user }) {
 
           {/* Pending Actions */}
           {status === 'pending' && (
-            <div className="mt-4 text-sm text-gray-600">
+            <div className="mt-4 text-sm text-[var(--color-text-secondary)]">
               <p className="font-semibold mb-1">What happens next?</p>
-              <ul className="list-disc list-inside space-y-1 text-gray-600">
+              <ul className="list-disc list-inside space-y-1 text-[var(--color-text-secondary)]">
                 <li>We&apos;ll verify your business documents</li>
                 <li>Approval typically takes 1-2 business days</li>
                 <li>You&apos;ll receive an email notification</li>
@@ -127,7 +127,7 @@ export default function B2BStatusCard({ user }) {
                 href={`https://wa.me/+8801800000000?text=${encodeURIComponent('Hi, I need help with my B2B application rejection.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                className="inline-flex items-center gap-2 bg-[var(--color-status-success-tint)] hover:bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
               >
                 <FaShieldAlt />
                 <span>Contact Support on WhatsApp</span>

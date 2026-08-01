@@ -13,10 +13,10 @@ export default function HowItWorks() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
             How It Works
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto">
             Purchase medical equipment in 4 simple steps
           </p>
         </div>
@@ -26,24 +26,24 @@ export default function HowItWorks() {
             <div key={index} className="relative text-center">
               {/* Connecting line (not on last step) */}
               {index < STEPS.length - 1 && (
-                <div className="hidden lg:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-teal-500 to-teal-300" />
+                <div className="hidden lg:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-brand-teal-tint0 to-brand-teal" />
               )}
 
               {/* Step number badge */}
-              <div className="relative mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold text-2xl mb-4 shadow-lg">
+              <div className="relative mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-brand-teal-tint0 to-brand-teal flex items-center justify-center text-white font-semibold text-2xl mb-4 shadow-lg">
                 {step.step}
               </div>
 
               {/* Icon */}
-              <div className="text-4xl text-teal-600 mb-3 flex justify-center">
+              <div className="text-4xl text-brand-teal mb-3 flex justify-center">
                 {step.icon}
               </div>
 
               {/* Title & Description */}
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">
+              <h3 className="font-semibold text-[var(--color-text-primary)] mb-2 text-lg">
                 {step.title}
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 {step.desc}
               </p>
             </div>

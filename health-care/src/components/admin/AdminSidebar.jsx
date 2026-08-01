@@ -13,27 +13,27 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
   ];
 
   return (
-    <div className="bg-gradient-dark text-white flex flex-col h-screen w-full md:w-64 lg:w-72">
+    <div className="bg-brand-navy text-white flex flex-col h-screen w-full md:w-64 lg:w-72">
       {/* Logo */}
       <div className="p-4 md:p-5 border-b border-white/10 bg-gradient-to-r from-blue-600/30 to-cyan-500/30">
-        <div className="font-[family-name:var(--font-lora)] text-[16px] md:text-[18px] font-semibold">
+        <div className="font-[family-name:var(--font-lora)] text-base md:text-lg font-semibold">
           Mediport<span className="text-cyan-400 drop-shadow-lg">BD</span>
         </div>
-        <div className="text-[10px] text-white/60 mt-1">Admin Panel</div>
+        <div className="text-xs text-white/60 mt-1">Admin Panel</div>
       </div>
 
       {/* User Info */}
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-[13px] shadow-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-lg">
             {user.initials}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[12px] font-semibold truncate">{user.name}</div>
-            <div className="text-[10px] text-white/60 truncate">{user.role}</div>
+            <div className="text-xs font-semibold truncate">{user.name}</div>
+            <div className="text-xs text-white/60 truncate">{user.role}</div>
           </div>
           {user.isOnline && (
-            <div className="w-2 h-2 bg-[#4DDBB8] rounded-full"></div>
+            <div className="w-2 h-2 bg-brand-teal-light rounded-full"></div>
           )}
         </div>
       </div>
@@ -50,12 +50,12 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
                 : 'text-white/70 hover:bg-white/10 hover:text-white hover:shadow-md'
             }`}
           >
-            <span className="text-[18px] flex-shrink-0">{item.icon}</span>
-            <span className="flex-1 text-left text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+            <span className="text-lg flex-shrink-0">{item.icon}</span>
+            <span className="flex-1 text-left text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
               {item.label}
             </span>
             {item.badge && (
-              <span className="bg-[#E24B4A] text-white text-[10px] font-bold px-2 py-[2px] rounded-full min-w-[20px] text-center flex-shrink-0">
+              <span className="bg-danger text-white text-xs font-semibold px-2 py-[2px] rounded-full min-w-[20px] text-center flex-shrink-0">
                 {item.badge}
               </span>
             )}
@@ -66,8 +66,8 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
       {/* Logout */}
       <div className="p-4 border-t border-white/10">
         <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-colors min-h-[48px]">
-          <span className="text-[18px]">🚪</span>
-          <span className="text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+          <span className="text-lg">🚪</span>
+          <span className="text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
             Logout
           </span>
         </button>

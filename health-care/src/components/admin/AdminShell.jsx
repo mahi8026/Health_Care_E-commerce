@@ -130,14 +130,14 @@ export default function AdminShell({ children, title, action, onAction }) {
       {/* Mobile Backdrop */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-[899] md:hidden"
+          className="fixed inset-0 bg-black/50 z-modal md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        bg-[#0B2545] text-white flex flex-col h-screen fixed top-0 left-0 z-[900]
+        bg-brand-navy text-white flex flex-col h-screen fixed top-0 left-0 z-drawer
         transition-transform duration-300
         w-[240px] md:w-[220px] lg:w-[220px]
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -147,11 +147,11 @@ export default function AdminShell({ children, title, action, onAction }) {
         <div className="p-5 border-b border-white/10">
           <div 
             onClick={() => router.push('/admin')}
-            className="font-[family-name:var(--font-lora)] text-[18px] font-semibold cursor-pointer hover:opacity-80 transition-opacity"
+            className="font-[family-name:var(--font-lora)] text-lg font-semibold cursor-pointer hover:opacity-80 transition-opacity"
           >
-            Mediport<span className="text-[#4DDBB8]">BD</span>
+            Mediport<span className="text-brand-teal-light">BD</span>
           </div>
-          <div className="text-[10px] text-white/60 mt-1">Admin Panel</div>
+          <div className="text-xs text-white/60 mt-1">Admin Panel</div>
         </div>
 
         {/* Back to Home Button */}
@@ -163,7 +163,7 @@ export default function AdminShell({ children, title, action, onAction }) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
-            <span className="text-[11px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+            <span className="text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
               Back to Store
             </span>
           </button>
@@ -172,15 +172,15 @@ export default function AdminShell({ children, title, action, onAction }) {
         {/* User Info */}
         <div className="p-4 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#4DDBB8] rounded-full flex items-center justify-center text-[#0B2545] font-bold text-[13px]">
+            <div className="w-10 h-10 bg-brand-teal-light rounded-full flex items-center justify-center text-brand-navy font-semibold text-sm">
               {adminUser.initials}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[12px] font-semibold truncate">{adminUser.name}</div>
-              <div className="text-[10px] text-white/60 truncate">{adminUser.role}</div>
+              <div className="text-xs font-semibold truncate">{adminUser.name}</div>
+              <div className="text-xs text-white/60 truncate">{adminUser.role}</div>
             </div>
             {adminUser.isOnline && (
-              <div className="w-2 h-2 bg-[#4DDBB8] rounded-full"></div>
+              <div className="w-2 h-2 bg-brand-teal-light rounded-full"></div>
             )}
           </div>
         </div>
@@ -197,12 +197,12 @@ export default function AdminShell({ children, title, action, onAction }) {
                   : 'text-white/70 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <span className="text-[18px]">{item.icon}</span>
-              <span className="flex-1 text-left text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+              <span className="text-lg">{item.icon}</span>
+              <span className="flex-1 text-left text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
                 {item.label}
               </span>
               {item.badge && (
-                <span className="bg-[#E24B4A] text-white text-[10px] font-bold px-2 py-[2px] rounded-full min-w-[20px] text-center">
+                <span className="bg-danger text-white text-xs font-semibold px-2 py-[2px] rounded-full min-w-[20px] text-center">
                   {item.badge}
                 </span>
               )}
@@ -216,8 +216,8 @@ export default function AdminShell({ children, title, action, onAction }) {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-[10px] rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
-            <span className="text-[18px]">🚪</span>
-            <span className="text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+            <span className="text-lg">🚪</span>
+            <span className="text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
               Logout
             </span>
           </button>
@@ -231,7 +231,7 @@ export default function AdminShell({ children, title, action, onAction }) {
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-[#0B2545] rounded-lg hover:bg-[var(--color-background-secondary)]"
+            className="md:hidden w-9 h-9 flex-shrink-0 flex items-center justify-center text-brand-navy rounded-lg hover:bg-[var(--color-background-secondary)]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="3" y1="12" x2="21" y2="12"/>
@@ -241,10 +241,10 @@ export default function AdminShell({ children, title, action, onAction }) {
           </button>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-[15px] md:text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
+            <h1 className="text-base md:text-base font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
               {title || 'Admin Panel'}
             </h1>
-            <div className="text-[10px] text-[var(--color-text-secondary)] truncate hidden sm:block">
+            <div className="text-xs text-[var(--color-text-secondary)] truncate hidden sm:block">
               {new Date().toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -261,16 +261,16 @@ export default function AdminShell({ children, title, action, onAction }) {
               <button
                 type="button"
                 onClick={() => { setShowSearch(v => !v); setShowNotifications(false); setShowUserMenu(false); }}
-                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="w-8 h-8 rounded-lg border border-[var(--color-border-primary)] flex items-center justify-center hover:bg-[var(--color-background-secondary)] transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
               </button>
               {showSearch && (
-                <div className="absolute right-0 top-10 w-72 bg-white rounded-xl border border-gray-200 shadow-xl z-50 overflow-hidden">
-                  <div className="p-3 border-b border-gray-100">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                <div className="absolute right-0 top-10 w-72 bg-white rounded-xl border border-[var(--color-border-primary)] shadow-xl z-dropdown overflow-hidden">
+                  <div className="p-3 border-b border-[var(--color-border-tertiary)]">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-[var(--color-background-secondary)] rounded-lg">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                       </svg>
@@ -280,12 +280,12 @@ export default function AdminShell({ children, title, action, onAction }) {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search admin pages..."
-                        className="flex-1 bg-transparent text-[13px] focus:outline-none text-gray-800 placeholder-gray-400"
+                        className="flex-1 bg-transparent text-sm focus:outline-none text-[var(--color-text-primary)] placeholder-gray-400"
                       />
                     </div>
                   </div>
                   <div className="py-1 max-h-64 overflow-y-auto">
-                    <p className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                    <p className="px-3 py-1.5 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
                       {searchQuery ? 'Results' : 'Quick Links'}
                     </p>
                     {filteredPages.map(page => (
@@ -293,14 +293,14 @@ export default function AdminShell({ children, title, action, onAction }) {
                         key={page.path}
                         type="button"
                         onClick={() => { router.push(page.path); setShowSearch(false); setSearchQuery(''); }}
-                        className="w-full text-left px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                        className="w-full text-left px-3 py-2.5 text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] flex items-center gap-2 transition-colors"
                       >
-                        <span className="text-gray-400">→</span>
+                        <span className="text-[var(--color-text-secondary)]">→</span>
                         {page.label}
                       </button>
                     ))}
                     {filteredPages.length === 0 && (
-                      <p className="px-3 py-4 text-[12px] text-gray-400 text-center">No pages found</p>
+                      <p className="px-3 py-4 text-xs text-[var(--color-text-secondary)] text-center">No pages found</p>
                     )}
                   </div>
                 </div>
@@ -312,54 +312,54 @@ export default function AdminShell({ children, title, action, onAction }) {
               <button
                 type="button"
                 onClick={() => { setShowNotifications(v => !v); setShowSearch(false); setShowUserMenu(false); }}
-                className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors relative"
+                className="w-8 h-8 rounded-lg border border-[var(--color-border-primary)] flex items-center justify-center hover:bg-[var(--color-background-secondary)] transition-colors relative"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                   <path d="M13.73 21a2 2 0 01-3.46 0"/>
                 </svg>
                 {badges.notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[9px] flex items-center justify-center font-bold">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--color-status-danger-tint)] rounded-full text-white text-xs flex items-center justify-center font-semibold">
                     {badges.notifications > 9 ? '9+' : badges.notifications}
                   </span>
                 )}
               </button>
               {showNotifications && (
-                <div className="absolute right-0 top-10 w-80 bg-white rounded-xl border border-gray-200 shadow-xl z-50 overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <p className="text-[13px] font-semibold text-gray-800">Notifications</p>
+                <div className="absolute right-0 top-10 w-80 bg-white rounded-xl border border-[var(--color-border-primary)] shadow-xl z-dropdown overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-tertiary)]">
+                    <p className="text-sm font-semibold text-[var(--color-text-primary)]">Notifications</p>
                     {badges.notifications > 0 && (
-                      <span className="text-[10px] px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-semibold">
+                      <span className="text-xs px-2 py-0.5 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-full font-semibold">
                         {badges.notifications} new
                       </span>
                     )}
                   </div>
-                  <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                  <div className="divide-y divide-[var(--color-border-tertiary)] max-h-72 overflow-y-auto">
                     {badges.orders > 0 && (
                       <button type="button" onClick={() => { router.push('/admin/orders'); setShowNotifications(false); }}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <p className="text-[13px] font-medium text-gray-800">📦 {badges.orders} pending order{badges.orders > 1 ? 's' : ''}</p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">Require your attention</p>
+                        className="w-full text-left px-4 py-3 hover:bg-[var(--color-background-secondary)] transition-colors">
+                        <p className="text-sm font-medium text-[var(--color-text-primary)]">📦 {badges.orders} pending order{badges.orders > 1 ? 's' : ''}</p>
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Require your attention</p>
                       </button>
                     )}
                     {badges.quotes > 0 && (
                       <button type="button" onClick={() => { router.push('/admin/quotes'); setShowNotifications(false); }}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <p className="text-[13px] font-medium text-gray-800">📋 {badges.quotes} pending quote{badges.quotes > 1 ? 's' : ''}</p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">Awaiting response</p>
+                        className="w-full text-left px-4 py-3 hover:bg-[var(--color-background-secondary)] transition-colors">
+                        <p className="text-sm font-medium text-[var(--color-text-primary)]">📋 {badges.quotes} pending quote{badges.quotes > 1 ? 's' : ''}</p>
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Awaiting response</p>
                       </button>
                     )}
                     {badges.orders === 0 && badges.quotes === 0 && (
                       <div className="px-4 py-8 text-center">
                         <p className="text-3xl mb-2">🎉</p>
-                        <p className="text-[13px] font-medium text-gray-700">All caught up!</p>
-                        <p className="text-[11px] text-gray-400 mt-0.5">No pending actions</p>
+                        <p className="text-sm font-medium text-[var(--color-text-primary)]">All caught up!</p>
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">No pending actions</p>
                       </div>
                     )}
                   </div>
-                  <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50">
+                  <div className="px-4 py-2.5 border-t border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
                     <button type="button" onClick={() => { router.push('/admin/activity-logs'); setShowNotifications(false); }}
-                      className="text-[11px] text-blue-600 hover:underline font-medium">
+                      className="text-xs text-blue-600 hover:underline font-medium">
                       View activity logs →
                     </button>
                   </div>
@@ -372,40 +372,40 @@ export default function AdminShell({ children, title, action, onAction }) {
               <button
                 type="button"
                 onClick={() => { setShowUserMenu(v => !v); setShowSearch(false); setShowNotifications(false); }}
-                className="w-8 h-8 md:w-9 md:h-9 bg-[#0B2545] rounded-lg flex items-center justify-center text-white text-[11px] font-bold hover:bg-[#0d2e56] transition-colors flex-shrink-0"
+                className="w-8 h-8 md:w-9 md:h-9 bg-brand-navy rounded-lg flex items-center justify-center text-white text-xs font-semibold hover:bg-[var(--color-brand-navy-hover)] transition-colors flex-shrink-0"
               >
                 {adminUser.initials}
               </button>
               {showUserMenu && (
-                <div className="absolute right-0 top-11 w-56 bg-white rounded-xl border border-gray-200 shadow-xl z-50 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                    <p className="text-[13px] font-semibold text-gray-800 truncate">{adminUser.name}</p>
-                    <p className="text-[11px] text-gray-500 truncate">{adminUser.email}</p>
-                    <span className="inline-block mt-1 text-[10px] px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-semibold">
+                <div className="absolute right-0 top-11 w-56 bg-white rounded-xl border border-[var(--color-border-primary)] shadow-xl z-dropdown overflow-hidden">
+                  <div className="px-4 py-3 border-b border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
+                    <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{adminUser.name}</p>
+                    <p className="text-xs text-[var(--color-text-secondary)] truncate">{adminUser.email}</p>
+                    <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-full font-semibold">
                       {adminUser.role}
                     </span>
                   </div>
                   <div className="py-1">
                     <button type="button" onClick={() => { router.push('/admin'); setShowUserMenu(false); }}
-                      className="w-full text-left px-4 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] flex items-center gap-2 transition-colors">
                       📊 Dashboard
                     </button>
                     <button type="button" onClick={() => { router.push('/admin/security'); setShowUserMenu(false); }}
-                      className="w-full text-left px-4 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] flex items-center gap-2 transition-colors">
                       🔒 Security Settings
                     </button>
                     <button type="button" onClick={() => { router.push('/admin/activity-logs'); setShowUserMenu(false); }}
-                      className="w-full text-left px-4 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] flex items-center gap-2 transition-colors">
                       📋 Activity Logs
                     </button>
                     <button type="button" onClick={() => { router.push('/'); setShowUserMenu(false); }}
-                      className="w-full text-left px-4 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] flex items-center gap-2 transition-colors">
                       🏠 Back to Store
                     </button>
                   </div>
-                  <div className="border-t border-gray-100 py-1">
+                  <div className="border-t border-[var(--color-border-tertiary)] py-1">
                     <button type="button" onClick={handleLogout}
-                      className="w-full text-left px-4 py-2.5 text-[13px] text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors font-medium">
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--color-status-danger)] hover:bg-[var(--color-status-danger-tint)] flex items-center gap-2 transition-colors font-medium">
                       🚪 Logout
                     </button>
                   </div>
@@ -415,7 +415,7 @@ export default function AdminShell({ children, title, action, onAction }) {
 
             {action && onAction && (
               <button onClick={onAction}
-                className="px-3 md:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[11px] md:text-[12px] font-semibold hover:bg-[#0d2e56] transition-colors whitespace-nowrap">
+                className="px-3 md:px-4 py-2 bg-brand-navy text-white rounded-lg text-xs md:text-xs font-semibold hover:bg-[var(--color-brand-navy-hover)] transition-colors whitespace-nowrap">
                 <span className="hidden sm:inline">{action}</span>
                 <span className="sm:hidden">+</span>
               </button>

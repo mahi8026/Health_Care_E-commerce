@@ -100,7 +100,7 @@ export const PAYMENT_METHODS = {
     label: 'Cash on Delivery',
     description: 'Pay with cash when you receive your order',
     icon: '💵',
-    color: '#059669'
+    color: 'var(--color-status-success)'
   },
   bkash: {
     id: 'bkash',
@@ -128,14 +128,14 @@ export const PAYMENT_METHODS = {
     label: 'Bank Transfer',
     description: 'Direct bank transfer (BEFTN/NPSB)',
     icon: '🏦',
-    color: '#185FA5'
+    color: 'var(--color-status-info)'
   },
   credit: {
     id: 'credit',
     label: 'B2B Credit',
     description: 'Use your B2B credit limit',
     icon: '💼',
-    color: '#0E8A6E'
+    color: 'var(--color-brand-teal)'
   },
   cheque: {
     id: 'cheque',

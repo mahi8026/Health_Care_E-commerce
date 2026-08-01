@@ -43,13 +43,13 @@ function LoadingFallback() {
     }}>
       <div style={{ textAlign: 'center', color: '#fff' }}>
         <div style={{
-          fontSize: 48,
+          fontSize: 'var(--text-5xl)',
           marginBottom: 16,
           animation: 'pulse 1.5s ease-in-out infinite',
         }}>
           🔥
         </div>
-        <div style={{ fontSize: 18, fontWeight: 600 }}>Loading Flash Deals...</div>
+        <div style={{ fontSize: 'var(--text-lg)', fontWeight: 600 }}>Loading Flash Deals...</div>
       </div>
       <style>{`
         @keyframes pulse {

@@ -340,5 +340,5 @@ export function highlightSearchTerm(text, query) {
   if (!text || !query) return text;
 
   const regex = new RegExp(`(${query})`, 'gi');
-  return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-900">$1</mark>');
+  return text.replace(regex, '<mark class="bg-yellow-200">$1</mark>');
 }

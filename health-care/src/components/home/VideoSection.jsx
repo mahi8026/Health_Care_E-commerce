@@ -22,7 +22,7 @@ export default function VideoSection() {
   };
 
   return (
-    <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, #0B2545 0%, #134B70 100%)', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134B70 100%)', position: 'relative', overflow: 'hidden' }}>
       {/* Background Pattern */}
       <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
@@ -84,7 +84,7 @@ export default function VideoSection() {
                   }}
                   className="play-button"
                 >
-                  <FaPlay style={{ fontSize: 24, color: '#0E8A6E', marginLeft: 4 }} />
+                  <FaPlay style={{ fontSize: 'var(--text-2xl)', color: 'var(--color-brand-teal)', marginLeft: 4 }} />
                 </div>
                 
                 {/* Watch on YouTube Badge */}
@@ -93,12 +93,12 @@ export default function VideoSection() {
                   bottom: 16, 
                   left: 16, 
                   background: 'rgba(255,0,0,0.9)', 
-                  backdropFilter: 'blur(10px)', 
+                  backdropFilter: 'blur(var(--glass-blur))', 
                   padding: '8px 16px', 
                   borderRadius: 8, 
-                  fontSize: 12, 
+                  fontSize: 'var(--text-xs)', 
                   color: '#fff', 
-                  fontWeight: 700,
+                  fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6
@@ -115,7 +115,7 @@ export default function VideoSection() {
                   background: 'rgba(0,0,0,0.8)', 
                   padding: '4px 8px', 
                   borderRadius: 4, 
-                  fontSize: 11, 
+                  fontSize: 'var(--text-xs)', 
                   color: '#fff', 
                   fontWeight: 600
                 }}>
@@ -127,10 +127,10 @@ export default function VideoSection() {
 
           {/* Right: Content */}
           <div style={{ color: '#fff' }}>
-            <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, lineHeight: 1.2 }}>
+            <h2 style={{ fontSize: 'var(--text-4xl)', fontWeight: 600, marginBottom: 12, lineHeight: 1.2 }}>
               Why Choose MediportBD?
             </h2>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginBottom: 24, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 'var(--text-base)', color: 'rgba(255,255,255,0.85)', marginBottom: 24, lineHeight: 1.6 }}>
               Bangladesh&apos;s trusted partner for medical equipment, serving hospitals and diagnostic centers nationwide.
             </p>
 
@@ -147,11 +147,11 @@ export default function VideoSection() {
                     background: 'rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.15)',
                     borderRadius: 8,
-                    backdropFilter: 'blur(10px)',
+                    backdropFilter: 'blur(var(--glass-blur))',
                   }}
                 >
-                  <FaCheckCircle style={{ fontSize: 16, color: '#4DDBB8', flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, fontWeight: 500 }}>{feature}</span>
+                  <FaCheckCircle style={{ fontSize: 'var(--text-base)', color: 'var(--color-brand-teal-light)', flexShrink: 0 }} />
+                  <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500 }}>{feature}</span>
                 </div>
               ))}
             </div>
@@ -162,21 +162,21 @@ export default function VideoSection() {
                 onClick={() => window.location.href = '/products'}
                 style={{
                   padding: '12px 24px',
-                  background: '#0E8A6E',
+                  background: 'var(--color-brand-teal)',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 700,
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#0B7558';
+                  e.currentTarget.style.background = 'var(--color-brand-teal-hover)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#0E8A6E';
+                  e.currentTarget.style.background = 'var(--color-brand-teal)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -190,8 +190,8 @@ export default function VideoSection() {
                   color: '#fff',
                   border: '2px solid rgba(255, 255, 255, 0.4)',
                   borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 700,
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                 }}

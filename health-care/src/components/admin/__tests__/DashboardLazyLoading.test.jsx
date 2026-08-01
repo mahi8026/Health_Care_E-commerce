@@ -171,7 +171,7 @@ describe('Admin Dashboard Lazy Loading Components', () => {
       );
 
       // Check for error icon container
-      const errorIcon = container.querySelector('.bg-red-100');
+      const errorIcon = container.querySelector('.bg-[var(--color-status-danger-tint)]');
       expect(errorIcon).toBeInTheDocument();
     });
 

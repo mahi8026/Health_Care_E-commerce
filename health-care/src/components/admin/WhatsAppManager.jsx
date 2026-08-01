@@ -48,7 +48,7 @@ export default function WhatsAppManager() {
   };
 
   useEffect(() => {
-    fetchConversations();
+    void Promise.resolve().then(fetchConversations);
     
     // Poll for updates every 30 seconds
     const interval = setInterval(fetchConversations, 30000);
@@ -67,11 +67,11 @@ export default function WhatsAppManager() {
 
   const getStatusBadge = (status) => {
     const styles = {
-      active: 'bg-green-100 text-green-800',
+      active: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
       resolved: 'bg-blue-100 text-blue-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      escalated: 'bg-red-100 text-red-800',
-      closed: 'bg-gray-100 text-gray-800'
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      escalated: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
+      closed: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]'
     };
     return styles[status] || styles.active;
   };
@@ -109,10 +109,10 @@ export default function WhatsAppManager() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--color-background-secondary)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
@@ -121,7 +121,7 @@ export default function WhatsAppManager() {
                 placeholder="Search by phone or name..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
 
@@ -130,7 +130,7 @@ export default function WhatsAppManager() {
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">All Status</option>
                 <option value="active">Active</option>
@@ -146,7 +146,7 @@ export default function WhatsAppManager() {
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">All Categories</option>
                 <option value="product_inquiry">Product Inquiry</option>
@@ -179,24 +179,24 @@ export default function WhatsAppManager() {
 
         {/* Loading State */}
         {loading && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-8 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading conversations...</p>
+            <p className="text-[var(--color-text-secondary)] mt-4">Loading conversations...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3">
               <span className="text-2xl">⚠️</span>
               <div className="flex-1">
-                <p className="text-red-800 font-medium">Error loading conversations</p>
-                <p className="text-red-600 text-sm mt-1">{error}</p>
+                <p className="text-[var(--color-status-danger)] font-medium">Error loading conversations</p>
+                <p className="text-[var(--color-status-danger)] text-sm mt-1">{error}</p>
               </div>
               <button
                 onClick={fetchConversations}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                className="px-4 py-2 bg-danger text-white rounded-lg hover:bg-danger transition-colors text-sm"
               >
                 Retry
               </button>
@@ -208,69 +208,69 @@ export default function WhatsAppManager() {
         {!loading && !error && (
           <>
             {conversations.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+              <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-12 text-center">
                 <span className="text-6xl">💬</span>
-                <h3 className="text-xl font-semibold text-gray-900 mt-4">No conversations found</h3>
-                <p className="text-gray-600 mt-2">
+                <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mt-4">No conversations found</h3>
+                <p className="text-[var(--color-text-secondary)] mt-2">
                   {filters.status || filters.category || filters.search
                     ? 'Try adjusting your filters'
                     : 'Customer conversations will appear here'}
                 </p>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] overflow-hidden">
                 {/* Desktop Table */}
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
+                    <thead className="bg-[var(--color-background-secondary)] border-b border-[var(--color-border-primary)]">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Customer
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Category
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Status
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Messages
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Assigned To
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Last Message
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-[var(--color-border-primary)]">
                       {conversations.map((conv) => (
                         <tr
                           key={conv._id}
-                          className="hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="hover:bg-[var(--color-background-secondary)] cursor-pointer transition-colors"
                           onClick={() => router.push(`/admin/whatsapp/${conv._id}`)}
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
-                                <span className="text-green-600 font-semibold text-sm">
+                              <div className="flex-shrink-0 h-10 w-10 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center">
+                                <span className="text-[var(--color-status-success)] font-semibold text-sm">
                                   {conv.customerName?.[0]?.toUpperCase() || '?'}
                                 </span>
                               </div>
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-[var(--color-text-primary)]">
                                   {conv.customerName || 'Unknown'}
                                 </div>
-                                <div className="text-sm text-gray-500">{conv.phoneNumber}</div>
+                                <div className="text-sm text-[var(--color-text-secondary)]">{conv.phoneNumber}</div>
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-900">
+                            <span className="text-sm text-[var(--color-text-primary)]">
                               {getCategoryLabel(conv.category)}
                             </span>
                           </td>
@@ -279,15 +279,15 @@ export default function WhatsAppManager() {
                               {conv.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-primary)]">
                             {conv.messageCount}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-primary)]">
                             {conv.assignedTo?.name || (
-                              <span className="text-gray-400 italic">Unassigned</span>
+                              <span className="text-[var(--color-text-secondary)] italic">Unassigned</span>
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-secondary)]">
                             {formatDate(conv.lastMessageAt)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -308,30 +308,30 @@ export default function WhatsAppManager() {
                 </div>
 
                 {/* Mobile Cards */}
-                <div className="md:hidden divide-y divide-gray-200">
+                <div className="md:hidden divide-y divide-[var(--color-border-primary)]">
                   {conversations.map((conv) => (
                     <div
                       key={conv._id}
                       onClick={() => router.push(`/admin/whatsapp/${conv._id}`)}
-                      className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                      className="p-4 hover:bg-[var(--color-background-secondary)] cursor-pointer transition-colors"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-                          <span className="text-green-600 font-semibold">
+                        <div className="flex-shrink-0 h-12 w-12 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center">
+                          <span className="text-[var(--color-status-success)] font-semibold">
                             {conv.customerName?.[0]?.toUpperCase() || '?'}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
                               {conv.customerName || 'Unknown'}
                             </p>
                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(conv.status)}`}>
                               {conv.status}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-500 mb-2">{conv.phoneNumber}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <p className="text-sm text-[var(--color-text-secondary)] mb-2">{conv.phoneNumber}</p>
+                          <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
                             <span>{getCategoryLabel(conv.category)}</span>
                             <span>•</span>
                             <span>{conv.messageCount} messages</span>
@@ -339,7 +339,7 @@ export default function WhatsAppManager() {
                             <span>{formatDate(conv.lastMessageAt)}</span>
                           </div>
                           {conv.assignedTo && (
-                            <p className="text-xs text-gray-600 mt-1">
+                            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                               Assigned to: {conv.assignedTo.name}
                             </p>
                           )}
@@ -353,9 +353,9 @@ export default function WhatsAppManager() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3 mt-6">
+              <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] px-4 py-3 mt-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
+                  <div className="text-sm text-[var(--color-text-primary)]">
                     Showing <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
                     <span className="font-medium">
                       {Math.min(pagination.page * pagination.limit, pagination.total)}
@@ -366,14 +366,14 @@ export default function WhatsAppManager() {
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                       disabled={pagination.page === 1}
-                      className="px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 border border-[var(--color-border-primary)] rounded-lg text-sm font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                       disabled={pagination.page === pagination.pages}
-                      className="px-3 py-1 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1 border border-[var(--color-border-primary)] rounded-lg text-sm font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Next
                     </button>

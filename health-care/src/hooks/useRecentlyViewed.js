@@ -24,11 +24,11 @@ export function useRecentlyViewed() {
       if (stored) {
         const parsed = JSON.parse(stored);
         // Use callback form to avoid the setState warning
-        setRecentlyViewed(() => Array.isArray(parsed) ? parsed : []);
+        void Promise.resolve().then(() => setRecentlyViewed(Array.isArray(parsed) ? parsed : []));
       }
     } catch (error) {
       console.error('Failed to load recently viewed:', error);
-      setRecentlyViewed([]);
+      void Promise.resolve().then(() => setRecentlyViewed([]));
     }
   }, []);
 

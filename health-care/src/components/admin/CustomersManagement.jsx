@@ -213,20 +213,20 @@ export default function CustomersManagement() {
 
   const getTierColor = (tier) => {
     const colors = {
-      Platinum: 'bg-[#E0E7FF] text-[#3730A3]',
-      Gold: 'bg-[#FEF3C7] text-[#92400E]',
-      Silver: 'bg-[#F3F4F6] text-[#374151]',
+      Platinum: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      Gold: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      Silver: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]',
     };
-    return colors[tier] || 'bg-[#F3F4F6] text-[#374151]';
+    return colors[tier] || 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]';
   };
 
   const getRoleColor = (role) => {
     const colors = {
-      admin: 'bg-[#FEE2E2] text-[#991B1B]',
-      b2b_customer: 'bg-[#DBEAFE] text-[#1E40AF]',
-      customer: 'bg-[#D1FAE5] text-[#065F46]',
+      admin: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
+      b2b_customer: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      customer: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
     };
-    return colors[role] || 'bg-[#F3F4F6] text-[#374151]';
+    return colors[role] || 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]';
   };
 
   const getRoleLabel = (role) => {
@@ -240,8 +240,8 @@ export default function CustomersManagement() {
 
   const getStatusColor = (isActive) =>
     isActive !== false
-      ? 'bg-[#D1FAE5] text-[#065F46]'
-      : 'bg-[#FEF3C7] text-[#92400E]';
+      ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
+      : 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]';
 
   const totalPages = Math.ceil(total / 10);
 
@@ -250,8 +250,8 @@ export default function CustomersManagement() {
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Toast */}
       {message.text && (
-        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 max-w-[calc(100vw-2rem)] ${
-          message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-toast max-w-[calc(100vw-2rem)] ${
+          message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
         }`}>
           {message.text}
         </div>
@@ -259,36 +259,36 @@ export default function CustomersManagement() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/50 z-modal flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-[#FEE2E2] flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-[#DC2626]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 rounded-full bg-[var(--color-status-danger-tint)] flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-[var(--color-status-danger)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[#0B2545]">Confirm Delete</h3>
-                <p className="text-sm text-[#6B7280] mt-1">
+                <h3 className="text-lg font-semibold text-brand-navy">Confirm Delete</h3>
+                <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                   {deleteConfirm === 'bulk'
                     ? `Delete ${selectedCustomers.length} customer(s)?`
                     : `Delete ${deleteConfirm.name}?`}
                 </p>
               </div>
             </div>
-            <p className="text-sm text-[#6B7280] mb-6">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-6">
               This action cannot be undone. All customer data, orders, and history will be permanently deleted.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 py-2.5 border border-[#E5E7EB] text-[#374151] rounded-lg font-semibold hover:bg-[#F9FAFB] transition-colors"
+                className="flex-1 px-4 py-2.5 border border-[var(--color-border-primary)] text-[var(--color-text-primary)] rounded-lg font-semibold hover:bg-[var(--color-background-secondary)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => deleteConfirm === 'bulk' ? handleBulkDelete() : handleDeleteCustomer(deleteConfirm.id)}
-                className="flex-1 px-4 py-2.5 bg-[#DC2626] text-white rounded-lg font-semibold hover:bg-[#B91C1C] transition-colors"
+                className="flex-1 px-4 py-2.5 bg-danger text-white rounded-lg font-semibold hover:bg-[#B91C1C] transition-colors"
               >
                 Delete
               </button>
@@ -299,20 +299,20 @@ export default function CustomersManagement() {
 
       {/* Bulk Actions Bar */}
       {selectedCustomers.length > 0 && (
-        <div className="bg-[#EFF6FF] border-b border-[#BFDBFE] px-4 py-3 flex items-center justify-between">
-          <span className="text-sm font-semibold text-[#1E40AF]">
+        <div className="bg-[var(--color-status-info-tint)] border-b border-[var(--color-status-info-tint)] px-4 py-3 flex items-center justify-between">
+          <span className="text-sm font-semibold text-[var(--color-status-info)]">
             {selectedCustomers.length} customer{selectedCustomers.length > 1 ? 's' : ''} selected
           </span>
           <div className="flex gap-2">
             <button
               onClick={() => setSelectedCustomers([])}
-              className="text-sm px-3 py-1.5 text-[#1E40AF] hover:underline"
+              className="text-sm px-3 py-1.5 text-[var(--color-status-info)] hover:underline"
             >
               Clear
             </button>
             <button
               onClick={() => setDeleteConfirm('bulk')}
-              className="text-sm px-4 py-1.5 bg-[#DC2626] text-white rounded-lg font-semibold hover:bg-[#B91C1C]"
+              className="text-sm px-4 py-1.5 bg-danger text-white rounded-lg font-semibold hover:bg-[#B91C1C]"
             >
               Delete Selected
             </button>
@@ -327,7 +327,7 @@ export default function CustomersManagement() {
           <select
             value={roleFilter}
             onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
-            className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[44px]"
+            className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[44px]"
           >
             {ROLE_FILTERS.map(r => (
               <option key={r.value} value={r.value}>{r.label}</option>
@@ -336,7 +336,7 @@ export default function CustomersManagement() {
           <select
             value={tierFilter}
             onChange={e => { setTierFilter(e.target.value); setPage(1); }}
-            className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[44px]"
+            className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[44px]"
           >
             {TIERS.map(t => (
               <option key={t} value={t}>{t === 'all' ? 'All tiers' : t}</option>
@@ -351,11 +351,11 @@ export default function CustomersManagement() {
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="Search by name or email..."
-            className="flex-1 px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] min-h-[44px]"
+            className="flex-1 px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] min-h-[44px]"
           />
           <button
             type="submit"
-            className="px-3 sm:px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="px-3 sm:px-4 py-2 bg-brand-navy text-white rounded-lg text-xs font-semibold min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <span className="hidden sm:inline">Search</span>
             <span className="sm:hidden">🔍</span>
@@ -364,7 +364,7 @@ export default function CustomersManagement() {
             <button
               type="button"
               onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
-              className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               ✕
             </button>
@@ -372,16 +372,16 @@ export default function CustomersManagement() {
         </form>
         
         {/* Row 3: Count */}
-        <div className="text-center text-[12px] text-[var(--color-text-secondary)] py-1">
+        <div className="text-center text-xs text-[var(--color-text-secondary)] py-1">
           {total} customer{total !== 1 ? 's' : ''}
         </div>
       </div>
 
       {/* Loading / Empty */}
       {loading ? (
-        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading customers…</div>
+        <div className="p-8 text-center text-xs text-[var(--color-text-secondary)]">Loading customers…</div>
       ) : customers.length === 0 ? (
-        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">
+        <div className="p-8 text-center text-xs text-[var(--color-text-secondary)]">
           {search ? `No customers found for "${search}"` : 'No B2B customers yet'}
         </div>
       ) : (
@@ -396,11 +396,11 @@ export default function CustomersManagement() {
                       type="checkbox"
                       checked={selectedCustomers.length === customers.length && customers.length > 0}
                       onChange={toggleSelectAll}
-                      className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
+                      className="w-4 h-4 accent-brand-teal cursor-pointer"
                     />
                   </th>
                   {['Customer', 'Email', 'Phone', 'Role', 'Tier', 'B2B Discount', 'Credit Limit', 'Credit Used', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
+                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                       {h}
                     </th>
                   ))}
@@ -411,31 +411,31 @@ export default function CustomersManagement() {
                   const customerId = customer._id || customer.id;
                   const isSelected = selectedCustomers.includes(customerId);
                   return (
-                  <tr key={customerId || `customer-${index}`} className={`border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)] ${isSelected ? 'bg-[#EFF6FF]' : ''}`}>
+                  <tr key={customerId || `customer-${index}`} className={`border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)] ${isSelected ? 'bg-[var(--color-status-info-tint)]' : ''}`}>
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleSelectCustomer(customerId)}
-                        className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
+                        className="w-4 h-4 accent-brand-teal cursor-pointer"
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      <div className="text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                         {customer.companyName || customer.name}
                       </div>
                       {customer.companyName && (
-                        <div className="text-[10px] text-[var(--color-text-secondary)]">{customer.name}</div>
+                        <div className="text-xs text-[var(--color-text-secondary)]">{customer.name}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{customer.email}</td>
-                    <td className="px-4 py-3 text-[11px]">{customer.phone || '—'}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{customer.email}</td>
+                    <td className="px-4 py-3 text-xs">{customer.phone || '—'}</td>
                     <td className="px-4 py-3">
                       <select
                         value={customer.role || 'customer'}
                         onChange={e => handleUpdateRole(customerId, e.target.value)}
                         disabled={!customerId}
-                        className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getRoleColor(customer.role)}`}
+                        className={`text-xs px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getRoleColor(customer.role)}`}
                       >
                         {ROLES.map(role => (
                           <option key={role.value} value={role.value}>{role.label}</option>
@@ -447,7 +447,7 @@ export default function CustomersManagement() {
                         value={customer.b2bTier || 'Silver'}
                         onChange={e => handleUpdateTier(customerId, e.target.value)}
                         disabled={!customerId}
-                        className={`text-[10px] px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getTierColor(customer.b2bTier)}`}
+                        className={`text-xs px-2 py-[3px] rounded font-medium border-0 cursor-pointer ${getTierColor(customer.b2bTier)}`}
                       >
                         <option value="Silver">Silver</option>
                         <option value="Gold">Gold</option>
@@ -460,7 +460,7 @@ export default function CustomersManagement() {
                           type="checkbox"
                           checked={!!customer.b2bDiscountEnabled}
                           onChange={e => handleUpdateDiscount(customerId, e.target.checked, customer.b2bDiscountPct || 0)}
-                          className="w-4 h-4 accent-[#0E8A6E] cursor-pointer"
+                          className="w-4 h-4 accent-brand-teal cursor-pointer"
                           title="Enable B2B discount"
                         />
                         <input
@@ -469,19 +469,19 @@ export default function CustomersManagement() {
                           defaultValue={customer.b2bDiscountPct || 0}
                           onBlur={e => handleUpdateDiscount(customerId, !!customer.b2bDiscountEnabled, Number(e.target.value))}
                           disabled={!customer.b2bDiscountEnabled}
-                          className="w-14 text-[11px] px-1 py-[3px] border border-[#E5E7EB] rounded text-center disabled:opacity-40"
+                          className="w-14 text-xs px-1 py-[3px] border border-[var(--color-border-primary)] rounded text-center disabled:opacity-40"
                         />
-                        <span className="text-[11px] text-[#6B7280]">%</span>
+                        <span className="text-xs text-[var(--color-text-secondary)]">%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(customer.creditLimit || 0).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(customer.creditUsed || 0).toLocaleString()}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(customer.isActive)}`}>
+                      <span className={`text-xs px-2 py-[3px] rounded font-medium ${getStatusColor(customer.isActive)}`}>
                         {customer.isActive !== false ? 'active' : 'inactive'}
                       </span>
                     </td>
@@ -489,15 +489,15 @@ export default function CustomersManagement() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingCustomer(customer)}
-                          className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
+                          className="text-xs text-brand-teal font-medium hover:underline"
                           title="Edit customer"
                         >
                           Edit
                         </button>
-                        <span className="text-[#E5E7EB]">|</span>
+                        <span className="border-[var(--color-border-primary)]">|</span>
                         <button
                           onClick={() => setDeleteConfirm({ id: customerId, name: customer.companyName || customer.name })}
-                          className="text-[11px] text-[#DC2626] font-medium hover:underline"
+                          className="text-xs text-[var(--color-status-danger)] font-medium hover:underline"
                           title="Delete customer"
                         >
                           Delete
@@ -517,32 +517,32 @@ export default function CustomersManagement() {
               const customerId = customer._id || customer.id;
               const isSelected = selectedCustomers.includes(customerId);
               return (
-                <div key={customerId || `customer-${index}`} className={`bg-[var(--color-background-secondary)] rounded-lg border p-4 space-y-3 ${isSelected ? 'border-[#3B82F6] bg-[#EFF6FF]' : 'border-[var(--color-border-tertiary)]'}`}>
+                <div key={customerId || `customer-${index}`} className={`bg-[var(--color-background-secondary)] rounded-lg border p-4 space-y-3 ${isSelected ? 'border-[var(--color-status-info)] bg-[var(--color-status-info-tint)]' : 'border-[var(--color-border-tertiary)]'}`}>
                   {/* Header with checkbox */}
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectCustomer(customerId)}
-                      className="w-5 h-5 accent-[#0E8A6E] cursor-pointer mt-0.5 flex-shrink-0"
+                      className="w-5 h-5 accent-brand-teal cursor-pointer mt-0.5 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)] truncate">
+                      <div className="text-sm font-semibold text-brand-navy font-[family-name:var(--font-plus-jakarta)] truncate">
                         {customer.companyName || customer.name}
                       </div>
                       {customer.companyName && (
-                        <div className="text-[11px] text-[var(--color-text-secondary)]">{customer.name}</div>
+                        <div className="text-xs text-[var(--color-text-secondary)]">{customer.name}</div>
                       )}
-                      <div className="text-[11px] text-[var(--color-text-secondary)] mt-0.5 truncate">{customer.email}</div>
+                      <div className="text-xs text-[var(--color-text-secondary)] mt-0.5 truncate">{customer.email}</div>
                     </div>
-                    <span className={`text-[10px] px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(customer.isActive)}`}>
+                    <span className={`text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(customer.isActive)}`}>
                       {customer.isActive !== false ? 'Active' : 'Inactive'}
                     </span>
                   </div>
 
                   {/* Phone */}
                   {customer.phone && (
-                    <div className="text-[12px] text-[var(--color-text-secondary)]">
+                    <div className="text-xs text-[var(--color-text-secondary)]">
                       📞 {customer.phone}
                     </div>
                   )}
@@ -550,24 +550,24 @@ export default function CustomersManagement() {
                   {/* Credit info */}
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-white rounded-lg p-2.5 border border-[var(--color-border-tertiary)]">
-                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Credit Limit</div>
-                      <div className="text-[13px] font-bold text-[#0B2545] mt-0.5">৳{(customer.creditLimit || 0).toLocaleString()}</div>
+                      <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Credit Limit</div>
+                      <div className="text-sm font-semibold text-brand-navy mt-0.5">৳{(customer.creditLimit || 0).toLocaleString()}</div>
                     </div>
                     <div className="bg-white rounded-lg p-2.5 border border-[var(--color-border-tertiary)]">
-                      <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Credit Used</div>
-                      <div className="text-[13px] font-bold text-[#0B2545] mt-0.5">৳{(customer.creditUsed || 0).toLocaleString()}</div>
+                      <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold">Credit Used</div>
+                      <div className="text-sm font-semibold text-brand-navy mt-0.5">৳{(customer.creditUsed || 0).toLocaleString()}</div>
                     </div>
                   </div>
 
                   {/* Role & Tier selectors */}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold block mb-1">Role</label>
+                      <label className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold block mb-1">Role</label>
                       <select
                         value={customer.role || 'customer'}
                         onChange={e => handleUpdateRole(customerId, e.target.value)}
                         disabled={!customerId}
-                        className={`w-full text-[12px] px-2 py-2 rounded-lg font-medium border cursor-pointer min-h-[44px] ${getRoleColor(customer.role)}`}
+                        className={`w-full text-xs px-2 py-2 rounded-lg font-medium border cursor-pointer min-h-[44px] ${getRoleColor(customer.role)}`}
                       >
                         {ROLES.map(role => (
                           <option key={role.value} value={role.value}>{role.label}</option>
@@ -575,12 +575,12 @@ export default function CustomersManagement() {
                       </select>
                     </div>
                     <div>
-                      <label className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold block mb-1">Tier</label>
+                      <label className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold block mb-1">Tier</label>
                       <select
                         value={customer.b2bTier || 'Silver'}
                         onChange={e => handleUpdateTier(customerId, e.target.value)}
                         disabled={!customerId}
-                        className={`w-full text-[12px] px-2 py-2 rounded-lg font-medium border cursor-pointer min-h-[44px] ${getTierColor(customer.b2bTier)}`}
+                        className={`w-full text-xs px-2 py-2 rounded-lg font-medium border cursor-pointer min-h-[44px] ${getTierColor(customer.b2bTier)}`}
                       >
                         <option value="Silver">Silver</option>
                         <option value="Gold">Gold</option>
@@ -591,16 +591,16 @@ export default function CustomersManagement() {
 
                   {/* B2B Discount control */}
                   <div className="bg-white rounded-lg p-3 border border-[var(--color-border-tertiary)]">
-                    <div className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold mb-2">B2B Discount</div>
+                    <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide font-semibold mb-2">B2B Discount</div>
                     <div className="flex items-center gap-3">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={!!customer.b2bDiscountEnabled}
                           onChange={e => handleUpdateDiscount(customerId, e.target.checked, customer.b2bDiscountPct || 0)}
-                          className="w-4 h-4 accent-[#0E8A6E]"
+                          className="w-4 h-4 accent-brand-teal"
                         />
-                        <span className="text-[12px] font-medium text-[#0B2545]">Enable</span>
+                        <span className="text-xs font-medium text-brand-navy">Enable</span>
                       </label>
                       <div className="flex items-center gap-1">
                         <input
@@ -609,9 +609,9 @@ export default function CustomersManagement() {
                           defaultValue={customer.b2bDiscountPct || 0}
                           onBlur={e => handleUpdateDiscount(customerId, !!customer.b2bDiscountEnabled, Number(e.target.value))}
                           disabled={!customer.b2bDiscountEnabled}
-                          className="w-16 text-[13px] px-2 py-1 border border-[#E5E7EB] rounded-lg text-center disabled:opacity-40 min-h-[36px]"
+                          className="w-16 text-sm px-2 py-1 border border-[var(--color-border-primary)] rounded-lg text-center disabled:opacity-40 min-h-[36px]"
                         />
-                        <span className="text-[13px] text-[#6B7280] font-medium">%</span>
+                        <span className="text-sm text-[var(--color-text-secondary)] font-medium">%</span>
                       </div>
                     </div>
                   </div>
@@ -620,13 +620,13 @@ export default function CustomersManagement() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setEditingCustomer(customer)}
-                      className="min-h-[48px] px-4 py-2 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg text-[13px] font-semibold hover:bg-[#F0FBF8] transition-colors"
+                      className="min-h-[48px] px-4 py-2 border border-brand-teal text-brand-teal rounded-lg text-sm font-semibold hover:bg-brand-teal-tint transition-colors"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => setDeleteConfirm({ id: customerId, name: customer.companyName || customer.name })}
-                      className="min-h-[48px] px-4 py-2 border border-[#DC2626] text-[#DC2626] rounded-lg text-[13px] font-semibold hover:bg-[#FEE2E2] transition-colors"
+                      className="min-h-[48px] px-4 py-2 border border-[var(--color-status-danger)] text-[var(--color-status-danger)] rounded-lg text-sm font-semibold hover:bg-[var(--color-status-danger-tint)] transition-colors"
                     >
                       Delete
                     </button>
@@ -644,19 +644,19 @@ export default function CustomersManagement() {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-xs px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <span className="hidden sm:inline">← Prev</span>
             <span className="sm:hidden">←</span>
           </button>
-          <span className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)]">
+          <span className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
             <span className="hidden sm:inline">Page {page} of {totalPages}</span>
             <span className="sm:hidden">{page}/{totalPages}</span>
           </span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-xs px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <span className="hidden sm:inline">Next →</span>
             <span className="sm:hidden">→</span>

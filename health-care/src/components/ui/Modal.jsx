@@ -84,7 +84,7 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-modal overflow-y-auto">
       {/* Backdrop — click outside to close */}
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -100,7 +100,7 @@ export default function Modal({
           aria-modal="true"
           aria-labelledby={title ? titleId : undefined}
           tabIndex={-1}
-          className={`relative bg-white rounded-t-2xl sm:rounded-lg shadow-xl ${sizes[size]} w-full max-h-[90vh] overflow-y-auto focus:outline-none`}
+          className={`relative bg-white rounded-t-lg sm:rounded-lg shadow-xl ${sizes[size]} w-full max-h-[90vh] overflow-y-auto focus:outline-none`}
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -110,7 +110,7 @@ export default function Modal({
               {title && (
                 <h3
                   id={titleId}
-                  className="text-[15px] sm:text-[16px] font-semibold font-[family-name:var(--font-lora)]"
+                  className="text-base sm:text-base font-semibold font-[family-name:var(--font-lora)]"
                 >
                   {title}
                 </h3>

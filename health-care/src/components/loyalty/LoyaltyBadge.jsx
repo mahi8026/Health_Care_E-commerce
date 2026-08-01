@@ -1,9 +1,9 @@
 'use client';
 
 const TIER_STYLES = {
-  Bronze:   { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',   icon: '🥉' },
-  Silver:   { bg: 'bg-gray-50',    text: 'text-gray-600',    border: 'border-gray-300',    icon: '🥈' },
-  Gold:     { bg: 'bg-yellow-50',  text: 'text-yellow-700',  border: 'border-yellow-300',  icon: '🥇' },
+  Bronze:   { bg: 'bg-[var(--color-status-warning-tint)]',   text: 'text-[var(--color-status-warning)]',   border: 'border-[var(--color-status-warning-tint)]',   icon: '🥉' },
+  Silver:   { bg: 'bg-[var(--color-background-secondary)]',    text: 'text-[var(--color-text-secondary)]',    border: 'border-[var(--color-border-primary)]',    icon: '🥈' },
+  Gold:     { bg: 'bg-[var(--color-status-warning-tint)]',  text: 'text-[var(--color-status-warning)]',  border: 'border-[var(--color-status-warning-tint)]',  icon: '🥇' },
   Platinum: { bg: 'bg-purple-50',  text: 'text-purple-700',  border: 'border-purple-200',  icon: '💎' },
 };
 

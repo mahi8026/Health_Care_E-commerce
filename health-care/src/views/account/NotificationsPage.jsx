@@ -43,8 +43,8 @@ function Toggle({ checked, onChange, id }) {
       aria-checked={checked}
       id={id}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0E8A6E] focus-visible:ring-offset-2 ${
-        checked ? 'bg-[#0E8A6E]' : 'bg-gray-200'
+      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 ${
+        checked ? 'bg-brand-teal' : 'bg-[var(--color-background-muted)]'
       }`}
     >
       <span
@@ -67,7 +67,7 @@ export default function NotificationsPage() {
   // Load preferences from user object
   useEffect(() => {
     if (user?.notificationPreferences) {
-      setPrefs({ ...DEFAULT_PREFS, ...user.notificationPreferences });
+      void Promise.resolve().then(() => setPrefs({ ...DEFAULT_PREFS, ...user.notificationPreferences }));
     }
   }, [user]);
 
@@ -99,8 +99,8 @@ export default function NotificationsPage() {
       <div className="space-y-6">
         {PREFS.map(({ group, items }) => (
           <div key={group} className="bg-white rounded-lg border border-[var(--color-border-tertiary)] overflow-hidden">
-            <div className="px-5 py-3 border-b border-[var(--color-border-tertiary)] bg-gray-50">
-              <h2 className="text-[13px] font-semibold text-[#0B2545]">{group}</h2>
+            <div className="px-5 py-3 border-b border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
+              <h2 className="text-sm font-semibold text-brand-navy">{group}</h2>
             </div>
             <ul className="divide-y divide-[var(--color-border-tertiary)]">
               {items.map(({ key, label, description }) => (
@@ -108,11 +108,11 @@ export default function NotificationsPage() {
                   <div className="flex-1 min-w-0">
                     <label
                       htmlFor={`pref-${key}`}
-                      className="text-[13px] font-medium text-[#0B2545] cursor-pointer"
+                      className="text-sm font-medium text-brand-navy cursor-pointer"
                     >
                       {label}
                     </label>
-                    <p className="text-[12px] text-[var(--color-text-secondary)] mt-0.5">{description}</p>
+                    <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{description}</p>
                   </div>
                   <Toggle
                     id={`pref-${key}`}
@@ -126,7 +126,7 @@ export default function NotificationsPage() {
         ))}
 
         {error && (
-          <p className="text-[12px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+          <p className="text-xs text-[var(--color-status-danger)] bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-lg px-4 py-2.5">
             {error}
           </p>
         )}
@@ -136,12 +136,12 @@ export default function NotificationsPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2.5 bg-[#0B2545] hover:bg-[#0d2d52] disabled:opacity-60 text-white text-[13px] font-semibold rounded-lg transition-colors"
+            className="px-5 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
           >
             {saving ? 'Saving…' : 'Save preferences'}
           </button>
           {saved && (
-            <span className="text-[12px] text-[#0E8A6E] font-medium flex items-center gap-1.5">
+            <span className="text-xs text-brand-teal font-medium flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12" />
               </svg>

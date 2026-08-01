@@ -45,16 +45,16 @@ export default function AccountPageShell({
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
           <Link
             href={backHref}
-            className="inline-flex items-center gap-2 text-[12px] text-[var(--color-text-secondary)] hover:text-[#0E8A6E] transition-colors mb-3"
+            className="inline-flex items-center gap-2 text-xs text-[var(--color-text-secondary)] hover:text-brand-teal transition-colors mb-3"
           >
             <FaArrowLeft size={11} />
             {backLabel}
           </Link>
-          <h1 className="text-[20px] sm:text-[24px] font-semibold text-[#0B2545] font-[family-name:var(--font-lora)]">
+          <h1 className="text-xl sm:text-2xl font-semibold text-brand-navy font-[family-name:var(--font-lora)]">
             {title}
           </h1>
           {description && (
-            <p className="text-[12px] sm:text-[13px] text-[var(--color-text-secondary)] mt-1">
+            <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-1">
               {description}
             </p>
           )}
@@ -70,16 +70,16 @@ export default function AccountPageShell({
 
 export function AccountBreadcrumb({ items }) {
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-[var(--color-text-secondary)] mb-4 flex-wrap">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)] mb-4 flex-wrap">
       {items.map((item, i) => (
         <span key={item.href || item.label} className="flex items-center gap-1.5">
           {i > 0 && <FaChevronRight size={8} className="opacity-50" />}
           {item.href ? (
-            <Link href={item.href} className="hover:text-[#0E8A6E] transition-colors">
+            <Link href={item.href} className="hover:text-brand-teal transition-colors">
               {item.label}
             </Link>
           ) : (
-            <span className="text-[#0B2545] font-medium">{item.label}</span>
+            <span className="text-brand-navy font-medium">{item.label}</span>
           )}
         </span>
       ))}

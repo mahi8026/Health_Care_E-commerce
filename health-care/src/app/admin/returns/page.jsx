@@ -9,8 +9,8 @@ const ReturnsManagement = dynamic(
     ssr: false,
     loading: () => (
       <div className="p-5 px-6 animate-pulse space-y-4">
-        <div className="h-10 bg-gray-200 rounded w-full" />
-        <div className="h-64 bg-gray-200 rounded w-full" />
+        <div className="h-10 bg-[var(--color-background-muted)] rounded w-full" />
+        <div className="h-64 bg-[var(--color-background-muted)] rounded w-full" />
       </div>
     ),
   }

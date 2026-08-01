@@ -54,13 +54,13 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
 
   return (
     <div
-      className={`hidden lg:block fixed top-0 left-0 right-0 z-[1000] bg-white border-b-2 border-gray-200 shadow-xl transition-all duration-500 ${
+      className={`hidden lg:block fixed top-0 left-0 right-0 z-sticky bg-white border-b-2 border-[var(--color-border-primary)] shadow-xl transition-all duration-500 ${
         visible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-6">
         {/* Product Image */}
-        <div className="relative w-16 h-16 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+        <div className="relative w-16 h-16 bg-[var(--color-background-secondary)] rounded-lg overflow-hidden flex-shrink-0 border border-[var(--color-border-primary)]">
           {product.images && product.images[0] ? (
             <Image
               src={product.images[0].url}
@@ -70,7 +70,7 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
               className="object-contain p-1"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">
+            <div className="w-full h-full flex items-center justify-center text-[var(--color-text-tertiary)] text-2xl">
               🏥
             </div>
           )}
@@ -83,18 +83,18 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
               {brandName}
             </div>
           )}
-          <h3 className="text-sm font-bold text-gray-900 truncate">
+          <h3 className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
             {product.name}
           </h3>
         </div>
 
         {/* Price */}
         <div className="flex-shrink-0">
-          <div className="text-2xl font-extrabold text-gray-900">
+          <div className="text-2xl font-semibold text-[var(--color-text-primary)]">
             {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
           </div>
           {product.oldPrice && product.oldPrice > product.price && (
-            <div className="text-sm text-gray-500 line-through text-right">
+            <div className="text-sm text-[var(--color-text-secondary)] line-through text-right">
               ৳{product.oldPrice?.toLocaleString()}
             </div>
           )}
@@ -102,11 +102,11 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
 
         {/* Quantity Selector */}
         {inStock && (
-          <div className="flex items-center border-2 border-gray-300 rounded-xl overflow-hidden flex-shrink-0">
+          <div className="flex items-center border-2 border-[var(--color-border-primary)] rounded-xl overflow-hidden flex-shrink-0">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               disabled={quantity <= 1}
-              className="w-10 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="w-10 h-10 flex items-center justify-center bg-[var(--color-background-secondary)] hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Decrease quantity"
             >
               <FaMinus size={12} />
@@ -115,14 +115,14 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
-              className="w-14 h-10 text-center text-base font-bold text-gray-900 border-none focus:outline-none"
+              className="w-14 h-10 text-center text-base font-semibold text-[var(--color-text-primary)] border-none focus:outline-none"
               min="1"
               max={product.stock}
             />
             <button
               onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
               disabled={quantity >= product.stock}
-              className="w-10 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="w-10 h-10 flex items-center justify-center bg-[var(--color-background-secondary)] hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Increase quantity"
             >
               <FaPlus size={12} />
@@ -135,7 +135,7 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
           <button
             onClick={handleAddToCart}
             disabled={adding}
-            className="px-8 py-3 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold text-base transition-all duration-300 hover:shadow-lg disabled:opacity-60 flex items-center gap-3 flex-shrink-0 relative overflow-hidden group"
+            className="px-8 py-3 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-lg disabled:opacity-60 flex items-center gap-3 flex-shrink-0 relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
             {adding ? (
@@ -151,7 +151,7 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
             )}
           </button>
         ) : (
-          <div className="px-8 py-3 bg-gray-300 text-gray-500 rounded-xl font-bold text-base flex-shrink-0">
+          <div className="px-8 py-3 bg-[var(--color-background-muted)] text-[var(--color-text-secondary)] rounded-xl font-semibold text-base flex-shrink-0">
             Out of Stock
           </div>
         )}

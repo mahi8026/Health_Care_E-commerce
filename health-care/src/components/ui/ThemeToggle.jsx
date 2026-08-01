@@ -17,15 +17,14 @@ export default function ThemeToggle({ className = '' }) {
     <button
       onClick={toggleTheme}
       className={`
-        relative w-10 h-10 rounded-full
+        relative w-11 h-11 rounded-full
         flex items-center justify-center
         transition-all duration-300
         hover:scale-110 active:scale-95
-        bg-gray-100 dark:bg-gray-800
-        text-gray-700 dark:text-gray-300
-        hover:bg-gray-200 dark:hover:bg-gray-700
-        focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
-        dark:focus:ring-offset-gray-900
+        bg-[var(--color-background-tertiary)]
+        text-[var(--color-text-primary)]
+        hover:bg-[var(--color-background-muted)]
+        focus:outline-none focus:ring-2 focus:ring-brand-teal focus:ring-offset-2
         ${className}
       `}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
@@ -66,11 +65,11 @@ export function ThemeToggleCompact({ className = '' }) {
     <button
       onClick={toggleTheme}
       className={`
-        relative w-8 h-8 rounded-lg
+        relative w-11 h-11 rounded-lg
         flex items-center justify-center
         transition-all duration-200
-        hover:bg-gray-100 dark:hover:bg-gray-800
-        text-gray-600 dark:text-gray-400
+        hover:bg-[var(--color-background-tertiary)]
+        text-[var(--color-text-secondary)]
         ${className}
       `}
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}

@@ -75,7 +75,7 @@ export default function OptimizedImage({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#F1F5F9',
+          background: 'var(--color-background-tertiary)',
           fontSize: Math.min((width || 100) * 0.4, 52),
           borderRadius: style.borderRadius || 0,
           ...style,

@@ -35,10 +35,10 @@ function CopyButton({ text }) {
     <button
       type="button"
       onClick={handleCopy}
-      className={`ml-2 px-2 py-0.5 rounded text-[10px] font-semibold transition-all min-h-[28px] min-w-[44px] ${
+      className={`ml-2 px-2 py-0.5 rounded text-xs font-semibold transition-all min-h-[44px] min-w-[44px] ${
         copied
-          ? 'bg-[#D1FAE5] text-[#065F46]'
-          : 'bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB] hover:text-[#374151]'
+          ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
+          : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-muted)] hover:text-[var(--color-text-primary)]'
       }`}
       title={`Copy ${text}`}
     >
@@ -51,13 +51,13 @@ export default function BankTransferForm({ orderNumber }) {
   const referenceText = orderNumber || 'Your Order Number';
 
   return (
-    <div className="mt-3 rounded-xl border border-[#BFDBFE] bg-[#EFF6FF] overflow-hidden">
+    <div className="mt-3 rounded-xl border border-[var(--color-status-info-tint)] bg-[var(--color-status-info-tint)] overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 bg-[#DBEAFE] border-b border-[#BFDBFE] flex items-center gap-2">
+      <div className="px-4 py-3 bg-[var(--color-status-info-tint)] border-b border-[var(--color-status-info-tint)] flex items-center gap-2">
         <span className="text-lg">🏦</span>
         <div>
-          <p className="text-[13px] font-bold text-[#1E40AF] m-0">Bank Transfer Details</p>
-          <p className="text-[11px] text-[#3B82F6] m-0">Transfer to the account below and use your order number as reference</p>
+          <p className="text-sm font-semibold text-[var(--color-status-info)] m-0">Bank Transfer Details</p>
+          <p className="text-xs text-[var(--color-status-info)] m-0">Transfer to the account below and use your order number as reference</p>
         </div>
       </div>
 
@@ -66,10 +66,10 @@ export default function BankTransferForm({ orderNumber }) {
         {BANK_DETAILS.map(({ label, value, icon, mono }) => (
           <div key={label} className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-[13px] flex-shrink-0">{icon}</span>
+              <span className="text-sm flex-shrink-0">{icon}</span>
               <div className="min-w-0">
-                <p className="text-[10px] text-[#6B7280] m-0 uppercase tracking-wide font-semibold">{label}</p>
-                <p className={`text-[12px] text-[#1E3A5F] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>
+                <p className="text-xs text-[var(--color-text-secondary)] m-0 uppercase tracking-wide font-semibold">{label}</p>
+                <p className={`text-xs text-[#1E3A5F] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>
                   {value}
                 </p>
               </div>
@@ -80,16 +80,16 @@ export default function BankTransferForm({ orderNumber }) {
       </div>
 
       {/* Reference Number — highlighted */}
-      <div className="mx-4 mb-3 rounded-lg bg-[#FEF3C7] border border-[#FCD34D] px-3 py-2.5">
+      <div className="mx-4 mb-3 rounded-lg bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] px-3 py-2.5">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-[10px] text-[#92400E] font-bold uppercase tracking-wide m-0">
+            <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">
               ⚠️ Payment Reference (Required)
             </p>
-            <p className="text-[13px] font-bold text-[#78350F] font-mono m-0 mt-0.5">
+            <p className="text-sm font-semibold text-[#78350F] font-mono m-0 mt-0.5">
               {referenceText}
             </p>
-            <p className="text-[10px] text-[#92400E] m-0 mt-0.5">
+            <p className="text-xs text-[var(--color-status-warning)] m-0 mt-0.5">
               You MUST include this as the transfer reference
             </p>
           </div>
@@ -99,16 +99,16 @@ export default function BankTransferForm({ orderNumber }) {
 
       {/* Instructions */}
       <div className="px-4 pb-3">
-        <div className="rounded-lg bg-white border border-[#BFDBFE] px-3 py-2.5 space-y-1.5">
-          <p className="text-[11px] font-bold text-[#1E40AF] m-0">📋 After transferring:</p>
+        <div className="rounded-lg bg-white border border-[var(--color-status-info-tint)] px-3 py-2.5 space-y-1.5">
+          <p className="text-xs font-semibold text-[var(--color-status-info)] m-0">📋 After transferring:</p>
           {[
             'Take a screenshot or note your transaction ID',
             'Your order will be confirmed within 1–2 business hours',
             'You\'ll receive an email confirmation once payment is verified',
             'Contact mahimrahman07@gmail.com if you need help',
           ].map((step, i) => (
-            <p key={i} className="text-[11px] text-[#374151] m-0 flex items-start gap-1.5">
-              <span className="text-[#3B82F6] font-bold flex-shrink-0">{i + 1}.</span>
+            <p key={i} className="text-xs text-[var(--color-text-primary)] m-0 flex items-start gap-1.5">
+              <span className="text-[var(--color-status-info)] font-semibold flex-shrink-0">{i + 1}.</span>
               {step}
             </p>
           ))}

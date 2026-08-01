@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useCompare } from '@/context/CompareContext';
@@ -17,14 +17,14 @@ export default function CompareBar() {
   return (
     <>
       <div
-        className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 z-[400] bg-[#0B2545] text-white rounded-2xl shadow-2xl p-4 flex items-center justify-between gap-3 animate-slideUp"
+        className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 z-sticky bg-brand-navy text-white rounded-2xl shadow-lg p-4 flex items-center justify-between gap-3 animate-slideUp"
         style={{ maxWidth: 'min(500px, calc(100vw - 32px))' }}
       >
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-bold mb-1">
+          <div className="text-sm font-semibold mb-1">
             {compareList.length} {compareList.length === 1 ? 'Product' : 'Products'} Selected
           </div>
-          <div className="text-[11px] text-white/70">
+          <div className="text-xs text-white/70">
             {compareList.length < 4 ? `Add up to ${4 - compareList.length} more to compare` : 'Maximum reached'}
           </div>
         </div>
@@ -32,7 +32,7 @@ export default function CompareBar() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2.5 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-[13px] font-bold transition-colors whitespace-nowrap"
+            className="px-4 py-2.5 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
           >
             Compare Now
           </button>

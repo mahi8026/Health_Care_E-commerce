@@ -75,11 +75,11 @@ export default function TrendingProducts({ limit = 12 }) {
       <div className="py-8">
         <div className="flex items-center gap-2 mb-6">
           <FaFire className="text-orange-500 text-2xl" />
-          <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
+          <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">Trending Now</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-80"></div>
+            <div key={i} className="bg-[var(--color-background-muted)] animate-pulse rounded-2xl h-80"></div>
           ))}
         </div>
       </div>
@@ -96,15 +96,15 @@ export default function TrendingProducts({ limit = 12 }) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <FaFire className="text-orange-500 text-2xl animate-pulse" />
-          <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
-          <span className="text-sm text-gray-500 bg-orange-50 px-3 py-1 rounded-full font-medium">
+          <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">Trending Now</h2>
+          <span className="text-sm text-[var(--color-text-secondary)] bg-orange-50 px-3 py-1 rounded-full font-medium">
             Hot Picks
           </span>
         </div>
         
         <Link
           href="/products"
-          className="text-sm text-[#0E8A6E] hover:text-[#0c7a61] font-semibold hover:underline"
+          className="text-sm text-brand-teal hover:text-[var(--color-brand-teal-hover)] font-semibold hover:underline"
         >
           View All →
         </Link>
@@ -126,15 +126,15 @@ export default function TrendingProducts({ limit = 12 }) {
               href={`/products/${productSlug}`}
               className="group"
             >
-              <div className="bg-white border-2 border-gray-200 rounded-2xl p-3 hover:border-orange-500 hover:shadow-xl transition-all duration-300 h-full flex flex-col relative">
+              <div className="bg-white border-2 border-[var(--color-border-primary)] rounded-2xl p-3 hover:border-orange-500 hover:shadow-xl transition-all duration-300 h-full flex flex-col relative">
                 {/* Trending Badge */}
-                <div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                <div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-orange-500 to-danger text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
                   <FaFire size={10} />
                   <span>Hot</span>
                 </div>
 
                 {/* Image */}
-                <div className="relative w-full h-40 mb-3 bg-gray-50 rounded-xl overflow-hidden">
+                <div className="relative w-full aspect-square mb-3 bg-[var(--color-background-secondary)] rounded-xl overflow-hidden">
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
@@ -144,7 +144,7 @@ export default function TrendingProducts({ limit = 12 }) {
                       className="object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-5xl">
+                    <div className="w-full h-full flex items-center justify-center text-[var(--color-text-tertiary)] text-5xl">
                       🏥
                     </div>
                   )}
@@ -152,17 +152,18 @@ export default function TrendingProducts({ limit = 12 }) {
                   {/* Wishlist Button */}
                   <button
                     onClick={(e) => handleToggleWishlist(e, product._id || product.id)}
-                    className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
-                      inWishlist ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                    className={`absolute top-2 right-2 w-11 h-11 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                      inWishlist ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)]'
                     }`}
                     aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                    aria-pressed={inWishlist}
                   >
                     <FaHeart size={14} className={inWishlist ? 'fill-current' : ''} />
                   </button>
 
                   {/* Stock Badge */}
                   {product.stock === 0 && (
-                    <div className="absolute bottom-2 left-2 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                    <div className="absolute bottom-2 left-2 px-2 py-1 bg-[var(--color-status-danger-tint)]0 text-white text-xs font-semibold rounded-full">
                       Out of Stock
                     </div>
                   )}
@@ -176,7 +177,7 @@ export default function TrendingProducts({ limit = 12 }) {
                 )}
 
                 {/* Name */}
-                <h3 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2 line-clamp-2 min-h-[40px]">
                   {product.name}
                 </h3>
 
@@ -184,15 +185,15 @@ export default function TrendingProducts({ limit = 12 }) {
                 <div className="mb-3 mt-auto">
                   {product.oldPrice && product.oldPrice > product.price ? (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-lg font-extrabold text-gray-900">
+                      <span className="text-lg font-semibold text-[var(--color-text-primary)]">
                         ৳{product.price?.toLocaleString()}
                       </span>
-                      <span className="text-sm text-gray-500 line-through">
+                      <span className="text-sm text-[var(--color-text-secondary)] line-through">
                         ৳{product.oldPrice?.toLocaleString()}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-lg font-extrabold text-gray-900">
+                    <span className="text-lg font-semibold text-[var(--color-text-primary)]">
                       {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
                     </span>
                   )}
@@ -202,7 +203,7 @@ export default function TrendingProducts({ limit = 12 }) {
                 {product.stock > 0 && product.price > 0 && (
                   <button
                     onClick={(e) => handleQuickAdd(e, product)}
-                    className="w-full py-2 px-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl font-bold text-xs transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100"
+                    className="w-full py-2 px-3 bg-gradient-to-r from-orange-500 to-danger hover:from-orange-600 hover:to-danger text-white rounded-xl font-semibold text-xs transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100"
                   >
                     <FaShoppingCart size={12} />
                     <span>Quick Add</span>

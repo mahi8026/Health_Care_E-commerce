@@ -91,10 +91,10 @@ export default function InstallPWA() {
   if (!showPrompt || isStandalone) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-50 animate-slide-up">
-      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-dropdown animate-slide-up">
+      <div className="bg-white rounded-2xl shadow-lg border border-[var(--color-border-primary)] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-green-600 px-5 py-3 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-600 to-[var(--color-status-success)] px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
               <FiSmartphone className="text-white text-xl" />
@@ -118,26 +118,26 @@ export default function InstallPWA() {
           {isIOS ? (
             // iOS Install Instructions
             <div className="space-y-3">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-[var(--color-text-primary)]">
                 Install this app on your iPhone for quick access and offline features.
               </p>
-              <ol className="text-xs text-gray-600 space-y-2 pl-4">
+              <ol className="text-xs text-[var(--color-text-secondary)] space-y-2 pl-4">
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-700 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">1</span>
+                  <span className="bg-blue-100 text-blue-700 font-semibold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">1</span>
                   <span>Tap the <strong>Share</strong> button in Safari (box with arrow)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-700 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</span>
+                  <span className="bg-blue-100 text-blue-700 font-semibold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</span>
                   <span>Scroll down and tap <strong>&quot;Add to Home Screen&quot;</strong></span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-100 text-blue-700 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</span>
+                  <span className="bg-blue-100 text-blue-700 font-semibold rounded-full w-5 h-5 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</span>
                   <span>Tap <strong>&quot;Add&quot;</strong> in the top-right corner</span>
                 </li>
               </ol>
               <button
                 onClick={handleDismiss}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors"
+                className="w-full bg-[var(--color-background-tertiary)] hover:bg-[var(--color-background-muted)] text-[var(--color-text-primary)] font-medium py-2.5 px-4 rounded-lg text-sm transition-colors"
               >
                 Got it
               </button>
@@ -146,24 +146,24 @@ export default function InstallPWA() {
             // Android/Chrome Install
             <div className="space-y-4">
               <div className="space-y-2">
-                <p className="text-sm text-gray-700 font-medium">
+                <p className="text-sm text-[var(--color-text-primary)] font-medium">
                   Quick access from your home screen
                 </p>
-                <ul className="text-xs text-gray-600 space-y-1">
+                <ul className="text-xs text-[var(--color-text-secondary)] space-y-1">
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-[var(--color-status-success)]">✓</span>
                     <span>Works offline</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-[var(--color-status-success)]">✓</span>
                     <span>Faster loading</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-[var(--color-status-success)]">✓</span>
                     <span>Push notifications</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-[var(--color-status-success)]">✓</span>
                     <span>Native app feel</span>
                   </li>
                 </ul>
@@ -179,7 +179,7 @@ export default function InstallPWA() {
                 </button>
                 <button
                   onClick={handleDismiss}
-                  className="px-4 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2.5 text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] rounded-lg text-sm font-medium transition-colors"
                 >
                   Maybe Later
                 </button>

@@ -36,7 +36,7 @@ export default function B2BStatistics() {
   }
 
   if (!stats) {
-    return <div className="text-center py-12 text-gray-500">No statistics available</div>;
+    return <div className="text-center py-12 text-[var(--color-text-secondary)]">No statistics available</div>;
   }
 
   const statCards = [
@@ -74,9 +74,9 @@ export default function B2BStatistics() {
 
   const colorClasses = {
     blue: 'bg-blue-100 text-blue-600',
-    yellow: 'bg-yellow-100 text-yellow-600',
-    green: 'bg-green-100 text-green-600',
-    red: 'bg-red-100 text-red-600',
+    yellow: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+    green: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+    red: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
     purple: 'bg-purple-100 text-purple-600'
   };
 
@@ -90,8 +90,8 @@ export default function B2BStatistics() {
             <div key={stat.label} className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                  <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)] mb-1">{stat.label}</p>
+                  <p className="text-3xl font-semibold text-[var(--color-text-primary)]">{stat.value}</p>
                 </div>
                 <div className={`p-4 rounded-lg ${colorClasses[stat.color]}`}>
                   <Icon className="w-8 h-8" />
@@ -104,34 +104,34 @@ export default function B2BStatistics() {
 
       {/* Approval Rate */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Approval Rate</h3>
+        <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Approval Rate</h3>
         <div className="space-y-3">
           {stats.approvedB2B + stats.rejectedB2B > 0 && (
             <>
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">Approved</span>
-                  <span className="text-sm font-medium text-green-600">
+                  <span className="text-sm text-[var(--color-text-secondary)]">Approved</span>
+                  <span className="text-sm font-medium text-[var(--color-status-success)]">
                     {((stats.approvedB2B / (stats.approvedB2B + stats.rejectedB2B)) * 100).toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-[var(--color-background-muted)] rounded-full h-2">
                   <div
-                    className="bg-green-600 h-2 rounded-full"
+                    className="bg-success h-2 rounded-full"
                     style={{ width: `${(stats.approvedB2B / (stats.approvedB2B + stats.rejectedB2B)) * 100}%` }}
                   />
                 </div>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">Rejected</span>
-                  <span className="text-sm font-medium text-red-600">
+                  <span className="text-sm text-[var(--color-text-secondary)]">Rejected</span>
+                  <span className="text-sm font-medium text-[var(--color-status-danger)]">
                     {((stats.rejectedB2B / (stats.approvedB2B + stats.rejectedB2B)) * 100).toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-[var(--color-background-muted)] rounded-full h-2">
                   <div
-                    className="bg-red-600 h-2 rounded-full"
+                    className="bg-danger h-2 rounded-full"
                     style={{ width: `${(stats.rejectedB2B / (stats.approvedB2B + stats.rejectedB2B)) * 100}%` }}
                   />
                 </div>
@@ -139,13 +139,13 @@ export default function B2BStatistics() {
             </>
           )}
           {stats.approvedB2B + stats.rejectedB2B === 0 && (
-            <p className="text-center text-gray-500 py-4">No applications processed yet</p>
+            <p className="text-center text-[var(--color-text-secondary)] py-4">No applications processed yet</p>
           )}
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-r from-[#0E8A6E] to-[#0c7a5f] rounded-lg shadow p-6 text-white">
+      <div className="bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-lg shadow p-6 text-white">
         <h3 className="text-lg font-semibold mb-2">Need Attention</h3>
         <p className="text-white/90 mb-4">
           You have <strong>{stats.pendingApplications}</strong> B2B applications waiting for review
@@ -153,7 +153,7 @@ export default function B2BStatistics() {
         {stats.pendingApplications > 0 && (
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-white text-[#0E8A6E] rounded-lg hover:bg-gray-100 font-medium"
+            className="px-4 py-2 bg-white text-brand-teal rounded-lg hover:bg-[var(--color-background-tertiary)] font-medium"
           >
             Review Applications
           </button>

@@ -69,10 +69,10 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
 
   return (
     <div
-      className="snap-start flex-shrink-0 w-[240px] bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+      className="snap-start flex-shrink-0 w-[240px] bg-white rounded-lg border border-[var(--color-border-primary)] overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
       onClick={onCardClick}
     >
-      <div className="relative h-56 bg-gray-50 overflow-hidden">
+      <div className="relative aspect-square w-full bg-[var(--color-background-secondary)] overflow-hidden">
         {optimizedImg ? (
           <Image
             src={optimizedImg}
@@ -83,13 +83,13 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
             className="group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl text-gray-300">
+          <div className="w-full h-full flex items-center justify-center text-6xl text-[var(--color-text-tertiary)]">
             🏥
           </div>
         )}
 
         {hasDiscount && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+          <div className="absolute top-3 left-3 bg-[var(--color-status-danger-tint)]0 text-white text-xs font-semibold px-2 py-1 rounded">
             -{discount}%
           </div>
         )}
@@ -97,21 +97,21 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
 
       <div className="p-4">
         {brandName && (
-          <div className="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-2">
+          <div className="text-xs font-semibold text-brand-teal uppercase tracking-wider mb-2">
             {brandName}
           </div>
         )}
 
-        <h3 className="font-semibold text-gray-900 text-sm mb-3 line-clamp-2 min-h-[40px]">
+        <h3 className="font-semibold text-[var(--color-text-primary)] text-sm mb-3 line-clamp-2 min-h-[40px]">
           {product.name}
         </h3>
 
         <div className="mb-3">
-          <div className="text-xl font-bold text-gray-900">
+          <div className="text-xl font-semibold text-[var(--color-text-primary)]">
             ৳{price > 0 ? price.toLocaleString() : 'Call'}
           </div>
           {hasDiscount && (
-            <div className="text-sm text-gray-400 line-through">
+            <div className="text-sm text-[var(--color-text-secondary)] line-through">
               ৳{oldPrice.toLocaleString()}
             </div>
           )}
@@ -119,7 +119,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
 
         <button
           onClick={onAddToCart}
-          className="w-full bg-teal-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-brand-teal text-white py-2 rounded-lg text-sm font-semibold hover:bg-brand-teal transition-colors flex items-center justify-center gap-2"
         >
           + Cart
         </button>
@@ -183,12 +183,12 @@ export default function CategoryProductSections({ categories = [] }) {
 
   if (loading) {
     return (
-      <div className="py-8 bg-gray-50">
+      <div className="py-8 bg-[var(--color-background-secondary)]">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6"></div>
+          <div className="h-8 w-48 bg-[var(--color-background-muted)] rounded animate-pulse mb-6"></div>
           <div className="flex gap-4 overflow-hidden">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-[280px] h-[320px] bg-gray-200 rounded-xl animate-pulse flex-shrink-0"></div>
+              <div key={i} className="w-[280px] h-[320px] bg-[var(--color-background-muted)] rounded-xl animate-pulse flex-shrink-0"></div>
             ))}
           </div>
         </div>
@@ -207,26 +207,26 @@ export default function CategoryProductSections({ categories = [] }) {
           if (!catProducts || catProducts.length === 0) return null;
 
           return (
-          <section key={categoryName} className="py-10 bg-white border-b border-gray-100">
+          <section key={categoryName} className="py-10 bg-white border-b border-[var(--color-border-tertiary)]">
             <div className="max-w-7xl mx-auto px-4">
               {/* Section Header - Matches image design with || bars */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   {/* Double vertical bars - key design element from image */}
                   <div className="flex gap-1">
-                    <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
-                    <div className="w-1 h-6 bg-teal-600 rounded-full"></div>
+                    <div className="w-1 h-6 bg-brand-teal rounded-full"></div>
+                    <div className="w-1 h-6 bg-brand-teal rounded-full"></div>
                   </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  <h2 className="text-xl md:text-2xl font-semibold text-[var(--color-text-primary)]">
                     {categoryName}
-                    <span className="ml-2 text-sm font-normal text-gray-500">
+                    <span className="ml-2 text-sm font-normal text-[var(--color-text-secondary)]">
                       ({categoryData?.productCount || catProducts.length} products)
                     </span>
                   </h2>
                 </div>
                 <Link
                   href={slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(categoryName)}`}
-                  className="flex items-center gap-1 text-teal-600 hover:text-teal-700 font-semibold text-sm transition-colors"
+                  className="flex items-center gap-1 text-brand-teal hover:text-brand-teal font-semibold text-sm transition-colors"
                 >
                   View All Items →
                 </Link>
@@ -238,7 +238,7 @@ export default function CategoryProductSections({ categories = [] }) {
                   className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory"
                   style={{
                     scrollbarWidth: 'thin',
-                    scrollbarColor: '#0E8A6E #f3f4f6',
+                    scrollbarColor: 'var(--color-brand-teal) #f3f4f6',
                   }}
                 >
                   {catProducts.map((product) => (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, memo, useMemo, lazy, Suspense } from 'react';
+import { showToast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
@@ -44,24 +45,24 @@ const VideoSection = lazy(() => import('@/components/home/VideoSection'));
 
 // All 18 categories - matches database (fallback only if API fails)
 const FALLBACK_CATEGORIES = [
-  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: '#EFF6FF' },
-  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: '#F0FDF4' },
+  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: 'var(--color-status-info-tint)' },
+  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: 'var(--color-status-success-tint)' },
   { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical · Molecular', color: '#FAF5FF' },
-  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU · Ventilators · Dialysis', color: '#FFF7ED' },
-  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges · Microscopes', color: '#F0FDFA' },
-  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: '#FFF1F2' },
-  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: '#FFFBEB' },
-  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: '#F8FAFC' },
-  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings · Tapes · Ostomy', color: '#F0FDF4' },
+  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU · Ventilators · Dialysis', color: 'var(--color-status-warning-tint)' },
+  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges · Microscopes', color: 'var(--color-status-success-tint)' },
+  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: 'var(--color-status-danger-tint)' },
+  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: 'var(--color-status-warning-tint)' },
+  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: 'var(--color-background-secondary)' },
+  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings · Tapes · Ostomy', color: 'var(--color-status-success-tint)' },
   { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters · Test Strips', color: '#FAF5FF' },
-  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS · Heating Pads', color: '#FFF7ED' },
-  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes · Otoscopes', color: '#EFF6FF' },
-  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas · Infusion Sets', color: '#F0FDFA' },
-  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags · Collection Sets', color: '#FFF1F2' },
-  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers · Oxygen Therapy', color: '#EFF6FF' },
-  { name: 'Medical Supplies', icon: <FaShoppingCart />, desc: 'General Medical Supplies', color: '#F8FAFC' },
-  { name: 'Compression Garments', icon: <FaShieldAlt />, desc: 'Compression Stockings', color: '#FFF1F2' },
-  { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: '#FFFBEB' },
+  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS · Heating Pads', color: 'var(--color-status-warning-tint)' },
+  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes · Otoscopes', color: 'var(--color-status-info-tint)' },
+  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas · Infusion Sets', color: 'var(--color-status-success-tint)' },
+  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags · Collection Sets', color: 'var(--color-status-danger-tint)' },
+  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers · Oxygen Therapy', color: 'var(--color-status-info-tint)' },
+  { name: 'Medical Supplies', icon: <FaShoppingCart />, desc: 'General Medical Supplies', color: 'var(--color-background-secondary)' },
+  { name: 'Compression Garments', icon: <FaShieldAlt />, desc: 'Compression Stockings', color: 'var(--color-status-danger-tint)' },
+  { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: 'var(--color-status-warning-tint)' },
 ];
 
 const SEARCH_SUGGESTIONS = ['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'];
@@ -150,13 +151,13 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       role="button" tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
       style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
-        border: '1px solid #E5E7EB', cursor: 'pointer',
+        border: '1px solid var(--color-border-primary)', cursor: 'pointer',
         transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
 
       {/* Image */}
-      <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ position: 'relative', aspectRatio: '1 / 1', background: 'var(--color-background-secondary)', overflow: 'hidden', flexShrink: 0 }}>
         {optimizedImg ? (
           <Image 
             src={optimizedImg} 
@@ -172,22 +173,22 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         {/* Badges */}
         <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {hasDiscount && (
-            <span style={{ background: '#EF4444', color: '#fff', fontSize: 10, fontWeight: 700,
+            <span style={{ background: 'var(--color-status-danger)', color: '#fff', fontSize: 10, fontWeight: 600,
               padding: '3px 8px', borderRadius: 6 }}>-{discount}%</span>
           )}
           {!inStock && (
-            <span style={{ background: '#6B7280', color: '#fff', fontSize: 10, fontWeight: 700,
+            <span style={{ background: 'var(--color-text-secondary)', color: '#fff', fontSize: 10, fontWeight: 600,
               padding: '3px 8px', borderRadius: 6 }}>{t('common.outOfStock')}</span>
           )}
         </div>
         {/* Quick add button on hover */}
         <button
           onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
-          style={{ position: 'absolute', bottom: 10, right: 10, background: '#0E8A6E',
+          style={{ position: 'absolute', bottom: 10, right: 10, background: 'var(--color-brand-teal)',
             color: '#fff', border: 'none', borderRadius: 8, padding: '7px 12px',
-            fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#0B7558'; }}
-          onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}
+            fontSize: 11, fontWeight: 600, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--color-brand-teal-hover)'; }}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--color-brand-teal)'}
           className="quick-add-btn">
           + {t('nav.cart')}
         </button>
@@ -196,7 +197,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       {/* Content */}
       <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {brandName && (
-          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 700,
+          <div style={{ fontSize: 10, color: 'var(--color-brand-teal)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
             {brandName}
           </div>
@@ -209,17 +210,17 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         {ratingVal > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
             {[1,2,3,4,5].map(s => (
-              <span key={s} style={{ color: s <= Math.round(ratingVal) ? '#F59E0B' : '#E5E7EB', fontSize: 13 }}>★</span>
+              <span key={s} style={{ color: s <= Math.round(ratingVal) ? 'var(--color-warning)' : '#E5E7EB', fontSize: 13 }}>★</span>
             ))}
-            <span style={{ fontSize: 10, color: '#6B7280' }}>({reviewCount})</span>
+            <span style={{ fontSize: 10, color: 'var(--color-text-secondary)' }}>({reviewCount})</span>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
+          <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
             {price > 0 ? `৳${price.toLocaleString()}` : t('common.contactForPrice')}
           </span>
           {hasDiscount && (
-            <span style={{ fontSize: 11, color: '#6B7280', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
               ৳{oldPrice.toLocaleString()}
             </span>
           )}
@@ -287,12 +288,12 @@ export default function HomePage() {
     if (categories.length > 0) return categories.slice(0, 16);
     return [
       { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
-      { name: 'Hospital Machines', emoji: '🏥', color: '#FFF7ED', slug: 'hospital-machines' },
-      { name: 'Lab Equipment', emoji: '🔬', color: '#F0FDFA', slug: 'lab-equipment' },
-      { name: 'PPE & Safety', emoji: '🛡️', color: '#FFF1F2', slug: 'ppe-and-safety' },
-      { name: 'Implants', emoji: '🦴', color: '#F8FAFC', slug: 'implants-ortho' },
-      { name: 'Diagnostic', emoji: '🩺', color: '#EFF6FF', slug: 'diagnostic-equipment' },
-      { name: 'Surgical', emoji: '💉', color: '#F0FDF4', slug: 'surgical-instruments' },
+      { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
+      { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
+      { name: 'PPE & Safety', emoji: '🛡️', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
+      { name: 'Implants', emoji: '🦴', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
+      { name: 'Diagnostic', emoji: '🩺', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
+      { name: 'Surgical', emoji: '💉', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
     ];
   }, [categories]);
   const topCategories = useMemo(() =>
@@ -657,7 +658,7 @@ export default function HomePage() {
         
         /* Category tiles - Kept (lightweight) */
         .cat-tile { transition: all 0.2s ease; }
-        .cat-tile:hover { border-color: #0E8A6E !important; }
+        .cat-tile:hover { border-color: var(--color-brand-teal) !important; }
         .cat-tile:hover .cat-tile-arrow { opacity: 1 !important; transform: translateX(3px) !important; }
         
         /* Section entrance - SIMPLIFIED (removed fadeInUp animation) */
@@ -665,10 +666,10 @@ export default function HomePage() {
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Button states - Kept (essential UX) */
-        .tab-active { background: #0B2545 !important; color: #fff !important; }
+        .tab-active { background: var(--color-brand-navy) !important; color: #fff !important; }
         .pill-hover:hover { background: rgba(255,255,255,0.2) !important; }
         .btn-primary-hover:hover { background: #0a1f3d !important; }
-        .btn-teal-hover:hover { background: #0c7a61 !important; transform: scale(1.02); }
+        .btn-teal-hover:hover { background: var(--color-brand-teal-hover) !important; transform: scale(1.02); }
         
         /* Trust badges - Kept (lightweight) */
         .trust-item { transition: transform 0.2s ease; }
@@ -739,16 +740,16 @@ export default function HomePage() {
         *::-webkit-scrollbar { height: 6px; }
         *::-webkit-scrollbar-track { background: var(--color-background-muted); border-radius: 10px; }
         *::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 10px; }
-        *::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        *::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
         /* Category section styles */
         .category-section { padding: 40px 0; border-bottom: 1px solid var(--color-border-primary); }
         .category-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 24px; }
         .category-title-accent { display: flex; align-items: center; gap: 12px; }
-        .category-title-accent::before { content: ''; width: 4px; height: 24px; background: #0E8A6E; border-radius: 2px; }
+        .category-title-accent::before { content: ''; width: 4px; height: 24px; background: var(--color-brand-teal); border-radius: 2px; }
         .category-product-row { display: flex; gap: 16px; overflow-x: auto; padding: 0 24px 8px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-product-row::-webkit-scrollbar { display: none; }
         /* Top selling card styles */
-        .top-selling-card { display: flex; gap: 16px; padding: 16px; background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
+        .top-selling-card { display: flex; gap: 16px; padding: 16px; background: #fff; border: 1px solid var(--color-border-primary); border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
         .top-selling-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .best-selling-badge { position: absolute; top: -1px; right: -1px; background: #F97316; color: #fff; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 0 12px 0 8px; }
         @media (max-width: 768px) {
@@ -785,13 +786,13 @@ export default function HomePage() {
 
           {/* LEFT: Text + Search */}
           <div className="hero-left-content">
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: '#4DDBB8', fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              <span style={{ width: 7, height: 7, background: '#4DDBB8', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ width: 7, height: 7, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
               {t('home.tagline')}
             </div>
-            <h1 style={{ fontSize: 'clamp(26px, 3.5vw, 48px)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>
+            <h1 style={{ fontSize: 'clamp(26px, 3.5vw, 48px)', fontWeight: 600, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>
               {t('home.heroTitle')}<br />
-              <span style={{ color: '#4DDBB8' }}>
+              <span style={{ color: 'var(--color-brand-teal-light)' }}>
                 <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
               </span>
             </h1>
@@ -894,14 +895,14 @@ export default function HomePage() {
                       tabIndex={0}
                       aria-label={`Go to slide ${i + 1}`}
                       aria-current={currentSlide === i ? 'true' : 'false'}
-                      style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? '#4DDBB8' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} 
+                      style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} 
                     />
                   ))}
                 </div>
               );
             })()}
             {/* Counter */}
-            <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 10, color: '#fff', fontSize: 11, fontWeight: 700, background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: 20 }}>
+            <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 10, color: '#fff', fontSize: 11, fontWeight: 600, background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: 20 }}>
               {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length > 0 ? heroSlides.length : 4).padStart(2, '0')}
             </div>
             {/* Arrows */}
@@ -912,7 +913,7 @@ export default function HomePage() {
                   <button 
                     onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
                     aria-label="Previous slide"
-                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
+                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
                     className="hero-slider-arrows"
                   >
                     ‹
@@ -920,7 +921,7 @@ export default function HomePage() {
                   <button 
                     onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
                     aria-label="Next slide"
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
                     className="hero-slider-arrows"
                   >
                     ›
@@ -939,9 +940,9 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
-              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+              <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.ourCatalog')}</p>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 600, margin: 0 }}>
                 {t('home.shopByCategory')}
               </h2>
             </div>
@@ -980,7 +981,7 @@ export default function HomePage() {
               };
               
               const emoji = cat.emoji || iconMap[categoryName] || '🏥';
-              const colors = ['#FAF5FF', '#FFF7ED', '#F0FDFA', '#FFF1F2', '#F8FAFC', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
+              const colors = ['#FAF5FF', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', '#FFF1F2', '#F8FAFC', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
               const color = cat.color || colors[index % colors.length];
               
               return (
@@ -994,12 +995,12 @@ export default function HomePage() {
                   {/* Circular icon */}
                   <div style={{ width: 80, height: 80, borderRadius: '50%', background: color,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 36, marginBottom: 10, border: '2px solid #E5E7EB',
+                    fontSize: 36, marginBottom: 10, border: '2px solid var(--color-border-primary)',
                     transition: 'all 0.2s' }}>
                     {emoji}
                   </div>
                   {/* Category name */}
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#374151',
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)',
                     textAlign: 'center', lineHeight: 1.3, maxWidth: 100, overflow: 'hidden',
                     textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical' }}>
@@ -1007,7 +1008,7 @@ export default function HomePage() {
                   </span>
                   {/* Product count */}
                   {productCount > 0 && (
-                    <span style={{ fontSize: 10, color: '#6B7280', marginTop: 2 }}>
+                    <span style={{ fontSize: 10, color: 'var(--color-text-secondary)', marginTop: 2 }}>
                       {productCount} items
                     </span>
                   )}
@@ -1024,13 +1025,13 @@ export default function HomePage() {
               onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
               <div style={{ width: 80, height: 80, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)',
+                background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 28, marginBottom: 10, border: '2px solid #0E8A6E',
-                color: '#fff', fontWeight: 700 }}>
+                fontSize: 28, marginBottom: 10, border: '2px solid var(--color-brand-teal)',
+                color: '#fff', fontWeight: 600 }}>
                 →
               </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#0E8A6E',
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-brand-teal)',
                 textAlign: 'center' }}>
                 {t('home.viewAll')}
               </span>
@@ -1044,7 +1045,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {promo && (
         <div style={{
-          background: 'linear-gradient(90deg, #085041, #0E8A6E, #085041)',
+          background: 'linear-gradient(90deg, #085041, var(--color-brand-teal), #085041)',
           padding: '12px 16px',
           display: 'flex',
           flexDirection: 'column',
@@ -1061,7 +1062,7 @@ export default function HomePage() {
               Limited time: Use code{' '}
               <span style={{
                 background: 'rgba(255,255,255,0.2)', padding: '2px 8px',
-                borderRadius: 5, fontWeight: 800, fontSize: 14, letterSpacing: '0.05em',
+                borderRadius: 5, fontWeight: 600, fontSize: 14, letterSpacing: '0.05em',
                 display: 'inline-block',
               }}>
                 {promo.code}
@@ -1073,10 +1074,10 @@ export default function HomePage() {
           {/* Bottom row: buttons */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
-              onClick={() => { navigator.clipboard.writeText(promo.code); alert('Code copied!'); }}
+              onClick={() => { navigator.clipboard.writeText(promo.code); showToast.success('Code copied!'); }}
               style={{
-                background: '#fff', color: '#0E8A6E', border: 'none',
-                padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                background: '#fff', color: 'var(--color-brand-teal)', border: 'none',
+                padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
               }}>
               {t('home.copyCode')}
             </button>
@@ -1108,18 +1109,18 @@ export default function HomePage() {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32 }}>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#0E8A6E', textTransform: 'uppercase',
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-brand-teal)', textTransform: 'uppercase',
                   letterSpacing: '0.08em', marginBottom: 6 }}>{t('home.mostPopular')}</div>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0,
-                  color: '#0B2545', lineHeight: 1.2 }}>{t('home.topSelling')}</h2>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 600, margin: 0,
+                  color: 'var(--color-brand-navy)', lineHeight: 1.2 }}>{t('home.topSelling')}</h2>
               </div>
               <button onClick={() => router.push('/products?sortBy=popular')}
-                style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 600, background: 'none',
-                  border: '1.5px solid #0E8A6E', borderRadius: 8, cursor: 'pointer',
+                style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 600, background: 'none',
+                  border: '1.5px solid var(--color-brand-teal)', borderRadius: 8, cursor: 'pointer',
                   padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6,
                   transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#0E8A6E'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#0E8A6E'; }}>
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-brand-teal)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--color-brand-teal)'; }}>
                 {t('home.viewAll')} <span>→</span>
               </button>
             </div>
@@ -1131,7 +1132,7 @@ export default function HomePage() {
                 // Show 4 skeleton loaders
                 [...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)
               ) : topSellingProducts.length === 0 ? (
-                <p className="text-gray-400 text-sm text-center py-8">No top selling products available</p>
+                <p className="text-[var(--color-text-secondary)] text-sm text-center py-8">No top selling products available</p>
               ) : (
                 topSellingProducts.slice(0, 4).map((product, idx) => {
                 const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
@@ -1149,7 +1150,7 @@ export default function HomePage() {
                     onClick={() => router.push(`/products/${product.slug || product._id}`)}
                     style={{
                       display: 'flex', gap: 0, background: '#fff',
-                      border: '1px solid #E5E7EB', borderRadius: 16,
+                      border: '1px solid var(--color-border-primary)', borderRadius: 16,
                       overflow: 'hidden', cursor: 'pointer',
                       transition: 'box-shadow 0.25s, transform 0.25s',
                       boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
@@ -1183,8 +1184,8 @@ export default function HomePage() {
                       <div style={{
                         position: 'absolute', top: 10, left: 10,
                         width: 28, height: 28, borderRadius: '50%',
-                        background: rank === 1 ? '#F59E0B' : rank === 2 ? '#94A3B8' : rank === 3 ? '#CD7C2F' : '#0E8A6E',
-                        color: '#fff', fontSize: 12, fontWeight: 800,
+                        background: rank === 1 ? 'var(--color-warning)' : rank === 2 ? '#94A3B8' : rank === 3 ? '#CD7C2F' : 'var(--color-brand-teal)',
+                        color: '#fff', fontSize: 12, fontWeight: 600,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
                       }}>#{rank}</div>
@@ -1193,8 +1194,8 @@ export default function HomePage() {
                       {hasDiscount && (
                         <div style={{
                           position: 'absolute', top: 10, right: 10,
-                          background: '#EF4444', color: '#fff', fontSize: 10,
-                          fontWeight: 700, padding: '3px 7px', borderRadius: 6
+                          background: 'var(--color-status-danger)', color: '#fff', fontSize: 10,
+                          fontWeight: 600, padding: '3px 7px', borderRadius: 6
                         }}>-{discountPct}%</div>
                       )}
                     </div>
@@ -1206,20 +1207,20 @@ export default function HomePage() {
                         {/* Category + Brand */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
                           {catName && (
-                            <span style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 700,
+                            <span style={{ fontSize: 10, color: 'var(--color-brand-teal)', fontWeight: 600,
                               textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                               {catName}
                             </span>
                           )}
-                          {catName && brandName && <span style={{ color: '#D1D5DB', fontSize: 10 }}>•</span>}
+                          {catName && brandName && <span style={{ color: 'var(--color-border-primary)', fontSize: 10 }}>•</span>}
                           {brandName && (
-                            <span style={{ fontSize: 10, color: '#6B7280', fontWeight: 600 }}>{brandName}</span>
+                            <span style={{ fontSize: 10, color: 'var(--color-text-secondary)', fontWeight: 600 }}>{brandName}</span>
                           )}
                         </div>
 
                         {/* Product name */}
                         <div style={{
-                          fontSize: 14, fontWeight: 700, color: '#0B2545', lineHeight: 1.45,
+                          fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)', lineHeight: 1.45,
                           marginBottom: 10, display: '-webkit-box',
                           WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
                         }}>
@@ -1228,11 +1229,11 @@ export default function HomePage() {
 
                         {/* Price row */}
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontSize: 20, fontWeight: 800, color: '#0B2545', letterSpacing: '-0.02em' }}>
+                          <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-navy)', letterSpacing: '-0.02em' }}>
                             {price > 0 ? `৳${price.toLocaleString()}` : 'Contact for Price'}
                           </span>
                           {hasDiscount && (
-                            <span style={{ fontSize: 12, color: '#6B7280', textDecoration: 'line-through' }}>
+                            <span style={{ fontSize: 12, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
                               ৳{oldPrice.toLocaleString()}
                             </span>
                           )}
@@ -1242,9 +1243,9 @@ export default function HomePage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>
                           <div style={{
                             width: 6, height: 6, borderRadius: '50%',
-                            background: product.stock > 0 ? '#10B981' : '#EF4444'
+                            background: product.stock > 0 ? 'var(--color-status-success)' : 'var(--color-status-danger)'
                           }} />
-                          <span style={{ fontSize: 11, color: product.stock > 0 ? '#059669' : '#DC2626', fontWeight: 500 }}>
+                          <span style={{ fontSize: 11, color: product.stock > 0 ? 'var(--color-status-success)' : 'var(--color-status-danger)', fontWeight: 500 }}>
                             {product.stock > 0 ? t('products.inStock') : t('products.outOfStock')}
                           </span>
                         </div>
@@ -1255,8 +1256,8 @@ export default function HomePage() {
                         <button
                           onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
                           style={{
-                            flex: 1, padding: '9px 10px', background: '#fff', color: '#0E8A6E',
-                            border: '1.5px solid #0E8A6E', borderRadius: 8, fontSize: 12,
+                            flex: 1, padding: '9px 10px', background: '#fff', color: 'var(--color-brand-teal)',
+                            border: '1.5px solid var(--color-brand-teal)', borderRadius: 8, fontSize: 12,
                             fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
                           }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#F0FDF4'; }}
@@ -1266,12 +1267,12 @@ export default function HomePage() {
                         <button
                           onClick={e => { e.stopPropagation(); router.push(`/products/${product.slug || product._id}`); }}
                           style={{
-                            flex: 1, padding: '9px 10px', background: '#0E8A6E', color: '#fff',
+                            flex: 1, padding: '9px 10px', background: 'var(--color-brand-teal)', color: '#fff',
                             border: 'none', borderRadius: 8, fontSize: 12,
                             fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#0c7a61'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = '#0E8A6E'; }}>
+                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-brand-teal-hover)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-brand-teal)'; }}>
                           {t('products.viewDetails')}
                         </button>
                       </div>
@@ -1291,11 +1292,11 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
-              <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 700, margin: 0 }}>{t('home.featuredProducts')}</h2>
+              <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 600, margin: 0 }}>{t('home.featuredProducts')}</h2>
             </div>
             <button onClick={() => router.push('/products')}
-              style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
               {t('home.viewAll')}
             </button>
           </div>
@@ -1321,8 +1322,8 @@ export default function HomePage() {
               style={{ 
                 padding: '10px 20px', 
                 borderRadius: 8, 
-                border: '1.5px solid #E5E7EB',
-                background: activeTab === 'all' ? '#0B2545' : '#fff',
+                border: '1.5px solid var(--color-border-primary)',
+                background: activeTab === 'all' ? 'var(--color-brand-navy)' : '#fff',
                 color: activeTab === 'all' ? '#fff' : '#374151',
                 fontSize: 14, 
                 fontWeight: 600, 
@@ -1366,8 +1367,8 @@ export default function HomePage() {
                     style={{ 
                       padding: '10px 20px', 
                       borderRadius: 8, 
-                      border: '1.5px solid #E5E7EB',
-                      background: activeTab === categoryName ? '#0B2545' : '#fff',
+                      border: '1.5px solid var(--color-border-primary)',
+                      background: activeTab === categoryName ? 'var(--color-brand-navy)' : '#fff',
                       color: activeTab === categoryName ? '#fff' : '#374151',
                       fontSize: 14, 
                       fontWeight: 600, 
@@ -1399,7 +1400,7 @@ export default function HomePage() {
               {[...Array(8)].map((_, i) => <ProductCardSkeleton key={i} />)}
             </div>
           ) : featuredProducts.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '64px 24px', color: '#6B7280' }}>
+            <div style={{ textAlign: 'center', padding: '64px 24px', color: 'var(--color-text-secondary)' }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>📦</div>
               <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No products found</p>
               <p style={{ fontSize: 14 }}>Try selecting a different category or check back later</p>
@@ -1435,15 +1436,15 @@ export default function HomePage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '0 24px', marginBottom: 20 }}>
               <div>
-                <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+                <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
                   textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.justArrived')}</p>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 700, margin: 0 }}>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 600, margin: 0 }}>
                   {t('home.newArrivals')}
                 </h2>
               </div>
               {!newArrivalsLoading && (
                 <button onClick={() => router.push('/products?sortBy=newest')}
-                  style={{ fontSize: 13, color: '#0E8A6E', fontWeight: 500, background: 'none',
+                  style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none',
                     border: 'none', cursor: 'pointer' }}>{t('home.viewAll')}</button>
               )}
             </div>
@@ -1453,7 +1454,7 @@ export default function HomePage() {
                 // Show 6 skeleton loaders
                 [...Array(6)].map((_, i) => <ProductCardSkeleton key={i} />)
               ) : newArrivals.length === 0 ? (
-                <p className="text-gray-400 text-sm text-center py-8">No new arrivals available</p>
+                <p className="text-[var(--color-text-secondary)] text-sm text-center py-8">No new arrivals available</p>
               ) : (
                 newArrivals.map(p => {
                 const img = p.images?.[0]?.url || p.images?.[0];
@@ -1461,8 +1462,8 @@ export default function HomePage() {
                   <div key={p._id} className="product-card-hover"
                     onClick={() => router.push(`/products/${p.slug || p._id}`)}
                     style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12,
-                      border: '1px solid #E5E7EB', overflow: 'hidden', flexShrink: 0 }}>
-                    <div style={{ height: 160, background: '#F9FAFB', position: 'relative', overflow: 'hidden' }}>
+                      border: '1px solid var(--color-border-primary)', overflow: 'hidden', flexShrink: 0 }}>
+                    <div style={{ height: 160, background: 'var(--color-background-secondary)', position: 'relative', overflow: 'hidden' }}>
                       {img ? (
                         <Image 
                           src={img} 
@@ -1475,8 +1476,8 @@ export default function HomePage() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
                           height: '100%', fontSize: 40 }}>🏥</div>
                       )}
-                      <span style={{ position: 'absolute', top: 8, left: 8, background: '#0E8A6E',
-                        color: '#fff', fontSize: 9, padding: '3px 8px', borderRadius: 20, fontWeight: 700 }}>
+                      <span style={{ position: 'absolute', top: 8, left: 8, background: 'var(--color-brand-teal)',
+                        color: '#fff', fontSize: 9, padding: '3px 8px', borderRadius: 20, fontWeight: 600 }}>
                         ✨ NEW
                       </span>
                     </div>
@@ -1485,7 +1486,7 @@ export default function HomePage() {
                         whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {p.name}
                       </div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: '#0B2545' }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
                         ৳{p.price?.toLocaleString()}
                       </div>
                     </div>
@@ -1512,22 +1513,22 @@ export default function HomePage() {
       <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#0B2545' }}>
+            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
               {t('home.whyMediport')}
             </h2>
           </div>
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {whyUsItems.map(({ icon, title, desc }) => (
               <div key={title} className="trust-item"
-                style={{ padding: '24px', borderRadius: 16, border: '1px solid #E5E7EB', background: '#F9FAFB', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.background = '#F9FAFB'; e.currentTarget.style.boxShadow = 'none'; }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 22, marginBottom: 16 }}>
+                style={{ padding: '24px', borderRadius: 16, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.background = 'var(--color-background-secondary)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 22, marginBottom: 16 }}>
                   {icon}
                 </div>
-                <h4 style={{ fontSize: 15, fontWeight: 700, color: '#0B2545', marginBottom: 8 }}>{title}</h4>
-                <p style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6, margin: 0 }}>{desc}</p>
+                <h4 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 8 }}>{title}</h4>
+                <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>{desc}</p>
               </div>
             ))}
           </div>
@@ -1539,19 +1540,19 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ background: 'linear-gradient(135deg, #0B2545 0%, #0d3162 100%)',
+        <div style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
           borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
           {/* Background decoration */}
           <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
-            background: 'radial-gradient(circle, #0E8A6E, transparent 70%)', opacity: 0.15 }} />
+            background: 'radial-gradient(circle, var(--color-brand-teal), transparent 70%)', opacity: 0.15 }} />
           <div className="b2b-cols" style={{ position: 'relative', display: 'grid',
             gridTemplateColumns: '1fr 220px', gap: 40, alignItems: 'center' }}>
             {/* Left */}
             <div>
-              <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: '#4DDBB8',
-                padding: '4px 14px', borderRadius: 999, fontWeight: 700,
+              <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)',
+                padding: '4px 14px', borderRadius: 999, fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
-              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700,
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600,
                 color: '#fff', margin: '14px 0 12px' }}>
                 {t('home.b2bTitle')}
               </h3>
@@ -1562,15 +1563,15 @@ export default function HomePage() {
                 {B2B_FEATURES.map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
                     fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
-                    <span style={{ color: '#4DDBB8', fontWeight: 700 }}>✓</span> {f}
+                    <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>✓</span> {f}
                   </div>
                 ))}
               </div>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <button className="btn-teal-hover"
                   onClick={() => router.push('/register?type=b2b')}
-                  style={{ padding: '13px 28px', background: '#0E8A6E', color: '#fff',
-                    border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                  style={{ padding: '13px 28px', background: 'var(--color-brand-teal)', color: '#fff',
+                    border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                   {t('home.registerB2B')}
                 </button>
                 <button onClick={() => router.push('/b2b')}
@@ -1596,7 +1597,7 @@ export default function HomePage() {
                   padding: '14px 18px', display: 'flex', alignItems: 'center',
                   justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{s.label}</span>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: '#4DDBB8' }}>{s.val}</span>
+                  <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)' }}>{s.val}</span>
                 </div>
               ))}
             </div>
@@ -1609,7 +1610,7 @@ export default function HomePage() {
       {/* SUPPORT & RESOURCES */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
-        <div style={{ padding: '56px 24px', background: '#F8FAFC' }}>
+        <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
             <Spinner size="lg" variant="medical" />
           </div>
@@ -1624,9 +1625,9 @@ export default function HomePage() {
       <section className="home-section" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 600,
+            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
               textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0 }}>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600, margin: 0 }}>
               {t('home.howItWorks')}
             </h2>
           </div>
@@ -1636,20 +1637,20 @@ export default function HomePage() {
               <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
                 {i < HOW_IT_WORKS.length - 1 && (
                   <div style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
-                    height: 2, background: '#E5E7EB', zIndex: 0 }} />
+                    height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
                 )}
                 <div style={{ position: 'relative', zIndex: 1, background: '#fff',
-                  borderRadius: 16, padding: '28px 20px', border: '1px solid #E5E7EB' }}>
+                  borderRadius: 16, padding: '28px 20px', border: '1px solid var(--color-border-primary)' }}>
                   <div style={{ width: 60, height: 60, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)',
+                    background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 16px', fontSize: 28, color: '#fff' }}>
                     {step.icon}
                   </div>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: '#0E8A6E',
+                  <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)',
                     marginBottom: 8 }}>{step.step}</div>
-                  <h4 style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{step.title}</h4>
-                  <p style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.6 }}>{step.desc}</p>
+                  <h4 style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{step.title}</h4>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -1661,7 +1662,7 @@ export default function HomePage() {
       {/* VIDEO SECTION */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
-        <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, #0B2545 0%, #134E7A 100%)' }}>
+        <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
             <Spinner size="lg" variant="medical" />
           </div>
@@ -1676,16 +1677,16 @@ export default function HomePage() {
       <section className="bg-hero-gradient" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <p style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
+          <p style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.testimonials')}</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 700, margin: 0, color: '#fff' }}>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600, margin: 0, color: '#fff' }}>
             {t('home.testimonials')}
           </h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}
           className="testimonials-grid">
           {testimonials.length === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-8">No testimonials available</p>
+            <p className="text-[var(--color-text-secondary)] text-sm text-center py-8">No testimonials available</p>
           ) : (testimonials.slice(0, 3).map((review) => {
             const userName = review.user?.name || review.userName || 'Anonymous';
             const companyName = review.user?.companyName || review.companyName || '';
@@ -1693,32 +1694,32 @@ export default function HomePage() {
             
             return (
               <div key={review._id} style={{ background: '#fff', borderRadius: 16,
-                border: '1px solid #E5E7EB', padding: '28px 24px', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#0E8A6E'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}>
+                border: '1px solid var(--color-border-primary)', padding: '28px 24px', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 {/* Stars */}
                 <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
                   {[1, 2, 3, 4, 5].map(s => (
-                    <span key={s} style={{ color: s <= rating ? '#F59E0B' : '#E5E7EB', fontSize: 18 }}>★</span>
+                    <span key={s} style={{ color: s <= rating ? 'var(--color-warning)' : '#E5E7EB', fontSize: 18 }}>★</span>
                   ))}
                 </div>
                 {/* Comment */}
-                <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, marginBottom: 20,
+                <p style={{ fontSize: 14, color: 'var(--color-text-primary)', lineHeight: 1.7, marginBottom: 20,
                   fontStyle: 'italic' }}>
                   &ldquo;{review.comment}&rdquo;
                 </p>
                 {/* User info */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ width: 48, height: 48, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #0E8A6E, #4DDBB8)',
+                    background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#fff', fontSize: 18, fontWeight: 700 }}>
+                    color: '#fff', fontSize: 18, fontWeight: 600 }}>
                     {userName.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0B2545' }}>{userName}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)' }}>{userName}</div>
                     {companyName && (
-                      <div style={{ fontSize: 12, color: '#6B7280' }}>{companyName}</div>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{companyName}</div>
                     )}
                   </div>
                 </div>

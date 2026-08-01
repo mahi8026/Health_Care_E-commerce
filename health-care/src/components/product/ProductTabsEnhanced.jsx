@@ -39,7 +39,7 @@ export default function ProductTabsEnhanced({ product }) {
   return (
     <div>
       {/* Tab Navigation */}
-      <div className="flex gap-2 border-b border-gray-200 mb-6 overflow-x-auto">
+      <div className="flex gap-2 border-b border-[var(--color-border-primary)] mb-6 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -48,8 +48,8 @@ export default function ProductTabsEnhanced({ product }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-3 font-semibold text-sm transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'text-[#0E8A6E] border-b-2 border-[#0E8A6E]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-t-lg'
+                  ? 'text-brand-teal border-b-2 border-brand-teal'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)] rounded-t-lg'
               }`}
             >
               <Icon size={16} />
@@ -63,18 +63,18 @@ export default function ProductTabsEnhanced({ product }) {
       <div className="animate-fadeIn">
         {activeTab === 'specs' && (
           <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Technical Specifications</h3>
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Technical Specifications</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(specifications).map(([key, value], index) => (
                 <div
                   key={key}
                   className={`p-4 rounded-lg transition-colors ${
-                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white border border-gray-200'
+                    index % 2 === 0 ? 'bg-[var(--color-background-secondary)]' : 'bg-white border border-[var(--color-border-primary)]'
                   }`}
                 >
-                  <div className="text-sm font-semibold text-gray-500 mb-1">{key}</div>
-                  <div className="text-base font-medium text-gray-900">{value}</div>
+                  <div className="text-sm font-semibold text-[var(--color-text-secondary)] mb-1">{key}</div>
+                  <div className="text-base font-medium text-[var(--color-text-primary)]">{value}</div>
                 </div>
               ))}
             </div>
@@ -82,11 +82,11 @@ export default function ProductTabsEnhanced({ product }) {
             {/* Features List */}
             {product.features && product.features.length > 0 && (
               <div className="mt-6">
-                <h4 className="text-md font-bold text-gray-900 mb-3">Key Features</h4>
+                <h4 className="text-md font-semibold text-[var(--color-text-primary)] mb-3">Key Features</h4>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {product.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
-                      <span className="text-[#0E8A6E] mt-1">✓</span>
+                    <li key={idx} className="flex items-start gap-2 text-sm text-[var(--color-text-primary)]">
+                      <span className="text-brand-teal mt-1">✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -96,7 +96,7 @@ export default function ProductTabsEnhanced({ product }) {
 
             {/* Compliance Note */}
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-[var(--color-text-primary)]">
                 <strong className="text-blue-900">Note:</strong> All specifications are subject to manufacturer standards. 
                 Contact our team for detailed technical documentation and compliance certificates.
               </p>
@@ -106,16 +106,16 @@ export default function ProductTabsEnhanced({ product }) {
 
         {activeTab === 'description' && (
           <div className="prose prose-sm max-w-none">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Product Description</h3>
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Product Description</h3>
             
             {product.description ? (
-              <div className="text-gray-700 leading-relaxed space-y-4">
+              <div className="text-[var(--color-text-primary)] leading-relaxed space-y-4">
                 {product.description.split('\n').map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
                 ))}
               </div>
             ) : (
-              <div className="space-y-4 text-gray-700">
+              <div className="space-y-4 text-[var(--color-text-primary)]">
                 <p>
                   <strong>{product.name}</strong> is a premium medical equipment designed for professional healthcare use. 
                   This product meets international quality standards and is certified for use in Bangladesh.
@@ -133,9 +133,9 @@ export default function ProductTabsEnhanced({ product }) {
             )}
 
             {/* Applications */}
-            <div className="mt-6 p-4 bg-teal-50 border border-teal-200 rounded-lg">
-              <h4 className="text-md font-bold text-gray-900 mb-2">Applications</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+            <div className="mt-6 p-4 bg-brand-teal-tint border border-brand-teal-tint rounded-lg">
+              <h4 className="text-md font-semibold text-[var(--color-text-primary)] mb-2">Applications</h4>
+              <ul className="list-disc list-inside space-y-1 text-sm text-[var(--color-text-primary)]">
                 <li>Hospitals and Medical Centers</li>
                 <li>Diagnostic Laboratories</li>
                 <li>Clinics and Nursing Homes</li>
@@ -148,20 +148,20 @@ export default function ProductTabsEnhanced({ product }) {
         {activeTab === 'shipping' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <FaTruck className="text-[#0E8A6E]" />
+              <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+                <FaTruck className="text-brand-teal" />
                 Shipping Information
               </h3>
               
               <div className="space-y-4">
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="p-4 bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] rounded-lg">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <FaTruck className="text-green-600" size={18} />
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-status-success-tint)] flex items-center justify-center flex-shrink-0">
+                      <FaTruck className="text-[var(--color-status-success)]" size={18} />
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 mb-1">Free Delivery</h4>
-                      <p className="text-sm text-gray-700">
+                      <h4 className="font-semibold text-[var(--color-text-primary)] mb-1">Free Delivery</h4>
+                      <p className="text-sm text-[var(--color-text-primary)]">
                         Free delivery within Dhaka for orders above ৳50,000. Nationwide shipping available with nominal charges.
                       </p>
                     </div>
@@ -169,22 +169,22 @@ export default function ProductTabsEnhanced({ product }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <h5 className="font-semibold text-gray-900 mb-2">Dhaka Delivery</h5>
-                    <p className="text-sm text-gray-600 mb-2">2-3 business days</p>
-                    <p className="text-sm text-gray-500">Free for orders &gt; ৳50,000</p>
+                  <div className="p-4 border border-[var(--color-border-primary)] rounded-lg">
+                    <h5 className="font-semibold text-[var(--color-text-primary)] mb-2">Dhaka Delivery</h5>
+                    <p className="text-sm text-[var(--color-text-secondary)] mb-2">2-3 business days</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Free for orders &gt; ৳50,000</p>
                   </div>
 
-                  <div className="p-4 border border-gray-200 rounded-lg">
-                    <h5 className="font-semibold text-gray-900 mb-2">Outside Dhaka</h5>
-                    <p className="text-sm text-gray-600 mb-2">3-5 business days</p>
-                    <p className="text-sm text-gray-500">Shipping charges apply</p>
+                  <div className="p-4 border border-[var(--color-border-primary)] rounded-lg">
+                    <h5 className="font-semibold text-[var(--color-text-primary)] mb-2">Outside Dhaka</h5>
+                    <p className="text-sm text-[var(--color-text-secondary)] mb-2">3-5 business days</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Shipping charges apply</p>
                   </div>
                 </div>
 
-                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <h5 className="font-bold text-gray-900 mb-2">Installation & Training</h5>
-                  <p className="text-sm text-gray-700">
+                <div className="p-4 bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg">
+                  <h5 className="font-semibold text-[var(--color-text-primary)] mb-2">Installation & Training</h5>
+                  <p className="text-sm text-[var(--color-text-primary)]">
                     Free installation and staff training included for eligible equipment in Dhaka metro area. 
                     Contact our team for details.
                   </p>
@@ -193,9 +193,9 @@ export default function ProductTabsEnhanced({ product }) {
             </div>
 
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Return & Refund Policy</h3>
+              <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Return & Refund Policy</h3>
               
-              <div className="space-y-3 text-sm text-gray-700">
+              <div className="space-y-3 text-sm text-[var(--color-text-primary)]">
                 <p>
                   <strong>7-Day Return:</strong> Return within 7 days if product is unused, in original packaging, 
                   with all accessories and documentation.
@@ -210,11 +210,11 @@ export default function ProductTabsEnhanced({ product }) {
                 </p>
               </div>
 
-              <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600">
+              <div className="mt-4 p-4 bg-[var(--color-background-secondary)] border border-[var(--color-border-primary)] rounded-lg">
+                <p className="text-sm text-[var(--color-text-secondary)]">
                   <strong>Need Help?</strong> Contact our customer support at{' '}
-                  <span className="text-[#0E8A6E] font-semibold">+880 1646-886795</span> or{' '}
-                  <span className="text-[#0E8A6E] font-semibold">mahimrahman07@gmail.com</span>
+                  <span className="text-brand-teal font-semibold">+880 1646-886795</span> or{' '}
+                  <span className="text-brand-teal font-semibold">mahimrahman07@gmail.com</span>
                 </p>
               </div>
             </div>

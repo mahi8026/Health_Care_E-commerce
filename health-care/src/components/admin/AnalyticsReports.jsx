@@ -131,11 +131,11 @@ export default function AnalyticsReports() {
 
   if (error) {
     return (
-      <div className="p-8 text-center text-[13px] text-[#E24B4A]">
+      <div className="p-8 text-center text-sm text-danger">
         {error}
         <button
           onClick={() => setPeriod(p => p)}
-          className="block mx-auto mt-3 text-[12px] text-[#0E8A6E] hover:underline"
+          className="block mx-auto mt-3 text-xs text-brand-teal hover:underline"
         >
           Retry
         </button>
@@ -178,9 +178,9 @@ export default function AnalyticsReports() {
           <button
             key={p.value}
             onClick={() => setPeriod(p.value)}
-            className={`min-h-[44px] px-4 py-2 rounded-lg text-[12px] font-medium transition-colors ${
+            className={`min-h-[44px] px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
               period === p.value
-                ? 'bg-[#0B2545] text-white'
+                ? 'bg-brand-navy text-white'
                 : 'bg-white border-[0.5px] border-[var(--color-border-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]'
             }`}
           >
@@ -193,21 +193,21 @@ export default function AnalyticsReports() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {metrics.map((metric, index) => (
           <div key={index} className="bg-white rounded-lg p-4 border-[0.5px] border-[var(--color-border-tertiary)]">
-            <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">
+            <div className="text-xs text-[var(--color-text-secondary)] mb-2">
               {metric.label}
             </div>
-            <div className="text-[24px] font-bold mb-1 font-[family-name:var(--font-plus-jakarta)]">
+            <div className="text-2xl font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)]">
               {metric.value}
             </div>
             <div className="flex items-center gap-2">
               {metric.change && (
-                <span className={`text-[10px] font-medium ${
-                  metric.change.startsWith('+') ? 'text-[#0E8A6E]' : 'text-[#E24B4A]'
+                <span className={`text-xs font-medium ${
+                  metric.change.startsWith('+') ? 'text-brand-teal' : 'text-danger'
                 }`}>
                   {metric.change}
                 </span>
               )}
-              <span className="text-[10px] text-[var(--color-text-tertiary)]">
+              <span className="text-xs text-[var(--color-text-tertiary)]">
                 {metric.period}
               </span>
             </div>
@@ -221,27 +221,27 @@ export default function AnalyticsReports() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Top Products */}
         <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
-          <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+          <h3 className="text-sm font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
             Top Products by Revenue
           </h3>
           {analytics?.topProducts?.length === 0 ? (
-            <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-4">No data for this period</p>
+            <p className="text-xs text-[var(--color-text-secondary)] text-center py-4">No data for this period</p>
           ) : (
             <div className="space-y-3">
               {(analytics?.topProducts || []).map((product, index) => (
                 <div key={index} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[11px] font-bold text-[var(--color-text-secondary)]">
+                  <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-xs font-semibold text-[var(--color-text-secondary)]">
                     #{index + 1}
                   </div>
                   <div className="flex-1">
-                    <div className="text-[12px] font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
+                    <div className="text-xs font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
                       {product.name || product._id}
                     </div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">
+                    <div className="text-xs text-[var(--color-text-secondary)]">
                       {product.totalSold || product.sales || 0} units sold
                     </div>
                   </div>
-                  <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                  <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
                     {fmt(product.totalRevenue || product.revenue || 0)}
                   </div>
                 </div>
@@ -252,27 +252,27 @@ export default function AnalyticsReports() {
 
         {/* Top Customers */}
         <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
-          <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+          <h3 className="text-sm font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
             Top Customers by Spending
           </h3>
           {analytics?.topCustomers?.length === 0 ? (
-            <p className="text-[12px] text-[var(--color-text-secondary)] text-center py-4">No data for this period</p>
+            <p className="text-xs text-[var(--color-text-secondary)] text-center py-4">No data for this period</p>
           ) : (
             <div className="space-y-3">
               {(analytics?.topCustomers || []).map((customer, index) => (
                 <div key={index} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[11px] font-bold text-[var(--color-text-secondary)]">
+                  <div className="w-8 h-8 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-xs font-semibold text-[var(--color-text-secondary)]">
                     #{index + 1}
                   </div>
                   <div className="flex-1">
-                    <div className="text-[12px] font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
+                    <div className="text-xs font-medium mb-[2px] font-[family-name:var(--font-plus-jakarta)]">
                       {customer.name || customer._id}
                     </div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">
+                    <div className="text-xs text-[var(--color-text-secondary)]">
                       {customer.totalOrders || customer.orders || 0} orders
                     </div>
                   </div>
-                  <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                  <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
                     {fmt(customer.totalSpent || customer.spent || 0)}
                   </div>
                 </div>

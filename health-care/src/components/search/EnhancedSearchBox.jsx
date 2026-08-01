@@ -41,7 +41,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
     const parts = text.split(new RegExp(`(${query})`, 'gi'));
     return parts.map((part, i) => 
       part.toLowerCase() === query.toLowerCase() ? 
-        <mark key={i} className="bg-[#0E8A6E]/10 text-[#0E8A6E] font-semibold px-0.5 rounded">{part}</mark> : 
+        <mark key={i} className="bg-brand-teal/10 text-brand-teal font-semibold px-0.5 rounded">{part}</mark> : 
         part
     );
   };
@@ -49,13 +49,13 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   // Load recent searches from localStorage
   useEffect(() => {
     const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
-    setRecentSearches(recent.slice(0, 5));
+    void Promise.resolve().then(() => setRecentSearches(recent.slice(0, 5)));
   }, []);
 
   // Fetch suggestions
   useEffect(() => {
     if (debouncedQuery.trim().length < 2) {
-      setSuggestions([]);
+      void Promise.resolve().then(() => setSuggestions([]));
       return;
     }
 
@@ -157,9 +157,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   return (
     <div ref={wrapperRef} className="relative w-full">
       {/* Search Input */}
-      <div className={`relative px-5 py-4 ${isHero ? 'border-b border-white/20 bg-white/10 backdrop-blur-md rounded-2xl' : 'border-b border-gray-100'}`}>
+      <div className={`relative px-5 py-4 ${isHero ? 'border-b border-white/20 bg-white/10 backdrop-blur-md rounded-2xl' : 'border-b border-[var(--color-border-tertiary)]'}`}>
         <div className="flex items-center gap-3">
-          <FaSearch size={18} className={isHero ? 'text-white/70 flex-shrink-0' : 'text-gray-400 flex-shrink-0'} />
+          <FaSearch size={18} className={isHero ? 'text-white/70 flex-shrink-0' : 'text-[var(--color-text-secondary)] flex-shrink-0'} />
           <input
             ref={inputRef}
             type="text"
@@ -174,15 +174,15 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
             placeholder={placeholder}
             autoFocus={autoFocus}
             aria-label="Search products"
-            className={`flex-1 bg-transparent border-0 focus:outline-none text-[15px] ${
+            className={`flex-1 bg-transparent border-0 focus:outline-none text-base ${
               isHero
                 ? 'text-white placeholder:text-white/50'
-                : 'text-gray-900 placeholder:text-gray-400'
+                : 'text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]'
             }`}
           />
           {loading && (
             <div className="flex-shrink-0">
-              <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${isHero ? 'border-white/70' : 'border-[#0E8A6E]'}`} />
+              <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${isHero ? 'border-white/70' : 'border-brand-teal'}`} />
             </div>
           )}
         </div>
@@ -191,20 +191,20 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
       {/* Dropdown Content — always visible when inside a modal (onClose provided),
           otherwise gated by isOpen to support standalone usage */}
       {(onClose ? true : isOpen) && (query.length > 0 || recentSearches.length > 0) && (
-        <div className={`bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar ${isHero ? 'rounded-2xl mt-2 shadow-2xl border border-gray-100' : ''}`}>
+        <div className={`bg-white max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar ${isHero ? 'rounded-2xl mt-2 shadow-lg border border-[var(--color-border-tertiary)]' : ''}`}>
           {/* Loading skeleton */}
           {loading && query.length >= 2 && (
-            <div className="p-4 border-t border-gray-100">
-              <div className="text-[11px] font-semibold text-gray-500 mb-3 uppercase tracking-wide">Searching...</div>
+            <div className="p-4 border-t border-[var(--color-border-tertiary)]">
+              <div className="text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wide">Searching...</div>
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl border-2 border-transparent animate-pulse">
-                    <div className="w-14 h-14 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl" />
+                    <div className="w-14 h-14 bg-gradient-to-br from-[var(--color-background-muted)] to-[var(--color-background-muted)] rounded-xl" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-3/4" />
-                      <div className="h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded w-1/2" />
+                      <div className="h-3 bg-gradient-to-r from-[var(--color-background-muted)] to-[var(--color-background-muted)] rounded w-3/4" />
+                      <div className="h-2 bg-gradient-to-r from-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded w-1/2" />
                     </div>
-                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-16" />
+                    <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] to-[var(--color-background-muted)] rounded w-16" />
                   </div>
                 ))}
               </div>
@@ -213,9 +213,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Popular Searches (shown when no query) */}
           {query.length === 0 && (
-            <div className="p-4 border-t border-gray-100 bg-gradient-to-b from-white to-gray-50">
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-500 mb-3 uppercase tracking-wide">
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+            <div className="p-4 border-t border-[var(--color-border-tertiary)] bg-gradient-to-b from-white to-[var(--color-background-secondary)]">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wide">
+                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-orange-400 to-danger flex items-center justify-center">
                   <FaFire size={11} className="text-white" />
                 </div>
                 Popular Searches
@@ -230,7 +230,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       e.stopPropagation();
                       handleSearch(term);
                     }}
-                    className="px-3 py-1.5 bg-white hover:bg-gradient-to-r hover:from-[#0E8A6E] hover:to-[#0c7a61] border border-gray-200 hover:border-transparent rounded-full text-[11px] font-medium text-gray-700 hover:text-white transition-all duration-200 hover:shadow-md hover:scale-105"
+                    className="px-3 py-1.5 bg-white hover:bg-gradient-to-r hover:from-brand-teal hover:to-[var(--color-brand-teal-hover)] border border-[var(--color-border-primary)] hover:border-transparent rounded-full text-xs font-medium text-[var(--color-text-primary)] hover:text-white transition-all duration-200 hover:shadow-md hover:scale-105"
                   >
                     {term}
                   </button>
@@ -241,9 +241,9 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Recent Searches */}
           {query.length === 0 && recentSearches.length > 0 && (
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-4 border-t border-[var(--color-border-tertiary)]">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
                   <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
                     <FaClock size={10} className="text-white" />
                   </div>
@@ -257,7 +257,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                     localStorage.removeItem('recentSearches');
                     setRecentSearches([]);
                   }}
-                  className="text-[10px] text-gray-400 hover:text-red-500 transition-colors"
+                  className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)] transition-colors"
                 >
                   Clear all
                 </button>
@@ -272,10 +272,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       e.stopPropagation();
                       handleSearch(term);
                     }}
-                    className="w-full text-left px-3 py-2 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 rounded-lg text-[13px] text-gray-700 hover:text-gray-900 transition-all duration-150 flex items-center justify-between group"
+                    className="w-full text-left px-3 py-2 hover:bg-gradient-to-r hover:from-[var(--color-background-secondary)] hover:to-[var(--color-background-tertiary)] rounded-lg text-sm text-[var(--color-text-primary)] hover:text-[var(--color-text-primary)] transition-all duration-150 flex items-center justify-between group"
                   >
                     <span>{term}</span>
-                    <FaSearch size={10} className="text-gray-300 group-hover:text-[#0E8A6E] transition-colors" />
+                    <FaSearch size={10} className="text-[var(--color-text-tertiary)] group-hover:text-brand-teal transition-colors" />
                   </button>
                 ))}
               </div>
@@ -284,10 +284,10 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* Product Suggestions */}
           {!loading && suggestions.length > 0 && (
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-4 border-t border-[var(--color-border-tertiary)]">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Products</div>
-                <div className="text-[10px] text-gray-400">{suggestions.length} results</div>
+                <div className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Products</div>
+                <div className="text-xs text-[var(--color-text-secondary)]">{suggestions.length} results</div>
               </div>
               <div className="space-y-1.5">
                 {suggestions.map((product, idx) => {
@@ -309,13 +309,13 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                       onMouseLeave={() => setHoveredProduct(null)}
                       className={`w-full relative group rounded-xl transition-all duration-200 ${
                         selectedIndex === idx 
-                          ? 'bg-gradient-to-r from-[#0E8A6E]/5 to-[#0E8A6E]/10 border-2 border-[#0E8A6E] shadow-lg shadow-[#0E8A6E]/10' 
-                          : 'hover:bg-gray-50 border-2 border-transparent hover:border-gray-200 hover:shadow-md'
+                          ? 'bg-gradient-to-r from-brand-teal/5 to-brand-teal/10 border-2 border-brand-teal shadow-lg shadow-brand-teal/10' 
+                          : 'hover:bg-[var(--color-background-secondary)] border-2 border-transparent hover:border-[var(--color-border-primary)] hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-center gap-3 p-2.5">
                         {/* Product Image */}
-                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#0E8A6E]/30 transition-all duration-200 group-hover:shadow-md relative">
+                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-[var(--color-background-secondary)] to-[var(--color-background-tertiary)] rounded-xl overflow-hidden border border-[var(--color-border-primary)] group-hover:border-brand-teal/30 transition-all duration-200 group-hover:shadow-md relative">
                           {img ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={img} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
@@ -327,21 +327,21 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           {/* Stock badge */}
                           {!inStock && (
                             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                              <span className="text-white text-[9px] font-bold">OUT</span>
+                              <span className="text-white text-xs font-semibold">OUT</span>
                             </div>
                           )}
                         </div>
 
                         {/* Product Info */}
                         <div className="flex-1 text-left min-w-0">
-                          <div className="text-[13px] font-semibold text-gray-900 line-clamp-1 group-hover:text-[#0E8A6E] transition-colors">
+                          <div className="text-sm font-semibold text-[var(--color-text-primary)] line-clamp-1 group-hover:text-brand-teal transition-colors">
                             {highlightMatch(product.name, query)}
                           </div>
                           {brandName && (
-                            <div className="text-[11px] text-gray-500 mt-0.5 flex items-center gap-1.5">
+                            <div className="text-xs text-[var(--color-text-secondary)] mt-0.5 flex items-center gap-1.5">
                               <span>{brandName}</span>
                               {inStock && product.stock < 10 && (
-                                <span className="inline-flex items-center gap-0.5 text-[9px] text-orange-600 font-medium">
+                                <span className="inline-flex items-center gap-0.5 text-xs text-orange-600 font-medium">
                                   <FaExclamationTriangle size={8} />
                                   Low stock
                                 </span>
@@ -351,7 +351,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           {/* Category tag */}
                           {product.category && (
                             <div className="mt-1">
-                              <span className="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[9px] font-medium">
+                              <span className="inline-block px-1.5 py-0.5 bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] rounded text-xs font-medium">
                                 {typeof product.category === 'object' ? product.category.name : product.category}
                               </span>
                             </div>
@@ -360,14 +360,14 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
                         {/* Price & Actions */}
                         <div className="flex-shrink-0 flex flex-col items-end gap-2">
-                          <div className="text-[14px] font-bold text-[#0B2545]">
+                          <div className="text-sm font-semibold text-brand-navy">
                             {product.price > 0 ? (
                               <span className="flex items-baseline gap-0.5">
-                                <span className="text-[10px] text-gray-500">৳</span>
+                                <span className="text-xs text-[var(--color-text-secondary)]">৳</span>
                                 {product.price.toLocaleString()}
                               </span>
                             ) : (
-                              <span className="text-[11px] px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full font-semibold">
+                              <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full font-semibold">
                                 Quote
                               </span>
                             )}
@@ -385,8 +385,8 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                                 }}
                                 className={`p-1.5 rounded-lg transition-all duration-200 ${
                                   inWishlist
-                                    ? 'bg-red-50 text-red-500 hover:bg-red-100'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] hover:bg-[var(--color-status-danger-tint)]'
+                                    : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-muted)]'
                                 }`}
                                 title="Add to wishlist"
                               >
@@ -399,7 +399,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                                   e.stopPropagation();
                                   addToCart(product);
                                 }}
-                                className="p-1.5 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105"
+                                className="p-1.5 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105"
                                 title="Add to cart"
                               >
                                 <FaShoppingCart size={11} />
@@ -409,7 +409,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                           
                           {/* Stock status */}
                           {inStock && product.stock >= 10 && (
-                            <div className="flex items-center gap-1 text-green-600 text-[9px] font-medium">
+                            <div className="flex items-center gap-1 text-[var(--color-status-success)] text-xs font-medium">
                               <FaCheck size={8} />
                               <span>In Stock</span>
                             </div>
@@ -425,15 +425,15 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* No results */}
           {query.length >= 2 && !loading && suggestions.length === 0 && (
-            <div className="p-10 text-center border-t border-gray-100">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                <FaSearch size={32} className="text-gray-400" />
+            <div className="p-10 text-center border-t border-[var(--color-border-tertiary)]">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--color-background-tertiary)] to-[var(--color-background-muted)] flex items-center justify-center">
+                <FaSearch size={32} className="text-[var(--color-text-secondary)]" />
               </div>
-              <div className="text-[15px] font-semibold text-gray-900 mb-2">No products found</div>
-              <div className="text-[13px] text-gray-500 mb-4">
-                We couldn&apos;t find any matches for &quot;<span className="font-semibold text-gray-700">{query}</span>&quot;
+              <div className="text-base font-semibold text-[var(--color-text-primary)] mb-2">No products found</div>
+              <div className="text-sm text-[var(--color-text-secondary)] mb-4">
+                We couldn&apos;t find any matches for &quot;<span className="font-semibold text-[var(--color-text-primary)]">{query}</span>&quot;
               </div>
-              <div className="text-[12px] text-gray-400">
+              <div className="text-xs text-[var(--color-text-secondary)]">
                 Try different keywords or browse our categories
               </div>
             </div>
@@ -441,7 +441,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
 
           {/* View all results */}
           {query.length >= 2 && suggestions.length > 0 && (
-            <div className="p-4 border-t border-gray-100 bg-gray-50">
+            <div className="p-4 border-t border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
               <button
                 type="button"
                 onClick={(e) => {
@@ -449,7 +449,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                   e.stopPropagation();
                   handleSearch(query);
                 }}
-                className="w-full py-2.5 bg-gradient-to-r from-[#0E8A6E] to-[#0c7a61] hover:from-[#0c7a61] hover:to-[#0E8A6E] text-white rounded-xl text-[13px] font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#0E8A6E]/30 hover:scale-[1.02] flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] hover:from-[var(--color-brand-teal-hover)] hover:to-brand-teal text-white rounded-xl text-sm font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-brand-teal/30 hover:scale-[1.02] flex items-center justify-center gap-2"
               >
                 <FaSearch size={12} />
                 View all results for &quot;{query}&quot;
@@ -467,11 +467,11 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #0E8A6E, #0c7a61);
+          background: linear-gradient(180deg, var(--color-brand-teal), #0c7a61);
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #0c7a61, #0E8A6E);
+          background: linear-gradient(180deg, #0c7a61, var(--color-brand-teal));
         }
         @keyframes fadeIn {
           from {

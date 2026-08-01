@@ -96,11 +96,11 @@ export default function CustomersAlsoViewed({ productId, category }) {
   if (loading) {
     return (
       <div className="py-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Customers Also Viewed</h2>
+        <h2 className="text-2xl font-semibold text-[var(--color-text-primary)] mb-6">Customers Also Viewed</h2>
         <div className="flex gap-4 overflow-hidden">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="flex-shrink-0 w-64">
-              <div className="bg-gray-200 animate-pulse rounded-2xl h-80"></div>
+              <div className="bg-[var(--color-background-muted)] animate-pulse rounded-2xl h-80"></div>
             </div>
           ))}
         </div>
@@ -115,20 +115,20 @@ export default function CustomersAlsoViewed({ productId, category }) {
   return (
     <div className="py-8 relative">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Customers Also Viewed</h2>
+        <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">Customers Also Viewed</h2>
         
         {/* Navigation Arrows */}
         <div className="flex gap-2">
           <button
             onClick={() => scroll('left')}
-            className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 hover:border-[#0E8A6E] hover:text-[#0E8A6E] flex items-center justify-center transition-all hover:scale-110 shadow-md"
+            className="w-11 h-11 rounded-full bg-white border-2 border-[var(--color-border-primary)] hover:border-brand-teal hover:text-brand-teal flex items-center justify-center transition-all hover:scale-110 shadow-md"
             aria-label="Scroll left"
           >
             <FaChevronLeft size={16} />
           </button>
           <button
             onClick={() => scroll('right')}
-            className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 hover:border-[#0E8A6E] hover:text-[#0E8A6E] flex items-center justify-center transition-all hover:scale-110 shadow-md"
+            className="w-11 h-11 rounded-full bg-white border-2 border-[var(--color-border-primary)] hover:border-brand-teal hover:text-brand-teal flex items-center justify-center transition-all hover:scale-110 shadow-md"
             aria-label="Scroll right"
           >
             <FaChevronRight size={16} />
@@ -152,9 +152,9 @@ export default function CustomersAlsoViewed({ productId, category }) {
               href={`/products/${productSlug}`}
               className="flex-shrink-0 w-64 group"
             >
-              <div className="bg-white border-2 border-gray-200 rounded-2xl p-4 hover:border-[#0E8A6E] hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+              <div className="bg-white border-2 border-[var(--color-border-primary)] rounded-2xl p-4 hover:border-brand-teal hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                 {/* Image */}
-                <div className="relative w-full h-48 mb-3 bg-gray-50 rounded-xl overflow-hidden">
+                <div className="relative w-full aspect-square mb-3 bg-[var(--color-background-secondary)] rounded-xl overflow-hidden">
                   {product.images && product.images[0] ? (
                     <Image
                       src={product.images[0].url}
@@ -164,7 +164,7 @@ export default function CustomersAlsoViewed({ productId, category }) {
                       className="object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">
+                    <div className="w-full h-full flex items-center justify-center text-[var(--color-text-tertiary)] text-6xl">
                       🏥
                     </div>
                   )}
@@ -172,22 +172,23 @@ export default function CustomersAlsoViewed({ productId, category }) {
                   {/* Wishlist Button */}
                   <button
                     onClick={(e) => handleToggleWishlist(e, product._id || product.id)}
-                    className={`absolute top-2 right-2 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
-                      inWishlist ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
+                    className={`absolute top-2 right-2 w-11 h-11 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                      inWishlist ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)]'
                     }`}
                     aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                    aria-pressed={inWishlist}
                   >
                     <FaHeart size={16} className={inWishlist ? 'fill-current' : ''} />
                   </button>
 
                   {/* Stock Badge */}
                   {product.stock === 0 && (
-                    <div className="absolute bottom-2 left-2 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                    <div className="absolute bottom-2 left-2 px-3 py-1 bg-[var(--color-status-danger-tint)]0 text-white text-xs font-semibold rounded-full">
                       Out of Stock
                     </div>
                   )}
                   {product.stock > 0 && product.stock < 5 && (
-                    <div className="absolute bottom-2 left-2 px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
+                    <div className="absolute bottom-2 left-2 px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">
                       Only {product.stock} left
                     </div>
                   )}
@@ -201,7 +202,7 @@ export default function CustomersAlsoViewed({ productId, category }) {
                 )}
 
                 {/* Name */}
-                <h3 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
+                <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-2 line-clamp-2 min-h-[40px]">
                   {product.name}
                 </h3>
 
@@ -209,15 +210,15 @@ export default function CustomersAlsoViewed({ productId, category }) {
                 <div className="mb-3 mt-auto">
                   {product.oldPrice && product.oldPrice > product.price ? (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-lg font-extrabold text-gray-900">
+                      <span className="text-lg font-semibold text-[var(--color-text-primary)]">
                         ৳{product.price?.toLocaleString()}
                       </span>
-                      <span className="text-sm text-gray-500 line-through">
+                      <span className="text-sm text-[var(--color-text-secondary)] line-through">
                         ৳{product.oldPrice?.toLocaleString()}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-lg font-extrabold text-gray-900">
+                    <span className="text-lg font-semibold text-[var(--color-text-primary)]">
                       {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
                     </span>
                   )}
@@ -227,7 +228,7 @@ export default function CustomersAlsoViewed({ productId, category }) {
                 {product.stock > 0 && product.price > 0 && (
                   <button
                     onClick={(e) => handleQuickAdd(e, product)}
-                    className="w-full py-2 px-4 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl font-bold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100"
+                    className="w-full py-2 px-4 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100"
                   >
                     <FaShoppingCart size={14} />
                     <span>Quick Add</span>

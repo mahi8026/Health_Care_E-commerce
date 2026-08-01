@@ -21,9 +21,9 @@ export default function GoogleLoginButton({ fullWidth = false, className = '' })
       aria-busy={loading}
       className={`
         group flex items-center justify-center gap-3 px-5 py-3
-        bg-white hover:bg-gray-50 
-        border border-gray-300 hover:border-gray-400
-        rounded-lg text-[14px] font-medium text-gray-700
+        bg-white hover:bg-[var(--color-background-secondary)] 
+        border border-[var(--color-border-primary)] hover:border-[var(--color-border-secondary)]
+        rounded-lg text-sm font-medium text-[var(--color-text-primary)]
         transition-all duration-200 
         hover:shadow-md
         disabled:opacity-50 disabled:cursor-not-allowed
@@ -35,7 +35,7 @@ export default function GoogleLoginButton({ fullWidth = false, className = '' })
       {loading ? (
         <>
           <svg 
-            className="animate-spin h-5 w-5 text-gray-600" 
+            className="animate-spin h-5 w-5 text-[var(--color-text-secondary)]" 
             xmlns="http://www.w3.org/2000/svg" 
             fill="none" 
             viewBox="0 0 24 24"

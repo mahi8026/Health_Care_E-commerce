@@ -86,7 +86,7 @@ export default function TopBar() {
   const { icon, text, shortText } = announcements[safeIndex] || announcements[0];
 
   return (
-    <div className="site-topbar flex items-center justify-between px-3 sm:px-4 md:px-6 text-[10px] sm:text-[11px] select-none py-1.5 sm:py-0">
+    <div className="site-topbar flex items-center justify-between px-3 sm:px-4 md:px-6 text-xs sm:text-xs select-none py-1.5 sm:py-0">
       {/* Rotating announcement */}
       <div
         className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-hidden"
@@ -94,7 +94,7 @@ export default function TopBar() {
         aria-live="polite"
         aria-atomic="true"
       >
-        <span className="text-[#0E8A6E] flex-shrink-0">{icon}</span>
+        <span className="text-brand-teal flex-shrink-0">{icon}</span>
         <span className="text-white/75 truncate leading-tight hidden sm:inline">{text}</span>
         <span className="text-white/75 truncate leading-tight sm:hidden">{shortText || text}</span>
       </div>
@@ -132,7 +132,7 @@ export default function TopBar() {
           title={`Call ${contactPhone}`}
         >
           <FaPhone size={10} />
-          <span className="hidden sm:inline text-[10px]">{contactPhone}</span>
+          <span className="hidden sm:inline text-xs">{contactPhone}</span>
         </a>
       </div>
     </div>

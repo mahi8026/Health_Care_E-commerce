@@ -130,12 +130,12 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
             onClick={() => setRating(star)}
             onMouseEnter={() => setHoverRating(star)}
             onMouseLeave={() => setHoverRating(0)}
-            className="text-[32px] transition-all hover:scale-110"
+            className="text-4xl transition-all hover:scale-110"
           >
             <span className={
               star <= (hoverRating || rating) 
                 ? 'text-[#FFA500]' 
-                : 'text-[#E5E7EB]'
+                : 'text-[var(--color-text-tertiary)]'
             }>
               ★
             </span>
@@ -147,17 +147,17 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/60 z-modal flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col"
+        className="bg-white rounded-2xl w-full max-w-2xl shadow-lg flex flex-col"
         style={{ maxHeight: 'calc(100vh - 2rem)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header — always visible at top */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] flex-shrink-0">
-          <h3 className="text-[16px] sm:text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+          <h3 className="text-base sm:text-lg font-semibold font-[family-name:var(--font-plus-jakarta)]">
             Write a Review
           </h3>
           <button
@@ -175,31 +175,31 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-5 space-y-5 pb-6">
           {/* Error Message */}
           {error && (
-            <div className="bg-[#FEE2E2] text-[#991B1B] px-4 py-3 rounded-lg text-[13px]">
+            <div className="bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
           {/* Verified purchase notice */}
           {!eligibleLoading && !orderId && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg text-[12px]">
+            <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] text-[var(--color-status-warning)] px-4 py-3 rounded-lg text-xs">
               ℹ️ No delivered order found for this product. You can still submit a review — it will be marked as unverified and pending approval.
             </div>
           )}
           {!eligibleLoading && orderId && (
-            <div className="bg-[#F0FDF9] border border-[#D1FAE5] text-[#065F46] px-4 py-3 rounded-lg text-[12px]">
+            <div className="bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] text-[var(--color-status-success)] px-4 py-3 rounded-lg text-xs">
               ✓ Verified purchase — your review will be published immediately.
             </div>
           )}
 
           {/* Rating */}
           <div>
-            <label className="block text-[13px] font-semibold text-[var(--color-text-primary)] mb-2">
-              Rating <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+              Rating <span className="text-[var(--color-status-danger)]">*</span>
             </label>
             {renderStars()}
             {rating > 0 && (
-              <div className="text-[12px] text-[var(--color-text-secondary)] mt-2">
+              <div className="text-xs text-[var(--color-text-secondary)] mt-2">
                 {rating === 5 && 'Excellent!'}
                 {rating === 4 && 'Very Good'}
                 {rating === 3 && 'Good'}
@@ -211,8 +211,8 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
 
           {/* Title */}
           <div>
-            <label className="block text-[13px] font-semibold text-[var(--color-text-primary)] mb-2">
-              Review Title <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+              Review Title <span className="text-[var(--color-status-danger)]">*</span>
             </label>
             <input
               type="text"
@@ -220,17 +220,17 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
               onChange={e => setTitle(e.target.value)}
               placeholder="Summarize your experience"
               maxLength={100}
-              className="w-full px-4 py-3 min-h-[48px] text-[16px] sm:text-[14px] border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E]"
+              className="w-full px-4 py-3 min-h-[48px] text-base sm:text-sm border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-brand-teal"
             />
-            <div className="text-[11px] text-[var(--color-text-secondary)] mt-1 text-right">
+            <div className="text-xs text-[var(--color-text-secondary)] mt-1 text-right">
               {title.length}/100
             </div>
           </div>
 
           {/* Comment */}
           <div>
-            <label className="block text-[13px] font-semibold text-[var(--color-text-primary)] mb-2">
-              Your Review <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-2">
+              Your Review <span className="text-[var(--color-status-danger)]">*</span>
             </label>
             <textarea
               value={comment}
@@ -238,16 +238,16 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
               placeholder="Share your experience with this product"
               maxLength={1000}
               rows={6}
-              className="w-full px-4 py-3 text-[16px] sm:text-[14px] border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
+              className="w-full px-4 py-3 text-base sm:text-sm border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-brand-teal resize-none"
             />
-            <div className="text-[11px] text-[var(--color-text-secondary)] mt-1 text-right">
+            <div className="text-xs text-[var(--color-text-secondary)] mt-1 text-right">
               {comment.length}/1000
             </div>
           </div>
 
           {/* Images */}
           <div>
-            <label className="block text-[13px] font-semibold text-[var(--color-text-primary)] mb-2">
+            <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-2">
               Photos (Optional)
             </label>
             
@@ -275,18 +275,18 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
                     }
                     open();
                   }}
-                  className="w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-[#0E8A6E] hover:bg-[#F0FDF9] rounded-lg p-4 text-center transition-colors"
+                  className="w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-brand-teal hover:bg-[var(--color-status-success-tint)] rounded-lg p-4 text-center transition-colors"
                 >
                   <svg className="mx-auto mb-2 w-8 h-8 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-[13px] text-[var(--color-text-secondary)]">
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     Click to upload photos
                     {images.length > 0 && (
-                      <span className="ml-1 text-[#0E8A6E] font-medium">({images.length}/5 added)</span>
+                      <span className="ml-1 text-brand-teal font-medium">({images.length}/5 added)</span>
                     )}
                   </p>
-                  <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                     JPEG, PNG, WebP — max 5 MB each
                   </p>
                 </button>
@@ -315,9 +315,9 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
           </div>
 
           {/* Guidelines */}
-          <div className="bg-[#F0FDF9] border border-[#D1FAE5] rounded-lg p-4">
-            <h4 className="text-[12px] font-semibold text-[#065F46] mb-2">Review Guidelines</h4>
-            <ul className="text-[11px] text-[#065F46] space-y-1">
+          <div className="bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] rounded-lg p-4">
+            <h4 className="text-xs font-semibold text-[var(--color-status-success)] mb-2">Review Guidelines</h4>
+            <ul className="text-xs text-[var(--color-status-success)] space-y-1">
               <li>• Be honest and specific about your experience</li>
               <li>• Focus on the product, not the seller or shipping</li>
               <li>• Avoid profanity and personal information</li>
@@ -330,21 +330,21 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 min-h-[48px] px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors"
+              className="flex-1 min-h-[48px] px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-sm font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || rating === 0 || title.trim().length < 10 || comment.trim().length < 50}
-              className="flex-1 min-h-[48px] px-4 py-3 bg-[#0B2545] text-white rounded-lg text-[14px] font-semibold hover:bg-[#0d2e56] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 min-h-[48px] px-4 py-3 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-brand-navy-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Submitting...' : 'Submit Review'}
             </button>
           </div>
           {/* Show why button is disabled */}
           {(rating === 0 || title.trim().length < 10 || comment.trim().length < 50) && (
-            <p className="text-[11px] text-center text-[var(--color-text-secondary)]">
+            <p className="text-xs text-center text-[var(--color-text-secondary)]">
               {rating === 0 && 'Select a star rating · '}
               {title.trim().length < 10 && `Title needs ${10 - title.trim().length} more chars · `}
               {comment.trim().length < 50 && `Review needs ${50 - comment.trim().length} more chars`}

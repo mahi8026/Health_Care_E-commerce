@@ -116,7 +116,7 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
             {
               label: 'Pending quotations',
               value: String(k.pendingQuotes ?? 0),
-              color: (k.pendingQuotes ?? 0) > 0 ? 'text-[#92400E]' : 'text-[#065F46]',
+              color: (k.pendingQuotes ?? 0) > 0 ? 'text-[var(--color-status-warning)]' : 'text-[var(--color-status-success)]',
             },
           ],
           actions: [
@@ -145,10 +145,10 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
           title: 'Stock Alerts',
           icon: '⚠️',
           stats: [
-            { label: 'Low Stock Items', value: kpi.value, color: 'text-[#92400E]' },
-            { label: 'Critical (< 5 units)', value: '2', color: 'text-[#991B1B]' },
-            { label: 'Low (< 10 units)', value: '8', color: 'text-[#92400E]' },
-            { label: 'Total Products', value: '30', color: 'text-[#065F46]' },
+            { label: 'Low Stock Items', value: kpi.value, color: 'text-[var(--color-status-warning)]' },
+            { label: 'Critical (< 5 units)', value: '2', color: 'text-[var(--color-status-danger)]' },
+            { label: 'Low (< 10 units)', value: '8', color: 'text-[var(--color-status-warning)]' },
+            { label: 'Total Products', value: '30', color: 'text-[var(--color-status-success)]' },
             { label: 'Out of Stock', value: '0', color: 'text-[var(--color-text-secondary)]' },
           ],
           actions: [
@@ -166,20 +166,20 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
   if (!content) return null;
 
   return (
-    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-modal p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-lg max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#0B2545] to-[#0d2d52] text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
+        <div className="bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] text-white px-6 py-4 rounded-t-lg flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="text-[32px]">{content.icon}</div>
+            <div className="text-4xl">{content.icon}</div>
             <div>
-              <h2 className="text-[16px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+              <h2 className="text-base font-semibold font-[family-name:var(--font-plus-jakarta)]">
                 {content.title}
               </h2>
-              <p className="text-[11px] opacity-80">Detailed breakdown</p>
+              <p className="text-xs opacity-80">Detailed breakdown</p>
             </div>
           </div>
           <button
@@ -203,15 +203,15 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
                 key={index}
                 className="flex items-center justify-between p-3 bg-[var(--color-background-tertiary)] rounded-lg"
               >
-                <span className="text-[12px] text-[var(--color-text-secondary)]">
+                <span className="text-xs text-[var(--color-text-secondary)]">
                   {stat.label}
                 </span>
                 <div className="text-right">
-                  <div className={`text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)] ${stat.color || 'text-[#0B2545]'}`}>
+                  <div className={`text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] ${stat.color || 'text-brand-navy'}`}>
                     {stat.value}
                   </div>
                   {stat.trend && (
-                    <div className="text-[10px] text-[#0E8A6E]">
+                    <div className="text-xs text-brand-teal">
                       {stat.trend}
                     </div>
                   )}
@@ -226,9 +226,9 @@ export default function KPIDetailModal({ kpi, onClose, onNavigate }) {
               <button
                 key={index}
                 onClick={action.action}
-                className={`w-full px-4 py-3 rounded-lg text-[12px] font-semibold transition-colors ${
+                className={`w-full px-4 py-3 rounded-lg text-xs font-semibold transition-colors ${
                   index === 0
-                    ? 'bg-[#0B2545] text-white hover:bg-[#0d2d52]'
+                    ? 'bg-brand-navy text-white hover:bg-[var(--color-brand-navy-hover)]'
                     : 'border-[0.5px] border-[var(--color-border-secondary)] hover:bg-[var(--color-background-tertiary)]'
                 }`}
               >

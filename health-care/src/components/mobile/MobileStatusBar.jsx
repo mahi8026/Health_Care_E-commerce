@@ -1,7 +1,7 @@
 export default function MobileStatusBar() {
   return (
     <div className="flex items-center justify-between px-6 pt-3 pb-2 bg-white">
-      <div className="text-[11px] font-semibold">9:41</div>
+      <div className="text-xs font-semibold">9:41</div>
       <div className="flex items-center gap-[6px]">
         <svg className="w-4 h-3" viewBox="0 0 16 12" fill="none">
           <path d="M1 5.5C1 3.567 2.567 2 4.5 2h7C13.433 2 15 3.567 15 5.5v1c0 1.933-1.567 3.5-3.5 3.5h-7C2.567 10 1 8.433 1 6.5v-1z" stroke="currentColor" strokeWidth="1" fill="none"/>

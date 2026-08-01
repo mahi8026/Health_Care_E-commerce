@@ -16,7 +16,7 @@ export default function ProductCardSkeleton() {
       style={{ minHeight: '320px' }}
     >
       {/* Image area */}
-      <div className="skeleton" style={{ height: '200px', width: '100%', borderRadius: 0 }} />
+      <div className="skeleton" style={{ aspectRatio: '1 / 1', width: '100%', borderRadius: 0 }} />
 
       {/* Content area */}
       <div style={{ padding: '1rem' }}>

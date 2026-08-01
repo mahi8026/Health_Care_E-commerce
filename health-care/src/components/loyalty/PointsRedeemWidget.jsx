@@ -48,21 +48,21 @@ export default function PointsRedeemWidget({ availablePoints = 0, orderTotal = 0
   return (
     <div className="border border-blue-100 rounded-xl p-4 bg-blue-50/50">
       <div className="flex items-center gap-2 mb-3">
-        <FaStar className="text-yellow-500 w-4 h-4" />
-        <span className="font-semibold text-gray-800 text-sm">Use Loyalty Points</span>
-        <span className="ml-auto text-xs text-gray-500">
+        <FaStar className="text-[var(--color-status-warning)] w-4 h-4" />
+        <span className="font-semibold text-[var(--color-text-primary)] text-sm">Use Loyalty Points</span>
+        <span className="ml-auto text-xs text-[var(--color-text-secondary)]">
           {availablePoints.toLocaleString()} pts available
         </span>
       </div>
 
       {!canRedeem ? (
-        <p className="text-xs text-gray-500 flex items-center gap-1">
+        <p className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
           <FaInfoCircle className="w-3 h-3" />
           Need at least {MIN_REDEEM} points to redeem (you have {availablePoints})
         </p>
       ) : (
         <>
-          <p className="text-xs text-gray-500 mb-2">
+          <p className="text-xs text-[var(--color-text-secondary)] mb-2">
             Max redeemable: <strong>{maxRedeemable.toLocaleString()} pts</strong> = ৳{(maxRedeemable * POINTS_TO_TAKA).toFixed(0)}
           </p>
           <div className="flex gap-2">
@@ -73,7 +73,7 @@ export default function PointsRedeemWidget({ availablePoints = 0, orderTotal = 0
               placeholder={`${MIN_REDEEM}–${maxRedeemable}`}
               min={MIN_REDEEM}
               max={maxRedeemable}
-              className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 py-2 text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="button"
@@ -85,12 +85,12 @@ export default function PointsRedeemWidget({ availablePoints = 0, orderTotal = 0
             <button
               type="button"
               onClick={handleRemove}
-              className="px-3 py-2 text-gray-500 text-sm border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+              className="px-3 py-2 text-[var(--color-text-secondary)] text-sm border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               Clear
             </button>
           </div>
-          {error && <p className="text-xs text-red-500 mt-1" role="alert" aria-live="polite">{error}</p>}
+          {error && <p className="text-xs text-[var(--color-status-danger)] mt-1" role="alert" aria-live="polite">{error}</p>}
         </>
       )}
     </div>

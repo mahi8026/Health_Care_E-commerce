@@ -73,7 +73,7 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
 
   if (!conversation) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div className="flex items-center justify-center h-full text-[var(--color-text-secondary)]">
         <p>Select a conversation to view</p>
       </div>
     );
@@ -82,14 +82,14 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white border-b border-[var(--color-border-primary)] p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
             {conversation.customer.name}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] transition-colors"
             aria-label="Close panel"
           >
             <FaTimes className="w-5 h-5" />
@@ -99,19 +99,19 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
         {/* Customer Info */}
         <div className="space-y-2 text-sm">
           {conversation.customer.email && (
-            <div className="flex items-center space-x-2 text-gray-600">
+            <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FaEnvelope className="w-4 h-4" />
               <span>{conversation.customer.email}</span>
             </div>
           )}
           {conversation.customer.phone && (
-            <div className="flex items-center space-x-2 text-gray-600">
+            <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FaPhone className="w-4 h-4" />
               <span>{conversation.customer.phone}</span>
             </div>
           )}
           {conversation.customer.userId && (
-            <div className="flex items-center space-x-2 text-gray-600">
+            <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FaUser className="w-4 h-4" />
               <span>Registered User</span>
             </div>
@@ -126,10 +126,10 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
 
         {/* Actions */}
         {conversation.status !== 'closed' && (
-          <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-3 pt-3 border-t border-[var(--color-border-primary)]">
             <button
               onClick={handleCloseConversation}
-              className="text-sm text-red-600 hover:text-red-700 font-medium"
+              className="text-sm text-[var(--color-status-danger)] hover:text-[var(--color-status-danger)] font-medium"
             >
               Close Conversation
             </button>

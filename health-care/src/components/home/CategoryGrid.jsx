@@ -32,10 +32,10 @@ export default function CategoryGrid({ categories, categoryCounts }) {
     <section className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
             Shop by Category
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto">
             Browse our comprehensive range of medical equipment and supplies across multiple categories
           </p>
         </div>
@@ -50,22 +50,22 @@ export default function CategoryGrid({ categories, categoryCounts }) {
               <Link
                 key={categoryName}
                 href={slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(categoryName)}`}
-                className="group bg-white rounded-2xl p-6 border-2 border-gray-100 hover:border-teal-500 hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
+                className="group bg-white rounded-2xl p-6 border-2 border-[var(--color-border-tertiary)] hover:border-brand-teal hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
               >
                 <div 
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl text-teal-600 group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: cat.color || '#F0FDFA' }}
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl text-brand-teal group-hover:scale-110 transition-transform"
+                  style={{ backgroundColor: cat.color || 'var(--color-status-success-tint)' }}
                 >
                   {getCategoryIcon(categoryName)}
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2 text-sm md:text-base">
+                <h3 className="font-semibold text-[var(--color-text-primary)] mb-2 text-sm md:text-base">
                   {categoryName}
                 </h3>
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-[var(--color-text-secondary)] mb-3">
                   {cat.description || cat.desc || 'Medical equipment'}
                 </p>
                 {count > 0 && (
-                  <span className="text-xs text-teal-600 font-medium">
+                  <span className="text-xs text-brand-teal font-medium">
                     {count} products
                   </span>
                 )}
@@ -99,12 +99,12 @@ function getCategoryIcon(categoryName) {
  * Fallback categories if API fails
  */
 const FALLBACK_CATEGORIES = [
-  { name: 'Diagnostic Equipment', desc: 'ECG · Ultrasound · Monitors', color: '#EFF6FF' },
-  { name: 'Surgical Instruments', desc: 'Instruments · Implants', color: '#F0FDF4' },
+  { name: 'Diagnostic Equipment', desc: 'ECG · Ultrasound · Monitors', color: 'var(--color-status-info-tint)' },
+  { name: 'Surgical Instruments', desc: 'Instruments · Implants', color: 'var(--color-status-success-tint)' },
   { name: 'Laboratory Reagents', desc: 'Clinical · Molecular', color: '#FAF5FF' },
-  { name: 'Hospital Machines', desc: 'ICU · Ventilators · Dialysis', color: '#FFF7ED' },
-  { name: 'Lab Equipment', desc: 'Centrifuges · Microscopes', color: '#F0FDFA' },
-  { name: 'PPE & Safety', desc: 'Masks · Gloves · Gowns', color: '#FFF1F2' },
-  { name: 'Dental Equipment', desc: 'Chairs · Drills', color: '#FFFBEB' },
-  { name: 'Implants & Ortho', desc: 'Bone Plates · Screws', color: '#F8FAFC' },
+  { name: 'Hospital Machines', desc: 'ICU · Ventilators · Dialysis', color: 'var(--color-status-warning-tint)' },
+  { name: 'Lab Equipment', desc: 'Centrifuges · Microscopes', color: 'var(--color-status-success-tint)' },
+  { name: 'PPE & Safety', desc: 'Masks · Gloves · Gowns', color: 'var(--color-status-danger-tint)' },
+  { name: 'Dental Equipment', desc: 'Chairs · Drills', color: 'var(--color-status-warning-tint)' },
+  { name: 'Implants & Ortho', desc: 'Bone Plates · Screws', color: 'var(--color-background-secondary)' },
 ];

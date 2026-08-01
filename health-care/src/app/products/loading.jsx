@@ -18,7 +18,7 @@ export default function ProductsLoading() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="rounded-xl overflow-hidden border border-gray-100">
+              <div key={i} className="rounded-xl overflow-hidden border border-[var(--color-border-tertiary)]">
                 <Skeleton className="h-[200px] w-full" />
                 <div className="p-4 space-y-3">
                   <Skeleton className="h-3 w-16" />

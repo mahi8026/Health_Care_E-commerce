@@ -34,7 +34,7 @@ export function useOrders(userId) {
   }, [userId]);
 
   useEffect(() => {
-    fetchOrders();
+    void Promise.resolve().then(fetchOrders);
   }, [fetchOrders]);
 
   const createOrder = useCallback(async (orderData) => {
@@ -89,7 +89,7 @@ export function useOrder(orderId) {
   }, [orderId]);
 
   useEffect(() => {
-    fetchOrder();
+    void Promise.resolve().then(fetchOrder);
   }, [fetchOrder]);
 
   return { order, loading, error, refetch: fetchOrder };

@@ -110,7 +110,7 @@ export function FlyToCartContainer() {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999]">
+    <div className="fixed inset-0 pointer-events-none z-toast">
       {flyingImages.map((image) => (
         <div
           key={image.id}
@@ -128,7 +128,7 @@ export function FlyToCartContainer() {
               alt="Product added to cart - animation"
               width={80}
               height={80}
-              className="w-20 h-20 object-cover rounded-lg shadow-2xl"
+              className="w-20 h-20 object-cover rounded-lg shadow-lg"
             />
           )}
         </div>

@@ -35,16 +35,16 @@ const toastIcons = {
 };
 
 const toastStyles = {
-  success: 'bg-green-50 border-green-200 text-green-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+  success: 'bg-[var(--color-status-success-tint)] border-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+  error: 'bg-[var(--color-status-danger-tint)] border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
+  warning: 'bg-[var(--color-status-warning-tint)] border-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
   info: 'bg-blue-50 border-blue-200 text-blue-800',
 };
 
 const iconStyles = {
-  success: 'text-green-500',
-  error: 'text-red-500',
-  warning: 'text-yellow-500',
+  success: 'text-[var(--color-status-success)]',
+  error: 'text-[var(--color-status-danger)]',
+  warning: 'text-[var(--color-status-warning)]',
   info: 'text-blue-500',
 };
 
@@ -94,7 +94,7 @@ export function Toast({ id, message, type = 'info', duration = 3000, onClose }) 
       {/* Close button */}
       <button
         onClick={handleClose}
-        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+        className="flex-shrink-0 text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] transition-colors"
         aria-label="Close notification"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,7 +119,7 @@ export function ToastContainer({ toasts, removeToast }) {
 
   return createPortal(
     <div
-      className="fixed top-4 right-4 z-[10000] flex flex-col gap-3 pointer-events-none"
+      className="fixed top-4 right-4 z-toast flex flex-col gap-3 pointer-events-none"
       aria-live="polite"
       aria-atomic="true"
       suppressHydrationWarning

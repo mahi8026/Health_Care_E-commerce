@@ -70,11 +70,11 @@ export default function AdminDashboardPage() {
       </h2>
 
       {/* Mobile Header - Only visible on mobile */}
-      <div className="md:hidden bg-[#0B2545] text-white p-4 flex items-center justify-between">
-        <div className="font-[family-name:var(--font-lora)] text-[18px] font-semibold">
-          Mediport<span className="text-[#4DDBB8]">BD</span>
+      <div className="md:hidden bg-brand-navy text-white p-4 flex items-center justify-between">
+        <div className="font-[family-name:var(--font-lora)] text-lg font-semibold">
+          Mediport<span className="text-brand-teal-light">BD</span>
         </div>
-        <div className="text-[10px] text-white/60">Admin Panel</div>
+        <div className="text-xs text-white/60">Admin Panel</div>
       </div>
 
       {/* Sidebar - Hidden on mobile, visible on desktop */}

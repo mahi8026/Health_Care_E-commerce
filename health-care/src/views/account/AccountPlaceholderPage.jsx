@@ -25,15 +25,15 @@ export default function AccountPlaceholderPage({ slug }) {
   return (
     <AccountPageShell title={content.title} description={content.description}>
       <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-6 sm:p-8 text-center">
-        <div className="text-[40px] mb-4" aria-hidden="true">🔜</div>
-        <h2 className="text-[16px] font-semibold text-[#0B2545] mb-2">Coming soon</h2>
-        <p className="text-[13px] text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">
+        <div className="text-5xl mb-4" aria-hidden="true">🔜</div>
+        <h2 className="text-base font-semibold text-brand-navy mb-2">Coming soon</h2>
+        <p className="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto leading-relaxed">
           {content.body}
         </p>
         {content.cta && (
           <Link
             href={content.cta.href}
-            className="inline-block mt-6 px-5 py-2.5 bg-[#0B2545] hover:bg-[#0d2d52] text-white text-[13px] font-semibold rounded-lg transition-colors"
+            className="inline-block mt-6 px-5 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white text-sm font-semibold rounded-lg transition-colors"
           >
             {content.cta.label}
           </Link>

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useRef, useEffect } from 'react';
 import { useCompare } from '@/context/CompareContext';
@@ -84,9 +84,9 @@ export default function CompareModal({ onClose }) {
     }
     if (spec.key === 'stock') {
       return product.stock > 0 ? (
-        <span className="text-[#0E8A6E] font-medium">✓ In Stock</span>
+        <span className="text-brand-teal font-medium">✓ In Stock</span>
       ) : (
-        <span className="text-[#E24B4A]">Out of Stock</span>
+        <span className="text-danger">Out of Stock</span>
       );
     }
     if (spec.key === 'rating') {
@@ -102,7 +102,7 @@ export default function CompareModal({ onClose }) {
     }
     if (spec.isNested && product.specifications) {
       return (
-        <div className="space-y-1 text-[11px]">
+        <div className="space-y-1 text-xs">
           {Object.entries(product.specifications).slice(0, 5).map(([k, v]) => (
             <div key={k}>
               <span className="font-medium">{k}:</span> {v}
@@ -115,29 +115,29 @@ export default function CompareModal({ onClose }) {
   };
 
   return (
-    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 z-[500] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 z-modal bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-2xl shadow-lg w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-primary)]">
           <div>
-            <h2 className="text-[20px] font-bold text-[#0B2545]">Compare Products</h2>
-            <p className="text-[12px] text-gray-500 mt-0.5">
+            <h2 className="text-xl font-semibold text-brand-navy">Compare Products</h2>
+            <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
               {compareList.length} {compareList.length === 1 ? 'product' : 'products'} selected
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={clearCompare}
-              className="px-4 py-2 text-[12px] text-[#E24B4A] hover:bg-red-50 rounded-lg transition-colors font-medium"
+              className="px-4 py-2 text-xs text-danger hover:bg-[var(--color-status-danger-tint)] rounded-lg transition-colors font-medium"
             >
               Clear All
             </button>
             <button
               onClick={onClose}
-              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[var(--color-background-tertiary)] transition-colors"
               aria-label="Close"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -153,14 +153,14 @@ export default function CompareModal({ onClose }) {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="sticky left-0 bg-white z-10 w-40 p-3 text-left text-[12px] font-semibold text-gray-500 border-b-2 border-gray-200">
+                  <th className="sticky left-0 bg-white z-10 w-40 p-3 text-left text-xs font-semibold text-[var(--color-text-secondary)] border-b-2 border-[var(--color-border-primary)]">
                     Feature
                   </th>
                   {compareList.map((product) => (
-                    <th key={product._id || product.id} className="p-3 border-b-2 border-gray-200 min-w-[220px]">
+                    <th key={product._id || product.id} className="p-3 border-b-2 border-[var(--color-border-primary)] min-w-[220px]">
                       <div className="flex flex-col items-center gap-3">
                         {/* Image */}
-                        <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="w-32 h-32 bg-[var(--color-background-tertiary)] rounded-lg overflow-hidden flex items-center justify-center">
                           {getImageUrl(product) ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -169,11 +169,11 @@ export default function CompareModal({ onClose }) {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <span className="text-[40px]">📦</span>
+                            <span className="text-5xl">📦</span>
                           )}
                         </div>
                         {/* Name */}
-                        <div className="text-[13px] font-semibold text-[#0B2545] text-center line-clamp-2 min-h-[40px]">
+                        <div className="text-sm font-semibold text-brand-navy text-center line-clamp-2 min-h-[40px]">
                           {product.name}
                         </div>
                         {/* Actions */}
@@ -183,13 +183,13 @@ export default function CompareModal({ onClose }) {
                               addToCart(product, 1);
                               onClose();
                             }}
-                            className="px-3 py-1.5 bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-lg text-[11px] font-semibold transition-colors"
+                            className="px-3 py-1.5 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-lg text-xs font-semibold transition-colors"
                           >
                             Add to Cart
                           </button>
                           <button
                             onClick={() => removeFromCompare(product._id || product.id)}
-                            className="px-3 py-1.5 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-[11px] font-medium transition-colors"
+                            className="px-3 py-1.5 border border-[var(--color-border-primary)] hover:bg-[var(--color-background-secondary)] text-[var(--color-text-primary)] rounded-lg text-xs font-medium transition-colors"
                           >
                             Remove
                           </button>
@@ -201,14 +201,14 @@ export default function CompareModal({ onClose }) {
               </thead>
               <tbody>
                 {specs.map((spec, idx) => (
-                  <tr key={spec.key} className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="sticky left-0 bg-inherit z-10 p-3 text-[12px] font-semibold text-gray-700 border-b border-gray-200">
+                  <tr key={spec.key} className={idx % 2 === 0 ? 'bg-[var(--color-background-secondary)]' : 'bg-white'}>
+                    <td className="sticky left-0 bg-inherit z-10 p-3 text-xs font-semibold text-[var(--color-text-primary)] border-b border-[var(--color-border-primary)]">
                       {spec.label}
                     </td>
                     {compareList.map((product) => (
                       <td
                         key={product._id || product.id}
-                        className="p-3 text-[12px] text-gray-600 text-center border-b border-gray-200"
+                        className="p-3 text-xs text-[var(--color-text-secondary)] text-center border-b border-[var(--color-border-primary)]"
                       >
                         {renderSpecValue(product, spec)}
                       </td>
@@ -221,13 +221,13 @@ export default function CompareModal({ onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-          <p className="text-[11px] text-gray-500">
+        <div className="px-6 py-4 border-t border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-between">
+          <p className="text-xs text-[var(--color-text-secondary)]">
             Tip: Click &ldquo;Add to Cart&rdquo; to purchase any product directly from here.
           </p>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-[#0B2545] hover:bg-[#0d2e56] text-white rounded-lg text-[13px] font-semibold transition-colors"
+            className="px-6 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-lg text-sm font-semibold transition-colors"
           >
             Done
           </button>

@@ -28,7 +28,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
         background: '#fff',
         borderRadius: 14,
         overflow: 'hidden',
-        border: '1px solid #E5E7EB',
+        border: '1px solid var(--color-border-primary)',
         transition: 'box-shadow 0.2s, transform 0.2s',
         cursor: 'pointer'
       }}
@@ -47,11 +47,11 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
           e.stopPropagation();
           onRemove(product._id);
         }}
-        className="absolute top-2 right-2 z-10 p-1.5 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-50"
+        className="absolute top-2 right-2 z-10 p-1.5 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-[var(--color-status-danger-tint)]"
         aria-label="Remove from recently viewed"
-        style={{ border: '1px solid #E5E7EB' }}
+        style={{ border: '1px solid var(--color-border-primary)' }}
       >
-        <FiX className="w-3.5 h-3.5 text-gray-600 hover:text-red-600" />
+        <FiX className="w-3.5 h-3.5 text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)]" />
       </button>
 
       <Link
@@ -60,8 +60,8 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
       >
         <div style={{
           position: 'relative',
-          height: 190,
-          background: '#F8FAFC',
+          aspectRatio: '1 / 1',
+          background: 'var(--color-background-secondary)',
           overflow: 'hidden',
           flexShrink: 0
         }}>
@@ -93,7 +93,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
                   height: '100%',
                   fontSize: 52,
                   color: '#CBD5E1',
-                  background: '#F8FAFC'
+                  background: 'var(--color-background-secondary)'
                 }}
               >
                 🏥
@@ -107,7 +107,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
               height: '100%',
               fontSize: 52,
               color: '#CBD5E1',
-              background: '#F8FAFC'
+              background: 'var(--color-background-secondary)'
             }}>
               🏥
             </div>
@@ -118,10 +118,10 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
               position: 'absolute',
               top: 10,
               left: 10,
-              background: '#EF4444',
+              background: 'var(--color-status-danger)',
               color: '#fff',
               fontSize: 10,
-              fontWeight: 700,
+              fontWeight: 600,
               padding: '3px 8px',
               borderRadius: 6
             }}>
@@ -134,10 +134,10 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
               position: 'absolute',
               top: hasDiscount ? 34 : 10,
               left: 10,
-              background: '#6B7280',
+              background: 'var(--color-text-secondary)',
               color: '#fff',
               fontSize: 10,
-              fontWeight: 700,
+              fontWeight: 600,
               padding: '3px 8px',
               borderRadius: 6
             }}>
@@ -150,8 +150,8 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
           {brandName && (
             <div style={{
               fontSize: 10,
-              color: '#0E8A6E',
-              fontWeight: 700,
+              color: 'var(--color-brand-teal)',
+              fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               marginBottom: 4
@@ -178,17 +178,17 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 'auto' }}>
             {price > 0 ? (
               <>
-                <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
+                <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
                   ৳{price.toLocaleString()}
                 </span>
                 {hasDiscount && (
-                  <span style={{ fontSize: 11, color: '#9CA3AF', textDecoration: 'line-through' }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
                     ৳{oldPrice.toLocaleString()}
                   </span>
                 )}
               </>
             ) : (
-              <span style={{ fontSize: 12, color: '#9CA3AF', fontStyle: 'italic' }}>
+              <span style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>
                 Contact for price
               </span>
             )}
@@ -204,9 +204,9 @@ const CompactProductItem = memo(function CompactProductItem({ product }) {
     <Link
       key={product._id}
       href={`/products/${product.slug || product._id}`}
-      className="flex gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      className="flex gap-3 p-2 rounded-lg hover:bg-[var(--color-background-secondary)] dark:hover:bg-gray-800 transition-colors"
     >
-      <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 dark:bg-gray-900 rounded">
+      <div className="relative w-16 h-16 flex-shrink-0 bg-[var(--color-background-tertiary)] dark:bg-gray-900 rounded">
         {product.images?.[0] ? (
           <>
             <Image
@@ -238,10 +238,10 @@ const CompactProductItem = memo(function CompactProductItem({ product }) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+        <h4 className="text-sm font-medium text-[var(--color-text-primary)] dark:text-gray-100 line-clamp-2">
           {product.name}
         </h4>
-        <p className="text-sm font-semibold text-teal-600 dark:text-teal-400 mt-1">
+        <p className="text-sm font-semibold text-brand-teal dark:text-brand-teal mt-1">
           ৳{product.price?.toLocaleString()}
         </p>
       </div>
@@ -277,19 +277,19 @@ export default function RecentlyViewed({
         marginBottom: 20 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <FiClock style={{ width: 20, height: 20, color: '#0E8A6E' }} />
+          <FiClock style={{ width: 20, height: 20, color: 'var(--color-brand-teal)' }} />
           <h2 style={{ 
             fontFamily: 'Georgia, serif',
             fontSize: 28,
-            fontWeight: 700,
+            fontWeight: 600,
             margin: 0,
-            color: '#0B2545'
+            color: 'var(--color-brand-navy)'
           }}>
             {title}
           </h2>
           <span style={{ 
             fontSize: 13,
-            color: '#9CA3AF',
+            color: 'var(--color-text-secondary)',
             fontWeight: 500,
             marginLeft: 4
           }}>
@@ -329,7 +329,7 @@ export function RecentlyViewedCompact({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-[var(--color-text-primary)] dark:text-[var(--color-text-tertiary)] flex items-center gap-2">
         <FiClock className="w-4 h-4" />
         Recently Viewed
       </h3>

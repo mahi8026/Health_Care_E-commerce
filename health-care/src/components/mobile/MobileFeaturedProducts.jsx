@@ -61,12 +61,12 @@ export default function MobileFeaturedProducts() {
   return (
     <div className="px-4 py-4 bg-[var(--color-background-secondary)]">
       <div className="flex items-center justify-between mb-3">
-        <div className="text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+        <div className="text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
           Featured products
         </div>
         <button 
           onClick={handleViewAll}
-          className="text-[10px] text-[#0E8A6E] font-medium"
+          className="text-xs text-brand-teal font-medium"
         >
           View all →
         </button>
@@ -81,10 +81,10 @@ export default function MobileFeaturedProducts() {
             {/* Badge */}
             {product.badge && (
               <div className="flex justify-end mb-2">
-                <span className={`text-[8px] px-2 py-[2px] rounded font-medium ${
+                <span className={`text-xs px-2 py-[2px] rounded font-medium ${
                   product.badge === 'sale'
-                    ? 'bg-[#FCEBEB] text-[#791F1F]'
-                    : 'bg-[#E1F5EE] text-[#085041]'
+                    ? 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
+                    : 'bg-brand-teal-tint text-[var(--color-status-success)]'
                 }`}>
                   {product.badge === 'sale' ? '🔥 SALE' : '✨ NEW'}
                 </span>
@@ -92,25 +92,25 @@ export default function MobileFeaturedProducts() {
             )}
 
             {/* Icon */}
-            <div className="w-12 h-12 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-[24px] mx-auto mb-2">
+            <div className="w-12 h-12 bg-[var(--color-background-tertiary)] rounded-lg flex items-center justify-center text-2xl mx-auto mb-2">
               {product.icon}
             </div>
 
             {/* Info */}
-            <div className="text-[11px] font-medium mb-1 font-[family-name:var(--font-plus-jakarta)] line-clamp-2 text-center">
+            <div className="text-xs font-medium mb-1 font-[family-name:var(--font-plus-jakarta)] line-clamp-2 text-center">
               {product.name}
             </div>
-            <div className="text-[9px] text-[var(--color-text-secondary)] mb-2 text-center">
+            <div className="text-xs text-[var(--color-text-secondary)] mb-2 text-center">
               {typeof product.brand === 'object' ? product.brand?.name : product.brand}
             </div>
 
             {/* Price */}
             <div className="text-center mb-2">
-              <div className="text-[13px] font-bold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
+              <div className="text-sm font-semibold text-brand-navy font-[family-name:var(--font-plus-jakarta)]">
                 ৳{product.price.toLocaleString()}
               </div>
               {product.oldPrice && (
-                <div className="text-[9px] text-[var(--color-text-tertiary)] line-through">
+                <div className="text-xs text-[var(--color-text-tertiary)] line-through">
                   ৳{product.oldPrice.toLocaleString()}
                 </div>
               )}
@@ -120,7 +120,7 @@ export default function MobileFeaturedProducts() {
             <button 
               onClick={(e) => handleAddToCart(product, e)}
               disabled={addingToCart[product.id]}
-              className="w-full py-[6px] bg-[#0B2545] text-white rounded text-[10px] font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+              className="w-full py-[6px] bg-brand-navy text-white rounded text-xs font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
             >
               {addingToCart[product.id] ? (
                 <>

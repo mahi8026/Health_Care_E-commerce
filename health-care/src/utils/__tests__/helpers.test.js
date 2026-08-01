@@ -110,7 +110,7 @@ describe('calculatePercentage', () => {
 
 describe('getStatusColor', () => {
   it('returns correct color for delivered', () => {
-    expect(getStatusColor('delivered')).toEqual({ bg: '#D1FAE5', text: '#065F46' });
+    expect(getStatusColor('delivered')).toEqual({ bg: 'var(--color-status-success-tint)', text: 'var(--color-status-success)' });
   });
 
   it('returns pending colors for unknown status', () => {

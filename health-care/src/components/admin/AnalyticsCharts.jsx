@@ -27,14 +27,14 @@ export default function AnalyticsCharts() {
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       {/* Monthly Revenue Table */}
       <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
-        <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+        <h3 className="text-sm font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
           Monthly Revenue
         </h3>
         <div className="space-y-2">
           {monthlyData.map((item, index) => (
             <div key={index} className="flex items-center justify-between py-2 border-b border-[var(--color-border-tertiary)] last:border-0">
-              <span className="text-[12px] text-[var(--color-text-secondary)]">{item.month}</span>
-              <span className="text-[13px] font-semibold text-[#0E8A6E]">{formatRevenue(item.revenue)}</span>
+              <span className="text-xs text-[var(--color-text-secondary)]">{item.month}</span>
+              <span className="text-sm font-semibold text-brand-teal">{formatRevenue(item.revenue)}</span>
             </div>
           ))}
         </div>
@@ -42,14 +42,14 @@ export default function AnalyticsCharts() {
 
       {/* Monthly Orders Table */}
       <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
-        <h3 className="text-[14px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+        <h3 className="text-sm font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
           Monthly Orders
         </h3>
         <div className="space-y-2">
           {monthlyData.map((item, index) => (
             <div key={index} className="flex items-center justify-between py-2 border-b border-[var(--color-border-tertiary)] last:border-0">
-              <span className="text-[12px] text-[var(--color-text-secondary)]">{item.month}</span>
-              <span className="text-[13px] font-semibold text-[#3B82F6]">{item.orders.toLocaleString()}</span>
+              <span className="text-xs text-[var(--color-text-secondary)]">{item.month}</span>
+              <span className="text-sm font-semibold text-[var(--color-status-info)]">{item.orders.toLocaleString()}</span>
             </div>
           ))}
         </div>

@@ -17,7 +17,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
     flexWrap: 'nowrap',
     alignItems: 'center',
     gap: '4px',
-    fontSize: '12px',
+    
     lineHeight: '1',
     overflow: 'hidden',
   };
@@ -41,14 +41,14 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           {idx > 0 && (
             <FaChevronRight
               size={8}
-              style={{ color: '#d1d5db', flexShrink: 0 }}
+              style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}
               aria-hidden
             />
           )}
           {current ? (
             <span
               style={{
-                color: '#374151',
+                color: 'var(--color-text-primary)',
                 fontWeight: 500,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -62,12 +62,12 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
             <Link
               href={item.href}
               style={{
-                color: '#6b7280',
+                color: 'var(--color-text-secondary)',
                 whiteSpace: 'nowrap',
                 textDecoration: 'none',
                 flexShrink: 0,
               }}
-              className="hover:text-[#0E8A6E] transition-colors"
+              className="hover:text-brand-teal transition-colors"
             >
               {item.label}
             </Link>
@@ -81,7 +81,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
       <div
         style={{
           backgroundColor: '#ffffff',
-          borderBottom: '1px solid #f3f4f6',
+          borderBottom: '1px solid var(--color-background-tertiary)',
           width: '100%',
         }}
         className={className || undefined}

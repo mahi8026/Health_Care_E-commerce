@@ -20,7 +20,7 @@ export default function ReagentToolbar({
         {/* Primary search */}
         <div className="flex-1 relative">
           <FaSearch
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)]"
             size={14}
             aria-hidden
           />
@@ -29,7 +29,7 @@ export default function ReagentToolbar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by product name, brand, or SKU…"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-[14px] text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15 bg-white shadow-sm"
+            className="w-full pl-10 pr-4 py-3 border border-[var(--color-border-primary)] rounded-xl text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15 bg-white shadow-sm"
             aria-label="Search reagents"
           />
         </div>
@@ -38,7 +38,7 @@ export default function ReagentToolbar({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="flex-1 sm:flex-none px-3 py-3 border border-gray-200 rounded-xl text-[13px] text-[#374151] bg-white shadow-sm focus:outline-none focus:border-[#0E8A6E] min-w-[140px]"
+            className="flex-1 sm:flex-none px-3 py-3 border border-[var(--color-border-primary)] rounded-xl text-sm text-[var(--color-text-primary)] bg-white shadow-sm focus:outline-none focus:border-brand-teal min-w-[140px]"
             aria-label="Sort products"
           >
             <option value="relevance">Relevance</option>
@@ -50,10 +50,10 @@ export default function ReagentToolbar({
           <button
             type="button"
             onClick={() => setLotOpen((v) => !v)}
-            className={`inline-flex items-center gap-2 px-3.5 py-3 rounded-xl text-[13px] font-medium border transition-colors whitespace-nowrap ${
+            className={`inline-flex items-center gap-2 px-3.5 py-3 rounded-xl text-sm font-medium border transition-colors whitespace-nowrap ${
               lotOpen
-                ? 'border-[#0E8A6E] bg-[#F0FBF8] text-[#0E8A6E]'
-                : 'border-gray-200 bg-white text-[#374151] hover:border-gray-300 shadow-sm'
+                ? 'border-brand-teal bg-brand-teal-tint text-brand-teal'
+                : 'border-[var(--color-border-primary)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-border-primary)] shadow-sm'
             }`}
             aria-expanded={lotOpen}
           >
@@ -64,16 +64,16 @@ export default function ReagentToolbar({
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-[12px] text-[#6B7280] px-0.5">
+      <div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] px-0.5">
         <span>
           {loading ? 'Loading catalog…' : (
             <>
-              <span className="font-semibold text-[#0B2545]">{totalCount.toLocaleString()}</span>
+              <span className="font-semibold text-brand-navy">{totalCount.toLocaleString()}</span>
               {' '}reagents
             </>
           )}
         </span>
-        <span className="hidden sm:inline text-[11px]">
+        <span className="hidden sm:inline text-xs">
           Cold chain · MSDS on request
         </span>
       </div>

@@ -35,8 +35,8 @@ const CATEGORY_ICON_MAP = {
 const glass = {
   panel: {
     background: 'rgba(11,37,69,0.82)',
-    backdropFilter: 'blur(48px) saturate(220%) brightness(1.06)',
-    WebkitBackdropFilter: 'blur(48px) saturate(220%) brightness(1.06)',
+    backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.06)',
+    WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.06)',
     borderLeft: '1px solid rgba(255,255,255,0.14)',
     boxShadow: '-12px 0 60px rgba(0,0,0,0.35), inset 1px 0 0 rgba(255,255,255,0.08)',
   },
@@ -44,7 +44,7 @@ const glass = {
     borderBottom: '1px solid rgba(255,255,255,0.07)',
   },
   item: {
-    base: { color: 'rgba(255,255,255,0.82)', fontSize: 14, fontWeight: 500 },
+    base: { color: 'rgba(255,255,255,0.82)', fontSize: 'var(--text-sm)', fontWeight: 500 },
     hover: { background: 'rgba(255,255,255,0.07)' },
   },
 };
@@ -95,10 +95,10 @@ export default function MobileMenu({ isOpen, onClose }) {
         onClick={onClose}
         aria-hidden="true"
         style={{
-          position: 'fixed', inset: 0, zIndex: 999,
+          position: 'fixed', inset: 0, zIndex: 'var(--z-drawer)',
           background: 'rgba(0,0,0,0.55)',
-          backdropFilter: isOpen ? 'blur(4px)' : 'none',
-          WebkitBackdropFilter: isOpen ? 'blur(4px)' : 'none',
+          backdropFilter: isOpen ? 'blur(var(--glass-blur))' : 'none',
+          WebkitBackdropFilter: isOpen ? 'blur(var(--glass-blur))' : 'none',
           opacity: isOpen ? 1 : 0,
           transition: 'opacity 0.3s, backdrop-filter 0.3s',
           pointerEvents: isOpen ? 'auto' : 'none',
@@ -113,7 +113,7 @@ export default function MobileMenu({ isOpen, onClose }) {
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0,
           width: '82%', maxWidth: 320,
-          zIndex: 1000,
+          zIndex: 'var(--z-drawer)',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
           overflowY: 'auto',
@@ -147,8 +147,8 @@ export default function MobileMenu({ isOpen, onClose }) {
                 style={{ objectFit: 'contain' }}
               />
             </div>
-            <span style={{ fontSize: 18, fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
-              Mediport<span style={{ color: '#4ddbb8' }}>BD</span>
+            <span style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: '#fff', letterSpacing: '-0.3px' }}>
+              Mediport<span style={{ color: 'var(--color-brand-teal-light)' }}>BD</span>
             </span>
           </div>
           <button
@@ -182,7 +182,7 @@ export default function MobileMenu({ isOpen, onClose }) {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search products…"
-              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 13, color: '#fff' }}
+              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 'var(--text-base)', color: '#fff' }}
               aria-label="Search products"
             />
             {searchQuery && (
@@ -209,16 +209,16 @@ export default function MobileMenu({ isOpen, onClose }) {
             >
               <div style={{
                 width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
-                background: 'linear-gradient(145deg,#0a6b55,#0e8a6e,#4ddbb8)',
+                background: 'linear-gradient(145deg,#0a6b55,var(--color-brand-teal),var(--color-brand-teal-light))',
                 color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 13, fontWeight: 700,
+                fontSize: 'var(--text-sm)', fontWeight: 600,
                 boxShadow: '0 2px 10px rgba(14,138,110,0.4)',
               }}>
                 {initials}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
+                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.45)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.email}</div>
               </div>
               <FaChevronRight size={11} color="rgba(255,255,255,0.3)" />
             </button>
@@ -237,9 +237,9 @@ export default function MobileMenu({ isOpen, onClose }) {
                 }}
               >
                 <FaUserShield size={14} color="#c4b5fd" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#c4b5fd', flex: 1 }}>Admin Panel</span>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: '#c4b5fd', flex: 1 }}>Admin Panel</span>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 999,
+                  fontSize: 'var(--text-xs)', fontWeight: 600, padding: '2px 7px', borderRadius: 999,
                   background: 'rgba(124,58,237,0.30)', border: '1px solid rgba(167,139,250,0.35)',
                   color: 'rgba(196,181,253,0.9)', letterSpacing: '0.04em',
                 }}>ADMIN</span>
@@ -258,10 +258,10 @@ export default function MobileMenu({ isOpen, onClose }) {
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
                 }}
               >
-                <FaBuilding size={14} color="#4ddbb8" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#4ddbb8', flex: 1 }}>B2B Portal</span>
+                <FaBuilding size={14} color="var(--color-brand-teal-light)" />
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-brand-teal-light)', flex: 1 }}>B2B Portal</span>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 999,
+                  fontSize: 'var(--text-xs)', fontWeight: 600, padding: '2px 7px', borderRadius: 999,
                   background: 'rgba(14,138,110,0.30)', border: '1px solid rgba(77,219,184,0.35)',
                   color: 'rgba(77,219,184,0.95)', letterSpacing: '0.04em',
                 }}>B2B</span>
@@ -281,7 +281,7 @@ export default function MobileMenu({ isOpen, onClose }) {
                 }}
               >
                 <FaBox size={14} color="#93c5fd" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#93c5fd', flex: 1 }}>My Orders</span>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: '#93c5fd', flex: 1 }}>My Orders</span>
                 <FaChevronRight size={10} color="rgba(147,197,253,0.5)" />
               </button>
             )}
@@ -290,7 +290,7 @@ export default function MobileMenu({ isOpen, onClose }) {
 
         {/* Main nav */}
         <div style={{ padding: '8px 0', ...glass.section }}>
-          <div style={{ padding: '4px 16px 6px', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          <div style={{ padding: '4px 16px 6px', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Navigation
           </div>
           {MAIN_LINKS.map(item => (
@@ -308,7 +308,7 @@ export default function MobileMenu({ isOpen, onClose }) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}
           >
-            <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Shop by Category
             </span>
             <FaChevronRight size={11} color="rgba(255,255,255,0.3)"
@@ -330,13 +330,13 @@ export default function MobileMenu({ isOpen, onClose }) {
                   <button key={name} onClick={() => handleNavigate(path)}
                     style={{
                       width: '100%', padding: '9px 16px 9px 28px', background: 'none', border: 'none',
-                      textAlign: 'left', fontSize: 13, color: 'rgba(255,255,255,0.72)', cursor: 'pointer',
+                      textAlign: 'left', fontSize: 'var(--text-sm)', color: 'rgba(255,255,255,0.72)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 10,
                     }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'none'}
                   >
-                    <span style={{ color: '#4ddbb8', flexShrink: 0 }}>{icon}</span>
+                    <span style={{ color: 'var(--color-brand-teal-light)', flexShrink: 0 }}>{icon}</span>
                     {name}
                   </button>
                 );
@@ -348,7 +348,7 @@ export default function MobileMenu({ isOpen, onClose }) {
         {/* Account actions */}
         {authed && (
           <div style={{ padding: '8px 0', ...glass.section }}>
-            <div style={{ padding: '4px 16px 6px', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <div style={{ padding: '4px 16px 6px', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               My Account
             </div>
             <GlassAccountButton icon={<FaUser size={13} />} label="My Account" onClick={() => handleNavigate('/account')} />
@@ -368,9 +368,9 @@ export default function MobileMenu({ isOpen, onClose }) {
             <button onClick={() => handleNavigate('/login')}
               style={{
                 width: '100%', padding: '12px', marginBottom: 8, border: 'none', borderRadius: 12,
-                fontSize: 14, fontWeight: 600, cursor: 'pointer', color: '#fff',
+                fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer', color: '#fff',
                 background: 'rgba(255,255,255,0.14)',
-                backdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(var(--glass-blur))',
                 border: '1px solid rgba(255,255,255,0.22)',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.20)',
               }}>
@@ -379,8 +379,8 @@ export default function MobileMenu({ isOpen, onClose }) {
             <button onClick={() => handleNavigate('/register')}
               style={{
                 width: '100%', padding: '12px', border: 'none', borderRadius: 12,
-                fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                color: '#4ddbb8',
+                fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer',
+                color: 'var(--color-brand-teal-light)',
                 background: 'rgba(77,219,184,0.10)',
                 border: '1px solid rgba(77,219,184,0.25)',
               }}>
@@ -394,10 +394,10 @@ export default function MobileMenu({ isOpen, onClose }) {
           <button onClick={() => handleNavigate('/b2b')}
             style={{
               width: '100%', padding: '13px', border: 'none', borderRadius: 12,
-              fontSize: 14, fontWeight: 700, cursor: 'pointer', color: '#fff',
+              fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer', color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               background: 'rgba(14,138,110,0.35)',
-              backdropFilter: 'blur(12px)',
+              backdropFilter: 'blur(var(--glass-blur))',
               border: '1px solid rgba(77,219,184,0.30)',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 16px rgba(14,138,110,0.20)',
             }}
@@ -423,7 +423,7 @@ function GlassNavButton({ item, onClick }) {
       style={{
         width: '100%', padding: '11px 16px', minHeight: 44,
         background: hovered ? 'rgba(255,255,255,0.07)' : 'none',
-        border: 'none', textAlign: 'left', fontSize: 14, fontWeight: 500,
+        border: 'none', textAlign: 'left', fontSize: 'var(--text-sm)', fontWeight: 500,
         color: hovered ? '#fff' : 'rgba(255,255,255,0.78)',
         cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -431,7 +431,7 @@ function GlassNavButton({ item, onClick }) {
       }}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {item.icon && <span style={{ color: '#4ddbb8' }}>{item.icon}</span>}
+        {item.icon && <span style={{ color: 'var(--color-brand-teal-light)' }}>{item.icon}</span>}
         {item.label}
       </span>
       <FaChevronRight size={10} color="rgba(255,255,255,0.25)" />
@@ -452,7 +452,7 @@ function GlassAccountButton({ icon, label, onClick, danger, admin }) {
     ? (hovered ? '#ff6b6b' : 'rgba(226,75,74,0.7)')
     : admin
     ? (hovered ? '#c4b5fd' : 'rgba(167,139,250,0.7)')
-    : (hovered ? '#4ddbb8' : 'rgba(255,255,255,0.4)');
+    : (hovered ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.4)');
 
   const bg = hovered
     ? danger
@@ -470,7 +470,7 @@ function GlassAccountButton({ icon, label, onClick, danger, admin }) {
       style={{
         width: '100%', padding: '11px 16px', minHeight: 44,
         background: bg,
-        border: 'none', textAlign: 'left', fontSize: 13,
+        border: 'none', textAlign: 'left', fontSize: 'var(--text-sm)',
         color,
         cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 12,
@@ -481,7 +481,7 @@ function GlassAccountButton({ icon, label, onClick, danger, admin }) {
       {label}
       {admin && (
         <span style={{
-          marginLeft: 'auto', fontSize: 10, fontWeight: 700,
+          marginLeft: 'auto', fontSize: 'var(--text-xs)', fontWeight: 600,
           padding: '2px 7px', borderRadius: 999,
           background: 'rgba(124,58,237,0.25)',
           border: '1px solid rgba(167,139,250,0.3)',

@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useRef } from 'react';
 import { FaPaperPlane, FaPaperclip, FaTimes } from 'react-icons/fa';
@@ -37,7 +38,7 @@ export default function ChatInput({ onSendMessage, onTyping, disabled = false })
     if (selectedFile) {
       // Check file size (max 5MB)
       if (selectedFile.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        showToast.warning('File size must be less than 5MB');
         return;
       }
       setFile(selectedFile);
@@ -83,14 +84,14 @@ export default function ChatInput({ onSendMessage, onTyping, disabled = false })
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 bg-white">
+    <form onSubmit={handleSubmit} className="border-t border-[var(--color-border-primary)] p-4 bg-white">
       {file && (
         <div className="mb-2 flex items-center justify-between bg-blue-50 p-2 rounded">
-          <span className="text-sm text-gray-700 truncate flex-1">{file.name}</span>
+          <span className="text-sm text-[var(--color-text-primary)] truncate flex-1">{file.name}</span>
           <button
             type="button"
             onClick={handleRemoveFile}
-            className="ml-2 text-red-500 hover:text-red-700"
+            className="ml-2 text-[var(--color-status-danger)] hover:text-[var(--color-status-danger)]"
           >
             <FaTimes />
           </button>
@@ -108,7 +109,7 @@ export default function ChatInput({ onSendMessage, onTyping, disabled = false })
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="p-2 text-gray-500 hover:text-blue-600 transition-colors disabled:opacity-50"
+          className="p-2 text-[var(--color-text-secondary)] hover:text-blue-600 transition-colors disabled:opacity-50"
           aria-label="Attach file"
         >
           <FaPaperclip className="w-5 h-5" />
@@ -119,7 +120,7 @@ export default function ChatInput({ onSendMessage, onTyping, disabled = false })
           onChange={handleInputChange}
           placeholder="Type your message..."
           disabled={disabled}
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+          className="flex-1 px-4 py-2 border border-[var(--color-border-primary)] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-[var(--color-background-tertiary)]"
         />
         <button
           type="submit"

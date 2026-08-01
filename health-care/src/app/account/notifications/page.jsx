@@ -24,25 +24,25 @@ export default function NotificationSettingsPage() {
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto', padding: '24px 16px' }}>
-      <h1 style={{ fontFamily: 'var(--font-lora)', fontSize: 24, fontWeight: 700,
-        color: '#0B2545', marginBottom: 6 }}>
+      <h1 style={{ fontFamily: 'var(--font-lora)', fontSize: 'var(--text-2xl)', fontWeight: 600,
+        color: 'var(--color-brand-navy)', marginBottom: 6 }}>
         Notification Settings
       </h1>
-      <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 24 }}>
+      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginBottom: 24 }}>
         Control which notifications you receive from MediportBD
       </p>
 
       {/* Master toggle */}
-      <div style={{ background: isSubscribed ? '#E1F5EE' : '#F9FAFB',
+      <div style={{ background: isSubscribed ? 'var(--color-brand-teal-tint)' : 'var(--color-background-secondary)',
         borderRadius: 12, padding: '16px 20px', marginBottom: 20,
-        border: `1px solid ${isSubscribed ? '#9FE1CB' : '#E5E7EB'}`,
+        border: `1px solid ${isSubscribed ? 'var(--color-brand-teal-tint)' : 'var(--color-border-primary)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700,
-            color: isSubscribed ? '#065F46' : '#0B2545' }}>
+          <div style={{ fontSize: 'var(--text-base)', fontWeight: 600,
+            color: isSubscribed ? 'var(--color-status-success)' : 'var(--color-brand-navy)' }}>
             {isSubscribed ? '🔔 Notifications Enabled' : '🔕 Notifications Disabled'}
           </div>
-          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginTop: 2 }}>
             {isSubscribed
               ? 'You are receiving push notifications on this device'
               : 'Enable to receive order updates and deals'}
@@ -52,11 +52,11 @@ export default function NotificationSettingsPage() {
           onClick={() => isSubscribed ? unsubscribe() : subscribe(token)}
           disabled={isLoading || !isSupported}
           style={{
-            padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+            padding: '9px 18px', borderRadius: 8, fontSize: 'var(--text-sm)', fontWeight: 600,
             cursor: (isLoading || !isSupported) ? 'not-allowed' : 'pointer',
             border: 'none', fontFamily: 'inherit',
-            background: isSubscribed ? '#FCEBEB' : '#0E8A6E',
-            color: isSubscribed ? '#791F1F' : '#fff',
+            background: isSubscribed ? 'var(--color-status-danger-tint)' : 'var(--color-brand-teal)',
+            color: isSubscribed ? 'var(--color-status-danger)' : '#fff',
             opacity: (isLoading || !isSupported) ? 0.6 : 1,
           }}>
           {isLoading ? '...' : isSubscribed ? 'Disable' : 'Enable'}
@@ -66,28 +66,28 @@ export default function NotificationSettingsPage() {
       {/* Individual preferences */}
       {isSubscribed && (
         <div style={{ background: '#fff', borderRadius: 12,
-          border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-          <div style={{ padding: '12px 20px', background: '#F9FAFB',
-            borderBottom: '1px solid #E5E7EB', fontSize: 12,
-            fontWeight: 700, color: '#6B7280', textTransform: 'uppercase',
+          border: '1px solid var(--color-border-primary)', overflow: 'hidden' }}>
+          <div style={{ padding: '12px 20px', background: 'var(--color-background-secondary)',
+            borderBottom: '1px solid var(--color-border-primary)', fontSize: 'var(--text-xs)',
+            fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase',
             letterSpacing: '0.08em' }}>
             Notification Types
           </div>
           {SETTINGS.map((s, idx) => (
             <div key={s.key}
               style={{ padding: '14px 20px', display: 'flex', alignItems: 'center',
-                gap: 14, borderBottom: idx < SETTINGS.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
-              <span style={{ fontSize: 24, flexShrink: 0 }}>{s.icon}</span>
+                gap: 14, borderBottom: idx < SETTINGS.length - 1 ? '1px solid var(--color-background-tertiary)' : 'none' }}>
+              <span style={{ fontSize: 'var(--text-2xl)', flexShrink: 0 }}>{s.icon}</span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>{s.label}</div>
-                <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>{s.desc}</div>
+                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text-primary)' }}>{s.label}</div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginTop: 1 }}>{s.desc}</div>
               </div>
               {/* Toggle switch */}
               <div
                 onClick={() => setPrefs(p => ({ ...p, [s.key]: !p[s.key] }))}
                 style={{
                   width: 44, height: 24, borderRadius: 12, flexShrink: 0,
-                  background: prefs[s.key] ? '#0E8A6E' : '#D1D5DB',
+                  background: prefs[s.key] ? 'var(--color-brand-teal)' : 'var(--color-background-muted)',
                   position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
                 }}>
                 <div style={{
@@ -103,18 +103,18 @@ export default function NotificationSettingsPage() {
       )}
 
       {!isSupported && (
-        <div style={{ background: '#FFF7ED', border: '1px solid #FCD34D',
+        <div style={{ background: 'var(--color-status-warning-tint)', border: '1px solid #FCD34D',
           borderRadius: 10, padding: '12px 16px', marginTop: 16,
-          fontSize: 13, color: '#633806' }}>
+          fontSize: 'var(--text-sm)', color: 'var(--color-status-warning)' }}>
           ⚠️ Push notifications are not supported in this browser.
           Try Chrome on Android or Safari on iOS 16.4+.
         </div>
       )}
 
       {permission === 'denied' && (
-        <div style={{ background: '#FCEBEB', border: '1px solid #F0797B',
+        <div style={{ background: 'var(--color-status-danger-tint)', border: '1px solid #F0797B',
           borderRadius: 10, padding: '12px 16px', marginTop: 16,
-          fontSize: 13, color: '#791F1F' }}>
+          fontSize: 'var(--text-sm)', color: 'var(--color-status-danger)' }}>
           🚫 Notifications are blocked. To enable:
           Click the 🔒 lock icon in your browser address bar →
           Find &quot;Notifications&quot; → Change to &quot;Allow&quot; → Refresh page.

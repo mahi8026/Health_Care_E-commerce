@@ -302,7 +302,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
               heroPriority={heroPriority}
             />
           </div>
-          <div id="add-to-cart">
+          <div id="add-to-cart" className="lg:sticky lg:top-24 lg:self-start">
             <ProductInfoPanelEnhanced
               product={product}
               quantity={quantity}
@@ -322,12 +322,12 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
 
         {/* Tabs: Specs, Description, Shipping */}
-        <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+        <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
           <ProductTabsEnhanced product={product} />
         </div>
 
         {/* Reviews */}
-        <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+        <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
           <ProductReviewsEnhanced productId={product._id || product.id} />
         </div>
 
@@ -341,8 +341,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
         {/* Product Video (if available) */}
         {product.videoUrl && (
-          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
-            <h2 className="text-[14px] font-semibold text-[#0B2545] mb-3">Product Video</h2>
+          <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
+            <h2 className="text-sm font-semibold text-brand-navy mb-3">Product Video</h2>
             <ProductVideo
               videoUrl={product.videoUrl}
               thumbnail={product.videoThumbnail}
@@ -353,10 +353,10 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
         {/* AI-Powered Recommendations */}
         {loadingRecommendations && (
-          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+          <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">🤖</span>
-              <h2 className="text-[14px] font-semibold text-[#0B2545]">Loading Recommendations...</h2>
+              <h2 className="text-sm font-semibold text-brand-navy">Loading Recommendations...</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {[...Array(6)].map((_, i) => (
@@ -367,11 +367,11 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         )}
         
         {!loadingRecommendations && recommendedProducts.length > 0 && (
-          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
+          <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">🤖</span>
-              <h2 className="text-[14px] font-semibold text-[#0B2545]">You Might Also Like</h2>
-              <span className="text-[10px] text-gray-400 bg-purple-50 px-2 py-0.5 rounded-full font-medium">
+              <h2 className="text-sm font-semibold text-brand-navy">You Might Also Like</h2>
+              <span className="text-xs text-[var(--color-text-secondary)] bg-purple-50 px-2 py-0.5 rounded-full font-medium">
                 AI Recommended
               </span>
             </div>
@@ -386,9 +386,9 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
                   <Link
                     key={recProduct._id || recProduct.id}
                     href={`/products/${recProduct.slug || recProduct._id}`}
-                    className="group bg-white rounded-lg border border-gray-100 hover:border-[#0E8A6E]/40 hover:shadow-lg transition-all overflow-hidden"
+                    className="group bg-white rounded-lg border border-[var(--color-border-tertiary)] hover:border-brand-teal/40 hover:shadow-lg transition-all overflow-hidden"
                   >
-                    <div className="relative aspect-square bg-gray-50">
+                    <div className="relative aspect-square bg-[var(--color-background-secondary)]">
                       {recImageUrl ? (
                         <Image
                           src={recImageUrl}
@@ -403,10 +403,10 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
                       )}
                     </div>
                     <div className="p-2">
-                      <h3 className="text-[11px] font-medium text-gray-800 line-clamp-2 mb-1 group-hover:text-[#0E8A6E]">
+                      <h3 className="text-xs font-medium text-[var(--color-text-primary)] line-clamp-2 mb-1 group-hover:text-brand-teal">
                         {recProduct.name}
                       </h3>
-                      <p className="text-[13px] font-bold text-[#0B2545]">
+                      <p className="text-sm font-semibold text-brand-navy">
                         {recPrice > 0 ? `৳${recPrice.toLocaleString()}` : 'Contact'}
                       </p>
                     </div>
@@ -427,24 +427,24 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         </div>
 
         {/* SEO Content */}
-        <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5">
-          <h2 className="text-[14px] font-semibold text-[#0B2545] mb-2.5">About {product.name}</h2>
+        <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
+          <h2 className="text-sm font-semibold text-brand-navy mb-2.5">About {product.name}</h2>
           {product.description && (
-            <p className="text-[12px] text-gray-500 leading-relaxed mb-4">{product.description}</p>
+            <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-4">{product.description}</p>
           )}
-          <h3 className="text-[13px] font-semibold text-[#0B2545] mb-1.5">
+          <h3 className="text-sm font-semibold text-brand-navy mb-1.5">
             {product.name} Price in Bangladesh
           </h3>
-          <p className="text-[12px] text-gray-500 leading-relaxed mb-4">
+          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-4">
             The retail price of {product.name} in Bangladesh is{' '}
             {product.price && product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Contact for Price'}.
             {' '}B2B institutions (hospitals, clinics, diagnostic centres) receive 8–30% bulk discount depending on order volume.
             Contact MediportBD for institutional pricing and credit terms.
           </p>
-          <h3 className="text-[13px] font-semibold text-[#0B2545] mb-1.5">
+          <h3 className="text-sm font-semibold text-brand-navy mb-1.5">
             Buy {product.name} in Bangladesh
           </h3>
-          <p className="text-[12px] text-gray-500 leading-relaxed">
+          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
             MediportBD is an authorised distributor{brandName ? ` of ${brandName}` : ''} in Bangladesh.
             {' '}All products are DGDA registered and come with full manufacturer warranty.
             {' '}Enjoy free delivery in Dhaka for orders over ৳50,000 and nationwide shipping to all major cities.
@@ -454,12 +454,12 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
       {/* ── Mobile Sticky Bottom Bar ───────────────────────────────────── */}
       <div
-        className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-white border-t border-gray-200 px-4 py-2.5 z-[500] shadow-lg flex items-center gap-2.5"
+        className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-white border-t border-[var(--color-border-primary)] px-4 py-2.5 z-sticky shadow-lg flex items-center gap-2.5"
         style={{ paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}
       >
         <div className="flex-1">
-          <div className="text-[9px] text-gray-400 font-medium">Price</div>
-          <div className="text-[18px] font-bold text-[#0B2545] leading-tight">
+          <div className="text-xs text-[var(--color-text-secondary)] font-medium">Price</div>
+          <div className="text-lg font-semibold text-brand-navy leading-tight">
             {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
           </div>
         </div>
@@ -475,7 +475,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
             setTimeout(() => setAddingToCart(false), 1200);
           }}
           disabled={addingToCart}
-          className="bg-[#0E8A6E] hover:bg-[#0c7a61] text-white rounded-xl px-5 py-2.5 text-[13px] font-bold transition-colors disabled:opacity-60 flex items-center gap-2 min-w-[130px] justify-center"
+          className="bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors disabled:opacity-60 flex items-center gap-2 min-w-[130px] justify-center"
         >
           {addingToCart ? (
             <>

@@ -10,7 +10,7 @@
 export function Skeleton({ className = '', ...props }) {
   return (
     <div
-      className={`animate-shimmer bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] rounded ${className}`}
+      className={`animate-shimmer bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] bg-[length:200%_100%] rounded ${className}`}
       {...props}
     />
   );
@@ -31,7 +31,7 @@ export function SkeletonText({ lines = 3, className = '' }) {
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
+    <div className="bg-white rounded-lg border border-[var(--color-border-primary)] p-4 space-y-4">
       {/* Image */}
       <Skeleton className="h-48 w-full" />
       
@@ -51,7 +51,7 @@ export function SkeletonProductCard() {
   return (
     <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col">
       {/* Image */}
-      <Skeleton className="h-[140px] sm:h-[160px] md:h-[130px] w-full" />
+      <Skeleton className="aspect-square w-full" />
       
       {/* Content */}
       <div className="p-2.5 sm:p-3 space-y-2">

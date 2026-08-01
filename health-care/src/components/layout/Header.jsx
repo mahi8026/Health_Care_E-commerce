@@ -220,7 +220,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             className="flex-shrink-0 cursor-pointer group flex items-center gap-2.5"
             aria-label="MediportBD home"
           >
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-[#4DDBB8]/60 transition-all bg-white flex items-center justify-center p-1">
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-brand-teal-light/60 transition-all bg-white flex items-center justify-center p-1">
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
@@ -230,8 +230,8 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                 className="object-contain"
               />
             </div>
-            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-[20px] font-bold text-white group-hover:text-[#4DDBB8] transition-colors">
-              Mediport<span className="text-[#4DDBB8]">BD</span>
+            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-xl font-semibold text-white group-hover:text-brand-teal-light transition-colors">
+              Mediport<span className="text-brand-teal-light">BD</span>
             </span>
           </button>
 
@@ -258,7 +258,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
               {megaMenuOpen && (
                 <div
-                  className="absolute top-[calc(100%+10px)] left-0 w-[720px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-50 p-4 nav-dropdown-enter"
+                  className="absolute top-[calc(100%+10px)] left-0 w-[720px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-dropdown p-4 nav-dropdown-enter"
                   onMouseLeave={() => setMegaMenuOpen(false)}
                   role="menu"
                 >
@@ -267,10 +267,10 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                       // Loading skeleton
                       Array.from({ length: 9 }).map((_, i) => (
                         <div key={i} className="flex items-start gap-3 p-3 rounded-lg animate-pulse">
-                          <div className="w-4 h-4 bg-gray-200 rounded mt-0.5" />
+                          <div className="w-4 h-4 bg-[var(--color-background-muted)] rounded mt-0.5" />
                           <div className="flex-1">
-                            <div className="h-3 bg-gray-200 rounded w-3/4 mb-2" />
-                            <div className="h-2 bg-gray-100 rounded w-full" />
+                            <div className="h-3 bg-[var(--color-background-muted)] rounded w-3/4 mb-2" />
+                            <div className="h-2 bg-[var(--color-background-tertiary)] rounded w-full" />
                           </div>
                         </div>
                       ))
@@ -279,26 +279,26 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                         <button
                           key={cat.href}
                           onClick={() => { router.push(cat.href); setMegaMenuOpen(false); }}
-                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F0FBF8] transition-colors text-left group"
+                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-brand-teal-tint transition-colors text-left group"
                           role="menuitem"
                         >
-                          <span className="mt-0.5 text-[#0E8A6E] flex-shrink-0 group-hover:scale-110 transition-transform">
+                          <span className="mt-0.5 text-brand-teal flex-shrink-0 group-hover:scale-110 transition-transform">
                             {cat.icon}
                           </span>
                           <div>
-                            <div className="text-[13px] font-semibold text-[#111827] group-hover:text-[#0E8A6E] transition-colors">
+                            <div className="text-sm font-semibold text-[var(--color-text-primary)] group-hover:text-brand-teal transition-colors">
                               {cat.label}
                             </div>
-                            <div className="text-[11px] text-[#6B7280] mt-0.5">{cat.desc}</div>
+                            <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">{cat.desc}</div>
                           </div>
                         </button>
                       ))
                     )}
                   </div>
-                  <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="mt-3 pt-3 border-t border-[var(--color-border-tertiary)]">
                     <button
                       onClick={() => { router.push('/products'); setMegaMenuOpen(false); }}
-                      className="w-full py-2 text-center text-[12px] font-semibold text-[#0E8A6E] hover:bg-[#F0FBF8] rounded-lg transition-colors"
+                      className="w-full py-2 text-center text-xs font-semibold text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                     >
                       View All Products →
                     </button>
@@ -427,12 +427,12 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
         <>
           {/* Backdrop: closes modal when clicking outside the panel */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9998] animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-modal animate-fade-in"
             onClick={() => setSearchOpen(false)}
           />
           {/* Modal panel: higher z-index, stopPropagation on the white card only */}
           <div 
-            className="fixed top-[70px] left-0 right-0 z-[9999] px-4 animate-slide-down-modal pointer-events-none"
+            className="fixed top-[70px] left-0 right-0 z-modal px-4 animate-slide-down-modal pointer-events-none"
           >
             <div className="max-w-[680px] mx-auto pointer-events-none">
               {/* White card — re-enable pointer events here so all children are clickable */}
@@ -448,7 +448,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                   />
                   <button
                     onClick={() => setSearchOpen(false)}
-                    className="absolute top-4 right-4 flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-200 group z-10"
+                    className="absolute top-4 right-4 flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-all duration-200 group z-10"
                     aria-label="Close search"
                   >
                     <FaTimes size={16} className="group-hover:rotate-90 transition-transform duration-200" />
@@ -456,18 +456,18 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                 </div>
               </div>
               {/* Keyboard shortcuts hint */}
-              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400 pointer-events-none">
+              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[var(--color-text-secondary)] pointer-events-none">
                 <div className="flex items-center gap-1.5">
-                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">↑</kbd>
-                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">↓</kbd>
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-xs font-medium shadow-sm">↑</kbd>
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-xs font-medium shadow-sm">↓</kbd>
                   <span>Navigate</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">Enter</kbd>
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-xs font-medium shadow-sm">Enter</kbd>
                   <span>Select</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-[10px] font-medium shadow-sm">Esc</kbd>
+                  <kbd className="px-2 py-0.5 bg-gray-800/90 text-white rounded text-xs font-medium shadow-sm">Esc</kbd>
                   <span>Close</span>
                 </div>
               </div>

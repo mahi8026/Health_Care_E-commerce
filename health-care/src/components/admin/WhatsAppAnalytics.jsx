@@ -50,7 +50,7 @@ export default function WhatsAppAnalytics() {
   };
 
   useEffect(() => {
-    fetchAnalytics();
+    void Promise.resolve().then(fetchAnalytics);
   }, [dateRange, customDates]);
 
   const formatNumber = (num) => {
@@ -71,12 +71,12 @@ export default function WhatsAppAnalytics() {
       label: item._id || 'Unknown',
       value: item.count,
       color: {
-        active: 'bg-green-500',
+        active: 'bg-[var(--color-status-success-tint)]',
         resolved: 'bg-blue-500',
-        pending: 'bg-yellow-500',
-        escalated: 'bg-red-500',
-        closed: 'bg-gray-500'
-      }[item._id] || 'bg-gray-500'
+        pending: 'bg-[var(--color-status-warning-tint)]',
+        escalated: 'bg-[var(--color-status-danger-tint)]',
+        closed: 'bg-[var(--color-background-secondary)]'
+      }[item._id] || 'bg-[var(--color-background-secondary)]'
     }));
   };
 
@@ -102,16 +102,16 @@ export default function WhatsAppAnalytics() {
     return analytics.messagesByDirection.map(item => ({
       label: item._id === 'inbound' ? 'Inbound' : 'Outbound',
       value: item.count,
-      color: item._id === 'inbound' ? 'bg-blue-500' : 'bg-green-500'
+      color: item._id === 'inbound' ? 'bg-blue-500' : 'bg-[var(--color-status-success-tint)]'
     }));
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading analytics...</p>
+          <p className="text-[var(--color-text-secondary)] mt-4">Loading analytics...</p>
         </div>
       </div>
     );
@@ -119,11 +119,11 @@ export default function WhatsAppAnalytics() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <span className="text-6xl">⚠️</span>
-          <h2 className="text-xl font-bold text-gray-900 mt-4">Error Loading Analytics</h2>
-          <p className="text-gray-600 mt-2">{error}</p>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mt-4">Error Loading Analytics</h2>
+          <p className="text-[var(--color-text-secondary)] mt-2">{error}</p>
           <button
             onClick={fetchAnalytics}
             className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -136,17 +136,17 @@ export default function WhatsAppAnalytics() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--color-background-secondary)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Date Range Filter */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-4 mb-6">
           <div className="flex flex-wrap items-end gap-4">
             <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Date Range</label>
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="today">Today</option>
                 <option value="last_7_days">Last 7 Days</option>
@@ -159,21 +159,21 @@ export default function WhatsAppAnalytics() {
             {dateRange === 'custom' && (
               <>
                 <div className="flex-1 min-w-[200px]">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Start Date</label>
                   <input
                     type="date"
                     value={customDates.startDate}
                     onChange={(e) => setCustomDates(prev => ({ ...prev, startDate: e.target.value }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   />
                 </div>
                 <div className="flex-1 min-w-[200px]">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">End Date</label>
                   <input
                     type="date"
                     value={customDates.endDate}
                     onChange={(e) => setCustomDates(prev => ({ ...prev, endDate: e.target.value }))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   />
                 </div>
               </>
@@ -183,11 +183,11 @@ export default function WhatsAppAnalytics() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Conversations</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-sm text-[var(--color-text-secondary)]">Total Conversations</p>
+                <p className="text-3xl font-semibold text-[var(--color-text-primary)] mt-2">
                   {formatNumber(analytics?.totalConversations)}
                 </p>
               </div>
@@ -197,39 +197,39 @@ export default function WhatsAppAnalytics() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Messages</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-sm text-[var(--color-text-secondary)]">Total Messages</p>
+                <p className="text-3xl font-semibold text-[var(--color-text-primary)] mt-2">
                   {formatNumber(analytics?.totalMessages)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-[var(--color-status-success-tint)] rounded-lg flex items-center justify-center">
                 <span className="text-2xl">📨</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Avg Response Time</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-sm text-[var(--color-text-secondary)]">Avg Response Time</p>
+                <p className="text-3xl font-semibold text-[var(--color-text-primary)] mt-2">
                   {formatTime(analytics?.avgResponseTime)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-[var(--color-status-warning-tint)] rounded-lg flex items-center justify-center">
                 <span className="text-2xl">⏱️</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Bot Conversations</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">
+                <p className="text-sm text-[var(--color-text-secondary)]">Bot Conversations</p>
+                <p className="text-3xl font-semibold text-[var(--color-text-primary)] mt-2">
                   {formatNumber(getBotVsHumanData().find(d => d.label === 'Bot')?.value || 0)}
                 </p>
               </div>
@@ -243,16 +243,16 @@ export default function WhatsAppAnalytics() {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Conversations by Status */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Conversations by Status</h3>
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Conversations by Status</h3>
             <div className="space-y-3">
               {getStatusData().map((item, index) => (
                 <div key={index}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700 capitalize">{item.label}</span>
-                    <span className="text-sm font-bold text-gray-900">{item.value}</span>
+                    <span className="text-sm font-medium text-[var(--color-text-primary)] capitalize">{item.label}</span>
+                    <span className="text-sm font-semibold text-[var(--color-text-primary)]">{item.value}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-[var(--color-background-muted)] rounded-full h-2">
                     <div
                       className={`${item.color} h-2 rounded-full transition-all`}
                       style={{ width: `${(item.value / analytics.totalConversations) * 100}%` }}
@@ -264,16 +264,16 @@ export default function WhatsAppAnalytics() {
           </div>
 
           {/* Messages by Direction */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Messages by Direction</h3>
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Messages by Direction</h3>
             <div className="space-y-3">
               {getMessageDirectionData().map((item, index) => (
                 <div key={index}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                    <span className="text-sm font-bold text-gray-900">{item.value}</span>
+                    <span className="text-sm font-medium text-[var(--color-text-primary)]">{item.label}</span>
+                    <span className="text-sm font-semibold text-[var(--color-text-primary)]">{item.value}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-[var(--color-background-muted)] rounded-full h-2">
                     <div
                       className={`${item.color} h-2 rounded-full transition-all`}
                       style={{ width: `${(item.value / analytics.totalMessages) * 100}%` }}
@@ -285,16 +285,16 @@ export default function WhatsAppAnalytics() {
           </div>
 
           {/* Bot vs Human */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Bot vs Human Conversations</h3>
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Bot vs Human Conversations</h3>
             <div className="space-y-3">
               {getBotVsHumanData().map((item, index) => (
                 <div key={index}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                    <span className="text-sm font-bold text-gray-900">{item.value}</span>
+                    <span className="text-sm font-medium text-[var(--color-text-primary)]">{item.label}</span>
+                    <span className="text-sm font-semibold text-[var(--color-text-primary)]">{item.value}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-[var(--color-background-muted)] rounded-full h-2">
                     <div
                       className={`${item.color} h-2 rounded-full transition-all`}
                       style={{ width: `${(item.value / analytics.totalConversations) * 100}%` }}
@@ -306,16 +306,16 @@ export default function WhatsAppAnalytics() {
           </div>
 
           {/* Conversations by Category */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Categories</h3>
+          <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-6">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Top Categories</h3>
             <div className="space-y-3">
               {getCategoryData().slice(0, 5).map((item, index) => (
                 <div key={index}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-700 capitalize">{item.label}</span>
-                    <span className="text-sm font-bold text-gray-900">{item.value}</span>
+                    <span className="text-sm font-medium text-[var(--color-text-primary)] capitalize">{item.label}</span>
+                    <span className="text-sm font-semibold text-[var(--color-text-primary)]">{item.value}</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-[var(--color-background-muted)] rounded-full h-2">
                     <div
                       className="bg-indigo-500 h-2 rounded-full transition-all"
                       style={{ width: `${(item.value / analytics.totalConversations) * 100}%` }}
@@ -328,35 +328,35 @@ export default function WhatsAppAnalytics() {
         </div>
 
         {/* All Categories Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-6 overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">All Categories</h3>
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] mt-6 overflow-hidden">
+          <div className="p-6 border-b border-[var(--color-border-primary)]">
+            <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">All Categories</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-[var(--color-background-secondary)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                     Count
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">
                     Percentage
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-[var(--color-border-primary)]">
                 {getCategoryData().map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">
+                  <tr key={index} className="hover:bg-[var(--color-background-secondary)]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--color-text-primary)] capitalize">
                       {item.label}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-primary)]">
                       {item.value}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-primary)]">
                       {((item.value / analytics.totalConversations) * 100).toFixed(1)}%
                     </td>
                   </tr>

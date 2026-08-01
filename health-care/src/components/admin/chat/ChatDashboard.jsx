@@ -1,4 +1,5 @@
 'use client';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
@@ -11,10 +12,10 @@ import { format, formatDistanceToNow } from 'date-fns';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
 
 const STATUS_OPTIONS = [
-  { value: 'online',  label: 'Online',  dot: 'bg-green-500' },
-  { value: 'away',    label: 'Away',    dot: 'bg-yellow-500' },
-  { value: 'busy',    label: 'Busy',    dot: 'bg-red-500' },
-  { value: 'offline', label: 'Offline', dot: 'bg-gray-400' },
+  { value: 'online',  label: 'Online',  dot: 'bg-[var(--color-status-success-tint)]' },
+  { value: 'away',    label: 'Away',    dot: 'bg-[var(--color-status-warning-tint)]' },
+  { value: 'busy',    label: 'Busy',    dot: 'bg-[var(--color-status-danger-tint)]' },
+  { value: 'offline', label: 'Offline', dot: 'bg-[var(--color-background-muted)]' },
 ];
 
 function formatTime(date) {
@@ -37,12 +38,12 @@ function getHeaders() {
 // ── Status badge ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
   const map = {
-    active:  'bg-green-100 text-green-700 border-green-200',
-    waiting: 'bg-amber-100 text-amber-700 border-amber-200',
-    closed:  'bg-gray-100  text-gray-500  border-gray-200',
+    active:  'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] border-[var(--color-status-success-tint)]',
+    waiting: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)] border-[var(--color-status-warning-tint)]',
+    closed:  'bg-[var(--color-background-tertiary)]  text-[var(--color-text-secondary)]  border-[var(--color-border-primary)]',
   };
   return (
-    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${map[status] ?? map.closed}`}>
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${map[status] ?? map.closed}`}>
       {status}
     </span>
   );
@@ -53,25 +54,25 @@ function ConvItem({ conv, isSelected, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-4 py-3 border-b border-gray-100 transition-colors hover:bg-blue-50/60
+      className={`w-full text-left px-4 py-3 border-b border-[var(--color-border-tertiary)] transition-colors hover:bg-blue-50/60
         ${isSelected ? 'bg-blue-50 border-l-[3px] border-l-blue-600' : 'border-l-[3px] border-l-transparent'}`}
     >
       <div className="flex items-start justify-between gap-2">
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
           {(conv.customer?.name || 'G')[0].toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1">
-            <span className="font-semibold text-gray-900 text-sm truncate">
+            <span className="font-semibold text-[var(--color-text-primary)] text-sm truncate">
               {conv.customer?.name || 'Guest'}
             </span>
-            <span className="text-[10px] text-gray-400 flex-shrink-0">
+            <span className="text-xs text-[var(--color-text-secondary)] flex-shrink-0">
               {timeAgo(conv.lastMessageAt || conv.createdAt)}
             </span>
           </div>
           {conv.customer?.email && (
-            <p className="text-xs text-gray-500 truncate mt-0.5">{conv.customer.email}</p>
+            <p className="text-xs text-[var(--color-text-secondary)] truncate mt-0.5">{conv.customer.email}</p>
           )}
           <div className="mt-1">
             <StatusBadge status={conv.status} />
@@ -90,7 +91,7 @@ function MessageBubble({ msg }) {
   if (isSystem) {
     return (
       <div className="flex justify-center my-2">
-        <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+        <span className="text-xs text-[var(--color-text-secondary)] bg-[var(--color-background-tertiary)] px-3 py-1 rounded-full">
           {msg.content?.text || msg.content}
         </span>
       </div>
@@ -100,27 +101,27 @@ function MessageBubble({ msg }) {
   return (
     <div className={`flex ${isAgent ? 'justify-end' : 'justify-start'} mb-3`}>
       {!isAgent && (
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center text-white text-xs font-bold mr-2 flex-shrink-0 self-end mb-1">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--color-background-muted)] to-[var(--color-text-secondary)] flex items-center justify-center text-white text-xs font-semibold mr-2 flex-shrink-0 self-end mb-1">
           {(msg.sender?.name || 'G')[0].toUpperCase()}
         </div>
       )}
       <div className={`max-w-[72%] ${isAgent ? 'items-end' : 'items-start'} flex flex-col`}>
         {!isAgent && (
-          <span className="text-[10px] text-gray-500 mb-1 px-1">{msg.sender?.name || 'Customer'}</span>
+          <span className="text-xs text-[var(--color-text-secondary)] mb-1 px-1">{msg.sender?.name || 'Customer'}</span>
         )}
         <div className={`rounded-2xl px-4 py-2.5 shadow-sm ${
           isAgent
             ? 'bg-blue-600 text-white rounded-br-sm'
-            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-sm'
+            : 'bg-white text-[var(--color-text-primary)] border border-[var(--color-border-primary)] rounded-bl-sm'
         }`}>
           <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
             {msg.content?.text || msg.content}
           </p>
         </div>
-        <span className="text-[10px] text-gray-400 mt-1 px-1">{formatTime(msg.createdAt)}</span>
+        <span className="text-xs text-[var(--color-text-secondary)] mt-1 px-1">{formatTime(msg.createdAt)}</span>
       </div>
       {isAgent && (
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-bold ml-2 flex-shrink-0 self-end mb-1">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-semibold ml-2 flex-shrink-0 self-end mb-1">
           A
         </div>
       )}
@@ -249,7 +250,7 @@ export default function ChatDashboard() {
 
   // ── Close conversation ────────────────────────────────────────────────────
   const handleClose = async (convId) => {
-    if (!confirm('Close this conversation?')) return;
+    if (!await confirmAction('Close this conversation?')) return;
     try {
       await fetch(`${API_URL}/chat/conversations/${convId}/close`, {
         method: 'POST',
@@ -267,7 +268,7 @@ export default function ChatDashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto" />
-          <p className="mt-3 text-sm text-gray-500">Loading conversations...</p>
+          <p className="mt-3 text-sm text-[var(--color-text-secondary)]">Loading conversations...</p>
         </div>
       </div>
     );
@@ -276,17 +277,17 @@ export default function ChatDashboard() {
   const currentStatus = STATUS_OPTIONS.find(s => s.value === agentStatus);
 
   return (
-    <div className="flex flex-col bg-gray-50 min-h-screen">
+    <div className="flex flex-col bg-[var(--color-background-secondary)] min-h-screen">
 
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+      <div className="bg-white border-b border-[var(--color-border-primary)] px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
             <FaComments className="text-white w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 leading-tight">Live Chat</h1>
-            <p className="text-xs text-gray-500">Real-time customer support</p>
+            <h1 className="text-lg font-semibold text-[var(--color-text-primary)] leading-tight">Live Chat</h1>
+            <p className="text-xs text-[var(--color-text-secondary)]">Real-time customer support</p>
           </div>
         </div>
 
@@ -296,7 +297,7 @@ export default function ChatDashboard() {
           <select
             value={agentStatus}
             onChange={e => setAgentStatus(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="text-sm border border-[var(--color-border-primary)] rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             {STATUS_OPTIONS.map(o => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -304,7 +305,7 @@ export default function ChatDashboard() {
           </select>
           <button
             onClick={fetchConversations}
-            className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+            className="p-1.5 text-[var(--color-text-secondary)] hover:text-blue-600 transition-colors"
             title="Refresh"
           >
             <FaSync className="w-3.5 h-3.5" />
@@ -316,38 +317,38 @@ export default function ChatDashboard() {
       <div className="grid grid-cols-3 gap-3 px-4 py-3">
         {[
           { label: 'Active',  value: stats.active,  icon: FaComments,    bg: 'bg-blue-50',   text: 'text-blue-600',  border: 'border-blue-100' },
-          { label: 'Waiting', value: stats.waiting, icon: FaClock,       bg: 'bg-amber-50',  text: 'text-amber-600', border: 'border-amber-100' },
-          { label: 'Closed',  value: stats.closed,  icon: FaCheckCircle, bg: 'bg-green-50',  text: 'text-green-600', border: 'border-green-100' },
+          { label: 'Waiting', value: stats.waiting, icon: FaClock,       bg: 'bg-[var(--color-status-warning-tint)]',  text: 'text-[var(--color-status-warning)]', border: 'border-[var(--color-status-warning-tint)]' },
+          { label: 'Closed',  value: stats.closed,  icon: FaCheckCircle, bg: 'bg-[var(--color-status-success-tint)]',  text: 'text-[var(--color-status-success)]', border: 'border-[var(--color-status-success-tint)]' },
         ].map(({ label, value, icon: Icon, bg, text, border }) => (
           <div key={label} className={`${bg} border ${border} rounded-xl p-3 flex items-center gap-2`}>
             <Icon className={`${text} w-4 h-4 flex-shrink-0`} />
             <div>
-              <p className={`text-xl font-bold ${text} leading-none`}>{value}</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">{label}</p>
+              <p className={`text-xl font-semibold ${text} leading-none`}>{value}</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{label}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* ── Main split layout ────────────────────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden mx-4 mb-4 rounded-xl border border-gray-200 bg-white shadow-sm"
+      <div className="flex flex-1 overflow-hidden mx-4 mb-4 rounded-xl border border-[var(--color-border-primary)] bg-white shadow-sm"
            style={{ minHeight: 0, height: 'calc(100vh - 260px)' }}>
 
         {/* ── Conversation list (hidden on mobile when panel open) ──────── */}
-        <div className={`flex flex-col border-r border-gray-100 flex-shrink-0
+        <div className={`flex flex-col border-r border-[var(--color-border-tertiary)] flex-shrink-0
           ${showPanel ? 'hidden md:flex' : 'flex'}
           w-full md:w-72 lg:w-80`}>
 
           {/* Search */}
-          <div className="p-3 border-b border-gray-100">
+          <div className="p-3 border-b border-[var(--color-border-tertiary)]">
             <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] w-3.5 h-3.5" />
               <input
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search conversations..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--color-background-secondary)]"
               />
             </div>
           </div>
@@ -355,7 +356,7 @@ export default function ChatDashboard() {
           {/* List */}
           <div className="flex-1 overflow-y-auto">
             {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+              <div className="flex flex-col items-center justify-center h-48 text-[var(--color-text-secondary)]">
                 <FaComments className="w-10 h-10 mb-2 opacity-30" />
                 <p className="text-sm">{search ? 'No results found' : 'No conversations yet'}</p>
               </div>
@@ -377,45 +378,45 @@ export default function ChatDashboard() {
           ${showPanel ? 'flex' : 'hidden md:flex'}`}>
 
           {!selected ? (
-            <div className="flex-1 flex items-center justify-center text-gray-400">
+            <div className="flex-1 flex items-center justify-center text-[var(--color-text-secondary)]">
               <div className="text-center px-6">
-                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-20 h-20 rounded-full bg-[var(--color-background-tertiary)] flex items-center justify-center mx-auto mb-4">
                   <FaComments className="w-9 h-9 opacity-40" />
                 </div>
-                <p className="text-base font-medium text-gray-500">Select a conversation</p>
-                <p className="text-sm text-gray-400 mt-1">Choose from the list to start replying</p>
+                <p className="text-base font-medium text-[var(--color-text-secondary)]">Select a conversation</p>
+                <p className="text-sm text-[var(--color-text-secondary)] mt-1">Choose from the list to start replying</p>
               </div>
             </div>
           ) : (
             <>
               {/* Panel header */}
-              <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 flex-shrink-0">
+              <div className="bg-white border-b border-[var(--color-border-tertiary)] px-4 py-3 flex items-center gap-3 flex-shrink-0">
                 {/* Back button (mobile) */}
                 <button
                   onClick={() => { setShowPanel(false); setSelected(null); }}
-                  className="md:hidden text-gray-500 hover:text-gray-700 p-1"
+                  className="md:hidden text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] p-1"
                 >
                   <FaArrowLeft className="w-4 h-4" />
                 </button>
 
                 {/* Avatar */}
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                   {(selected.customer?.name || 'G')[0].toUpperCase()}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-900 text-sm truncate">
+                  <p className="font-semibold text-[var(--color-text-primary)] text-sm truncate">
                     {selected.customer?.name || 'Guest'}
                   </p>
                   <div className="flex items-center gap-3 flex-wrap">
                     {selected.customer?.email && (
-                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <span className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
                         <FaEnvelope className="w-3 h-3" />{selected.customer.email}
                       </span>
                     )}
                     {selected.customer?.phone && (
-                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <span className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
                         <FaPhone className="w-3 h-3" />{selected.customer.phone}
                       </span>
                     )}
@@ -428,14 +429,14 @@ export default function ChatDashboard() {
                   {selected.status !== 'closed' && (
                     <button
                       onClick={() => handleClose(selected.conversationId)}
-                      className="text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors"
+                      className="text-xs text-[var(--color-status-danger)] hover:text-[var(--color-status-danger)] border border-[var(--color-status-danger-tint)] hover:border-[var(--color-status-danger)] px-3 py-1.5 rounded-lg transition-colors"
                     >
                       Close
                     </button>
                   )}
                   <button
                     onClick={() => { setSelected(null); setShowPanel(false); }}
-                    className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors hidden md:block"
+                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] p-1.5 rounded-lg hover:bg-[var(--color-background-tertiary)] transition-colors hidden md:block"
                   >
                     <FaTimes className="w-4 h-4" />
                   </button>
@@ -445,7 +446,7 @@ export default function ChatDashboard() {
               {/* Messages area */}
               <div className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50/50">
                 {messages.length === 0 ? (
-                  <div className="flex items-center justify-center h-full text-gray-400">
+                  <div className="flex items-center justify-center h-full text-[var(--color-text-secondary)]">
                     <p className="text-sm">No messages yet</p>
                   </div>
                 ) : (
@@ -460,7 +461,7 @@ export default function ChatDashboard() {
               {selected.status !== 'closed' ? (
                 <form
                   onSubmit={handleSendReply}
-                  className="bg-white border-t border-gray-100 px-4 py-3 flex items-end gap-2 flex-shrink-0"
+                  className="bg-white border-t border-[var(--color-border-tertiary)] px-4 py-3 flex items-end gap-2 flex-shrink-0"
                 >
                   <textarea
                     ref={replyRef}
@@ -475,7 +476,7 @@ export default function ChatDashboard() {
                     placeholder="Type your reply... (Enter to send)"
                     rows={1}
                     disabled={sending}
-                    className="flex-1 px-4 py-2.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none bg-gray-50 disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 border border-[var(--color-border-primary)] rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none bg-[var(--color-background-secondary)] disabled:opacity-50"
                     style={{ maxHeight: '120px', overflowY: 'auto' }}
                   />
                   <button
@@ -487,7 +488,7 @@ export default function ChatDashboard() {
                   </button>
                 </form>
               ) : (
-                <div className="bg-gray-50 border-t border-gray-100 px-4 py-3 text-center text-sm text-gray-400 flex-shrink-0">
+                <div className="bg-[var(--color-background-secondary)] border-t border-[var(--color-border-tertiary)] px-4 py-3 text-center text-sm text-[var(--color-text-secondary)] flex-shrink-0">
                   🔒 This conversation is closed
                 </div>
               )}

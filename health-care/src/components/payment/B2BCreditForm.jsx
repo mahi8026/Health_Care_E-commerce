@@ -40,22 +40,22 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-      <div className="bg-[#E1F5EE] border-[0.5px] border-[#0E8A6E] rounded-lg p-3 md:p-4">
-        <h3 className="text-[12px] md:text-[13px] font-semibold mb-2 md:mb-3 text-[#0E8A6E]">
+      <div className="bg-brand-teal-tint border-[0.5px] border-brand-teal rounded-lg p-3 md:p-4">
+        <h3 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-brand-teal">
           💼 B2B Credit Line
         </h3>
-        <div className="space-y-1.5 md:space-y-2 text-[11px] md:text-[12px]">
+        <div className="space-y-1.5 md:space-y-2 text-xs md:text-xs">
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Total Credit Limit:</span>
             <span className="font-semibold">৳{creditLimit.toLocaleString()}</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Credit Used:</span>
-            <span className="font-semibold text-[#DC2626]">৳{creditUsed.toLocaleString()}</span>
+            <span className="font-semibold text-[var(--color-status-danger)]">৳{creditUsed.toLocaleString()}</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Available Credit:</span>
-            <span className="font-semibold text-[#0E8A6E]">৳{availableCredit.toLocaleString()}</span>
+            <span className="font-semibold text-brand-teal">৳{availableCredit.toLocaleString()}</span>
           </div>
           <div className="h-[0.5px] bg-[var(--color-border-tertiary)] my-2"></div>
           <div className="flex justify-between flex-wrap gap-1">
@@ -64,7 +64,7 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Remaining After Payment:</span>
-            <span className={`font-semibold ${remainingAfterPayment >= 0 ? 'text-[#0E8A6E]' : 'text-[#DC2626]'}`}>
+            <span className={`font-semibold ${remainingAfterPayment >= 0 ? 'text-brand-teal' : 'text-[var(--color-status-danger)]'}`}>
               ৳{remainingAfterPayment.toLocaleString()}
             </span>
           </div>
@@ -72,12 +72,12 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
       </div>
 
       {!hasEnoughCredit && (
-        <div className="bg-[#FEE2E2] border-[0.5px] border-[#DC2626] rounded-lg p-2.5 md:p-3 text-[11px] md:text-[12px] text-[#991B1B]">
+        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[var(--color-status-danger)] rounded-lg p-2.5 md:p-3 text-xs md:text-xs text-[var(--color-status-danger)]">
           <div className="flex items-start gap-2">
             <span className="flex-shrink-0">⚠️</span>
             <div>
               <strong>Insufficient Credit</strong><br />
-              <span className="text-[10px] md:text-[11px]">
+              <span className="text-xs md:text-xs">
                 You need ৳{amount.toLocaleString()} but only have ৳{availableCredit.toLocaleString()} available.
                 Please contact your account manager to increase your credit limit.
               </span>
@@ -86,7 +86,7 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
         </div>
       )}
 
-      <div className="bg-[var(--color-background-secondary)] rounded-lg p-2.5 md:p-3 text-[10px] md:text-[11px] text-[var(--color-text-secondary)]">
+      <div className="bg-[var(--color-background-secondary)] rounded-lg p-2.5 md:p-3 text-xs md:text-xs text-[var(--color-text-secondary)]">
         <div className="flex items-start gap-2">
           <span className="flex-shrink-0">ℹ️</span>
           <div>
@@ -100,7 +100,7 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
       </div>
 
       {error && (
-        <div className="p-2 md:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] md:text-[12px]">
+        <div className="p-2 md:p-3 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs md:text-xs">
           {error}
         </div>
       )}
@@ -108,7 +108,7 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
       <button
         type="submit"
         disabled={loading || !hasEnoughCredit}
-        className="w-full bg-[#0E8A6E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-[12px] md:text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#0C7A5F] transition-colors"
+        className="w-full bg-brand-teal text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[var(--color-brand-teal-hover)] transition-colors"
       >
         {loading ? (
           <>
@@ -123,10 +123,10 @@ export default function B2BCreditForm({ amount, orderId, onSuccess, onError }) {
         )}
       </button>
 
-      <div className="text-center text-[10px] md:text-[11px] text-[var(--color-text-secondary)] flex flex-wrap justify-center gap-1">
+      <div className="text-center text-xs md:text-xs text-[var(--color-text-secondary)] flex flex-wrap justify-center gap-1">
         <span>Account Manager: <span className="font-semibold">{user?.accountManager?.name || 'Your Account Manager'}</span></span>
         <span>•</span>
-        <a href="tel:+8801712345678" className="text-[#0E8A6E] hover:underline">
+        <a href="tel:+8801712345678" className="text-brand-teal hover:underline">
           +880 1712-345678
         </a>
       </div>

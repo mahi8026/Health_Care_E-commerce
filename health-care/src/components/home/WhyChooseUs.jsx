@@ -21,13 +21,13 @@ export default function WhyChooseUs({ settings }) {
   const features = buildFeatures(settings);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+    <section className="py-16 bg-gradient-to-br from-[var(--color-background-secondary)] to-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
             Why Choose MediportBD?
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto">
             Your trusted partner for medical equipment in Bangladesh
           </p>
         </div>
@@ -36,17 +36,17 @@ export default function WhyChooseUs({ settings }) {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow border border-[var(--color-border-tertiary)]"
             >
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 text-xl">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-brand-teal-tint flex items-center justify-center text-brand-teal text-xl">
                   {feature.icon}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 mb-2 text-lg">
+                  <h3 className="font-semibold text-[var(--color-text-primary)] mb-2 text-lg">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                     {feature.desc}
                   </p>
                 </div>

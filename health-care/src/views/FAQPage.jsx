@@ -188,14 +188,14 @@ export default function FAQPage() {
     : filteredCategories.filter(cat => cat.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--color-background-secondary)] to-[var(--color-background-tertiary)] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-semibold text-[var(--color-text-primary)] mb-4">
             Frequently Asked Questions
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto">
             Find answers to common questions about ordering, delivery, products, returns, and B2B services.
           </p>
         </div>
@@ -203,13 +203,13 @@ export default function FAQPage() {
         {/* Search Bar */}
         <div className="mb-8">
           <div className="relative">
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--color-text-secondary)]" />
             <input
               type="text"
               placeholder="Search FAQs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent text-gray-900"
+              className="w-full pl-12 pr-4 py-4 bg-white border border-[var(--color-border-primary)] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent text-[var(--color-text-primary)]"
             />
           </div>
         </div>
@@ -220,8 +220,8 @@ export default function FAQPage() {
             onClick={() => setActiveCategory('all')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               activeCategory === 'all'
-                ? 'bg-[#0E8A6E] text-white shadow-md'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
+                ? 'bg-brand-teal text-white shadow-md'
+                : 'bg-white text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)]'
             }`}
           >
             All
@@ -232,8 +232,8 @@ export default function FAQPage() {
               onClick={() => setActiveCategory(cat.category)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeCategory === cat.category
-                  ? 'bg-[#0E8A6E] text-white shadow-md'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-brand-teal text-white shadow-md'
+                  : 'bg-white text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)]'
               }`}
             >
               {cat.icon} {cat.category}
@@ -246,13 +246,13 @@ export default function FAQPage() {
           <div className="space-y-8">
             {displayCategories.map((category) => (
               <div key={category.category} className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-[#0E8A6E] to-[#0A6B56] px-6 py-4">
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <div className="bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] px-6 py-4">
+                  <h2 className="text-2xl font-semibold text-white flex items-center gap-3">
                     <span className="text-3xl">{category.icon}</span>
                     {category.category}
                   </h2>
                 </div>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-[var(--color-border-tertiary)]">
                   {category.faqs.map((faq, faqIndex) => {
                     const key = `${category.category}-${faqIndex}`;
                     const isOpen = openIndex === key;
@@ -260,17 +260,17 @@ export default function FAQPage() {
                       <div key={key} className="transition-all">
                         <button
                           onClick={() => toggleFAQ(category.category, faqIndex)}
-                          className="w-full px-6 py-5 flex justify-between items-start gap-4 hover:bg-gray-50 transition-colors text-left"
+                          className="w-full px-6 py-5 flex justify-between items-start gap-4 hover:bg-[var(--color-background-secondary)] transition-colors text-left"
                         >
-                          <span className="font-semibold text-gray-900 flex-1">
+                          <span className="font-semibold text-[var(--color-text-primary)] flex-1">
                             {faq.question}
                           </span>
-                          <span className="text-[#0E8A6E] flex-shrink-0 mt-1">
+                          <span className="text-brand-teal flex-shrink-0 mt-1">
                             {isOpen ? <FaChevronUp /> : <FaChevronDown />}
                           </span>
                         </button>
                         {isOpen && (
-                          <div className="px-6 pb-5 text-gray-600 leading-relaxed">
+                          <div className="px-6 pb-5 text-[var(--color-text-secondary)] leading-relaxed">
                             {faq.answer}
                           </div>
                         )}
@@ -283,14 +283,14 @@ export default function FAQPage() {
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
-            <p className="text-gray-600 text-lg mb-2">No FAQs found matching your search.</p>
-            <p className="text-gray-500 text-sm">Try a different search term or browse all categories.</p>
+            <p className="text-[var(--color-text-secondary)] text-lg mb-2">No FAQs found matching your search.</p>
+            <p className="text-[var(--color-text-secondary)] text-sm">Try a different search term or browse all categories.</p>
           </div>
         )}
 
         {/* Still have questions? */}
-        <div className="mt-12 bg-gradient-to-r from-[#0E8A6E] to-[#0A6B56] rounded-2xl shadow-lg p-8 text-white">
-          <h3 className="text-2xl font-bold mb-4 text-center">Still have questions?</h3>
+        <div className="mt-12 bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-2xl shadow-lg p-8 text-white">
+          <h3 className="text-2xl font-semibold mb-4 text-center">Still have questions?</h3>
           <p className="text-center mb-6 text-white/90">
             Our support team is here to help you with any inquiries.
           </p>

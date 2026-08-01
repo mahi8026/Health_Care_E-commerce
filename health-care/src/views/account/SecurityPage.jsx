@@ -1,4 +1,5 @@
 'use client';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -89,7 +90,7 @@ export default function SecurityPage() {
   };
 
   const handleDisable2FA = async () => {
-    if (!confirm('Disable two-factor authentication? This will make your account less secure.')) return;
+    if (!await confirmAction('Disable two-factor authentication? This will make your account less secure.')) return;
     setTwoFactorLoading(true);
     try {
       const data = await api.post('/auth/2fa/disable', {});
@@ -182,8 +183,8 @@ export default function SecurityPage() {
       {message.text && (
         <div
           role="alert"
-          className={`mb-4 px-4 py-3 rounded-lg text-[13px] ${
-            message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+          className={`mb-4 px-4 py-3 rounded-lg text-sm ${
+            message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
           }`}
         >
           {message.text}
@@ -194,12 +195,12 @@ export default function SecurityPage() {
         {/* In-Page Password Change Form */}
         <section className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-5 sm:p-6">
           <div className="flex items-start gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[#F0FBF8] flex items-center justify-center text-[#0E8A6E]">
+            <div className="w-10 h-10 rounded-lg bg-brand-teal-tint flex items-center justify-center text-brand-teal">
               <FaKey size={16} />
             </div>
             <div className="flex-1">
-              <h2 className="text-[15px] font-semibold text-[#0B2545]">Change Password</h2>
-              <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
+              <h2 className="text-base font-semibold text-brand-navy">Change Password</h2>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                 Update your password directly without leaving this page.
               </p>
             </div>
@@ -208,8 +209,8 @@ export default function SecurityPage() {
           {passwordMessage.text && (
             <div
               role="alert"
-              className={`mb-4 px-4 py-3 rounded-lg text-[13px] ${
-                passwordMessage.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+              className={`mb-4 px-4 py-3 rounded-lg text-sm ${
+                passwordMessage.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
               }`}
             >
               {passwordMessage.text}
@@ -218,7 +219,7 @@ export default function SecurityPage() {
 
           <form onSubmit={handlePasswordChange} className="space-y-4">
             <div>
-              <label htmlFor="currentPassword" className="block text-[13px] font-medium text-[#0B2545] mb-1.5">
+              <label htmlFor="currentPassword" className="block text-sm font-medium text-brand-navy mb-1.5">
                 Current password
               </label>
               <input
@@ -226,14 +227,14 @@ export default function SecurityPage() {
                 id="currentPassword"
                 value={passwordForm.currentPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10"
+                className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10"
                 placeholder="Enter current password"
                 disabled={changingPassword}
               />
             </div>
 
             <div>
-              <label htmlFor="newPassword" className="block text-[13px] font-medium text-[#0B2545] mb-1.5">
+              <label htmlFor="newPassword" className="block text-sm font-medium text-brand-navy mb-1.5">
                 New password
               </label>
               <input
@@ -241,14 +242,14 @@ export default function SecurityPage() {
                 id="newPassword"
                 value={passwordForm.newPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10"
+                className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10"
                 placeholder="Enter new password (min 8 characters)"
                 disabled={changingPassword}
               />
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-[13px] font-medium text-[#0B2545] mb-1.5">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-brand-navy mb-1.5">
                 Confirm new password
               </label>
               <input
@@ -256,7 +257,7 @@ export default function SecurityPage() {
                 id="confirmPassword"
                 value={passwordForm.confirmPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10"
+                className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10"
                 placeholder="Re-enter new password"
                 disabled={changingPassword}
               />
@@ -271,12 +272,12 @@ export default function SecurityPage() {
         {/* Email Reset Link (Alternative Method) */}
         <section className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-5 sm:p-6">
           <div className="flex items-start gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[#F0FBF8] flex items-center justify-center text-[#0E8A6E]">
+            <div className="w-10 h-10 rounded-lg bg-brand-teal-tint flex items-center justify-center text-brand-teal">
               <FaKey size={16} />
             </div>
             <div>
-              <h2 className="text-[15px] font-semibold text-[#0B2545]">Reset via Email</h2>
-              <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
+              <h2 className="text-base font-semibold text-brand-navy">Reset via Email</h2>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                 Reset your password via a secure link sent to <strong>{user?.email}</strong>.
               </p>
             </div>
@@ -284,9 +285,9 @@ export default function SecurityPage() {
           <Button type="button" onClick={handleResetEmail} disabled={sending}>
             {sending ? 'Sending…' : 'Email me a reset link'}
           </Button>
-          <p className="text-[11px] text-[var(--color-text-tertiary)] mt-3">
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-3">
             Or use the{' '}
-            <Link href="/forgot-password" className="text-[#0E8A6E] font-medium hover:underline">
+            <Link href="/forgot-password" className="text-brand-teal font-medium hover:underline">
               forgot password page
             </Link>
             .
@@ -300,20 +301,20 @@ export default function SecurityPage() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h2 className="text-[15px] font-semibold text-[#0B2545]">Two-Factor Authentication</h2>
+                <h2 className="text-base font-semibold text-brand-navy">Two-Factor Authentication</h2>
                 {setupStep === 'complete' && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D1FAE5] text-[#065F46]">✓ Enabled</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]">✓ Enabled</span>
                 )}
               </div>
-              <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                 Add an extra layer of security — require a code from your authenticator app at login.
               </p>
             </div>
           </div>
 
           {twoFactorMessage.text && (
-            <div role="alert" className={`mb-4 px-4 py-3 rounded-lg text-[13px] ${
-              twoFactorMessage.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+            <div role="alert" className={`mb-4 px-4 py-3 rounded-lg text-sm ${
+              twoFactorMessage.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
             }`}>
               {twoFactorMessage.text}
             </div>
@@ -323,8 +324,8 @@ export default function SecurityPage() {
           {setupStep === 'idle' && (
             <div>
               <div className="bg-[#F5F3FF] border border-[#DDD6FE] rounded-lg p-4 mb-4">
-                <p className="text-[12px] font-semibold text-[#5B21B6] mb-2">You&apos;ll need:</p>
-                <ul className="space-y-1 text-[12px] text-[#6D28D9]">
+                <p className="text-xs font-semibold text-[#5B21B6] mb-2">You&apos;ll need:</p>
+                <ul className="space-y-1 text-xs text-[#6D28D9]">
                   <li>• An authenticator app (Google Authenticator, Authy, etc.)</li>
                   <li>• Your smartphone — takes about 2 minutes</li>
                 </ul>
@@ -338,7 +339,7 @@ export default function SecurityPage() {
           {/* Verify — scan QR and enter code */}
           {setupStep === 'verify' && qrCode && (
             <div>
-              <p className="text-[13px] font-semibold text-[#0B2545] mb-3">Step 1 — Scan this QR code with your authenticator app:</p>
+              <p className="text-sm font-semibold text-brand-navy mb-3">Step 1 — Scan this QR code with your authenticator app:</p>
               <div className="flex justify-center mb-4">
                 <div className="bg-white p-3 rounded-xl border-2 border-[#DDD6FE]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -346,13 +347,13 @@ export default function SecurityPage() {
                 </div>
               </div>
               {secret && (
-                <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-3 mb-4">
-                  <p className="text-[11px] text-[#6B7280] mb-1">Can&apos;t scan? Enter this code manually:</p>
-                  <code className="block text-center font-mono text-[12px] text-[#0B2545] break-all">{secret}</code>
+                <div className="bg-[var(--color-background-secondary)] border border-[var(--color-border-primary)] rounded-lg p-3 mb-4">
+                  <p className="text-xs text-[var(--color-text-secondary)] mb-1">Can&apos;t scan? Enter this code manually:</p>
+                  <code className="block text-center font-mono text-xs text-brand-navy break-all">{secret}</code>
                 </div>
               )}
               <form onSubmit={handleEnable2FA}>
-                <p className="text-[13px] font-semibold text-[#0B2545] mb-2">Step 2 — Enter the 6-digit code from your app:</p>
+                <p className="text-sm font-semibold text-brand-navy mb-2">Step 2 — Enter the 6-digit code from your app:</p>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -360,14 +361,14 @@ export default function SecurityPage() {
                   onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="000000"
                   maxLength={6}
-                  className="w-full px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-center text-[22px] font-mono tracking-[0.4em] focus:outline-none focus:border-[#7C3AED] focus:ring-2 focus:ring-[#7C3AED]/10 mb-4"
+                  className="w-full px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-center text-2xl font-mono indent-[0.4em] focus:outline-none focus:border-[#7C3AED] focus:ring-2 focus:ring-[#7C3AED]/10 mb-4"
                   required
                 />
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => { setSetupStep('idle'); setQrCode(null); setSecret(null); setVerificationCode(''); }}
-                    className="px-4 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-[13px] font-medium text-[#6B7280] hover:bg-[#F9FAFB]"
+                    className="px-4 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-background-secondary)]"
                   >
                     Cancel
                   </button>
@@ -382,11 +383,11 @@ export default function SecurityPage() {
           {/* Complete — 2FA is active */}
           {setupStep === 'complete' && (
             <div>
-              <div className="bg-[#D1FAE5] border border-[#6EE7B7] rounded-lg p-4 mb-4 flex items-start gap-3">
+              <div className="bg-[var(--color-status-success-tint)] border border-[#6EE7B7] rounded-lg p-4 mb-4 flex items-start gap-3">
                 <span className="text-lg">🛡️</span>
                 <div>
-                  <p className="text-[13px] font-semibold text-[#065F46]">Two-factor authentication is active</p>
-                  <p className="text-[12px] text-[#047857] mt-0.5">
+                  <p className="text-sm font-semibold text-[var(--color-status-success)]">Two-factor authentication is active</p>
+                  <p className="text-xs text-[var(--color-status-success)] mt-0.5">
                     You&apos;ll need your authenticator app code each time you log in.
                     {twoFactorStatus?.enabledAt && (
                       <> Enabled on {new Date(twoFactorStatus.enabledAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' })}.</>
@@ -394,8 +395,8 @@ export default function SecurityPage() {
                   </p>
                 </div>
               </div>
-              <div className="bg-[#FFFBEB] border border-[#FCD34D] rounded-lg p-3 mb-4">
-                <p className="text-[12px] text-[#92400E]">
+              <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-3 mb-4">
+                <p className="text-xs text-[var(--color-status-warning)]">
                   ⚠️ If you lose access to your authenticator app, contact{' '}
                   <a href="mailto:mahimrahman07@gmail.com" className="font-semibold underline">mahimrahman07@gmail.com</a>.
                 </p>
@@ -404,7 +405,7 @@ export default function SecurityPage() {
                 type="button"
                 onClick={handleDisable2FA}
                 disabled={twoFactorLoading}
-                className="px-4 py-2.5 border border-red-300 text-red-700 rounded-lg text-[13px] font-medium hover:bg-red-50 disabled:opacity-50"
+                className="px-4 py-2.5 border border-[var(--color-status-danger)] text-[var(--color-status-danger)] rounded-lg text-sm font-medium hover:bg-[var(--color-status-danger-tint)] disabled:opacity-50"
               >
                 {twoFactorLoading ? 'Disabling…' : 'Disable Two-Factor Authentication'}
               </button>

@@ -139,16 +139,16 @@ export function generateSKU(category, brand) {
 
 export function getStatusColor(status) {
   const colors = {
-    pending: { bg: '#FEF3C7', text: '#92400E' },
-    confirmed: { bg: '#DBEAFE', text: '#1E40AF' },
-    processing: { bg: '#E0E7FF', text: '#3730A3' },
-    shipped: { bg: '#E0E7FF', text: '#3730A3' },
-    delivered: { bg: '#D1FAE5', text: '#065F46' },
-    cancelled: { bg: '#FEE2E2', text: '#991B1B' },
-    active: { bg: '#D1FAE5', text: '#065F46' },
-    inactive: { bg: '#F3F4F6', text: '#6B7280' },
-    low: { bg: '#FEF3C7', text: '#92400E' },
-    out: { bg: '#FEE2E2', text: '#991B1B' }
+    pending: { bg: 'var(--color-status-warning-tint)', text: 'var(--color-status-warning)' },
+    confirmed: { bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)' },
+    processing: { bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)' },
+    shipped: { bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)' },
+    delivered: { bg: 'var(--color-status-success-tint)', text: 'var(--color-status-success)' },
+    cancelled: { bg: 'var(--color-status-danger-tint)', text: 'var(--color-status-danger)' },
+    active: { bg: 'var(--color-status-success-tint)', text: 'var(--color-status-success)' },
+    inactive: { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-secondary)' },
+    low: { bg: 'var(--color-status-warning-tint)', text: 'var(--color-status-warning)' },
+    out: { bg: 'var(--color-status-danger-tint)', text: 'var(--color-status-danger)' }
   };
   return colors[status] || colors.pending;
 }

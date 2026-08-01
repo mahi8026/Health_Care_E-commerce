@@ -109,14 +109,14 @@ export default function SearchPage({ onProductClick }) {
         <div className="flex items-center justify-between mb-4 md:hidden">
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] font-medium bg-white"
+            className="flex items-center gap-2 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-sm font-medium bg-white"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
             </svg>
             Filters
             {activeFilterCount > 0 && (
-              <span className="w-5 h-5 bg-[#0E8A6E] text-white rounded-full text-[10px] flex items-center justify-center font-bold">
+              <span className="w-5 h-5 bg-brand-teal text-white rounded-full text-xs flex items-center justify-center font-semibold">
                 {activeFilterCount}
               </span>
             )}
@@ -126,11 +126,11 @@ export default function SearchPage({ onProductClick }) {
 
         {/* Mobile filter drawer */}
         {mobileFiltersOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-modal md:hidden">
             <div className="absolute inset-0 bg-black/40" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMobileFiltersOpen(false); }} onClick={() => setMobileFiltersOpen(false)} />
             <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white overflow-y-auto shadow-xl">
               <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
-                <span className="text-[15px] font-semibold">Filters</span>
+                <span className="text-base font-semibold">Filters</span>
                 <button onClick={() => setMobileFiltersOpen(false)} aria-label="Close filters" className="p-1 text-[var(--color-text-secondary)]">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -155,12 +155,12 @@ export default function SearchPage({ onProductClick }) {
 
           <div>
             <div className="hidden md:flex items-center justify-between mb-4">
-              <h2 className="text-[18px] font-semibold font-[family-name:var(--font-lora)]">
+              <h2 className="text-lg font-semibold font-[family-name:var(--font-lora)]">
                 Search Results
               </h2>
               <SortOptions sortBy={sortBy} onSortChange={handleSortChange} />
             </div>
-            <h2 className="md:hidden text-[16px] font-semibold font-[family-name:var(--font-lora)] mb-3">
+            <h2 className="md:hidden text-base font-semibold font-[family-name:var(--font-lora)] mb-3">
               Search Results
             </h2>
 

@@ -86,10 +86,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
       <button
         onClick={handlePrevious}
         disabled={currentPage === 1}
-        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-compact ${
           currentPage === 1
-            ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
-            : 'bg-white border border-gray-200 text-gray-600 hover:border-[#0E8A6E] hover:text-[#0E8A6E] hover:shadow-lg hover:scale-105 active:scale-95'
+            ? 'bg-[var(--color-background-tertiary)] text-[var(--color-text-tertiary)] cursor-not-allowed'
+            : 'bg-white border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] hover:border-brand-teal hover:text-brand-teal hover:shadow-lg hover:scale-105 active:scale-95'
         }`}
         aria-label="Previous page"
       >
@@ -113,7 +113,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
           return (
             <span 
               key={page}
-              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-gray-400 text-[12px] sm:text-[14px] font-medium"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-[var(--color-text-secondary)] text-xs sm:text-sm font-medium"
               aria-hidden="true"
             >
               ...
@@ -127,10 +127,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
           <button
             key={page}
             onClick={() => handlePageClick(page)}
-            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[12px] sm:text-[14px] font-semibold transition-all duration-200 ${
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-200 ${
               isActive
-                ? 'bg-[#3B82F6] text-white shadow-lg shadow-blue-500/30 scale-110'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-[#0E8A6E] hover:text-[#0E8A6E] hover:shadow-lg hover:scale-105 active:scale-95'
+                ? 'bg-[var(--color-status-info)] text-white shadow-lg shadow-blue-500/30 scale-110'
+                : 'bg-white border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] hover:border-brand-teal hover:text-brand-teal hover:shadow-lg hover:scale-105 active:scale-95'
             }`}
             aria-label={`Page ${page}`}
             aria-current={isActive ? 'page' : undefined}
@@ -144,10 +144,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
       <button
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 touch-compact ${
           currentPage === totalPages
-            ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
-            : 'bg-white border border-gray-200 text-gray-600 hover:border-[#0E8A6E] hover:text-[#0E8A6E] hover:shadow-lg hover:scale-105 active:scale-95'
+            ? 'bg-[var(--color-background-tertiary)] text-[var(--color-text-tertiary)] cursor-not-allowed'
+            : 'bg-white border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] hover:border-brand-teal hover:text-brand-teal hover:shadow-lg hover:scale-105 active:scale-95'
         }`}
         aria-label="Next page"
       >

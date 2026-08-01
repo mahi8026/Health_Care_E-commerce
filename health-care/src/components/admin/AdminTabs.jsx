@@ -19,22 +19,22 @@ export default function AdminTabs({ activeTab, setActiveTab }) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`relative px-3 sm:px-4 py-3 text-[11px] sm:text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)] transition-colors whitespace-nowrap flex-shrink-0 min-h-[44px] ${
+            className={`relative px-3 sm:px-4 py-3 text-xs sm:text-xs font-medium font-[family-name:var(--font-plus-jakarta)] transition-colors whitespace-nowrap flex-shrink-0 min-h-[44px] ${
               activeTab === tab.id
-                ? 'text-[#0B2545]'
+                ? 'text-brand-navy'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
             }`}
           >
             <span className="flex items-center gap-1.5 sm:gap-2">
               {tab.label}
               {tab.badge && (
-                <span className="bg-[#E24B4A] text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-[2px] rounded-full min-w-[16px] sm:min-w-[18px] text-center">
+                <span className="bg-danger text-white text-xs sm:text-xs font-semibold px-1.5 sm:px-2 py-[2px] rounded-full min-w-[16px] sm:min-w-[18px] text-center">
                   {tab.badge}
                 </span>
               )}
             </span>
             {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0B2545]"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-navy"></div>
             )}
           </button>
         ))}

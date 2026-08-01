@@ -55,7 +55,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
       <button
         onClick={onLoginClick}
         aria-label="Account"
-        className="w-11 h-11 rounded-[7px] border border-gray-200 bg-white flex items-center justify-center cursor-pointer hover:bg-[#F3F4F6] hover:border-gray-300 transition-colors text-[#6B7280] hover:text-[#0B2545]"
+        className="w-11 h-11 rounded-md border border-[var(--color-border-primary)] bg-white flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-tertiary)] hover:border-[var(--color-border-primary)] transition-colors text-[var(--color-text-secondary)] hover:text-brand-navy"
       >
         <UserIcon />
       </button>
@@ -77,10 +77,10 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
         className={
           isGlass
             ? `nav-glass-control nav-glass-control--pill ${isOpen ? 'is-open' : ''}`
-            : `w-10 h-10 rounded-lg border flex items-center justify-center cursor-pointer transition-colors font-bold text-[11px] ${
+            : `w-10 h-10 rounded-lg border flex items-center justify-center cursor-pointer transition-colors font-semibold text-xs ${
                 isOpen
-                  ? 'border-[#0E8A6E] bg-[#F0FBF8] text-[#0E8A6E]'
-                  : 'border-gray-200 bg-white text-[#0B2545] hover:bg-gray-50 hover:border-gray-300'
+                  ? 'border-brand-teal bg-brand-teal-tint text-brand-teal'
+                  : 'border-[var(--color-border-primary)] bg-white text-brand-navy hover:bg-[var(--color-background-secondary)] hover:border-[var(--color-border-primary)]'
               }`
         }
       >
@@ -100,21 +100,21 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
 
       {isOpen && (
         <div
-          className={`absolute right-0 top-[calc(100%+10px)] w-[260px] rounded-2xl py-2 z-50 nav-dropdown-enter ${
-            isGlass ? 'glass-panel-dark' : 'bg-white border border-gray-100 shadow-xl'
+          className={`absolute right-0 top-[calc(100%+10px)] w-[260px] rounded-2xl py-2 z-dropdown nav-dropdown-enter ${
+            isGlass ? 'glass-panel-dark' : 'bg-white border border-[var(--color-border-tertiary)] shadow-xl'
           }`}
           role="menu"
         >
-          <div className={`px-4 py-3 border-b ${isGlass ? 'border-white/10' : 'border-gray-100'}`}>
+          <div className={`px-4 py-3 border-b ${isGlass ? 'border-white/10' : 'border-[var(--color-border-tertiary)]'}`}>
             <div className="flex items-center gap-3">
-              <div className="glass-avatar glass-avatar--no-status w-9 h-9 text-[13px]">
+              <div className="glass-avatar glass-avatar--no-status w-9 h-9 text-sm">
                 {initials}
               </div>
               <div className="min-w-0">
-                <div className={`text-[13px] font-semibold truncate ${isGlass ? 'text-white' : 'text-[#111827]'}`}>
+                <div className={`text-sm font-semibold truncate ${isGlass ? 'text-white' : 'text-[var(--color-text-primary)]'}`}>
                   {user?.name || 'User'}
                 </div>
-                <div className={`text-[11px] truncate ${isGlass ? 'text-white/55' : 'text-[#6B7280]'}`}>
+                <div className={`text-xs truncate ${isGlass ? 'text-white/55' : 'text-[var(--color-text-secondary)]'}`}>
                   {user?.email}
                 </div>
               </div>
@@ -122,12 +122,12 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
             {isB2BCustomer() && user?.b2bTier && (
               <div className="mt-2">
                 <span
-                  className={`inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold ${
+                  className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-semibold ${
                     user.b2bTier === 'Platinum'
                       ? 'bg-[#EEEDFE] text-[#3C3489]'
                       : user.b2bTier === 'Gold'
-                      ? 'bg-[#FAEEDA] text-[#633806]'
-                      : 'bg-[#E6F1FB] text-[#0C447C]'
+                      ? 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]'
+                      : 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]'
                   }`}
                 >
                   {user.b2bTier === 'Platinum' && '💎'}
@@ -153,11 +153,11 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
             )}
           </div>
 
-          <div className={`border-t pt-1 mt-1 ${isGlass ? 'border-white/10' : 'border-gray-100'}`}>
+          <div className={`border-t pt-1 mt-1 ${isGlass ? 'border-white/10' : 'border-[var(--color-border-tertiary)]'}`}>
             <button
               onClick={() => handleMenuClick(onLogout)}
-              className={`w-full px-4 py-2 text-left text-[12px] text-[#E24B4A] flex items-center gap-3 transition-colors ${
-                isGlass ? 'hover:bg-white/5' : 'hover:bg-[#FEF2F2]'
+              className={`w-full px-4 py-2 text-left text-xs text-danger flex items-center gap-3 transition-colors ${
+                isGlass ? 'hover:bg-white/5' : 'hover:bg-[var(--color-status-danger-tint)]'
               }`}
               role="menuitem"
             >
@@ -175,14 +175,14 @@ function MenuItem({ icon, label, onClick, glass }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full px-4 py-2 text-left text-[12px] flex items-center gap-3 transition-colors ${
+      className={`w-full px-4 py-2 text-left text-xs flex items-center gap-3 transition-colors ${
         glass
           ? 'text-white/85 hover:bg-white/8'
-          : 'text-[#374151] hover:bg-surface-subtle'
+          : 'text-[var(--color-text-primary)] hover:bg-surface-subtle'
       }`}
       role="menuitem"
     >
-      <span className={glass ? 'text-white/50' : 'text-[#6B7280]'}>{icon}</span>
+      <span className={glass ? 'text-white/50' : 'text-[var(--color-text-secondary)]'}>{icon}</span>
       <span>{label}</span>
     </button>
   );

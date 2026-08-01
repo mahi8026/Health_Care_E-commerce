@@ -68,14 +68,14 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
   if (notConfigured) {
     return (
       <div className="space-y-3 md:space-y-4">
-        <div className="bg-[#FEF3C7] border-[0.5px] border-[#F59E0B] rounded-lg p-3 md:p-4">
+        <div className="bg-[var(--color-status-warning-tint)] border-[0.5px] border-warning rounded-lg p-3 md:p-4">
           <div className="flex items-start gap-2 md:gap-3">
-            <span className="text-[20px] md:text-[24px]">⚠️</span>
+            <span className="text-xl md:text-2xl">⚠️</span>
             <div>
-              <h3 className="text-[12px] md:text-[13px] font-semibold text-[#92400E] mb-1">
+              <h3 className="text-xs md:text-sm font-semibold text-[var(--color-status-warning)] mb-1">
                 bKash Not Available Yet
               </h3>
-              <p className="text-[11px] md:text-[12px] text-[#92400E]">
+              <p className="text-xs md:text-xs text-[var(--color-status-warning)]">
                 bKash payment integration is pending configuration. Please use Bank Transfer or B2B Credit instead.
               </p>
             </div>
@@ -84,7 +84,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         <button
           type="button"
           onClick={() => onError && onError(new Error('bKash not configured'))}
-          className="w-full text-[11px] md:text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] py-2"
+          className="w-full text-xs md:text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] py-2"
         >
           ← Choose a different payment method
         </button>
@@ -96,15 +96,15 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
   if (step === 'verify') {
     return (
       <form onSubmit={handleVerify} className="space-y-3 md:space-y-4">
-        <div className="bg-[#FBEAF0] border-[0.5px] border-[#E2136E] rounded-lg p-3 md:p-4 text-center">
-          <div className="text-[28px] md:text-[32px] mb-2">📱</div>
-          <h3 className="text-[13px] md:text-[14px] font-semibold mb-1 text-[#E2136E]">
+        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[#E2136E] rounded-lg p-3 md:p-4 text-center">
+          <div className="text-3xl md:text-4xl mb-2">📱</div>
+          <h3 className="text-sm md:text-sm font-semibold mb-1 text-[#E2136E]">
             Complete Payment in bKash
           </h3>
-          <p className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)] mb-2 md:mb-3 px-2">
-            Payment ID: <span className="font-mono font-semibold text-[10px] md:text-[11px]">{paymentID}</span>
+          <p className="text-xs md:text-xs text-[var(--color-text-secondary)] mb-2 md:mb-3 px-2">
+            Payment ID: <span className="font-mono font-semibold text-xs md:text-xs">{paymentID}</span>
           </p>
-          <p className="text-[10px] md:text-[11px] text-[var(--color-text-secondary)] px-2">
+          <p className="text-xs md:text-xs text-[var(--color-text-secondary)] px-2">
             1. Complete the payment in the bKash page that opened<br />
             2. Enter your bKash PIN to confirm<br />
             3. Click &ldquo;I&apos;ve Paid&rdquo; below once done
@@ -114,7 +114,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
               href={bkashURL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-2 md:mt-3 text-[11px] md:text-[12px] text-[#E2136E] underline"
+              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-[#E2136E] underline"
             >
               Re-open bKash payment page →
             </a>
@@ -122,7 +122,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         </div>
 
         {error && (
-          <div className="p-2 md:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] md:text-[12px]">
+          <div className="p-2 md:p-3 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs md:text-xs">
             {error}
           </div>
         )}
@@ -130,7 +130,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-[12px] md:text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
+          className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
         >
           {loading ? (
             <>
@@ -145,7 +145,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         <button
           type="button"
           onClick={() => { setStep('initiate'); setError(null); }}
-          className="w-full text-[var(--color-text-secondary)] text-[11px] md:text-[12px] hover:text-[var(--color-text-primary)]"
+          className="w-full text-[var(--color-text-secondary)] text-xs md:text-xs hover:text-[var(--color-text-primary)]"
         >
           ← Start over
         </button>
@@ -156,8 +156,8 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
   // Step 1: Initiate
   return (
     <form onSubmit={handleInitiate} className="space-y-3 md:space-y-4">
-      <div className="bg-[#FBEAF0] rounded-lg p-3 md:p-4 text-center">
-        <div className="text-[32px] md:text-[40px] mb-2">
+      <div className="bg-[var(--color-status-danger-tint)] rounded-lg p-3 md:p-4 text-center">
+        <div className="text-4xl md:text-5xl mb-2">
           <img
             src="https://www.bkash.com/sites/default/files/bkash-logo.png"
             alt="bKash"
@@ -166,20 +166,20 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
           />
           <span style={{ display: 'none' }}>bKash</span>
         </div>
-        <p className="text-[11px] md:text-[12px] text-[var(--color-text-secondary)] px-2">
+        <p className="text-xs md:text-xs text-[var(--color-text-secondary)] px-2">
           You will be redirected to bKash to complete the payment of{' '}
           <strong>৳{amount.toLocaleString()}</strong>
         </p>
       </div>
 
-      <div className="bg-[var(--color-background-tertiary)] rounded-lg p-2 md:p-3 text-[10px] md:text-[11px] text-[var(--color-text-secondary)] space-y-1">
+      <div className="bg-[var(--color-background-tertiary)] rounded-lg p-2 md:p-3 text-xs md:text-xs text-[var(--color-text-secondary)] space-y-1">
         <div>✓ Secure payment via bKash Tokenized Checkout</div>
         <div>✓ No card details required</div>
         <div>✓ Instant confirmation</div>
       </div>
 
       {error && (
-        <div className="p-2 md:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] md:text-[12px]">
+        <div className="p-2 md:p-3 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs md:text-xs">
           {error}
         </div>
       )}
@@ -187,7 +187,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-[12px] md:text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
+        className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
       >
         {loading ? (
           <>
@@ -200,7 +200,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         )}
       </button>
 
-      <div className="flex items-center justify-center gap-1 text-[10px] md:text-[11px] text-[var(--color-text-secondary)]">
+      <div className="flex items-center justify-center gap-1 text-xs md:text-xs text-[var(--color-text-secondary)]">
         <span>🔒</span>
         <span>Secured by bKash Tokenized Checkout</span>
       </div>

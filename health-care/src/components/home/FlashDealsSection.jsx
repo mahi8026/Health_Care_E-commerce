@@ -29,13 +29,13 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
   return (
     <div onClick={onClick} className="group"
       style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
-        border: '1px solid #E5E7EB', cursor: 'pointer',
+        border: '1px solid var(--color-border-primary)', cursor: 'pointer',
         transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
 
       {/* Image */}
-      <div style={{ position: 'relative', height: 190, background: '#F8FAFC', overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ position: 'relative', aspectRatio: '1 / 1', background: 'var(--color-background-secondary)', overflow: 'hidden', flexShrink: 0 }}>
         {optimizedImg ? (
           <Image
             src={optimizedImg}
@@ -50,17 +50,17 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         )}
         {/* Discount badge */}
         {discountPct > 0 && (
-          <div style={{ position: 'absolute', top: 10, left: 10, background: '#EF4444', color: '#fff', fontSize: 10, fontWeight: 700,
+          <div style={{ position: 'absolute', top: 10, left: 10, background: 'var(--color-status-danger)', color: '#fff', fontSize: 10, fontWeight: 600,
             padding: '3px 8px', borderRadius: 6 }}>-{discountPct}%</div>
         )}
         {/* Quick add button on hover */}
         <button
           onClick={e => { e.stopPropagation(); addToCart({ ...product, price: finalPrice }, 1); }}
-          style={{ position: 'absolute', bottom: 10, right: 10, background: '#0E8A6E',
+          style={{ position: 'absolute', bottom: 10, right: 10, background: 'var(--color-brand-teal)',
             color: '#fff', border: 'none', borderRadius: 8, padding: '7px 12px',
-            fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#0B7558'; }}
-          onMouseLeave={e => e.currentTarget.style.background = '#0E8A6E'}
+            fontSize: 11, fontWeight: 600, cursor: 'pointer', opacity: 0, transition: 'opacity 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--color-brand-teal-hover)'; }}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--color-brand-teal)'}
           className="quick-add-btn">
           + Cart
         </button>
@@ -69,7 +69,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
       {/* Content */}
       <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {brandName && (
-          <div style={{ fontSize: 10, color: '#0E8A6E', fontWeight: 700,
+          <div style={{ fontSize: 10, color: 'var(--color-brand-teal)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
             {brandName}
           </div>
@@ -80,11 +80,11 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
           {product.name}
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <span style={{ fontSize: 17, fontWeight: 800, color: '#0B2545' }}>
+          <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
             {finalPrice > 0 ? `৳${finalPrice.toLocaleString()}` : 'Contact for price'}
           </span>
           {originalPrice > finalPrice && (
-            <span style={{ fontSize: 11, color: '#6B7280', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
               ৳{originalPrice.toLocaleString()}
             </span>
           )}
@@ -129,7 +129,7 @@ export default function FlashDealsSection() {
   }, []);
 
   useEffect(() => {
-    fetchFlashDeals();
+    void Promise.resolve().then(fetchFlashDeals);
 
     const handleDealExpired = () => {
       fetchFlashDeals();
@@ -178,7 +178,7 @@ export default function FlashDealsSection() {
 
   if (loading) {
     return (
-      <section style={{ background: '#0B2545', padding: '24px 16px' }}>
+      <section style={{ background: 'var(--color-brand-navy)', padding: '24px 16px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', color: '#fff' }}>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Loading Flash Deals...</div>
         </div>
@@ -193,18 +193,18 @@ export default function FlashDealsSection() {
   const currentDeal = flashDeals[0];
 
   return (
-    <section style={{ background: '#0B2545', padding: '24px 16px' }}>
+    <section style={{ background: 'var(--color-brand-navy)', padding: '24px 16px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header row */}
         <div style={{ marginBottom: 20 }}>
           {/* Title + countdown stacked on mobile */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 11, color: '#4DDBB8', fontWeight: 600,
+              <div style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
                 FLASH DEALS
               </div>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700,
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 600,
                 color: '#fff', margin: 0 }}>Deal of the Day</h2>
             </div>
             <button onClick={() => router.push('/flash-deals')}
@@ -224,12 +224,12 @@ export default function FlashDealsSection() {
               { val: timeLeft.s, label: 'sec' },
             ].map((t, i) => (
               <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
-                {i > 0 && <span style={{ color: '#4DDBB8', fontWeight: 700, fontSize: 16 }}>:</span>}
+                {i > 0 && <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600, fontSize: 16 }}>:</span>}
                 <div style={{
                   background: 'rgba(255,255,255,0.1)', borderRadius: 8,
                   padding: '6px 10px', textAlign: 'center', minWidth: 46,
                 }}>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: '#4DDBB8', lineHeight: 1 }}>
+                  <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)', lineHeight: 1 }}>
                     {String(t.val).padStart(2, '0')}
                   </div>
                   <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>

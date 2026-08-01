@@ -51,9 +51,9 @@ class DashboardErrorBoundary extends Component {
           <div className="bg-[var(--color-background-primary)] rounded-lg border border-[var(--color-border-tertiary)] p-8 max-w-md w-full shadow-lg">
             {/* Error Icon */}
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-[var(--color-status-danger-tint)] flex items-center justify-center">
                 <svg 
-                  className="w-8 h-8 text-red-600" 
+                  className="w-8 h-8 text-[var(--color-status-danger)]" 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -81,12 +81,12 @@ class DashboardErrorBoundary extends Component {
 
             {/* Error Details (Development Only) */}
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <div className="mb-6 p-3 bg-gray-50 rounded border border-gray-200">
-                <p className="text-xs font-mono text-red-600 mb-1">
+              <div className="mb-6 p-3 bg-[var(--color-background-secondary)] rounded border border-[var(--color-border-primary)]">
+                <p className="text-xs font-mono text-[var(--color-status-danger)] mb-1">
                   {this.state.error.toString()}
                 </p>
                 {this.state.errorInfo && (
-                  <details className="text-xs font-mono text-gray-600">
+                  <details className="text-xs font-mono text-[var(--color-text-secondary)]">
                     <summary className="cursor-pointer">Stack trace</summary>
                     <pre className="mt-2 whitespace-pre-wrap">
                       {this.state.errorInfo.componentStack}
@@ -107,14 +107,14 @@ class DashboardErrorBoundary extends Component {
             <div className="flex gap-3">
               <button
                 onClick={this.handleRetry}
-                className="flex-1 bg-[#0B2545] text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#0a1f3a] transition-colors"
+                className="flex-1 bg-brand-navy text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#0a1f3a] transition-colors"
               >
                 Try Again
               </button>
               {this.props.onNavigateHome && (
                 <button
                   onClick={this.handleGoHome}
-                  className="flex-1 bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--color-border-tertiary)] hover:bg-gray-50 transition-colors"
+                  className="flex-1 bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-secondary)] transition-colors"
                 >
                   Go Home
                 </button>

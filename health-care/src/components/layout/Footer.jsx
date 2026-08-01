@@ -82,7 +82,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#0B2545] text-white">
+    <footer className="bg-brand-navy text-white">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-10">
 
         {/* ── Desktop: 5-column grid ── */}
@@ -92,13 +92,13 @@ export default function Footer() {
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h4>
                 <ul className="space-y-3">
                   {col.items.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="text-[12px] text-white/70 hover:text-white transition-colors">
+                      <a href={item.href} className="text-xs text-white/70 hover:text-white transition-colors">
                         {item.label}
                       </a>
                     </li>
@@ -111,7 +111,7 @@ export default function Footer() {
           {/* MediportBD column — only logo + description + newsletter */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30 bg-white p-1">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
@@ -120,14 +120,14 @@ export default function Footer() {
                   className="object-contain"
                 />
               </div>
-              <div className="font-[family-name:var(--font-lora)] text-[22px] font-semibold text-white">
-                Mediport<span className="text-[#0E8A6E]">BD</span>
+              <div className="font-[family-name:var(--font-lora)] text-2xl font-semibold text-white">
+                Mediport<span className="text-brand-teal">BD</span>
               </div>
             </div>
-            <p className="text-[12px] text-white/70 mb-4 leading-relaxed">
+            <p className="text-xs text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
-            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-2 font-[family-name:var(--font-plus-jakarta)]">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-2 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
             </h4>
             <form onSubmit={handleSubscribe} className="space-y-2">
@@ -139,19 +139,19 @@ export default function Footer() {
                   placeholder="Your email"
                   disabled={loading}
                   aria-label="Email address for newsletter"
-                  className="flex-1 px-3 py-2 text-[12px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50"
+                  className="flex-1 px-3 py-2 text-xs bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-[#0E8A6E] text-white text-[12px] font-medium rounded hover:bg-[#0a6b56] transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-teal text-white text-xs font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50"
                 >
                   {loading ? '...' : 'Subscribe'}
                 </button>
               </div>
               {!showNameInput && !message && (
                 <button type="button" onClick={() => setShowNameInput(true)}
-                  className="text-[10px] text-white/50 hover:text-white/80 transition-colors">
+                  className="text-xs text-white/50 hover:text-white/80 transition-colors">
                   + Add your name (optional)
                 </button>
               )}
@@ -159,10 +159,10 @@ export default function Footer() {
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                   placeholder="Your name (optional)" disabled={loading}
                   aria-label="Your name for newsletter"
-                  className="w-full px-3 py-2 text-[12px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E] disabled:opacity-50" />
+                  className="w-full px-3 py-2 text-xs bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50" />
               )}
               {message && (
-                <div className={`text-[11px] p-2 rounded ${messageType === 'success' ? 'bg-[#0E8A6E]/20 text-[#4DDBB8]' : 'bg-[#E24B4A]/20 text-[#FCA5A5]'}`}>
+                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
                   {messageType === 'success' ? '✓' : '✗'} {message}
                 </div>
               )}
@@ -175,7 +175,7 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#0E8A6E]/30 bg-white p-1">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
@@ -184,11 +184,11 @@ export default function Footer() {
                   className="object-contain"
                 />
               </div>
-              <div className="font-[family-name:var(--font-lora)] text-[24px] font-semibold text-white">
-                Mediport<span className="text-[#0E8A6E]">BD</span>
+              <div className="font-[family-name:var(--font-lora)] text-2xl font-semibold text-white">
+                Mediport<span className="text-brand-teal">BD</span>
               </div>
             </div>
-            <p className="text-[12px] text-white/70 leading-relaxed">
+            <p className="text-xs text-white/70 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
           </div>
@@ -196,13 +196,13 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-6">
             {links.map((col) => (
               <div key={col.heading}>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h4>
                 <ul className="space-y-2">
                   {col.items.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="text-[12px] text-white/70 hover:text-white transition-colors">
+                      <a href={item.href} className="text-xs text-white/70 hover:text-white transition-colors">
                         {item.label}
                       </a>
                     </li>
@@ -213,18 +213,18 @@ export default function Footer() {
           </div>
           {/* Newsletter */}
           <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#4DDBB8] mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h4>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email" disabled={loading}
                 aria-label="Email address for newsletter"
-                className="w-full px-3 py-3 text-[14px] bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-[#0E8A6E]" />
+                className="w-full px-3 py-3 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal" />
               <button type="submit" disabled={loading}
-                className="w-full px-4 py-3 bg-[#0E8A6E] text-white text-[13px] font-medium rounded hover:bg-[#0a6b56] transition-colors disabled:opacity-50">
+                className="w-full px-4 py-3 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50">
                 {loading ? 'Subscribing...' : 'Subscribe'}
               </button>
               {message && (
-                <div className={`text-[11px] p-2 rounded ${messageType === 'success' ? 'bg-[#0E8A6E]/20 text-[#4DDBB8]' : 'bg-[#E24B4A]/20 text-[#FCA5A5]'}`}>
+                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
                   {messageType === 'success' ? '✓' : '✗'} {message}
                 </div>
               )}
@@ -238,10 +238,10 @@ export default function Footer() {
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4">
           {/* Desktop: Single row with all items */}
           <div className="hidden md:flex items-center justify-between gap-4">
-            <p className="text-[11px] text-white/50 whitespace-nowrap">
+            <p className="text-xs text-white/50 whitespace-nowrap">
               © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
             </p>
-            <div className="flex items-center gap-4 text-[11px] text-white/50">
+            <div className="flex items-center gap-4 text-xs text-white/50">
               <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
                 className="hover:text-white/80 transition-colors whitespace-nowrap">
                 📱 {CONTACT.phone}
@@ -252,25 +252,25 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex items-center gap-3">
-              <a href="/privacy" className="text-[11px] text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Privacy Policy</a>
-              <a href="/terms" className="text-[11px] text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Terms of Service</a>
-              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded whitespace-nowrap">DGDA Registered</span>
-              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded whitespace-nowrap">ISO 13485</span>
+              <a href="/privacy" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Privacy Policy</a>
+              <a href="/terms" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Terms of Service</a>
+              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">DGDA Registered</span>
+              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">ISO 13485</span>
             </div>
           </div>
 
           {/* Tablet: Two rows */}
           <div className="hidden sm:flex md:hidden flex-col gap-3">
             <div className="flex items-center justify-between">
-              <p className="text-[11px] text-white/50">
+              <p className="text-xs text-white/50">
                 © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">DGDA Registered</span>
-                <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">ISO 13485</span>
+                <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA Registered</span>
+                <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
               </div>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-white/50">
+            <div className="flex items-center justify-between text-xs text-white/50">
               <div className="flex items-center gap-3">
                 <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
                   className="hover:text-white/80 transition-colors">
@@ -290,10 +290,10 @@ export default function Footer() {
 
           {/* Mobile: Three rows, centered */}
           <div className="flex sm:hidden flex-col gap-3 text-center">
-            <p className="text-[10px] text-white/50">
+            <p className="text-xs text-white/50">
               © {currentYear} Mediport Bangladesh Ltd.
             </p>
-            <div className="flex flex-col gap-2 text-[11px] text-white/50">
+            <div className="flex flex-col gap-2 text-xs text-white/50">
               <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
                 className="hover:text-white/80 transition-colors">
                 📱 {CONTACT.phone}
@@ -304,13 +304,13 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <a href="/privacy" className="text-[10px] text-white/50 hover:text-white/80 transition-colors">Privacy</a>
+              <a href="/privacy" className="text-xs text-white/50 hover:text-white/80 transition-colors">Privacy</a>
               <span className="text-white/30">·</span>
-              <a href="/terms" className="text-[10px] text-white/50 hover:text-white/80 transition-colors">Terms</a>
+              <a href="/terms" className="text-xs text-white/50 hover:text-white/80 transition-colors">Terms</a>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">DGDA</span>
-              <span className="text-[10px] text-[#4DDBB8] font-medium border border-[#0E8A6E] px-2 py-0.5 rounded">ISO 13485</span>
+              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA</span>
+              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
             </div>
           </div>
         </div>

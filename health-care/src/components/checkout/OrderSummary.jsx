@@ -1,5 +1,7 @@
 "use client";
 
+import { showToast } from '@/components/ui/Toast';
+
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
@@ -174,10 +176,10 @@ export default function OrderSummary({
 
   return (
     <div className="lg:sticky lg:top-[calc(var(--site-nav-height)+1rem)]">
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
-        <div className="px-4 py-4 sm:px-5 border-b border-[#F3F4F6] bg-[#F8FAFC]">
-          <h2 className="text-[15px] font-bold text-[#0B2545] m-0">Order summary</h2>
-          <p className="text-[12px] text-[#6B7280] m-0 mt-0.5">
+      <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] shadow-sm overflow-hidden">
+        <div className="px-4 py-4 sm:px-5 border-b border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
+          <h2 className="text-base font-semibold text-brand-navy m-0">Order summary</h2>
+          <p className="text-xs text-[var(--color-text-secondary)] m-0 mt-0.5">
             {items.length} {items.length === 1 ? 'item' : 'items'}
           </p>
         </div>
@@ -187,7 +189,7 @@ export default function OrderSummary({
             const img = getItemImage(item);
             return (
               <div key={item.id} className="flex gap-3">
-                <div className="w-12 h-12 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="w-12 h-12 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
                     <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
@@ -195,21 +197,21 @@ export default function OrderSummary({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-[#0B2545] line-clamp-2 m-0 leading-snug">
+                  <p className="text-sm font-semibold text-brand-navy line-clamp-2 m-0 leading-snug">
                     {item.name}
                   </p>
                   {item.brand && (
-                    <p className="text-[11px] text-[#9CA3AF] m-0 mt-0.5">{item.brand}</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)] m-0 mt-0.5">{item.brand}</p>
                   )}
                   {item.isB2BPrice && (
-                    <span className="inline-flex items-center gap-1 text-[8px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full mt-1">
+                    <span className="inline-flex items-center gap-1 text-xs text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full mt-1">
                       <FaShieldAlt size={7} />
                       B2B
                     </span>
                   )}
                   <div className="flex justify-between items-center mt-1.5">
-                    <span className="text-[11px] text-[#6B7280]">×{item.quantity}</span>
-                    <span className="text-[13px] font-bold text-[#0B2545]">
+                    <span className="text-xs text-[var(--color-text-secondary)]">×{item.quantity}</span>
+                    <span className="text-sm font-semibold text-brand-navy">
                       ৳{(item.displayPrice * item.quantity).toLocaleString()}
                     </span>
                   </div>
@@ -224,7 +226,7 @@ export default function OrderSummary({
             <button
               type="button"
               onClick={() => setShowCouponInput(true)}
-              className="flex items-center gap-1.5 text-[12px] font-semibold text-[#0E8A6E] hover:underline"
+              className="flex items-center gap-1.5 text-xs font-semibold text-brand-teal hover:underline"
             >
               <FaTag size={11} />
               Add coupon
@@ -238,26 +240,26 @@ export default function OrderSummary({
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                 placeholder="CODE"
-                className="flex-1 px-3 py-2 min-h-[48px] text-[16px] sm:text-xs font-mono uppercase border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/15"
+                className="flex-1 px-3 py-2 min-h-[48px] text-base sm:text-xs font-mono uppercase border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
               />
               <button
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={couponLoading}
-                className="px-4 py-2 min-h-[48px] text-xs font-semibold bg-[#0E8A6E] text-white rounded-lg hover:bg-[#0a7560] disabled:opacity-50"
+                className="px-4 py-2 min-h-[48px] text-xs font-semibold bg-brand-teal text-white rounded-lg hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-50"
               >
                 Apply
               </button>
             </div>
           )}
-          {couponError && <p className="text-[11px] text-[#E24B4A] mt-1" role="alert" aria-live="polite">{couponError}</p>}
+          {couponError && <p className="text-xs text-danger mt-1" role="alert" aria-live="polite">{couponError}</p>}
           {appliedCoupon && (
-            <div className="flex justify-between items-center mt-2 p-2.5 rounded-lg bg-[#ECFDF5] border border-[#0E8A6E]/20">
-              <span className="text-[12px] font-semibold text-[#065F46]">{appliedCoupon.code}</span>
+            <div className="flex justify-between items-center mt-2 p-2.5 rounded-lg bg-[var(--color-status-success-tint)] border border-brand-teal/20">
+              <span className="text-xs font-semibold text-[var(--color-status-success)]">{appliedCoupon.code}</span>
               <button
                 type="button"
                 onClick={() => onCouponApply(null)}
-                className="text-[11px] text-[#0E8A6E] font-semibold hover:underline"
+                className="text-xs text-brand-teal font-semibold hover:underline"
               >
                 Remove
               </button>
@@ -266,17 +268,17 @@ export default function OrderSummary({
 
           {/* Loyalty Points Redemption */}
           {availablePoints > 0 && onRedeemPoints && (
-            <div className="mt-3 pt-3 border-t border-[#F3F4F6]">
+            <div className="mt-3 pt-3 border-t border-[var(--color-border-tertiary)]">
               {pointsDiscount > 0 ? (
-                <div className="flex justify-between items-center p-2.5 rounded-lg bg-[#FFF7ED] border border-[#F59E0B]/30">
+                <div className="flex justify-between items-center p-2.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-warning/30">
                   <div>
-                    <span className="text-[12px] font-semibold text-[#92400E]">⭐ {pointsDiscount} pts redeemed</span>
-                    <p className="text-[10px] text-[#92400E] mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
+                    <span className="text-xs font-semibold text-[var(--color-status-warning)]">⭐ {pointsDiscount} pts redeemed</span>
+                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => { onRedeemPoints(0); setPointsInput(''); setShowPointsInput(false); }}
-                    className="text-[11px] text-[#F59E0B] font-semibold hover:underline"
+                    className="text-xs text-warning font-semibold hover:underline"
                   >
                     Remove
                   </button>
@@ -285,16 +287,16 @@ export default function OrderSummary({
                 <button
                   type="button"
                   onClick={() => setShowPointsInput(true)}
-                  className="flex items-center gap-1.5 text-[12px] font-semibold text-[#F59E0B] hover:underline"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-warning hover:underline"
                 >
                   ⭐ Redeem loyalty points ({availablePoints} available)
                 </button>
               ) : (
                 <div>
-                  <p className="text-[11px] text-[#6B7280] mb-1.5">
+                  <p className="text-xs text-[var(--color-text-secondary)] mb-1.5">
                     You have <strong>{availablePoints} points</strong> = ৳{(availablePoints * 0.1).toFixed(2)} discount value
                   </p>
-                  <p className="text-[10px] text-[#9CA3AF] mb-2">
+                  <p className="text-xs text-[var(--color-text-tertiary)] mb-2">
                     100 points = ৳10 • Minimum 50 points to redeem • Max 20% of order
                   </p>
                   <div className="flex gap-2">
@@ -305,7 +307,7 @@ export default function OrderSummary({
                       placeholder={`Min 50, Max ${Math.min(availablePoints, Math.floor(subtotal * 0.2 / 0.1))}`}
                       min="50"
                       max={Math.min(availablePoints, Math.floor(subtotal * 0.2 / 0.1))}
-                      className="flex-1 px-3 py-2 min-h-[44px] text-[13px] border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/15"
+                      className="flex-1 px-3 py-2 min-h-[44px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-warning focus:ring-2 focus:ring-warning/15"
                     />
                     <button
                       type="button"
@@ -313,23 +315,23 @@ export default function OrderSummary({
                         const pts = parseInt(pointsInput) || 0;
                         const maxPoints = Math.min(availablePoints, Math.floor(subtotal * 0.2 / 0.1));
                         if (pts < 50) {
-                          alert('Minimum 50 points required to redeem');
+                          showToast.warning('Minimum 50 points required to redeem');
                           return;
                         }
                         if (pts > maxPoints) {
-                          alert(`Maximum ${maxPoints} points can be redeemed for this order`);
+                          showToast.warning(`Maximum ${maxPoints} points can be redeemed for this order`);
                           return;
                         }
                         if (pts > 0) { onRedeemPoints(pts); setShowPointsInput(false); }
                       }}
-                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-[#F59E0B] text-white rounded-lg hover:bg-[#D97706]"
+                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-warning text-white rounded-lg hover:bg-[#D97706]"
                     >
                       Apply
                     </button>
                     <button
                       type="button"
                       onClick={() => { setShowPointsInput(false); setPointsInput(''); }}
-                      className="px-3 py-2 min-h-[44px] text-xs text-[#6B7280] border border-[#E5E7EB] rounded-lg hover:bg-gray-50"
+                      className="px-3 py-2 min-h-[44px] text-xs text-[var(--color-text-secondary)] border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-secondary)]"
                     >
                       Cancel
                     </button>
@@ -340,10 +342,10 @@ export default function OrderSummary({
           )}
         </div>
 
-        <div className="px-4 sm:px-5 py-3 border-t border-[#F3F4F6] space-y-2 text-[13px]">
-          <div className="flex justify-between text-[#6B7280]">
+        <div className="px-4 sm:px-5 py-3 border-t border-[var(--color-border-tertiary)] space-y-2 text-sm">
+          <div className="flex justify-between text-[var(--color-text-secondary)]">
             <span>Subtotal</span>
-            <span className="font-medium text-[#0B2545]">৳{subtotal.toLocaleString()}</span>
+            <span className="font-medium text-brand-navy">৳{subtotal.toLocaleString()}</span>
           </div>
           {b2bSavings > 0 && (
             <div className="flex justify-between text-[#7C3AED]">
@@ -355,26 +357,26 @@ export default function OrderSummary({
             </div>
           )}
           {couponDiscount > 0 && (
-            <div className="flex justify-between text-[#0E8A6E]">
+            <div className="flex justify-between text-brand-teal">
               <span>Coupon discount</span>
               <span className="font-medium">−৳{couponDiscount.toLocaleString()}</span>
             </div>
           )}
           {pointsDiscount > 0 && (
-            <div className="flex justify-between text-[#F59E0B]">
+            <div className="flex justify-between text-warning">
               <span>⭐ Points discount</span>
               <span className="font-medium">−৳{(pointsDiscount * 0.1).toFixed(2)}</span>
             </div>
           )}
-          <div className="flex justify-between text-[#6B7280]">
-            <span>Delivery <span className="text-[10px] text-[#9CA3AF]">(Steadfast Courier)</span></span>
-            <span className="font-medium text-[#0B2545]">৳{deliveryFee.toLocaleString()}</span>
+          <div className="flex justify-between text-[var(--color-text-secondary)]">
+            <span>Delivery <span className="text-xs text-[var(--color-text-tertiary)]">(Steadfast Courier)</span></span>
+            <span className="font-medium text-brand-navy">৳{deliveryFee.toLocaleString()}</span>
           </div>
         </div>
 
-        <div className="px-4 sm:px-5 py-4 border-t-2 border-[#0B2545]/10 flex justify-between items-center">
-          <span className="text-sm font-semibold text-[#6B7280]">Total</span>
-          <span className="text-xl font-bold text-[#0B2545] font-[family-name:var(--font-lora)]">
+        <div className="px-4 sm:px-5 py-4 border-t-2 border-brand-navy/10 flex justify-between items-center">
+          <span className="text-sm font-semibold text-[var(--color-text-secondary)]">Total</span>
+          <span className="text-xl font-semibold text-brand-navy font-[family-name:var(--font-lora)]">
             ৳{displayTotal.toLocaleString()}
           </span>
         </div>
@@ -385,15 +387,15 @@ export default function OrderSummary({
               type="button"
               onClick={onPlaceOrder}
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-[#0E8A6E] hover:bg-[#0a7560] text-white text-sm font-bold shadow-lg shadow-[#0E8A6E]/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-3.5 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold shadow-lg shadow-brand-teal/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Processing…' : `Place order · ৳${displayTotal.toLocaleString()}`}
             </button>
           </div>
         )}
 
-        <div className="px-4 sm:px-5 pb-4 flex items-start gap-2 text-[11px] text-[#6B7280]">
-          <FaLock className="text-[#0E8A6E] mt-0.5 shrink-0" size={12} />
+        <div className="px-4 sm:px-5 pb-4 flex items-start gap-2 text-xs text-[var(--color-text-secondary)]">
+          <FaLock className="text-brand-teal mt-0.5 shrink-0" size={12} />
           <span>Secure, encrypted checkout. Your data is never shared.</span>
         </div>
       </div>

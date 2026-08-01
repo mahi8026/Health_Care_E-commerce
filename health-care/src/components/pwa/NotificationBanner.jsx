@@ -68,8 +68,8 @@ export default function NotificationBanner() {
 
   return (
     <div style={{
-      position: 'fixed', bottom: 80, left: 16, right: 16, zIndex: 9998,
-      background: '#0B2545', borderRadius: 16, padding: 16,
+      position: 'fixed', bottom: 80, left: 16, right: 16, zIndex: 'var(--z-toast)',
+      background: 'var(--color-brand-navy)', borderRadius: 16, padding: 16,
       border: '1px solid rgba(255,255,255,0.1)',
       boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
       animation: 'slideUp 0.3s ease', maxWidth: 480, margin: '0 auto',
@@ -79,16 +79,16 @@ export default function NotificationBanner() {
       <button onClick={handleDismiss} style={{
         position: 'absolute', top: 10, right: 12,
         background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)',
-        fontSize: 18, cursor: 'pointer',
+        fontSize: 'var(--text-lg)', cursor: 'pointer',
       }}>×</button>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 14 }}>
-        <div style={{ fontSize: 32, flexShrink: 0 }}>🔔</div>
+        <div style={{ fontSize: 'var(--text-4xl)', flexShrink: 0 }}>🔔</div>
         <div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+          <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: '#fff', marginBottom: 4 }}>
             Stay updated with MediportBD
           </div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+          <div style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
             Get instant alerts for order updates, flash deals, and stock
             notifications — even when your browser is closed.
           </div>
@@ -98,9 +98,9 @@ export default function NotificationBanner() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
         {['📦 Order updates', '🔥 Flash deals', '📋 Stock alerts'].map(feat => (
           <span key={feat} style={{
-            fontSize: 10, padding: '3px 8px', borderRadius: 20,
+            fontSize: 'var(--text-xs)', padding: '3px 8px', borderRadius: 20,
             background: 'rgba(14,138,110,0.2)', border: '1px solid rgba(77,219,184,0.2)',
-            color: '#4DDBB8',
+            color: 'var(--color-brand-teal-light)',
           }}>{feat}</span>
         ))}
       </div>
@@ -109,10 +109,10 @@ export default function NotificationBanner() {
         <div style={{
           marginBottom: 10, padding: '8px 12px', borderRadius: 8,
           background: 'rgba(226,75,74,0.15)', border: '1px solid rgba(226,75,74,0.3)',
-          color: '#FCA5A5', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6,
+          color: '#FCA5A5', fontSize: 'var(--text-xs)', display: 'flex', alignItems: 'center', gap: 6,
         }}>
           <span>⚠️</span><span>{error}</span>
-          <button onClick={() => setError('')} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'rgba(252,165,165,0.6)', cursor: 'pointer', fontSize: 14, padding: 0 }}>×</button>
+          <button onClick={() => setError('')} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'rgba(252,165,165,0.6)', cursor: 'pointer', fontSize: 'var(--text-sm)', padding: 0 }}>×</button>
         </div>
       )}
 
@@ -120,13 +120,13 @@ export default function NotificationBanner() {
         <button onClick={handleDismiss} style={{
           flex: 1, padding: '10px', background: 'rgba(255,255,255,0.07)',
           border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-          color: 'rgba(255,255,255,0.65)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit',
+          color: 'rgba(255,255,255,0.65)', fontSize: 'var(--text-xs)', cursor: 'pointer', fontFamily: 'inherit',
         }}>
           Not now
         </button>
         <button onClick={handleEnable} disabled={isLoading} style={{
-          flex: 2, padding: '10px', background: isLoading ? 'rgba(14,138,110,0.6)' : '#0E8A6E',
-          border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700,
+          flex: 2, padding: '10px', background: isLoading ? 'rgba(14,138,110,0.6)' : 'var(--color-brand-teal)',
+          border: 'none', borderRadius: 10, color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600,
           cursor: isLoading ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'background 0.2s',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
         }}>

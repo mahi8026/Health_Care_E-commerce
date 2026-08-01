@@ -14,7 +14,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
   return (
     <nav
       aria-label="Checkout progress"
-      className="bg-white rounded-2xl border border-[#E5E7EB] px-4 py-4 sm:px-6 mb-4"
+      className="bg-white rounded-2xl border border-[var(--color-border-primary)] px-4 py-4 sm:px-6 mb-4"
     >
       <ol className="flex items-center m-0 p-0 list-none">
         {STEPS.map((step, idx) => {
@@ -28,24 +28,24 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                  className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                     done
-                      ? 'bg-[#0E8A6E] text-white'
+                      ? 'bg-brand-teal text-white'
                       : active
-                      ? 'bg-[#0B2545] text-white'
-                      : 'bg-[#F3F4F6] text-[#9CA3AF]'
+                      ? 'bg-brand-navy text-white'
+                      : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-tertiary)]'
                   }`}
                 >
                   {done ? <FaCheck size={12} /> : step.num}
                 </span>
                 <span
                   className={`text-xs font-semibold whitespace-nowrap ${
-                    active ? 'text-[#0B2545]' : done ? 'text-[#0E8A6E]' : 'text-[#9CA3AF]'
+                    active ? 'text-brand-navy' : done ? 'text-brand-teal' : 'text-[var(--color-text-tertiary)]'
                   }`}
                 >
                   {step.label}
                   {step.num === 1 && itemCount > 0 && (
-                    <span className="font-normal text-[#9CA3AF] hidden sm:inline">
+                    <span className="font-normal text-[var(--color-text-tertiary)] hidden sm:inline">
                       {' '}
                       ({itemCount})
                     </span>
@@ -55,7 +55,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
               {idx < STEPS.length - 1 && (
                 <div
                   className={`flex-1 h-px mx-2 sm:mx-4 min-w-[12px] ${
-                    step.num < currentStep ? 'bg-[#0E8A6E]' : 'bg-[#E5E7EB]'
+                    step.num < currentStep ? 'bg-brand-teal' : 'bg-[var(--color-background-muted)]'
                   }`}
                   aria-hidden
                 />
@@ -65,8 +65,8 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
         })}
       </ol>
       {STEPS[0].href && currentStep > 1 && (
-        <p className="text-[11px] text-[#6B7280] mt-3 mb-0 sm:hidden">
-          <Link href="/cart" className="text-[#0E8A6E] font-medium hover:underline">
+        <p className="text-xs text-[var(--color-text-secondary)] mt-3 mb-0 sm:hidden">
+          <Link href="/cart" className="text-brand-teal font-medium hover:underline">
             ← Edit cart
           </Link>
         </p>

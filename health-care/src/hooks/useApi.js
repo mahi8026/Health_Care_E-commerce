@@ -46,7 +46,7 @@ export function useApi(endpoint, options = {}) {
   }, [endpoint, optionsStr]);
 
   useEffect(() => {
-    fetchData();
+    void Promise.resolve().then(fetchData);
     return () => abortRef.current?.abort();
   }, [fetchData]);
 

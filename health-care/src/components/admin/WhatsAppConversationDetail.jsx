@@ -47,7 +47,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
   // Fetch conversation details
   useEffect(() => {
-    fetchConversation();
+    void Promise.resolve().then(fetchConversation);
     
     // Poll for new messages every 10 seconds
     const interval = setInterval(fetchConversation, 10000);
@@ -171,11 +171,11 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
   const getStatusBadge = (status) => {
     const styles = {
-      active: 'bg-green-100 text-green-800',
+      active: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
       resolved: 'bg-blue-100 text-blue-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      escalated: 'bg-red-100 text-red-800',
-      closed: 'bg-gray-100 text-gray-800'
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      escalated: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
+      closed: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]'
     };
     return styles[status] || styles.active;
   };
@@ -232,7 +232,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
       
       case 'document':
         return (
-          <div className="flex items-center gap-2 p-3 bg-gray-100 rounded-lg">
+          <div className="flex items-center gap-2 p-3 bg-[var(--color-background-tertiary)] rounded-lg">
             <span className="text-2xl">📄</span>
             <div className="flex-1">
               <p className="text-sm font-medium">{message.content?.filename || 'Document'}</p>
@@ -278,13 +278,13 @@ export default function WhatsAppConversationDetail({ conversationId }) {
       
       case 'location':
         return (
-          <div className="p-3 bg-gray-100 rounded-lg">
+          <div className="p-3 bg-[var(--color-background-tertiary)] rounded-lg">
             <p className="text-2xl mb-2">📍</p>
             {message.content?.locationName && (
               <p className="font-medium">{message.content.locationName}</p>
             )}
             {message.content?.locationAddress && (
-              <p className="text-sm text-gray-600">{message.content.locationAddress}</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">{message.content.locationAddress}</p>
             )}
             {message.content?.latitude && message.content?.longitude && (
               <a
@@ -304,22 +304,22 @@ export default function WhatsAppConversationDetail({ conversationId }) {
           <div>
             <p>{message.content?.buttonText || message.content?.listTitle}</p>
             {message.content?.buttonId && (
-              <p className="text-xs text-gray-500 mt-1">Selected: {message.content.buttonId}</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">Selected: {message.content.buttonId}</p>
             )}
           </div>
         );
       
       default:
-        return <p className="text-gray-500 italic">Unsupported message type: {message.type}</p>;
+        return <p className="text-[var(--color-text-secondary)] italic">Unsupported message type: {message.type}</p>;
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading conversation...</p>
+          <p className="text-[var(--color-text-secondary)] mt-4">Loading conversation...</p>
         </div>
       </div>
     );
@@ -327,15 +327,15 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--color-background-secondary)] flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <span className="text-6xl">⚠️</span>
-          <h2 className="text-xl font-bold text-gray-900 mt-4">Error Loading Conversation</h2>
-          <p className="text-gray-600 mt-2">{error}</p>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mt-4">Error Loading Conversation</h2>
+          <p className="text-[var(--color-text-secondary)] mt-2">{error}</p>
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => router.back()}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-secondary)] transition-colors"
             >
               Go Back
             </button>
@@ -352,12 +352,12 @@ export default function WhatsAppConversationDetail({ conversationId }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--color-background-secondary)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Chat Area */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-[calc(100vh-200px)]">
+            <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] flex flex-col h-[calc(100vh-200px)]">
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
@@ -369,13 +369,13 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                       className={`max-w-[70%] rounded-lg p-3 ${
                         message.direction === 'outbound'
                           ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
+                          : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]'
                       }`}
                     >
                       {renderMessageContent(message)}
                       
                       <div className={`flex items-center gap-2 mt-2 text-xs ${
-                        message.direction === 'outbound' ? 'text-blue-100' : 'text-gray-500'
+                        message.direction === 'outbound' ? 'text-blue-100' : 'text-[var(--color-text-secondary)]'
                       }`}>
                         <span>{formatTime(message.createdAt)}</span>
                         {message.direction === 'outbound' && (
@@ -384,7 +384,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                           </span>
                         )}
                         {message.status === 'failed' && (
-                          <span className="text-red-500" title={message.errorMessage}>
+                          <span className="text-[var(--color-status-danger)]" title={message.errorMessage}>
                             Failed
                           </span>
                         )}
@@ -392,7 +392,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                       
                       {message.sentBy && (
                         <p className={`text-xs mt-1 ${
-                          message.direction === 'outbound' ? 'text-blue-100' : 'text-gray-500'
+                          message.direction === 'outbound' ? 'text-blue-100' : 'text-[var(--color-text-secondary)]'
                         }`}>
                           Sent by: {message.sentBy.name}
                         </p>
@@ -404,14 +404,14 @@ export default function WhatsAppConversationDetail({ conversationId }) {
               </div>
 
               {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="border-t border-gray-200 p-4">
+              <form onSubmit={handleSendMessage} className="border-t border-[var(--color-border-primary)] p-4">
                 <div className="flex gap-2">
                   <textarea
                     value={messageText}
                     onChange={(e) => setMessageText(e.target.value)}
                     placeholder="Type your message..."
                     rows={2}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="flex-1 px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -427,7 +427,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                     {sending ? 'Sending...' : 'Send'}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-[var(--color-text-secondary)] mt-2">
                   Press Enter to send, Shift+Enter for new line
                 </p>
               </form>
@@ -437,16 +437,16 @@ export default function WhatsAppConversationDetail({ conversationId }) {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Conversation Info */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Conversation Info</h3>
+            <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-4">
+              <h3 className="font-semibold text-[var(--color-text-primary)] mb-4">Conversation Info</h3>
               
               {/* Status */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Status</label>
                 <select
                   value={conversation.status}
                   onChange={(e) => handleStatusChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full px-3 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 >
                   <option value="active">Active</option>
                   <option value="resolved">Resolved</option>
@@ -458,11 +458,11 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
               {/* Category */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Category</label>
                 <select
                   value={conversation.category}
                   onChange={(e) => handleCategoryChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full px-3 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 >
                   <option value="product_inquiry">Product Inquiry</option>
                   <option value="order_status">Order Status</option>
@@ -480,12 +480,12 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
               {/* Assign To Agent */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Assign To</label>
+                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Assign To</label>
                 <select
                   value={conversation.assignedTo?._id || ''}
                   onChange={(e) => handleAssignAgent(e.target.value)}
                   disabled={loadingAdmins || assigningAgent}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Unassigned</option>
                   {adminUsers.map((user) => (
@@ -495,27 +495,27 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                   ))}
                 </select>
                 {assigningAgent && (
-                  <p className="text-xs text-gray-500 mt-1">Assigning...</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">Assigning...</p>
                 )}
               </div>
 
               {/* Metadata */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Messages:</span>
+                  <span className="text-[var(--color-text-secondary)]">Messages:</span>
                   <span className="font-medium">{conversation.messageCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Created:</span>
+                  <span className="text-[var(--color-text-secondary)]">Created:</span>
                   <span className="font-medium">{formatDate(conversation.createdAt)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Last Message:</span>
+                  <span className="text-[var(--color-text-secondary)]">Last Message:</span>
                   <span className="font-medium">{formatDate(conversation.lastMessageAt)}</span>
                 </div>
                 {conversation.assignedTo && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Assigned To:</span>
+                    <span className="text-[var(--color-text-secondary)]">Assigned To:</span>
                     <span className="font-medium">{conversation.assignedTo.name}</span>
                   </div>
                 )}
@@ -524,19 +524,19 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
             {/* Customer Context */}
             {conversation.user && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Customer Details</h3>
+              <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-4">
+                <h3 className="font-semibold text-[var(--color-text-primary)] mb-4">Customer Details</h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-gray-600">Name:</span>
+                    <span className="text-[var(--color-text-secondary)]">Name:</span>
                     <p className="font-medium">{conversation.user.name}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Email:</span>
+                    <span className="text-[var(--color-text-secondary)]">Email:</span>
                     <p className="font-medium">{conversation.user.email}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Phone:</span>
+                    <span className="text-[var(--color-text-secondary)]">Phone:</span>
                     <p className="font-medium">{conversation.user.phone}</p>
                   </div>
                 </div>
@@ -545,15 +545,15 @@ export default function WhatsAppConversationDetail({ conversationId }) {
 
             {/* Related Order */}
             {conversation.relatedOrder && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Related Order</h3>
+              <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-4">
+                <h3 className="font-semibold text-[var(--color-text-primary)] mb-4">Related Order</h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-gray-600">Order Number:</span>
+                    <span className="text-[var(--color-text-secondary)]">Order Number:</span>
                     <p className="font-medium">{conversation.relatedOrder.orderNumber}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Status:</span>
+                    <span className="text-[var(--color-text-secondary)]">Status:</span>
                     <p className="font-medium">{conversation.relatedOrder.status}</p>
                   </div>
                   <button
@@ -567,9 +567,9 @@ export default function WhatsAppConversationDetail({ conversationId }) {
             )}
 
             {/* Internal Notes */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] p-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900">Internal Notes</h3>
+                <h3 className="font-semibold text-[var(--color-text-primary)]">Internal Notes</h3>
                 <button
                   onClick={() => setShowNoteInput(!showNoteInput)}
                   className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -585,7 +585,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                     onChange={(e) => setNoteText(e.target.value)}
                     placeholder="Add internal note..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none mb-2"
+                    className="w-full px-3 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none mb-2"
                   />
                   <button
                     type="submit"
@@ -600,9 +600,9 @@ export default function WhatsAppConversationDetail({ conversationId }) {
               <div className="space-y-3">
                 {conversation.notes?.length > 0 ? (
                   conversation.notes.map((note, index) => (
-                    <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                      <p className="text-sm text-gray-900">{note.text}</p>
-                      <div className="flex items-center gap-2 mt-2 text-xs text-gray-600">
+                    <div key={index} className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-3">
+                      <p className="text-sm text-[var(--color-text-primary)]">{note.text}</p>
+                      <div className="flex items-center gap-2 mt-2 text-xs text-[var(--color-text-secondary)]">
                         <span>{note.addedBy?.name || 'Unknown'}</span>
                         <span>•</span>
                         <span>{formatDate(note.addedAt)}</span>
@@ -610,7 +610,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500 italic">No notes yet</p>
+                  <p className="text-sm text-[var(--color-text-secondary)] italic">No notes yet</p>
                 )}
               </div>
             </div>

@@ -94,19 +94,19 @@ export default function OrderDetailModal({ orderId, onClose }) {
 
   const getStatusColor = (status) => {
     const colors = {
-      placed: 'bg-[#FEF3C7] text-[#92400E]',
-      pending: 'bg-[#FEF3C7] text-[#92400E]',
-      confirmed: 'bg-[#DBEAFE] text-[#1E40AF]',
-      processing: 'bg-[#E0E7FF] text-[#3730A3]',
-      shipped: 'bg-[#E0E7FF] text-[#3730A3]',
-      delivered: 'bg-[#D1FAE5] text-[#065F46]',
-      cancelled: 'bg-[#FEE2E2] text-[#991B1B]'
+      placed: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      confirmed: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      processing: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      shipped: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      delivered: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+      cancelled: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
     };
     return colors[status] || colors.placed;
   };
 
   return (
-    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div ref={containerRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 flex items-center justify-center z-modal p-4" onClick={onClose}>
       <div 
         className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -114,11 +114,11 @@ export default function OrderDetailModal({ orderId, onClose }) {
         {/* Header */}
         <div className="sticky top-0 bg-white border-b-[0.5px] border-[var(--color-border-tertiary)] px-6 py-4 flex items-center justify-between">
           <div>
-            <h2 className="text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+            <h2 className="text-lg font-semibold font-[family-name:var(--font-plus-jakarta)]">
               Order Details
             </h2>
             {order && (
-              <p className="text-[12px] text-[var(--color-text-secondary)] mt-1">
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                 {order.orderNumber || order._id}
               </p>
             )}
@@ -139,10 +139,10 @@ export default function OrderDetailModal({ orderId, onClose }) {
         <div className="p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0B2545]"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-navy"></div>
             </div>
           ) : !order ? (
-            <div className="text-center py-12 text-[13px] text-[var(--color-text-secondary)]">
+            <div className="text-center py-12 text-sm text-[var(--color-text-secondary)]">
               Order not found
             </div>
           ) : (
@@ -150,21 +150,21 @@ export default function OrderDetailModal({ orderId, onClose }) {
               {/* Status & Date */}
               <div className="flex items-center justify-between">
                 <div>
-                  <span className={`inline-block text-[11px] px-3 py-1 rounded font-medium ${getStatusColor(order.status)}`}>
+                  <span className={`inline-block text-xs px-3 py-1 rounded font-medium ${getStatusColor(order.status)}`}>
                     {order.status?.toUpperCase()}
                   </span>
                 </div>
-                <div className="text-[12px] text-[var(--color-text-secondary)]">
+                <div className="text-xs text-[var(--color-text-secondary)]">
                   {order.createdAt ? new Date(order.createdAt).toLocaleString('en-BD') : ''}
                 </div>
               </div>
 
               {/* Customer Info */}
               <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4">
-                <h3 className="text-[13px] font-semibold mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-sm font-semibold mb-3 font-[family-name:var(--font-plus-jakarta)]">
                   Customer Information
                 </h3>
-                <div className="grid grid-cols-2 gap-4 text-[12px]">
+                <div className="grid grid-cols-2 gap-4 text-xs">
                   <div>
                     <div className="text-[var(--color-text-secondary)] mb-1">Name</div>
                     <div className="font-medium">{order.user?.name || order.customer || 'N/A'}</div>
@@ -181,7 +181,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
                     <div className="text-[var(--color-text-secondary)] mb-1">Customer Type</div>
                     <div className="font-medium">
                       {order.user?.role === 'b2b' ? (
-                        <span className="text-[#0E8A6E]">B2B Customer</span>
+                        <span className="text-brand-teal">B2B Customer</span>
                       ) : (
                         'Retail'
                       )}
@@ -193,10 +193,10 @@ export default function OrderDetailModal({ orderId, onClose }) {
               {/* Shipping Address */}
               {order.shippingAddress && (
                 <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4">
-                  <h3 className="text-[13px] font-semibold mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                  <h3 className="text-sm font-semibold mb-3 font-[family-name:var(--font-plus-jakarta)]">
                     Shipping Address
                   </h3>
-                  <div className="text-[12px] text-[var(--color-text-primary)]">
+                  <div className="text-xs text-[var(--color-text-primary)]">
                     {order.shippingAddress.street && <div>{order.shippingAddress.street}</div>}
                     {order.shippingAddress.city && <div>{order.shippingAddress.city}</div>}
                     {order.shippingAddress.postalCode && <div>{order.shippingAddress.postalCode}</div>}
@@ -207,24 +207,24 @@ export default function OrderDetailModal({ orderId, onClose }) {
 
               {/* Order Items */}
               <div>
-                <h3 className="text-[13px] font-semibold mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-sm font-semibold mb-3 font-[family-name:var(--font-plus-jakarta)]">
                   Order Items
                 </h3>
                 <div className="space-y-2">
                   {(order.items || []).map((item, index) => (
                     <div key={index} className="flex items-center gap-3 p-3 bg-[var(--color-background-tertiary)] rounded-lg">
-                      <div className="w-12 h-12 bg-white rounded flex items-center justify-center text-[20px]">
+                      <div className="w-12 h-12 bg-white rounded flex items-center justify-center text-xl">
                         {item.product?.images?.[0] || '📦'}
                       </div>
                       <div className="flex-1">
-                        <div className="text-[12px] font-medium mb-1">
+                        <div className="text-xs font-medium mb-1">
                           {item.product?.name || item.name || 'Product'}
                         </div>
-                        <div className="text-[11px] text-[var(--color-text-secondary)]">
+                        <div className="text-xs text-[var(--color-text-secondary)]">
                           Qty: {item.quantity} × ৳{(item.price || 0).toLocaleString()}
                         </div>
                       </div>
-                      <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                      <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
                         ৳{((item.quantity || 0) * (item.price || 0)).toLocaleString()}
                       </div>
                     </div>
@@ -234,13 +234,13 @@ export default function OrderDetailModal({ orderId, onClose }) {
 
               {/* Order Summary */}
               <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] pt-4">
-                <div className="space-y-2 text-[12px]">
+                <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
                     <span className="text-[var(--color-text-secondary)]">Subtotal</span>
                     <span className="font-medium">৳{(order.subtotal || 0).toLocaleString()}</span>
                   </div>
                   {order.discount > 0 && (
-                    <div className="flex justify-between text-[#0E8A6E]">
+                    <div className="flex justify-between text-brand-teal">
                       <span>Discount</span>
                       <span className="font-medium">−৳{order.discount.toLocaleString()}</span>
                     </div>
@@ -249,9 +249,9 @@ export default function OrderDetailModal({ orderId, onClose }) {
                     <span className="text-[var(--color-text-secondary)]">Shipping</span>
                     <span className="font-medium">৳{(order.shippingCost || 0).toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-[16px] font-bold pt-2 border-t-[0.5px] border-[var(--color-border-tertiary)]">
+                  <div className="flex justify-between text-base font-semibold pt-2 border-t-[0.5px] border-[var(--color-border-tertiary)]">
                     <span>Total</span>
-                    <span className="text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
+                    <span className="text-brand-navy font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </span>
                   </div>
@@ -260,18 +260,18 @@ export default function OrderDetailModal({ orderId, onClose }) {
 
               {/* Payment Info */}
               {order.paymentMethod && (
-                <div className="bg-[#E6F1FB] rounded-lg p-4">
-                  <h3 className="text-[13px] font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
+                <div className="bg-[var(--color-status-info-tint)] rounded-lg p-4">
+                  <h3 className="text-sm font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                     Payment Information
                   </h3>
-                  <div className="text-[12px] space-y-1">
+                  <div className="text-xs space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-[#0C447C]">Method</span>
+                      <span className="text-[var(--color-status-info)]">Method</span>
                       <span className="font-medium">{order.paymentMethod}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#0C447C]">Status</span>
-                      <span className={`font-medium ${order.paymentStatus === 'paid' ? 'text-[#065F46]' : 'text-[#92400E]'}`}>
+                      <span className="text-[var(--color-status-info)]">Status</span>
+                      <span className={`font-medium ${order.paymentStatus === 'paid' ? 'text-[var(--color-status-success)]' : 'text-[var(--color-status-warning)]'}`}>
                         {order.paymentStatus || 'Pending'}
                       </span>
                     </div>
@@ -283,14 +283,14 @@ export default function OrderDetailModal({ orderId, onClose }) {
               <div className="flex gap-3 pt-4">
                 <button 
                   onClick={() => setShowStatusUpdate(true)}
-                  className="flex-1 px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold hover:bg-[#0d2d52] transition-colors"
+                  className="flex-1 px-4 py-2 bg-brand-navy text-white rounded-lg text-xs font-semibold hover:bg-[var(--color-brand-navy-hover)] transition-colors"
                 >
                   Update Status
                 </button>
                 <button 
                   onClick={handlePrintInvoice}
                   disabled={generatingInvoice}
-                  className="flex-1 px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {generatingInvoice ? 'Generating...' : 'Print Invoice'}
                 </button>

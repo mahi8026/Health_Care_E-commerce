@@ -38,8 +38,8 @@ export default function WishlistButton({ productId, className = '', size = 'defa
 
     const headerClass =
       variant === 'header'
-        ? 'w-11 h-11 rounded-lg flex items-center justify-center relative text-[#6B7280] hover:text-[#0B2545] hover:bg-gray-50 transition-colors'
-        : 'w-11 h-11 rounded-[7px] border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)] transition-colors';
+        ? 'w-11 h-11 rounded-lg flex items-center justify-center relative text-[var(--color-text-secondary)] hover:text-brand-navy hover:bg-[var(--color-background-secondary)] transition-colors'
+        : 'w-11 h-11 rounded-md border-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-primary)] flex items-center justify-center cursor-pointer relative hover:bg-[var(--color-background-secondary)] transition-colors';
 
     return (
       <button
@@ -53,7 +53,7 @@ export default function WishlistButton({ productId, className = '', size = 'defa
           <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
         </svg>
         {wishlistCount > 0 && (
-          <div aria-hidden="true" className="absolute top-1 right-1 bg-[#E24B4A] text-white text-[9px] min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center font-bold leading-none border-2 border-white">
+          <div aria-hidden="true" className="absolute top-1 right-1 bg-danger text-white text-xs min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center font-semibold leading-none border-2 border-white">
             {wishlistCount}
           </div>
         )}
@@ -82,9 +82,9 @@ export default function WishlistButton({ productId, className = '', size = 'defa
   };
 
   const sizeClasses = {
-    small: 'w-[26px] h-[26px]',
-    default: 'w-[32px] h-[32px]',
-    large: 'w-[40px] h-[40px]'
+    small: 'w-11 h-11',
+    default: 'w-11 h-11',
+    large: 'w-11 h-11'
   };
 
   const iconSizes = {
@@ -110,8 +110,8 @@ export default function WishlistButton({ productId, className = '', size = 'defa
           width={iconSizes[size]}
           height={iconSizes[size]}
           viewBox="0 0 24 24"
-          fill={inWishlist ? '#E24B4A' : 'none'}
-          stroke={inWishlist ? '#E24B4A' : 'currentColor'}
+          fill={inWishlist ? 'var(--color-status-danger)' : 'none'}
+          stroke={inWishlist ? 'var(--color-status-danger)' : 'currentColor'}
           strokeWidth="1.5"
         >
           <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>

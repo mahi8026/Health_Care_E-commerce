@@ -1,4 +1,5 @@
 'use client';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect } from 'react';
 import { FaCheck, FaTimes, FaToggleOn, FaToggleOff, FaSearch, FaBuilding, FaEnvelope, FaPhone } from 'react-icons/fa';
@@ -48,7 +49,7 @@ export default function B2BUsersList() {
   }, [filter, search, page]);
 
   const handleApprove = async (userId) => {
-    if (!confirm('Are you sure you want to approve this B2B application?')) return;
+    if (!await confirmAction('Are you sure you want to approve this B2B application?')) return;
 
     try {
       setActionLoading(userId);
@@ -129,9 +130,9 @@ export default function B2BUsersList() {
 
   const getStatusBadge = (status) => {
     const styles = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      approved: 'bg-green-100 text-green-800',
-      rejected: 'bg-red-100 text-red-800'
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      approved: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+      rejected: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
     };
 
     return (
@@ -150,20 +151,20 @@ export default function B2BUsersList() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <FaSearch className="absolute left-3 top-3 text-gray-400" />
+          <FaSearch className="absolute left-3 top-3 text-[var(--color-text-secondary)]" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, company..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
           />
         </div>
 
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+          className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
         >
           <option value="all">All Status</option>
           <option value="pending">Pending</option>
@@ -175,47 +176,47 @@ export default function B2BUsersList() {
       {/* Users Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-[var(--color-border-primary)]">
+            <thead className="bg-[var(--color-background-secondary)]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">B2B Pricing</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applied</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase">Company</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase">B2B Pricing</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--color-text-secondary)] uppercase">Applied</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-[var(--color-text-secondary)] uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-[var(--color-border-primary)]">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-12 text-center text-[var(--color-text-secondary)]">
                     No B2B users found
                   </td>
                 </tr>
               ) : (
                 users.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50">
+                  <tr key={user._id} className="hover:bg-[var(--color-background-secondary)]">
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500 flex items-center gap-1">
+                        <div className="font-medium text-[var(--color-text-primary)]">{user.name}</div>
+                        <div className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1">
                           <FaEnvelope className="w-3 h-3" />
                           {user.email}
                         </div>
                         {user.b2bId && (
-                          <div className="text-xs text-gray-400 mt-1">ID: {user.b2bId}</div>
+                          <div className="text-xs text-[var(--color-text-secondary)] mt-1">ID: {user.b2bId}</div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <FaBuilding className="text-gray-400" />
+                        <FaBuilding className="text-[var(--color-text-secondary)]" />
                         <div>
                           <div className="font-medium text-sm">{user.companyName || 'N/A'}</div>
                           {user.institutionType && (
-                            <div className="text-xs text-gray-500">{user.institutionType}</div>
+                            <div className="text-xs text-[var(--color-text-secondary)]">{user.institutionType}</div>
                           )}
                         </div>
                       </div>
@@ -223,13 +224,13 @@ export default function B2BUsersList() {
                     <td className="px-6 py-4">
                       <div className="text-sm">
                         {user.phone && (
-                          <div className="flex items-center gap-1 text-gray-600">
+                          <div className="flex items-center gap-1 text-[var(--color-text-secondary)]">
                             <FaPhone className="w-3 h-3" />
                             {user.phone}
                           </div>
                         )}
                         {user.tradeLicense && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-[var(--color-text-secondary)] mt-1">
                             License: {user.tradeLicense}
                           </div>
                         )}
@@ -244,15 +245,15 @@ export default function B2BUsersList() {
                         disabled={actionLoading === user._id || user.b2bApprovalStatus !== 'approved'}
                         className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm ${
                           user.b2bDiscountEnabled
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
+                            : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]'
                         } ${user.b2bApprovalStatus !== 'approved' ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                         {user.b2bDiscountEnabled ? <FaToggleOn /> : <FaToggleOff />}
                         {user.b2bDiscountEnabled ? 'Enabled' : 'Disabled'}
                       </button>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-[var(--color-text-secondary)]">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
@@ -261,24 +262,24 @@ export default function B2BUsersList() {
                           <button
                             onClick={() => handleApprove(user._id)}
                             disabled={actionLoading === user._id}
-                            className="inline-flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50"
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-success text-white text-sm rounded hover:bg-success disabled:opacity-50"
                           >
                             <FaCheck /> Approve
                           </button>
                           <button
                             onClick={() => handleReject(user._id)}
                             disabled={actionLoading === user._id}
-                            className="inline-flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 disabled:opacity-50"
+                            className="inline-flex items-center gap-1 px-3 py-1 bg-danger text-white text-sm rounded hover:bg-danger disabled:opacity-50"
                           >
                             <FaTimes /> Reject
                           </button>
                         </>
                       )}
                       {user.b2bApprovalStatus === 'approved' && (
-                        <span className="text-green-600 text-sm">✓ Approved</span>
+                        <span className="text-[var(--color-status-success)] text-sm">✓ Approved</span>
                       )}
                       {user.b2bApprovalStatus === 'rejected' && (
-                        <span className="text-red-600 text-sm">✗ Rejected</span>
+                        <span className="text-[var(--color-status-danger)] text-sm">✗ Rejected</span>
                       )}
                     </td>
                   </tr>
@@ -291,21 +292,21 @@ export default function B2BUsersList() {
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
           <div className="px-6 py-4 border-t flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-[var(--color-text-secondary)]">
               Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} users
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={!pagination.hasPrev}
-                className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border rounded hover:bg-[var(--color-background-secondary)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
               <button
                 onClick={() => setPage(p => p + 1)}
                 disabled={!pagination.hasNext}
-                className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border rounded hover:bg-[var(--color-background-secondary)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>

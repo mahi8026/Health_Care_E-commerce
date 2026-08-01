@@ -78,42 +78,42 @@ export default function FloatingWhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-24 left-4 md:bottom-6 md:right-6 md:left-auto z-[900] flex flex-col items-start md:items-end gap-3">
+    <div className="fixed bottom-24 left-4 md:bottom-6 md:right-6 md:left-auto z-dropdown flex flex-col items-start md:items-end gap-3">
       {/* Tooltip */}
       {showTooltip && (
-        <div className="animate-fadeSlideUp bg-white rounded-2xl shadow-2xl p-4 max-w-xs border border-gray-200">
+        <div className="animate-fadeSlideUp bg-white rounded-2xl shadow-lg p-4 max-w-xs border border-[var(--color-border-primary)]">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <h4 className="font-bold text-gray-900 text-sm mb-1">Need Help?</h4>
-              <p className="text-xs text-gray-600">Chat with us on WhatsApp</p>
+              <h4 className="font-semibold text-[var(--color-text-primary)] text-sm mb-1">Need Help?</h4>
+              <p className="text-xs text-[var(--color-text-secondary)]">Chat with us on WhatsApp</p>
             </div>
             <button
               onClick={() => setShowTooltip(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] transition-colors"
               aria-label="Close tooltip"
             >
               <FaTimes size={14} />
             </button>
           </div>
           
-          <div className="space-y-2 text-xs text-gray-700 mb-3">
+          <div className="space-y-2 text-xs text-[var(--color-text-primary)] mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span>
+              <span className="text-[var(--color-status-success)]">✓</span>
               <span>Quick product inquiries</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span>
+              <span className="text-[var(--color-status-success)]">✓</span>
               <span>Order tracking & support</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span>
+              <span className="text-[var(--color-status-success)]">✓</span>
               <span>B2B bulk pricing</span>
             </div>
           </div>
           
           <button
             onClick={handleClick}
-            className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold text-sm transition-all hover:shadow-lg"
+            className="w-full py-2 px-4 bg-[var(--color-status-success-tint)] hover:bg-success text-white rounded-xl font-semibold text-sm transition-all hover:shadow-lg"
           >
             Start Chat
           </button>
@@ -125,13 +125,13 @@ export default function FloatingWhatsAppButton() {
         onClick={handleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        className={`group relative w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-green-500/50 hover:scale-110 transition-all duration-300 ${
+        className={`group relative w-14 h-14 bg-gradient-to-br from-[var(--color-status-success)] to-[var(--color-status-success)] rounded-full flex items-center justify-center shadow-lg hover:shadow-green-500/50 hover:scale-110 transition-all duration-300 ${
           bounce ? 'animate-bounce' : ''
         }`}
         aria-label="Chat on WhatsApp"
       >
         {/* Pulsing ring effect */}
-        <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20"></span>
+        <span className="absolute inset-0 rounded-full bg-[var(--color-status-success-tint)] animate-ping opacity-20"></span>
         
         {/* WhatsApp icon */}
         <FaWhatsapp 
@@ -140,7 +140,7 @@ export default function FloatingWhatsAppButton() {
         />
         
         {/* Online indicator */}
-        <span className="absolute top-0 right-0 w-4 h-4 bg-green-400 border-2 border-white rounded-full animate-pulse"></span>
+        <span className="absolute top-0 right-0 w-4 h-4 bg-success border-2 border-white rounded-full animate-pulse"></span>
         
         {/* Hover text - desktop only */}
         <span className="hidden md:block absolute right-16 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300">

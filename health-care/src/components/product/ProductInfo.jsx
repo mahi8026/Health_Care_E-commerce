@@ -86,26 +86,26 @@ export default function ProductInfo({
     <div>
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed top-4 right-4 z-50 bg-[#D1FAE5] text-[#065F46] rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 animate-slide-in">
-          <span className="text-[18px]">✓</span>
-          <p className="text-[12px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+        <div className="fixed top-4 right-4 z-toast bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 animate-slide-in">
+          <span className="text-lg">✓</span>
+          <p className="text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
             {toastMessage}
           </p>
         </div>
       )}
       {/* Meta Tags */}
       <div className="flex gap-2 items-center mb-[10px] flex-wrap">
-        <span className="text-[11px] text-[#0E8A6E] font-medium bg-[#E1F5EE] px-2 py-[3px] rounded">
+        <span className="text-xs text-brand-teal font-medium bg-brand-teal-tint px-2 py-[3px] rounded">
           {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </span>
-        <span className="text-[11px] text-[var(--color-text-secondary)]">
+        <span className="text-xs text-[var(--color-text-secondary)]">
           {typeof product.category === 'object' ? product.category?.name : product.category}
         </span>
-        <span className="text-[11px] text-[var(--color-text-tertiary)]">SKU: {product.sku}</span>
+        <span className="text-xs text-[var(--color-text-tertiary)]">SKU: {product.sku}</span>
       </div>
 
       {/* Title */}
-      <h1 className="font-[family-name:var(--font-lora)] text-[20px] font-semibold leading-[1.3] mb-[10px]">
+      <h1 className="font-[family-name:var(--font-lora)] text-xl font-semibold leading-[1.3] mb-[10px]">
         {product.name}
       </h1>
 
@@ -116,46 +116,46 @@ export default function ProductInfo({
             <div
               key={i}
               className={`w-[11px] h-[11px] ${
-                i < Math.floor(rating) ? 'bg-[#F59E0B]' : 'bg-[var(--color-border-secondary)]'
+                i < Math.floor(rating) ? 'bg-warning' : 'bg-[var(--color-border-secondary)]'
               }`}
               style={{ clipPath: 'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' }}
             />
           ))}
         </div>
-        <span className="text-[11px] text-[var(--color-text-secondary)]">
+        <span className="text-xs text-[var(--color-text-secondary)]">
           {rating > 0 ? `${rating} (${product.reviewCount || 0} reviews)` : 'No reviews yet'}
         </span>
-        <span className="text-[11px] text-[#0E8A6E]">· {product.recommendPercent}% recommend</span>
+        <span className="text-xs text-brand-teal">· {product.recommendPercent}% recommend</span>
       </div>
 
       {/* Price Block */}
       <div className="bg-[var(--color-background-secondary)] rounded-lg p-[14px] mb-4">
         <div className="flex items-baseline flex-wrap gap-1">
-          <span className="font-[family-name:var(--font-lora)] text-[26px] font-semibold text-[#0B2545]">
+          <span className="font-[family-name:var(--font-lora)] text-3xl font-semibold text-brand-navy">
             ৳ {price.toLocaleString()}
           </span>
           {oldPrice > price && (
-            <span className="text-[13px] text-[var(--color-text-secondary)] line-through ml-2">
+            <span className="text-sm text-[var(--color-text-secondary)] line-through ml-2">
               ৳ {oldPrice.toLocaleString()}
             </span>
           )}
           {savings > 0 && (
-            <span className="text-[11px] text-[#0E8A6E] font-medium ml-[6px] bg-[#E1F5EE] px-[7px] py-[2px] rounded">
+            <span className="text-xs text-brand-teal font-medium ml-[6px] bg-brand-teal-tint px-[7px] py-[2px] rounded">
               Save ৳ {savings.toLocaleString()}
             </span>
           )}
         </div>
-        <div className="text-[11px] text-[var(--color-text-secondary)] mt-1">
+        <div className="text-xs text-[var(--color-text-secondary)] mt-1">
           Inclusive of VAT · Free installation in Dhaka
         </div>
         <div className="flex gap-[6px] mt-2 flex-wrap">
-          <span className="text-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded px-2 py-[3px] text-[var(--color-text-secondary)]">
+          <span className="text-xs border-[0.5px] border-[var(--color-border-secondary)] rounded px-2 py-[3px] text-[var(--color-text-secondary)]">
             2–4 units: −8%
           </span>
-          <span className="text-[10px] border-[0.5px] border-[#0E8A6E] rounded px-2 py-[3px] text-[#0E8A6E] bg-[#E1F5EE]">
+          <span className="text-xs border-[0.5px] border-brand-teal rounded px-2 py-[3px] text-brand-teal bg-brand-teal-tint">
             5–9 units: −15%
           </span>
-          <span className="text-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded px-2 py-[3px] text-[var(--color-text-secondary)]">
+          <span className="text-xs border-[0.5px] border-[var(--color-border-secondary)] rounded px-2 py-[3px] text-[var(--color-text-secondary)]">
             10+ units: −22%
           </span>
         </div>
@@ -164,20 +164,20 @@ export default function ProductInfo({
       {/* Stock Status */}
       <div className="flex items-center gap-[6px] mb-[14px]">
         <div className="w-[7px] h-[7px] rounded-full bg-[#639922] flex-shrink-0" />
-        <span className="text-[12px] text-[var(--color-text-secondary)]">
+        <span className="text-xs text-[var(--color-text-secondary)]">
           <strong className="text-[var(--color-text-primary)]">In stock</strong> — ships within 24 hr from Dhaka warehouse
         </span>
       </div>
 
       {/* Connectivity Variant */}
       <div className="mb-[14px]">
-        <div className="text-[11px] text-[var(--color-text-secondary)] mb-[6px]">Connectivity option</div>
+        <div className="text-xs text-[var(--color-text-secondary)] mb-[6px]">Connectivity option</div>
         <div className="flex gap-[6px] flex-wrap">
           <button
             onClick={() => setSelectedConnectivity('usb-lan')}
-            className={`px-3 py-[5px] rounded-md border-[0.5px] text-[11px] cursor-pointer ${
+            className={`px-3 py-[5px] rounded-md border-[0.5px] text-xs cursor-pointer ${
               selectedConnectivity === 'usb-lan'
-                ? 'border-[#0B2545] bg-[#0B2545] text-white border-[1.5px]'
+                ? 'border-brand-navy bg-brand-navy text-white border-[1.5px]'
                 : 'border-[var(--color-border-secondary)] text-[var(--color-text-primary)]'
             }`}
           >
@@ -185,9 +185,9 @@ export default function ProductInfo({
           </button>
           <button
             onClick={() => setSelectedConnectivity('usb-lan-wifi')}
-            className={`px-3 py-[5px] rounded-md border-[0.5px] text-[11px] cursor-pointer ${
+            className={`px-3 py-[5px] rounded-md border-[0.5px] text-xs cursor-pointer ${
               selectedConnectivity === 'usb-lan-wifi'
-                ? 'border-[#0B2545] bg-[#0B2545] text-white border-[1.5px]'
+                ? 'border-brand-navy bg-brand-navy text-white border-[1.5px]'
                 : 'border-[var(--color-border-secondary)] text-[var(--color-text-primary)]'
             }`}
           >
@@ -198,15 +198,15 @@ export default function ProductInfo({
 
       {/* Warranty Variant */}
       <div className="mb-[14px]">
-        <div className="text-[11px] text-[var(--color-text-secondary)] mb-[6px]">Warranty</div>
+        <div className="text-xs text-[var(--color-text-secondary)] mb-[6px]">Warranty</div>
         <div className="flex gap-[6px] flex-wrap">
           {['1-year', '2-year', 'amc'].map((warranty) => (
             <button
               key={warranty}
               onClick={() => setSelectedWarranty(warranty)}
-              className={`px-3 py-[5px] rounded-md border-[0.5px] text-[11px] cursor-pointer ${
+              className={`px-3 py-[5px] rounded-md border-[0.5px] text-xs cursor-pointer ${
                 selectedWarranty === warranty
-                  ? 'border-[#0B2545] bg-[#0B2545] text-white border-[1.5px]'
+                  ? 'border-brand-navy bg-brand-navy text-white border-[1.5px]'
                   : 'border-[var(--color-border-secondary)] text-[var(--color-text-primary)]'
               }`}
             >
@@ -220,15 +220,15 @@ export default function ProductInfo({
 
       {/* Quantity */}
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-[11px] text-[var(--color-text-secondary)]">Quantity</span>
-        <div className="flex items-center border-[0.5px] border-[var(--color-border-secondary)] rounded-[7px] overflow-hidden">
+        <span className="text-xs text-[var(--color-text-secondary)]">Quantity</span>
+        <div className="flex items-center border-[0.5px] border-[var(--color-border-secondary)] rounded-md overflow-hidden">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
             className="w-11 h-11 bg-[var(--color-background-secondary)] border-none cursor-pointer text-base flex items-center justify-center text-[var(--color-text-primary)]"
           >
             −
           </button>
-          <div className="w-14 text-center text-[13px] font-medium border-l-[0.5px] border-r-[0.5px] border-[var(--color-border-tertiary)] h-11 leading-[44px]">
+          <div className="w-14 text-center text-sm font-medium border-l-[0.5px] border-r-[0.5px] border-[var(--color-border-tertiary)] h-11 leading-[44px]">
             {quantity}
           </div>
           <button
@@ -238,7 +238,7 @@ export default function ProductInfo({
             +
           </button>
         </div>
-        <span className="text-[10px] text-[var(--color-text-secondary)]">Min. order: 1 unit</span>
+        <span className="text-xs text-[var(--color-text-secondary)]">Min. order: 1 unit</span>
       </div>
 
       {/* CTA Buttons */}
@@ -247,7 +247,7 @@ export default function ProductInfo({
           onClick={handleAddToCart}
           disabled={addingToCart}
           aria-label="Add to cart"
-          className="flex-[2] bg-[#0B2545] text-white border-none px-3 py-3 rounded-lg text-[13px] font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-[2] bg-brand-navy text-white border-none px-3 py-3 rounded-lg text-sm font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {addingToCart ? (
             <>
@@ -265,7 +265,7 @@ export default function ProductInfo({
           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           className={`w-[42px] h-[42px] rounded-lg border-[0.5px] flex items-center justify-center cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             inWishlist 
-              ? 'border-[#E24B4A] bg-[#FEE2E2]' 
+              ? 'border-danger bg-[var(--color-status-danger-tint)]' 
               : 'border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)]'
           }`}
         >
@@ -275,20 +275,20 @@ export default function ProductInfo({
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
           ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill={inWishlist ? '#E24B4A' : 'none'} stroke={inWishlist ? '#E24B4A' : 'currentColor'} strokeWidth="1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill={inWishlist ? 'var(--color-status-danger)' : 'none'} stroke={inWishlist ? 'var(--color-status-danger)' : 'currentColor'} strokeWidth="1.5">
               <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
             </svg>
           )}
         </button>
       </div>
 
-      <button className="w-full bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-[10px] py-[10px] rounded-lg text-[13px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] font-medium mb-[14px]">
+      <button className="w-full bg-transparent text-brand-navy border-[0.5px] border-brand-navy px-[10px] py-[10px] rounded-lg text-sm cursor-pointer font-[family-name:var(--font-plus-jakarta)] font-medium mb-[14px]">
         Request formal quotation (B2B)
       </button>
 
       <button 
         onClick={handleWhatsAppClick}
-        className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white border-none px-[10px] py-[10px] rounded-lg text-[13px] font-semibold cursor-pointer font-[family-name:var(--font-plus-jakarta)] mb-[14px] flex items-center justify-center gap-[6px] transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+        className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white border-none px-[10px] py-[10px] rounded-lg text-sm font-semibold cursor-pointer font-[family-name:var(--font-plus-jakarta)] mb-[14px] flex items-center justify-center gap-[6px] transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -306,7 +306,7 @@ export default function ProductInfo({
           { icon: 'refresh', text: <><strong>30-day</strong> return & replacement policy</> }
         ].map((item, idx) => (
           <div key={idx} className="flex items-center gap-2 py-[5px] border-b-[0.5px] border-[var(--color-border-tertiary)] last:border-b-0">
-            <div className="w-6 h-6 rounded-[5px] bg-[var(--color-background-primary)] flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 rounded-sm bg-[var(--color-background-primary)] flex items-center justify-center flex-shrink-0">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 {item.icon === 'truck' && <><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></>}
                 {item.icon === 'clock' && <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>}
@@ -314,7 +314,7 @@ export default function ProductInfo({
                 {item.icon === 'refresh' && <><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></>}
               </svg>
             </div>
-            <div className="text-[11px] text-[var(--color-text-secondary)]">{item.text}</div>
+            <div className="text-xs text-[var(--color-text-secondary)]">{item.text}</div>
           </div>
         ))}
       </div>
@@ -322,7 +322,7 @@ export default function ProductInfo({
       {/* Trust Icons */}
       <div className="flex gap-2 flex-wrap">
         {['CE Certified', 'ISO 13485', 'DGDA Cleared', '24/7 Support'].map((trust, idx) => (
-          <div key={idx} className="flex items-center gap-1 text-[10px] text-[var(--color-text-secondary)] bg-[var(--color-background-secondary)] px-2 py-1 rounded-[5px]">
+          <div key={idx} className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] bg-[var(--color-background-secondary)] px-2 py-1 rounded-sm">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <polyline points="20 6 9 17 4 12"/>
             </svg>

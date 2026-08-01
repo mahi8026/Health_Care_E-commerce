@@ -32,7 +32,7 @@ const CONTACT_OPTIONS = [
     value: '+880 1646-886795',
     sub: 'Quick replies during business hours',
     href: 'https://wa.me/8801646886795',
-    color: 'bg-green-50 text-green-600',
+    color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
     cta: 'Chat on WhatsApp',
   },
   {
@@ -69,7 +69,7 @@ const FAQ_SECTIONS = [
   {
     category: 'Products & Stock',
     icon: <FaBoxOpen />,
-    color: 'text-green-600',
+    color: 'text-[var(--color-status-success)]',
     items: [
       {
         q: 'Are all products DGDA registered?',
@@ -126,7 +126,7 @@ const FAQ_SECTIONS = [
   {
     category: 'Account & B2B',
     icon: <FaUserCircle />,
-    color: 'text-teal-600',
+    color: 'text-brand-teal',
     items: [
       {
         q: 'How do I register as a B2B customer?',
@@ -143,21 +143,21 @@ const FAQ_SECTIONS = [
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-[var(--color-border-tertiary)] last:border-0">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-4 text-left gap-4 min-h-[48px]"
         aria-expanded={open}
       >
-        <span className="text-sm font-medium text-gray-800">{q}</span>
+        <span className="text-sm font-medium text-[var(--color-text-primary)]">{q}</span>
         {open ? (
-          <FaChevronUp className="text-gray-400 flex-shrink-0 text-xs" />
+          <FaChevronUp className="text-[var(--color-text-secondary)] flex-shrink-0 text-xs" />
         ) : (
-          <FaChevronDown className="text-gray-400 flex-shrink-0 text-xs" />
+          <FaChevronDown className="text-[var(--color-text-secondary)] flex-shrink-0 text-xs" />
         )}
       </button>
       {open && (
-        <p className="text-sm text-gray-500 leading-relaxed pb-4">{a}</p>
+        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed pb-4">{a}</p>
       )}
     </div>
   );
@@ -167,13 +167,13 @@ export default function HelpPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-[#0B2545] text-white py-12 md:py-16 px-4">
+      <section className="bg-brand-navy text-white py-12 md:py-16 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaHeadset className="text-[#1DB954]" />
             Customer Support
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">How can we help you?</h1>
+          <h1 className="text-3xl md:text-4xl font-semibold mb-4">How can we help you?</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
             Browse our frequently asked questions or reach out directly — our support team is available Sunday through Thursday, 9 AM to 6 PM.
           </p>
@@ -183,26 +183,26 @@ export default function HelpPage() {
       {/* Contact Options */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Contact Us</h2>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-6">Contact Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {CONTACT_OPTIONS.map((opt) => (
               <div
                 key={opt.label}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4"
+                className="bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm p-6 flex flex-col gap-4"
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${opt.color}`}>
                   {opt.icon}
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-gray-400 mb-0.5">{opt.label}</p>
-                  <p className="font-semibold text-gray-900 text-sm">{opt.value}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{opt.sub}</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] mb-0.5">{opt.label}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)] text-sm">{opt.value}</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{opt.sub}</p>
                 </div>
                 <a
                   href={opt.href}
                   target={opt.href.startsWith('http') ? '_blank' : undefined}
                   rel={opt.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className="block text-center text-sm font-semibold text-[#0B2545] bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl py-2.5"
+                  className="block text-center text-sm font-semibold text-brand-navy bg-[var(--color-background-secondary)] hover:bg-[var(--color-background-tertiary)] transition-colors rounded-xl py-2.5"
                 >
                   {opt.cta}
                 </a>
@@ -215,16 +215,16 @@ export default function HelpPage() {
       {/* FAQ */}
       <section className="py-4 px-4 pb-16">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-6">Frequently Asked Questions</h2>
           <div className="flex flex-col gap-4">
             {FAQ_SECTIONS.map((section) => (
               <div
                 key={section.category}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+                className="bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm overflow-hidden"
               >
-                <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--color-border-tertiary)]">
                   <span className={section.color}>{section.icon}</span>
-                  <h3 className="font-semibold text-gray-900 text-sm">{section.category}</h3>
+                  <h3 className="font-semibold text-[var(--color-text-primary)] text-sm">{section.category}</h3>
                 </div>
                 <div className="px-6">
                   {section.items.map((item) => (
@@ -236,15 +236,15 @@ export default function HelpPage() {
           </div>
 
           {/* Still need help */}
-          <div className="mt-8 bg-[#0B2545] rounded-2xl p-8 text-white text-center">
+          <div className="mt-8 bg-brand-navy rounded-2xl p-8 text-white text-center">
             <FaHeadset className="text-3xl text-[#1DB954] mx-auto mb-3" />
-            <h3 className="font-bold text-lg mb-2">Still need help?</h3>
+            <h3 className="font-semibold text-lg mb-2">Still need help?</h3>
             <p className="text-white/70 text-sm mb-5">
               Our support team is ready to assist with any question not covered above.
             </p>
             <a
               href="mailto:mahimrahman07@gmail.com"
-              className="inline-block bg-white text-[#0B2545] font-semibold text-sm px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors"
+              className="inline-block bg-white text-brand-navy font-semibold text-sm px-6 py-3 rounded-xl hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               Email Support Team
             </a>

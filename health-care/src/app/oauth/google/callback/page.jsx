@@ -68,12 +68,12 @@ export default function GoogleCallbackPage() {
           </p>
         )}
         {status === 'success' && (
-          <p className="mt-4 text-green-600 font-medium">
+          <p className="mt-4 text-[var(--color-status-success)] font-medium">
             ✓ Login successful! Redirecting...
           </p>
         )}
         {status === 'error' && (
-          <p className="mt-4 text-red-600 font-medium">
+          <p className="mt-4 text-[var(--color-status-danger)] font-medium">
             ✗ Authentication failed. Redirecting...
           </p>
         )}

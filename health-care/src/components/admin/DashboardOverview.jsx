@@ -10,17 +10,17 @@ import { formatBdt, formatPrice, formatGrowthBadge } from '@/utils/formatBdt';
 
 const KPICard = memo(function KPICard({ label, value, subtitle, badge, trend, icon, accent, onClick }) {
   const badgeStyles = {
-    up: 'bg-emerald-50 text-emerald-800 border border-emerald-100',
-    down: 'bg-red-50 text-red-800 border border-red-100',
-    neutral: 'bg-gray-50 text-gray-600 border border-gray-100',
-    warning: 'bg-amber-50 text-amber-800 border border-amber-100',
+    up: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] border border-[var(--color-status-success-tint)]',
+    down: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] border border-[var(--color-status-danger-tint)]',
+    neutral: 'bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] border border-[var(--color-border-tertiary)]',
+    warning: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)] border border-[var(--color-status-warning-tint)]',
   };
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group text-left bg-white rounded-xl border border-gray-100 p-5 hover:border-[#0E8A6E]/40 hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-[#0E8A6E]/20"
+      className="group text-left bg-white rounded-xl border border-[var(--color-border-tertiary)] p-5 hover:border-brand-teal/40 hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-brand-teal/20"
     >
       <div className="flex items-start justify-between gap-3 mb-4">
         <div
@@ -31,18 +31,18 @@ const KPICard = memo(function KPICard({ label, value, subtitle, badge, trend, ic
         </div>
         {badge?.text && (
           <span
-            className={`text-[10px] font-semibold px-2 py-1 rounded-full whitespace-nowrap ${badgeStyles[badge.variant] || badgeStyles.neutral}`}
+            className={`text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${badgeStyles[badge.variant] || badgeStyles.neutral}`}
           >
             {badge.text}
           </span>
         )}
       </div>
-      <p className="text-[26px] font-bold text-[#0B2545] leading-none tracking-tight font-[family-name:var(--font-plus-jakarta)] group-hover:text-[#0E8A6E] transition-colors">
+      <p className="text-3xl font-semibold text-brand-navy leading-none tracking-tight font-[family-name:var(--font-plus-jakarta)] group-hover:text-brand-teal transition-colors">
         {value}
       </p>
-      <p className="text-[13px] font-semibold text-[#374151] mt-2">{label}</p>
+      <p className="text-sm font-semibold text-[var(--color-text-primary)] mt-2">{label}</p>
       {subtitle && (
-        <p className="text-[11px] text-[#6B7280] mt-0.5">{subtitle}</p>
+        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{subtitle}</p>
       )}
     </button>
   );
@@ -92,7 +92,7 @@ export default function DashboardOverview() {
   }, [setSelectedKPI]);
 
   useEffect(() => {
-    fetchDashboard();
+    void Promise.resolve().then(fetchDashboard);
     const interval = setInterval(fetchDashboard, 60_000);
     return () => clearInterval(interval);
   }, [fetchDashboard]);
@@ -101,12 +101,12 @@ export default function DashboardOverview() {
 
   if (error && !stats) {
     return (
-      <div className="p-8 text-center bg-white rounded-xl border border-red-100">
-        <p className="text-[14px] text-[#991B1B] mb-3">Failed to load dashboard: {error}</p>
+      <div className="p-8 text-center bg-white rounded-xl border border-[var(--color-status-danger-tint)]">
+        <p className="text-sm text-[var(--color-status-danger)] mb-3">Failed to load dashboard: {error}</p>
         <button
           type="button"
           onClick={fetchDashboard}
-          className="px-4 py-2 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold"
+          className="px-4 py-2 bg-brand-navy text-white rounded-lg text-sm font-semibold"
         >
           Retry
         </button>
@@ -125,7 +125,7 @@ export default function DashboardOverview() {
       subtitle: `${formatBdt(k.thisMonthRevenue ?? 0)} this month`,
       badge: revenueBadge,
       icon: '💰',
-      accent: '#0E8A6E',
+      accent: 'var(--color-brand-teal)',
       detail: { stats: k, type: 'revenue' },
       navigate: 'analytics',
     },
@@ -186,13 +186,13 @@ export default function DashboardOverview() {
 
   const getStatusColor = (status) => {
     const colors = {
-      placed: 'bg-[#FEF3C7] text-[#92400E]',
-      pending: 'bg-[#FEF3C7] text-[#92400E]',
-      confirmed: 'bg-[#DBEAFE] text-[#1E40AF]',
-      processing: 'bg-[#E0E7FF] text-[#3730A3]',
-      shipped: 'bg-[#E0E7FF] text-[#3730A3]',
-      delivered: 'bg-[#D1FAE5] text-[#065F46]',
-      cancelled: 'bg-[#FEE2E2] text-[#991B1B]',
+      placed: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      confirmed: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      processing: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      shipped: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+      delivered: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+      cancelled: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
     };
     return colors[status] || colors.placed;
   };
@@ -200,10 +200,10 @@ export default function DashboardOverview() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-        <p className="text-[11px] text-[#6B7280]">
+        <p className="text-xs text-[var(--color-text-secondary)]">
           Live metrics
           {lastUpdated && (
-            <span className="text-[#9CA3AF]">
+            <span className="text-[var(--color-text-tertiary)]">
               {' · '}
               Updated {lastUpdated.toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit' })}
             </span>
@@ -213,7 +213,7 @@ export default function DashboardOverview() {
           type="button"
           onClick={handleRefresh}
           disabled={loading}
-          className="px-3 py-1.5 text-[11px] font-semibold text-[#0B2545] border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+          className="px-3 py-1.5 text-xs font-semibold text-brand-navy border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-secondary)] disabled:opacity-50"
         >
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>
@@ -250,22 +250,22 @@ export default function DashboardOverview() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-        <div className="bg-white rounded-xl p-5 border border-gray-100">
+        <div className="bg-white rounded-xl p-5 border border-[var(--color-border-tertiary)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[15px] font-semibold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
+            <h3 className="text-base font-semibold text-brand-navy font-[family-name:var(--font-plus-jakarta)]">
               Recent Orders
             </h3>
             <button
               type="button"
               onClick={() => router.push('/admin/orders')}
-              className="text-[12px] text-[#0E8A6E] font-semibold hover:underline"
+              className="text-xs text-brand-teal font-semibold hover:underline"
             >
               View all →
             </button>
           </div>
 
           {recentOrders.length === 0 ? (
-            <p className="text-[13px] text-[#6B7280] text-center py-8">No orders yet</p>
+            <p className="text-sm text-[var(--color-text-secondary)] text-center py-8">No orders yet</p>
           ) : (
             <div className="space-y-2">
               {recentOrders.map((order) => (
@@ -273,26 +273,26 @@ export default function DashboardOverview() {
                   key={order._id || order.orderNumber}
                   type="button"
                   onClick={() => setSelectedOrder(order._id || order.orderNumber)}
-                  className="w-full flex items-center gap-4 p-3.5 rounded-lg border border-gray-50 bg-surface-subtle hover:border-[#0E8A6E]/30 hover:bg-[#F0FBF8] transition-all text-left group"
+                  className="w-full flex items-center gap-4 p-3.5 rounded-lg border border-[var(--color-border-tertiary)] bg-surface-subtle hover:border-brand-teal/30 hover:bg-brand-teal-tint transition-all text-left group"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <span className="text-[13px] font-semibold text-[#0B2545] group-hover:text-[#0E8A6E]">
+                      <span className="text-sm font-semibold text-brand-navy group-hover:text-brand-teal">
                         {order.orderNumber || order.id}
                       </span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getStatusColor(order.status)}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getStatusColor(order.status)}`}>
                         {order.status}
                       </span>
                     </div>
-                    <p className="text-[12px] text-[#6B7280] truncate">
+                    <p className="text-xs text-[var(--color-text-secondary)] truncate">
                       {order.user?.name || order.user?.companyName || order.customer || 'Customer'}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="text-[14px] font-bold text-[#0B2545]">
+                    <p className="text-sm font-semibold text-brand-navy">
                       {formatPrice(order.totalAmount || order.total || 0)}
                     </p>
-                    <p className="text-[11px] text-[#9CA3AF]">
+                    <p className="text-xs text-[var(--color-text-tertiary)]">
                       {order.createdAt
                         ? new Date(order.createdAt).toLocaleDateString('en-BD', {
                             day: 'numeric',
@@ -307,69 +307,69 @@ export default function DashboardOverview() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl p-5 border border-gray-100">
-          <h3 className="text-[15px] font-semibold text-[#0B2545] mb-4 font-[family-name:var(--font-plus-jakarta)]">
+        <div className="bg-white rounded-xl p-5 border border-[var(--color-border-tertiary)]">
+          <h3 className="text-base font-semibold text-brand-navy mb-4 font-[family-name:var(--font-plus-jakarta)]">
             Cart Recovery
           </h3>
           <div className="space-y-3">
-            <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-100">
-              <p className="text-[10px] font-semibold text-amber-800 uppercase tracking-wide">Abandoned</p>
-              <p className="text-[22px] font-bold text-amber-900 mt-1">{abandonedCartPanel.totalAbandoned}</p>
+            <div className="p-3.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)]">
+              <p className="text-xs font-semibold text-[var(--color-status-warning)] uppercase tracking-wide">Abandoned</p>
+              <p className="text-2xl font-semibold text-[var(--color-status-warning)] mt-1">{abandonedCartPanel.totalAbandoned}</p>
             </div>
-            <div className="p-3.5 rounded-lg bg-red-50 border border-red-100">
-              <p className="text-[10px] font-semibold text-red-800 uppercase tracking-wide">Value at risk</p>
-              <p className="text-[22px] font-bold text-red-900 mt-1">
+            <div className="p-3.5 rounded-lg bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)]">
+              <p className="text-xs font-semibold text-[var(--color-status-danger)] uppercase tracking-wide">Value at risk</p>
+              <p className="text-2xl font-semibold text-[var(--color-status-danger)] mt-1">
                 {formatPrice(abandonedCartPanel.totalValueAtRisk)}
               </p>
             </div>
-            <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-100">
-              <p className="text-[10px] font-semibold text-emerald-800 uppercase tracking-wide">Recovery rate</p>
-              <p className="text-[22px] font-bold text-emerald-900 mt-1">{abandonedCartPanel.recoveryRate}%</p>
+            <div className="p-3.5 rounded-lg bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)]">
+              <p className="text-xs font-semibold text-[var(--color-status-success)] uppercase tracking-wide">Recovery rate</p>
+              <p className="text-2xl font-semibold text-[var(--color-status-success)] mt-1">{abandonedCartPanel.recoveryRate}%</p>
             </div>
             <div className="p-3.5 rounded-lg bg-indigo-50 border border-indigo-100">
-              <p className="text-[10px] font-semibold text-indigo-800 uppercase tracking-wide">Emails sent</p>
-              <p className="text-[22px] font-bold text-indigo-900 mt-1">{abandonedCartPanel.emailsSent}</p>
+              <p className="text-xs font-semibold text-indigo-800 uppercase tracking-wide">Emails sent</p>
+              <p className="text-2xl font-semibold text-indigo-900 mt-1">{abandonedCartPanel.emailsSent}</p>
             </div>
           </div>
-          <p className="text-[11px] text-[#6B7280] mt-4 pt-3 border-t border-gray-100">
+          <p className="text-xs text-[var(--color-text-secondary)] mt-4 pt-3 border-t border-[var(--color-border-tertiary)]">
             Recovery emails run automatically for carts inactive over 1 hour.
           </p>
         </div>
       </div>
 
-      <div className="mt-4 bg-white rounded-xl p-5 border border-gray-100">
+      <div className="mt-4 bg-white rounded-xl p-5 border border-[var(--color-border-tertiary)]">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-[15px] font-semibold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
+          <h3 className="text-base font-semibold text-brand-navy font-[family-name:var(--font-plus-jakarta)]">
             Stock Alerts
           </h3>
           <button
             type="button"
             onClick={() => router.push('/admin/products')}
-            className="text-[12px] text-[#0E8A6E] font-semibold hover:underline"
+            className="text-xs text-brand-teal font-semibold hover:underline"
           >
             Manage →
           </button>
         </div>
 
         {stockAlerts.length === 0 ? (
-          <p className="text-[13px] text-[#6B7280] text-center py-8">All products adequately stocked</p>
+          <p className="text-sm text-[var(--color-text-secondary)] text-center py-8">All products adequately stocked</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             {stockAlerts.map((alert, index) => (
               <div
                 key={alert._id || alert.sku || index}
-                className="p-3.5 rounded-lg bg-amber-50 border border-amber-100"
+                className="p-3.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)]"
               >
-                <p className="text-[12px] font-semibold text-[#0B2545] line-clamp-2 mb-1">
+                <p className="text-xs font-semibold text-brand-navy line-clamp-2 mb-1">
                   {alert.name || alert.product}
                 </p>
-                <p className="text-[11px] text-amber-800 font-medium">
+                <p className="text-xs text-[var(--color-status-warning)] font-medium">
                   {alert.stock ?? alert.currentStock} units left
                 </p>
                 <button
                   type="button"
                   onClick={() => router.push('/admin/products')}
-                  className="mt-2 w-full text-[11px] py-1.5 bg-white border border-amber-200 rounded-md text-amber-900 font-medium hover:bg-amber-50"
+                  className="mt-2 w-full text-xs py-1.5 bg-white border border-[var(--color-status-warning-tint)] rounded-md text-[var(--color-status-warning)] font-medium hover:bg-[var(--color-status-warning-tint)]"
                 >
                   Reorder
                 </button>

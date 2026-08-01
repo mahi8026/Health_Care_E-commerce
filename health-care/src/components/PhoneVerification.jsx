@@ -150,12 +150,12 @@ export default function PhoneVerification({ onVerified }) {
 
   if (!user.phone) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-4">
         <div className="flex items-start">
-          <span className="text-yellow-600 text-xl mr-3">⚠️</span>
+          <span className="text-[var(--color-status-warning)] text-xl mr-3">⚠️</span>
           <div>
-            <h3 className="font-semibold text-yellow-900">Phone Number Required</h3>
-            <p className="text-sm text-yellow-700 mt-1">
+            <h3 className="font-semibold text-[var(--color-status-warning)]">Phone Number Required</h3>
+            <p className="text-sm text-[var(--color-status-warning)] mt-1">
               Please add a phone number to your profile to enable phone verification.
             </p>
           </div>
@@ -187,13 +187,13 @@ export default function PhoneVerification({ onVerified }) {
         </div>
         
         {error && (
-          <div className="mt-3 text-sm text-red-600">
+          <div className="mt-3 text-sm text-[var(--color-status-danger)]">
             {error}
           </div>
         )}
         
         {success && !showModal && (
-          <div className="mt-3 text-sm text-green-600">
+          <div className="mt-3 text-sm text-[var(--color-status-success)]">
             {success}
           </div>
         )}
@@ -201,18 +201,18 @@ export default function PhoneVerification({ onVerified }) {
 
       {/* OTP Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-white rounded-t-2xl sm:rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center p-0 sm:p-4 z-modal">
+          <div className="bg-white rounded-t-lg sm:rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Verify Phone Number</h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">Verify Phone Number</h2>
+                <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                   Enter the 6-digit code sent to your phone
                 </p>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -234,17 +234,17 @@ export default function PhoneVerification({ onVerified }) {
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onPaste={index === 0 ? handlePaste : undefined}
                   aria-label={`Digit ${index + 1} of OTP code`}
-                  className="w-11 h-14 sm:w-12 sm:h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  className="w-11 h-14 sm:w-12 sm:h-14 text-center text-2xl font-semibold border-2 border-[var(--color-border-primary)] rounded-lg focus:border-blue-500 focus:outline-none"
                   autoFocus={index === 0}
                 />
               ))}
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="mb-4 p-3 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-lg">
+                <p className="text-sm text-[var(--color-status-danger)]">{error}</p>
                 {attemptsRemaining > 0 && attemptsRemaining < 5 && (
-                  <p className="text-xs text-red-500 mt-1">
+                  <p className="text-xs text-[var(--color-status-danger)] mt-1">
                     {attemptsRemaining} {attemptsRemaining === 1 ? 'attempt' : 'attempts'} remaining
                   </p>
                 )}
@@ -252,8 +252,8 @@ export default function PhoneVerification({ onVerified }) {
             )}
 
             {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-600">{success}</p>
+              <div className="mb-4 p-3 bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] rounded-lg">
+                <p className="text-sm text-[var(--color-status-success)]">{success}</p>
               </div>
             )}
 
@@ -269,13 +269,13 @@ export default function PhoneVerification({ onVerified }) {
               <button
                 onClick={handleSendOTP}
                 disabled={!canResend || sending}
-                className="min-h-[44px] px-4 text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+                className="min-h-[44px] px-4 text-sm text-blue-600 hover:text-blue-700 disabled:text-[var(--color-text-secondary)] disabled:cursor-not-allowed"
               >
                 {!canResend ? `Resend OTP in ${resendCountdown}s` : sending ? 'Sending...' : 'Resend OTP'}
               </button>
             </div>
 
-            <p className="mt-4 text-xs text-gray-500 text-center">
+            <p className="mt-4 text-xs text-[var(--color-text-secondary)] text-center">
               OTP is valid for 5 minutes. Maximum 3 requests per hour.
             </p>
           </div>

@@ -51,12 +51,12 @@ export default function BrandShowcase() {
       <section style={{ padding: '80px 24px 60px', background: '#FAFBFC' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div className="text-center mb-12">
-            <div style={{ width: 200, height: 32, background: '#E5E7EB', margin: '0 auto 12px', borderRadius: 8 }} className="skeleton" />
-            <div style={{ width: 400, height: 20, background: '#E5E7EB', margin: '0 auto', borderRadius: 6 }} className="skeleton" />
+            <div style={{ width: 200, height: 32, background: 'var(--color-background-muted)', margin: '0 auto 12px', borderRadius: 8 }} className="skeleton" />
+            <div style={{ width: 400, height: 20, background: 'var(--color-background-muted)', margin: '0 auto', borderRadius: 6 }} className="skeleton" />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
             {[...Array(12)].map((_, i) => (
-              <div key={i} style={{ height: 120, background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12 }} className="skeleton" />
+              <div key={i} style={{ height: 120, background: '#fff', border: '1px solid var(--color-border-primary)', borderRadius: 12 }} className="skeleton" />
             ))}
           </div>
         </div>
@@ -69,13 +69,13 @@ export default function BrandShowcase() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header - More Compact */}
         <div className="text-center" style={{ marginBottom: 32 }}>
-          <p style={{ fontSize: 11, color: '#0E8A6E', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
+          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
             GLOBAL PARTNERSHIPS
           </p>
-          <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0B2545', marginBottom: 8, fontFamily: 'Georgia, serif' }}>
+          <h2 style={{ fontSize: 'var(--text-3xl)', fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 8, fontFamily: 'var(--font-lora), serif' }}>
             Trusted Global Brands
           </h2>
-          <p style={{ fontSize: 14, color: '#64748B', maxWidth: 600, margin: '0 auto', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', maxWidth: 600, margin: '0 auto', lineHeight: 1.5 }}>
             Partnering with world-leading manufacturers to deliver certified medical equipment
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function BrandShowcase() {
             const brandName = typeof brand === 'string' ? brand : brand.name;
             const brandLogo = typeof brand === 'object' ? brand.logo : null;
             const brandDesc = typeof brand === 'object' ? brand.description || brand.desc : null;
-            const brandColor = typeof brand === 'object' ? brand.color : '#0E8A6E';
+            const brandColor = typeof brand === 'object' ? brand.color : 'var(--color-brand-teal)';
 
             return (
               <div
@@ -101,7 +101,7 @@ export default function BrandShowcase() {
                 onClick={() => handleBrandClick({ name: brandName })}
                 style={{
                   background: '#fff',
-                  border: '2px solid #E5E7EB',
+                  border: '2px solid var(--color-border-primary)',
                   borderRadius: 10,
                   padding: '18px 12px',
                   display: 'flex',
@@ -117,12 +117,12 @@ export default function BrandShowcase() {
                 }}
                 className="brand-card"
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = brandColor || '#0E8A6E';
-                  e.currentTarget.style.boxShadow = `0 4px 16px ${brandColor || '#0E8A6E'}20`;
+                  e.currentTarget.style.borderColor = brandColor || 'var(--color-brand-teal)';
+                  e.currentTarget.style.boxShadow = `0 4px 16px ${brandColor || 'var(--color-brand-teal)'}20`;
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#E5E7EB';
+                  e.currentTarget.style.borderColor = 'var(--color-border-primary)';
                   e.currentTarget.style.boxShadow = 'none';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
@@ -145,24 +145,24 @@ export default function BrandShowcase() {
                         width: 42,
                         height: 42,
                         borderRadius: '50%',
-                        background: `linear-gradient(135deg, ${brandColor || '#0E8A6E'}15, ${brandColor || '#0E8A6E'}05)`,
-                        border: `2px solid ${brandColor || '#0E8A6E'}30`,
+                        background: `linear-gradient(135deg, ${brandColor || 'var(--color-brand-teal)'}15, ${brandColor || 'var(--color-brand-teal)'}05)`,
+                        border: `2px solid ${brandColor || 'var(--color-brand-teal)'}30`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         margin: '0 auto 6px',
-                        fontSize: 16,
-                        fontWeight: 800,
-                        color: brandColor || '#0E8A6E',
+                        fontSize: 'var(--text-base)',
+                        fontWeight: 600,
+                        color: brandColor || 'var(--color-brand-teal)',
                       }}
                     >
                       {brandName.charAt(0)}
                     </div>
                     <div
                       style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: '#0B2545',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 600,
+                        color: 'var(--color-brand-navy)',
                         textAlign: 'center',
                         lineHeight: 1.2,
                       }}
@@ -176,8 +176,8 @@ export default function BrandShowcase() {
                 {brandDesc && (
                   <div
                     style={{
-                      fontSize: 10,
-                      color: '#94A3B8',
+                      fontSize: 'var(--text-xs)',
+                      color: 'var(--color-text-tertiary)',
                       textAlign: 'center',
                       fontWeight: 500,
                       marginTop: 2,
@@ -197,23 +197,23 @@ export default function BrandShowcase() {
             onClick={() => router.push('/products')}
             style={{
               padding: '10px 28px',
-              background: '#0E8A6E',
+              background: 'var(--color-brand-teal)',
               color: '#fff',
               border: 'none',
               borderRadius: 8,
-              fontSize: 13,
-              fontWeight: 700,
+              fontSize: 'var(--text-sm)',
+              fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
               boxShadow: '0 2px 8px rgba(14, 138, 110, 0.2)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#0c7a61';
+              e.currentTarget.style.background = 'var(--color-brand-teal-hover)';
               e.currentTarget.style.transform = 'translateY(-1px)';
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(14, 138, 110, 0.3)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#0E8A6E';
+              e.currentTarget.style.background = 'var(--color-brand-teal)';
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = '0 2px 8px rgba(14, 138, 110, 0.2)';
             }}
