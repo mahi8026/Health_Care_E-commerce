@@ -6,8 +6,9 @@ import Image from 'next/image';
 import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import WishlistButton from '@/components/wishlist/WishlistButton';
-import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
+  import WishlistButton from '@/components/wishlist/WishlistButton';
+  import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
+  import { EmptyWishlist } from '@/components/ui/EmptyState';
 
 export default function WishlistClient() {
   const router = useRouter();
@@ -38,8 +39,8 @@ export default function WishlistClient() {
     return (
       <div className="max-w-[1400px] mx-auto px-6 py-8">
         <div className="mb-8">
-          <div className="h-8 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-64 mb-2 animate-shimmer" />
-          <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 animate-shimmer" />
+          <div className="h-8 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-64 mb-2 animate-shimmer" />
+          <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-48 animate-shimmer" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {[...Array(10)].map((_, i) => (
@@ -54,30 +55,18 @@ export default function WishlistClient() {
     <div className="max-w-[1400px] mx-auto px-6 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-[28px] font-semibold text-[var(--color-text-primary)] mb-2 font-[family-name:var(--font-lora)]">
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">
           My Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
         </h1>
-        <p className="text-[13px] text-[var(--color-text-secondary)]">
+        <p className="text-sm text-[var(--color-text-secondary)]">
           Save your favorite products for later
         </p>
       </div>
 
       {/* Empty State */}
       {wishlistCount === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-          <div className="text-[60px]">❤️</div>
-          <h2 className="text-[18px] font-semibold text-[var(--color-text-primary)]">
-            Your wishlist is empty
-          </h2>
-          <p className="text-[13px] text-[var(--color-text-secondary)] mb-4">
-            Start browsing and save your favorite products
-          </p>
-          <button
-            onClick={() => router.push('/products')}
-            className="px-6 py-3 bg-[#0B2545] text-white rounded-[7px] text-[13px] font-medium hover:bg-[#0d2d52] transition-colors"
-          >
-            Browse Products
-          </button>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <EmptyWishlist />
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
@@ -97,7 +86,7 @@ export default function WishlistClient() {
             return (
               <div
                 key={product._id}
-                className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-md transition-shadow"
+                className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg overflow-hidden flex flex-col hover:shadow-md transition-shadow"
               >
                 {/* Image */}
                 <div
@@ -113,7 +102,7 @@ export default function WishlistClient() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex items-center justify-center w-full h-full text-[50px] text-[#9CA3AF] bg-[#F3F4F6]">
+                    <div className="flex items-center justify-center w-full h-full text-5xl text-[var(--color-text-tertiary)] bg-[var(--color-background-tertiary)]">
                       🏥
                     </div>
                   )}
@@ -126,7 +115,7 @@ export default function WishlistClient() {
                   {/* Out of stock badge */}
                   {product.stock === 0 && (
                     <div className="absolute bottom-2 left-2">
-                      <span className="text-[9px] px-2 py-1 rounded bg-[#FEE2E2] text-[#991B1B] font-medium">
+                      <span className="text-xs px-2 py-1 rounded bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] font-medium">
                         Out of Stock
                       </span>
                     </div>
@@ -136,14 +125,14 @@ export default function WishlistClient() {
                 {/* Product Info */}
                 <div className="p-3 flex-1 flex flex-col">
                   {/* Brand */}
-                  <div className="text-[9px] text-[#0E8A6E] font-medium uppercase tracking-[0.5px] mb-1">
+                  <div className="text-xs text-brand-teal font-medium uppercase tracking-[0.5px] mb-1">
                     {brandName}
                   </div>
 
                   {/* Name */}
                   <div
                     onClick={() => goToProduct(product)}
-                    className="text-[13px] font-medium leading-[1.35] text-[var(--color-text-primary)] mb-2 flex-1 cursor-pointer hover:text-[#0E8A6E] line-clamp-2"
+                    className="text-sm font-medium leading-[1.35] text-[var(--color-text-primary)] mb-2 flex-1 cursor-pointer hover:text-brand-teal line-clamp-2"
                   >
                     {product.name}
                   </div>
@@ -157,7 +146,7 @@ export default function WishlistClient() {
                             key={i}
                             className={`w-[10px] h-[10px] ${
                               i < Math.round(product.rating.average)
-                                ? 'bg-[#F59E0B]'
+                                ? 'bg-warning'
                                 : 'bg-[var(--color-border-secondary)]'
                             }`}
                             style={{
@@ -167,7 +156,7 @@ export default function WishlistClient() {
                           />
                         ))}
                       </div>
-                      <span className="text-[10px] text-[var(--color-text-secondary)]">
+                      <span className="text-xs text-[var(--color-text-secondary)]">
                         ({product.rating.count || 0})
                       </span>
                     </div>
@@ -175,15 +164,15 @@ export default function WishlistClient() {
 
                   {/* Price */}
                   <div className="flex items-baseline gap-2 mb-3">
-                    <span className="font-[family-name:var(--font-lora)] text-[17px] text-[#0B2545] font-semibold">
+                    <span className="font-[family-name:var(--font-lora)] text-lg text-brand-navy font-semibold">
                       ৳{product.price?.toLocaleString()}
                     </span>
                     {product.discount?.percentage > 0 && (
                       <>
-                        <span className="text-[11px] text-[var(--color-text-secondary)] line-through">
+                        <span className="text-xs text-[var(--color-text-secondary)] line-through">
                           ৳{product.discount.originalPrice?.toLocaleString()}
                         </span>
-                        <span className="text-[10px] text-[#0E8A6E] font-medium">
+                        <span className="text-xs text-brand-teal font-medium">
                           -{product.discount.percentage}%
                         </span>
                       </>
@@ -195,13 +184,13 @@ export default function WishlistClient() {
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={product.stock === 0}
-                      className="flex-1 bg-[#0B2545] text-white border-none px-3 py-2 rounded-[7px] text-[11px] font-medium cursor-pointer hover:bg-[#0d2d52] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 bg-brand-navy text-white border-none px-3 py-2 rounded-md text-xs font-medium cursor-pointer hover:bg-[var(--color-brand-navy-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                     </button>
                     <button
                       onClick={() => handleRemove(product._id)}
-                      className="px-3 py-2 bg-transparent text-[#E24B4A] border-[0.5px] border-[#E24B4A] rounded-[7px] text-[11px] font-medium cursor-pointer hover:bg-[#FEE2E2] transition-colors"
+                      className="px-3 py-2 bg-transparent text-danger border-[0.5px] border-danger rounded-md text-xs font-medium cursor-pointer hover:bg-[var(--color-status-danger-tint)] transition-colors"
                       title="Remove from wishlist"
                     >
                       Remove

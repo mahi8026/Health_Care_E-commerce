@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { FaTimes, FaCircle } from 'react-icons/fa';
+import Spinner from '@/components/ui/Spinner';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 import { useAuth } from '@/context/AuthContext';
@@ -77,7 +78,7 @@ export default function ChatWidget({ onClose }) {
         });
     } else {
       // No existing conversation — show empty state, wait for first message
-      setIsLoading(false);
+      void Promise.resolve().then(() => setIsLoading(false));
     }
 
     return () => clearInterval(pollRef.current);
@@ -171,7 +172,7 @@ export default function ChatWidget({ onClose }) {
   // ── Render ──────────────────────────────────────────────────────────────
   return (
     <div
-      className="fixed right-4 md:right-6 z-[9999] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-100"
+      className="fixed right-4 md:right-6 z-modal bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden border border-[var(--color-border-tertiary)]"
       style={{
         bottom: '5.5rem',
         width: 'min(384px, calc(100vw - 2rem))',
@@ -179,17 +180,17 @@ export default function ChatWidget({ onClose }) {
       }}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-gradient-to-r from-brand-navy to-[#0d3060] px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-sm shadow">
+            <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-brand-navy font-semibold text-sm shadow">
               MC
             </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-success border-2 border-white rounded-full" />
           </div>
           <div>
             <p className="text-white font-semibold text-sm leading-tight">Mediport Support</p>
-            <p className="text-blue-100 text-xs">
+            <p className="text-white/70 text-xs">
               {isLoading ? 'Loading...' : 'We\'ll reply soon'}
             </p>
           </div>
@@ -205,10 +206,10 @@ export default function ChatWidget({ onClose }) {
 
       {/* Body */}
       {isLoading ? (
-        <div className="flex-1 flex items-center justify-center bg-gray-50">
+        <div className="flex-1 flex items-center justify-center bg-[var(--color-background-secondary)]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
-            <p className="mt-2 text-xs text-gray-400">Loading...</p>
+            <Spinner size="md" variant="medical" className="mx-auto" />
+            <p className="mt-2 text-xs text-[var(--color-text-secondary)]">Loading...</p>
           </div>
         </div>
       ) : (

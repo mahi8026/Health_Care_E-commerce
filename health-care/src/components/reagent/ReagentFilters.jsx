@@ -59,12 +59,12 @@ export default function ReagentFilters({ filters, setFilters }) {
   return (
     <div className="p-5">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-[14px] font-semibold text-[#0B2545] font-[family-name:var(--font-plus-jakarta)]">
+        <h3 className="text-sm font-semibold text-brand-navy font-[family-name:var(--font-plus-jakarta)]">
           Filters
         </h3>
         <button
           onClick={clearAll}
-          className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
+          className="text-xs text-brand-teal font-medium hover:underline"
         >
           Clear all
         </button>
@@ -72,17 +72,17 @@ export default function ReagentFilters({ filters, setFilters }) {
 
       {/* Brand Filter */}
       <div className="mb-5">
-        <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
+        <h4 className="text-xs font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Brand
-        </div>
+        </h4>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-4 bg-gray-100 rounded animate-pulse" />
+              <div key={i} className="h-4 bg-[var(--color-background-tertiary)] rounded animate-pulse" />
             ))}
           </div>
         ) : brands.length === 0 ? (
-          <p className="text-[11px] text-[#9CA3AF]">No brands available</p>
+          <p className="text-xs text-[var(--color-text-tertiary)]">No brands available</p>
         ) : (
           <div className="space-y-2">
             {brands.map((brand) => (
@@ -91,9 +91,9 @@ export default function ReagentFilters({ filters, setFilters }) {
                   type="checkbox"
                   checked={filters.brands?.includes(brand)}
                   onChange={() => toggleFilter('brands', brand)}
-                  className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                  className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-brand-teal focus:ring-brand-teal"
                 />
-                <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
+                <span className="text-xs text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
                   {brand}
                 </span>
               </label>
@@ -103,18 +103,18 @@ export default function ReagentFilters({ filters, setFilters }) {
       </div>
 
       {/* Category Filter — optional on reagent-only page */}
-      <div className="mb-5 pb-5 border-b border-gray-100 hidden">
-        <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
+      <div className="mb-5 pb-5 border-b border-[var(--color-border-tertiary)] hidden">
+        <h4 className="text-xs font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Category
-        </div>
+        </h4>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-4 bg-gray-100 rounded animate-pulse" />
+              <div key={i} className="h-4 bg-[var(--color-background-tertiary)] rounded animate-pulse" />
             ))}
           </div>
         ) : categories.length === 0 ? (
-          <p className="text-[11px] text-[#9CA3AF]">No categories available</p>
+          <p className="text-xs text-[var(--color-text-tertiary)]">No categories available</p>
         ) : (
           <div className="space-y-2">
             {categories.map((category) => (
@@ -123,9 +123,9 @@ export default function ReagentFilters({ filters, setFilters }) {
                   type="checkbox"
                   checked={filters.categories?.includes(category)}
                   onChange={() => toggleFilter('categories', category)}
-                  className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                  className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-brand-teal focus:ring-brand-teal"
                 />
-                <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
+                <span className="text-xs text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
                   {category}
                 </span>
               </label>
@@ -136,11 +136,11 @@ export default function ReagentFilters({ filters, setFilters }) {
 
       {/* Price Range */}
       <div className="mb-5 pb-5 border-b-[0.5px] border-[var(--color-border-tertiary)]">
-        <div className="text-[12px] font-medium mb-3 font-[family-name:var(--font-plus-jakarta)]">
+        <h4 className="text-xs font-medium mb-3 font-[family-name:var(--font-plus-jakarta)]">
           Price range
-        </div>
+        </h4>
         <input
-          type="range"
+          type="range" aria-label="Price range"
           min="0"
           max="100000"
           step="5000"
@@ -148,11 +148,11 @@ export default function ReagentFilters({ filters, setFilters }) {
           onChange={(e) =>
             setFilters({ ...filters, priceRange: parseInt(e.target.value) })
           }
-          className="w-full h-1 bg-[var(--color-border-tertiary)] rounded-lg appearance-none cursor-pointer accent-[#0E8A6E]"
+          className="w-full h-1 bg-[var(--color-border-tertiary)] rounded-lg appearance-none cursor-pointer accent-brand-teal"
         />
         <div className="flex justify-between mt-2">
-          <span className="text-[11px] text-[var(--color-text-secondary)]">৳0</span>
-          <span className="text-[11px] font-medium font-[family-name:var(--font-plus-jakarta)]">
+          <span className="text-xs text-[var(--color-text-secondary)]">৳0</span>
+          <span className="text-xs font-medium font-[family-name:var(--font-plus-jakarta)]">
             ৳{filters.priceRange?.toLocaleString()}
           </span>
         </div>
@@ -160,9 +160,9 @@ export default function ReagentFilters({ filters, setFilters }) {
 
       {/* Temperature Storage */}
       <div className="mb-5 pb-5 border-b-[0.5px] border-[var(--color-border-tertiary)]">
-        <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
+        <h4 className="text-xs font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Temperature storage
-        </div>
+        </h4>
         <div className="space-y-2">
           {TEMPERATURES.map((temp) => (
             <label key={temp} className="flex items-center gap-2 cursor-pointer group">
@@ -170,9 +170,9 @@ export default function ReagentFilters({ filters, setFilters }) {
                 type="checkbox"
                 checked={filters.temperature?.includes(temp)}
                 onChange={() => toggleFilter('temperature', temp)}
-                className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-brand-teal focus:ring-brand-teal"
               />
-              <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
+              <span className="text-xs text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
                 {temp}
               </span>
             </label>
@@ -182,9 +182,9 @@ export default function ReagentFilters({ filters, setFilters }) {
 
       {/* Hazard Classification */}
       <div>
-        <div className="text-[12px] font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
+        <h4 className="text-xs font-medium mb-2 font-[family-name:var(--font-plus-jakarta)]">
           Hazard classification
-        </div>
+        </h4>
         <div className="space-y-2">
           {HAZARDS.map((hazard) => (
             <label key={hazard} className="flex items-center gap-2 cursor-pointer group">
@@ -192,9 +192,9 @@ export default function ReagentFilters({ filters, setFilters }) {
                 type="checkbox"
                 checked={filters.hazards?.includes(hazard)}
                 onChange={() => toggleFilter('hazards', hazard)}
-                className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                className="w-4 h-4 rounded border-[var(--color-border-secondary)] text-brand-teal focus:ring-brand-teal"
               />
-              <span className="text-[11px] text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
+              <span className="text-xs text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]">
                 {hazard}
               </span>
             </label>

@@ -25,19 +25,19 @@ export default function ProductFilters({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-4">
+    <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] overflow-hidden sticky top-4">
       {/* Sidebar header */}
-      <div className="px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d3060] flex items-center justify-between">
+      <div className="px-5 py-4 bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
           </svg>
-          <span className="text-white font-bold text-[14px]">{t('products.filters')}</span>
+          <span className="text-white font-semibold text-sm">{t('products.filters')}</span>
         </div>
         {hasActiveFilters && (
           <button 
             onClick={onClearAll}
-            className="text-[11px] text-red-300 hover:text-red-200 font-medium transition-colors"
+            className="text-xs text-red-300 hover:text-red-200 font-medium transition-colors"
           >
             {t('products.clearAll')}
           </button>
@@ -46,14 +46,15 @@ export default function ProductFilters({
 
       <div className="p-4 space-y-5">
         {/* Category */}
-        <div>
-          <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+        <div role="group" aria-labelledby="pf-category">
+          <h3 id="pf-category" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
             <span>📂</span> {t('products.category')}
-          </label>
+          </h3>
           <select 
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700"
+            aria-label={t('products.category')}
+            className="w-full px-3 py-2.5 border border-[var(--color-border-primary)] rounded-xl text-base bg-white focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10 transition-all cursor-pointer text-[var(--color-text-primary)]"
           >
             <option value="">{t('products.allCategories')}</option>
             {categories.map(cat => (
@@ -65,14 +66,15 @@ export default function ProductFilters({
         </div>
 
         {/* Brand */}
-        <div>
-          <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+        <div role="group" aria-labelledby="pf-brand">
+          <h3 id="pf-brand" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
             <span>🏭</span> {t('products.brand')}
-          </label>
+          </h3>
           <select 
             value={selectedBrand}
             onChange={(e) => onBrandChange(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700"
+            aria-label={t('products.brand')}
+            className="w-full px-3 py-2.5 border border-[var(--color-border-primary)] rounded-xl text-base bg-white focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10 transition-all cursor-pointer text-[var(--color-text-primary)]"
           >
             <option value="">{t('products.allBrands')}</option>
             {brands.map(brand => (
@@ -84,31 +86,33 @@ export default function ProductFilters({
         </div>
 
         {/* Price Range */}
-        <div>
-          <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+        <div role="group" aria-labelledby="pf-price">
+          <h3 id="pf-price" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
             <span>💰</span> {t('products.priceRange')}
-          </label>
+          </h3>
           <div className="flex gap-2 items-center">
             <input 
               type="number" 
               placeholder="Min"
+              aria-label={`${t('products.priceRange')} — min`}
               value={priceRange.minPrice || ''}
               onChange={(e) => onPriceRangeChange({ 
                 ...priceRange, 
                 minPrice: e.target.value ? Number(e.target.value) : undefined 
               })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all" 
+              className="w-full px-3 py-2 border border-[var(--color-border-primary)] rounded-xl text-base focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10 transition-all" 
             />
-            <span className="text-gray-400 text-[12px] flex-shrink-0">–</span>
+            <span className="text-[var(--color-text-secondary)] text-xs flex-shrink-0">–</span>
             <input 
               type="number" 
               placeholder="Max"
+              aria-label={`${t('products.priceRange')} — max`}
               value={priceRange.maxPrice || ''}
               onChange={(e) => onPriceRangeChange({ 
                 ...priceRange, 
                 maxPrice: e.target.value ? Number(e.target.value) : undefined 
               })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all" 
+              className="w-full px-3 py-2 border border-[var(--color-border-primary)] rounded-xl text-base focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10 transition-all" 
             />
           </div>
           
@@ -123,10 +127,10 @@ export default function ProductFilters({
               <button 
                 key={label}
                 onClick={() => handlePricePreset(min, max)}
-                className={`px-2 py-1 rounded-lg text-[10px] font-medium border transition-all ${
+                className={`px-2 py-1 rounded-lg text-xs font-medium border transition-all ${
                   priceRange.minPrice === (min || undefined) && priceRange.maxPrice === max
-                    ? 'bg-[#0E8A6E] text-white border-[#0E8A6E]'
-                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-[#0E8A6E] hover:text-[#0E8A6E]'
+                    ? 'bg-brand-teal text-white border-brand-teal'
+                    : 'bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] border-[var(--color-border-primary)] hover:border-brand-teal hover:text-brand-teal'
                 }`}
               >
                 {label}
@@ -136,18 +140,18 @@ export default function ProductFilters({
         </div>
 
         {/* Availability */}
-        <div>
-          <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+        <div role="group" aria-labelledby="pf-availability">
+          <h3 id="pf-availability" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
             <span>📦</span> {t('products.availability')}
-          </label>
-          <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:border-[#0E8A6E] hover:bg-[#0E8A6E]/5 transition-all cursor-pointer">
+          </h3>
+          <label className="flex items-center gap-3 p-3 border border-[var(--color-border-primary)] rounded-xl hover:border-brand-teal hover:bg-brand-teal/5 transition-all cursor-pointer">
             <input 
               type="checkbox" 
               checked={inStock}
               onChange={(e) => onInStockChange(e.target.checked)}
-              className="w-4 h-4 text-[#0E8A6E] border-gray-300 rounded focus:ring-[#0E8A6E] cursor-pointer accent-[#0E8A6E]" 
+              className="w-4 h-4 text-brand-teal border-[var(--color-border-primary)] rounded focus:ring-brand-teal cursor-pointer accent-brand-teal" 
             />
-            <span className="text-[13px] text-gray-700 font-medium">
+            <span className="text-sm text-[var(--color-text-primary)] font-medium">
               {t('products.inStockOnly')}
             </span>
           </label>
@@ -155,12 +159,12 @@ export default function ProductFilters({
 
         {/* Results count */}
         {totalResults > 0 && (
-          <div className="pt-4 border-t border-gray-100">
-            <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0E8A6E]/8 border border-[#0E8A6E]/20 rounded-xl">
-              <span className="text-[15px] font-bold text-[#0E8A6E]">
+          <div className="pt-4 border-t border-[var(--color-border-tertiary)]">
+            <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-brand-teal/8 border border-brand-teal/20 rounded-xl">
+              <span className="text-base font-semibold text-brand-teal">
                 {totalResults.toLocaleString()}
               </span>
-              <span className="text-[12px] text-gray-600">
+              <span className="text-xs text-[var(--color-text-secondary)]">
                 {t('products.productsFound')}
               </span>
             </div>

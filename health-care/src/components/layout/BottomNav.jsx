@@ -22,10 +22,10 @@ const NAV_ITEMS = [
   { icon: FaUser,         label: 'Account',  path: '/account',  requiresAuth: true, authFallback: '/login', exactMatch: false },
 ];
 
-const ACTIVE_COLOR   = '#0E8A6E';
-const INACTIVE_COLOR = '#9CA3AF';
+const ACTIVE_COLOR   = 'var(--color-brand-teal)';
+const INACTIVE_COLOR = 'var(--color-text-secondary)';
 const ADMIN_COLOR    = '#7C3AED';
-const B2B_COLOR      = '#0E8A6E';
+const B2B_COLOR      = 'var(--color-brand-teal)';
 
 const BottomNav = memo(function BottomNav() {
   const pathname = usePathname();
@@ -66,143 +66,71 @@ const BottomNav = memo(function BottomNav() {
   };
 
   return (
-    <>
-      <style>{`
-        @media (min-width: 1024px) {
-          .bottom-nav-bar { display: none !important; }
-        }
-      `}</style>
+    <nav
+      className="bottom-nav-bar fixed bottom-0 left-0 right-0 w-full h-[60px] bg-white border-t border-[var(--color-border-primary)] z-[var(--z-bottom-nav)] flex shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
+      aria-label="Mobile navigation"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
+      {items.map((item) => {
+        const isActive = item.exactMatch
+          ? pathname === item.path
+          : pathname?.startsWith(item.path);
+        const Icon        = item.icon;
+        const activeColor = item.isAdmin ? ADMIN_COLOR : item.isB2B ? B2B_COLOR : ACTIVE_COLOR;
+        const color       = isActive ? activeColor : INACTIVE_COLOR;
 
-      <nav
-        className="bottom-nav-bar"
-        aria-label="Mobile navigation"
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 60,
-          background: '#fff',
-          borderTop: '1px solid #E5E7EB',
-          zIndex: 1000,
-          paddingBottom: 'env(safe-area-inset-bottom)',
-          boxShadow: '0 -2px 12px rgba(0,0,0,0.06)',
-          width: '100%',
-          display: 'flex',
-        }}
-      >
-        {items.map((item) => {
-          const isActive = item.exactMatch
-            ? pathname === item.path
-            : pathname?.startsWith(item.path);
-          const Icon        = item.icon;
-          const activeColor = item.isAdmin ? ADMIN_COLOR : item.isB2B ? B2B_COLOR : ACTIVE_COLOR;
-          const color       = isActive ? activeColor : INACTIVE_COLOR;
+        return (
+          <button
+            key={item.path}
+            onClick={() => handleNavClick(item)}
+            aria-label={item.label}
+            aria-current={isActive ? 'page' : undefined}
+            className="flex-1 flex flex-col items-center justify-center gap-[3px] bg-transparent border-none cursor-pointer relative p-[6px_4px] transition-colors"
+            style={{ color }}
+          >
+            {/* Active indicator */}
+            {isActive && (
+              <span
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-[2.5px] rounded-b-[3px]"
+                style={{ background: activeColor }}
+              />
+            )}
 
-          return (
-            <button
-              key={item.path}
-              onClick={() => handleNavClick(item)}
-              aria-label={item.label}
-              aria-current={isActive ? 'page' : undefined}
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 3,
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                position: 'relative',
-                color,
-                transition: 'color 0.2s',
-                padding: '6px 4px',
-              }}
-            >
-              {/* Active indicator */}
-              {isActive && (
-                <span style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 20,
-                  height: 2.5,
-                  background: activeColor,
-                  borderRadius: '0 0 3px 3px',
-                }} />
-              )}
+            {/* Admin badge dot */}
+            {item.isAdmin && !isActive && (
+              <span
+                className="absolute top-[7px] right-[22%] w-[7px] h-[7px] rounded-full border-[1.5px] border-white"
+                style={{ background: ADMIN_COLOR }}
+              />
+            )}
 
-              {/* Admin badge dot */}
-              {item.isAdmin && !isActive && (
-                <span style={{
-                  position: 'absolute',
-                  top: 7,
-                  right: '22%',
-                  width: 7,
-                  height: 7,
-                  borderRadius: '50%',
-                  background: ADMIN_COLOR,
-                  border: '1.5px solid #fff',
-                }} />
-              )}
+            {/* B2B badge dot */}
+            {item.isB2B && !isActive && (
+              <span
+                className="absolute top-[7px] right-[22%] w-[7px] h-[7px] rounded-full border-[1.5px] border-white"
+                style={{ background: B2B_COLOR }}
+              />
+            )}
 
-              {/* B2B badge dot */}
-              {item.isB2B && !isActive && (
-                <span style={{
-                  position: 'absolute',
-                  top: 7,
-                  right: '22%',
-                  width: 7,
-                  height: 7,
-                  borderRadius: '50%',
-                  background: B2B_COLOR,
-                  border: '1.5px solid #fff',
-                }} />
-              )}
+            <Icon size={18} />
 
-              <Icon size={18} />
+            <span className={`text-xs tracking-[0.01em] ${isActive ? 'font-semibold' : 'font-normal'}`}>
+              {item.label}
+            </span>
 
-              <span style={{
-                fontSize: 9.5,
-                fontWeight: isActive ? 700 : 400,
-                letterSpacing: '0.01em',
-              }}>
-                {item.label}
+            {/* Cart badge */}
+            {item.showCartBadge && cartCount > 0 && (
+              <span
+                aria-label={`${cartCount} items in cart`}
+                className="absolute top-[5px] right-[18%] bg-[var(--color-status-danger)] text-white rounded-full w-4 h-4 text-xs font-semibold flex items-center justify-center border-[1.5px] border-white leading-none"
+              >
+                {cartCount > 9 ? '9+' : cartCount}
               </span>
-
-              {/* Cart badge */}
-              {item.showCartBadge && cartCount > 0 && (
-                <span
-                  aria-label={`${cartCount} items in cart`}
-                  style={{
-                    position: 'absolute',
-                    top: 5,
-                    right: '18%',
-                    background: '#E24B4A',
-                    color: '#fff',
-                    borderRadius: '50%',
-                    width: 16,
-                    height: 16,
-                    fontSize: 9,
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '1.5px solid #fff',
-                    lineHeight: 1,
-                  }}
-                >
-                  {cartCount > 9 ? '9+' : cartCount}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </nav>
-    </>
+            )}
+          </button>
+        );
+      })}
+    </nav>
   );
 });
 

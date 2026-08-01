@@ -8,6 +8,8 @@ import { useBrands } from '@/hooks/useBrands';
 import { useT } from '@/hooks/useT';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import SearchResults from '@/components/search/SearchResults';
+import ProductFilters from '@/components/product/ProductFilters';
+import ProductFiltersMobile from '@/components/product/ProductFiltersMobile';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
@@ -67,17 +69,19 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     
     if (needsUpdate) {
       // Apply all updates in one batch
-      if (updates.query !== undefined) {
-        setSearchQuery(updates.query);
-        setSearchInput(updates.query);
-      }
-      if (updates.category !== undefined) {
-        setSearchCategory(updates.category);
-      }
-      if (updates.brand !== undefined) {
-        setFilters((f) => ({ ...f, brands: updates.brand ? [updates.brand] : [] }));
-      }
-      setPage(1);
+      void Promise.resolve().then(() => {
+        if (updates.query !== undefined) {
+          setSearchQuery(updates.query);
+          setSearchInput(updates.query);
+        }
+        if (updates.category !== undefined) {
+          setSearchCategory(updates.category);
+        }
+        if (updates.brand !== undefined) {
+          setFilters((f) => ({ ...f, brands: updates.brand ? [updates.brand] : [] }));
+        }
+        setPage(1);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, pathname]);
@@ -176,6 +180,17 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     setPage(1);
   };
 
+  // Category change with slug-based SEO navigation
+  const handleCategoryChange = useCallback((name) => {
+    const slug = CATEGORY_NAME_TO_SLUG[name];
+    if (slug) {
+      router.push(`/products/category/${slug}`);
+    } else {
+      setSearchCategory(name);
+      setPage(1);
+    }
+  }, [router]);
+
   const hasActiveFilters = searchCategory || filters.brands?.length > 0 ||
     filters.minPrice || filters.maxPrice || filters.inStock || searchQuery;
 
@@ -199,7 +214,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
       {/* ── Active filters + category pills bar ─────────────────────────── */}
       {(hasActiveFilters || true) && (
-        <div className="bg-[#0B2545] border-b border-[#0d2d52]">
+        <div className="bg-brand-navy border-b border-[var(--color-brand-navy-hover)]">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 w-full max-w-full overflow-hidden">
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 md:pb-0 md:flex-wrap">
               {/* Category quick-filter pills — from API */}
@@ -218,9 +233,9 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                           setPage(1);
                         }
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
                         searchCategory === name
-                          ? 'bg-[#0E8A6E] text-white'
+                          ? 'bg-brand-teal text-white'
                           : 'bg-white/10 text-white/80 hover:bg-white/20'
                       }`}>
                       {name}
@@ -234,25 +249,25 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
                 <>
                   <span className="text-white/30 hidden sm:block flex-shrink-0">|</span>
                   {searchQuery && (
-                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-xs px-2.5 py-1 rounded-full flex-shrink-0">
                       &ldquo;{searchQuery}&rdquo;
                       <button onClick={() => { setSearchQuery(''); setSearchInput(''); setPage(1); }} className="hover:text-red-300 ml-0.5" aria-label="Clear search query">×</button>
                     </span>
                   )}
                   {filters.inStock && (
-                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-xs px-2.5 py-1 rounded-full flex-shrink-0">
                       In Stock
                       <button onClick={() => handleFilterChange({ ...filters, inStock: false })} className="hover:text-red-300 ml-0.5" aria-label="Remove in stock filter">×</button>
                     </span>
                   )}
                   {(filters.minPrice || filters.maxPrice) && (
-                    <span className="flex items-center gap-1 bg-white/15 text-white text-[11px] px-2.5 py-1 rounded-full flex-shrink-0">
+                    <span className="flex items-center gap-1 bg-white/15 text-white text-xs px-2.5 py-1 rounded-full flex-shrink-0">
                       ৳{filters.minPrice || 0}–{filters.maxPrice ? `৳${filters.maxPrice}` : '∞'}
                       <button onClick={() => handleFilterChange({ ...filters, minPrice: undefined, maxPrice: undefined })} className="hover:text-red-300 ml-0.5" aria-label="Remove price range filter">×</button>
                     </span>
                   )}
                   <button onClick={clearAllFilters}
-                    className="text-red-300 hover:text-red-200 text-[11px] font-medium underline ml-1 flex-shrink-0">
+                    className="text-red-300 hover:text-red-200 text-xs font-medium underline ml-1 flex-shrink-0">
                     {t('products.clearAll')}
                   </button>
                 </>
@@ -268,121 +283,22 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
           {/* ── Sidebar ─────────────────────────────────────────────────── */}
           <aside className="hidden lg:block w-60 flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-4">
-
-              {/* Sidebar header */}
-              <div className="px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d3060] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
-                  </svg>
-                  <span className="text-white font-bold text-[14px]">{t('products.filters')}</span>
-                </div>
-                {hasActiveFilters && (
-                  <button onClick={clearAllFilters}
-                    className="text-[11px] text-red-300 hover:text-red-200 font-medium transition-colors">
-                    {t('products.clearAll')}
-                  </button>
-                )}
-              </div>
-
-              <div className="p-4 space-y-5">
-
-                {/* Category */}
-                <div>
-                  <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>📂</span> {t('products.category')}
-                  </label>
-                  <select value={searchCategory}
-                    onChange={e => {
-                      const name = e.target.value;
-                      const slug = CATEGORY_NAME_TO_SLUG[name];
-                      if (slug) {
-                        router.push(`/products/category/${slug}`);
-                      } else {
-                        setSearchCategory(name);
-                        resetPagination();
-                      }
-                    }}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700">
-                    <option value="">{t('products.allCategories')}</option>
-                    {categories.map(cat => (
-                      <option key={cat._id} value={cat.name}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Brand */}
-                <div>
-                  <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>🏭</span> {t('products.brand')}
-                  </label>
-                  <select value={filters.brands?.[0] || ''}
-                    onChange={e => handleFilterChange({ ...filters, brands: e.target.value ? [e.target.value] : [] })}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700">
-                    <option value="">{t('products.allBrands')}</option>
-                    {brands.map(brand => (
-                      <option key={brand._id} value={brand?.name || brand}>{brand?.name || brand}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Price Range */}
-                <div>
-                  <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>💰</span> {t('products.priceRange')}
-                  </label>
-                  <div className="flex gap-2 items-center">
-                    <input type="number" placeholder="Min"
-                      value={filters.minPrice || ''}
-                      onChange={e => handleFilterChange({ ...filters, minPrice: e.target.value ? Number(e.target.value) : undefined })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all" />
-                    <span className="text-gray-400 text-[12px] flex-shrink-0">–</span>
-                    <input type="number" placeholder="Max"
-                      value={filters.maxPrice || ''}
-                      onChange={e => handleFilterChange({ ...filters, maxPrice: e.target.value ? Number(e.target.value) : undefined })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all" />
-                  </div>
-                  {/* Quick price presets */}
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {[['Under ৳1K', 0, 1000], ['৳1K–5K', 1000, 5000], ['৳5K–20K', 5000, 20000], ['৳20K+', 20000, undefined]].map(([label, min, max]) => (
-                      <button key={label}
-                        onClick={() => handleFilterChange({ ...filters, minPrice: min || undefined, maxPrice: max })}
-                        className={`px-2 py-1 rounded-lg text-[10px] font-medium border transition-all ${
-                          filters.minPrice === (min || undefined) && filters.maxPrice === max
-                            ? 'bg-[#0E8A6E] text-white border-[#0E8A6E]'
-                            : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-[#0E8A6E] hover:text-[#0E8A6E]'
-                        }`}>
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Availability */}
-                <div>
-                  <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-                    <span>📦</span> {t('products.availability')}
-                  </label>
-                  <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:border-[#0E8A6E] hover:bg-[#0E8A6E]/5 transition-all cursor-pointer">
-                    <input type="checkbox" checked={filters.inStock || false}
-                      onChange={e => handleFilterChange({ ...filters, inStock: e.target.checked })}
-                      className="w-4 h-4 text-[#0E8A6E] border-gray-300 rounded focus:ring-[#0E8A6E] cursor-pointer accent-[#0E8A6E]" />
-                    <span className="text-[13px] text-gray-700 font-medium">{t('products.inStockOnly')}</span>
-                  </label>
-                </div>
-
-                {/* Results count */}
-                {pagination.total > 0 && (
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0E8A6E]/8 border border-[#0E8A6E]/20 rounded-xl">
-                      <span className="text-[15px] font-bold text-[#0E8A6E]">{pagination.total.toLocaleString()}</span>
-                      <span className="text-[12px] text-gray-600">{t('products.productsFound')}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <ProductFilters
+              categories={categories}
+              brands={brands}
+              selectedCategory={searchCategory}
+              selectedBrand={filters.brands?.[0] || ''}
+              priceRange={{ minPrice: filters.minPrice, maxPrice: filters.maxPrice }}
+              inStock={!!filters.inStock}
+              onCategoryChange={handleCategoryChange}
+              onBrandChange={(brand) => handleFilterChange({ ...filters, brands: brand ? [brand] : [] })}
+              onPriceRangeChange={(range) => handleFilterChange({ ...filters, minPrice: range.minPrice, maxPrice: range.maxPrice })}
+              onInStockChange={(checked) => handleFilterChange({ ...filters, inStock: checked })}
+              onClearAll={clearAllFilters}
+              totalResults={pagination.total || 0}
+              hasActiveFilters={hasActiveFilters}
+              t={t}
+            />
           </aside>
 
           {/* ── Products Area ────────────────────────────────────────────── */}
@@ -394,40 +310,40 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
             </h1>
 
             {/* Top bar */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-3 sm:px-4 py-2.5 sm:py-3 mb-4 flex items-center justify-between gap-2 sm:gap-3 min-w-0">
+            <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] px-3 sm:px-4 py-2.5 sm:py-3 mb-4 flex items-center justify-between gap-2 sm:gap-3 min-w-0">
               <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                 {/* Mobile filter toggle */}
                 <button onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 border border-gray-200 rounded-lg text-[11px] sm:text-[12px] font-medium text-gray-600 hover:border-[#0E8A6E] hover:text-[#0E8A6E] transition-colors flex-shrink-0">
+                  className="lg:hidden flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 border border-[var(--color-border-primary)] rounded-lg text-xs sm:text-xs font-medium text-[var(--color-text-secondary)] hover:border-brand-teal hover:text-brand-teal transition-colors flex-shrink-0">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="sm:w-[14px] sm:h-[14px]">
                     <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
                   </svg>
                   <span className="hidden xs:inline">{t('products.filters')}</span>
-                  {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-[#0E8A6E]" />}
+                  {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-brand-teal" />}
                 </button>
 
-                <div className="text-[11px] sm:text-[13px] text-gray-500 truncate min-w-0">
+                <div className="text-xs sm:text-sm text-[var(--color-text-secondary)] truncate min-w-0">
                   {loading && (!products || products.length === 0) ? (
-                    <span className="text-gray-400">{t('products.loading')}</span>
+                    <span className="text-[var(--color-text-secondary)]">{t('products.loading')}</span>
                   ) : (
                     <>
                       {searchCategory
-                        ? <span className="font-semibold text-[#0B2545] truncate">{searchCategory}</span>
-                        : <span className="text-gray-600">{t('products.allProducts')}</span>}
-                      <span className="text-gray-400 mx-1 sm:mx-1.5">·</span>
-                      <span className="font-medium text-gray-700">{products?.length || 0}</span>
-                      <span className="text-gray-400 hidden xs:inline"> of </span>
-                      <span className="text-gray-400 xs:hidden">/</span>
-                      <span className="font-medium text-gray-700">{pagination.total || 0}</span>
+                        ? <span className="font-semibold text-brand-navy truncate">{searchCategory}</span>
+                        : <span className="text-[var(--color-text-secondary)]">{t('products.allProducts')}</span>}
+                      <span className="text-[var(--color-text-secondary)] mx-1 sm:mx-1.5">·</span>
+                      <span className="font-medium text-[var(--color-text-primary)]">{products?.length || 0}</span>
+                      <span className="text-[var(--color-text-secondary)] hidden xs:inline"> of </span>
+                      <span className="text-[var(--color-text-secondary)] xs:hidden">/</span>
+                      <span className="font-medium text-[var(--color-text-primary)]">{pagination.total || 0}</span>
                     </>
                   )}
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                <span className="text-[11px] sm:text-[12px] text-gray-500 hidden sm:block">{t('products.sortBy')}</span>
+                <span className="text-xs sm:text-xs text-[var(--color-text-secondary)] hidden sm:block">{t('products.sortBy')}</span>
                 <select aria-label="Sort products" value={sortBy} onChange={e => handleSortChange(e.target.value)}
-                  className="px-2 sm:px-3 py-1.5 border border-gray-200 rounded-xl text-[11px] sm:text-[12px] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all cursor-pointer text-gray-700 font-medium min-w-0 max-w-[140px] sm:max-w-none">
+                  className="px-2 sm:px-3 py-1.5 border border-[var(--color-border-primary)] rounded-xl text-xs sm:text-xs bg-white focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10 transition-all cursor-pointer text-[var(--color-text-primary)] font-medium min-w-0 max-w-[140px] sm:max-w-none">
                   {SORT_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
@@ -449,11 +365,11 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
             {/* SEO Content */}
             {CATEGORY_CONTENT[searchCategory] && (
-              <section className="mt-8 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-                <h2 className="text-[15px] font-semibold text-[#0B2545] mb-3">
+              <section className="mt-8 bg-white border border-[var(--color-border-tertiary)] rounded-2xl p-6 shadow-sm">
+                <h2 className="text-base font-semibold text-brand-navy mb-3">
                   About {searchCategory} in Bangladesh
                 </h2>
-                <div className="text-[13px] text-gray-500 leading-relaxed whitespace-pre-line">
+                <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed whitespace-pre-line">
                   {CATEGORY_CONTENT[searchCategory]}
                 </div>
               </section>
@@ -463,78 +379,22 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
       </div>
 
       {/* ── Mobile Sidebar Drawer ────────────────────────────────────────── */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSidebarOpen(false); }} onClick={() => setSidebarOpen(false)} />
-          <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl overflow-y-auto">
-            <div className="px-5 py-4 bg-gradient-to-r from-[#0B2545] to-[#0d3060] flex items-center justify-between">
-              <span className="text-white font-bold text-[14px]">{t('products.filters')}</span>
-              <button onClick={() => setSidebarOpen(false)} aria-label="Close sidebar" className="text-white/70 hover:text-white">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6 6 18M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-            <div className="p-4 space-y-5">
-              <div>
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">{t('products.category')}</label>
-                <select value={searchCategory}
-                  onChange={e => {
-                    const name = e.target.value;
-                    const slug = CATEGORY_NAME_TO_SLUG[name];
-                    if (slug) {
-                      router.push(`/products/category/${slug}`);
-                      setSidebarOpen(false);
-                    } else {
-                      setSearchCategory(name);
-                      setPage(1);
-                      setSidebarOpen(false);
-                    }
-                  }}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]">
-                  <option value="">{t('products.allCategories')}</option>
-                  {categories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">{t('products.brand')}</label>
-                <select value={filters.brands?.[0] || ''}
-                  onChange={e => { handleFilterChange({ ...filters, brands: e.target.value ? [e.target.value] : [] }); setSidebarOpen(false); }}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]">
-                  <option value="">{t('products.allBrands')}</option>
-                  {brands.map(brand => <option key={brand._id} value={brand?.name || brand}>{brand?.name || brand}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">{t('products.priceRange')}</label>
-                <div className="flex gap-2 items-center">
-                  <input type="number" placeholder="Min" value={filters.minPrice || ''}
-                    onChange={e => handleFilterChange({ ...filters, minPrice: e.target.value ? Number(e.target.value) : undefined })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:border-[#0E8A6E]" />
-                  <span className="text-gray-400 text-[12px]">–</span>
-                  <input type="number" placeholder="Max" value={filters.maxPrice || ''}
-                    onChange={e => handleFilterChange({ ...filters, maxPrice: e.target.value ? Number(e.target.value) : undefined })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:border-[#0E8A6E]" />
-                </div>
-              </div>
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer">
-                <input type="checkbox" checked={filters.inStock || false}
-                  onChange={e => handleFilterChange({ ...filters, inStock: e.target.checked })}
-                  className="w-4 h-4 accent-[#0E8A6E]" />
-                <span className="text-[13px] text-gray-700 font-medium">{t('products.inStockOnly')}</span>
-              </label>
-              <button onClick={() => { clearAllFilters(); setSidebarOpen(false); }}
-                className="w-full py-2.5 border border-red-200 text-red-600 rounded-xl text-[13px] font-medium hover:bg-red-50 transition-colors">
-                {t('products.clearAll')}
-              </button>
-              <button onClick={() => setSidebarOpen(false)}
-                className="w-full py-2.5 bg-[#0E8A6E] text-white rounded-xl text-[13px] font-semibold hover:bg-[#0c7a61] transition-colors">
-                {t('products.filters')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ProductFiltersMobile
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        categories={categories}
+        brands={brands}
+        selectedCategory={searchCategory}
+        selectedBrand={filters.brands?.[0] || ''}
+        priceRange={{ minPrice: filters.minPrice, maxPrice: filters.maxPrice }}
+        inStock={!!filters.inStock}
+        onCategoryChange={handleCategoryChange}
+        onBrandChange={(brand) => handleFilterChange({ ...filters, brands: brand ? [brand] : [] })}
+        onPriceRangeChange={(range) => handleFilterChange({ ...filters, minPrice: range.minPrice, maxPrice: range.maxPrice })}
+        onInStockChange={(checked) => handleFilterChange({ ...filters, inStock: checked })}
+        onClearAll={clearAllFilters}
+        t={t}
+      />
     </div>
   );
 }

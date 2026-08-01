@@ -6,9 +6,10 @@ import { useCompare } from '@/context/CompareContext';
 import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
 import WishlistButton from './wishlist/WishlistButton';
+import RatingStars from '@/components/ui/RatingStars';
 import { getProductPriceDisplay } from '@/utils/pricing';
 
-const ProductCard = React.memo(function ProductCard({ product, onProductClick }) {
+const ProductCard = React.memo(function ProductCard({ product, onProductClick, showStockBadge = false, showFeaturedBadge = false, showCategory = false }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const { toggleCompare, isInCompare } = useCompare();
@@ -120,11 +121,20 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
   return (
     <div 
       ref={cardRef}
-      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-[10px] overflow-hidden flex flex-col hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 ease-out cursor-pointer"
+      role="link"
+      tabIndex={0}
+      aria-label={`${product.name} — view details`}
+      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg overflow-hidden flex flex-col hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
       onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
     >
-      {/* Image Container - Responsive Height with hover zoom */}
-      <div className="h-[140px] sm:h-[160px] md:h-[130px] bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
+      {/* Image Container - 1:1 aspect policy with hover zoom */}
+      <div className="aspect-square w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {isVisible && primaryImage ? (
           <>
             <Image
@@ -146,16 +156,16 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
               }}
             />
             {/* Fallback shown when image fails to load */}
-            <div className="image-fallback hidden absolute inset-0 items-center justify-center text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">
+            <div className="image-fallback hidden absolute inset-0 items-center justify-center text-5xl text-[var(--color-text-tertiary)] bg-[var(--color-background-tertiary)]">
               🏥
             </div>
           </>
         ) : !isVisible ? (
           /* Skeleton placeholder while not in viewport */
-          <div className="w-full h-full bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse" />
+          <div className="w-full h-full bg-gradient-to-r from-[var(--color-background-tertiary)] via-[var(--color-background-muted)] to-[var(--color-background-tertiary)] animate-pulse" />
         ) : (
           /* Fallback shown when no image exists */
-          <div className="flex items-center justify-center w-full h-full text-[40px] text-[#9CA3AF] bg-[#F3F4F6]">
+          <div className="flex items-center justify-center w-full h-full text-5xl text-[var(--color-text-tertiary)] bg-[var(--color-background-tertiary)]">
             🏥
           </div>
         )}
@@ -163,7 +173,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
         {/* Save Badge - Top Left - Responsive with entrance animation */}
         {hasDiscount && (
           <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-[#7C3AED] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md shadow-md animate-bounce-in">
-            <span className="text-[9px] sm:text-[11px] font-semibold">
+            <span className="text-xs sm:text-xs font-semibold">
               {priceDisplay.isB2BPrice ? 'B2B Save' : 'Save'}: {savings.toLocaleString()}৳ (-{discountPercent}%)
             </span>
           </div>
@@ -172,11 +182,25 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
         {/* Other Badges */}
         <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 flex flex-col gap-1" style={{ marginTop: hasDiscount ? '32px' : '0' }}>
           {product.badges?.map((badge, idx) => (
-            <span key={idx} className={`text-[8px] sm:text-[9px] px-[6px] py-[2px] sm:px-[7px] sm:py-[3px] rounded font-medium ${badge.className}`}>
+            <span key={idx} className={`text-xs sm:text-xs px-[6px] py-[2px] sm:px-[7px] sm:py-[3px] rounded font-medium ${badge.className}`}>
               {badge.text}
             </span>
           ))}
+          {showFeaturedBadge && product.isFeatured && !hasDiscount && (
+            <span className="bg-warning text-white text-xs font-semibold px-2 py-0.5 rounded-md shadow-sm">
+              ⭐ Featured
+            </span>
+          )}
         </div>
+
+        {/* Stock badge - Top Right (optional) */}
+        {showStockBadge && (
+          <div className={`absolute top-1.5 right-8 sm:top-2 sm:right-8 px-2 py-0.5 rounded-md text-xs font-semibold shadow-sm ${
+            product.stock > 0 ? 'bg-[var(--color-status-success-tint)] text-white' : 'bg-[var(--color-status-danger-tint)] text-white'
+          }`}>
+            {product.stock > 0 ? `${product.stock > 99 ? '99+' : product.stock} in stock` : 'Out of stock'}
+          </div>
+        )}
         
         {/* Wishlist Button - Top Right */}
         <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1">
@@ -188,10 +212,11 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
             className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all shadow-md ${
               inCompareList
                 ? 'bg-[#7C3AED] text-white'
-                : 'bg-white/90 text-gray-600 hover:bg-white'
+                : 'bg-white/90 text-[var(--color-text-secondary)] hover:bg-white'
             }`}
             title={inCompareList ? 'Remove from compare' : 'Add to compare'}
             aria-label={inCompareList ? 'Remove from compare' : 'Add to compare'}
+            aria-pressed={inCompareList}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
@@ -202,55 +227,53 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
       
       {/* Content - Responsive Padding */}
       <div className="p-2.5 sm:p-3 flex-1 flex flex-col">
+        {/* Category (optional) + Brand */}
+        {showCategory && (
+          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+            <span className="text-xs font-semibold text-brand-teal uppercase tracking-wider">
+              {typeof product.category === 'object' ? product.category?.name : product.category}
+            </span>
+            <span className="text-[var(--color-text-tertiary)] text-xs">·</span>
+          </div>
+        )}
         {/* Brand */}
-        <div className="text-[8px] sm:text-[9px] text-[#0E8A6E] font-medium uppercase tracking-[0.5px] mb-[3px]">
+        <div className="text-xs sm:text-xs text-brand-teal font-medium uppercase tracking-[0.5px] mb-[3px]">
           {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </div>
         
         {/* Product Name - Responsive Font */}
-        <div className="text-[11px] sm:text-[12px] font-medium leading-[1.35] text-[var(--color-text-primary)] mb-[6px] flex-1 line-clamp-2">
+        <div className="text-xs sm:text-xs font-medium leading-[1.35] text-[var(--color-text-primary)] mb-[6px] flex-1 line-clamp-2">
           {product.name}
         </div>
         
         {/* Rating */}
-        <div className="flex items-center gap-1 mb-2">
-          <div className="flex gap-[1px]">
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={i} 
-                className={`w-[11px] h-[11px] sm:w-[12px] sm:h-[12px] ${i < product.rating ? 'bg-[#F59E0B]' : 'bg-[var(--color-border-secondary)]'}`} 
-                style={{ clipPath: 'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' }}
-              ></div>
-            ))}
-          </div>
-          <span className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)]">({product.reviews})</span>
-        </div>
+        <RatingStars rating={product.rating || 0} count={product.reviews} />
         
         {/* Price - Responsive Font with B2B indicator */}
         <div className="flex flex-col gap-1 mb-[10px]">
           <div className="flex items-baseline gap-[6px]">
-            <span className="font-[family-name:var(--font-lora)] text-[15px] sm:text-[16px] text-[#0B2545] font-semibold">
+            <span className="font-[family-name:var(--font-lora)] text-base sm:text-base text-brand-navy font-semibold">
               {priceDisplay.formatted}
             </span>
             {priceDisplay.showOriginalPrice && (
-              <span className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] line-through">
+              <span className="text-xs sm:text-xs text-[var(--color-text-secondary)] line-through">
                 {priceDisplay.originalPriceFormatted}
               </span>
             )}
             {!priceDisplay.isB2BPrice && product.oldPrice && (
-              <span className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)] line-through">
+              <span className="text-xs sm:text-xs text-[var(--color-text-secondary)] line-through">
                 {product.oldPrice}
               </span>
             )}
             {product.discount && !priceDisplay.isB2BPrice && (
-              <span className="text-[9px] sm:text-[10px] text-[#0E8A6E] font-medium">
+              <span className="text-xs sm:text-xs text-brand-teal font-medium">
                 {product.discount}
               </span>
             )}
           </div>
           {/* B2B Price Badge */}
           {priceDisplay.isB2BPrice && (
-            <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] text-[#7C3AED] font-semibold bg-purple-50 px-2 py-0.5 rounded-full w-fit">
+            <span className="inline-flex items-center gap-1 text-xs sm:text-xs text-[#7C3AED] font-semibold bg-purple-50 px-2 py-0.5 rounded-full w-fit">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
@@ -262,7 +285,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
         {/* Stock Status */}
         <div className="flex items-center gap-[5px] mb-[10px]">
           <div className="w-[5px] h-[5px] sm:w-[6px] sm:h-[6px] rounded-full bg-[#639922] flex-shrink-0"></div>
-          <span className="text-[9px] sm:text-[10px] text-[var(--color-text-secondary)]">{product.stock}</span>
+          <span className="text-xs sm:text-xs text-[var(--color-text-secondary)]">{product.stock}</span>
         </div>
         
         {/* Action Buttons - Responsive with enhanced interactions */}
@@ -270,7 +293,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
           <button 
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="relative overflow-hidden bg-[#0B2545] text-white border-none px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[#0d2d52] hover:shadow-lg active:scale-95 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1 group/btn"
+            className="relative overflow-hidden bg-brand-navy text-white border-none px-2 py-1.5 sm:py-2 rounded-md text-xs sm:text-xs font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)] hover:shadow-lg active:scale-95 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1 group/btn"
           >
             {/* Ripple effect container */}
             <span className="absolute inset-0 overflow-hidden">
@@ -299,7 +322,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick })
           </button>
           <button 
             onClick={handleViewDetails}
-            className="bg-transparent text-[#0B2545] border-[0.5px] border-[#0B2545] px-2 py-1.5 sm:py-2 rounded-[7px] text-[10px] sm:text-[11px] cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-gray-50 hover:border-[#0d2d52] active:scale-95 transition-all duration-200"
+            className="bg-transparent text-brand-navy border-[0.5px] border-brand-navy px-2 py-1.5 sm:py-2 rounded-md text-xs sm:text-xs cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-secondary)] hover:border-[var(--color-brand-navy-hover)] active:scale-95 transition-all duration-200"
           >
             {t('products.viewDetails')}
           </button>

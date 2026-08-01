@@ -41,7 +41,7 @@ export default function SiteChrome({ children }) {
           <HeaderWrapper onCartClick={() => setCartSidebarOpen(true)} />
         </div>
       )}
-      <main className={showStoreNav ? 'site-main' : 'site-main site-main--bare'}>
+      <main id="main-content" className={showStoreNav ? 'site-main' : 'site-main site-main--bare'}>
         {children}
       </main>
       {showFooter && <Footer />}

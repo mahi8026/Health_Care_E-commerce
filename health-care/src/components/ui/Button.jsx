@@ -1,12 +1,14 @@
 'use client';
 
 import { forwardRef, useState } from 'react';
+import Link from 'next/link';
 
 /**
  * Enhanced Button Component with micro-interactions
  * 
  * Usage:
  * <Button variant="primary" size="md" loading={isLoading}>Click me</Button>
+ * <Button href="/products" variant="success" size="lg">Browse</Button>
  */
 
 const Button = forwardRef(function Button(
@@ -21,6 +23,7 @@ const Button = forwardRef(function Button(
     fullWidth = false,
     className = '',
     onClick,
+    href,
     ...props
   },
   ref
@@ -30,18 +33,18 @@ const Button = forwardRef(function Button(
   const baseStyles = 'relative overflow-hidden inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed';
 
   const variantStyles = {
-    primary: 'bg-[#0B2545] text-white hover:bg-[#0d2d52] hover:shadow-lg hover:shadow-[#0B2545]/20',
-    secondary: 'bg-white text-[#0B2545] border border-[#0B2545] hover:bg-gray-50 hover:border-[#0d2d52]',
-    success: 'bg-[#0E8A6E] text-white hover:bg-[#0a6b55] hover:shadow-lg hover:shadow-[#0E8A6E]/20',
-    danger: 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20',
-    warning: 'bg-yellow-500 text-white hover:bg-yellow-600 hover:shadow-lg hover:shadow-yellow-500/20',
-    ghost: 'bg-transparent text-[#0B2545] hover:bg-gray-100',
-    link: 'bg-transparent text-[#0E8A6E] hover:underline p-0',
+    primary: 'bg-brand-navy text-white hover:bg-[var(--color-brand-navy-hover)] hover:shadow-lg hover:shadow-brand-navy/20',
+    secondary: 'bg-white text-brand-navy border border-brand-navy hover:bg-[var(--color-background-secondary)] hover:border-[var(--color-brand-navy-hover)]',
+    success: 'bg-brand-teal text-white hover:bg-[var(--color-brand-teal-hover)] hover:shadow-lg hover:shadow-brand-teal/20',
+    danger: 'bg-danger text-white hover:bg-danger hover:shadow-lg hover:shadow-red-600/20',
+    warning: 'bg-warning text-white hover:opacity-90 hover:shadow-lg hover:shadow-yellow-500/20',
+    ghost: 'bg-transparent text-brand-navy hover:bg-[var(--color-background-tertiary)]',
+    link: 'bg-transparent text-brand-teal hover:underline p-0 touch-compact',
   };
 
   const sizeStyles = {
-    sm: 'text-xs px-3 py-1.5 min-h-[32px]',
-    md: 'text-sm px-4 py-2 min-h-[40px]',
+    sm: 'text-xs px-3 py-1.5 min-h-[32px] touch-compact',
+    md: 'text-sm px-4 py-2 min-h-[40px] touch-compact',
     lg: 'text-base px-6 py-3 min-h-[48px]',
     xl: 'text-lg px-8 py-4 min-h-[56px]',
   };
@@ -73,20 +76,16 @@ const Button = forwardRef(function Button(
     onClick?.(e);
   };
 
-  return (
-    <button
-      ref={ref}
-      className={`
-        ${baseStyles}
-        ${variantStyles[variant]}
-        ${sizeStyles[size]}
-        ${fullWidth ? 'w-full' : ''}
-        ${className}
-      `}
-      disabled={disabled || loading}
-      onClick={handleClick}
-      {...props}
-    >
+  const buttonClasses = `
+    ${baseStyles}
+    ${variantStyles[variant]}
+    ${sizeStyles[size]}
+    ${fullWidth ? 'w-full' : ''}
+    ${className}
+  `;
+
+  const content = (
+    <>
       {/* Ripple effects */}
       {ripples.map((ripple) => (
         <span
@@ -135,6 +134,33 @@ const Button = forwardRef(function Button(
           <span className="flex-shrink-0">{icon}</span>
         )}
       </span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        ref={ref}
+        href={href}
+        className={buttonClasses}
+        onClick={handleClick}
+        aria-disabled={disabled || loading}
+        {...props}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      ref={ref}
+      className={buttonClasses}
+      disabled={disabled || loading}
+      onClick={handleClick}
+      {...props}
+    >
+      {content}
     </button>
   );
 });
