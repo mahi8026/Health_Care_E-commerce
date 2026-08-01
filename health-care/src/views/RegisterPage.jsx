@@ -7,6 +7,7 @@ import BrandLogo from '@/components/ui/BrandLogo';
 import { useAuth } from '@/context/AuthContext';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 
 export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -24,6 +25,10 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const { register, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // Initialize reCAPTCHA
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha } = useRecaptcha(recaptchaSiteKey);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -79,7 +84,24 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const result = await register(formData);
+    
+    // Execute reCAPTCHA before submitting
+    let recaptchaToken = null;
+    if (recaptchaSiteKey) {
+      recaptchaToken = await executeRecaptcha('register');
+      if (!recaptchaToken) {
+        setErrors({ submit: 'Security verification failed. Please refresh the page and try again.' });
+        return;
+      }
+    }
+    
+    // Add reCAPTCHA token to form data
+    const dataToSubmit = { ...formData };
+    if (recaptchaToken) {
+      dataToSubmit.recaptchaToken = recaptchaToken;
+    }
+    
+    const result = await register(dataToSubmit);
     if (!result.success) {
       setErrors({ submit: result.error || 'Registration failed. Please try again.' });
     } else if (onSuccess) {
@@ -430,6 +452,31 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
           </div>
 
           <GoogleLoginButton fullWidth />
+
+          {/* reCAPTCHA Notice */}
+          {recaptchaSiteKey && (
+            <p className="mt-4 text-center text-xs text-[var(--color-text-secondary)]">
+              This site is protected by reCAPTCHA and the Google{' '}
+              <a 
+                href="https://policies.google.com/privacy" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-brand-teal hover:underline"
+              >
+                Privacy Policy
+              </a>
+              {' '}and{' '}
+              <a 
+                href="https://policies.google.com/terms" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-brand-teal hover:underline"
+              >
+                Terms of Service
+              </a>
+              {' '}apply.
+            </p>
+          )}
 
           {/* Terms */}
           <p className="mt-5 text-center text-xs text-[var(--color-text-secondary)]">
