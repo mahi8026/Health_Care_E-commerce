@@ -1,5 +1,5 @@
 {
-  "name": "MediportBD — Medical Equipment Bangladesh",
+  "name": "MediportBD - Medical Equipment Bangladesh",
   "short_name": "MediportBD",
   "description": "Bangladesh's leading medical equipment e-commerce platform. Buy ECG machines, surgical instruments, lab reagents and more.",
   "start_url": "/?utm_source=pwa",
@@ -13,61 +13,61 @@
   "categories": ["shopping", "medical", "health"],
   "icons": [
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-192x192-maskable.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/Mediport_Logo.png",
+      "src": "/icons/icon-512x512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -81,7 +81,7 @@
       "description": "Browse all medical equipment",
       "icons": [
         {
-          "src": "/Mediport_Logo.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -94,7 +94,7 @@
       "description": "Laboratory reagents and supplies",
       "icons": [
         {
-          "src": "/Mediport_Logo.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -107,7 +107,7 @@
       "description": "B2B pricing and bulk orders",
       "icons": [
         {
-          "src": "/Mediport_Logo.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -120,34 +120,11 @@
       "description": "Track your order status",
       "icons": [
         {
-          "src": "/Mediport_Logo.png",
+          "src": "/icons/icon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
       ]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home-mobile.png",
-      "sizes": "640x1280",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "MediportBD Homepage"
-    },
-    {
-      "src": "/screenshots/products-mobile.png",
-      "sizes": "640x1280",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Product Catalog"
-    },
-    {
-      "src": "/screenshots/home-desktop.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "MediportBD Desktop View"
     }
   ],
   "related_applications": [],

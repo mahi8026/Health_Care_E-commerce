@@ -59,8 +59,7 @@ export default function VideoSection() {
                     transition: 'transform 0.3s'
                   }}
                   onError={(e) => {
-                    // Fallback to generic medical image if YouTube thumbnail fails
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1200&h=675&fit=crop';
+                    e.currentTarget.style.display = 'none';
                   }}
                 />
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', transition: 'background 0.3s' }} className="video-overlay" />

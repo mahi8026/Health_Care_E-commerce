@@ -335,7 +335,7 @@ export default function HomePage() {
   // Hero slider auto-play - paused during hover or scroll for performance
   useEffect(() => {
     if (isSliderHovered || isScrolling) return;
-    const count = heroSlides.filter(s => s.isActive).length || 4;
+    const count = heroSlides.filter(s => s.isActive).length || 1;
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % count);
     }, 7000); // Increased from 5000ms to 7000ms for performance
@@ -371,7 +371,7 @@ export default function HomePage() {
   // Hero slider keyboard navigation (Left/Right arrow keys)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const total = heroSlides.length > 0 ? heroSlides.length : 4;
+      const total = heroSlides.length > 0 ? heroSlides.length : 1;
       if (e.key === 'ArrowLeft') {
         setCurrentSlide(prev => (prev - 1 + total) % total);
       } else if (e.key === 'ArrowRight') {
@@ -834,45 +834,7 @@ export default function HomePage() {
                 </div>
               ))
             ) : (
-              <>
-                {currentSlide === 0 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <Image 
-                    src="https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800&h=500&fit=crop" 
-                    alt="Diagnostic medical equipment Bangladesh — ECG machines and patient monitors — MediportBD"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 52vw"
-                    style={{ objectFit: 'cover' }}
-                    priority
-                  />
-                </div>}
-                {currentSlide === 1 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <Image 
-                    src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=500&fit=crop" 
-                    alt="Laboratory reagents Bangladesh — HbA1c CBC diagnostic kits — MediportBD"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 52vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>}
-                {currentSlide === 2 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <Image 
-                    src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=500&fit=crop" 
-                    alt="Hospital equipment Bangladesh — ICU ventilators and infusion pumps — MediportBD"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 52vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>}
-                {currentSlide === 3 && <div className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <Image 
-                    src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=500&fit=crop" 
-                    alt="Surgical instruments Bangladesh — scissors forceps trocar sets — MediportBD"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 52vw"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>}
-              </>
+              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(77,219,184,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(14,138,110,0.5), transparent 60%), linear-gradient(140deg, #0b2545 0%, #12355f 60%, #0e8a6e 140%)' }} />
             )}
             {/* Bottom gradient */}
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', zIndex: 5 }} />
@@ -903,11 +865,11 @@ export default function HomePage() {
             })()}
             {/* Counter */}
             <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 10, color: '#fff', fontSize: 11, fontWeight: 600, background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: 20 }}>
-              {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length > 0 ? heroSlides.length : 4).padStart(2, '0')}
+              {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length > 0 ? heroSlides.length : 1).padStart(2, '0')}
             </div>
             {/* Arrows */}
             {(() => {
-              const total = heroSlides.length > 0 ? heroSlides.length : 4;
+              const total = heroSlides.length > 0 ? heroSlides.length : 1;
               return (
                 <>
                   <button 

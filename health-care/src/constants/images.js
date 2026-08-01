@@ -1,57 +1,48 @@
 /**
  * Image Constants
- * Centralized image paths and fallbacks
+ * Centralized image paths and helpers
  */
 
 export const IMAGES = {
-  // Placeholder images
-  placeholder: '/placeholder.svg',
-  productPlaceholder: '/placeholder.svg',
-  userPlaceholder: '/placeholder.svg',
-  
-  // Logo
   logo: '/Mediport_Logo.png',
-  
-  // Default OG image
   ogImage: '/og-default.png',
 };
 
 /**
- * Get image URL with fallback
+ * Get image URL
  * @param {string|object} image - Image URL or image object with url property
- * @param {string} fallback - Fallback image path
- * @returns {string} Image URL
+ * @returns {string|null} Image URL or null when no image exists
  */
-export function getImageUrl(image, fallback = IMAGES.placeholder) {
-  if (!image) return fallback;
-  
+export function getImageUrl(image) {
+  if (!image) return null;
+
   // Handle image object with url property
   if (typeof image === 'object' && image.url) {
-    return image.url || fallback;
+    return image.url;
   }
-  
+
   // Handle direct URL string
   if (typeof image === 'string') {
-    return image || fallback;
+    return image || null;
   }
-  
-  return fallback;
+
+  return null;
 }
 
 /**
- * Get product image URL with fallback
+ * Get product image URL
  * @param {object} product - Product object
- * @returns {string} Image URL
+ * @returns {string|null} Primary image URL or null when no image exists
  */
 export function getProductImageUrl(product) {
-  if (!product) return IMAGES.productPlaceholder;
-  
+  if (!product) return null;
+
   const images = product.images;
-  if (!images || !Array.isArray(images) || images.length === 0) {
-    return IMAGES.productPlaceholder;
+  if (!Array.isArray(images) || images.length === 0) {
+    return null;
   }
-  
-  return getImageUrl(images[0], IMAGES.productPlaceholder);
+
+  return getImageUrl(images[0]);
 }
 
 export default IMAGES;

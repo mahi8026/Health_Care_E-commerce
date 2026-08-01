@@ -4,8 +4,9 @@ import { showToast } from '@/components/ui/Toast';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { FaBoxOpen } from 'react-icons/fa';
 import { API } from '@/constants/api';
-import { getProductImageUrl, IMAGES } from '@/constants/images';
+import { getProductImageUrl } from '@/constants/images';
 
 const RETURN_REASONS = [
   { value: 'damaged', label: 'Product arrived damaged' },
@@ -241,14 +242,20 @@ export default function ReturnRequestPage() {
               return (
                 <div key={idx} className="flex gap-4 items-center">
                   <div className="relative w-20 h-20 flex-shrink-0">
-                    <Image 
-                      src={productImage} 
-                      alt={`${productName} — Return request — MediportBD Bangladesh`}
-                      fill
-                      sizes="80px"
-                      style={{ objectFit: 'cover' }}
-                      className="rounded-lg border"
-                    />
+                    {productImage ? (
+                      <Image 
+                        src={productImage} 
+                        alt={`${productName} — Return request — MediportBD Bangladesh`}
+                        fill
+                        sizes="80px"
+                        style={{ objectFit: 'cover' }}
+                        className="rounded-lg border"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-lg border flex items-center justify-center text-2xl text-[var(--color-text-tertiary)] bg-[var(--color-background-tertiary)]">
+                        <FaBoxOpen />
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-brand-navy">{productName}</h3>
