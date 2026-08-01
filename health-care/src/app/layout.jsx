@@ -15,7 +15,8 @@ import StructuredData, {
 import Script from "next/script";
 import LazyChatContainer from "@/components/chat/LazyChatContainer";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
-import ToastProvider from "@/components/ui/ToastProvider";
+  import ToastProvider from "@/components/ui/ToastProvider";
+  import ConfirmDialogProvider from "@/components/ui/ConfirmDialog";
 import ServiceWorkerRegistration from "@/components/ui/ServiceWorkerRegistration";
 import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 import LoginPromptModal from "@/components/ui/LoginPromptModal";
@@ -53,7 +54,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: '#F6F9FC',
+  themeColor: '#ffffff', // --color-background-page
 };
 
 export const metadata = {
@@ -138,7 +139,7 @@ export default function RootLayout({ children }) {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${lora.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`} data-scroll-behavior="smooth">
       <head>
         {/* Performance: preconnect to critical third-party origins */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -166,12 +167,12 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png" />
         
         {/* MS Tiles for Windows */}
-        <meta name="msapplication-TileColor" content="#0B2545" />
+        <meta name="msapplication-TileColor" content="var(--color-brand-navy)" />
         <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
       </head>
-      <body className={`min-h-screen antialiased text-[var(--color-text-primary)] ${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`}>
+      <body className={`min-h-screen antialiased text-[var(--color-text-primary)]`}>
         {/* Skip to main content — keyboard/screen-reader accessibility */}
         <a href="#main-content" className="skip-to-content">
           Skip to main content
@@ -190,9 +191,9 @@ export default function RootLayout({ children }) {
                     title="Something went wrong"
                     message="An unexpected error occurred. Please refresh the page or contact support if the problem persists."
                   >
-                    <main id="main-content">
+                    <div>
                       <SiteChrome>{children}</SiteChrome>
-                    </main>
+                    </div>
                     <LazyChatContainer />
                   </ErrorBoundary>
                 </CompareProvider>
@@ -215,6 +216,9 @@ export default function RootLayout({ children }) {
 
         {/* Toast Notifications - Global */}
         <ToastProvider />
+
+        {/* Confirm Dialog - Global */}
+        <ConfirmDialogProvider />
 
         {/* PWA Service Worker */}
         <ServiceWorkerRegistration />

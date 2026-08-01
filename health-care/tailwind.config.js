@@ -13,6 +13,7 @@ module.exports = {
         'brand-navy': '#0b2545',
         'brand-teal': '#0e8a6e',
         'brand-teal-light': '#4ddbb8',
+        'brand-teal-tint': '#e1f5ee',
         
         // Page backgrounds
         'page': 'var(--color-background-page)',
@@ -21,10 +22,45 @@ module.exports = {
         'surface-subtle': 'var(--color-background-secondary)',
         'surface-muted': 'var(--color-background-muted)',
         'surface-inset': 'var(--color-background-inset)',
+
+        // Background token utilities
+        'background-primary': 'var(--color-background-primary)',
+        'background-secondary': 'var(--color-background-secondary)',
+        'background-tertiary': 'var(--color-background-tertiary)',
+        'background-muted': 'var(--color-background-muted)',
+        'background-elevated': 'var(--color-background-elevated)',
+        'background-inset': 'var(--color-background-inset)',
+
+        // Text token utilities
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'text-tertiary': 'var(--color-text-tertiary)',
+
+        // Border token utilities
+        'border-primary': 'var(--color-border-primary)',
+        'border-secondary': 'var(--color-border-secondary)',
+        'border-tertiary': 'var(--color-border-tertiary)',
+
+        // Semantic status colors
+        'success': '#16a34a',
+        'danger': '#e24b4a',
+        'warning': '#f59e0b',
+
+        // Semantic status tint surfaces
+        'success-tint': 'var(--color-status-success-tint)',
+        'danger-tint': 'var(--color-status-danger-tint)',
+        'warning-tint': 'var(--color-status-warning-tint)',
+
+        // Semantic status info
+        'info': 'var(--color-status-info)',
+        'info-tint': 'var(--color-status-info-tint)',
       },
       fontFamily: {
-        sans: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-plus-jakarta)', 'Plus Jakarta Sans', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
         serif: ['var(--font-lora)', 'Georgia', 'serif'],
+      },
+      screens: {
+        'xs': '480px',
       },
       fontSize: {
         'xs': 'var(--text-xs)',
@@ -38,10 +74,13 @@ module.exports = {
         '5xl': 'var(--text-5xl)',
       },
       zIndex: {
+        'sticky': '500',
         'dropdown': '700',
         'modal': '800',
         'header': '900',
         'bottom-nav': '1000',
+        'drawer': '1100',
+        'toast': '10000',
       },
       animation: {
         // Spinner animations
@@ -54,6 +93,12 @@ module.exports = {
         'shimmer': 'shimmer 2s linear infinite',
         'scale-in': 'scaleIn 0.3s ease-out',
         'fade-in': 'fadeIn 0.4s ease-in',
+        // UI kit micro-interactions
+        'ripple': 'ripple 0.6s ease-out',
+        'float': 'float 3s ease-in-out infinite',
+        'heart-beat': 'heartBeat 0.6s ease-in-out',
+        'cart-bounce': 'cartBounce 0.5s ease-in-out',
+        'fade-out': 'fadeOut 0.5s ease-out forwards',
       },
       keyframes: {
         heartbeat: {
@@ -71,6 +116,30 @@ module.exports = {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        ripple: {
+          '0%': { transform: 'scale(0)', opacity: '0.6' },
+          '100%': { transform: 'scale(4)', opacity: '0' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        heartBeat: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '25%': { transform: 'scale(1.25)' },
+          '50%': { transform: 'scale(1)' },
+          '75%': { transform: 'scale(1.1)' },
+        },
+        cartBounce: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '40%': { transform: 'translateY(-8px)' },
+          '70%': { transform: 'translateY(2px)' },
+          '90%': { transform: 'translateY(-1px)' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
       },
     },

@@ -4,17 +4,17 @@
  */
 
 export const COLORS = {
-  primary: '#0B2545',
-  teal: '#0E8A6E',
-  tealLight: '#4DDBB8',
-  danger: '#E24B4A',
-  warning: '#F59E0B',
-  success: '#10B981',
+  primary: 'var(--color-brand-navy)',
+  teal: 'var(--color-brand-teal)',
+  tealLight: 'var(--color-brand-teal-light)',
+  danger: 'var(--color-status-danger)',
+  warning: 'var(--color-status-warning)',
+  success: 'var(--color-status-success)',
   info: '#3B82F6',
 
   page: '#F6F9FC',
   pageTop: '#F9FBFD',
-  heroGradient: 'linear-gradient(135deg, #0B2545 0%, #0D3162 60%, #0E8A6E 100%)',
+  heroGradient: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0D3162 60%, var(--color-brand-teal) 100%)',
   surface: '#FFFFFF',
   surfaceSubtle: '#F6F9FC',
   surfaceMuted: '#E4ECF4',

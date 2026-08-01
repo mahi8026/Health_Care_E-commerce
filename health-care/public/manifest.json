@@ -4,7 +4,7 @@
   "description": "Bangladesh's leading medical equipment e-commerce platform. Buy ECG machines, surgical instruments, lab reagents and more.",
   "start_url": "/?utm_source=pwa",
   "display": "standalone",
-  "background_color": "#F6F9FC",
+  "background_color": "#ffffff",
   "theme_color": "#0B2545",
   "orientation": "portrait-primary",
   "scope": "/",
