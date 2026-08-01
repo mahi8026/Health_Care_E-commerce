@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -40,7 +41,7 @@ export default function NewCategoryPage() {
     (async () => {
       await fetchCategories();
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const handleChange = (e) => {
@@ -125,10 +126,10 @@ export default function NewCategoryPage() {
         });
       }
 
-      alert('Category created successfully!');
+      showToast.success('Category created successfully!');
       router.push('/admin/categories');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create category');
+      showToast.error(err.response?.data?.message || 'Failed to create category');
     } finally {
       setLoading(false);
     }
@@ -145,15 +146,15 @@ export default function NewCategoryPage() {
           >
             ← Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Category</h1>
-          <p className="text-gray-600 mt-1">Add a new product category</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">Create New Category</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">Add a new product category</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-6">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Category Name *
             </label>
             <input
@@ -162,26 +163,26 @@ export default function NewCategoryPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., Diagnostic Equipment"
             />
             {formData.name && (
-              <p className="text-xs text-gray-500 mt-1">
-                Slug: <code className="bg-gray-100 px-2 py-1 rounded">{generateSlug(formData.name)}</code>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                Slug: <code className="bg-[var(--color-background-tertiary)] px-2 py-1 rounded">{generateSlug(formData.name)}</code>
               </p>
             )}
           </div>
 
           {/* Parent Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Parent Category (Optional)
             </label>
             <select
               name="parentCategory"
               value={formData.parentCategory}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">None (Root Category)</option>
               {categories.map(cat => (
@@ -190,14 +191,14 @@ export default function NewCategoryPage() {
                 </option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
               Select a parent to create a subcategory (max 2 levels)
             </p>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Description
             </label>
             <textarea
@@ -205,7 +206,7 @@ export default function NewCategoryPage() {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Brief description of this category..."
             />
           </div>
@@ -214,14 +215,14 @@ export default function NewCategoryPage() {
           <div className="grid grid-cols-2 gap-6">
             {/* Category Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                 Category Image
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, 'image')}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="w-full text-sm text-[var(--color-text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
               {imagePreview && (
                 <img src={imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />
@@ -230,14 +231,14 @@ export default function NewCategoryPage() {
 
             {/* Banner Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                 Banner Image
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, 'banner')}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="w-full text-sm text-[var(--color-text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
               {bannerPreview && (
                 <img src={bannerPreview} alt="Preview" className="mt-2 w-full h-24 object-cover rounded" />
@@ -247,7 +248,7 @@ export default function NewCategoryPage() {
 
           {/* Display Order */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Display Order
             </label>
             <input
@@ -255,10 +256,10 @@ export default function NewCategoryPage() {
               name="displayOrder"
               value={formData.displayOrder}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="0"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
               Lower numbers appear first
             </p>
           </div>
@@ -273,7 +274,7 @@ export default function NewCategoryPage() {
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 rounded"
               />
-              <span className="text-sm font-medium text-gray-700">Active</span>
+              <span className="text-sm font-medium text-[var(--color-text-primary)]">Active</span>
             </label>
           </div>
 
@@ -282,7 +283,7 @@ export default function NewCategoryPage() {
             <button
               type="button"
               onClick={() => setShowSEO(!showSEO)}
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-4"
+              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-primary)] mb-4"
             >
               <span>{showSEO ? '▼' : '▶'}</span>
               SEO Settings (Optional)
@@ -291,7 +292,7 @@ export default function NewCategoryPage() {
             {showSEO && (
               <div className="space-y-4 pl-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Meta Title
                   </label>
                   <input
@@ -299,13 +300,13 @@ export default function NewCategoryPage() {
                     name="seo.metaTitle"
                     value={formData.seo.metaTitle}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="SEO title for search engines"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Meta Description
                   </label>
                   <textarea
@@ -313,13 +314,13 @@ export default function NewCategoryPage() {
                     value={formData.seo.metaDescription}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="SEO description for search engines"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Keywords (comma-separated)
                   </label>
                   <input
@@ -327,7 +328,7 @@ export default function NewCategoryPage() {
                     name="seo.keywords"
                     value={formData.seo.keywords}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="keyword1, keyword2, keyword3"
                   />
                 </div>
@@ -340,7 +341,7 @@ export default function NewCategoryPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-6 py-2 border border-[var(--color-border-primary)] rounded-lg text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)]"
             >
               Cancel
             </button>

@@ -17,10 +17,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) {
-      setForm({
-        name: user.name || '',
-        phone: user.phone || '',
-        companyName: user.companyName || user.company || '',
+      void Promise.resolve().then(() => {
+        setForm({
+          name: user.name || '',
+          phone: user.phone || '',
+          companyName: user.companyName || user.company || '',
+        });
       });
     }
   }, [user]);
@@ -89,10 +91,10 @@ export default function ProfilePage() {
       {message.text && (
         <div
           role="alert"
-          className={`mb-4 px-4 py-3 rounded-lg text-[13px] ${
+          className={`mb-4 px-4 py-3 rounded-lg text-sm ${
             message.type === 'success'
-              ? 'bg-[#D1FAE5] text-[#065F46]'
-              : 'bg-[#FEE2E2] text-[#991B1B]'
+              ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
+              : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
           }`}
         >
           {message.text}
@@ -104,16 +106,16 @@ export default function ProfilePage() {
         className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-5 sm:p-6 space-y-5"
       >
         <div>
-          <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-1.5">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
             Email
           </label>
           <input
             type="email"
             value={user?.email || ''}
             disabled
-            className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] cursor-not-allowed"
+            className="w-full px-3 py-2.5 border border-[var(--color-border-secondary)] rounded-lg text-base bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] cursor-not-allowed"
           />
-          <p className="text-[11px] text-[var(--color-text-tertiary)] mt-1">
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
             Contact support to change your email address.
           </p>
         </div>
@@ -152,10 +154,10 @@ export default function ProfilePage() {
         )}
 
         {user?.b2bId && (
-          <div className="text-[12px] text-[var(--color-text-secondary)] bg-[#F0FBF8] border border-[#C6EDE4] rounded-lg px-3 py-2">
-            B2B ID: <span className="font-semibold text-[#0B2545]">{user.b2bId}</span>
+          <div className="text-xs text-[var(--color-text-secondary)] bg-brand-teal-tint border border-brand-teal-tint rounded-lg px-3 py-2">
+            B2B ID: <span className="font-semibold text-brand-navy">{user.b2bId}</span>
             {user.b2bTier && (
-              <span className="ml-2 text-[#0E8A6E] font-medium">· {user.b2bTier}</span>
+              <span className="ml-2 text-brand-teal font-medium">· {user.b2bTier}</span>
             )}
           </div>
         )}

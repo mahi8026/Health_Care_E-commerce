@@ -1,4 +1,5 @@
 'use client';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect } from 'react';
 import AccountPageShell from '@/components/account/AccountPageShell';
@@ -116,7 +117,7 @@ export default function AddressesPage() {
   };
 
   const handleDelete = async (index) => {
-    if (!confirm('Remove this address?')) return;
+    if (!await confirmAction('Remove this address?')) return;
     const next = addresses.filter((_, i) => i !== index);
     if (next.length && !next.some((a) => a.isDefault)) {
       next[0] = { ...next[0], isDefault: true };
@@ -130,7 +131,7 @@ export default function AddressesPage() {
   };
 
   const fieldClass =
-    'w-full px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]';
+    'w-full px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal';
 
   return (
     <AccountPageShell
@@ -140,8 +141,8 @@ export default function AddressesPage() {
       {message.text && (
         <div
           role="alert"
-          className={`mb-4 px-4 py-3 rounded-lg text-[13px] ${
-            message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+          className={`mb-4 px-4 py-3 rounded-lg text-sm ${
+            message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
           }`}
         >
           {message.text}
@@ -151,11 +152,11 @@ export default function AddressesPage() {
       {loading ? (
         <div className="space-y-4 animate-fade-in">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 animate-pulse">
+            <div key={i} className="bg-white rounded-xl p-6 border border-[var(--color-border-tertiary)] animate-pulse">
               <div className="space-y-3">
-                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-32 animate-shimmer" />
-                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-full animate-shimmer" />
-                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-3/4 animate-shimmer" />
+                <div className="h-5 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-32 animate-shimmer" />
+                <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-full animate-shimmer" />
+                <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-3/4 animate-shimmer" />
               </div>
             </div>
           ))}
@@ -172,14 +173,14 @@ export default function AddressesPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[13px] font-semibold text-[#0B2545]">{addr.label || 'Address'}</span>
+                        <span className="text-sm font-semibold text-brand-navy">{addr.label || 'Address'}</span>
                         {addr.isDefault && (
-                          <span className="text-[10px] bg-[#E1F5EE] text-[#0E8A6E] px-2 py-0.5 rounded-full font-medium">
+                          <span className="text-xs bg-brand-teal-tint text-brand-teal px-2 py-0.5 rounded-full font-medium">
                             Default
                           </span>
                         )}
                       </div>
-                      <p className="text-[12px] text-[var(--color-text-secondary)] leading-relaxed">
+                      <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                         {addr.street}, {addr.thana}, {addr.district} {addr.postcode}
                       </p>
                     </div>
@@ -189,7 +190,7 @@ export default function AddressesPage() {
                           type="button"
                           onClick={() => handleSetDefault(index)}
                           disabled={saving}
-                          className="p-2 text-[#0E8A6E] hover:bg-[#F0FBF8] rounded-lg transition-colors"
+                          className="p-2 text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                           title="Set as default"
                           aria-label="Set as default"
                         >
@@ -199,7 +200,7 @@ export default function AddressesPage() {
                       <button
                         type="button"
                         onClick={() => handleEdit(index)}
-                        className="px-2 py-1 text-[11px] font-medium text-[#374151] hover:bg-[var(--color-background-tertiary)] rounded-lg"
+                        className="px-2 py-1 text-xs font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] rounded-lg"
                       >
                         Edit
                       </button>
@@ -207,7 +208,7 @@ export default function AddressesPage() {
                         type="button"
                         onClick={() => handleDelete(index)}
                         disabled={saving}
-                        className="p-2 text-[#E24B4A] hover:bg-[#FEE2E2] rounded-lg transition-colors"
+                        className="p-2 text-danger hover:bg-[var(--color-status-danger-tint)] rounded-lg transition-colors"
                         aria-label="Delete address"
                       >
                         <FaTrash size={13} />
@@ -220,14 +221,14 @@ export default function AddressesPage() {
           )}
 
           <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-5 sm:p-6">
-            <h2 className="text-[15px] font-semibold text-[#0B2545] mb-4 flex items-center gap-2">
-              <FaPlus size={12} className="text-[#0E8A6E]" />
+            <h2 className="text-base font-semibold text-brand-navy mb-4 flex items-center gap-2">
+              <FaPlus size={12} className="text-brand-teal" />
               {editingIndex !== null ? 'Edit address' : 'Add new address'}
             </h2>
             <form onSubmit={handleSaveForm} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium mb-1.5">Label</label>
+                  <label className="block text-sm font-medium mb-1.5">Label</label>
                   <input
                     className={fieldClass}
                     value={form.label}
@@ -236,7 +237,7 @@ export default function AddressesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium mb-1.5">Division</label>
+                  <label className="block text-sm font-medium mb-1.5">Division</label>
                   <select
                     className={fieldClass}
                     value={form.division || 'Dhaka'}
@@ -252,7 +253,7 @@ export default function AddressesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium mb-1.5">District</label>
+                  <label className="block text-sm font-medium mb-1.5">District</label>
                   <select
                     className={fieldClass}
                     value={form.district}
@@ -265,7 +266,7 @@ export default function AddressesPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-[12px] font-medium mb-1.5">Street address</label>
+                <label className="block text-sm font-medium mb-1.5">Street address</label>
                 <input
                   className={fieldClass}
                   value={form.street}
@@ -275,7 +276,7 @@ export default function AddressesPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium mb-1.5">Thana / upazila</label>
+                  <label className="block text-sm font-medium mb-1.5">Thana / upazila</label>
                   <input
                     className={fieldClass}
                     value={form.thana}
@@ -284,7 +285,7 @@ export default function AddressesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium mb-1.5">Postcode</label>
+                  <label className="block text-sm font-medium mb-1.5">Postcode</label>
                   <input
                     className={fieldClass}
                     value={form.postcode}
@@ -294,12 +295,12 @@ export default function AddressesPage() {
                   />
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-[12px] cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
                   type="checkbox"
                   checked={form.isDefault}
                   onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))}
-                  className="rounded border-gray-300 text-[#0E8A6E] focus:ring-[#0E8A6E]"
+                  className="rounded border-[var(--color-border-primary)] text-brand-teal focus:ring-brand-teal"
                 />
                 Set as default delivery address
               </label>
@@ -311,7 +312,7 @@ export default function AddressesPage() {
                   <button
                     type="button"
                     onClick={() => { setEditingIndex(null); setForm(EMPTY_ADDRESS); }}
-                    className="px-4 py-2 text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[#0B2545]"
+                    className="px-4 py-2 text-sm font-medium text-[var(--color-text-secondary)] hover:text-brand-navy"
                   >
                     Cancel
                   </button>

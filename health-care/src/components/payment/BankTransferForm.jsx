@@ -45,36 +45,36 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
   if (submitted) {
     return (
       <div className="space-y-4">
-        <div className="bg-[#E1F5EE] border border-[#9FE1CB] rounded-xl p-5">
-          <div className="text-[14px] font-bold text-[#065F46] mb-3 flex items-center gap-2">
-            <span className="text-[20px]">✓</span>
+        <div className="bg-brand-teal-tint border border-brand-teal-tint rounded-xl p-5">
+          <div className="text-sm font-semibold text-[var(--color-status-success)] mb-3 flex items-center gap-2">
+            <span className="text-xl">✓</span>
             Reference number submitted!
           </div>
-          <div className="text-[12px] text-[#374151] mb-4 leading-relaxed">
+          <div className="text-xs text-[var(--color-text-primary)] mb-4 leading-relaxed">
             Please transfer <strong>৳{amount?.toLocaleString()}</strong> to:
           </div>
           
           {/* Bank details table */}
           <div className="bg-white rounded-lg overflow-hidden mb-4">
             {Object.entries(BANK_DETAILS).map(([key, val]) => (
-              <div key={key} className="flex justify-between items-center px-4 py-3 border-b border-[#F3F4F6] last:border-b-0 text-[12px]">
-                <span className="text-[#6B7280] capitalize">
+              <div key={key} className="flex justify-between items-center px-4 py-3 border-b border-[var(--color-border-tertiary)] last:border-b-0 text-xs">
+                <span className="text-[var(--color-text-secondary)] capitalize">
                   {key.replace(/([A-Z])/g, ' $1').trim()}
                 </span>
-                <span className="font-semibold text-[#111827]">{val}</span>
+                <span className="font-semibold text-[var(--color-text-primary)]">{val}</span>
               </div>
             ))}
             
             {/* Order reference with copy button */}
-            <div className="flex justify-between items-center px-4 py-3 bg-[#F9FAFB]">
-              <span className="text-[#0E8A6E] font-semibold text-[13px]">Transfer Reference</span>
+            <div className="flex justify-between items-center px-4 py-3 bg-[var(--color-background-secondary)]">
+              <span className="text-brand-teal font-semibold text-sm">Transfer Reference</span>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-[#0B2545] font-mono text-[13px]">
+                <span className="font-semibold text-brand-navy font-mono text-sm">
                   {orderId}
                 </span>
                 <button
                   onClick={() => handleCopy(orderId)}
-                  className="text-[10px] px-3 py-1.5 rounded-md border border-[#0E8A6E] bg-transparent text-[#0E8A6E] hover:bg-[#E1F5EE] transition-colors font-medium"
+                  className="text-xs px-3 py-1.5 rounded-md border border-brand-teal bg-transparent text-brand-teal hover:bg-brand-teal-tint transition-colors font-medium"
                 >
                   {copied ? '✓ Copied' : 'Copy'}
                 </button>
@@ -82,7 +82,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
             </div>
           </div>
           
-          <div className="text-[11px] text-[#6B7280] flex items-start gap-2">
+          <div className="text-xs text-[var(--color-text-secondary)] flex items-start gap-2">
             <span className="flex-shrink-0">⏱</span>
             <span>Your order will be confirmed within 2–4 business hours after transfer verification.</span>
           </div>
@@ -93,18 +93,18 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-      <div className="bg-[#E6F1FB] border-[0.5px] border-[#185FA5] rounded-lg p-3 md:p-4">
-        <h3 className="text-[12px] md:text-[13px] font-semibold mb-2 md:mb-3 text-[#185FA5]">
+      <div className="bg-[var(--color-status-info-tint)] border-[0.5px] border-[#185FA5] rounded-lg p-3 md:p-4">
+        <h3 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-[#185FA5]">
           Bank Account Details
         </h3>
-        <div className="space-y-1.5 md:space-y-2 text-[11px] md:text-[12px]">
+        <div className="space-y-1.5 md:space-y-2 text-xs md:text-xs">
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Bank Name:</span>
             <span className="font-semibold">Dutch-Bangla Bank Ltd</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Account Number:</span>
-            <span className="font-mono font-semibold text-[10px] md:text-[12px]">1721 2030 5678</span>
+            <span className="font-mono font-semibold text-xs md:text-xs">1721 2030 5678</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Account Name:</span>
@@ -116,17 +116,17 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Routing Number:</span>
-            <span className="font-mono font-semibold text-[10px] md:text-[12px]">090260123</span>
+            <span className="font-mono font-semibold text-xs md:text-xs">090260123</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-[var(--color-background-secondary)] rounded-lg p-2.5 md:p-3 text-[10px] md:text-[11px] text-[var(--color-text-secondary)]">
+      <div className="bg-[var(--color-background-secondary)] rounded-lg p-2.5 md:p-3 text-xs md:text-xs text-[var(--color-text-secondary)]">
         <div className="flex items-start gap-2">
           <span className="flex-shrink-0">💡</span>
           <div>
             <strong className="text-[var(--color-text-primary)]">Important:</strong><br />
-            • Use order ID <span className="font-mono font-semibold text-[10px]">{orderId}</span> as reference<br />
+            • Use order ID <span className="font-mono font-semibold text-xs">{orderId}</span> as reference<br />
             • Payment verification takes 2-4 hours on business days<br />
             • Keep your transaction receipt for records
           </div>
@@ -134,7 +134,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
       </div>
 
       <div className="bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg p-3 md:p-4">
-        <label className="block text-[11px] md:text-[12px] font-medium mb-2 text-[var(--color-text-secondary)]">
+        <label className="block text-sm md:text-sm font-medium mb-2 text-[var(--color-text-secondary)]">
           Transaction Reference Number
         </label>
         <input
@@ -143,15 +143,15 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
           onChange={(e) => setTransactionRef(e.target.value)}
           placeholder="Enter your bank transaction reference"
           required
-          className="w-full px-2.5 md:px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] md:text-[13px] focus:outline-none focus:border-[#185FA5]"
+          className="w-full px-2.5 md:px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs md:text-sm focus:outline-none focus:border-[#185FA5]"
         />
-        <p className="text-[9px] md:text-[10px] text-[var(--color-text-secondary)] mt-1">
+        <p className="text-xs md:text-xs text-[var(--color-text-secondary)] mt-1">
           This is the reference number from your bank transfer receipt
         </p>
       </div>
 
       {error && (
-        <div className="p-2 md:p-3 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[11px] md:text-[12px]">
+        <div className="p-2 md:p-3 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs md:text-xs">
           {error}
         </div>
       )}
@@ -159,7 +159,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
       <button
         type="submit"
         disabled={loading || !transactionRef}
-        className="w-full bg-[#185FA5] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-[12px] md:text-[13px] font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#144A8A] transition-colors"
+        className="w-full bg-[#185FA5] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#144A8A] transition-colors"
       >
         {loading ? (
           <>
@@ -175,7 +175,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
         )}
       </button>
 
-      <div className="text-center text-[10px] md:text-[11px] text-[var(--color-text-secondary)]">
+      <div className="text-center text-xs md:text-xs text-[var(--color-text-secondary)]">
         Amount to transfer: <span className="font-semibold text-[var(--color-text-primary)]">৳{amount.toLocaleString()}</span>
       </div>
     </form>

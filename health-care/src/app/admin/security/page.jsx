@@ -1,4 +1,5 @@
 'use client';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -70,7 +71,7 @@ export default function SecuritySettingsPage() {
     (async () => {
       await fetchTwoFactorStatus();
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   // Redirect if not logged in
@@ -125,7 +126,7 @@ export default function SecuritySettingsPage() {
   };
 
   const handleDisable2FA = async () => {
-    if (!confirm('Are you sure you want to disable two-factor authentication? This will make your account less secure.')) {
+    if (!await confirmAction('Are you sure you want to disable two-factor authentication? This will make your account less secure.')) {
       return;
     }
 
@@ -165,13 +166,13 @@ export default function SecuritySettingsPage() {
     <AdminShell>
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Security Settings</h1>
-          <p className="text-gray-600 mt-1">Manage your account security and two-factor authentication</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">Security Settings</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">Manage your account security and two-factor authentication</p>
         </div>
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+          <div className="mb-6 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] px-4 py-3 rounded-lg flex items-start">
             <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>
@@ -180,7 +181,7 @@ export default function SecuritySettingsPage() {
         )}
 
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
+          <div className="mb-6 bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] text-[var(--color-status-success)] px-4 py-3 rounded-lg flex items-start">
             <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
@@ -189,20 +190,20 @@ export default function SecuritySettingsPage() {
         )}
 
         {/* Two-Factor Authentication Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-primary)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--color-border-primary)] bg-[var(--color-background-secondary)]">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <svg className="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Two-Factor Authentication (2FA)</h2>
-                  <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                  <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Two-Factor Authentication (2FA)</h2>
+                  <p className="text-sm text-[var(--color-text-secondary)]">Add an extra layer of security to your account</p>
                 </div>
               </div>
               {setupStep === 'complete' && (
-                <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                <span className="px-3 py-1 bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] text-sm font-medium rounded-full">
                   ✓ Enabled
                 </span>
               )}
@@ -214,13 +215,13 @@ export default function SecuritySettingsPage() {
             {setupStep === 'check' && (
               <div>
                 <div className="mb-6">
-                  <h3 className="text-md font-semibold text-gray-900 mb-2">What is Two-Factor Authentication?</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-md font-semibold text-[var(--color-text-primary)] mb-2">What is Two-Factor Authentication?</h3>
+                  <p className="text-[var(--color-text-secondary)] mb-4">
                     Two-factor authentication (2FA) adds an extra layer of security to your account. After entering your password, 
-                    you'll need to enter a 6-digit code from your authenticator app.
+                    you&apos;ll need to enter a 6-digit code from your authenticator app.
                   </p>
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-medium text-blue-900 mb-2">You'll need:</h4>
+                    <h4 className="font-medium text-blue-900 mb-2">You&apos;ll need:</h4>
                     <ul className="list-disc list-inside text-blue-800 space-y-1">
                       <li>An authenticator app (Google Authenticator, Authy, Microsoft Authenticator, etc.)</li>
                       <li>Your smartphone or tablet</li>
@@ -242,20 +243,20 @@ export default function SecuritySettingsPage() {
             {setupStep === 'verify' && qrCode && (
               <div>
                 <div className="mb-6">
-                  <h3 className="text-md font-semibold text-gray-900 mb-4">Step 1: Scan QR Code</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-md font-semibold text-[var(--color-text-primary)] mb-4">Step 1: Scan QR Code</h3>
+                  <p className="text-[var(--color-text-secondary)] mb-4">
                     Open your authenticator app and scan this QR code:
                   </p>
                   <div className="flex justify-center mb-4">
-                    <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                    <div className="bg-white p-4 rounded-lg border-2 border-[var(--color-border-primary)]">
                       <img src={qrCode} alt="2FA QR Code" className="w-64 h-64" loading="lazy" />
                     </div>
                   </div>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <p className="text-sm text-gray-700 mb-2">
-                      <strong>Can't scan the QR code?</strong> Enter this code manually:
+                  <div className="bg-[var(--color-background-secondary)] border border-[var(--color-border-primary)] rounded-lg p-4">
+                    <p className="text-sm text-[var(--color-text-primary)] mb-2">
+                      <strong>Can&apos;t scan the QR code?</strong> Enter this code manually:
                     </p>
-                    <code className="block bg-white px-3 py-2 rounded border border-gray-300 text-center font-mono text-sm break-all">
+                    <code className="block bg-white px-3 py-2 rounded border border-[var(--color-border-primary)] text-center font-mono text-sm break-all">
                       {secret}
                     </code>
                   </div>
@@ -263,8 +264,8 @@ export default function SecuritySettingsPage() {
 
                 <form onSubmit={handleEnable2FA}>
                   <div className="mb-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Step 2: Enter Verification Code</h3>
-                    <p className="text-gray-600 mb-4">
+                    <h3 className="text-md font-semibold text-[var(--color-text-primary)] mb-4">Step 2: Enter Verification Code</h3>
+                    <p className="text-[var(--color-text-secondary)] mb-4">
                       Enter the 6-digit code from your authenticator app:
                     </p>
                     <input
@@ -273,7 +274,7 @@ export default function SecuritySettingsPage() {
                       onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                       placeholder="000000"
                       maxLength={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl font-mono tracking-widest"
+                      className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl font-mono tracking-widest"
                       required
                     />
                   </div>
@@ -288,7 +289,7 @@ export default function SecuritySettingsPage() {
                         setVerificationCode('');
                         setError('');
                       }}
-                      className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                      className="px-6 py-3 border border-[var(--color-border-primary)] text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-[var(--color-background-secondary)] transition-colors"
                     >
                       Cancel
                     </button>
@@ -307,26 +308,26 @@ export default function SecuritySettingsPage() {
             {/* Step 3: Enabled */}
             {setupStep === 'complete' && twoFactorStatus?.isEnabled && (
               <div>
-                <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="mb-6 bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] rounded-lg p-4">
                   <div className="flex items-start">
-                    <svg className="w-6 h-6 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-6 h-6 text-[var(--color-status-success)] mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <div>
-                      <h3 className="font-semibold text-green-900 mb-1">Two-Factor Authentication is Active</h3>
-                      <p className="text-green-800 text-sm">
-                        Your account is protected with 2FA. You'll need to enter a code from your authenticator app when logging in.
+                      <h3 className="font-semibold text-[var(--color-status-success)] mb-1">Two-Factor Authentication is Active</h3>
+                      <p className="text-[var(--color-status-success)] text-sm">
+                        Your account is protected with 2FA. You&apos;ll need to enter a code from your authenticator app when logging in.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="text-md font-semibold text-gray-900 mb-2">Status</h3>
+                  <h3 className="text-md font-semibold text-[var(--color-text-primary)] mb-2">Status</h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Enabled on:</span>
-                      <span className="font-medium text-gray-900">
+                    <div className="flex justify-between py-2 border-b border-[var(--color-border-tertiary)]">
+                      <span className="text-[var(--color-text-secondary)]">Enabled on:</span>
+                      <span className="font-medium text-[var(--color-text-primary)]">
                         {new Date(twoFactorStatus.enabledAt).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
@@ -334,9 +335,9 @@ export default function SecuritySettingsPage() {
                         })}
                       </span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Last verified:</span>
-                      <span className="font-medium text-gray-900">
+                    <div className="flex justify-between py-2 border-b border-[var(--color-border-tertiary)]">
+                      <span className="text-[var(--color-text-secondary)]">Last verified:</span>
+                      <span className="font-medium text-[var(--color-text-primary)]">
                         {twoFactorStatus.lastVerifiedAt 
                           ? new Date(twoFactorStatus.lastVerifiedAt).toLocaleString()
                           : 'Never'}
@@ -345,10 +346,10 @@ export default function SecuritySettingsPage() {
                   </div>
                 </div>
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                  <h4 className="font-medium text-yellow-900 mb-2">⚠️ Important</h4>
-                  <p className="text-yellow-800 text-sm">
-                    If you lose access to your authenticator app, you won't be able to log in. 
+                <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-4 mb-6">
+                  <h4 className="font-medium text-[var(--color-status-warning)] mb-2">⚠️ Important</h4>
+                  <p className="text-[var(--color-status-warning)] text-sm">
+                    If you lose access to your authenticator app, you won&apos;t be able to log in. 
                     Make sure to keep backup codes in a safe place or contact support if you lose access.
                   </p>
                 </div>
@@ -356,7 +357,7 @@ export default function SecuritySettingsPage() {
                 <button
                   onClick={handleDisable2FA}
                   disabled={loading}
-                  className="px-6 py-3 border border-red-300 text-red-700 font-medium rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-3 border border-[var(--color-status-danger)] text-[var(--color-status-danger)] font-medium rounded-lg hover:bg-[var(--color-status-danger-tint)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? 'Disabling...' : 'Disable Two-Factor Authentication'}
                 </button>

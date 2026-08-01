@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { API } from '@/constants/api';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * Redesigned Frequently Bought Together Component
@@ -56,13 +57,13 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
     <div className="mt-6 mb-6">
       {/* Toast */}
       {showToast && (
-        <div className="fixed top-4 right-4 z-50 bg-[#D1FAE5] text-[#065F46] rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 animate-slide-in">
-          <span className="text-[18px]">✓</span>
-          <p className="text-[13px] font-semibold">Added to cart!</p>
+        <div className="fixed top-4 right-4 z-[var(--z-toast)] bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded-lg shadow-lg px-4 py-3 flex items-center gap-3 animate-slide-in">
+          <span className="text-lg">✓</span>
+          <p className="text-sm font-semibold">Added to cart!</p>
         </div>
       )}
 
-      <h3 className="text-[16px] font-bold text-[#0B2545] mb-4">
+      <h3 className="text-base font-semibold text-brand-navy mb-4">
         Frequently Bought Together
       </h3>
       
@@ -76,33 +77,32 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
             <div
               key={product._id || product.id}
               className={`border rounded-xl p-4 flex flex-col gap-3 bg-white hover:shadow-md transition-all flex-shrink-0 w-[200px] ${
-                isSelected ? 'border-[#0E8A6E] border-2' : 'border-[#E5E7EB]'
+                isSelected ? 'border-brand-teal border-2' : 'border-[#E5E7EB]'
               }`}
             >
               {/* Image */}
-              <div className="w-full h-24 rounded-lg bg-surface-subtle flex items-center justify-center overflow-hidden">
+              <div className="w-full aspect-square rounded-lg bg-surface-subtle flex items-center justify-center overflow-hidden">
                 {imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={imageUrl} 
+                  <OptimizedImage
+                    src={imageUrl}
                     alt={`${product.name}${typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price > 0 ? product.price.toLocaleString() : 'Contact for Price'} Bangladesh`}
-                    className="w-full h-full object-contain p-2"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement.innerHTML = '<div class="text-[32px]">📦</div>';
-                    }}
+                    fill
+                    context="card"
+                    fallback="📦"
+                    className="w-full h-full"
+                    style={{ objectFit: 'contain', padding: 8 }}
                   />
                 ) : (
-                  <div className="text-[32px]">📦</div>
+                  <div className="text-4xl">📦</div>
                 )}
               </div>
 
               {/* Product Info */}
               <div className="flex-1">
-                <div className="text-[12px] font-semibold text-[#0B2545] line-clamp-2 mb-2 min-h-[36px]">
+                <div className="text-xs font-semibold text-brand-navy line-clamp-2 mb-2 min-h-[36px]">
                   {product.name}
                 </div>
-                <div className="text-[14px] font-bold text-[#0E8A6E]">
+                <div className="text-sm font-semibold text-brand-teal">
                   ৳{(product.price || 0).toLocaleString()}
                 </div>
               </div>
@@ -110,7 +110,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
               {/* Add Button */}
               <button
                 onClick={() => handleAddProduct(product)}
-                className="w-full py-2 bg-[#0B2545] hover:bg-[#1a3a5c] text-white rounded-lg text-[12px] font-semibold transition-colors flex items-center justify-center gap-1"
+                className="w-full py-2 bg-brand-navy hover:bg-[#1a3a5c] text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="5" x2="12" y2="19"/>
@@ -127,8 +127,8 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
       {selectedProducts.length > 0 && (
         <div className="mt-4 bg-[#E1F5EE] rounded-lg p-4 flex items-center justify-between">
           <div>
-            <div className="text-[12px] text-[#0E8A6E] font-medium">Bundle Total</div>
-            <div className="text-[20px] font-bold text-[#0B2545]">
+            <div className="text-xs text-brand-teal font-medium">Bundle Total</div>
+            <div className="text-xl font-semibold text-brand-navy">
               ৳{bundleTotal.toLocaleString()}
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
                 .forEach(p => handleAddProduct(p));
               setSelectedProducts([]);
             }}
-            className="px-6 py-2 bg-[#0E8A6E] hover:bg-[#0B7558] text-white rounded-lg text-[13px] font-semibold transition-colors"
+            className="px-6 py-2 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-lg text-sm font-semibold transition-colors"
           >
             Add Bundle to Cart
           </button>

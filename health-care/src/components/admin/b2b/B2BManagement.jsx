@@ -19,12 +19,12 @@ export default function B2BManagement() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">B2B Management</h1>
-        <p className="text-gray-600 mt-1">Manage B2B users, approvals, and category discounts</p>
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">B2B Management</h1>
+        <p className="text-[var(--color-text-secondary)] mt-1">Manage B2B users, approvals, and category discounts</p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-[var(--color-border-primary)]">
         <nav className="flex space-x-8">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -35,8 +35,8 @@ export default function B2BManagement() {
                 className={`
                   flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm
                   ${activeTab === tab.id
-                    ? 'border-[#0E8A6E] text-[#0E8A6E]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-brand-teal text-brand-teal'
+                    : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-primary)]'
                   }
                 `}
               >

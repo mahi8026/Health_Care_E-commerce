@@ -42,12 +42,12 @@ export default function ProductImageGalleryEnhanced({
   const badgeConfig = {
     'CE': { icon: '🇪🇺', label: 'CE Certified', color: 'bg-blue-500 text-white' },
     'CE Certified': { icon: '🇪🇺', label: 'CE Certified', color: 'bg-blue-500 text-white' },
-    'FDA': { icon: '🇺🇸', label: 'FDA Approved', color: 'bg-green-500 text-white' },
-    'DGDA': { icon: '🇧🇩', label: 'DGDA Registered', color: 'bg-[#0E8A6E] text-white' },
+    'FDA': { icon: '🇺🇸', label: 'FDA Approved', color: 'bg-[var(--color-status-success-tint)] text-white' },
+    'DGDA': { icon: '🇧🇩', label: 'DGDA Registered', color: 'bg-brand-teal text-white' },
     'ISO': { icon: '✓', label: 'ISO 13485', color: 'bg-orange-500 text-white' },
-    'Bestseller': { icon: '⭐', label: 'Bestseller', color: 'bg-yellow-100 text-yellow-800' },
-    'New arrival': { icon: '🆕', label: 'New Arrival', color: 'bg-green-100 text-green-800' },
-    'Sale': { icon: '🔥', label: 'On Sale', color: 'bg-red-500 text-white' },
+    'Bestseller': { icon: '⭐', label: 'Bestseller', color: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]' },
+    'New arrival': { icon: '🆕', label: 'New Arrival', color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
+    'Sale': { icon: '🔥', label: 'On Sale', color: 'bg-[var(--color-status-danger-tint)] text-white' },
   };
 
   const handleToggleWishlist = async () => {
@@ -96,7 +96,7 @@ export default function ProductImageGalleryEnhanced({
       {/* Main Image Container */}
       <div 
         ref={imageRef}
-        className="relative bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm group"
+        className="relative bg-white rounded-2xl overflow-hidden border border-[var(--color-border-primary)] shadow-sm group"
         style={{ aspectRatio: '1/1' }}
         onMouseEnter={() => setIsZooming(true)}
         onMouseLeave={() => setIsZooming(false)}
@@ -119,8 +119,8 @@ export default function ProductImageGalleryEnhanced({
             />
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50">
-            <span className="text-8xl text-gray-300">🏥</span>
+          <div className="w-full h-full flex items-center justify-center bg-[var(--color-background-secondary)]">
+            <span className="text-8xl text-[var(--color-text-tertiary)]">🏥</span>
           </div>
         )}
 
@@ -135,7 +135,7 @@ export default function ProductImageGalleryEnhanced({
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <span className="text-base">{config.icon}</span>
-                <span className="text-xs font-bold whitespace-nowrap">{config.label}</span>
+                <span className="text-xs font-semibold whitespace-nowrap">{config.label}</span>
               </div>
             );
           })}
@@ -148,7 +148,7 @@ export default function ProductImageGalleryEnhanced({
             onClick={handleToggleWishlist}
             disabled={togglingWishlist}
             className={`w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
-              inWishlist ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
+              inWishlist ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)]'
             }`}
             aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           >
@@ -162,7 +162,7 @@ export default function ProductImageGalleryEnhanced({
           {/* Fullscreen Button */}
           <button
             onClick={() => setIsLightboxOpen(true)}
-            className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 text-gray-600 hover:text-[#0E8A6E]"
+            className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 text-[var(--color-text-secondary)] hover:text-brand-teal"
             aria-label="View fullscreen"
           >
             <FaExpand size={18} />
@@ -192,7 +192,7 @@ export default function ProductImageGalleryEnhanced({
           {images.length > 4 && (
             <button
               onClick={handlePrevImage}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#0E8A6E] hover:scale-110 transition-all"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center text-[var(--color-text-secondary)] hover:text-brand-teal hover:scale-110 transition-all"
               aria-label="Previous image"
             >
               <FaChevronLeft size={14} />
@@ -205,10 +205,12 @@ export default function ProductImageGalleryEnhanced({
               <button
                 key={img.publicId || idx}
                 onClick={() => setActiveIndex(idx)}
+                aria-current={activeIndex === idx}
+                aria-label={`${product.name} view ${idx + 1}`}
                 className={`relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden transition-all duration-300 ${
                   activeIndex === idx
-                    ? 'ring-4 ring-[#0E8A6E] ring-offset-2 scale-105 shadow-xl'
-                    : 'ring-2 ring-gray-200 hover:ring-gray-400 hover:scale-105'
+                    ? 'ring-4 ring-brand-teal ring-offset-2 scale-105 shadow-xl'
+                    : 'ring-2 ring-[var(--color-border-primary)] hover:ring-[var(--color-border-secondary)] hover:scale-105'
                 }`}
               >
                 <Image
@@ -219,7 +221,7 @@ export default function ProductImageGalleryEnhanced({
                   className="object-cover"
                 />
                 {activeIndex === idx && (
-                  <div className="absolute inset-0 bg-[#0E8A6E]/10" />
+                  <div className="absolute inset-0 bg-brand-teal/10" />
                 )}
               </button>
             ))}
@@ -229,7 +231,7 @@ export default function ProductImageGalleryEnhanced({
           {images.length > 4 && (
             <button
               onClick={handleNextImage}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#0E8A6E] hover:scale-110 transition-all"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center text-[var(--color-text-secondary)] hover:text-brand-teal hover:scale-110 transition-all"
               aria-label="Next image"
             >
               <FaChevronRight size={14} />
@@ -241,7 +243,7 @@ export default function ProductImageGalleryEnhanced({
       {/* Fullscreen Lightbox Modal */}
       {isLightboxOpen && activeImage && (
         <div 
-          className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center animate-fadeIn"
+          className="fixed inset-0 bg-black/95 z-[var(--z-drawer)] flex items-center justify-center animate-fadeIn"
           onClick={() => setIsLightboxOpen(false)}
         >
           {/* Close Button */}

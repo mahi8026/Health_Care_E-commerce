@@ -112,15 +112,15 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen bg-[var(--color-background-secondary)] p-4">
         <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
           {/* Header skeleton */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[var(--color-border-tertiary)]">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full animate-shimmer" />
+              <div className="w-20 h-20 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full animate-shimmer" />
               <div className="flex-1 space-y-3">
-                <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 animate-shimmer" />
-                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-64 animate-shimmer" />
+                <div className="h-6 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-48 animate-shimmer" />
+                <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-64 animate-shimmer" />
               </div>
             </div>
           </div>
@@ -128,16 +128,16 @@ export default function AccountPage() {
           {/* Stats cards skeleton */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 animate-pulse">
-                <div className="h-10 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+              <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-[var(--color-border-tertiary)] animate-pulse">
+                <div className="h-10 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
               </div>
             ))}
           </div>
           
           {/* Menu items skeleton */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[var(--color-border-tertiary)] space-y-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-16 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg animate-shimmer" />
+              <div key={i} className="h-16 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
             ))}
           </div>
         </div>
@@ -179,18 +179,18 @@ export default function AccountPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#0E8A6E] rounded-full flex items-center justify-center text-white text-[20px] sm:text-[24px] font-bold flex-shrink-0">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-brand-teal rounded-full flex items-center justify-center text-white text-xl sm:text-2xl font-semibold flex-shrink-0">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div>
-                <h1 className="text-[18px] sm:text-[20px] md:text-[24px] font-semibold text-[#0B2545] font-[family-name:var(--font-lora)]">
+                <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
                   {user?.name || 'User'}
                 </h1>
-                <p className="text-[11px] sm:text-[12px] md:text-[13px] text-[var(--color-text-secondary)] mt-0.5">
+                <p className="text-xs sm:text-xs md:text-sm text-[var(--color-text-secondary)] mt-0.5">
                   {user?.email}
                 </p>
                 {user?.role === 'b2b' && (
-                  <span className="inline-block mt-1 text-[10px] sm:text-[11px] bg-[#E1F5EE] text-[#0E8A6E] px-2 py-0.5 rounded-full font-medium">
+                  <span className="inline-block mt-1 text-xs sm:text-xs bg-brand-teal-tint text-brand-teal px-2 py-0.5 rounded-full font-medium">
                     B2B Customer
                   </span>
                 )}
@@ -198,7 +198,7 @@ export default function AccountPage() {
             </div>
             <button
               onClick={() => router.push('/account/profile')}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] font-medium hover:bg-[var(--color-background-tertiary)] transition-colors"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-sm font-medium hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               <FaEdit size={14} />
               {t('account.editProfile')}
@@ -221,34 +221,34 @@ export default function AccountPage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#0B2545] mb-1">
+            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-brand-navy mb-1">
               {stats.totalOrders}
             </div>
-            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+            <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
               {t('account.totalOrders')}
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#F59E0B] mb-1">
+            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-warning mb-1">
               {stats.pendingOrders}
             </div>
-            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+            <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
               {t('account.pending')}
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#E24B4A] mb-1">
+            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-danger mb-1">
               {stats.wishlistItems}
             </div>
-            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+            <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
               {t('account.wishlist')}
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-[20px] sm:text-[24px] md:text-[28px] font-bold text-[#0E8A6E] mb-1">
+            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-brand-teal mb-1">
               {stats.reviewsWritten}
             </div>
-            <div className="text-[10px] sm:text-[11px] text-[var(--color-text-secondary)]">
+            <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
               {t('account.reviews')}
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function AccountPage() {
         <div className="space-y-4 sm:space-y-6">
           {menuItems.map((section) => (
             <div key={section.section}>
-              <h2 className="text-[13px] sm:text-[14px] font-semibold text-[var(--color-text-secondary)] mb-2 sm:mb-3 px-1">
+              <h2 className="text-sm sm:text-sm font-semibold text-[var(--color-text-secondary)] mb-2 sm:mb-3 px-1">
                 {section.section}
               </h2>
               <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] divide-y divide-[var(--color-border-tertiary)]">
@@ -269,19 +269,19 @@ export default function AccountPage() {
                     className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-background-tertiary)] transition-colors text-left"
                   >
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[var(--color-background-secondary)] rounded-lg flex items-center justify-center text-[#0B2545] flex-shrink-0">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[var(--color-background-secondary)] rounded-lg flex items-center justify-center text-brand-navy flex-shrink-0">
                         {item.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[13px] sm:text-[14px] font-medium text-[#0B2545] flex items-center gap-2">
+                        <div className="text-sm sm:text-sm font-medium text-brand-navy flex items-center gap-2">
                           {item.label}
                           {item.badge && (
-                            <span className="bg-[#E24B4A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                            <span className="bg-danger text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                               {item.badge}
                             </span>
                           )}
                         </div>
-                        <div className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] mt-0.5 truncate">
+                        <div className="text-xs sm:text-xs text-[var(--color-text-secondary)] mt-0.5 truncate">
                           {item.description}
                         </div>
                       </div>
@@ -298,7 +298,7 @@ export default function AccountPage() {
         <div className="mt-6">
           <button
             onClick={handleLogout}
-            className="w-full bg-white border border-[var(--color-border-tertiary)] rounded-lg p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 text-[#E24B4A] hover:bg-[#FEE2E2] transition-colors font-medium text-[13px] sm:text-[14px]"
+            className="w-full bg-white border border-[var(--color-border-tertiary)] rounded-lg p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 text-danger hover:bg-[var(--color-status-danger-tint)] transition-colors font-medium text-sm sm:text-sm"
           >
             <FaSignOutAlt size={16} />
             {t('account.logout')}

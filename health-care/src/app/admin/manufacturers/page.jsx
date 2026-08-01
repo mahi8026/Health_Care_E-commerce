@@ -1,4 +1,6 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -11,6 +13,21 @@ const isAuthenticated = () => {
   }
   return false;
 };
+const SortHeader = ({ field, label, sortField, sortOrder, onSort }) => (
+  <th 
+    className="px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-primary)] uppercase tracking-wider bg-[var(--color-background-tertiary)] cursor-pointer hover:bg-[var(--color-background-muted)] transition"
+    onClick={() => onSort(field)}
+  >
+    <div className="flex items-center gap-2">
+      {label}
+      {sortField === field && (
+        <span className="inline-block">
+          {sortOrder === 'asc' ? '↑' : '↓'}
+        </span>
+      )}
+    </div>
+  </th>
+);
 
 export default function ManufacturersPage() {
   const router = useRouter();
@@ -82,8 +99,10 @@ export default function ManufacturersPage() {
   useEffect(() => {
     if (!isAuthenticated()) {
       process.env.NODE_ENV !== "production" && console.warn('[Manufacturers] No authentication token found');
-      setError('Please log in to access the admin panel');
-      setLoading(false);
+      void Promise.resolve().then(() => {
+        setError('Please log in to access the admin panel');
+        setLoading(false);
+      });
     }
   }, [router]);
 
@@ -97,7 +116,7 @@ export default function ManufacturersPage() {
   }, [includeInactive, searchTerm, countryFilter]);
 
   const handleDelete = async (id, name) => {
-    if (!confirm(`Are you sure you want to deactivate "${name}"?`)) return;
+    if (!await confirmAction(`Are you sure you want to deactivate "${name}"?`)) return;
 
     try {
       await api.delete(`/manufacturers/${id}`);
@@ -106,10 +125,10 @@ export default function ManufacturersPage() {
         newSet.delete(id);
         return newSet;
       });
-      alert('Manufacturer deactivated successfully');
+      showToast.success('Manufacturer deactivated successfully');
       fetchManufacturers();
     } catch (err) {
-      alert(err.message || err.data?.message || 'Failed to delete manufacturer');
+      showToast.error(err.message || err.data?.message || 'Failed to delete manufacturer');
     }
   };
 
@@ -128,11 +147,11 @@ export default function ManufacturersPage() {
   const handleSaveEdit = async () => {
     try {
       await api.patch(`/manufacturers/${editingId}`, editForm);
-      alert('Manufacturer updated successfully');
+      showToast.success('Manufacturer updated successfully');
       setEditingId(null);
       fetchManufacturers();
     } catch (err) {
-      alert(err.message || err.data?.message || 'Failed to update manufacturer');
+      showToast.error(err.message || err.data?.message || 'Failed to update manufacturer');
     }
   };
 
@@ -193,37 +212,22 @@ export default function ManufacturersPage() {
     setSelectedIds(newSet);
   };
 
-  const SortHeader = ({ field, label }) => (
-    <th 
-      className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-100 cursor-pointer hover:bg-gray-150 transition"
-      onClick={() => handleSort(field)}
-    >
-      <div className="flex items-center gap-2">
-        {label}
-        {sortField === field && (
-          <span className="inline-block">
-            {sortOrder === 'asc' ? '↑' : '↓'}
-          </span>
-        )}
-      </div>
-    </th>
-  );
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-[var(--color-background-secondary)] to-[var(--color-background-tertiary)] p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-8">
-            <div className="h-10 bg-gray-300 rounded w-1/3"></div>
+            <div className="h-10 bg-[var(--color-background-muted)] rounded w-1/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
+                <div key={i} className="h-24 bg-[var(--color-background-muted)] rounded-lg"></div>
               ))}
             </div>
             <div className="space-y-3">
-              <div className="h-8 bg-gray-200 rounded"></div>
+              <div className="h-8 bg-[var(--color-background-muted)] rounded"></div>
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                <div key={i} className="h-16 bg-[var(--color-background-muted)] rounded"></div>
               ))}
             </div>
           </div>
@@ -239,8 +243,8 @@ export default function ManufacturersPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between md:items-center mb-4 md:mb-8 gap-3">
           <div>
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">Manufacturers</h1>
-            <p className="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Manage product manufacturers and brands</p>
+            <h1 className="text-2xl md:text-4xl font-semibold bg-gradient-to-r from-blue-400 via-cyan-400 to-brand-teal bg-clip-text text-transparent">Manufacturers</h1>
+            <p className="text-[var(--color-text-tertiary)] mt-1 md:mt-2 text-sm md:text-base">Manage product manufacturers and brands</p>
           </div>
           <button
             onClick={() => router.push('/admin/manufacturers/new')}
@@ -253,21 +257,21 @@ export default function ManufacturersPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-8">
-          <div className="bg-gradient-primary text-white rounded-lg shadow-lg p-4 md:p-6 border border-blue-400/30 hover:shadow-xl hover:shadow-blue-500/20 transition">
-            <div className="text-[10px] md:text-xs text-blue-100 font-semibold uppercase">Total</div>
-            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.length}</div>
+          <div className="bg-brand-navy text-white rounded-lg shadow-lg p-4 md:p-6 border border-blue-400/30 hover:shadow-xl hover:shadow-blue-500/20 transition">
+            <div className="text-xs md:text-xs text-blue-100 font-semibold uppercase">Total</div>
+            <div className="text-xl md:text-3xl font-semibold mt-1 md:mt-2">{manufacturers.length}</div>
           </div>
-          <div className="bg-gradient-success text-white rounded-lg shadow-lg p-4 md:p-6 border border-green-400/30 hover:shadow-xl hover:shadow-green-500/20 transition">
-            <div className="text-[10px] md:text-xs text-green-100 font-semibold uppercase">Active</div>
-            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.filter(m => m.isActive).length}</div>
+          <div className="bg-success text-white rounded-lg shadow-lg p-4 md:p-6 border border-green-400/30 hover:shadow-xl hover:shadow-green-500/20 transition">
+            <div className="text-xs md:text-xs text-green-100 font-semibold uppercase">Active</div>
+            <div className="text-xl md:text-3xl font-semibold mt-1 md:mt-2">{manufacturers.filter(m => m.isActive).length}</div>
           </div>
-          <div className="bg-gradient-danger text-white rounded-lg shadow-lg p-4 md:p-6 border border-red-400/30 hover:shadow-xl hover:shadow-red-500/20 transition">
-            <div className="text-[10px] md:text-xs text-red-100 font-semibold uppercase">Inactive</div>
-            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{manufacturers.filter(m => !m.isActive).length}</div>
+          <div className="bg-danger text-white rounded-lg shadow-lg p-4 md:p-6 border border-red-400/30 hover:shadow-xl hover:shadow-red-500/20 transition">
+            <div className="text-xs md:text-xs text-red-100 font-semibold uppercase">Inactive</div>
+            <div className="text-xl md:text-3xl font-semibold mt-1 md:mt-2">{manufacturers.filter(m => !m.isActive).length}</div>
           </div>
-          <div className="bg-gradient-warning text-white rounded-lg shadow-lg p-4 md:p-6 border border-yellow-400/30 hover:shadow-xl hover:shadow-yellow-500/20 transition col-span-2 md:col-span-1">
-            <div className="text-[10px] md:text-xs text-yellow-100 font-semibold uppercase">Total Products</div>
-            <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">
+          <div className="bg-warning text-white rounded-lg shadow-lg p-4 md:p-6 border border-yellow-400/30 hover:shadow-xl hover:shadow-yellow-500/20 transition col-span-2 md:col-span-1">
+            <div className="text-xs md:text-xs text-yellow-100 font-semibold uppercase">Total Products</div>
+            <div className="text-xl md:text-3xl font-semibold mt-1 md:mt-2">
               {manufacturers.reduce((sum, m) => sum + (m.productCount || 0), 0)}
             </div>
           </div>
@@ -278,7 +282,7 @@ export default function ManufacturersPage() {
           <div className="space-y-3">
             {/* Row 1: Search */}
             <div>
-              <label className="block text-xs md:text-sm font-medium text-gray-300 mb-2">Search</label>
+              <label className="block text-sm font-medium text-[var(--color-text-tertiary)] mb-2">Search</label>
               <input
                 type="text"
                 placeholder="Search by name, slug..."
@@ -287,21 +291,21 @@ export default function ManufacturersPage() {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-3 md:px-4 py-2 md:py-3 bg-white/80 backdrop-blur border border-white/30 text-gray-900 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition text-sm md:text-base min-h-[44px]"
+                className="w-full px-3 md:px-4 py-2 md:py-3 bg-white/80 backdrop-blur border border-white/30 text-[var(--color-text-primary)] placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition text-sm md:text-base min-h-[44px]"
               />
             </div>
 
             {/* Row 2: Country and Status */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-300 mb-2">Country</label>
+                <label className="block text-sm font-medium text-[var(--color-text-tertiary)] mb-2">Country</label>
                 <select
                   value={countryFilter}
                   onChange={(e) => {
                     setCountryFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full px-3 md:px-4 py-2 md:py-3 bg-white/80 backdrop-blur border border-white/30 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition text-sm md:text-base min-h-[44px]"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 bg-white/80 backdrop-blur border border-white/30 text-[var(--color-text-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition text-sm md:text-base min-h-[44px]"
                 >
                   <option value="">All Countries</option>
                   {countries.map(country => (
@@ -310,7 +314,7 @@ export default function ManufacturersPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-300 mb-2">Status</label>
+                <label className="block text-sm font-medium text-[var(--color-text-tertiary)] mb-2">Status</label>
                 <label className="flex items-center gap-2 mt-2 cursor-pointer bg-white/10 px-3 py-2 rounded-lg min-h-[44px]">
                   <input
                     type="checkbox"
@@ -319,7 +323,7 @@ export default function ManufacturersPage() {
                       setIncludeInactive(e.target.checked);
                       setCurrentPage(1);
                     }}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300"
+                    className="w-4 h-4 text-blue-600 rounded border-[var(--color-border-primary)]"
                   />
                   <span className="text-xs md:text-sm text-gray-200">Include Inactive</span>
                 </label>
@@ -328,7 +332,7 @@ export default function ManufacturersPage() {
 
             {/* Row 3: Count and Refresh */}
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs md:text-sm text-gray-300">
+              <span className="text-xs md:text-sm text-[var(--color-text-tertiary)]">
                 {sortedData.length} manufacturer{sortedData.length !== 1 ? 's' : ''} found
               </span>
               <button
@@ -346,7 +350,7 @@ export default function ManufacturersPage() {
 
         {/* Error */}
         {error && (
-          <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur border-2 border-red-400/50 text-red-300 px-4 md:px-6 py-3 md:py-4 rounded-lg mb-4 md:mb-6 flex items-start gap-2 md:gap-3 max-w-[calc(100vw-2rem)]">
+          <div className="bg-gradient-to-r from-[var(--color-status-danger-tint)]/20 to-pink-500/20 backdrop-blur border-2 border-red-400/50 text-red-300 px-4 md:px-6 py-3 md:py-4 rounded-lg mb-4 md:mb-6 flex items-start gap-2 md:gap-3 max-w-[calc(100vw-2rem)]">
             <span className="text-lg md:text-xl flex-shrink-0">⚠️</span>
             <div className="min-w-0">
               <div className="font-medium text-sm md:text-base">Error</div>
@@ -361,8 +365,8 @@ export default function ManufacturersPage() {
             <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur border-b border-blue-400/50 px-3 md:px-6 py-2 md:py-3 flex items-center justify-between">
               <span className="text-xs md:text-sm font-medium text-blue-200">{selectedIds.size} selected</span>
               <button
-                className="text-[10px] md:text-xs bg-gradient-to-r from-red-600 to-pink-600 text-white px-2 md:px-3 py-1 rounded hover:shadow-lg transition font-medium min-h-[36px]"
-                onClick={() => alert('Bulk delete feature coming soon')}
+                className="text-xs md:text-xs bg-gradient-to-r from-danger to-pink-600 text-white px-2 md:px-3 py-1 rounded hover:shadow-lg transition font-medium min-h-[36px]"
+                onClick={() => showToast.warning('Bulk delete feature coming soon')}
               >
                 Bulk Delete
               </button>
@@ -372,7 +376,7 @@ export default function ManufacturersPage() {
           {/* Desktop Table */}
           <div className="hidden md:block flex-1 overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '1000px'}}>
-              <thead className="bg-gray-100 border-b border-gray-200">
+              <thead className="bg-[var(--color-background-tertiary)] border-b border-[var(--color-border-primary)]">
                 <tr>
                   <th className="px-6 py-3 text-left">
                     <input
@@ -382,24 +386,24 @@ export default function ManufacturersPage() {
                       className="w-4 h-4 text-blue-600 rounded"
                     />
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-[var(--color-text-primary)] uppercase tracking-wider">
                     Logo
                   </th>
-                  <SortHeader field="name" label="Name" />
-                  <SortHeader field="slug" label="Slug" />
-                  <SortHeader field="country" label="Country" />
-                  <SortHeader field="productCount" label="Products" />
-                  <SortHeader field="isActive" label="Status" />
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <SortHeader field="name" label="Name" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+                  <SortHeader field="slug" label="Slug" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+                  <SortHeader field="country" label="Country" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+                  <SortHeader field="productCount" label="Products" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+                  <SortHeader field="isActive" label="Status" sortField={sortField} sortOrder={sortOrder} onSort={handleSort} />
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-[var(--color-text-primary)] uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-[var(--color-border-primary)]">
                 {paginatedData.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="px-6 py-12 text-center">
-                      <div className="text-gray-500">
+                      <div className="text-[var(--color-text-secondary)]">
                         <div className="text-lg">📦</div>
                         <div className="mt-2">
                           {searchTerm || countryFilter
@@ -411,7 +415,7 @@ export default function ManufacturersPage() {
                   </tr>
                 ) : (
                   paginatedData.map((manufacturer) => (
-                    <tr key={manufacturer._id} className="hover:bg-gray-50 transition">
+                    <tr key={manufacturer._id} className="hover:bg-[var(--color-background-secondary)] transition">
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
@@ -425,17 +429,17 @@ export default function ManufacturersPage() {
                           <img
                             src={manufacturer.logo.url}
                             alt={manufacturer.name}
-                            className="w-12 h-12 object-contain rounded border border-gray-200"
+                            className="w-12 h-12 object-contain rounded border border-[var(--color-border-primary)]"
                             loading="lazy"
                           />
                         ) : (
-                          <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-300">
+                          <div className="w-12 h-12 bg-[var(--color-background-muted)] rounded flex items-center justify-center text-[var(--color-text-secondary)] text-xs border border-[var(--color-border-primary)]">
                             No logo
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-semibold text-gray-900">{manufacturer.name}</div>
+                        <div className="text-sm font-semibold text-[var(--color-text-primary)]">{manufacturer.name}</div>
                         {manufacturer.website && (
                           <a
                             href={manufacturer.website}
@@ -448,11 +452,11 @@ export default function ManufacturersPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <code className="text-xs bg-gray-100 px-3 py-1 rounded text-gray-700 font-mono">
+                        <code className="text-xs bg-[var(--color-background-tertiary)] px-3 py-1 rounded text-[var(--color-text-primary)] font-mono">
                           {manufacturer.slug}
                         </code>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--color-text-primary)]">
                         {manufacturer.country || '—'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -464,8 +468,8 @@ export default function ManufacturersPage() {
                         <span
                           className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             manufacturer.isActive
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
+                              : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]'
                           }`}
                         >
                           {manufacturer.isActive ? '● Active' : '● Inactive'}
@@ -480,7 +484,7 @@ export default function ManufacturersPage() {
                         </button>
                         <button
                           onClick={() => handleDelete(manufacturer._id, manufacturer.name)}
-                          className="text-red-600 hover:text-red-900 hover:underline transition"
+                          className="text-[var(--color-status-danger)] hover:text-[var(--color-status-danger)] hover:underline transition"
                         >
                           Delete
                         </button>
@@ -495,7 +499,7 @@ export default function ManufacturersPage() {
           {/* Mobile Card View */}
           <div className="md:hidden space-y-3 p-3">
             {paginatedData.length === 0 ? (
-              <div className="py-12 text-center text-gray-400">
+              <div className="py-12 text-center text-[var(--color-text-secondary)]">
                 <div className="text-3xl mb-2">📦</div>
                 <div className="text-sm">
                   {searchTerm || countryFilter
@@ -518,31 +522,31 @@ export default function ManufacturersPage() {
                       <img
                         src={manufacturer.logo.url}
                         alt={manufacturer.name}
-                        className="w-16 h-16 object-contain rounded border border-gray-200 flex-shrink-0"
+                        className="w-16 h-16 object-contain rounded border border-[var(--color-border-primary)] flex-shrink-0"
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-[10px] border border-gray-300 flex-shrink-0">
+                      <div className="w-16 h-16 bg-[var(--color-background-muted)] rounded flex items-center justify-center text-[var(--color-text-secondary)] text-xs border border-[var(--color-border-primary)] flex-shrink-0">
                         No logo
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-bold text-gray-900 truncate">{manufacturer.name}</div>
+                      <div className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{manufacturer.name}</div>
                       {manufacturer.website && (
                         <a
                           href={manufacturer.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[10px] text-blue-600 hover:underline truncate block"
+                          className="text-xs text-blue-600 hover:underline truncate block"
                         >
                           {new URL(manufacturer.website).hostname}
                         </a>
                       )}
                       <span
-                        className={`inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full ${
+                        className={`inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded-full ${
                           manufacturer.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
+                            : 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]'
                         }`}
                       >
                         {manufacturer.isActive ? '● Active' : '● Inactive'}
@@ -551,34 +555,34 @@ export default function ManufacturersPage() {
                   </div>
 
                   {/* Details Grid */}
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <div className="text-gray-500 uppercase font-semibold">Slug</div>
-                      <code className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-700 font-mono block truncate">
+                      <div className="text-[var(--color-text-secondary)] uppercase font-semibold">Slug</div>
+                      <code className="text-xs bg-[var(--color-background-tertiary)] px-2 py-0.5 rounded text-[var(--color-text-primary)] font-mono block truncate">
                         {manufacturer.slug}
                       </code>
                     </div>
                     <div>
-                      <div className="text-gray-500 uppercase font-semibold">Country</div>
-                      <div className="text-gray-900 truncate">{manufacturer.country || '—'}</div>
+                      <div className="text-[var(--color-text-secondary)] uppercase font-semibold">Country</div>
+                      <div className="text-[var(--color-text-primary)] truncate">{manufacturer.country || '—'}</div>
                     </div>
                     <div className="col-span-2">
-                      <div className="text-gray-500 uppercase font-semibold">Products</div>
-                      <div className="text-gray-900 font-semibold">{manufacturer.productCount || 0} products</div>
+                      <div className="text-[var(--color-text-secondary)] uppercase font-semibold">Products</div>
+                      <div className="text-[var(--color-text-primary)] font-semibold">{manufacturer.productCount || 0} products</div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--color-border-primary)]">
                     <button
                       onClick={() => handleEdit(manufacturer)}
-                      className="min-h-[40px] px-3 text-[11px] text-blue-600 font-semibold border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                      className="min-h-[40px] px-3 text-xs text-blue-600 font-semibold border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(manufacturer._id, manufacturer.name)}
-                      className="min-h-[40px] px-3 text-[11px] text-red-600 font-semibold border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                      className="min-h-[40px] px-3 text-xs text-[var(--color-status-danger)] font-semibold border border-[var(--color-status-danger)] rounded-lg hover:bg-[var(--color-status-danger-tint)] transition-colors"
                     >
                       Delete
                     </button>
@@ -590,8 +594,8 @@ export default function ManufacturersPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white px-3 md:px-6 py-3 md:py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-2">
-              <div className="text-xs md:text-sm text-gray-600 text-center sm:text-left">
+            <div className="bg-white px-3 md:px-6 py-3 md:py-4 border-t border-[var(--color-border-primary)] flex flex-col sm:flex-row items-center justify-between gap-2">
+              <div className="text-xs md:text-sm text-[var(--color-text-secondary)] text-center sm:text-left">
                 <span className="hidden sm:inline">Showing {startIdx + 1} to {Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}</span>
                 <span className="sm:hidden">{startIdx + 1}-{Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length}</span>
               </div>
@@ -599,7 +603,7 @@ export default function ManufacturersPage() {
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(currentPage - 1)}
-                  className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-xs md:text-sm min-h-[44px] min-w-[44px]"
+                  className="px-3 md:px-4 py-2 border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-secondary)] disabled:opacity-50 disabled:cursor-not-allowed transition text-xs md:text-sm min-h-[44px] min-w-[44px]"
                 >
                   <span className="hidden sm:inline">← Prev</span>
                   <span className="sm:hidden">←</span>
@@ -610,7 +614,7 @@ export default function ManufacturersPage() {
                 <button
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage(currentPage + 1)}
-                  className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-xs md:text-sm min-h-[44px] min-w-[44px]"
+                  className="px-3 md:px-4 py-2 border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-secondary)] disabled:opacity-50 disabled:cursor-not-allowed transition text-xs md:text-sm min-h-[44px] min-w-[44px]"
                 >
                   <span className="hidden sm:inline">Next →</span>
                   <span className="sm:hidden">→</span>
@@ -622,10 +626,10 @@ export default function ManufacturersPage() {
 
         {/* Edit Modal */}
         {editingId && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-modal p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex items-center justify-between border-b">
-                <h2 className="text-xl font-bold text-white">Edit Manufacturer</h2>
+                <h2 className="text-xl font-semibold text-white">Edit Manufacturer</h2>
                 <button
                   onClick={() => setEditingId(null)}
                   className="text-white hover:opacity-80 text-2xl"
@@ -636,44 +640,44 @@ export default function ManufacturersPage() {
 
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Name *</label>
                   <input
                     type="text"
                     value={editForm.name || ''}
                     onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Manufacturer name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Slug *</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Slug *</label>
                   <input
                     type="text"
                     value={editForm.slug || ''}
                     onChange={(e) => setEditForm({...editForm, slug: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="manufacturer-slug"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Country</label>
                     <input
                       type="text"
                       value={editForm.country || ''}
                       onChange={(e) => setEditForm({...editForm, country: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Country"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Status</label>
                     <select
                       value={editForm.isActive ? 'active' : 'inactive'}
                       onChange={(e) => setEditForm({...editForm, isActive: e.target.value === 'active'})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -682,32 +686,32 @@ export default function ManufacturersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Website</label>
                   <input
                     type="url"
                     value={editForm.website || ''}
                     onChange={(e) => setEditForm({...editForm, website: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="https://example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Description</label>
                   <textarea
                     value={editForm.description || ''}
                     onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                     rows="3"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Manufacturer description"
                   />
                 </div>
               </div>
 
-              <div className="sticky bottom-0 bg-gray-50 px-6 py-4 border-t flex gap-3 justify-end">
+              <div className="sticky bottom-0 bg-[var(--color-background-secondary)] px-6 py-4 border-t flex gap-3 justify-end">
                 <button
                   onClick={() => setEditingId(null)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition font-medium"
+                  className="px-4 py-2 border border-[var(--color-border-primary)] rounded-lg hover:bg-[var(--color-background-tertiary)] transition font-medium"
                 >
                   Cancel
                 </button>

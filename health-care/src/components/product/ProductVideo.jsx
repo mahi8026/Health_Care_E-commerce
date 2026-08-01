@@ -56,7 +56,7 @@ export default function ProductVideo({
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--color-brand-navy)] to-[var(--color-brand-navy)]">
               <div className="text-center">
                 <FiPlay className="w-16 h-16 text-white/50 mx-auto mb-2" />
                 <p className="text-white/70 text-sm">Video Preview</p>
@@ -66,7 +66,7 @@ export default function ProductVideo({
 
           {/* Play button overlay */}
           <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-            <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xl">
+            <div className="w-20 h-20 rounded-full bg-danger flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
               <FiPlay className="w-10 h-10 text-white ml-1" />
             </div>
           </div>
@@ -82,7 +82,7 @@ export default function ProductVideo({
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="absolute top-3 right-3 z-20 p-2 bg-black/70 backdrop-blur-sm rounded-full text-white hover:bg-black/90 transition-colors"
+            className="absolute top-3 right-3 z-20 p-0 w-11 h-11 flex items-center justify-center bg-black/70 backdrop-blur-sm rounded-full text-white hover:bg-black/90 transition-colors"
             aria-label="Close video"
           >
             <FiX className="w-5 h-5" />
@@ -189,7 +189,7 @@ export function ProductVideoGallery({ videos = [], className = '' }) {
 
   return (
     <div className={className}>
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <h3 className="text-lg font-semibold text-[var(--color-text-primary)] dark:text-gray-100 mb-4">
         Product Videos
       </h3>
 
@@ -216,14 +216,14 @@ export function ProductVideoGallery({ videos = [], className = '' }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--color-brand-navy)] to-[var(--color-brand-navy)]">
                     <FiPlay className="w-12 h-12 text-white/50" />
                   </div>
                 )}
 
                 {/* Play overlay */}
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-full bg-danger flex items-center justify-center group-hover:scale-110 transition-transform">
                     <FiPlay className="w-6 h-6 text-white ml-0.5" />
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export function ProductVideoCompact({ videoUrl, className = '' }) {
     return (
       <button
         onClick={() => setShowVideo(true)}
-        className={`inline-flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors ${className}`}
+        className={`inline-flex items-center gap-2 px-3 py-1.5 bg-danger hover:bg-danger text-white text-sm font-medium rounded-lg transition-colors ${className}`}
       >
         <FiPlay className="w-4 h-4" />
         Watch Video
@@ -266,7 +266,7 @@ export function ProductVideoCompact({ videoUrl, className = '' }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[var(--z-modal)] bg-black/90 flex items-center justify-center p-4">
       <div className="relative w-full max-w-4xl">
         <button
           onClick={() => setShowVideo(false)}

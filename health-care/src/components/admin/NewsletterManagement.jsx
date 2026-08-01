@@ -1,4 +1,5 @@
 'use client';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect, useCallback } from 'react';
 import { API } from '@/constants/api';
@@ -70,12 +71,12 @@ export default function NewsletterManagement() {
   }, [page, search, filterStatus, filterSource]);
 
   useEffect(() => {
-    fetchStats();
-    fetchSubscribers();
+    void Promise.resolve().then(fetchStats);
+    void Promise.resolve().then(fetchSubscribers);
   }, [fetchStats, fetchSubscribers]);
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this subscriber?')) return;
+    if (!await confirmAction('Delete this subscriber?')) return;
     try {
       const res = await fetch(`${API}/newsletter/subscribers/${id}`, {
         method: 'DELETE',
@@ -98,7 +99,7 @@ export default function NewsletterManagement() {
       showToast.warning('Subject and content are required');
       return;
     }
-    if (!confirm(`Send broadcast to ${stats?.active || 0} active subscribers?`)) return;
+    if (!await confirmAction(`Send broadcast to ${stats?.active || 0} active subscribers?`)) return;
 
     setBroadcasting(true);
     try {
@@ -127,7 +128,7 @@ export default function NewsletterManagement() {
     <div>
       {/* Success banner */}
       {successMsg && (
-        <div className="mb-4 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-[13px] font-medium">
+        <div className="mb-4 px-4 py-3 bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded-lg text-sm font-medium">
           ✅ Broadcast sent successfully! {successMsg}
         </div>
       )}
@@ -136,31 +137,31 @@ export default function NewsletterManagement() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
           { label: 'Total Subscribers', value: stats?.total ?? 0, color: 'text-[var(--color-text-primary)]' },
-          { label: 'Active', value: stats?.active ?? 0, color: 'text-[#0E8A6E]' },
-          { label: 'Unsubscribed', value: stats?.unsubscribed ?? 0, color: 'text-[#E24B4A]' },
-          { label: 'This Month', value: stats?.thisMonth ?? 0, color: 'text-[#3730A3]' },
+          { label: 'Active', value: stats?.active ?? 0, color: 'text-brand-teal' },
+          { label: 'Unsubscribed', value: stats?.unsubscribed ?? 0, color: 'text-danger' },
+          { label: 'This Month', value: stats?.thisMonth ?? 0, color: 'text-[var(--color-status-info)]' },
         ].map(({ label, value, color }) => (
-          <div key={label} className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
-            <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">{label}</div>
-            <div className={`text-[24px] font-bold ${color} font-[family-name:var(--font-plus-jakarta)]`}>{value}</div>
+          <div key={label} className="bg-white rounded-lg p-4 border border-[var(--color-border-tertiary)] shadow-sm">
+            <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">{label}</div>
+            <div className={`text-2xl font-semibold ${color} font-[family-name:var(--font-plus-jakarta)]`}>{value}</div>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm mb-4">
+      <div className="bg-white rounded-lg p-4 border border-[var(--color-border-tertiary)] shadow-sm mb-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap">
           <input
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search by email or name..."
-            className="flex-1 min-w-[200px] px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B2545]/20 focus:border-[#0B2545]"
+            className="flex-1 min-w-[200px] px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy/20 focus:border-brand-navy"
           />
           <select
             value={filterStatus}
             onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-            className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
+            className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -169,7 +170,7 @@ export default function NewsletterManagement() {
           <select
             value={filterSource}
             onChange={(e) => { setFilterSource(e.target.value); setPage(1); }}
-            className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
+            className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
           >
             <option value="all">All Sources</option>
             <option value="footer">Footer</option>
@@ -179,7 +180,7 @@ export default function NewsletterManagement() {
           </select>
           <button
             onClick={() => setShowBroadcastPanel(true)}
-            className="sm:ml-auto h-[38px] px-4 bg-[#0B2545] text-white text-[12px] font-semibold rounded-lg hover:bg-[#0d2d52] transition-colors"
+            className="sm:ml-auto h-[38px] px-4 bg-brand-navy text-white text-xs font-semibold rounded-lg hover:bg-[var(--color-brand-navy-hover)] transition-colors"
           >
             📧 Compose Broadcast
           </button>
@@ -188,13 +189,13 @@ export default function NewsletterManagement() {
 
       {/* Error state */}
       {error && (
-        <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-10 text-center mb-4">
+        <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] shadow-sm p-10 text-center mb-4">
           <div className="text-4xl mb-3">📭</div>
-          <p className="text-[15px] font-semibold text-gray-800 mb-1">Newsletter API Unavailable</p>
-          <p className="text-[13px] text-gray-500 mb-4 max-w-md mx-auto">{error}</p>
+          <p className="text-base font-semibold text-[var(--color-text-primary)] mb-1">Newsletter API Unavailable</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-4 max-w-md mx-auto">{error}</p>
           <button
             onClick={() => { fetchStats(); fetchSubscribers(); }}
-            className="px-5 py-2 bg-[#0B2545] text-white text-[13px] font-medium rounded-lg hover:bg-[#0d2d52] transition-colors"
+            className="px-5 py-2 bg-brand-navy text-white text-sm font-medium rounded-lg hover:bg-[var(--color-brand-navy-hover)] transition-colors"
           >
             Retry
           </button>
@@ -203,38 +204,38 @@ export default function NewsletterManagement() {
 
       {/* Table */}
       {!error && (
-        <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] shadow-sm overflow-hidden">
           {/* Mobile view */}
           <div className="md:hidden">
             {loading ? (
-              <div className="p-8 text-center text-[13px] text-gray-400">Loading...</div>
+              <div className="p-8 text-center text-sm text-[var(--color-text-secondary)]">Loading...</div>
             ) : subscribers.length === 0 ? (
               <div className="p-10 text-center">
                 <div className="text-4xl mb-3">📋</div>
-                <p className="text-[14px] font-semibold text-gray-700">No subscribers yet</p>
-                <p className="text-[12px] text-gray-400 mt-1">Subscribers will appear here once people sign up</p>
+                <p className="text-sm font-semibold text-[var(--color-text-primary)]">No subscribers yet</p>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">Subscribers will appear here once people sign up</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-[var(--color-border-tertiary)]">
                 {subscribers.map((sub) => (
                   <div key={sub._id} className="p-4">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="min-w-0">
-                        <p className="text-[13px] font-semibold text-gray-800 truncate">{sub.email}</p>
-                        {sub.name && <p className="text-[11px] text-gray-500 mt-0.5">{sub.name}</p>}
+                        <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">{sub.email}</p>
+                        {sub.name && <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">{sub.name}</p>}
                       </div>
-                      <span className={`text-[10px] px-2 py-1 rounded-full font-semibold flex-shrink-0 ${
-                        sub.isSubscribed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                      <span className={`text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 ${
+                        sub.isSubscribed ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
                       }`}>
                         {sub.isSubscribed ? 'Active' : 'Unsub'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium capitalize">{sub.source}</span>
-                        <span className="text-[11px] text-gray-400">{new Date(sub.subscribedAt).toLocaleDateString('en-BD')}</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium capitalize">{sub.source}</span>
+                        <span className="text-xs text-[var(--color-text-secondary)]">{new Date(sub.subscribedAt).toLocaleDateString('en-BD')}</span>
                       </div>
-                      <button onClick={() => handleDelete(sub._id)} className="text-[11px] text-red-500 hover:text-red-700 font-medium">Delete</button>
+                      <button onClick={() => handleDelete(sub._id)} className="text-xs text-[var(--color-status-danger)] hover:text-[var(--color-status-danger)] font-medium">Delete</button>
                     </div>
                   </div>
                 ))}
@@ -245,41 +246,41 @@ export default function NewsletterManagement() {
           {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full" style={{ minWidth: 700 }}>
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-[var(--color-background-secondary)] border-b border-[var(--color-border-tertiary)]">
                 <tr>
                   {['Email', 'Name', 'Source', 'Subscribed', 'Status', 'Actions'].map((h) => (
-                    <th key={h} className={`px-4 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wide ${h === 'Actions' ? 'text-right' : 'text-left'}`}>{h}</th>
+                    <th key={h} className={`px-4 py-3 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide ${h === 'Actions' ? 'text-right' : 'text-left'}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="6" className="text-center py-10 text-[13px] text-gray-400">Loading...</td></tr>
+                  <tr><td colSpan="6" className="text-center py-10 text-sm text-[var(--color-text-secondary)]">Loading...</td></tr>
                 ) : subscribers.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="text-center py-16">
                       <div className="text-4xl mb-3">📋</div>
-                      <p className="text-[14px] font-semibold text-gray-700">No subscribers yet</p>
-                      <p className="text-[12px] text-gray-400 mt-1">Subscribers will appear here once people sign up via the footer or checkout</p>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">No subscribers yet</p>
+                      <p className="text-xs text-[var(--color-text-secondary)] mt-1">Subscribers will appear here once people sign up via the footer or checkout</p>
                     </td>
                   </tr>
                 ) : subscribers.map((sub) => (
-                  <tr key={sub._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-[12px] text-gray-800 font-medium">{sub.email}</td>
-                    <td className="px-4 py-3 text-[12px] text-gray-500">{sub.name || '—'}</td>
+                  <tr key={sub._id} className="border-b border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-secondary)] transition-colors">
+                    <td className="px-4 py-3 text-xs text-[var(--color-text-primary)] font-medium">{sub.email}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{sub.name || '—'}</td>
                     <td className="px-4 py-3">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold capitalize">{sub.source}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold capitalize">{sub.source}</span>
                     </td>
-                    <td className="px-4 py-3 text-[12px] text-gray-400">{new Date(sub.subscribedAt).toLocaleDateString('en-BD')}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{new Date(sub.subscribedAt).toLocaleDateString('en-BD')}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                        sub.isSubscribed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                        sub.isSubscribed ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
                       }`}>
                         {sub.isSubscribed ? 'Active' : 'Unsubscribed'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => handleDelete(sub._id)} className="text-[11px] text-red-500 hover:text-red-700 hover:underline font-medium">Delete</button>
+                      <button onClick={() => handleDelete(sub._id)} className="text-xs text-[var(--color-status-danger)] hover:text-[var(--color-status-danger)] hover:underline font-medium">Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -289,14 +290,14 @@ export default function NewsletterManagement() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--color-border-tertiary)]">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="px-4 py-2 text-[12px] border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                className="px-4 py-2 text-xs border border-[var(--color-border-primary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors">
                 ← Previous
               </button>
-              <span className="text-[12px] text-gray-500">Page {page} of {totalPages}</span>
+              <span className="text-xs text-[var(--color-text-secondary)]">Page {page} of {totalPages}</span>
               <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="px-4 py-2 text-[12px] border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                className="px-4 py-2 text-xs border border-[var(--color-border-primary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors">
                 Next →
               </button>
             </div>
@@ -306,51 +307,51 @@ export default function NewsletterManagement() {
 
       {/* Broadcast Modal */}
       {showBroadcastPanel && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
-              <h2 className="text-[16px] font-semibold text-gray-800">📧 Compose Broadcast</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-modal p-0 sm:p-4">
+          <div className="bg-white rounded-t-lg sm:rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
+              <h2 className="text-base font-semibold text-[var(--color-text-primary)]">📧 Compose Broadcast</h2>
               <button onClick={() => setShowBroadcastPanel(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors text-lg">×</button>
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] transition-colors text-lg">×</button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">Subject *</label>
+                <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-1.5">Subject *</label>
                 <input
                   type="text"
                   value={broadcastData.subject}
                   onChange={(e) => setBroadcastData({ ...broadcastData, subject: e.target.value })}
                   placeholder="Email subject line..."
-                  className="w-full px-3 h-[42px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B2545]/20 focus:border-[#0B2545]"
+                  className="w-full px-3 h-[42px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy/20 focus:border-brand-navy"
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-semibold text-gray-700 mb-1.5">HTML Content *</label>
+                <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-1.5">HTML Content *</label>
                 <textarea
                   value={broadcastData.htmlContent}
                   onChange={(e) => setBroadcastData({ ...broadcastData, htmlContent: e.target.value })}
                   placeholder="<h1>Hello subscribers!</h1><p>Your message here...</p>"
                   rows={12}
-                  className="w-full px-3 py-2.5 text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545] font-mono resize-y"
+                  className="w-full px-3 py-2.5 text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy font-mono resize-y"
                 />
-                <p className="text-[11px] text-gray-400 mt-1">Unsubscribe link will be added automatically.</p>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">Unsubscribe link will be added automatically.</p>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-[12px] text-blue-800 font-medium">
+                <p className="text-xs text-blue-800 font-medium">
                   📬 Sending to <strong>{stats?.active || 0}</strong> active subscribers
                 </p>
-                <p className="text-[11px] text-blue-600 mt-0.5">Emails sent in batches of 50 to avoid rate limits</p>
+                <p className="text-xs text-blue-600 mt-0.5">Emails sent in batches of 50 to avoid rate limits</p>
               </div>
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleBroadcast}
                   disabled={broadcasting || !broadcastData.subject || !broadcastData.htmlContent}
-                  className="flex-1 h-[42px] bg-[#0B2545] text-white text-[13px] font-semibold rounded-lg hover:bg-[#0d2d52] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-[42px] bg-brand-navy text-white text-sm font-semibold rounded-lg hover:bg-[var(--color-brand-navy-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {broadcasting ? 'Sending...' : '📧 Send Broadcast'}
                 </button>
                 <button onClick={() => setShowBroadcastPanel(false)}
-                  className="h-[42px] px-5 border border-gray-200 text-[13px] rounded-lg hover:bg-gray-50 transition-colors">
+                  className="h-[42px] px-5 border border-[var(--color-border-primary)] text-sm rounded-lg hover:bg-[var(--color-background-secondary)] transition-colors">
                   Cancel
                 </button>
               </div>

@@ -126,9 +126,9 @@ export default function ReviewsManagement() {
 
   const renderStars = (rating) => {
     return (
-      <div className="flex gap-[2px] text-[14px]">
+      <div className="flex gap-[2px] text-sm">
         {[1, 2, 3, 4, 5].map(star => (
-          <span key={star} className={star <= rating ? 'text-[#FFA500]' : 'text-[#E5E7EB]'}>
+          <span key={star} className={star <= rating ? 'text-[#FFA500]' : 'text-[var(--color-text-tertiary)]'}>
             ★
           </span>
         ))}
@@ -138,9 +138,9 @@ export default function ReviewsManagement() {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'bg-[#FEF3C7] text-[#92400E]',
-      approved: 'bg-[#D1FAE5] text-[#065F46]',
-      rejected: 'bg-[#FEE2E2] text-[#991B1B]'
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      approved: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+      rejected: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
     };
     return colors[status] || colors.pending;
   };
@@ -151,8 +151,8 @@ export default function ReviewsManagement() {
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)]">
       {/* Message Toast */}
       {message.text && (
-        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
-          message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-toast ${
+          message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
         }`}>
           {message.text}
         </div>
@@ -162,26 +162,26 @@ export default function ReviewsManagement() {
       <div className="p-4 border-b border-[var(--color-border-tertiary)]">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4">
-            <div className="text-[11px] text-[var(--color-text-secondary)] mb-1">Total Reviews</div>
-            <div className="text-[24px] font-bold font-[family-name:var(--font-plus-jakarta)]">
+            <div className="text-xs text-[var(--color-text-secondary)] mb-1">Total Reviews</div>
+            <div className="text-2xl font-semibold font-[family-name:var(--font-plus-jakarta)]">
               {(stats?.pending || 0) + (stats?.approved || 0) + (stats?.rejected || 0)}
             </div>
           </div>
-          <div className="bg-[#FEF3C7] rounded-lg p-4">
-            <div className="text-[11px] text-[#92400E] mb-1">Pending</div>
-            <div className="text-[24px] font-bold text-[#92400E] font-[family-name:var(--font-plus-jakarta)]">
+          <div className="bg-[var(--color-status-warning-tint)] rounded-lg p-4">
+            <div className="text-xs text-[var(--color-status-warning)] mb-1">Pending</div>
+            <div className="text-2xl font-semibold text-[var(--color-status-warning)] font-[family-name:var(--font-plus-jakarta)]">
               {stats?.pending || 0}
             </div>
           </div>
-          <div className="bg-[#D1FAE5] rounded-lg p-4">
-            <div className="text-[11px] text-[#065F46] mb-1">Approved</div>
-            <div className="text-[24px] font-bold text-[#065F46] font-[family-name:var(--font-plus-jakarta)]">
+          <div className="bg-[var(--color-status-success-tint)] rounded-lg p-4">
+            <div className="text-xs text-[var(--color-status-success)] mb-1">Approved</div>
+            <div className="text-2xl font-semibold text-[var(--color-status-success)] font-[family-name:var(--font-plus-jakarta)]">
               {stats?.approved || 0}
             </div>
           </div>
-          <div className="bg-[#FEE2E2] rounded-lg p-4">
-            <div className="text-[11px] text-[#991B1B] mb-1">Rejected</div>
-            <div className="text-[24px] font-bold text-[#991B1B] font-[family-name:var(--font-plus-jakarta)]">
+          <div className="bg-[var(--color-status-danger-tint)] rounded-lg p-4">
+            <div className="text-xs text-[var(--color-status-danger)] mb-1">Rejected</div>
+            <div className="text-2xl font-semibold text-[var(--color-status-danger)] font-[family-name:var(--font-plus-jakarta)]">
               {stats?.rejected || 0}
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function ReviewsManagement() {
         <select
           value={statusFilter}
           onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
+          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
         >
           {STATUS_OPTIONS.map(s => (
             <option key={s} value={s}>{s === 'all' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
@@ -202,22 +202,22 @@ export default function ReviewsManagement() {
         <select
           value={ratingFilter}
           onChange={e => { setRatingFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
+          className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-[family-name:var(--font-plus-jakarta)] bg-white min-h-[48px]"
         >
           {RATING_OPTIONS.map(r => (
             <option key={r} value={r}>{r === 'all' ? 'All ratings' : `${r} stars`}</option>
           ))}
         </select>
-        <div className="sm:ml-auto text-[11px] sm:text-[12px] text-[var(--color-text-secondary)] self-center text-center sm:text-left">
+        <div className="sm:ml-auto text-xs sm:text-xs text-[var(--color-text-secondary)] self-center text-center sm:text-left">
           {pagination?.total || 0} reviews total
         </div>
       </div>
 
       {/* Reviews Table/Cards */}
       {loading ? (
-        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading reviews…</div>
+        <div className="p-8 text-center text-xs text-[var(--color-text-secondary)]">Loading reviews…</div>
       ) : reviews.length === 0 ? (
-        <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No reviews found</div>
+        <div className="p-8 text-center text-xs text-[var(--color-text-secondary)]">No reviews found</div>
       ) : (
         <>
           {/* Desktop Table */}
@@ -226,7 +226,7 @@ export default function ReviewsManagement() {
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
                   {['Product', 'Customer', 'Rating', 'Review', 'Status', 'Date', 'Actions'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -237,37 +237,37 @@ export default function ReviewsManagement() {
                       <div className="flex items-center gap-2">
                         <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]" loading="lazy" />
                         <div>
-                          <div className="text-[12px] font-semibold line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
-                          <div className="text-[10px] text-[var(--color-text-secondary)]">{review.product?.sku}</div>
+                          <div className="text-xs font-semibold line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
+                          <div className="text-xs text-[var(--color-text-secondary)]">{review.product?.sku}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-[12px]">{review.user?.name}</div>
-                      <div className="text-[10px] text-[var(--color-text-secondary)]">{review.user?.email}</div>
+                      <div className="text-xs">{review.user?.name}</div>
+                      <div className="text-xs text-[var(--color-text-secondary)]">{review.user?.email}</div>
                     </td>
                     <td className="px-4 py-3">{renderStars(review.rating)}</td>
                     <td className="px-4 py-3 max-w-xs">
-                      <div className="text-[12px] font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)]">{review.title}</div>
-                      <div className="text-[11px] text-[var(--color-text-secondary)] line-clamp-2">{review.comment}</div>
-                      {review.images?.length > 0 && <div className="text-[10px] text-[#0E8A6E] mt-1">📷 {review.images.length} image{review.images.length > 1 ? 's' : ''}</div>}
-                      {review.reported && <div className="text-[10px] text-[#E24B4A] mt-1">🚩 Reported ({review.reportedBy?.length || 0})</div>}
+                      <div className="text-xs font-semibold mb-1 font-[family-name:var(--font-plus-jakarta)]">{review.title}</div>
+                      <div className="text-xs text-[var(--color-text-secondary)] line-clamp-2">{review.comment}</div>
+                      {review.images?.length > 0 && <div className="text-xs text-brand-teal mt-1">📷 {review.images.length} image{review.images.length > 1 ? 's' : ''}</div>}
+                      {review.reported && <div className="text-xs text-danger mt-1">🚩 Reported ({review.reportedBy?.length || 0})</div>}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(review.status)}`}>{review.status}</span>
+                      <span className={`text-xs px-2 py-[3px] rounded font-medium ${getStatusColor(review.status)}`}>{review.status}</span>
                     </td>
-                    <td className="px-4 py-3 text-[11px] text-[var(--color-text-secondary)]">{new Date(review.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">{new Date(review.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
                         {review.status === 'pending' && (
                           <>
-                            <button onClick={() => handleOpenModal(review, 'approve')} className="text-[11px] px-2 py-1 bg-[#D1FAE5] text-[#065F46] rounded hover:bg-[#A7F3D0]">Approve</button>
-                            <button onClick={() => handleOpenModal(review, 'reject')} className="text-[11px] px-2 py-1 bg-[#FEE2E2] text-[#991B1B] rounded hover:bg-[#FECACA]">Reject</button>
+                            <button onClick={() => handleOpenModal(review, 'approve')} className="text-xs px-2 py-1 bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded hover:bg-[#A7F3D0]">Approve</button>
+                            <button onClick={() => handleOpenModal(review, 'reject')} className="text-xs px-2 py-1 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded hover:bg-[var(--color-status-danger-tint)]">Reject</button>
                           </>
                         )}
-                        {review.status === 'approved' && <button onClick={() => handleOpenModal(review, 'reject')} className="text-[11px] px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)]">Reject</button>}
-                        {review.status === 'rejected' && <button onClick={() => handleOpenModal(review, 'approve')} className="text-[11px] px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)]">Approve</button>}
-                        <button onClick={() => handleOpenModal(review, 'view')} className="text-[11px] text-[#0E8A6E] font-medium hover:underline">View</button>
+                        {review.status === 'approved' && <button onClick={() => handleOpenModal(review, 'reject')} className="text-xs px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)]">Reject</button>}
+                        {review.status === 'rejected' && <button onClick={() => handleOpenModal(review, 'approve')} className="text-xs px-2 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)]">Approve</button>}
+                        <button onClick={() => handleOpenModal(review, 'view')} className="text-xs text-brand-teal font-medium hover:underline">View</button>
                       </div>
                     </td>
                   </tr>
@@ -283,27 +283,27 @@ export default function ReviewsManagement() {
                 <div className="flex items-start gap-3">
                   <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-12 h-12 object-cover rounded border border-[var(--color-border-secondary)] flex-shrink-0" loading="lazy" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-bold text-[#0B2545] line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)]">{review.user?.name}</div>
+                    <div className="text-sm font-semibold text-brand-navy line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
+                    <div className="text-xs text-[var(--color-text-secondary)]">{review.user?.name}</div>
                     <div className="mt-1">{renderStars(review.rating)}</div>
                   </div>
-                  <span className={`text-[10px] px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(review.status)}`}>{review.status}</span>
+                  <span className={`text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0 ${getStatusColor(review.status)}`}>{review.status}</span>
                 </div>
                 <div>
-                  <div className="text-[12px] font-semibold text-[#0B2545]">{review.title}</div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)] mt-0.5 line-clamp-2">{review.comment}</div>
+                  <div className="text-xs font-semibold text-brand-navy">{review.title}</div>
+                  <div className="text-xs text-[var(--color-text-secondary)] mt-0.5 line-clamp-2">{review.comment}</div>
                 </div>
-                <div className="text-[11px] text-[var(--color-text-secondary)]">{new Date(review.createdAt).toLocaleDateString()}</div>
+                <div className="text-xs text-[var(--color-text-secondary)]">{new Date(review.createdAt).toLocaleDateString()}</div>
                 <div className="flex gap-2 pt-2 border-t border-[var(--color-border-tertiary)]">
                   {review.status === 'pending' && (
                     <>
-                      <button onClick={() => handleOpenModal(review, 'approve')} className="flex-1 min-h-[48px] px-3 py-2 bg-[#D1FAE5] text-[#065F46] rounded-lg text-[12px] font-semibold">Approve</button>
-                      <button onClick={() => handleOpenModal(review, 'reject')} className="flex-1 min-h-[48px] px-3 py-2 bg-[#FEE2E2] text-[#991B1B] rounded-lg text-[12px] font-semibold">Reject</button>
+                      <button onClick={() => handleOpenModal(review, 'approve')} className="flex-1 min-h-[48px] px-3 py-2 bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded-lg text-xs font-semibold">Approve</button>
+                      <button onClick={() => handleOpenModal(review, 'reject')} className="flex-1 min-h-[48px] px-3 py-2 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs font-semibold">Reject</button>
                     </>
                   )}
-                  {review.status === 'approved' && <button onClick={() => handleOpenModal(review, 'reject')} className="flex-1 min-h-[48px] px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold">Reject</button>}
-                  {review.status === 'rejected' && <button onClick={() => handleOpenModal(review, 'approve')} className="flex-1 min-h-[48px] px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[12px] font-semibold">Approve</button>}
-                  <button onClick={() => handleOpenModal(review, 'view')} className="flex-1 min-h-[48px] px-3 py-2 bg-[#0B2545] text-white rounded-lg text-[12px] font-semibold">View</button>
+                  {review.status === 'approved' && <button onClick={() => handleOpenModal(review, 'reject')} className="flex-1 min-h-[48px] px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-xs font-semibold">Reject</button>}
+                  {review.status === 'rejected' && <button onClick={() => handleOpenModal(review, 'approve')} className="flex-1 min-h-[48px] px-3 py-2 border border-[var(--color-border-secondary)] rounded-lg text-xs font-semibold">Approve</button>}
+                  <button onClick={() => handleOpenModal(review, 'view')} className="flex-1 min-h-[48px] px-3 py-2 bg-brand-navy text-white rounded-lg text-xs font-semibold">View</button>
                 </div>
               </div>
             ))}
@@ -314,13 +314,13 @@ export default function ReviewsManagement() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="p-3 sm:p-4 flex items-center justify-between gap-2 border-t-[0.5px] border-[var(--color-border-tertiary)]">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="text-xs px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center">
             <span className="hidden sm:inline">← Prev</span><span className="sm:hidden">←</span>
           </button>
-          <span className="text-[11px] sm:text-[12px] text-[var(--color-text-secondary)]">
+          <span className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
             <span className="hidden sm:inline">Page {page} of {totalPages}</span><span className="sm:hidden">{page}/{totalPages}</span>
           </span>
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="text-[12px] px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="text-xs px-3 sm:px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 font-medium min-h-[44px] min-w-[44px] flex items-center justify-center">
             <span className="hidden sm:inline">Next →</span><span className="sm:hidden">→</span>
           </button>
         </div>
@@ -328,16 +328,16 @@ export default function ReviewsManagement() {
 
       {/* Review Detail Modal */}
       {showModal && selectedReview && (
-        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-3xl shadow-2xl sm:my-8">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-modal p-0 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-t-lg sm:rounded-xl w-full max-w-3xl shadow-lg sm:my-8">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white rounded-t-2xl sm:rounded-t-xl">
-              <h3 className="text-[16px] sm:text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white rounded-t-lg sm:rounded-t-xl">
+              <h3 className="text-base sm:text-lg font-semibold font-[family-name:var(--font-plus-jakarta)]">
                 Review Details
               </h3>
               <button
                 onClick={handleCloseModal}
-                className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-[var(--color-text-secondary)]"
+                className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-[var(--color-background-tertiary)] transition-colors text-[var(--color-text-secondary)]"
                 aria-label="Close"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -351,7 +351,7 @@ export default function ReviewsManagement() {
               {/* Product & Customer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Product</div>
+                  <div className="text-xs text-[var(--color-text-secondary)] mb-2">Product</div>
                   <div className="flex items-center gap-3">
                     <img
                       src={selectedReview.product?.images?.[0]?.url || '/placeholder.png'}
@@ -360,21 +360,21 @@ export default function ReviewsManagement() {
                       loading="lazy"
                     />
                     <div className="min-w-0">
-                      <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
+                      <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] truncate">
                         {selectedReview.product?.name}
                       </div>
-                      <div className="text-[11px] text-[var(--color-text-secondary)]">
+                      <div className="text-xs text-[var(--color-text-secondary)]">
                         SKU: {selectedReview.product?.sku}
                       </div>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Customer</div>
-                  <div className="text-[13px] font-semibold">{selectedReview.user?.name}</div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)]">{selectedReview.user?.email}</div>
+                  <div className="text-xs text-[var(--color-text-secondary)] mb-2">Customer</div>
+                  <div className="text-sm font-semibold">{selectedReview.user?.name}</div>
+                  <div className="text-xs text-[var(--color-text-secondary)]">{selectedReview.user?.email}</div>
                   {selectedReview.verifiedPurchase && (
-                    <div className="text-[10px] px-2 py-[2px] bg-[#D1FAE5] text-[#065F46] rounded font-medium inline-block mt-1">
+                    <div className="text-xs px-2 py-[2px] bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded font-medium inline-block mt-1">
                       ✓ Verified Purchase
                     </div>
                   )}
@@ -383,12 +383,12 @@ export default function ReviewsManagement() {
 
               {/* Review */}
               <div>
-                <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Review</div>
+                <div className="text-xs text-[var(--color-text-secondary)] mb-2">Review</div>
                 {renderStars(selectedReview.rating)}
-                <h4 className="text-[15px] font-semibold mt-2 mb-2 font-[family-name:var(--font-plus-jakarta)]">
+                <h4 className="text-base font-semibold mt-2 mb-2 font-[family-name:var(--font-plus-jakarta)]">
                   {selectedReview.title}
                 </h4>
-                <p className="text-[13px] text-[var(--color-text-primary)] leading-relaxed">
+                <p className="text-sm text-[var(--color-text-primary)] leading-relaxed">
                   {selectedReview.comment}
                 </p>
               </div>
@@ -396,7 +396,7 @@ export default function ReviewsManagement() {
               {/* Images */}
               {selectedReview.images?.length > 0 && (
                 <div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">Images</div>
+                  <div className="text-xs text-[var(--color-text-secondary)] mb-2">Images</div>
                   <div className="flex gap-2 flex-wrap">
                     {selectedReview.images.map((img, idx) => (
                       <img
@@ -415,14 +415,14 @@ export default function ReviewsManagement() {
               {/* Reports */}
               {selectedReview.reported && selectedReview.reportedBy?.length > 0 && (
                 <div>
-                  <div className="text-[11px] text-[var(--color-text-secondary)] mb-2">
+                  <div className="text-xs text-[var(--color-text-secondary)] mb-2">
                     Reports ({selectedReview.reportedBy.length})
                   </div>
                   <div className="space-y-2">
                     {selectedReview.reportedBy.slice(0, 3).map((report, idx) => (
-                      <div key={idx} className="bg-[#FEE2E2] border border-[#FCA5A5] rounded p-3">
-                        <div className="text-[11px] text-[#991B1B]">{report.reason}</div>
-                        <div className="text-[10px] text-[#991B1B] mt-1">
+                      <div key={idx} className="bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded p-3">
+                        <div className="text-xs text-[var(--color-status-danger)]">{report.reason}</div>
+                        <div className="text-xs text-[var(--color-status-danger)] mt-1">
                           {new Date(report.reportedAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -434,7 +434,7 @@ export default function ReviewsManagement() {
               {/* Admin Response */}
               {modalAction !== 'view' && (
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-2">
                     Admin Response (Optional)
                   </label>
                   <textarea
@@ -443,10 +443,10 @@ export default function ReviewsManagement() {
                     placeholder="Add a response to the customer..."
                     maxLength={500}
                     rows={3}
-                    className="w-full px-3 py-3 border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
-                    style={{ fontSize: '16px' }}
+                    className="w-full px-3 py-3 border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-brand-teal resize-none"
+                    style={{ fontSize: 'var(--text-base)' }}
                   />
-                  <div className="text-[10px] text-[var(--color-text-secondary)] mt-1 text-right">
+                  <div className="text-xs text-[var(--color-text-secondary)] mt-1 text-right">
                     {adminResponse.length}/500
                   </div>
                 </div>
@@ -455,22 +455,22 @@ export default function ReviewsManagement() {
               {/* Rejection Reason */}
               {modalAction === 'reject' && (
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
-                    Rejection Reason <span className="text-red-500">*</span>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-2">
+                    Rejection Reason <span className="text-[var(--color-status-danger)]">*</span>
                   </label>
                   <textarea
                     value={rejectionReason}
                     onChange={e => setRejectionReason(e.target.value)}
                     placeholder="Explain why this review is being rejected..."
                     rows={3}
-                    className="w-full px-3 py-3 border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-[#0E8A6E] resize-none"
-                    style={{ fontSize: '16px' }}
+                    className="w-full px-3 py-3 border border-[var(--color-border-secondary)] rounded-lg focus:outline-none focus:border-brand-teal resize-none"
+                    style={{ fontSize: 'var(--text-base)' }}
                   />
                 </div>
               )}
 
               {/* Meta Info */}
-              <div className="text-[11px] text-[var(--color-text-secondary)] space-y-1">
+              <div className="text-xs text-[var(--color-text-secondary)] space-y-1">
                 <div>Posted: {new Date(selectedReview.createdAt).toLocaleDateString()}</div>
                 {selectedReview.isEdited && (
                   <div>Edited: {new Date(selectedReview.editedAt).toLocaleDateString()}</div>
@@ -487,17 +487,17 @@ export default function ReviewsManagement() {
               <div className="px-4 sm:px-6 py-4 border-t border-[var(--color-border-tertiary)] flex gap-3 sticky bottom-0 bg-white">
                 <button
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-[14px] font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors min-h-[48px]"
+                  className="flex-1 px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-sm font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors min-h-[48px]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpdateStatus}
                   disabled={actionLoading || (modalAction === 'reject' && !rejectionReason.trim())}
-                  className={`flex-1 px-4 py-3 rounded-lg text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] ${
+                  className={`flex-1 px-4 py-3 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] ${
                     modalAction === 'approve'
-                      ? 'bg-[#0E8A6E] text-white hover:bg-[#0c7359]'
-                      : 'bg-[#E24B4A] text-white hover:bg-[#dc2626]'
+                      ? 'bg-brand-teal text-white hover:bg-[var(--color-brand-teal-hover)]'
+                      : 'bg-danger text-white hover:bg-danger'
                   }`}
                 >
                   {actionLoading ? 'Processing...' : modalAction === 'approve' ? 'Approve Review' : 'Reject Review'}

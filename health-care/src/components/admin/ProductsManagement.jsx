@@ -1,5 +1,7 @@
 "use client";
 
+import { confirmAction } from '@/components/ui/ConfirmDialog';
+import EmptyState from '@/components/ui/EmptyState';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { API } from '@/constants/api';
 
@@ -359,7 +361,7 @@ export default function ProductsManagement({ openCreateRef }) {
   }, [page, categoryFilter, brandFilter, statusFilter, stockFilter, searchQuery, showMessage]);
 
   const handleDelete = async (productId) => {
-    if (!confirm('Delete this product? This cannot be undone.')) return;
+    if (!await confirmAction('Delete this product? This cannot be undone.')) return;
     try {
       const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/products/${productId}`, {
@@ -667,9 +669,9 @@ export default function ProductsManagement({ openCreateRef }) {
   };
 
   const getStockStatus = (product) => {
-    if (product.stock === 0) return { color: 'bg-[#FEE2E2] text-[#991B1B]', label: 'Out of stock' };
-    if (product.stock <= (product.lowStockThreshold || 10)) return { color: 'bg-[#FEF3C7] text-[#92400E]', label: 'Low stock' };
-    return { color: 'bg-[#D1FAE5] text-[#065F46]', label: 'In stock' };
+    if (product.stock === 0) return { color: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]', label: 'Out of stock' };
+    if (product.stock <= (product.lowStockThreshold || 10)) return { color: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]', label: 'Low stock' };
+    return { color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]', label: 'In stock' };
   };
 
   const totalPages = Math.ceil(total / 20);
@@ -678,8 +680,8 @@ export default function ProductsManagement({ openCreateRef }) {
     <div className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Message Toast */}
       {message.text && (
-        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
-          message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-toast ${
+          message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
         }`}>
           {message.text}
         </div>
@@ -687,11 +689,11 @@ export default function ProductsManagement({ openCreateRef }) {
 
       {/* ── Create Product Modal ─────────────────────────────────────────── */}
       {showCreate && (
-        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-start justify-center z-50 overflow-y-auto sm:py-8 sm:px-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-xl w-full max-w-2xl shadow-2xl max-h-[95vh] sm:max-h-none overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-start justify-center z-modal overflow-y-auto sm:py-8 sm:px-4">
+          <div className="bg-white rounded-t-lg sm:rounded-xl w-full max-w-2xl shadow-lg max-h-[95vh] sm:max-h-none overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b-[0.5px] border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
-              <h3 className="text-[15px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-base font-semibold font-[family-name:var(--font-plus-jakarta)]">
                 {modalMode === 'edit' ? `Edit — ${modalProduct?.name}` : 'Add New Product'}
               </h3>
               <button
@@ -706,13 +708,13 @@ export default function ProductsManagement({ openCreateRef }) {
             <div className="px-4 sm:px-6 py-5 space-y-5">
               {/* Image Upload */}
               <div>
-                <label className="block text-[12px] font-semibold text-[var(--color-text-primary)] mb-2">
+                <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-2">
                   Product Images <span className="font-normal text-[var(--color-text-secondary)]">(up to 5 — JPEG, PNG, WebP)</span>
                 </label>
 
                 <label
                   htmlFor="image-upload"
-                  className={`w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-[#0E8A6E] hover:bg-[#F0FDF9] rounded-lg p-5 text-center transition-colors cursor-pointer block ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                  className={`w-full border-2 border-dashed border-[var(--color-border-secondary)] hover:border-brand-teal hover:bg-[var(--color-status-success-tint)] rounded-lg p-5 text-center transition-colors cursor-pointer block ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
                   <input
                     id="image-upload"
@@ -726,13 +728,13 @@ export default function ProductsManagement({ openCreateRef }) {
                   <svg className="mx-auto mb-2 w-8 h-8 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-[12px] text-[var(--color-text-secondary)]">
+                  <p className="text-xs text-[var(--color-text-secondary)]">
                     {uploading ? 'Uploading...' : 'Click to upload images'}
                     {createForm.images.length > 0 && !uploading && (
-                      <span className="ml-1 text-[#0E8A6E] font-medium">({createForm.images.length}/5 added)</span>
+                      <span className="ml-1 text-brand-teal font-medium">({createForm.images.length}/5 added)</span>
                     )}
                   </p>
-                  <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">JPEG, PNG, WebP — max 5 MB each</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">JPEG, PNG, WebP — max 5 MB each</p>
                 </label>
 
                 {/* Image previews */}
@@ -743,7 +745,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         key={img.publicId || img.url || idx} 
                         className="relative group w-20 h-20 rounded-lg overflow-hidden cursor-pointer"
                         style={{
-                          border: img.isPrimary ? '2px solid #0E8A6E' : '0.5px solid #E5E7EB'
+                          border: img.isPrimary ? '2px solid var(--color-brand-teal)' : '0.5px solid var(--color-border-primary)'
                         }}
                         onClick={() => {
                           // Set clicked image as primary
@@ -760,7 +762,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         
                         {/* Primary badge */}
                         {img.isPrimary && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-[#0E8A6E] text-white text-[9px] text-center py-[2px] font-semibold" style={{ background: 'rgba(14,138,110,0.9)' }}>
+                          <div className="absolute bottom-0 left-0 right-0 bg-brand-teal text-white text-xs text-center py-[2px] font-semibold" style={{ background: 'rgba(14,138,110,0.9)' }}>
                             PRIMARY
                           </div>
                         )}
@@ -783,7 +785,7 @@ export default function ProductsManagement({ openCreateRef }) {
                   </div>
                 )}
                 {createForm.images.length > 0 && (
-                  <div className="text-[10px] text-[#9CA3AF] mt-2">
+                  <div className="text-xs text-[var(--color-text-tertiary)] mt-2">
                     Click any image to set as primary · Hover and click × to remove
                   </div>
                 )}
@@ -791,10 +793,10 @@ export default function ProductsManagement({ openCreateRef }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1 flex items-center gap-1.5">
-                    SKU <span className="text-red-500">*</span>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1 flex items-center gap-1.5">
+                    SKU <span className="text-[var(--color-status-danger)]">*</span>
                     {skuAutoGenerated && modalMode === 'create' && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#ECFDF5] text-[#0E8A6E] border border-[#A7F3D0]">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold bg-[var(--color-status-success-tint)] text-brand-teal border border-[#A7F3D0]">
                         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                         AUTO
                       </span>
@@ -815,16 +817,16 @@ export default function ProductsManagement({ openCreateRef }) {
                         setCreateForm(f => ({ ...f, sku: e.target.value.toUpperCase() }));
                         setSkuAutoGenerated(false);
                       }}
-                      className={`w-full px-3 py-2 pr-8 border-[0.5px] rounded-lg text-[13px] focus:outline-none font-mono transition-colors ${
+                      className={`w-full px-3 py-2 pr-8 border-[0.5px] rounded-lg text-sm focus:outline-none font-mono transition-colors ${
                         skuAutoGenerated
-                          ? 'border-[#0E8A6E] bg-[#F0FDF9] focus:border-[#0E8A6E]'
-                          : 'border-[var(--color-border-secondary)] focus:border-[#0E8A6E]'
+                          ? 'border-brand-teal bg-[var(--color-status-success-tint)] focus:border-brand-teal'
+                          : 'border-[var(--color-border-secondary)] focus:border-brand-teal'
                       }`}
                     />
                     {/* Spinner while generating */}
                     {skuGenerating && (
                       <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
-                        <svg className="animate-spin w-3.5 h-3.5 text-[#0E8A6E]" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin w-3.5 h-3.5 text-brand-teal" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                         </svg>
@@ -836,7 +838,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         type="button"
                         title="Regenerate SKU"
                         onClick={() => generateSku(createForm.category, createForm.brand)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0E8A6E] hover:text-[#0a6b55] transition-colors"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-brand-teal hover:text-[var(--color-brand-teal-hover)] transition-colors"
                       >
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                           <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
@@ -846,11 +848,11 @@ export default function ProductsManagement({ openCreateRef }) {
                     )}
                   </div>
                   {!createForm.category && !createForm.brand && modalMode === 'create' && (
-                    <p className="text-[10px] text-[var(--color-text-secondary)] mt-1">SKU auto-fills after selecting category &amp; brand</p>
+                    <p className="text-xs text-[var(--color-text-secondary)] mt-1">SKU auto-fills after selecting category &amp; brand</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Brand <span className="text-red-500">*</span></label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Brand <span className="text-[var(--color-status-danger)]">*</span></label>
                   <div className="relative brand-dropdown-container">
                     <input
                       type="text"
@@ -864,13 +866,13 @@ export default function ProductsManagement({ openCreateRef }) {
                         setCreateForm(f => ({ ...f, brand: '' }));
                       }}
                       onFocus={() => setShowBrandDropdown(true)}
-                      className={`w-full px-3 py-2 border-[0.5px] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] ${
-                        createForm.brand ? 'border-[#0E8A6E] bg-[#F0FDF9]' : 'border-[var(--color-border-secondary)]'
+                      className={`w-full px-3 py-2 border-[0.5px] rounded-lg text-sm focus:outline-none focus:border-brand-teal ${
+                        createForm.brand ? 'border-brand-teal bg-[var(--color-status-success-tint)]' : 'border-[var(--color-border-secondary)]'
                       }`}
                     />
                     {/* Matched indicator */}
                     {createForm.brand && (
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0E8A6E]">
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 text-brand-teal">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
@@ -889,13 +891,13 @@ export default function ProductsManagement({ openCreateRef }) {
                                 setBrandSearch(manufacturer.name);
                                 setShowBrandDropdown(false);
                               }}
-                              className={`px-3 py-2 hover:bg-[var(--color-background-tertiary)] cursor-pointer text-[13px] flex items-center justify-between ${
-                                createForm.brand === manufacturer._id ? 'bg-[#F0FDF9] text-[#0E8A6E] font-semibold' : ''
+                              className={`px-3 py-2 hover:bg-[var(--color-background-tertiary)] cursor-pointer text-sm flex items-center justify-between ${
+                                createForm.brand === manufacturer._id ? 'bg-[var(--color-status-success-tint)] text-brand-teal font-semibold' : ''
                               }`}
                             >
                               <span>{manufacturer.name}</span>
                               {manufacturer.country && (
-                                <span className="text-[11px] text-[var(--color-text-secondary)] ml-2">
+                                <span className="text-xs text-[var(--color-text-secondary)] ml-2">
                                   ({manufacturer.country})
                                 </span>
                               )}
@@ -929,7 +931,7 @@ export default function ProductsManagement({ openCreateRef }) {
                                 showMessage('Failed to create brand', 'error');
                               }
                             }}
-                            className="px-3 py-2 hover:bg-[#F0FDF9] cursor-pointer text-[13px] flex items-center gap-2 text-[#0E8A6E] font-medium border-t border-[var(--color-border-tertiary)]"
+                            className="px-3 py-2 hover:bg-[var(--color-status-success-tint)] cursor-pointer text-sm flex items-center gap-2 text-brand-teal font-medium border-t border-[var(--color-border-tertiary)]"
                           >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <path d="M12 5v14M5 12h14"/>
@@ -942,43 +944,43 @@ export default function ProductsManagement({ openCreateRef }) {
                   </div>
                   {/* Only show hint when dropdown is open and user hasn't selected yet */}
                   {brandSearch && !createForm.brand && showBrandDropdown && (
-                    <p className="text-[10px] text-amber-600 mt-1">Select a manufacturer from the list</p>
+                    <p className="text-xs text-[var(--color-status-warning)] mt-1">Select a manufacturer from the list</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Product Name <span className="text-red-500">*</span></label>
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Product Name <span className="text-[var(--color-status-danger)]">*</span></label>
                 <input
                   type="text"
                   placeholder="e.g. Siemens ADVIA 2120i Hematology Analyzer"
                   value={createForm.name}
                   onChange={e => setCreateForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Description <span className="text-red-500">*</span></label>
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Description <span className="text-[var(--color-status-danger)]">*</span></label>
                 <textarea
                   rows={3}
                   placeholder="Detailed product description…"
                   value={createForm.description}
                   onChange={e => setCreateForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] resize-none"
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Category <span className="text-red-500">*</span></label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Category <span className="text-[var(--color-status-danger)]">*</span></label>
                   <select
                     value={createForm.category}
                     onChange={e => {
                       const newCat = e.target.value;
                       setCreateForm(f => ({ ...f, category: newCat, subcategory: '' }));
                     }}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm bg-white focus:outline-none focus:border-brand-teal"
                   >
                     <option value="">Select category...</option>
                     {(categories || []).map(c => (
@@ -989,13 +991,13 @@ export default function ProductsManagement({ openCreateRef }) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Subcategory</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Subcategory</label>
                   <input
                     type="text"
                     placeholder="e.g. Hematology"
                     value={createForm.subcategory}
                     onChange={e => setCreateForm(f => ({ ...f, subcategory: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                 </div>
               </div>
@@ -1003,41 +1005,41 @@ export default function ProductsManagement({ openCreateRef }) {
               {/* Pricing */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Price (৳) <span className="text-red-500">*</span></label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Price (৳) <span className="text-[var(--color-status-danger)]">*</span></label>
                   <input
                     type="number"
                     min="0"
                     placeholder="0"
                     value={createForm.price}
                     onChange={e => setCreateForm(f => ({ ...f, price: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">B2B Price (৳)</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">B2B Price (৳)</label>
                   <input
                     type="number"
                     min="0"
                     placeholder="0"
                     value={createForm.b2bPrice}
                     onChange={e => setCreateForm(f => ({ ...f, b2bPrice: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                   {!createForm.b2bPrice && createForm.price && (
-                    <div className="text-[10px] text-[#9CA3AF] mt-1">
+                    <div className="text-xs text-[var(--color-text-tertiary)] mt-1">
                       Auto: ৳{Math.round(Number(createForm.price) * 0.78).toLocaleString()} (78% of retail)
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Old Price (৳)</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Old Price (৳)</label>
                   <input
                     type="number"
                     min="0"
                     placeholder="0"
                     value={createForm.oldPrice}
                     onChange={e => setCreateForm(f => ({ ...f, oldPrice: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                 </div>
               </div>
@@ -1045,33 +1047,33 @@ export default function ProductsManagement({ openCreateRef }) {
               {/* Stock & Unit */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Stock <span className="text-red-500">*</span></label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Stock <span className="text-[var(--color-status-danger)]">*</span></label>
                   <input
                     type="number"
                     min="0"
                     placeholder="0"
                     value={createForm.stock}
                     onChange={e => setCreateForm(f => ({ ...f, stock: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Low Stock Alert</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Low Stock Alert</label>
                   <input
                     type="number"
                     min="0"
                     placeholder="10"
                     value={createForm.lowStockThreshold}
                     onChange={e => setCreateForm(f => ({ ...f, lowStockThreshold: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-1">Unit</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Unit</label>
                   <select
                     value={createForm.unit}
                     onChange={e => setCreateForm(f => ({ ...f, unit: e.target.value }))}
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm bg-white focus:outline-none focus:border-brand-teal"
                   >
                     {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
@@ -1080,7 +1082,7 @@ export default function ProductsManagement({ openCreateRef }) {
 
               {/* Certifications */}
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Certifications</label>
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-2">Certifications</label>
                 <div className="flex gap-3 flex-wrap">
                   {CERTIFICATIONS.map(cert => (
                     <label key={cert} className="flex items-center gap-1.5 cursor-pointer">
@@ -1095,9 +1097,9 @@ export default function ProductsManagement({ openCreateRef }) {
                               : f.certifications.filter(c => c !== cert)
                           }));
                         }}
-                        className="accent-[#0E8A6E]"
+                        className="accent-brand-teal"
                       />
-                      <span className="text-[12px]">{cert}</span>
+                      <span className="text-xs">{cert}</span>
                     </label>
                   ))}
                 </div>
@@ -1106,7 +1108,7 @@ export default function ProductsManagement({ openCreateRef }) {
               {/* Storage Temperature + Hazard Class */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Storage Temperature</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-2">Storage Temperature</label>
                   <div className="space-y-2">
                     {[
                       { val: 'room', label: '🌡️ Room temp (15–25°C)' },
@@ -1120,15 +1122,15 @@ export default function ProductsManagement({ openCreateRef }) {
                           value={opt.val}
                           checked={createForm.storageTemp === opt.val}
                           onChange={() => setCreateForm(f => ({ ...f, storageTemp: opt.val }))}
-                          className="accent-[#0E8A6E]"
+                          className="accent-brand-teal"
                         />
-                        <span className="text-[12px]">{opt.label}</span>
+                        <span className="text-xs">{opt.label}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">Hazard Class</label>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-2">Hazard Class</label>
                   <div className="space-y-2">
                     {[
                       { val: 'safe', label: '✅ Safe' },
@@ -1142,9 +1144,9 @@ export default function ProductsManagement({ openCreateRef }) {
                           value={opt.val}
                           checked={createForm.hazardClass === opt.val}
                           onChange={() => setCreateForm(f => ({ ...f, hazardClass: opt.val }))}
-                          className="accent-[#0E8A6E]"
+                          className="accent-brand-teal"
                         />
-                        <span className="text-[12px]">{opt.label}</span>
+                        <span className="text-xs">{opt.label}</span>
                       </label>
                     ))}
                   </div>
@@ -1153,8 +1155,8 @@ export default function ProductsManagement({ openCreateRef }) {
 
               {/* Specifications */}
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
-                  Specifications <span className="text-[10px] font-normal">(technical details)</span>
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-2">
+                  Specifications <span className="text-xs font-normal">(technical details)</span>
                 </label>
                 {createForm.specifications.map((spec, idx) => (
                   <div key={idx} className="grid grid-cols-[1fr_1fr_32px] gap-2 mb-2">
@@ -1166,7 +1168,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         updated[idx].key = e.target.value;
                         setCreateForm(f => ({ ...f, specifications: updated }));
                       }}
-                      className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                      className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal"
                     />
                     <input
                       placeholder="Value (e.g. 12)"
@@ -1176,7 +1178,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         updated[idx].value = e.target.value;
                         setCreateForm(f => ({ ...f, specifications: updated }));
                       }}
-                      className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                      className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal"
                     />
                     <button
                       type="button"
@@ -1184,7 +1186,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         ...f,
                         specifications: f.specifications.filter((_, i) => i !== idx)
                       }))}
-                      className="bg-[#FEE2E2] border-[0.5px] border-[#F87171] rounded-lg text-[#991B1B] text-lg hover:bg-[#FEF2F2] transition-colors"
+                      className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[var(--color-status-danger)] rounded-lg text-[var(--color-status-danger)] text-lg hover:bg-[var(--color-status-danger-tint)] transition-colors"
                     >
                       ×
                     </button>
@@ -1196,7 +1198,7 @@ export default function ProductsManagement({ openCreateRef }) {
                     ...f,
                     specifications: [...f.specifications, { key: '', value: '' }]
                   }))}
-                  className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
+                  className="text-xs px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
                 >
                   + Add specification
                 </button>
@@ -1204,9 +1206,9 @@ export default function ProductsManagement({ openCreateRef }) {
 
               {/* Size Variants */}
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2 flex items-center gap-2">
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-2 flex items-center gap-2">
                   📏 Size Variants
-                  <span className="text-[10px] font-normal">(for clothing, PPE, etc.)</span>
+                  <span className="text-xs font-normal">(for clothing, PPE, etc.)</span>
                 </label>
                 <div className="space-y-2">
                   {(createForm.sizes || []).map((size, idx) => (
@@ -1218,7 +1220,7 @@ export default function ProductsManagement({ openCreateRef }) {
                           newSizes[idx] = { ...newSizes[idx], name: e.target.value };
                           setCreateForm(f => ({ ...f, sizes: newSizes }));
                         }}
-                        className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E] w-24"
+                        className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal w-24"
                       >
                         <option value="">Size</option>
                         <option value="XS">XS</option>
@@ -1238,7 +1240,7 @@ export default function ProductsManagement({ openCreateRef }) {
                           setCreateForm(f => ({ ...f, sizes: newSizes }));
                         }}
                         placeholder="Stock"
-                        className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E] w-24"
+                        className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal w-24"
                       />
                       <input
                         type="number"
@@ -1249,9 +1251,9 @@ export default function ProductsManagement({ openCreateRef }) {
                           setCreateForm(f => ({ ...f, sizes: newSizes }));
                         }}
                         placeholder="Price adj. (৳)"
-                        className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E] flex-1"
+                        className="px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal flex-1"
                       />
-                      <label className="flex items-center gap-1 text-[11px] whitespace-nowrap">
+                      <label className="flex items-center gap-1 text-sm whitespace-nowrap">
                         <input
                           type="checkbox"
                           checked={size.isAvailable !== false}
@@ -1260,7 +1262,7 @@ export default function ProductsManagement({ openCreateRef }) {
                             newSizes[idx] = { ...newSizes[idx], isAvailable: e.target.checked };
                             setCreateForm(f => ({ ...f, sizes: newSizes }));
                           }}
-                          className="accent-[#0E8A6E]"
+                          className="accent-brand-teal"
                         />
                         Available
                       </label>
@@ -1270,7 +1272,7 @@ export default function ProductsManagement({ openCreateRef }) {
                           ...f,
                           sizes: (f.sizes || []).filter((_, i) => i !== idx)
                         }))}
-                        className="w-8 h-8 bg-[#FEE2E2] border-[0.5px] border-[#F87171] rounded-lg text-[#991B1B] text-lg hover:bg-[#FEF2F2] transition-colors flex items-center justify-center flex-shrink-0"
+                        className="w-8 h-8 bg-[var(--color-status-danger-tint)] border-[0.5px] border-[var(--color-status-danger)] rounded-lg text-[var(--color-status-danger)] text-lg hover:bg-[var(--color-status-danger-tint)] transition-colors flex items-center justify-center flex-shrink-0"
                       >
                         ×
                       </button>
@@ -1283,7 +1285,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         ...f,
                         sizes: [...(f.sizes || []), { name: 'M', stock: 0, priceAdjustment: 0, isAvailable: true }]
                       }))}
-                      className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
+                      className="text-xs px-3 py-2 rounded-lg border-[0.5px] border-[var(--color-border-secondary)] bg-transparent hover:bg-[var(--color-background-tertiary)] transition-colors"
                     >
                       + Add size variant
                     </button>
@@ -1311,12 +1313,12 @@ export default function ProductsManagement({ openCreateRef }) {
                           showMessage('All sizes already added', 'error');
                         }
                       }}
-                      className="text-[11px] px-3 py-2 rounded-lg border-[0.5px] border-[#0E8A6E] bg-[#0E8A6E]/5 text-[#0E8A6E] hover:bg-[#0E8A6E]/10 transition-colors font-medium"
+                      className="text-xs px-3 py-2 rounded-lg border-[0.5px] border-brand-teal bg-brand-teal/5 text-brand-teal hover:bg-brand-teal/10 transition-colors font-medium"
                     >
                       ✨ Add All Sizes
                     </button>
                   </div>
-                  <div className="text-[10px] text-[#9CA3AF] mt-1">
+                  <div className="text-xs text-[var(--color-text-tertiary)] mt-1">
                     💡 For products like clothing, PPE, support belts. Price adj. = extra cost for larger sizes (e.g., +50 for XL)
                   </div>
                 </div>
@@ -1324,12 +1326,12 @@ export default function ProductsManagement({ openCreateRef }) {
 
               {/* Tags */}
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
-                  Tags <span className="text-[10px] font-normal">(for search)</span>
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-2">
+                  Tags <span className="text-xs font-normal">(for search)</span>
                 </label>
                 <div className="border-[0.5px] border-[var(--color-border-secondary)] rounded-lg p-2 min-h-[44px] flex flex-wrap gap-2 items-center">
                   {createForm.tags.map((tag, i) => (
-                    <span key={i} className="bg-[#FAEEDA] text-[#633806] rounded px-2 py-1 text-[11px] flex items-center gap-1">
+                    <span key={i} className="bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)] rounded px-2 py-1 text-xs flex items-center gap-1">
                       {tag}
                       <button
                         type="button"
@@ -1337,7 +1339,7 @@ export default function ProductsManagement({ openCreateRef }) {
                           ...f,
                           tags: f.tags.filter((_, idx) => idx !== i)
                         }))}
-                        className="text-[14px] hover:text-[#991B1B]"
+                        className="text-sm hover:text-[var(--color-status-danger)]"
                       >
                         ×
                       </button>
@@ -1356,22 +1358,22 @@ export default function ProductsManagement({ openCreateRef }) {
                       }
                     }}
                     placeholder={createForm.tags.length ? '' : 'Type and press Enter...'}
-                    className="border-none outline-none text-[12px] flex-1 min-w-[120px] bg-transparent"
+                    className="border-none outline-none text-xs flex-1 min-w-[120px] bg-transparent"
                   />
                 </div>
-                <div className="text-[10px] text-[#9CA3AF] mt-1">
+                <div className="text-xs text-[var(--color-text-tertiary)] mt-1">
                   e.g. ecg, cardiac, diagnostic — press Enter after each
                 </div>
               </div>
 
               {/* Compatible With */}
               <div>
-                <label className="block text-[11px] text-[var(--color-text-secondary)] mb-2">
-                  Compatible With <span className="text-[10px] font-normal">(related products)</span>
+                <label className="block text-sm text-[var(--color-text-secondary)] mb-2">
+                  Compatible With <span className="text-xs font-normal">(related products)</span>
                 </label>
                 <div className="border-[0.5px] border-[var(--color-border-secondary)] rounded-lg p-2 min-h-[44px] flex flex-wrap gap-2 items-center">
                   {createForm.compatibleWith.map((item, i) => (
-                    <span key={i} className="bg-[#E6F1FB] text-[#0C447C] rounded px-2 py-1 text-[11px] flex items-center gap-1">
+                    <span key={i} className="bg-[var(--color-status-info-tint)] text-[var(--color-status-info)] rounded px-2 py-1 text-xs flex items-center gap-1">
                       {item}
                       <button
                         type="button"
@@ -1379,7 +1381,7 @@ export default function ProductsManagement({ openCreateRef }) {
                           ...f,
                           compatibleWith: f.compatibleWith.filter((_, idx) => idx !== i)
                         }))}
-                        className="text-[14px] hover:text-[#991B1B]"
+                        className="text-sm hover:text-[var(--color-status-danger)]"
                       >
                         ×
                       </button>
@@ -1398,7 +1400,7 @@ export default function ProductsManagement({ openCreateRef }) {
                       }
                     }}
                     placeholder={createForm.compatibleWith.length ? '' : 'Type product names...'}
-                    className="border-none outline-none text-[12px] flex-1 min-w-[120px] bg-transparent"
+                    className="border-none outline-none text-xs flex-1 min-w-[120px] bg-transparent"
                   />
                 </div>
               </div>
@@ -1407,30 +1409,30 @@ export default function ProductsManagement({ openCreateRef }) {
               {(() => {
                 const selectedCategory = categories?.find(c => c._id === createForm.category);
                 return selectedCategory?.name === 'Laboratory Reagents' && (
-                  <div className="bg-[#E6F1FB] rounded-lg p-4">
-                    <div className="text-[12px] font-semibold text-[#0C447C] mb-3 flex items-center gap-2">
+                  <div className="bg-[var(--color-status-info-tint)] rounded-lg p-4">
+                    <div className="text-xs font-semibold text-[var(--color-status-info)] mb-3 flex items-center gap-2">
                       🧪 Reagent Details
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] text-[#6B7280] mb-1">
+                        <label className="block text-sm text-[var(--color-text-secondary)] mb-1">
                           Lot Number
                         </label>
                         <input
                           value={createForm.lotNumber}
                           onChange={e => setCreateForm(f => ({ ...f, lotNumber: e.target.value }))}
                           placeholder="e.g. LOT-2025-08841"
-                          className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                          className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] text-[#6B7280] mb-1">Expiry Date</label>
+                        <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Expiry Date</label>
                         <input
                           type="date"
                           value={createForm.expiryDate}
                           onChange={e => setCreateForm(f => ({ ...f, expiryDate: e.target.value }))}
                           min={new Date().toISOString().split('T')[0]}
-                          className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[12px] focus:outline-none focus:border-[#0E8A6E]"
+                          className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs focus:outline-none focus:border-brand-teal"
                         />
                       </div>
                     </div>
@@ -1445,18 +1447,18 @@ export default function ProductsManagement({ openCreateRef }) {
                     type="checkbox"
                     checked={createForm.isFeatured}
                     onChange={e => setCreateForm(f => ({ ...f, isFeatured: e.target.checked }))}
-                    className="accent-[#0E8A6E]"
+                    className="accent-brand-teal"
                   />
-                  <span className="text-[12px]">Featured product</span>
+                  <span className="text-xs">Featured product</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={createForm.isActive}
                     onChange={e => setCreateForm(f => ({ ...f, isActive: e.target.checked }))}
-                    className="accent-[#0E8A6E]"
+                    className="accent-brand-teal"
                   />
-                  <span className="text-[12px]">Active (visible on site)</span>
+                  <span className="text-xs">Active (visible on site)</span>
                 </label>
               </div>
             </div>
@@ -1466,13 +1468,13 @@ export default function ProductsManagement({ openCreateRef }) {
               <button
                 onClick={handleCreateProduct}
                 disabled={creating}
-                className="flex-1 min-h-[48px] py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2e56] transition-colors"
+                className="flex-1 min-h-[48px] py-2.5 bg-brand-navy text-white rounded-lg text-sm font-semibold disabled:opacity-50 hover:bg-[var(--color-brand-navy-hover)] transition-colors"
               >
                 {creating ? 'Saving…' : modalMode === 'edit' ? 'Save Changes' : 'Create Product'}
               </button>
               <button
                 onClick={closeModal}
-                className="flex-1 min-h-[48px] py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] hover:bg-[var(--color-background-tertiary)] transition-colors"
+                className="flex-1 min-h-[48px] py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 Cancel
               </button>
@@ -1491,7 +1493,7 @@ export default function ProductsManagement({ openCreateRef }) {
               placeholder="Search by product name, SKU, or description..."
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); setPage(1); }}
-              className="w-full px-4 py-2.5 pl-10 min-h-[48px] text-[16px] sm:text-[13px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none focus:border-[#0E8A6E] focus:ring-2 focus:ring-[#0E8A6E]/10 transition-all"
+              className="w-full px-4 py-2.5 pl-10 min-h-[48px] text-base sm:text-sm border-[0.5px] border-[var(--color-border-secondary)] rounded-lg font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/10 transition-all"
             />
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1499,7 +1501,7 @@ export default function ProductsManagement({ openCreateRef }) {
             {searchQuery && (
               <button
                 onClick={() => { setSearchQuery(''); setPage(1); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[#E24B4A] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-danger transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1516,10 +1518,10 @@ export default function ProductsManagement({ openCreateRef }) {
             <select
               value={categoryFilter}
               onChange={e => { setCategoryFilter(e.target.value); setPage(1); }}
-              className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+              className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                 categoryFilter 
-                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
-                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+                  ? 'border-brand-teal bg-[var(--color-status-success-tint)] text-brand-teal font-semibold shadow-sm' 
+                  : 'border-[var(--color-border-secondary)] hover:border-brand-teal text-[var(--color-text-primary)]'
               }`}
             >
               <option value="">📂 All categories</option>
@@ -1529,7 +1531,7 @@ export default function ProductsManagement({ openCreateRef }) {
                 </option>
               ))}
             </select>
-            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${categoryFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${categoryFilter ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
@@ -1540,10 +1542,10 @@ export default function ProductsManagement({ openCreateRef }) {
               <select
                 value={brandFilter}
                 onChange={e => { setBrandFilter(e.target.value); setPage(1); }}
-                className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                   brandFilter 
-                    ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
-                    : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+                    ? 'border-brand-teal bg-[var(--color-status-success-tint)] text-brand-teal font-semibold shadow-sm' 
+                    : 'border-[var(--color-border-secondary)] hover:border-brand-teal text-[var(--color-text-primary)]'
                 }`}
               >
                 <option value="">🏭 All brands</option>
@@ -1553,7 +1555,7 @@ export default function ProductsManagement({ openCreateRef }) {
                   </option>
                 ))}
               </select>
-              <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${brandFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${brandFilter ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
@@ -1562,10 +1564,10 @@ export default function ProductsManagement({ openCreateRef }) {
               <select
                 value={statusFilter}
                 onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-                className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+                className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                   statusFilter 
-                    ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
-                    : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+                    ? 'border-brand-teal bg-[var(--color-status-success-tint)] text-brand-teal font-semibold shadow-sm' 
+                    : 'border-[var(--color-border-secondary)] hover:border-brand-teal text-[var(--color-text-primary)]'
                 }`}
               >
                 <option value="">⚡ All status</option>
@@ -1573,7 +1575,7 @@ export default function ProductsManagement({ openCreateRef }) {
                 <option value="inactive">✗ Inactive</option>
                 <option value="featured">⭐ Featured</option>
               </select>
-              <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${statusFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${statusFilter ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
@@ -1584,10 +1586,10 @@ export default function ProductsManagement({ openCreateRef }) {
             <select
               value={stockFilter}
               onChange={e => { setStockFilter(e.target.value); setPage(1); }}
-              className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-[13px] font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
+              className={`w-full pl-3 pr-8 min-h-[44px] py-2 border-[0.5px] rounded-lg text-sm font-[family-name:var(--font-plus-jakarta)] bg-white focus:outline-none transition-all appearance-none cursor-pointer ${
                 stockFilter 
-                  ? 'border-[#0E8A6E] bg-[#F0FDF9] text-[#0E8A6E] font-semibold shadow-sm' 
-                  : 'border-[var(--color-border-secondary)] hover:border-[#0E8A6E] text-[var(--color-text-primary)]'
+                  ? 'border-brand-teal bg-[var(--color-status-success-tint)] text-brand-teal font-semibold shadow-sm' 
+                  : 'border-[var(--color-border-secondary)] hover:border-brand-teal text-[var(--color-text-primary)]'
               }`}
             >
               <option value="">📦 All stock levels</option>
@@ -1595,7 +1597,7 @@ export default function ProductsManagement({ openCreateRef }) {
               <option value="lowstock">⚠️ Low Stock</option>
               <option value="outofstock">✗ Out of Stock</option>
             </select>
-            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${stockFilter ? 'text-[#0E8A6E]' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${stockFilter ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
@@ -1613,7 +1615,7 @@ export default function ProductsManagement({ openCreateRef }) {
                   setSearchQuery('');
                   setPage(1);
                 }}
-                className="flex-1 min-h-[44px] px-3 py-2 border-[0.5px] border-[#E24B4A] bg-[#FEF2F2] text-[#E24B4A] rounded-lg text-[12px] font-medium hover:bg-[#E24B4A] hover:text-white transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                className="flex-1 min-h-[44px] px-3 py-2 border-[0.5px] border-danger bg-[var(--color-status-danger-tint)] text-danger rounded-lg text-xs font-medium hover:bg-danger hover:text-white transition-all flex items-center justify-center gap-1.5 shadow-sm"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1630,10 +1632,10 @@ export default function ProductsManagement({ openCreateRef }) {
               <svg className="w-4 h-4 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
-              <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">
+              <span className="text-sm font-semibold text-[var(--color-text-primary)]">
                 {total}
               </span>
-              <span className="text-[13px] text-[var(--color-text-secondary)]">
+              <span className="text-sm text-[var(--color-text-secondary)]">
                 product{total !== 1 ? 's' : ''}
               </span>
             </div>
@@ -1644,9 +1646,13 @@ export default function ProductsManagement({ openCreateRef }) {
       {/* ── Mobile Card View (< md) ─────────────────────────────────────── */}
       <div className="md:hidden">
         {loading ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading products…</div>
+          <div className="p-8 text-center text-xs text-[var(--color-text-secondary)]">Loading products…</div>
         ) : products.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No products found</div>
+          <EmptyState
+          icon="🔍"
+          title="No products found"
+          description="No products match the current search or filters. Try clearing them or adding a new product."
+        />
         ) : (
           <div className="divide-y divide-[var(--color-border-tertiary)]">
             {products.map(product => {
@@ -1678,7 +1684,6 @@ export default function ProductsManagement({ openCreateRef }) {
                         crossOrigin="anonymous"
                         referrerPolicy="no-referrer"
                         loading="lazy"
-                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-2xl">🏥</div>
@@ -1688,29 +1693,29 @@ export default function ProductsManagement({ openCreateRef }) {
                   {/* Product info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <p className="text-[13px] font-semibold text-[var(--color-text-primary)] leading-tight line-clamp-2">{product.name}</p>
-                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium flex-shrink-0 ${stockStatus.color}`}>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)] leading-tight line-clamp-2">{product.name}</p>
+                      <span className={`text-xs px-2 py-[3px] rounded font-medium flex-shrink-0 ${stockStatus.color}`}>
                         {stockStatus.label}
                       </span>
                     </div>
-                    <p className="text-[10px] font-mono text-[var(--color-text-secondary)] mb-1">{product.sku}</p>
+                    <p className="text-xs font-mono text-[var(--color-text-secondary)] mb-1">{product.sku}</p>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
-                      {brandName && <span className="text-[11px] text-[#0E8A6E] font-medium">{brandName}</span>}
-                      {categoryName && <span className="text-[11px] text-[var(--color-text-secondary)]">{categoryName}</span>}
-                      <span className="text-[11px] text-[var(--color-text-secondary)]">Stock: <span className="font-semibold text-[var(--color-text-primary)]">{product.stock}</span></span>
+                      {brandName && <span className="text-xs text-brand-teal font-medium">{brandName}</span>}
+                      {categoryName && <span className="text-xs text-[var(--color-text-secondary)]">{categoryName}</span>}
+                      <span className="text-xs text-[var(--color-text-secondary)]">Stock: <span className="font-semibold text-[var(--color-text-primary)]">{product.stock}</span></span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[14px] font-bold text-[#0B2545]">৳{(product.price || 0).toLocaleString()}</span>
+                      <span className="text-sm font-semibold text-brand-navy">৳{(product.price || 0).toLocaleString()}</span>
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEditOpen(product)}
-                          className="min-h-[36px] px-3 text-[11px] text-[#0E8A6E] font-semibold border border-[#0E8A6E] rounded-lg hover:bg-[#F0FDF9] transition-colors"
+                          className="min-h-[36px] px-3 text-xs text-brand-teal font-semibold border border-brand-teal rounded-lg hover:bg-[var(--color-status-success-tint)] transition-colors"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(product._id)}
-                          className="min-h-[36px] px-3 text-[11px] text-[#E24B4A] font-semibold border border-[#E24B4A] rounded-lg hover:bg-[#FEF2F2] transition-colors"
+                          className="min-h-[36px] px-3 text-xs text-danger font-semibold border border-danger rounded-lg hover:bg-[var(--color-status-danger-tint)] transition-colors"
                         >
                           Delete
                         </button>
@@ -1727,15 +1732,19 @@ export default function ProductsManagement({ openCreateRef }) {
       {/* ── Desktop Table View (≥ md) ────────────────────────────────────── */}
       <div className="hidden md:block overflow-x-auto">
         {loading ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">Loading products…</div>
+          <div className="p-8 text-center text-xs text-[var(--color-text-secondary)]">Loading products…</div>
         ) : products.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-secondary)]">No products found</div>
+          <EmptyState
+          icon="🔍"
+          title="No products found"
+          description="No products match the current search or filters. Try clearing them or adding a new product."
+        />
         ) : (
           <table className="w-full">
             <thead>
               <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
                 {['Image', 'SKU', 'Product Name', 'Category', 'Stock', 'Price', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
+                  <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                     {h}
                   </th>
                 ))}
@@ -1775,28 +1784,28 @@ export default function ProductsManagement({ openCreateRef }) {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-[11px] font-mono text-[var(--color-text-secondary)]">{product.sku}</td>
-                    <td className="px-4 py-3 text-[12px] font-medium">{product.name}</td>
-                    <td className="px-4 py-3 text-[12px]">{categoryName || '—'}</td>
-                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">{product.stock}</td>
-                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <td className="px-4 py-3 text-xs font-mono text-[var(--color-text-secondary)]">{product.sku}</td>
+                    <td className="px-4 py-3 text-xs font-medium">{product.name}</td>
+                    <td className="px-4 py-3 text-xs">{categoryName || '—'}</td>
+                    <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">{product.stock}</td>
+                    <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(product.price || 0).toLocaleString()}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${stockStatus.color}`}>
+                      <span className={`text-xs px-2 py-[3px] rounded font-medium ${stockStatus.color}`}>
                         {stockStatus.label}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleEditOpen(product)}
-                        className="text-[11px] text-[#0E8A6E] font-medium hover:underline mr-3"
+                        className="text-xs text-brand-teal font-medium hover:underline mr-3"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(product._id)}
-                        className="text-[11px] text-[#E24B4A] font-medium hover:underline"
+                        className="text-xs text-danger font-medium hover:underline"
                       >
                         Delete
                       </button>
@@ -1815,15 +1824,15 @@ export default function ProductsManagement({ openCreateRef }) {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="min-h-[44px] text-[12px] px-4 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors"
+            className="min-h-[44px] text-xs px-4 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors"
           >
             ← Prev
           </button>
-          <span className="text-[12px] text-[var(--color-text-secondary)]">Page {page} of {totalPages}</span>
+          <span className="text-xs text-[var(--color-text-secondary)]">Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="min-h-[44px] text-[12px] px-4 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors"
+            className="min-h-[44px] text-xs px-4 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors"
           >
             Next →
           </button>

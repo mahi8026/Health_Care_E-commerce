@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -55,7 +56,7 @@ export default function EditCategoryPage() {
         banner: cat.banner
       });
     } catch (err) {
-      alert('Failed to load category');
+      showToast.error('Failed to load category');
       router.push('/admin/categories');
     } finally {
       setLoading(false);
@@ -165,10 +166,10 @@ export default function EditCategoryPage() {
         });
       }
 
-      alert('Category updated successfully!');
+      showToast.success('Category updated successfully!');
       router.push('/admin/categories');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update category');
+      showToast.error(err.response?.data?.message || 'Failed to update category');
     } finally {
       setSaving(false);
     }
@@ -179,8 +180,8 @@ export default function EditCategoryPage() {
       <div className="min-h-screen bg-page-muted p-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-8 bg-[var(--color-background-muted)] rounded w-1/4"></div>
+            <div className="h-64 bg-[var(--color-background-muted)] rounded"></div>
           </div>
         </div>
       </div>
@@ -198,15 +199,15 @@ export default function EditCategoryPage() {
           >
             ← Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Category</h1>
-          <p className="text-gray-600 mt-1">Update category details</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">Edit Category</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">Update category details</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-6">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Category Name *
             </label>
             <input
@@ -215,25 +216,25 @@ export default function EditCategoryPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             {formData.name && (
-              <p className="text-xs text-gray-500 mt-1">
-                Slug: <code className="bg-gray-100 px-2 py-1 rounded">{generateSlug(formData.name)}</code>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                Slug: <code className="bg-[var(--color-background-tertiary)] px-2 py-1 rounded">{generateSlug(formData.name)}</code>
               </p>
             )}
           </div>
 
           {/* Parent Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Parent Category (Optional)
             </label>
             <select
               name="parentCategory"
               value={formData.parentCategory}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">None (Root Category)</option>
               {categories.map(cat => (
@@ -246,7 +247,7 @@ export default function EditCategoryPage() {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Description
             </label>
             <textarea
@@ -254,7 +255,7 @@ export default function EditCategoryPage() {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -262,20 +263,20 @@ export default function EditCategoryPage() {
           <div className="grid grid-cols-2 gap-6">
             {/* Category Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                 Category Image
               </label>
               {currentImages.image && !imagePreview && (
                 <div className="mb-2">
                   <img src={currentImages.image.url} alt="Current" className="w-32 h-32 object-cover rounded" />
-                  <p className="text-xs text-gray-500 mt-1">Current image</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">Current image</p>
                 </div>
               )}
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, 'image')}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="w-full text-sm text-[var(--color-text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
               {imagePreview && (
                 <img src={imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />
@@ -284,20 +285,20 @@ export default function EditCategoryPage() {
 
             {/* Banner Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                 Banner Image
               </label>
               {currentImages.banner && !bannerPreview && (
                 <div className="mb-2">
                   <img src={currentImages.banner.url} alt="Current" className="w-full h-24 object-cover rounded" />
-                  <p className="text-xs text-gray-500 mt-1">Current banner</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">Current banner</p>
                 </div>
               )}
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, 'banner')}
-                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="w-full text-sm text-[var(--color-text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
               {bannerPreview && (
                 <img src={bannerPreview} alt="Preview" className="mt-2 w-full h-24 object-cover rounded" />
@@ -307,7 +308,7 @@ export default function EditCategoryPage() {
 
           {/* Display Order */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Display Order
             </label>
             <input
@@ -315,7 +316,7 @@ export default function EditCategoryPage() {
               name="displayOrder"
               value={formData.displayOrder}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -329,7 +330,7 @@ export default function EditCategoryPage() {
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 rounded"
               />
-              <span className="text-sm font-medium text-gray-700">Active</span>
+              <span className="text-sm font-medium text-[var(--color-text-primary)]">Active</span>
             </label>
           </div>
 
@@ -338,7 +339,7 @@ export default function EditCategoryPage() {
             <button
               type="button"
               onClick={() => setShowSEO(!showSEO)}
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-4"
+              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-primary)] mb-4"
             >
               <span>{showSEO ? '▼' : '▶'}</span>
               SEO Settings (Optional)
@@ -347,7 +348,7 @@ export default function EditCategoryPage() {
             {showSEO && (
               <div className="space-y-4 pl-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Meta Title
                   </label>
                   <input
@@ -355,12 +356,12 @@ export default function EditCategoryPage() {
                     name="seo.metaTitle"
                     value={formData.seo.metaTitle}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Meta Description
                   </label>
                   <textarea
@@ -368,12 +369,12 @@ export default function EditCategoryPage() {
                     value={formData.seo.metaDescription}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Keywords (comma-separated)
                   </label>
                   <input
@@ -381,7 +382,7 @@ export default function EditCategoryPage() {
                     name="seo.keywords"
                     value={formData.seo.keywords}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -393,7 +394,7 @@ export default function EditCategoryPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-6 py-2 border border-[var(--color-border-primary)] rounded-lg text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)]"
             >
               Cancel
             </button>

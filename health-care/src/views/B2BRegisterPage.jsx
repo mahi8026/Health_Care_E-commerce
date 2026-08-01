@@ -224,17 +224,17 @@ export default function B2BRegisterPage() {
 
   if (step === 3) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0E8A6E] to-[#0c7a5f] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FaCheckCircle className="w-12 h-12 text-green-600" />
+      <div className="min-h-screen bg-gradient-to-br from-brand-teal to-[var(--color-brand-teal-hover)] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center mx-auto mb-6">
+            <FaCheckCircle className="w-12 h-12 text-[var(--color-status-success)]" />
           </div>
           
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-4">
             Application Submitted!
           </h1>
           
-          <p className="text-gray-600 mb-2">
+          <p className="text-[var(--color-text-secondary)] mb-2">
             Thank you for registering, <strong>{formData.name}</strong>!
           </p>
           
@@ -251,13 +251,13 @@ export default function B2BRegisterPage() {
           <div className="space-y-3">
             <button
               onClick={() => router.push('/login')}
-              className="w-full bg-[#0E8A6E] text-white py-3 rounded-lg hover:bg-[#0c7a5f] font-medium transition-colors"
+              className="w-full bg-brand-teal text-white py-3 rounded-lg hover:bg-[var(--color-brand-teal-hover)] font-medium transition-colors"
             >
               Go to Login
             </button>
             <button
               onClick={() => router.push('/')}
-              className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              className="w-full border border-[var(--color-border-primary)] text-[var(--color-text-primary)] py-3 rounded-lg hover:bg-[var(--color-background-secondary)] font-medium transition-colors"
             >
               Back to Home
             </button>
@@ -268,32 +268,32 @@ export default function B2BRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-[var(--color-background-secondary)] py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">
             B2B Registration
           </h1>
-          <p className="text-gray-600">
+          <p className="text-[var(--color-text-secondary)]">
             Join our wholesale program for exclusive discounts and benefits
           </p>
         </div>
 
         {/* Benefits Banner */}
-        <div className="bg-gradient-to-r from-[#0E8A6E] to-[#0c7a5f] rounded-xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-xl p-6 mb-8 text-white">
           <h3 className="text-xl font-semibold mb-4">B2B Benefits:</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <div className="text-2xl font-bold">8-30%</div>
+              <div className="text-2xl font-semibold">8-30%</div>
               <div className="text-white/90 text-sm">Category Discounts</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">Bulk</div>
+              <div className="text-2xl font-semibold">Bulk</div>
               <div className="text-white/90 text-sm">Order Support</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">Free</div>
+              <div className="text-2xl font-semibold">Free</div>
               <div className="text-white/90 text-sm">Installation & Training</div>
             </div>
           </div>
@@ -302,18 +302,18 @@ export default function B2BRegisterPage() {
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-center">
-            <div className={`flex items-center ${step >= 1 ? 'text-[#0E8A6E]' : 'text-gray-400'}`}>
+            <div className={`flex items-center ${step >= 1 ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                step >= 1 ? 'bg-[#0E8A6E] text-white' : 'bg-gray-200'
+                step >= 1 ? 'bg-brand-teal text-white' : 'bg-[var(--color-background-muted)]'
               }`}>
                 1
               </div>
               <span className="ml-2 hidden sm:inline">Personal Info</span>
             </div>
-            <div className={`w-16 h-1 mx-2 ${step >= 2 ? 'bg-[#0E8A6E]' : 'bg-gray-300'}`}></div>
-            <div className={`flex items-center ${step >= 2 ? 'text-[#0E8A6E]' : 'text-gray-400'}`}>
+            <div className={`w-16 h-1 mx-2 ${step >= 2 ? 'bg-brand-teal' : 'bg-[var(--color-background-muted)]'}`}></div>
+            <div className={`flex items-center ${step >= 2 ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                step >= 2 ? 'bg-[#0E8A6E] text-white' : 'bg-gray-200'
+                step >= 2 ? 'bg-brand-teal text-white' : 'bg-[var(--color-background-muted)]'
               }`}>
                 2
               </div>
@@ -325,7 +325,7 @@ export default function B2BRegisterPage() {
         {/* Form */}
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div className="bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] px-4 py-3 rounded-lg mb-6">
               {error}
             </div>
           )}
@@ -334,10 +334,10 @@ export default function B2BRegisterPage() {
             {/* Step 1: Personal Information */}
             {step === 1 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+                <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">Personal Information</h2>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     <FaUser className="inline mr-2" />
                     Full Name *
                   </label>
@@ -348,14 +348,14 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="John Doe"
                   />
-                  {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                  {errors.name && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     <FaEnvelope className="inline mr-2" />
                     Email Address *
                   </label>
@@ -366,14 +366,14 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="john@company.com"
                   />
-                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     <FaPhone className="inline mr-2" />
                     Phone Number *
                   </label>
@@ -384,15 +384,15 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="01XXXXXXXXX"
                   />
-                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                  <p className="text-sm text-gray-500 mt-1">Format: 01XXXXXXXXX</p>
+                  {errors.phone && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.phone}</p>}
+                  <p className="text-sm text-[var(--color-text-secondary)] mt-1">Format: 01XXXXXXXXX</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     <FaLock className="inline mr-2" />
                     Password *
                   </label>
@@ -403,17 +403,17 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="Min 8 characters"
                   />
-                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-                  <p className="text-sm text-gray-500 mt-1">
+                  {errors.password && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.password}</p>}
+                  <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                     Must contain uppercase, lowercase, number, and special character
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     <FaLock className="inline mr-2" />
                     Confirm Password *
                   </label>
@@ -424,16 +424,16 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="Re-enter password"
                   />
-                  {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+                  {errors.confirmPassword && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.confirmPassword}</p>}
                 </div>
 
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="w-full bg-[#0E8A6E] text-white py-3 rounded-lg hover:bg-[#0c7a5f] font-medium transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-brand-teal text-white py-3 rounded-lg hover:bg-[var(--color-brand-teal-hover)] font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   Next: Business Details <FaArrowRight />
                 </button>
@@ -443,10 +443,10 @@ export default function B2BRegisterPage() {
             {/* Step 2: Business Details */}
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Business Information</h2>
+                <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">Business Information</h2>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     <FaBuilding className="inline mr-2" />
                     Company/Institution Name *
                   </label>
@@ -457,14 +457,14 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="ABC Hospital"
                   />
-                  {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
+                  {errors.companyName && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.companyName}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Institution Type *
                   </label>
                   <select
@@ -473,19 +473,19 @@ export default function B2BRegisterPage() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                   >
                     <option value="">Select Type</option>
                     {institutionTypes.map(type => (
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
-                  {errors.institutionType && <p className="text-red-500 text-xs mt-1">{errors.institutionType}</p>}
+                  {errors.institutionType && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.institutionType}</p>}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                       <FaIdCard className="inline mr-2" />
                       Trade License Number
                     </label>
@@ -494,13 +494,13 @@ export default function B2BRegisterPage() {
                       name="tradeLicense"
                       value={formData.tradeLicense}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                      className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                       placeholder="Optional"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                       <FaFileAlt className="inline mr-2" />
                       Tax ID / TIN
                     </label>
@@ -509,14 +509,14 @@ export default function B2BRegisterPage() {
                       name="taxId"
                       value={formData.taxId}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                      className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                       placeholder="Optional"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     bKash Number (for payments)
                   </label>
                   <input
@@ -524,42 +524,42 @@ export default function B2BRegisterPage() {
                     name="bkashPhone"
                     value={formData.bkashPhone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                     placeholder="01XXXXXXXXX (optional)"
                   />
                 </div>
 
                 <div className="border-t pt-6">
-                  <h3 className="font-medium text-gray-900 mb-4">Business Address</h3>
+                  <h3 className="font-medium text-[var(--color-text-primary)] mb-4">Business Address</h3>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Street Address</label>
                       <input
                         type="text"
                         name="address.street"
                         value={formData.address.street}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                        className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                         placeholder="123 Main Street"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Thana/Upazila</label>
+                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Thana/Upazila</label>
                         <input
                           type="text"
                           name="address.thana"
                           value={formData.address.thana}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                          className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                           placeholder="e.g., Dhanmondi"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">District *</label>
+                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">District *</label>
                         <input
                           type="text"
                           name="address.district"
@@ -567,21 +567,21 @@ export default function B2BRegisterPage() {
                           onChange={handleChange}
                           onBlur={handleBlur}
                           required
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                          className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                           placeholder="e.g., Dhaka"
                         />
-                        {errors['address.district'] && <p className="text-red-500 text-xs mt-1">{errors['address.district']}</p>}
+                        {errors['address.district'] && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors['address.district']}</p>}
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                      <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Postal Code</label>
                       <input
                         type="text"
                         name="address.postcode"
                         value={formData.address.postcode}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+                        className="w-full px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent"
                         placeholder="e.g., 1205"
                       />
                     </div>
@@ -592,14 +592,14 @@ export default function B2BRegisterPage() {
                   <button
                     type="button"
                     onClick={handlePrevStep}
-                    className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                    className="flex-1 border border-[var(--color-border-primary)] text-[var(--color-text-primary)] py-3 rounded-lg hover:bg-[var(--color-background-secondary)] font-medium transition-colors"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 bg-[#0E8A6E] text-white py-3 rounded-lg hover:bg-[#0c7a5f] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 bg-brand-teal text-white py-3 rounded-lg hover:bg-[var(--color-brand-teal-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <>
@@ -616,13 +616,13 @@ export default function B2BRegisterPage() {
           </form>
 
           {/* Footer Links */}
-          <div className="mt-6 pt-6 border-t text-center text-sm text-gray-600">
+          <div className="mt-6 pt-6 border-t text-center text-sm text-[var(--color-text-secondary)]">
             Already have an account?{' '}
-            <Link href="/login" className="text-[#0E8A6E] hover:underline font-medium">
+            <Link href="/login" className="text-brand-teal hover:underline font-medium">
               Login here
             </Link>
             <br />
-            <Link href="/register" className="text-gray-500 hover:underline">
+            <Link href="/register" className="text-[var(--color-text-secondary)] hover:underline">
               Register as Retail Customer
             </Link>
           </div>

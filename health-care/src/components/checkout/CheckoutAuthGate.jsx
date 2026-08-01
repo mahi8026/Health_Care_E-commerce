@@ -66,14 +66,14 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F9FC] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[var(--color-background-tertiary)] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
 
         {/* Back link */}
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#0E8A6E] mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-brand-teal mb-6 transition-colors"
         >
           <FaArrowLeft size={11} />
           Back to checkout
@@ -81,16 +81,16 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto mb-4 bg-[#E1F5EE] rounded-full flex items-center justify-center">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0E8A6E" strokeWidth="2">
+          <div className="w-14 h-14 mx-auto mb-4 bg-brand-teal-tint rounded-full flex items-center justify-center">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-teal)" strokeWidth="2">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
             </svg>
           </div>
-          <h1 className="text-[22px] font-bold text-[#0B2545] font-[family-name:var(--font-lora)]">
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
             {mode === 'login' ? 'Sign in to continue' : 'Create your account'}
           </h1>
-          <p className="text-[13px] text-[#6B7280] mt-1">
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
             {mode === 'login'
               ? 'Your cart is saved — sign in to place your order.'
               : 'Quick setup — your cart will be waiting.'}
@@ -98,14 +98,14 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
         </div>
 
         {/* Tab switcher */}
-        <div className="flex bg-[#F3F4F6] rounded-xl p-1 mb-6">
+        <div className="flex bg-[var(--color-background-tertiary)] rounded-xl p-1 mb-6">
           <button
             type="button"
             onClick={() => setMode('login')}
-            className={`flex-1 py-2 rounded-lg text-[13px] font-semibold transition-all ${
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
               mode === 'login'
-                ? 'bg-white text-[#0B2545] shadow-sm'
-                : 'text-[#6B7280] hover:text-[#0B2545]'
+                ? 'bg-white text-brand-navy shadow-sm'
+                : 'text-[var(--color-text-secondary)] hover:text-brand-navy'
             }`}
           >
             Sign In
@@ -113,27 +113,27 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
           <button
             type="button"
             onClick={() => setMode('register')}
-            className={`flex-1 py-2 rounded-lg text-[13px] font-semibold transition-all ${
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
               mode === 'register'
-                ? 'bg-white text-[#0B2545] shadow-sm'
-                : 'text-[#6B7280] hover:text-[#0B2545]'
+                ? 'bg-white text-brand-navy shadow-sm'
+                : 'text-[var(--color-text-secondary)] hover:text-brand-navy'
             }`}
           >
             Create Account
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-6 shadow-sm">
 
           {/* Google login — always visible */}
           <GoogleLoginButton fullWidth className="mb-5" />
 
           <div className="relative mb-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#E5E7EB]" />
+              <div className="w-full border-t border-[var(--color-border-primary)]" />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-3 bg-white text-[12px] text-[#9CA3AF]">or continue with email</span>
+              <span className="px-3 bg-white text-xs text-[var(--color-text-tertiary)]">or continue with email</span>
             </div>
           </div>
 
@@ -141,7 +141,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
           {mode === 'login' && (
             <form onSubmit={handleLogin} noValidate>
               {loginError && (
-                <div className="mb-4 px-3 py-2.5 bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] rounded-lg text-[12px]">
+                <div className="mb-4 px-3 py-2.5 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs">
                   {loginError}
                 </div>
               )}
@@ -168,7 +168,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
               <div className="text-right mb-5">
                 <a
                   href="/forgot-password"
-                  className="text-[12px] text-[#0E8A6E] hover:underline"
+                  className="text-xs text-brand-teal hover:underline"
                 >
                   Forgot password?
                 </a>
@@ -183,7 +183,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
           {mode === 'register' && (
             <form onSubmit={handleRegister} noValidate>
               {registerErrors.submit && (
-                <div className="mb-4 px-3 py-2.5 bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] rounded-lg text-[12px]">
+                <div className="mb-4 px-3 py-2.5 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs">
                   {registerErrors.submit}
                 </div>
               )}
@@ -200,12 +200,12 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
                       onChange={(e) => setRegisterData({ ...registerData, accountType: e.target.value })}
                       className="sr-only"
                     />
-                    <div className={`p-3 border rounded-xl text-center transition-colors text-[12px] font-semibold ${
+                    <div className={`p-3 border rounded-xl text-center transition-colors text-xs font-semibold ${
                       registerData.accountType === type
                         ? type === 'B2B'
-                          ? 'border-[#0E8A6E] bg-[#E1F5EE] text-[#0E8A6E]'
-                          : 'border-[#0B2545] bg-[#0B2545] text-white'
-                        : 'border-[#E5E7EB] text-[#6B7280] hover:bg-[#F9FAFB]'
+                          ? 'border-brand-teal bg-brand-teal-tint text-brand-teal'
+                          : 'border-brand-navy bg-brand-navy text-white'
+                        : 'border-[var(--color-border-primary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-secondary)]'
                     }`}>
                       {type === 'Retail' ? '👤 Retail' : '🏢 B2B'}
                     </div>
@@ -289,7 +289,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
                 Create Account &amp; Place Order
               </Button>
 
-              <p className="mt-3 text-center text-[10px] text-[#9CA3AF]">
+              <p className="mt-3 text-center text-xs text-[var(--color-text-tertiary)]">
                 By registering you agree to our Terms of Service and Privacy Policy
               </p>
             </form>

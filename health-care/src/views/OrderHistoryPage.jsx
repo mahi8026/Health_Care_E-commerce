@@ -10,14 +10,14 @@ import { API } from '@/constants/api';
 const PAGE_SIZE = 10;
 
 const STATUS_COLORS = {
-  placed: 'bg-[#FEF3C7] text-[#92400E]',
-  pending: 'bg-[#FEF3C7] text-[#92400E]',
-  confirmed: 'bg-[#DBEAFE] text-[#1E40AF]',
-  processing: 'bg-[#E0E7FF] text-[#3730A3]',
-  shipped: 'bg-[#E0E7FF] text-[#3730A3]',
-  out_for_delivery: 'bg-[#E0E7FF] text-[#3730A3]',
-  delivered: 'bg-[#D1FAE5] text-[#065F46]',
-  cancelled: 'bg-[#FEE2E2] text-[#991B1B]',
+  placed: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+  pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+  confirmed: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+  processing: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+  shipped: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+  out_for_delivery: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
+  delivered: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+  cancelled: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
 };
 
 export default function OrderHistoryPage() {
@@ -105,35 +105,35 @@ export default function OrderHistoryPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
-      <h1 className="text-[20px] font-semibold mb-6 font-[family-name:var(--font-lora)]">
+      <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-6">
         {t('orders.title')}
       </h1>
 
       {loading ? (
         <div className="space-y-4 animate-fade-in">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 animate-pulse">
+            <div key={i} className="bg-white rounded-xl p-6 border border-[var(--color-border-tertiary)] animate-pulse">
               <div className="flex items-center gap-4 mb-4">
-                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-32 animate-shimmer" />
-                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-24 animate-shimmer" />
+                <div className="h-5 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-32 animate-shimmer" />
+                <div className="h-5 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-24 animate-shimmer" />
               </div>
-              <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full w-48 mb-3 animate-shimmer" />
-              <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-lg w-full animate-shimmer" />
+              <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-48 mb-3 animate-shimmer" />
+              <div className="h-6 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg w-full animate-shimmer" />
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="text-center py-12 text-[13px] text-[#E24B4A]">{error}</div>
+        <div className="text-center py-12 text-sm text-danger">{error}</div>
       ) : orders.length === 0 ? (
         <div className="text-center py-16">
-          <div className="text-[48px] mb-4">📦</div>
-          <p className="text-[14px] font-medium mb-2">{t('orders.noOrders')}</p>
-          <p className="text-[12px] text-[var(--color-text-secondary)] mb-6">
+          <div className="text-5xl mb-4">📦</div>
+          <p className="text-sm font-medium mb-2">{t('orders.noOrders')}</p>
+          <p className="text-xs text-[var(--color-text-secondary)] mb-6">
             {t('orders.noOrdersDesc')}
           </p>
           <button
             onClick={() => router.push('/reagent-store')}
-            className="px-6 py-3 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2d52]"
+            className="px-6 py-3 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-brand-navy-hover)]"
           >
             {t('orders.browseCatalog')}
           </button>
@@ -146,7 +146,7 @@ export default function OrderHistoryPage() {
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-tertiary)]">
                   {[t('orders.orderId'), t('orders.date'), t('orders.items'), t('orders.total'), t('orders.status'), t('orders.actions')].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
+                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-[var(--color-text-secondary)] font-[family-name:var(--font-plus-jakarta)]">
                       {h}
                     </th>
                   ))}
@@ -155,20 +155,20 @@ export default function OrderHistoryPage() {
               <tbody>
                 {orders.map(order => (
                   <tr key={order._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
-                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       {order.orderNumber}
                     </td>
-                    <td className="px-4 py-3 text-[12px] text-[var(--color-text-secondary)]">
+                    <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">
                       {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                     </td>
-                    <td className="px-4 py-3 text-[12px]">
+                    <td className="px-4 py-3 text-xs">
                       {order.items?.length || 0} {(order.items?.length || 0) !== 1 ? t('orders.items') : t('orders.items')}
                     </td>
-                    <td className="px-4 py-3 text-[12px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       <div className="flex flex-col gap-0.5">
                         <span>৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                         {order.isB2BOrder && order.b2bDiscount > 0 && (
-                          <span className="text-[10px] text-[#7C3AED] font-medium flex items-center gap-1">
+                          <span className="text-xs text-[#7C3AED] font-medium flex items-center gap-1">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
                             </svg>
@@ -178,7 +178,7 @@ export default function OrderHistoryPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
+                      <span className={`text-xs px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
                         {order.status}
                       </span>
                     </td>
@@ -186,14 +186,14 @@ export default function OrderHistoryPage() {
                       <div className="flex gap-2 flex-wrap">
                         <button
                           onClick={() => handleTrack(order.orderNumber)}
-                          className="text-[11px] text-[#0E8A6E] font-medium hover:underline"
+                          className="text-xs text-brand-teal font-medium hover:underline"
                         >
                           {t('orders.track')}
                         </button>
                         <span className="text-[var(--color-border-secondary)]">·</span>
                         <button
                           onClick={() => handleInvoice(order)}
-                          className="text-[11px] text-[#0B2545] font-medium hover:underline"
+                          className="text-xs text-brand-navy font-medium hover:underline"
                         >
                           {t('orders.invoice')}
                         </button>
@@ -202,7 +202,7 @@ export default function OrderHistoryPage() {
                             <span className="text-[var(--color-border-secondary)]">·</span>
                             <button
                               onClick={() => handleRequestReturn(order._id)}
-                              className="text-[11px] text-[#E24B4A] font-medium hover:underline"
+                              className="text-xs text-danger font-medium hover:underline"
                             >
                               {t('orders.return')}
                             </button>
@@ -216,7 +216,7 @@ export default function OrderHistoryPage() {
                                 productId: item.product?._id || item.product,
                                 productName: item.product?.name || item.name || 'Product'
                               })}
-                              className="text-[11px] text-[#F59E0B] font-medium hover:underline flex items-center gap-0.5"
+                              className="text-xs text-warning font-medium hover:underline flex items-center gap-0.5"
                             >
                               ★ {t('orders.writeReview')}
                             </button>
@@ -236,28 +236,28 @@ export default function OrderHistoryPage() {
               <div key={order._id} className="bg-white rounded-lg border-[0.5px] border-[var(--color-border-tertiary)] p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <div className="text-[13px] font-semibold font-[family-name:var(--font-plus-jakarta)] mb-1">
+                    <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] mb-1">
                       {order.orderNumber}
                     </div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)]">
+                    <div className="text-xs text-[var(--color-text-secondary)]">
                       {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                     </div>
                   </div>
-                  <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
+                  <span className={`text-xs px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
                     {order.status}
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between mb-3 pb-3 border-b-[0.5px] border-[var(--color-border-tertiary)]">
-                  <div className="text-[11px] text-[var(--color-text-secondary)]">
+                  <div className="text-xs text-[var(--color-text-secondary)]">
                     {order.items?.length || 0} {t('orders.items')}
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
-                    <div className="text-[14px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+                    <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </div>
                     {order.isB2BOrder && order.b2bDiscount > 0 && (
-                      <div className="text-[10px] text-[#7C3AED] font-medium flex items-center gap-1">
+                      <div className="text-xs text-[#7C3AED] font-medium flex items-center gap-1">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
                         </svg>
@@ -270,20 +270,20 @@ export default function OrderHistoryPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleTrack(order.orderNumber)}
-                    className="flex-1 min-h-[44px] py-2 text-[12px] text-[#0E8A6E] font-medium border-[0.5px] border-[#0E8A6E] rounded-lg hover:bg-[#E1F5EE] transition-colors"
+                    className="flex-1 min-h-[44px] py-2 text-xs text-brand-teal font-medium border-[0.5px] border-brand-teal rounded-lg hover:bg-brand-teal-tint transition-colors"
                   >
                     {t('orders.track')}
                   </button>
                   <button
                     onClick={() => handleInvoice(order)}
-                    className="flex-1 min-h-[44px] py-2 text-[12px] text-[#0B2545] font-medium border-[0.5px] border-[#0B2545] rounded-lg hover:bg-[#E6F1FB] transition-colors"
+                    className="flex-1 min-h-[44px] py-2 text-xs text-brand-navy font-medium border-[0.5px] border-brand-navy rounded-lg hover:bg-[var(--color-status-info-tint)] transition-colors"
                   >
                     {t('orders.invoice')}
                   </button>
                   {canRequestReturn(order) && (
                     <button
                       onClick={() => handleRequestReturn(order._id)}
-                      className="flex-1 min-h-[44px] py-2 text-[12px] text-[#E24B4A] font-medium border-[0.5px] border-[#E24B4A] rounded-lg hover:bg-[#FEE2E2] transition-colors"
+                      className="flex-1 min-h-[44px] py-2 text-xs text-danger font-medium border-[0.5px] border-danger rounded-lg hover:bg-[var(--color-status-danger-tint)] transition-colors"
                     >
                       {t('orders.return')}
                     </button>
@@ -294,7 +294,7 @@ export default function OrderHistoryPage() {
                         productId: order.items[0].product?._id || order.items[0].product,
                         productName: order.items[0].product?.name || order.items[0].name || 'Product'
                       })}
-                      className="flex-1 min-h-[44px] py-2 text-[12px] text-[#F59E0B] font-medium border-[0.5px] border-[#F59E0B] rounded-lg hover:bg-[#FFFBEB] transition-colors"
+                      className="flex-1 min-h-[44px] py-2 text-xs text-warning font-medium border-[0.5px] border-warning rounded-lg hover:bg-[var(--color-status-warning-tint)] transition-colors"
                     >
                       ★ {t('orders.writeReview')}
                     </button>
@@ -310,17 +310,17 @@ export default function OrderHistoryPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="min-h-[44px] text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
+                className="min-h-[44px] text-xs px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 {t('orders.previous')}
               </button>
-              <span className="text-[12px] text-[var(--color-text-secondary)]">
+              <span className="text-xs text-[var(--color-text-secondary)]">
                 {t('orders.page')} {page} {t('orders.of')} {totalPages} · {total} orders
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="min-h-[44px] text-[12px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
+                className="min-h-[44px] text-xs px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 {t('orders.next')}
               </button>

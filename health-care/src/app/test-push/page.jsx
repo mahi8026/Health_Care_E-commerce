@@ -186,39 +186,39 @@ export default function TestPushPage() {
   const clearLogs = () => setLogs([]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-[var(--color-background-secondary)] p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">🔔 Push Notification Diagnostics</h1>
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-6">🔔 Push Notification Diagnostics</h1>
         
         {/* Status Summary */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Status Summary</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${status.browserSupport ? 'bg-green-500' : 'bg-red-500'}`}></span>
+              <span className={`w-3 h-3 rounded-full ${status.browserSupport ? 'bg-[var(--color-status-success-tint)]' : 'bg-[var(--color-status-danger-tint)]'}`}></span>
               <span>Browser Support</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${status.vapidKey ? 'bg-green-500' : 'bg-red-500'}`}></span>
+              <span className={`w-3 h-3 rounded-full ${status.vapidKey ? 'bg-[var(--color-status-success-tint)]' : 'bg-[var(--color-status-danger-tint)]'}`}></span>
               <span>VAPID Key</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${status.serviceWorker ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+              <span className={`w-3 h-3 rounded-full ${status.serviceWorker ? 'bg-[var(--color-status-success-tint)]' : 'bg-[var(--color-status-warning-tint)]'}`}></span>
               <span>Service Worker</span>
             </div>
             <div className="flex items-center gap-2">
               <span className={`w-3 h-3 rounded-full ${
-                status.permission === 'granted' ? 'bg-green-500' : 
-                status.permission === 'denied' ? 'bg-red-500' : 'bg-yellow-500'
+                status.permission === 'granted' ? 'bg-[var(--color-status-success-tint)]' : 
+                status.permission === 'denied' ? 'bg-[var(--color-status-danger-tint)]' : 'bg-[var(--color-status-warning-tint)]'
               }`}></span>
               <span>Permission: {status.permission || 'default'}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${status.subscription ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+              <span className={`w-3 h-3 rounded-full ${status.subscription ? 'bg-[var(--color-status-success-tint)]' : 'bg-[var(--color-background-muted)]'}`}></span>
               <span>Subscribed</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${status.backend !== false ? 'bg-green-500' : 'bg-red-500'}`}></span>
+              <span className={`w-3 h-3 rounded-full ${status.backend !== false ? 'bg-[var(--color-status-success-tint)]' : 'bg-[var(--color-status-danger-tint)]'}`}></span>
               <span>Backend</span>
             </div>
           </div>
@@ -234,7 +234,7 @@ export default function TestPushPage() {
           </button>
           <button
             onClick={testUnsubscribe}
-            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700"
+            className="bg-danger text-white px-6 py-2 rounded-lg hover:bg-danger"
           >
             🗑️ Unsubscribe
           </button>
@@ -246,7 +246,7 @@ export default function TestPushPage() {
           </button>
           <button
             onClick={clearLogs}
-            className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500"
+            className="bg-[var(--color-background-muted)] text-white px-6 py-2 rounded-lg hover:bg-[var(--color-background-secondary)]"
           >
             🗑️ Clear Logs
           </button>
@@ -256,16 +256,16 @@ export default function TestPushPage() {
         <div className="bg-gray-900 text-gray-100 rounded-lg shadow p-6 font-mono text-sm max-h-[600px] overflow-y-auto">
           <h2 className="text-lg font-semibold mb-4 text-white">Console Logs</h2>
           {logs.length === 0 ? (
-            <p className="text-gray-400">No logs yet...</p>
+            <p className="text-[var(--color-text-secondary)]">No logs yet...</p>
           ) : (
             logs.map((log, i) => (
               <div key={i} className={`mb-2 ${
-                log.type === 'error' ? 'text-red-400' :
+                log.type === 'error' ? 'text-[var(--color-status-danger)]' :
                 log.type === 'success' ? 'text-green-400' :
-                log.type === 'warning' ? 'text-yellow-400' :
-                'text-gray-300'
+                log.type === 'warning' ? 'text-[var(--color-status-warning)]' :
+                'text-[var(--color-text-tertiary)]'
               }`}>
-                <span className="text-gray-500">[{log.timestamp}]</span> {log.message}
+                <span className="text-[var(--color-text-secondary)]">[{log.timestamp}]</span> {log.message}
               </div>
             ))
           )}
@@ -275,9 +275,9 @@ export default function TestPushPage() {
         <div className="bg-white rounded-lg shadow p-6 mt-6">
           <h2 className="text-xl font-semibold mb-4">Environment Info</h2>
           <div className="space-y-2 text-sm">
-            <div><strong>API URL:</strong> <code className="bg-gray-100 px-2 py-1 rounded">{API}</code></div>
-            <div><strong>VAPID Key:</strong> <code className="bg-gray-100 px-2 py-1 rounded text-xs">{VAPID_PUBLIC_KEY?.substring(0, 50)}...</code></div>
-            <div><strong>User Agent:</strong> <code className="bg-gray-100 px-2 py-1 rounded text-xs">{navigator.userAgent}</code></div>
+            <div><strong>API URL:</strong> <code className="bg-[var(--color-background-tertiary)] px-2 py-1 rounded">{API}</code></div>
+            <div><strong>VAPID Key:</strong> <code className="bg-[var(--color-background-tertiary)] px-2 py-1 rounded text-xs">{VAPID_PUBLIC_KEY?.substring(0, 50)}...</code></div>
+            <div><strong>User Agent:</strong> <code className="bg-[var(--color-background-tertiary)] px-2 py-1 rounded text-xs">{navigator.userAgent}</code></div>
           </div>
         </div>
       </div>

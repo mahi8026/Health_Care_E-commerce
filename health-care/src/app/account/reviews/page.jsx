@@ -1,5 +1,6 @@
 "use client";
 
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -73,7 +74,7 @@ export default function UserReviewsPage() {
   }, [user, page]);
 
   const handleDelete = async (reviewId) => {
-    if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+    if (!await confirmAction('Are you sure you want to delete this review? This action cannot be undone.')) {
       return;
     }
 
@@ -104,9 +105,9 @@ export default function UserReviewsPage() {
 
   const renderStars = (rating) => {
     return (
-      <div className="flex gap-[2px] text-[14px]">
+      <div className="flex gap-[2px] text-sm">
         {[1, 2, 3, 4, 5].map(star => (
-          <span key={star} className={star <= rating ? 'text-[#FFA500]' : 'text-[#E5E7EB]'}>
+          <span key={star} className={star <= rating ? 'text-[#FFA500]' : 'border-[var(--color-border-primary)]'}>
             ★
           </span>
         ))}
@@ -116,9 +117,9 @@ export default function UserReviewsPage() {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'bg-[#FEF3C7] text-[#92400E]',
-      approved: 'bg-[#D1FAE5] text-[#065F46]',
-      rejected: 'bg-[#FEE2E2] text-[#991B1B]'
+      pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      approved: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
+      rejected: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
     };
     return colors[status] || colors.pending;
   };
@@ -130,8 +131,8 @@ export default function UserReviewsPage() {
       <div className="max-w-6xl mx-auto px-4">
         {/* Message Toast */}
         {message.text && (
-          <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
-            message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+          <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-toast ${
+            message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
           }`}>
             {message.text}
           </div>
@@ -139,10 +140,10 @@ export default function UserReviewsPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-[28px] font-bold mb-2 font-[family-name:var(--font-plus-jakarta)]">
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">
             My Reviews
           </h1>
-          <p className="text-[14px] text-[var(--color-text-secondary)]">
+          <p className="text-sm text-[var(--color-text-secondary)]">
             Manage your product reviews and share your experiences
           </p>
         </div>
@@ -150,7 +151,7 @@ export default function UserReviewsPage() {
         {/* Products to Review */}
         {eligibleProducts.length > 0 && (
           <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-6 mb-6">
-            <h2 className="text-[18px] font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
+            <h2 className="text-lg font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">
               Products to Review ({eligibleProducts.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -162,15 +163,15 @@ export default function UserReviewsPage() {
                     className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border-secondary)]"
                   />
                   <div className="flex-1">
-                    <h3 className="text-[13px] font-semibold mb-1 line-clamp-2 font-[family-name:var(--font-plus-jakarta)]">
+                    <h3 className="text-sm font-semibold mb-1 line-clamp-2 font-[family-name:var(--font-plus-jakarta)]">
                       {product.name}
                     </h3>
-                    <p className="text-[11px] text-[var(--color-text-secondary)] mb-2">
+                    <p className="text-xs text-[var(--color-text-secondary)] mb-2">
                       Delivered: {new Date(product.deliveredAt).toLocaleDateString()}
                     </p>
                     <button
                       onClick={() => handleWriteReview(product)}
-                      className="text-[12px] px-3 py-1 bg-[#0B2545] text-white rounded font-semibold hover:bg-[#0d2e56] transition-colors"
+                      className="text-xs px-3 py-1 bg-brand-navy text-white rounded font-semibold hover:bg-[var(--color-brand-navy-hover)] transition-colors"
                     >
                       Write Review
                     </button>
@@ -180,7 +181,7 @@ export default function UserReviewsPage() {
             </div>
             {eligibleProducts.length > 4 && (
               <div className="text-center mt-4">
-                <button className="text-[13px] text-[#0E8A6E] font-medium hover:underline">
+                <button className="text-sm text-brand-teal font-medium hover:underline">
                   View all {eligibleProducts.length} products →
                 </button>
               </div>
@@ -191,29 +192,29 @@ export default function UserReviewsPage() {
         {/* My Reviews */}
         <div className="bg-white rounded-lg border border-[var(--color-border-tertiary)]">
           <div className="px-6 py-4 border-b border-[var(--color-border-tertiary)]">
-            <h2 className="text-[18px] font-semibold font-[family-name:var(--font-plus-jakarta)]">
+            <h2 className="text-lg font-semibold font-[family-name:var(--font-plus-jakarta)]">
               Your Reviews ({pagination?.total || 0})
             </h2>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0B2545] mx-auto mb-4"></div>
-              <p className="text-[13px] text-[var(--color-text-secondary)]">Loading reviews...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-navy mx-auto mb-4"></div>
+              <p className="text-sm text-[var(--color-text-secondary)]">Loading reviews...</p>
             </div>
           ) : reviews.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="text-[48px] mb-4">📝</div>
-              <h3 className="text-[16px] font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
+              <div className="text-5xl mb-4">📝</div>
+              <h3 className="text-base font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 No reviews yet
               </h3>
-              <p className="text-[13px] text-[var(--color-text-secondary)] mb-4">
+              <p className="text-sm text-[var(--color-text-secondary)] mb-4">
                 Share your experience with products you&apos;ve purchased
               </p>
               {eligibleProducts.length > 0 && (
                 <button
                   onClick={() => handleWriteReview(eligibleProducts[0])}
-                  className="px-6 py-2 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0d2e56] transition-colors"
+                  className="px-6 py-2 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-brand-navy-hover)] transition-colors"
                 >
                   Write Your First Review
                 </button>
@@ -233,17 +234,17 @@ export default function UserReviewsPage() {
                     />
                     <div className="flex-1">
                       <h3 
-                        className="text-[14px] font-semibold mb-1 cursor-pointer hover:text-[#0E8A6E] transition-colors font-[family-name:var(--font-plus-jakarta)]"
+                        className="text-sm font-semibold mb-1 cursor-pointer hover:text-brand-teal transition-colors font-[family-name:var(--font-plus-jakarta)]"
                         onClick={() => router.push(`/products/${review.product?._id}`)}
                       >
                         {review.product?.name}
                       </h3>
-                      <p className="text-[11px] text-[var(--color-text-secondary)]">
+                      <p className="text-xs text-[var(--color-text-secondary)]">
                         SKU: {review.product?.sku}
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className={`text-[10px] px-2 py-[3px] rounded font-medium ${getStatusColor(review.status)}`}>
+                      <span className={`text-xs px-2 py-[3px] rounded font-medium ${getStatusColor(review.status)}`}>
                         {review.status}
                       </span>
                     </div>
@@ -252,10 +253,10 @@ export default function UserReviewsPage() {
                   {/* Review Content */}
                   <div className="mb-3">
                     {renderStars(review.rating)}
-                    <h4 className="text-[14px] font-semibold mt-2 mb-1 font-[family-name:var(--font-plus-jakarta)]">
+                    <h4 className="text-sm font-semibold mt-2 mb-1 font-[family-name:var(--font-plus-jakarta)]">
                       {review.title}
                     </h4>
-                    <p className="text-[13px] text-[var(--color-text-primary)] leading-relaxed">
+                    <p className="text-sm text-[var(--color-text-primary)] leading-relaxed">
                       {review.comment}
                     </p>
                   </div>
@@ -277,11 +278,11 @@ export default function UserReviewsPage() {
 
                   {/* Admin Response */}
                   {review.adminResponse && (
-                    <div className="bg-[#F0FDF9] border-l-4 border-[#0E8A6E] p-3 mb-3">
-                      <div className="text-[11px] font-semibold text-[#0E8A6E] mb-1">
+                    <div className="bg-[var(--color-status-success-tint)] border-l-4 border-brand-teal p-3 mb-3">
+                      <div className="text-xs font-semibold text-brand-teal mb-1">
                         Response from MediportBD
                       </div>
-                      <p className="text-[12px] text-[var(--color-text-primary)]">
+                      <p className="text-xs text-[var(--color-text-primary)]">
                         {review.adminResponse}
                       </p>
                     </div>
@@ -289,11 +290,11 @@ export default function UserReviewsPage() {
 
                   {/* Rejection Reason */}
                   {review.status === 'rejected' && review.rejectionReason && (
-                    <div className="bg-[#FEE2E2] border-l-4 border-[#E24B4A] p-3 mb-3">
-                      <div className="text-[11px] font-semibold text-[#991B1B] mb-1">
+                    <div className="bg-[var(--color-status-danger-tint)] border-l-4 border-danger p-3 mb-3">
+                      <div className="text-xs font-semibold text-[var(--color-status-danger)] mb-1">
                         Rejection Reason
                       </div>
-                      <p className="text-[12px] text-[#991B1B]">
+                      <p className="text-xs text-[var(--color-status-danger)]">
                         {review.rejectionReason}
                       </p>
                     </div>
@@ -301,7 +302,7 @@ export default function UserReviewsPage() {
 
                   {/* Meta Info */}
                   <div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-tertiary)]">
-                    <div className="flex items-center gap-4 text-[11px] text-[var(--color-text-secondary)]">
+                    <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
                       <span>
                         Posted: {new Date(review.createdAt).toLocaleDateString()}
                       </span>
@@ -315,13 +316,13 @@ export default function UserReviewsPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => router.push(`/products/${review.product?._id}`)}
-                        className="text-[12px] px-3 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)] transition-colors"
+                        className="text-xs px-3 py-1 border border-[var(--color-border-secondary)] rounded hover:bg-[var(--color-background-tertiary)] transition-colors"
                       >
                         View Product
                       </button>
                       <button
                         onClick={() => handleDelete(review._id)}
-                        className="text-[12px] px-3 py-1 border border-[#E24B4A] text-[#E24B4A] rounded hover:bg-[#FEE2E2] transition-colors"
+                        className="text-xs px-3 py-1 border border-danger text-danger rounded hover:bg-[var(--color-status-danger-tint)] transition-colors"
                       >
                         Delete
                       </button>
@@ -338,17 +339,17 @@ export default function UserReviewsPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
+                className="px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 ← Previous
               </button>
-              <span className="text-[13px] text-[var(--color-text-secondary)]">
+              <span className="text-sm text-[var(--color-text-secondary)]">
                 Page {page} of {pagination.pages}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
                 disabled={page === pagination.pages}
-                className="px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-[13px] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
+                className="px-4 py-2 border border-[var(--color-border-secondary)] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[var(--color-background-tertiary)] transition-colors"
               >
                 Next →
               </button>

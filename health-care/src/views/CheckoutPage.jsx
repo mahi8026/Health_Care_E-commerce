@@ -318,14 +318,14 @@ export default function CheckoutPage({ onBackToCart }) {
 
   if (cart.length === 0 && !isConfirmed) {
     return (
-      <div className="min-h-[60vh] bg-[#F6F9FC] flex items-center justify-center px-4 py-16">
-        <div className="text-center max-w-sm bg-white rounded-2xl border border-[#E5E7EB] p-8">
+      <div className="min-h-[60vh] bg-[var(--color-background-tertiary)] flex items-center justify-center px-4 py-16">
+        <div className="text-center max-w-sm bg-white rounded-2xl border border-[var(--color-border-primary)] p-8">
           <div className="text-5xl mb-4">🛒</div>
-          <h2 className="text-lg font-bold text-[#0B2545] mb-2">{t('cart.empty')}</h2>
-          <p className="text-sm text-[#6B7280] mb-6">{t('cart.emptyDesc')}</p>
+          <h2 className="text-lg font-semibold text-brand-navy mb-2">{t('cart.empty')}</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-6">{t('cart.emptyDesc')}</p>
           <Link
             href="/products"
-            className="inline-block w-full py-3 rounded-xl bg-[#0E8A6E] text-white text-sm font-bold hover:bg-[#0a7560]"
+            className="inline-block w-full py-3 rounded-xl bg-brand-teal text-white text-sm font-semibold hover:bg-[var(--color-brand-teal-hover)]"
           >
             {t('product.browseProducts')}
           </Link>
@@ -365,18 +365,18 @@ export default function CheckoutPage({ onBackToCart }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F9FC] pb-24 lg:pb-10">
+    <div className="min-h-screen bg-[var(--color-background-tertiary)] pb-24 lg:pb-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
         <div className="flex items-center justify-between gap-4 mb-5">
           <div>
             <Link
               href="/cart"
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#0E8A6E] mb-2"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-brand-teal mb-2"
             >
               <FaArrowLeft size={11} />
               {t('checkout.backToCart')}
             </Link>
-            <h1 className="text-[22px] sm:text-[26px] font-bold text-[#0B2545] m-0 font-[family-name:var(--font-lora)]">
+            <h1 className="text-2xl md:text-3xl font-semibold text-text-primary m-0">
               {t('checkout.title')}
             </h1>
           </div>
@@ -390,7 +390,7 @@ export default function CheckoutPage({ onBackToCart }) {
               {error && (
                 <div
                   role="alert"
-                  className="px-4 py-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#991B1B] text-sm space-y-1"
+                  className="px-4 py-3 rounded-xl bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] text-sm space-y-1"
                 >
                   {Array.isArray(error) ? (
                     error.map((e) => (
@@ -426,7 +426,7 @@ export default function CheckoutPage({ onBackToCart }) {
                 <button
                   type="button"
                   onClick={() => (onBackToCart ? onBackToCart() : router.push('/cart'))}
-                  className="px-5 py-3 rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#0B2545] hover:bg-[#F9FAFB]"
+                  className="px-5 py-3 rounded-xl border border-[var(--color-border-primary)] bg-white text-sm font-semibold text-brand-navy hover:bg-[var(--color-background-secondary)]"
                 >
                   {t('checkout.backToCart')}
                 </button>
@@ -452,7 +452,7 @@ export default function CheckoutPage({ onBackToCart }) {
             </aside>
           </div>
         ) : (
-          <div className="max-w-lg mx-auto bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-8">
+          <div className="max-w-lg mx-auto bg-white rounded-2xl border border-[var(--color-border-primary)] p-6 sm:p-8">
             <OrderConfirmation
               orderId={orderId || 'ORD-XXXX'}
               mongoId={createdOrderId}
@@ -465,18 +465,18 @@ export default function CheckoutPage({ onBackToCart }) {
 
       {!isConfirmed && (
         <div
-          className="lg:hidden fixed bottom-0 left-0 right-0 z-[500] bg-white border-t border-[#E5E7EB] px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
+          className="lg:hidden fixed bottom-0 left-0 right-0 z-sticky bg-white border-t border-[var(--color-border-primary)] px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]"
           style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
         >
           <div className="flex items-center justify-between gap-3 mb-2">
-            <span className="text-[12px] text-[#6B7280]">{t('checkout.total')}</span>
-            <span className="text-lg font-bold text-[#0B2545]">৳{orderTotal.toLocaleString()}</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">{t('checkout.total')}</span>
+            <span className="text-lg font-semibold text-brand-navy">৳{orderTotal.toLocaleString()}</span>
           </div>
           <button
             type="button"
             onClick={handlePlaceOrder}
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-[#0E8A6E] hover:bg-[#0a7560] text-white text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

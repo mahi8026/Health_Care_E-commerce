@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -37,7 +38,7 @@ export default function EditManufacturerPage() {
       const mfr = (response.manufacturers || []).find(m => m._id === manufacturerId);
       
       if (!mfr) {
-        alert('Manufacturer not found');
+        showToast.error('Manufacturer not found');
         router.push('/admin/manufacturers');
         return;
       }
@@ -58,7 +59,7 @@ export default function EditManufacturerPage() {
       
       setCurrentLogo(mfr.logo);
     } catch (err) {
-      alert('Failed to load manufacturer');
+      showToast.error('Failed to load manufacturer');
       router.push('/admin/manufacturers');
     } finally {
       setLoading(false);
@@ -136,10 +137,10 @@ export default function EditManufacturerPage() {
         });
       }
 
-      alert('Manufacturer updated successfully!');
+      showToast.success('Manufacturer updated successfully!');
       router.push('/admin/manufacturers');
     } catch (err) {
-      alert(err.message || err.data?.message || 'Failed to update manufacturer');
+      showToast.error(err.message || err.data?.message || 'Failed to update manufacturer');
     } finally {
       setSaving(false);
     }
@@ -150,8 +151,8 @@ export default function EditManufacturerPage() {
       <div className="min-h-screen bg-page-muted p-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-8 bg-[var(--color-background-muted)] rounded w-1/4"></div>
+            <div className="h-64 bg-[var(--color-background-muted)] rounded"></div>
           </div>
         </div>
       </div>
@@ -169,15 +170,15 @@ export default function EditManufacturerPage() {
           >
             ← Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Manufacturer</h1>
-          <p className="text-gray-600 mt-1">Update manufacturer details</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">Edit Manufacturer</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">Update manufacturer details</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-6">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Manufacturer Name *
             </label>
             <input
@@ -186,18 +187,18 @@ export default function EditManufacturerPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             {formData.name && (
-              <p className="text-xs text-gray-500 mt-1">
-                Slug: <code className="bg-gray-100 px-2 py-1 rounded">{generateSlug(formData.name)}</code>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                Slug: <code className="bg-[var(--color-background-tertiary)] px-2 py-1 rounded">{generateSlug(formData.name)}</code>
               </p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Description
             </label>
             <textarea
@@ -205,26 +206,26 @@ export default function EditManufacturerPage() {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Logo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Logo
             </label>
             {currentLogo && !logoPreview && (
               <div className="mb-2">
                 <img src={currentLogo.url} alt="Current" className="w-32 h-32 object-contain rounded border" loading="lazy" />
-                <p className="text-xs text-gray-500 mt-1">Current logo</p>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1">Current logo</p>
               </div>
             )}
             <input
               type="file"
               accept="image/*"
               onChange={handleLogoChange}
-              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="w-full text-sm text-[var(--color-text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {logoPreview && (
               <img src={logoPreview} alt="Preview" className="mt-2 w-32 h-32 object-contain rounded border" loading="lazy" />
@@ -234,7 +235,7 @@ export default function EditManufacturerPage() {
           {/* Country & Website */}
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                 Country
               </label>
               <input
@@ -242,12 +243,12 @@ export default function EditManufacturerPage() {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                 Website
               </label>
               <input
@@ -255,14 +256,14 @@ export default function EditManufacturerPage() {
                 name="website"
                 value={formData.website}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
 
           {/* Contact Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Contact Email
             </label>
             <input
@@ -270,7 +271,7 @@ export default function EditManufacturerPage() {
               name="contactEmail"
               value={formData.contactEmail}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -284,7 +285,7 @@ export default function EditManufacturerPage() {
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 rounded"
               />
-              <span className="text-sm font-medium text-gray-700">Active</span>
+              <span className="text-sm font-medium text-[var(--color-text-primary)]">Active</span>
             </label>
           </div>
 
@@ -293,7 +294,7 @@ export default function EditManufacturerPage() {
             <button
               type="button"
               onClick={() => setShowSEO(!showSEO)}
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-4"
+              className="flex items-center gap-2 text-sm font-medium text-[var(--color-text-primary)] mb-4"
             >
               <span>{showSEO ? '▼' : '▶'}</span>
               SEO Settings (Optional)
@@ -302,7 +303,7 @@ export default function EditManufacturerPage() {
             {showSEO && (
               <div className="space-y-4 pl-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Meta Title
                   </label>
                   <input
@@ -310,12 +311,12 @@ export default function EditManufacturerPage() {
                     name="seo.metaTitle"
                     value={formData.seo.metaTitle}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Meta Description
                   </label>
                   <textarea
@@ -323,12 +324,12 @@ export default function EditManufacturerPage() {
                     value={formData.seo.metaDescription}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                     Keywords (comma-separated)
                   </label>
                   <input
@@ -336,7 +337,7 @@ export default function EditManufacturerPage() {
                     name="seo.keywords"
                     value={formData.seo.keywords}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-[var(--color-border-primary)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -348,7 +349,7 @@ export default function EditManufacturerPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              className="px-6 py-2 border border-[var(--color-border-primary)] rounded-lg text-[var(--color-text-primary)] hover:bg-[var(--color-background-secondary)]"
             >
               Cancel
             </button>

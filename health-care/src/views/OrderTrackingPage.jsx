@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -45,15 +46,15 @@ function TrackingTimeline({ status, timeline }) {
                 width: 44,
                 height: 44,
                 borderRadius: '50%',
-                background: isDone ? '#0E8A6E' : isCurrent ? '#0B2545' : '#F3F4F6',
-                border: isCurrent ? '3px solid #0E8A6E' : '2px solid transparent',
+                background: isDone ? 'var(--color-brand-teal)' : isCurrent ? 'var(--color-brand-navy)' : 'var(--color-background-tertiary)',
+                border: isCurrent ? '3px solid var(--color-brand-teal)' : '2px solid transparent',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: isPending ? 16 : 20,
                 boxShadow: isCurrent ? '0 0 0 4px rgba(14,138,110,0.15)' : 'none',
                 transition: 'all 0.3s',
-                color: isPending ? '#D1D5DB' : 'inherit',
+                color: isPending ? 'var(--color-text-tertiary)' : 'inherit',
                 filter: isPending ? 'grayscale(100%)' : 'none',
                 animation: isCurrent ? 'pulse 2s ease-in-out infinite' : 'none',
               }}>
@@ -63,7 +64,7 @@ function TrackingTimeline({ status, timeline }) {
                 <div style={{
                   width: 2,
                   height: 32,
-                  background: isDone ? '#0E8A6E' : '#E5E7EB',
+                  background: isDone ? 'var(--color-brand-teal)' : 'var(--color-background-muted)',
                   transition: 'background 0.5s',
                 }} />
               )}
@@ -72,16 +73,16 @@ function TrackingTimeline({ status, timeline }) {
             {/* Content */}
             <div style={{ paddingTop: 8, paddingBottom: idx < TRACKING_STEPS.length - 1 ? 24 : 0 }}>
               <div style={{
-                fontSize: 14,
+                fontSize: 'var(--text-sm)',
                 fontWeight: isCurrent ? 700 : isDone ? 600 : 400,
-                color: isPending ? '#9CA3AF' : '#0B2545',
+                color: isPending ? 'var(--color-text-secondary)' : 'var(--color-brand-navy)',
                 marginBottom: 2,
               }}>
                 {step.label}
               </div>
-              <div style={{ fontSize: 12, color: '#6B7280' }}>{step.desc}</div>
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>{step.desc}</div>
               {timeEntry?.timestamp && (
-                <div style={{ fontSize: 10, color: '#6B7280', marginTop: 4 }}>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginTop: 4 }}>
                   {new Date(timeEntry.timestamp).toLocaleString('en-GB', {
                     day: 'numeric',
                     month: 'short',
@@ -149,7 +150,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
   useEffect(() => {
     if (initialOrderNumber) {
-      handleTrack(initialOrderNumber);
+      void Promise.resolve().then(() => handleTrack(initialOrderNumber));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialOrderNumber]);
@@ -170,7 +171,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
       document.body.removeChild(a);
     } catch (error) {
       // Failed to download invoice
-      alert('Failed to download invoice. Please try again.');
+      showToast.error('Failed to download invoice. Please try again.');
     } finally {
       setDownloading(false);
     }
@@ -183,20 +184,20 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
   const getStatusColor = (status) => {
     const colors = {
-      completed: 'text-teal-600',
-      active: 'text-navy-600',
-      pending: 'text-gray-400'
+      completed: 'text-brand-teal',
+      active: 'text-brand-navy',
+      pending: 'text-[var(--color-text-secondary)]'
     };
-    return colors[status] || 'text-gray-400';
+    return colors[status] || 'text-[var(--color-text-secondary)]';
   };
 
   const getStatusBgColor = (status) => {
     const colors = {
-      completed: 'bg-teal-100',
-      active: 'bg-navy-100',
-      pending: 'bg-gray-100'
+      completed: 'bg-brand-teal-tint',
+      active: 'bg-brand-navy/10',
+      pending: 'bg-[var(--color-background-tertiary)]'
     };
-    return colors[status] || 'bg-gray-100';
+    return colors[status] || 'bg-[var(--color-background-tertiary)]';
   };
 
   const formatDate = (date) => {
@@ -231,7 +232,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
       {/* Share Toast */}
       {shareToast && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-3 bg-[#D1FAE5] text-[#065F46] rounded-xl shadow-lg text-[13px] font-semibold flex items-center gap-2">
+        <div className="fixed top-4 right-4 z-toast px-4 py-3 bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded-xl shadow-lg text-sm font-semibold flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
@@ -242,8 +243,8 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#0B2545] mb-2">Track Your Order</h1>
-          <p className="text-gray-600">Enter your order number to see real-time tracking</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">Track Your Order</h1>
+          <p className="text-[var(--color-text-secondary)]">Enter your order number to see real-time tracking</p>
         </div>
 
         {/* Search Box */}
@@ -254,13 +255,13 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
               placeholder="Enter order number (e.g., ORD-00001)"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+              className="flex-1 px-4 py-3 border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading}
-              className="w-full sm:w-auto px-8 py-3 bg-[#0E8A6E] text-white rounded-lg font-semibold hover:bg-[#0c7a5f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full sm:w-auto px-8 py-3 bg-brand-teal text-white rounded-lg font-semibold hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (
                 <>
@@ -274,7 +275,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
           </form>
           
           {error && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div className="mt-4 p-4 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-lg text-[var(--color-status-danger)] text-sm">
               {error}
             </div>
           )}
@@ -287,25 +288,25 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-[#0B2545] mb-1">
+                  <h2 className="text-xl font-semibold text-brand-navy mb-1">
                     Order {order.orderNumber}
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     Placed on {formatDate(order.createdAt)}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleShare}
-                    className="px-3 py-2 bg-[#F3F4F6] text-[#374151] rounded-lg text-[12px] font-medium hover:bg-[#E5E7EB] transition-colors flex items-center gap-2"
+                    className="px-3 py-2 bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--color-background-muted)] transition-colors flex items-center gap-2"
                   >
                     🔗 Share
                   </button>
                   <div className="text-right">
-                    <div className="text-sm text-gray-600 mb-1">Status</div>
+                    <div className="text-sm text-[var(--color-text-secondary)] mb-1">Status</div>
                     <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
-                      order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                      order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                      order.status === 'delivered' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' :
+                      order.status === 'cancelled' ? 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]' :
                       'bg-blue-100 text-blue-700'
                     }`}>
                       {order.status.replace(/_/g, ' ').toUpperCase()}
@@ -316,12 +317,12 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
               {/* Estimated Delivery */}
               {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                <div className="bg-[#E6F1FB] border border-[#0C447C] rounded-lg p-4 mb-6">
+                <div className="bg-[var(--color-status-info-tint)] border border-[var(--color-status-info)] rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">📦</span>
                     <div>
-                      <div className="text-sm text-[#0C447C] font-semibold">Estimated Delivery</div>
-                      <div className="text-[#0C447C]">{getEstimatedDelivery()}</div>
+                      <div className="text-sm text-[var(--color-status-info)] font-semibold">Estimated Delivery</div>
+                      <div className="text-[var(--color-status-info)]">{getEstimatedDelivery()}</div>
                     </div>
                   </div>
                 </div>
@@ -329,7 +330,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
 
               {/* Timeline */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-[#0B2545] mb-4">Order Timeline</h3>
+                <h3 className="font-semibold text-brand-navy mb-4">Order Timeline</h3>
                 <TrackingTimeline status={order.status} timeline={order.timeline} />
               </div>
             </div>
@@ -337,23 +338,23 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
             {/* Shipping Details */}
             {order.tracking && (order.tracking.courier || order.tracking.trackingNumber) && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="font-semibold text-[#0B2545] mb-4">Shipping Details</h3>
+                <h3 className="font-semibold text-brand-navy mb-4">Shipping Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {order.tracking.courier && (
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">Courier</div>
+                      <div className="text-sm text-[var(--color-text-secondary)] mb-1">Courier</div>
                       <div className="font-semibold">{order.tracking.courier}</div>
                     </div>
                   )}
                   {order.tracking.trackingNumber && (
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">Tracking Number</div>
+                      <div className="text-sm text-[var(--color-text-secondary)] mb-1">Tracking Number</div>
                       <div className="font-mono text-sm font-semibold">{order.tracking.trackingNumber}</div>
                     </div>
                   )}
                   {order.tracking.dispatchedAt && (
                     <div>
-                      <div className="text-sm text-gray-600 mb-1">Dispatched At</div>
+                      <div className="text-sm text-[var(--color-text-secondary)] mb-1">Dispatched At</div>
                       <div className="font-semibold">{formatDate(order.tracking.dispatchedAt)}</div>
                     </div>
                   )}
@@ -370,8 +371,8 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
             {/* Delivery Address */}
             {order.deliveryAddress && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="font-semibold text-[#0B2545] mb-4">Delivery Address</h3>
-                <div className="text-gray-700">
+                <h3 className="font-semibold text-brand-navy mb-4">Delivery Address</h3>
+                <div className="text-[var(--color-text-primary)]">
                   {order.deliveryAddress.name && <div className="font-semibold">{order.deliveryAddress.name}</div>}
                   {order.deliveryAddress.phone && <div className="text-sm">{order.deliveryAddress.phone}</div>}
                   <div className="mt-2">
@@ -387,17 +388,17 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
             {/* Order Items */}
             {order.items && order.items.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="font-semibold text-[#0B2545] mb-4">Order Items</h3>
+                <h3 className="font-semibold text-brand-navy mb-4">Order Items</h3>
                 <div className="space-y-3">
                   {order.items.map((item, index) => (
                     <div key={index} className="flex justify-between items-center py-3 border-b last:border-b-0">
                       <div className="flex-1">
-                        <div className="font-semibold text-gray-900">{item.name}</div>
-                        {item.sku && <div className="text-sm text-gray-600">SKU: {item.sku}</div>}
-                        {item.brand && <div className="text-sm text-gray-600">{item.brand}</div>}
+                        <div className="font-semibold text-[var(--color-text-primary)]">{item.name}</div>
+                        {item.sku && <div className="text-sm text-[var(--color-text-secondary)]">SKU: {item.sku}</div>}
+                        {item.brand && <div className="text-sm text-[var(--color-text-secondary)]">{item.brand}</div>}
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-gray-600">Qty: {item.qty || item.quantity}</div>
+                        <div className="text-sm text-[var(--color-text-secondary)]">Qty: {item.qty || item.quantity}</div>
                         <div className="font-semibold">৳{(item.price || 0).toLocaleString()}</div>
                       </div>
                     </div>
@@ -407,7 +408,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 {/* Order Summary */}
                 <div className="mt-6 pt-4 border-t space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
+                    <span className="text-[var(--color-text-secondary)]">Subtotal</span>
                     <span>৳{(order.subtotal || 0).toLocaleString()}</span>
                   </div>
                   {order.isB2BOrder && order.b2bDiscount > 0 && (
@@ -421,19 +422,19 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                   )}
                   {order.deliveryFee > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Delivery Fee</span>
+                      <span className="text-[var(--color-text-secondary)]">Delivery Fee</span>
                       <span>৳{order.deliveryFee.toLocaleString()}</span>
                     </div>
                   )}
                   {order.vatAmount > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">VAT (5%)</span>
+                      <span className="text-[var(--color-text-secondary)]">VAT (5%)</span>
                       <span>৳{order.vatAmount.toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                  <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                     <span>Total</span>
-                    <span className="text-[#0E8A6E]">৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
+                    <span className="text-brand-teal">৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                   </div>
                   {order.isB2BOrder && order.b2bDiscount > 0 && (
                     <div className="flex justify-center pt-2">
@@ -452,7 +453,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
               <button
                 onClick={handleDownloadInvoice}
                 disabled={downloading}
-                className="w-full sm:w-auto px-6 py-3 border border-[#0E8A6E] text-[#0E8A6E] rounded-lg font-semibold hover:bg-[#E1F5EE] transition-colors disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-3 border border-brand-teal text-brand-teal rounded-lg font-semibold hover:bg-brand-teal-tint transition-colors disabled:opacity-50"
               >
                 {downloading ? (
                   <>
@@ -465,7 +466,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
               </button>
               <button
                 onClick={() => router.push('/')}
-                className="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                className="w-full sm:w-auto px-6 py-3 border border-[var(--color-border-primary)] rounded-lg font-semibold hover:bg-[var(--color-background-secondary)] transition-colors"
               >
                 Continue Shopping
               </button>
@@ -473,7 +474,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 href={`https://wa.me/${CONTACT.whatsapp}?text=I need help with order ${order.orderNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 bg-[var(--color-status-success-tint)] text-white rounded-lg font-semibold hover:bg-success transition-colors flex items-center justify-center gap-2"
               >
                 <span>💬</span>
                 WhatsApp Support

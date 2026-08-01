@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect, useCallback } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -6,21 +7,21 @@ import AdminShell from '@/components/admin/AdminShell';
 
 const ACTION_CATEGORIES = {
   AUTH:         { label: 'Auth',     color: 'bg-blue-100 text-blue-800' },
-  ORDER:        { label: 'Orders',   color: 'bg-green-100 text-green-800' },
+  ORDER:        { label: 'Orders',   color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
   PRODUCT:      { label: 'Products', color: 'bg-purple-100 text-purple-800' },
-  CATEGORY:     { label: 'Category', color: 'bg-yellow-100 text-yellow-800' },
+  CATEGORY:     { label: 'Category', color: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]' },
   MANUFACTURER: { label: 'Brands',   color: 'bg-indigo-100 text-indigo-800' },
   COUPON:       { label: 'Coupons',  color: 'bg-pink-100 text-pink-800' },
   REVIEW:       { label: 'Reviews',  color: 'bg-orange-100 text-orange-800' },
-  USER:         { label: 'Users',    color: 'bg-red-100 text-red-800' },
-  PAYMENT:      { label: 'Payments', color: 'bg-emerald-100 text-emerald-800' },
-  SYSTEM:       { label: 'System',   color: 'bg-gray-100 text-gray-800' },
+  USER:         { label: 'Users',    color: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]' },
+  PAYMENT:      { label: 'Payments', color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
+  SYSTEM:       { label: 'System',   color: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]' },
 };
 
 const ROLE_COLORS = {
-  admin:        'bg-red-100 text-red-700',
+  admin:        'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
   b2b_customer: 'bg-blue-100 text-blue-700',
-  customer:     'bg-green-100 text-green-700',
+  customer:     'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
 };
 
 export default function ActivityLogsPage() {
@@ -87,16 +88,16 @@ export default function ActivityLogsPage() {
       a.href = url; a.download = `activity-logs-${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a); a.click();
       URL.revokeObjectURL(url); document.body.removeChild(a);
-    } catch { alert('Failed to export logs'); }
+    } catch { showToast.error('Failed to export logs'); }
   };
 
   const getCategory = (action) => ACTION_CATEGORIES[action?.split('_')[0]] || ACTION_CATEGORIES.SYSTEM;
 
   const statCards = stats ? [
-    { label: 'Total Today',   value: stats.totalToday,        color: 'text-gray-800' },
+    { label: 'Total Today',   value: stats.totalToday,        color: 'text-[var(--color-text-primary)]' },
     { label: 'Admin Actions', value: stats.adminActionsToday, color: 'text-blue-600' },
-    { label: 'Failed',        value: stats.failedToday,       color: 'text-red-600'  },
-    { label: 'Active Users',  value: stats.activeUsersToday,  color: 'text-emerald-600' },
+    { label: 'Failed',        value: stats.failedToday,       color: 'text-[var(--color-status-danger)]'  },
+    { label: 'Active Users',  value: stats.activeUsersToday,  color: 'text-[var(--color-status-success)]' },
   ] : [];
 
   return (
@@ -105,26 +106,26 @@ export default function ActivityLogsPage() {
 
         {/* Page Header */}
         <div className="mb-5">
-          <h1 className="text-[20px] md:text-[24px] font-bold text-gray-900 font-[family-name:var(--font-lora)]">
+          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
             Activity Logs
           </h1>
-          <p className="text-[12px] text-gray-500 mt-0.5">Monitor user actions and system events</p>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Monitor user actions and system events</p>
         </div>
 
         {/* Stats — 2×2 on mobile, 4 cols on md+ */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
             {statCards.map(({ label, value, color }) => (
-              <div key={label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-                <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-                <p className={`text-[22px] font-bold ${color} font-[family-name:var(--font-plus-jakarta)]`}>{value ?? 0}</p>
+              <div key={label} className="bg-white rounded-xl border border-[var(--color-border-tertiary)] shadow-sm p-4">
+                <p className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">{label}</p>
+                <p className={`text-2xl font-semibold ${color} font-[family-name:var(--font-plus-jakarta)]`}>{value ?? 0}</p>
               </div>
             ))}
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5">
+        <div className="bg-white rounded-xl border border-[var(--color-border-tertiary)] shadow-sm p-4 mb-5">
           {/* Row 1: search + category + status */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
             <input
@@ -133,13 +134,13 @@ export default function ActivityLogsPage() {
               aria-label="Search activity logs"
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value, page: 1 })}
-              className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B2545]/20 focus:border-[#0B2545] col-span-1 sm:col-span-1"
+              className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-navy/20 focus:border-brand-navy col-span-1 sm:col-span-1"
             />
             <select
               value={filters.category}
               onChange={(e) => setFilters({ ...filters, category: e.target.value, page: 1 })}
               aria-label="Filter by category"
-              className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
+              className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
             >
               <option value="">All Categories</option>
               {Object.entries(ACTION_CATEGORIES).map(([k, { label }]) => (
@@ -150,7 +151,7 @@ export default function ActivityLogsPage() {
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
               aria-label="Filter by status"
-              className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
+              className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
             >
               <option value="">All Status</option>
               <option value="success">Success</option>
@@ -165,85 +166,85 @@ export default function ActivityLogsPage() {
               value={filters.startDate}
               aria-label="Start date"
               onChange={(e) => setFilters({ ...filters, startDate: e.target.value, page: 1 })}
-              className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
+              className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
             />
             <input
               type="date"
               value={filters.endDate}
               aria-label="End date"
               onChange={(e) => setFilters({ ...filters, endDate: e.target.value, page: 1 })}
-              className="px-3 h-[38px] text-[13px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#0B2545]"
+              className="px-3 h-[38px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
             />
             <button
               onClick={handleExport}
-              className="h-[38px] px-4 bg-emerald-600 text-white text-[12px] font-semibold rounded-lg hover:bg-emerald-700 transition-colors col-span-2 sm:col-span-1"
+              className="h-[38px] px-4 bg-success text-white text-xs font-semibold rounded-lg hover:bg-success transition-colors col-span-2 sm:col-span-1"
             >
               ⬇ Export CSV
             </button>
           </div>
 
           {/* Row 3: auto-refresh + count */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--color-border-tertiary)]">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={autoRefresh}
                 onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="rounded border-gray-300 text-[#0B2545] focus:ring-[#0B2545]/30"
+                className="rounded border-[var(--color-border-primary)] text-brand-navy focus:ring-brand-navy/30"
               />
-              <span className="text-[12px] text-gray-600">Auto-refresh every 30s</span>
+              <span className="text-xs text-[var(--color-text-secondary)]">Auto-refresh every 30s</span>
             </label>
-            <span className="text-[11px] text-gray-400">{logs.length} of {pagination.total} logs</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">{logs.length} of {pagination.total} logs</span>
           </div>
         </div>
 
         {/* ── Mobile Card List ───────────────────────────────── */}
         <div className="md:hidden space-y-3 mb-5">
           {loading ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-[13px] text-gray-400">Loading...</div>
+            <div className="bg-white rounded-xl border border-[var(--color-border-tertiary)] p-8 text-center text-sm text-[var(--color-text-secondary)]">Loading...</div>
           ) : logs.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-10 text-center">
+            <div className="bg-white rounded-xl border border-[var(--color-border-tertiary)] p-10 text-center">
               <div className="text-4xl mb-3">📋</div>
-              <p className="text-[14px] font-semibold text-gray-700">No logs found</p>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">No logs found</p>
             </div>
           ) : logs.map((log) => {
             const cat = getCategory(log.action);
             return (
-              <div key={log._id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+              <div key={log._id} className="bg-white rounded-xl border border-[var(--color-border-tertiary)] shadow-sm p-4">
                 {/* Top row */}
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="min-w-0">
-                    <p className="text-[12px] font-semibold text-gray-800 truncate">{log.userEmail || 'Guest'}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">
+                    <p className="text-xs font-semibold text-[var(--color-text-primary)] truncate">{log.userEmail || 'Guest'}</p>
+                    <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
                       {formatDistanceToNow(new Date(log.createdAt), { addSuffix: true })}
                     </p>
                   </div>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${
-                    log.status === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${
+                    log.status === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
                   }`}>
                     {log.status}
                   </span>
                 </div>
                 {/* Badges row */}
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${cat.color}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${cat.color}`}>
                     {log.action?.replace(/_/g, ' ')}
                   </span>
                   {log.userRole && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${ROLE_COLORS[log.userRole] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_COLORS[log.userRole] || 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]'}`}>
                       {log.userRole}
                     </span>
                   )}
                 </div>
                 {/* Bottom row */}
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] text-gray-500 truncate">
+                  <p className="text-xs text-[var(--color-text-secondary)] truncate">
                     {log.targetModel && `${log.targetModel}: `}{log.targetName || log.ipAddress || '—'}
                   </p>
                   <button
                     type="button"
                     onClick={() => setSelectedLog(log)}
-                    className="text-[11px] text-blue-600 font-medium hover:underline flex-shrink-0 ml-2"
+                    className="text-xs text-blue-600 font-medium hover:underline flex-shrink-0 ml-2"
                   >
                     Details
                   </button>
@@ -254,64 +255,64 @@ export default function ActivityLogsPage() {
         </div>
 
         {/* ── Desktop Table ──────────────────────────────────── */}
-        <div className="hidden md:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="hidden md:block bg-white rounded-xl border border-[var(--color-border-tertiary)] shadow-sm overflow-hidden">
           <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
             <table className="w-full" style={{ minWidth: 900 }}>
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-[var(--color-background-secondary)] border-b border-[var(--color-border-tertiary)]">
                 <tr>
                   {['Timestamp', 'User', 'Action', 'Target', 'IP', 'Status', ''].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="7" className="text-center py-10 text-[13px] text-gray-400">Loading...</td></tr>
+                  <tr><td colSpan="7" className="text-center py-10 text-sm text-[var(--color-text-secondary)]">Loading...</td></tr>
                 ) : logs.length === 0 ? (
                   <tr>
                     <td colSpan="7" className="text-center py-16">
                       <div className="text-4xl mb-3">📋</div>
-                      <p className="text-[14px] font-semibold text-gray-700">No activity logs found</p>
-                      <p className="text-[12px] text-gray-400 mt-1">Try adjusting your filters</p>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">No activity logs found</p>
+                      <p className="text-xs text-[var(--color-text-secondary)] mt-1">Try adjusting your filters</p>
                     </td>
                   </tr>
                 ) : logs.map((log) => {
                   const cat = getCategory(log.action);
                   return (
-                    <tr key={log._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-[12px] text-gray-500 whitespace-nowrap">
+                    <tr key={log._id} className="border-b border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-secondary)] transition-colors">
+                      <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)] whitespace-nowrap">
                         <span title={format(new Date(log.createdAt), 'PPpp')}>
                           {formatDistanceToNow(new Date(log.createdAt), { addSuffix: true })}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <p className="text-[12px] font-medium text-gray-800">{log.userEmail || 'Guest'}</p>
+                        <p className="text-xs font-medium text-[var(--color-text-primary)]">{log.userEmail || 'Guest'}</p>
                         {log.userRole && (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${ROLE_COLORS[log.userRole] || 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${ROLE_COLORS[log.userRole] || 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]'}`}>
                             {log.userRole}
                           </span>
                         )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${cat.color}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${cat.color}`}>
                           {log.action?.replace(/_/g, ' ')}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-[12px] text-gray-800">{log.targetModel || '—'}</p>
-                        <p className="text-[11px] text-gray-400 truncate max-w-[160px]">{log.targetName || '—'}</p>
+                        <p className="text-xs text-[var(--color-text-primary)]">{log.targetModel || '—'}</p>
+                        <p className="text-xs text-[var(--color-text-secondary)] truncate max-w-[160px]">{log.targetName || '—'}</p>
                       </td>
-                      <td className="px-4 py-3 text-[11px] text-gray-400 whitespace-nowrap">{log.ipAddress || '—'}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)] whitespace-nowrap">{log.ipAddress || '—'}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                          log.status === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                          log.status === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
                         }`}>
                           {log.status}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <button type="button" onClick={() => setSelectedLog(log)}
-                          className="text-[11px] text-blue-600 hover:underline font-medium">
+                          className="text-xs text-blue-600 hover:underline font-medium">
                           Details
                         </button>
                       </td>
@@ -324,14 +325,14 @@ export default function ActivityLogsPage() {
 
           {/* Pagination */}
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--color-border-tertiary)]">
               <button onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))} disabled={filters.page === 1}
-                className="px-4 py-2 text-[12px] border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                className="px-4 py-2 text-xs border border-[var(--color-border-primary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors">
                 ← Previous
               </button>
-              <span className="text-[12px] text-gray-500">Page {pagination.page} of {pagination.pages}</span>
+              <span className="text-xs text-[var(--color-text-secondary)]">Page {pagination.page} of {pagination.pages}</span>
               <button onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))} disabled={filters.page === pagination.pages}
-                className="px-4 py-2 text-[12px] border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50 transition-colors">
+                className="px-4 py-2 text-xs border border-[var(--color-border-primary)] rounded-lg disabled:opacity-40 hover:bg-[var(--color-background-secondary)] transition-colors">
                 Next →
               </button>
             </div>
@@ -342,12 +343,12 @@ export default function ActivityLogsPage() {
         {pagination.pages > 1 && (
           <div className="md:hidden flex items-center justify-between mt-4">
             <button onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))} disabled={filters.page === 1}
-              className="px-4 py-2.5 text-[12px] border border-gray-200 rounded-lg disabled:opacity-40 bg-white hover:bg-gray-50">
+              className="px-4 py-2.5 text-xs border border-[var(--color-border-primary)] rounded-lg disabled:opacity-40 bg-white hover:bg-[var(--color-background-secondary)]">
               ← Previous
             </button>
-            <span className="text-[12px] text-gray-500">Page {pagination.page} of {pagination.pages}</span>
+            <span className="text-xs text-[var(--color-text-secondary)]">Page {pagination.page} of {pagination.pages}</span>
             <button onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))} disabled={filters.page === pagination.pages}
-              className="px-4 py-2.5 text-[12px] border border-gray-200 rounded-lg disabled:opacity-40 bg-white hover:bg-gray-50">
+              className="px-4 py-2.5 text-xs border border-[var(--color-border-primary)] rounded-lg disabled:opacity-40 bg-white hover:bg-[var(--color-background-secondary)]">
               Next →
             </button>
           </div>
@@ -356,12 +357,12 @@ export default function ActivityLogsPage() {
 
       {/* Details Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
-              <h2 className="text-[15px] font-semibold text-gray-800">Log Details</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-modal p-0 sm:p-4">
+          <div className="bg-white rounded-t-lg sm:rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border-tertiary)] sticky top-0 bg-white z-10">
+              <h2 className="text-base font-semibold text-[var(--color-text-primary)]">Log Details</h2>
               <button type="button" onClick={() => setSelectedLog(null)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 text-lg transition-colors">
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] text-lg transition-colors">
                 ×
               </button>
             </div>
@@ -377,31 +378,31 @@ export default function ActivityLogsPage() {
                 { label: 'User Agent', value: selectedLog.userAgent || '—' },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-                  <p className="text-[13px] text-gray-800 break-all">{value}</p>
+                  <p className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">{label}</p>
+                  <p className="text-sm text-[var(--color-text-primary)] break-all">{value}</p>
                 </div>
               ))}
 
               {selectedLog.errorMessage && (
                 <div>
-                  <p className="text-[11px] font-semibold text-red-400 uppercase tracking-wide mb-1">Error</p>
-                  <p className="text-[13px] text-red-600">{selectedLog.errorMessage}</p>
+                  <p className="text-xs font-semibold text-[var(--color-status-danger)] uppercase tracking-wide mb-1">Error</p>
+                  <p className="text-sm text-[var(--color-status-danger)]">{selectedLog.errorMessage}</p>
                 </div>
               )}
 
               {selectedLog.changes && (
                 <div>
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Changes</p>
-                  <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                  <p className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">Changes</p>
+                  <div className="bg-[var(--color-background-secondary)] rounded-lg p-3 space-y-2">
                     <div>
-                      <p className="text-[10px] text-gray-500 font-medium mb-1">Before:</p>
-                      <pre className="text-[11px] text-gray-800 overflow-x-auto whitespace-pre-wrap">
+                      <p className="text-xs text-[var(--color-text-secondary)] font-medium mb-1">Before:</p>
+                      <pre className="text-xs text-[var(--color-text-primary)] overflow-x-auto whitespace-pre-wrap">
                         {JSON.stringify(selectedLog.changes.before, null, 2)}
                       </pre>
                     </div>
                     <div>
-                      <p className="text-[10px] text-gray-500 font-medium mb-1">After:</p>
-                      <pre className="text-[11px] text-gray-800 overflow-x-auto whitespace-pre-wrap">
+                      <p className="text-xs text-[var(--color-text-secondary)] font-medium mb-1">After:</p>
+                      <pre className="text-xs text-[var(--color-text-primary)] overflow-x-auto whitespace-pre-wrap">
                         {JSON.stringify(selectedLog.changes.after, null, 2)}
                       </pre>
                     </div>
@@ -411,7 +412,7 @@ export default function ActivityLogsPage() {
 
               <div className="pt-2">
                 <button type="button" onClick={() => setSelectedLog(null)}
-                  className="w-full h-[42px] bg-gray-100 text-gray-700 text-[13px] font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                  className="w-full h-[42px] bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] text-sm font-medium rounded-lg hover:bg-[var(--color-background-muted)] transition-colors">
                   Close
                 </button>
               </div>

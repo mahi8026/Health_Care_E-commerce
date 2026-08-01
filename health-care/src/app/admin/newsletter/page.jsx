@@ -9,10 +9,10 @@ export default function NewsletterPage() {
     <AdminShell title="Newsletter Management">
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)] mb-2 font-[family-name:var(--font-lora)]">
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">
           Newsletter Management
         </h1>
-        <p className="text-[13px] text-[var(--color-text-secondary)]">
+        <p className="text-sm text-[var(--color-text-secondary)]">
           Manage subscribers and send broadcast emails
         </p>
       </div>

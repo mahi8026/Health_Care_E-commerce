@@ -1,4 +1,5 @@
 'use client';
+import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -39,12 +40,12 @@ export default function ReturnRequestPage() {
         const orderData = data.order || data.data?.order || data.data;
         setOrder(orderData);
       } else {
-        alert(data.message || 'Order not found');
+        showToast.error(data.message || 'Order not found');
         router.push('/orders');
       }
     } catch (err) {
       process.env.NODE_ENV !== "production" && console.error(err);
-      alert('Failed to load order');
+      showToast.error('Failed to load order');
       router.push('/orders');
     } finally {
       setLoading(false);
@@ -63,7 +64,7 @@ export default function ReturnRequestPage() {
     if (files.length === 0) return;
 
     if (images.length + files.length > 5) {
-      alert('Maximum 5 images allowed');
+      showToast.warning('Maximum 5 images allowed');
       return;
     }
 
@@ -95,7 +96,7 @@ export default function ReturnRequestPage() {
       setImages([...images, ...uploadedImages]);
     } catch (err) {
       process.env.NODE_ENV !== "production" && console.error(err);
-      alert('Failed to upload images');
+      showToast.error('Failed to upload images');
     } finally {
       setUploadingImages(false);
     }
@@ -109,17 +110,17 @@ export default function ReturnRequestPage() {
     e.preventDefault();
     
     if (!reason) {
-      alert('Please select a reason for return');
+      showToast.info('Please select a reason for return');
       return;
     }
     
     if (!description.trim()) {
-      alert('Please provide a description');
+      showToast.info('Please provide a description');
       return;
     }
 
     if (description.length < 20) {
-      alert('Please provide a more detailed description (minimum 20 characters)');
+      showToast.warning('Please provide a more detailed description (minimum 20 characters)');
       return;
     }
 
@@ -154,14 +155,14 @@ export default function ReturnRequestPage() {
 
       const data = await res.json();
       if (data.success) {
-        alert('Return request submitted successfully! We will review it within 24-48 hours.');
+        showToast.success('Return request submitted successfully! We will review it within 24-48 hours.');
         router.push('/returns/my-returns');
       } else {
-        alert(data.message || 'Failed to submit return request');
+        showToast.error(data.message || 'Failed to submit return request');
       }
     } catch (err) {
       process.env.NODE_ENV !== "production" && console.error(err);
-      alert('Error submitting return request');
+      showToast.error('Error submitting return request');
     } finally {
       setSubmitting(false);
     }
@@ -171,8 +172,8 @@ export default function ReturnRequestPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0B2545] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading order details...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-navy mx-auto mb-4"></div>
+          <p className="text-[var(--color-text-secondary)]">Loading order details...</p>
         </div>
       </div>
     );
@@ -182,10 +183,10 @@ export default function ReturnRequestPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Order not found</p>
+          <p className="text-[var(--color-text-secondary)] mb-4">Order not found</p>
           <button
             onClick={() => router.push('/orders')}
-            className="text-[#0E8A6E] hover:underline"
+            className="text-brand-teal hover:underline"
           >
             View Orders
           </button>
@@ -199,7 +200,7 @@ export default function ReturnRequestPage() {
       <div className="max-w-4xl mx-auto px-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-6"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -207,15 +208,15 @@ export default function ReturnRequestPage() {
           Back
         </button>
 
-        <h1 className="text-3xl font-bold text-[#0B2545] mb-2">Request Return</h1>
-        <p className="text-gray-600 mb-8">Please provide details about why you want to return this order</p>
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">Request Return</h1>
+        <p className="text-[var(--color-text-secondary)] mb-8">Please provide details about why you want to return this order</p>
         
         {/* Order Summary */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="bg-white rounded-lg border border-[var(--color-border-primary)] p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="font-semibold text-lg text-[#0B2545]">Order #{order.orderNumber}</h2>
-              <p className="text-sm text-gray-600">
+              <h2 className="font-semibold text-lg text-brand-navy">Order #{order.orderNumber}</h2>
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 Placed on {new Date(order.createdAt).toLocaleDateString('en-US', { 
                   year: 'numeric', 
                   month: 'long', 
@@ -224,8 +225,8 @@ export default function ReturnRequestPage() {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">Total Amount</p>
-              <p className="text-lg font-semibold text-[#0B2545]">৳{order.totalAmount?.toLocaleString()}</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Total Amount</p>
+              <p className="text-lg font-semibold text-brand-navy">৳{order.totalAmount?.toLocaleString()}</p>
             </div>
           </div>
 
@@ -250,11 +251,11 @@ export default function ReturnRequestPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-medium text-[#0B2545]">{productName}</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="font-medium text-brand-navy">{productName}</h3>
+                    <p className="text-sm text-[var(--color-text-secondary)]">
                       Quantity: {itemQty} × ৳{itemPrice.toLocaleString()}
                     </p>
-                    <p className="text-sm font-medium text-[#0E8A6E]">
+                    <p className="text-sm font-medium text-brand-teal">
                       Subtotal: ৳{(itemQty * itemPrice).toLocaleString()}
                     </p>
                   </div>
@@ -265,15 +266,15 @@ export default function ReturnRequestPage() {
         </div>
 
         {/* Return Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-[var(--color-border-primary)] p-6 space-y-6">
           <div>
-            <label className="block font-medium text-[#0B2545] mb-2">
-              Reason for Return <span className="text-red-500">*</span>
+            <label className="block font-medium text-brand-navy mb-2">
+              Reason for Return <span className="text-[var(--color-status-danger)]">*</span>
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent"
+              className="w-full border border-[var(--color-border-primary)] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent"
               required
             >
               <option value="">Select a reason</option>
@@ -284,30 +285,30 @@ export default function ReturnRequestPage() {
           </div>
 
           <div>
-            <label className="block font-medium text-[#0B2545] mb-2">
-              Detailed Description <span className="text-red-500">*</span>
+            <label className="block font-medium text-brand-navy mb-2">
+              Detailed Description <span className="text-[var(--color-status-danger)]">*</span>
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 h-32 focus:outline-none focus:ring-2 focus:ring-[#0E8A6E] focus:border-transparent resize-none"
+              className="w-full border border-[var(--color-border-primary)] rounded-lg px-4 py-3 h-32 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent resize-none"
               placeholder="Please provide detailed information about the issue (minimum 20 characters)..."
               maxLength={500}
               required
             />
             <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-500">Minimum 20 characters</span>
-              <span className={`${description.length > 500 ? 'text-red-500' : 'text-gray-500'}`}>
+              <span className="text-[var(--color-text-secondary)]">Minimum 20 characters</span>
+              <span className={`${description.length > 500 ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-text-secondary)]'}`}>
                 {description.length}/500
               </span>
             </div>
           </div>
 
           <div>
-            <label className="block font-medium text-[#0B2545] mb-2">
+            <label className="block font-medium text-brand-navy mb-2">
               Upload Images (Optional)
             </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <div className="border-2 border-dashed border-[var(--color-border-primary)] rounded-lg p-6 text-center">
               <input
                 type="file"
                 accept="image/*"
@@ -321,13 +322,13 @@ export default function ReturnRequestPage() {
                 htmlFor="image-upload"
                 className={`cursor-pointer ${uploadingImages || images.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                <svg className="mx-auto h-12 w-12 text-[var(--color-text-secondary)] mb-3" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                   <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <p className="text-sm text-gray-600 mb-1">
+                <p className="text-sm text-[var(--color-text-secondary)] mb-1">
                   {uploadingImages ? 'Uploading...' : 'Click to upload images'}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--color-text-secondary)]">
                   PNG, JPG, WebP up to 5MB (max 5 images)
                 </p>
               </label>
@@ -348,7 +349,7 @@ export default function ReturnRequestPage() {
                     <button
                       type="button"
                       onClick={() => removeImage(idx)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      className="absolute top-1 right-1 bg-[var(--color-status-danger-tint)] text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
                     >
                       ×
                     </button>
@@ -360,14 +361,14 @@ export default function ReturnRequestPage() {
 
           {/* Return Policy */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-medium text-[#0B2545] mb-2 flex items-center gap-2">
+            <h3 className="font-medium text-brand-navy mb-2 flex items-center gap-2">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 16v-4M12 8h.01"/>
               </svg>
               Return Policy
             </h3>
-            <ul className="text-sm text-gray-700 space-y-1 ml-7">
+            <ul className="text-sm text-[var(--color-text-primary)] space-y-1 ml-7">
               <li>• Returns must be requested within 7 days of delivery</li>
               <li>• Products must be unused and in original packaging</li>
               <li>• Refund will be processed within 3-5 business days after approval</li>
@@ -381,14 +382,14 @@ export default function ReturnRequestPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 px-6 py-3 border border-[var(--color-border-primary)] rounded-lg text-[var(--color-text-primary)] font-medium hover:bg-[var(--color-background-secondary)] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || uploadingImages}
-              className="flex-1 px-6 py-3 bg-[#0E8A6E] text-white rounded-lg font-medium hover:bg-[#0c7359] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 px-6 py-3 bg-brand-teal text-white rounded-lg font-medium hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? 'Submitting...' : 'Submit Return Request'}
             </button>

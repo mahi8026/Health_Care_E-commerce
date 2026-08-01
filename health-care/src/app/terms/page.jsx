@@ -63,17 +63,17 @@ const sections = [
 export default function TermsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="text-3xl font-bold text-[#0B2545] mb-2">Terms of Service</h1>
-      <p className="text-sm text-[#6B7280] mb-8">Last updated: July 31, 2026</p>
+      <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">Terms of Service</h1>
+      <p className="text-sm text-[var(--color-text-secondary)] mb-8">Last updated: July 31, 2026</p>
 
-      <div className="prose prose-sm max-w-none text-[#4B5563] space-y-8">
+      <div className="prose prose-sm max-w-none text-[var(--color-text-secondary)] space-y-8">
         <p className="text-base leading-relaxed">
           Welcome to {SITE_CONFIG.name}. These Terms of Service govern your use of our website and the purchase of products from us.
         </p>
 
         {sections.map((section) => (
           <section key={section.title}>
-            <h2 className="text-xl font-semibold text-[#0B2545] mb-3">{section.title}</h2>
+            <h2 className="text-xl font-semibold text-brand-navy mb-3">{section.title}</h2>
             <p className="leading-relaxed">{section.content}</p>
           </section>
         ))}

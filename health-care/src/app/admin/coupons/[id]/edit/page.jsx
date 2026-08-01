@@ -180,7 +180,7 @@ export default function EditCouponPage() {
   if (fetching) {
     return (
       <div className="p-6">
-        <div className="text-center py-20 text-[13px] text-[var(--color-text-secondary)]">
+        <div className="text-center py-20 text-sm text-[var(--color-text-secondary)]">
           Loading coupon...
         </div>
       </div>
@@ -193,19 +193,19 @@ export default function EditCouponPage() {
       <div className="mb-6">
         <button
           onClick={() => router.back()}
-          className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-3"
+          className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-3"
         >
           ← Back to Coupons
         </button>
-        <h1 className="text-[24px] font-bold font-[family-name:var(--font-lora)]">
+        <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
           Edit Coupon
         </h1>
       </div>
 
       {/* Message Toast */}
       {message.text && (
-        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${
-          message.type === 'success' ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEE2E2] text-[#991B1B]'
+        <div className={`fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-toast ${
+          message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
         }`}>
           {message.text}
         </div>
@@ -216,30 +216,30 @@ export default function EditCouponPage() {
         
         {/* Basic Info */}
         <div>
-          <h3 className="text-[15px] font-semibold mb-4">Basic Information</h3>
+          <h3 className="text-base font-semibold mb-4">Basic Information</h3>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                Coupon Code <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                Coupon Code <span className="text-[var(--color-status-danger)]">*</span>
               </label>
               <input
                 type="text"
                 value={form.code}
                 onChange={(e) => setForm(f => ({ ...f, code: e.target.value.toUpperCase() }))}
                 placeholder="e.g. SUMMER2024"
-                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] font-mono uppercase focus:outline-none focus:border-[#0E8A6E]"
+                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-mono uppercase focus:outline-none focus:border-brand-teal"
               />
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                Type <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                Type <span className="text-[var(--color-status-danger)]">*</span>
               </label>
               <select
                 value={form.type}
                 onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))}
-                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E]"
+                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm bg-white focus:outline-none focus:border-brand-teal"
               >
                 <option value="percentage">Percentage Discount</option>
                 <option value="fixed">Fixed Amount</option>
@@ -251,8 +251,8 @@ export default function EditCouponPage() {
           {form.type !== 'buy_x_get_y' ? (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                  {form.type === 'percentage' ? 'Percentage (%)' : 'Amount (৳)'} <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                  {form.type === 'percentage' ? 'Percentage (%)' : 'Amount (৳)'} <span className="text-[var(--color-status-danger)]">*</span>
                 </label>
                 <input
                   type="number"
@@ -262,13 +262,13 @@ export default function EditCouponPage() {
                   value={form.value}
                   onChange={(e) => setForm(f => ({ ...f, value: e.target.value }))}
                   placeholder={form.type === 'percentage' ? 'e.g. 10' : 'e.g. 500'}
-                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                 />
               </div>
 
               {form.type === 'percentage' && (
                 <div>
-                  <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
+                  <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
                     Maximum Discount (৳)
                   </label>
                   <input
@@ -278,7 +278,7 @@ export default function EditCouponPage() {
                     value={form.maximumDiscount}
                     onChange={(e) => setForm(f => ({ ...f, maximumDiscount: e.target.value }))}
                     placeholder="Optional cap"
-                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                    className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                   />
                 </div>
               )}
@@ -286,8 +286,8 @@ export default function EditCouponPage() {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                  Buy Quantity <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                  Buy Quantity <span className="text-[var(--color-status-danger)]">*</span>
                 </label>
                 <input
                   type="number"
@@ -295,12 +295,12 @@ export default function EditCouponPage() {
                   value={form.buyQuantity}
                   onChange={(e) => setForm(f => ({ ...f, buyQuantity: e.target.value }))}
                   placeholder="e.g. 2"
-                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                  Get Quantity (Free) <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                  Get Quantity (Free) <span className="text-[var(--color-status-danger)]">*</span>
                 </label>
                 <input
                   type="number"
@@ -308,7 +308,7 @@ export default function EditCouponPage() {
                   value={form.getQuantity}
                   onChange={(e) => setForm(f => ({ ...f, getQuantity: e.target.value }))}
                   placeholder="e.g. 1"
-                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                  className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
                 />
               </div>
             </div>
@@ -317,11 +317,11 @@ export default function EditCouponPage() {
 
         {/* Conditions */}
         <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] pt-6">
-          <h3 className="text-[15px] font-semibold mb-4">Conditions</h3>
+          <h3 className="text-base font-semibold mb-4">Conditions</h3>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
                 Minimum Order Amount (৳)
               </label>
               <input
@@ -330,12 +330,12 @@ export default function EditCouponPage() {
                 step="0.01"
                 value={form.minimumOrderAmount}
                 onChange={(e) => setForm(f => ({ ...f, minimumOrderAmount: e.target.value }))}
-                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
               />
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
                 Usage Limit (0 = unlimited)
               </label>
               <input
@@ -343,7 +343,7 @@ export default function EditCouponPage() {
                 min="0"
                 value={form.usageLimit}
                 onChange={(e) => setForm(f => ({ ...f, usageLimit: e.target.value }))}
-                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
               />
             </div>
           </div>
@@ -354,19 +354,19 @@ export default function EditCouponPage() {
                 type="checkbox"
                 checked={form.isFirstOrderOnly}
                 onChange={(e) => setForm(f => ({ ...f, isFirstOrderOnly: e.target.checked }))}
-                className="accent-[#0E8A6E]"
+                className="accent-brand-teal"
               />
-              <span className="text-[13px]">First order only</span>
+              <span className="text-sm">First order only</span>
             </label>
           </div>
         </div>
 
         {/* Targeting */}
         <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] pt-6">
-          <h3 className="text-[15px] font-semibold mb-4">Targeting (Optional)</h3>
+          <h3 className="text-base font-semibold mb-4">Targeting (Optional)</h3>
           
           <div className="mb-4">
-            <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
               Applicable User Roles
             </label>
             <div className="flex gap-4">
@@ -379,19 +379,19 @@ export default function EditCouponPage() {
                       ...f,
                       applicableUserRoles: toggleArrayItem(f.applicableUserRoles, role)
                     }))}
-                    className="accent-[#0E8A6E]"
+                    className="accent-brand-teal"
                   />
-                  <span className="text-[13px] capitalize">{role.replace('_', ' ')}</span>
+                  <span className="text-sm capitalize">{role.replace('_', ' ')}</span>
                 </label>
               ))}
             </div>
-            <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
               Leave empty to apply to all users
             </p>
           </div>
 
           <div className="mb-4">
-            <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
               Applicable Categories
             </label>
             <select
@@ -401,7 +401,7 @@ export default function EditCouponPage() {
                 const selected = Array.from(e.target.selectedOptions, option => option.value);
                 setForm(f => ({ ...f, applicableCategories: selected }));
               }}
-              className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] bg-white focus:outline-none focus:border-[#0E8A6E] min-h-[100px]"
+              className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm bg-white focus:outline-none focus:border-brand-teal min-h-[100px]"
             >
               {categories && categories.length > 0 ? (
                 categories.map(cat => (
@@ -411,7 +411,7 @@ export default function EditCouponPage() {
                 <option disabled>Loading categories...</option>
               )}
             </select>
-            <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
               Hold Ctrl/Cmd to select multiple. Leave empty to apply to all categories
             </p>
           </div>
@@ -419,30 +419,30 @@ export default function EditCouponPage() {
 
         {/* Validity Period */}
         <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] pt-6">
-          <h3 className="text-[15px] font-semibold mb-4">Validity Period</h3>
+          <h3 className="text-base font-semibold mb-4">Validity Period</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                Start Date <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                Start Date <span className="text-[var(--color-status-danger)]">*</span>
               </label>
               <input
                 type="datetime-local"
                 value={form.startDate}
                 onChange={(e) => setForm(f => ({ ...f, startDate: e.target.value }))}
-                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
               />
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
-                End Date <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+                End Date <span className="text-[var(--color-status-danger)]">*</span>
               </label>
               <input
                 type="datetime-local"
                 value={form.endDate}
                 onChange={(e) => setForm(f => ({ ...f, endDate: e.target.value }))}
-                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E]"
+                className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
               />
             </div>
           </div>
@@ -450,7 +450,7 @@ export default function EditCouponPage() {
 
         {/* Status & Description */}
         <div className="border-t-[0.5px] border-[var(--color-border-tertiary)] pt-6">
-          <h3 className="text-[15px] font-semibold mb-4">Status & Description</h3>
+          <h3 className="text-base font-semibold mb-4">Status & Description</h3>
           
           <div className="mb-4">
             <label className="flex items-center gap-2 cursor-pointer">
@@ -458,14 +458,14 @@ export default function EditCouponPage() {
                 type="checkbox"
                 checked={form.isActive}
                 onChange={(e) => setForm(f => ({ ...f, isActive: e.target.checked }))}
-                className="accent-[#0E8A6E]"
+                className="accent-brand-teal"
               />
-              <span className="text-[13px]">Active (visible to users)</span>
+              <span className="text-sm">Active (visible to users)</span>
             </label>
           </div>
 
           <div>
-            <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-2">
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
               Description
             </label>
             <textarea
@@ -473,7 +473,7 @@ export default function EditCouponPage() {
               value={form.description}
               onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Internal notes about this coupon..."
-              className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] focus:outline-none focus:border-[#0E8A6E] resize-none"
+              className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal resize-none"
             />
           </div>
         </div>
@@ -483,14 +483,14 @@ export default function EditCouponPage() {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2.5 bg-[#0B2545] text-white rounded-lg text-[13px] font-semibold disabled:opacity-50 hover:bg-[#0d2e56] transition-colors"
+            className="px-6 py-2.5 bg-brand-navy text-white rounded-lg text-sm font-semibold disabled:opacity-50 hover:bg-[var(--color-brand-navy-hover)] transition-colors"
           >
             {loading ? 'Updating...' : 'Update Coupon'}
           </button>
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-[13px] hover:bg-[var(--color-background-tertiary)] transition-colors"
+            className="px-6 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm hover:bg-[var(--color-background-tertiary)] transition-colors"
           >
             Cancel
           </button>
