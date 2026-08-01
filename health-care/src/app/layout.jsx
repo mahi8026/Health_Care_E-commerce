@@ -1,4 +1,5 @@
 import { Plus_Jakarta_Sans, Lora, Noto_Sans_Bengali } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { AuthProvider } from "@/context/AuthContext";
@@ -194,7 +195,9 @@ export default function RootLayout({ children }) {
                     <div>
                       <SiteChrome>{children}</SiteChrome>
                     </div>
-                    <LazyChatContainer />
+                    <Suspense fallback={null}>
+                      <LazyChatContainer />
+                    </Suspense>
                   </ErrorBoundary>
                 </CompareProvider>
               </WishlistProvider>

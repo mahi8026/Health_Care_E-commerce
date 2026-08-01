@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 import AdminShell from '@/components/admin/AdminShell';
 
 const ReturnsManagement = dynamic(
@@ -20,7 +21,14 @@ export default function ReturnsPage() {
   return (
     <AdminShell title="Returns Management" action="Export returns">
       <div className="w-full max-w-full overflow-hidden">
-        <ReturnsManagement />
+        <Suspense fallback={(
+          <div className="p-5 px-6 animate-pulse space-y-4">
+          <div className="h-10 bg-[var(--color-background-muted)] rounded w-full" />
+          <div className="h-64 bg-[var(--color-background-muted)] rounded w-full" />
+          </div>
+        )}>
+          <ReturnsManagement />
+        </Suspense>
       </div>
     </AdminShell>
   );

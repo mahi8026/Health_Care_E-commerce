@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import ChartSkeleton from './ChartSkeleton';
 import { API } from '@/constants/api';
@@ -216,7 +217,14 @@ export default function AnalyticsReports() {
       </div>
 
       {/* Charts */}
-      <AnalyticsCharts />
+      <Suspense fallback={(
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <ChartSkeleton />
+        <ChartSkeleton />
+        </div>
+      )}>
+        <AnalyticsCharts />
+      </Suspense>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Top Products */}

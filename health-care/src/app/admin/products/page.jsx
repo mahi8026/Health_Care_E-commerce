@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from 'react';
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import AdminShell from '@/components/admin/AdminShell';
 
@@ -34,7 +35,15 @@ export default function ProductsPage() {
       onAction={handleAddProduct}
     >
       <div className="p-4 md:p-5 md:px-6 max-w-full overflow-hidden">
-        <ProductsManagement openCreateRef={openCreateProductRef} />
+        <Suspense fallback={(
+          <div className="p-5 px-6 animate-pulse space-y-4">
+          <div className="h-10 bg-[var(--color-background-muted)] rounded w-full" />
+          <div className="h-64 bg-[var(--color-background-muted)] rounded w-full" />
+          <div className="h-64 bg-[var(--color-background-muted)] rounded w-full" />
+          </div>
+        )}>
+          <ProductsManagement openCreateRef={openCreateProductRef} />
+        </Suspense>
       </div>
     </AdminShell>
   );
