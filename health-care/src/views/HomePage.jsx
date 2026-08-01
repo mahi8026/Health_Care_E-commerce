@@ -769,11 +769,14 @@ export default function HomePage() {
           .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .trust-grid { grid-template-columns: 1fr !important; }
           .b2b-cols { grid-template-columns: 1fr !important; }
+          .b2b-banner { padding: 28px 20px !important; }
           .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 1024px) {
           .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .how-it-works-step-line { display: none; }
+          .b2b-cols { grid-template-columns: 1fr !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
@@ -1476,7 +1479,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
               {t('home.whyMediport')}
             </h2>
           </div>
@@ -1502,7 +1505,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
+        <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
           borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
           {/* Background decoration */}
           <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
@@ -1514,7 +1517,7 @@ export default function HomePage() {
               <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)',
                 padding: '4px 14px', borderRadius: 999, fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
-              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600,
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600,
                 color: '#fff', margin: '14px 0 12px' }}>
                 {t('home.b2bTitle')}
               </h3>
@@ -1589,7 +1592,7 @@ export default function HomePage() {
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
               textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600, margin: 0 }}>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0 }}>
               {t('home.howItWorks')}
             </h2>
           </div>
@@ -1598,7 +1601,7 @@ export default function HomePage() {
             {HOW_IT_WORKS.map((step, i) => (
               <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
                 {i < HOW_IT_WORKS.length - 1 && (
-                  <div style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
+                  <div className="how-it-works-step-line" style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
                     height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
                 )}
                 <div style={{ position: 'relative', zIndex: 1, background: '#fff',
@@ -1641,9 +1644,9 @@ export default function HomePage() {
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.testimonials')}</p>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 600, margin: 0, color: '#fff' }}>
-            {t('home.testimonials')}
-          </h2>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: '#fff' }}>
+              {t('home.testimonials')}
+            </h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}
           className="testimonials-grid">

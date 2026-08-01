@@ -238,7 +238,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           <div className="hidden md:block nav-divider" />
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-0.5 flex-1" aria-label="Main navigation">
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1" aria-label="Main navigation">
             <div className="relative" ref={megaMenuRef}>
               <button
                 onClick={() => setMegaMenuOpen((v) => !v)}
@@ -379,7 +379,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             </div>
 
             {!authed && (
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden xl:flex items-center gap-2">
                 <button onClick={onLoginClick} className="nav-cta-ghost">
                   {t('nav.login')}
                 </button>

@@ -237,7 +237,7 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4">
           {/* Desktop: Single row with all items */}
-          <div className="hidden md:flex items-center justify-between gap-4">
+          <div className="hidden xl:flex items-center justify-between gap-4">
             <p className="text-xs text-white/50 whitespace-nowrap">
               © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
             </p>
@@ -260,7 +260,7 @@ export default function Footer() {
           </div>
 
           {/* Tablet: Two rows */}
-          <div className="hidden sm:flex md:hidden flex-col gap-3">
+          <div className="hidden sm:flex xl:hidden flex-col gap-3">
             <div className="flex items-center justify-between">
               <p className="text-xs text-white/50">
                 © {currentYear} Mediport Bangladesh Ltd. All rights reserved.

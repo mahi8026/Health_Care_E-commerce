@@ -489,16 +489,16 @@ html.nav-scrolled .site-nav-shell::after {
 .home-hero::before {
   top: -10%;
   right: 5%;
-  width: 500px;
-  height: 500px;
+  width: min(500px, 80vw);
+  height: min(500px, 80vw);
   background: radial-gradient(circle, rgba(14, 138, 110, 0.25), transparent 70%);
 }
 
 .home-hero::after {
   bottom: -20%;
   left: 0;
-  width: 400px;
-  height: 400px;
+  width: min(400px, 75vw);
+  height: min(400px, 75vw);
   background: radial-gradient(circle, rgba(77, 219, 184, 0.12), transparent 70%);
 }
 
@@ -696,7 +696,7 @@ html.nav-scrolled .site-nav-shell::after {
     transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .glass-chip-primary {
     display: inline-flex;
   }
@@ -721,7 +721,7 @@ html.nav-scrolled .site-nav-shell::after {
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .glass-chip-admin {
     display: inline-flex;
   }
@@ -1096,8 +1096,6 @@ html {
   background-color: var(--color-background-page);
   background-image: var(--page-gradient-wash);
   background-attachment: fixed;
-  overflow-x: hidden;
-  max-width: 100vw;
 }
 
 body {
@@ -1107,9 +1105,6 @@ body {
   background-color: transparent;
   color: var(--color-text-primary);
   font-size: var(--text-sm);
-  min-width: 320px;
-  overflow-x: hidden;
-  max-width: 100vw;
 }
 
 /* Page-level background utility (use on view wrappers) */
@@ -1183,7 +1178,6 @@ img, video {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-  overflow-x: hidden;
 }
 
 @media (min-width: 640px) {
@@ -1374,12 +1368,6 @@ html.home-page {
 
 /* ── Mobile-Specific Overrides ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Ensure no horizontal overflow */
-  body, html {
-    overflow-x: hidden;
-    max-width: 100vw;
-  }
-  
   /* Stack columns */
   .mobile-stack {
     display: flex !important;

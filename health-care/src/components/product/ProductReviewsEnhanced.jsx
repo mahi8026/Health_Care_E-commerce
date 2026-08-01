@@ -326,7 +326,7 @@ export default function ProductReviewsEnhanced({ productId }) {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 mb-8">
           {/* Left: Overall Rating */}
           <div className="bg-gradient-to-br from-[var(--color-status-warning-tint)] to-orange-50 rounded-2xl p-6 text-center border border-[var(--color-status-warning-tint)]">
-            <div className="text-6xl font-semibold text-[var(--color-text-primary)] mb-3">
+            <div className="text-[clamp(3rem,10vw,3.75rem)] font-semibold text-[var(--color-text-primary)] mb-3">
               {stats.averageRating.toFixed(1)}
             </div>
             <div className="flex justify-center mb-3">
