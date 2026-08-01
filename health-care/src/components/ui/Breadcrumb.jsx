@@ -4,23 +4,12 @@ import Link from 'next/link';
 import { FaChevronRight } from 'react-icons/fa';
 
 /**
- * Breadcrumb Navigation Component — single line, no wrapping.
+ * Breadcrumb Navigation Component — matches reference design exactly
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
 
   const isCurrent = (item, idx) => idx === items.length - 1 || item.href === '#';
-
-  const wrapStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    gap: '4px',
-    
-    lineHeight: '1',
-    overflow: 'hidden',
-  };
 
   const renderItems = () =>
     items.map((item, idx) => {
@@ -28,32 +17,18 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
       return (
         <div
           key={`${item.label}-${idx}`}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '4px',
-            flexShrink: current ? 1 : 0,
-            minWidth: 0,
-            whiteSpace: 'nowrap',
-          }}
+          className="flex items-center"
         >
           {idx > 0 && (
             <FaChevronRight
-              size={8}
-              style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}
-              aria-hidden
+              size={20}
+              className="text-blue-400/60 mx-3 md:mx-4 flex-shrink-0"
+              aria-hidden="true"
             />
           )}
           {current ? (
             <span
-              style={{
-                color: 'var(--color-text-primary)',
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
+              className="text-brand-navy font-bold text-xl md:text-2xl truncate"
               aria-current="page"
             >
               {item.label}
@@ -61,13 +36,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           ) : (
             <Link
               href={item.href}
-              style={{
-                color: 'var(--color-text-secondary)',
-                whiteSpace: 'nowrap',
-                textDecoration: 'none',
-                flexShrink: 0,
-              }}
-              className="hover:text-brand-teal transition-colors"
+              className="text-blue-500 hover:text-blue-600 font-semibold text-xl md:text-2xl transition-colors duration-200 whitespace-nowrap flex-shrink-0"
             >
               {item.label}
             </Link>
@@ -79,21 +48,16 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   if (variant === 'default') {
     return (
       <div
+        className={`w-full bg-gradient-to-r from-[#E8F0FE] via-[#E3EFFD] to-[#DCE9FC] border-b border-blue-100 ${className}`}
         style={{
-          backgroundColor: '#ffffff',
-          borderBottom: '1px solid var(--color-background-tertiary)',
-          width: '100%',
+          background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)'
         }}
-        className={className || undefined}
       >
-        <div
-          style={{
-            maxWidth: '80rem',
-            margin: '0 auto',
-            padding: '6px 16px',
-          }}
-        >
-          <nav aria-label="Breadcrumb" style={wrapStyle}>
+        <div className="max-w-7xl mx-auto px-6 md:px-8 py-5 md:py-6">
+          <nav 
+            aria-label="Breadcrumb" 
+            className="flex items-center overflow-x-auto scrollbar-hide"
+          >
             {renderItems()}
           </nav>
         </div>
@@ -101,8 +65,12 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
     );
   }
 
+  // Inline variant
   return (
-    <nav aria-label="Breadcrumb" style={wrapStyle} className={className || undefined}>
+    <nav 
+      aria-label="Breadcrumb" 
+      className={`flex items-center overflow-x-auto scrollbar-hide ${className}`}
+    >
       {renderItems()}
     </nav>
   );
