@@ -21,14 +21,14 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         >
           {idx > 0 && (
             <FaChevronRight
-              size={20}
-              className="text-blue-400/60 mx-3 md:mx-4 flex-shrink-0"
+              size={12}
+              className="text-blue-400/60 mx-2 flex-shrink-0"
               aria-hidden="true"
             />
           )}
           {current ? (
             <span
-              className="text-brand-navy font-bold text-xl md:text-2xl truncate"
+              className="text-brand-navy font-semibold text-sm md:text-base truncate"
               aria-current="page"
             >
               {item.label}
@@ -36,7 +36,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           ) : (
             <Link
               href={item.href}
-              className="text-blue-500 hover:text-blue-600 font-semibold text-xl md:text-2xl transition-colors duration-200 whitespace-nowrap flex-shrink-0"
+              className="text-blue-500 hover:text-blue-600 font-medium text-sm md:text-base transition-colors duration-200 whitespace-nowrap flex-shrink-0"
             >
               {item.label}
             </Link>
@@ -53,7 +53,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)'
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-5 md:py-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-3.5">
           <nav 
             aria-label="Breadcrumb" 
             className="flex items-center overflow-x-auto scrollbar-hide"
