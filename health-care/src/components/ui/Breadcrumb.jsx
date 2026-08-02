@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaChevronRight } from 'react-icons/fa';
 
 /**
- * Breadcrumb Navigation Component — matches reference design exactly
+ * Breadcrumb Navigation Component — compact inline design with gradient background
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
