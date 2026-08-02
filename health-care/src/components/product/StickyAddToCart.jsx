@@ -54,11 +54,13 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
 
   return (
     <div
-      className={`hidden lg:block fixed left-0 right-0 bg-white border-b-2 border-[var(--color-border-primary)] shadow-xl transition-all duration-500`}
+      className="hidden lg:block fixed left-0 right-0 bg-white border-b-2 border-[var(--color-border-primary)] shadow-xl"
       style={{
-        top: visible ? 'var(--site-nav-height)' : '-200px',
+        top: 'var(--site-nav-height)',
         zIndex: 850,
+        transform: visible ? 'translateY(0)' : 'translateY(calc(-100% - var(--site-nav-height)))',
         opacity: visible ? 1 : 0,
+        transition: 'transform 0.4s ease, opacity 0.3s ease',
         pointerEvents: visible ? 'auto' : 'none',
       }}
     >
