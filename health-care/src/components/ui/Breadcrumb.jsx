@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaChevronRight } from 'react-icons/fa';
 
 /**
- * Breadcrumb Navigation Component — compact inline design with gradient background
+ * Breadcrumb Navigation Component — compact single-line design
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
@@ -19,14 +19,24 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         <React.Fragment key={`${item.label}-${idx}`}>
           {idx > 0 && (
             <FaChevronRight
-              size={10}
-              className="text-blue-400/60 mx-1.5 flex-shrink-0"
+              size={9}
+              style={{ color: 'rgba(96,165,250,0.7)', flexShrink: 0, margin: '0 6px' }}
               aria-hidden="true"
             />
           )}
           {current ? (
             <span
-              className="text-brand-navy font-semibold text-xs md:text-sm whitespace-nowrap flex-shrink-0"
+              style={{
+                color: '#0b2545',
+                fontWeight: 600,
+                fontSize: '13px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '300px',
+                flexShrink: 1,
+                display: 'inline-block',
+              }}
               aria-current="page"
             >
               {item.label}
@@ -34,7 +44,14 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           ) : (
             <Link
               href={item.href}
-              className="text-blue-500 hover:text-blue-600 font-medium text-xs md:text-sm transition-colors duration-200 whitespace-nowrap flex-shrink-0"
+              style={{
+                color: '#3B82F6',
+                fontWeight: 500,
+                fontSize: '13px',
+                whiteSpace: 'nowrap',
+                textDecoration: 'none',
+                flexShrink: 0,
+              }}
             >
               {item.label}
             </Link>
@@ -46,15 +63,22 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   if (variant === 'default') {
     return (
       <div
-        className={`w-full border-b border-blue-100 ${className}`}
+        className={`w-full ${className}`}
         style={{
-          background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)'
+          background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)',
+          borderBottom: '1px solid #DBEAFE',
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2 md:py-2.5">
-          <nav 
-            aria-label="Breadcrumb" 
-            className="flex flex-row items-center gap-0 overflow-x-auto scrollbar-hide"
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '8px 16px' }}>
+          <nav
+            aria-label="Breadcrumb"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'nowrap',
+              alignItems: 'center',
+              overflow: 'hidden',
+            }}
           >
             {renderItems()}
           </nav>
@@ -65,9 +89,16 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   // Inline variant
   return (
-    <nav 
-      aria-label="Breadcrumb" 
-      className={`flex flex-row items-center gap-0 overflow-x-auto scrollbar-hide ${className}`}
+    <nav
+      aria-label="Breadcrumb"
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        alignItems: 'center',
+        overflow: 'hidden',
+      }}
+      className={className}
     >
       {renderItems()}
     </nav>
