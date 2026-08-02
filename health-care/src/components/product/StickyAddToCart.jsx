@@ -54,19 +54,21 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
 
   return (
     <div
-      className="hidden lg:block fixed left-0 right-0 bg-white shadow-xl"
+      className="hidden lg:block fixed left-0 right-0 bg-white shadow-md"
       style={{
-        top: 'var(--site-nav-height)',
+        top: 0,
         zIndex: 850,
-        transform: visible ? 'translateY(0)' : 'translateY(-100%)',
+        transform: visible 
+          ? 'translateY(var(--site-nav-height))' 
+          : 'translateY(calc(-100% - var(--site-nav-height)))',
         opacity: visible ? 1 : 0,
-        transition: 'transform 0.4s ease, opacity 0.3s ease',
+        transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
         pointerEvents: visible ? 'auto' : 'none',
-        marginTop: 0,
-        paddingTop: 0,
+        willChange: visible ? 'transform' : 'auto',
+        borderBottom: '1px solid var(--color-border-primary)',
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center gap-6" style={{ borderBottom: '1px solid var(--color-border-primary)' }}>
+      <div className="max-w-7xl mx-auto px-6 py-2 flex items-center gap-6">
         {/* Product Image */}
         <div className="relative w-16 h-16 bg-[var(--color-background-secondary)] rounded-lg overflow-hidden flex-shrink-0 border border-[var(--color-border-primary)]">
           {product.images && product.images[0] ? (
