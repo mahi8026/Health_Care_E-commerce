@@ -31,10 +31,11 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         <li
           key={`${item.label}-${idx}`}
           style={{
-            display: 'flex',
+            display: 'flex',       // ← CRITICAL: must be flex, not default list-item
             alignItems: 'center',
             flexShrink: current ? 1 : 0,
             minWidth: 0,
+            listStyle: 'none',
           }}
         >
           {idx > 0 && (
@@ -54,6 +55,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 minWidth: 0,
+                display: 'block',   // required for overflow/ellipsis to work
+                maxWidth: '280px',
               }}
               aria-current="page"
             >
