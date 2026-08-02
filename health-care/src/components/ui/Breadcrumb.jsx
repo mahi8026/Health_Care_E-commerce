@@ -12,15 +12,35 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   const isCurrent = (item, idx) => idx === items.length - 1 || item.href === '#';
 
+  const olStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    minWidth: 0,
+    width: '100%',
+  };
+
   const renderItems = () =>
     items.map((item, idx) => {
       const current = isCurrent(item, idx);
       return (
-        <React.Fragment key={`${item.label}-${idx}`}>
+        <li
+          key={`${item.label}-${idx}`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexShrink: current ? 1 : 0,
+            minWidth: 0,
+          }}
+        >
           {idx > 0 && (
             <FaChevronRight
               size={9}
-              style={{ color: 'rgba(96,165,250,0.7)', flexShrink: 0, margin: '0 6px' }}
+              style={{ color: 'rgba(96,165,250,0.7)', flexShrink: 0, margin: '0 5px' }}
               aria-hidden="true"
             />
           )}
@@ -33,9 +53,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                maxWidth: '300px',
-                flexShrink: 1,
-                display: 'inline-block',
+                minWidth: 0,
               }}
               aria-current="page"
             >
@@ -56,51 +74,36 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               {item.label}
             </Link>
           )}
-        </React.Fragment>
+        </li>
       );
     });
 
   if (variant === 'default') {
     return (
       <div
-        className={`w-full ${className}`}
+        className={className}
         style={{
+          width: '100%',
           background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)',
           borderBottom: '1px solid #DBEAFE',
         }}
       >
-        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '8px 16px' }}>
-          <nav
-            aria-label="Breadcrumb"
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'nowrap',
-              alignItems: 'center',
-              overflow: 'hidden',
-            }}
-          >
-            {renderItems()}
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '8px 16px', minWidth: 0 }}>
+          <nav aria-label="Breadcrumb" style={{ minWidth: 0 }}>
+            <ol style={olStyle}>
+              {renderItems()}
+            </ol>
           </nav>
         </div>
       </div>
     );
   }
 
-  // Inline variant
   return (
-    <nav
-      aria-label="Breadcrumb"
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        alignItems: 'center',
-        overflow: 'hidden',
-      }}
-      className={className}
-    >
-      {renderItems()}
+    <nav aria-label="Breadcrumb" className={className} style={{ minWidth: 0 }}>
+      <ol style={olStyle}>
+        {renderItems()}
+      </ol>
     </nav>
   );
 }
