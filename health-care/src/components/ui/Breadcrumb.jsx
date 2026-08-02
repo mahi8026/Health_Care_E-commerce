@@ -12,18 +12,6 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   const isCurrent = (item, idx) => idx === items.length - 1 || item.href === '#';
 
-  const olStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    listStyle: 'none',
-    margin: 0,
-    padding: 0,
-    minWidth: 0,
-    width: '100%',
-  };
-
   const renderItems = () =>
     items.map((item, idx) => {
       const current = isCurrent(item, idx);
@@ -31,17 +19,16 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         <li
           key={`${item.label}-${idx}`}
           style={{
-            display: 'flex',       // ← CRITICAL: must be flex, not default list-item
+            display: 'flex',
             alignItems: 'center',
             flexShrink: current ? 1 : 0,
             minWidth: 0,
-            listStyle: 'none',
           }}
         >
           {idx > 0 && (
             <FaChevronRight
               size={9}
-              style={{ color: 'rgba(96,165,250,0.7)', flexShrink: 0, margin: '0 5px' }}
+              style={{ color: 'rgba(96,165,250,0.7)', flexShrink: 0, margin: '0 6px' }}
               aria-hidden="true"
             />
           )}
@@ -51,12 +38,12 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 color: '#0b2545',
                 fontWeight: 600,
                 fontSize: '13px',
+                lineHeight: '1.4',
+                display: 'block',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 minWidth: 0,
-                display: 'block',   // required for overflow/ellipsis to work
-                maxWidth: '280px',
               }}
               aria-current="page"
             >
@@ -69,6 +56,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 color: '#3B82F6',
                 fontWeight: 500,
                 fontSize: '13px',
+                lineHeight: '1.4',
                 whiteSpace: 'nowrap',
                 textDecoration: 'none',
                 flexShrink: 0,
@@ -89,11 +77,24 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           width: '100%',
           background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)',
           borderBottom: '1px solid #DBEAFE',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '8px 16px', minWidth: 0 }}>
-          <nav aria-label="Breadcrumb" style={{ minWidth: 0 }}>
-            <ol style={olStyle}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '8px 16px' }}>
+          <nav aria-label="Breadcrumb">
+            <ol
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                listStyle: 'none',
+                margin: 0,
+                padding: 0,
+                overflow: 'hidden',
+                width: '100%',
+              }}
+            >
               {renderItems()}
             </ol>
           </nav>
@@ -103,8 +104,20 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   }
 
   return (
-    <nav aria-label="Breadcrumb" className={className} style={{ minWidth: 0 }}>
-      <ol style={olStyle}>
+    <nav aria-label="Breadcrumb" className={className}>
+      <ol
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'nowrap',
+          alignItems: 'center',
+          listStyle: 'none',
+          margin: 0,
+          padding: 0,
+          overflow: 'hidden',
+          width: '100%',
+        }}
+      >
         {renderItems()}
       </ol>
     </nav>
