@@ -46,7 +46,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   if (variant === 'default') {
     return (
       <div
-        className={`w-full bg-gradient-to-r from-[#E8F0FE] via-[#E3EFFD] to-[#DCE9FC] border-b border-blue-100 ${className}`}
+        className={`w-full border-b border-blue-100 ${className}`}
         style={{
           background: 'linear-gradient(90deg, #E8F0FE 0%, #E3EFFD 50%, #DCE9FC 100%)'
         }}
