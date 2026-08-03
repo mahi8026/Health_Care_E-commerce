@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
       
       return { success: true, user: response.user };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, errorDetails: error.data };
     } finally {
       setLoading(false);
     }

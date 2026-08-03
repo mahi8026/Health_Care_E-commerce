@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import BrandLogo from '@/components/ui/BrandLogo';
@@ -30,6 +30,14 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   const { executeRecaptcha } = useRecaptcha(recaptchaSiteKey);
 
+  // Debug: Log if site key is loaded
+  useEffect(() => {
+    console.log('reCAPTCHA Site Key loaded:', recaptchaSiteKey ? 'YES' : 'NO');
+    if (recaptchaSiteKey) {
+      console.log('Site key starts with:', recaptchaSiteKey.substring(0, 10) + '...');
+    }
+  }, [recaptchaSiteKey]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
@@ -47,6 +55,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
     } else if (name === 'password') {
       if (!value) newErrors.password = 'Password is required';
       else if (value.length < 8) newErrors.password = 'Minimum 8 characters';
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(value)) newErrors.password = 'Password must contain uppercase, lowercase, number, and special character';
       else delete newErrors.password;
     } else if (name === 'confirmPassword') {
       if (!value) newErrors.confirmPassword = 'Confirm password is required';
@@ -74,6 +83,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
     else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Invalid email format';
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 8) newErrors.password = 'Minimum 8 characters';
+    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(formData.password)) newErrors.password = 'Password must contain uppercase, lowercase, number, and special character';
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     if (formData.accountType === 'B2B' && !formData.company.trim()) newErrors.company = 'Company name is required';
@@ -103,7 +113,16 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
     
     const result = await register(dataToSubmit);
     if (!result.success) {
-      setErrors({ submit: result.error || 'Registration failed. Please try again.' });
+      const fieldErrors = result.errorDetails?.errors;
+      if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
+        const next = {};
+        for (const fe of fieldErrors) {
+          if (fe.field) next[fe.field] = fe.message;
+        }
+        setErrors({ ...next, submit: 'Please fix the highlighted fields below.' });
+      } else {
+        setErrors({ submit: result.error || 'Registration failed. Please try again.' });
+      }
     } else if (onSuccess) {
       onSuccess();
     } else {
