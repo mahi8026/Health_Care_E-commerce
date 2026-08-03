@@ -12,7 +12,7 @@
  * which is automatically registered by the OneSignal SDK at /OneSignalSDKWorker.js
  */
 
-const CACHE_VERSION = 'Mediport-v2'; // v2: Skip Cloudinary (CSP fix)
+const CACHE_VERSION = 'Mediport-v3'; // v3: Clear stale caches after reCAPTCHA CSP fix
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const API_CACHE = `${CACHE_VERSION}-api`;
