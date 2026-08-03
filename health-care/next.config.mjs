@@ -187,9 +187,9 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://browser.sentry-cdn.com https://cdn.onesignal.com https://api.onesignal.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://browser.sentry-cdn.com https://cdn.onesignal.com https://api.onesignal.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://www.google-analytics.com https://ssl.gstatic.com https://img.youtube.com",
+              "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://www.google-analytics.com https://ssl.gstatic.com https://www.gstatic.com https://img.youtube.com",
               "font-src 'self' data: https://fonts.gstatic.com",
               "connect-src 'self' https://healthcaree-commerce-production.up.railway.app https://www.google-analytics.com https://analytics.google.com https://o4508309534613504.ingest.de.sentry.io https://res.cloudinary.com https://img.youtube.com https://onesignal.com https://api.onesignal.com https://cdn.onesignal.com",
               "frame-src 'self' https://www.youtube.com https://www.google.com",
