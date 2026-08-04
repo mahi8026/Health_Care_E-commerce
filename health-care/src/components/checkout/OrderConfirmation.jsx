@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { showToast } from '@/components/ui/Toast';
 
@@ -23,7 +23,7 @@ function CopyBtn({ text }) {
         copied ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-background-muted)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-muted)]'
       }`}
     >
-      {copied ? '✓ Copied' : 'Copy'}
+      {copied ? 'âœ“ Copied' : 'Copy'}
     </button>
   );
 }
@@ -39,7 +39,7 @@ function BankTransferConfirmation({ orderId }) {
   return (
     <div className="rounded-xl border border-[var(--color-status-warning-tint)] bg-[var(--color-status-warning-tint)] overflow-hidden mb-6 text-left">
       <div className="px-4 py-3 bg-[var(--color-status-warning-tint)] border-b border-[var(--color-status-warning-tint)] flex items-center gap-2">
-        <span className="text-lg">🏦</span>
+        <span className="text-lg">ðŸ¦</span>
         <div>
           <p className="text-sm font-semibold text-[var(--color-status-warning)] m-0">Complete Your Bank Transfer</p>
           <p className="text-xs text-[#B45309] m-0">Transfer within 24 hours to confirm your order</p>
@@ -57,11 +57,11 @@ function BankTransferConfirmation({ orderId }) {
           </div>
         ))}
 
-        {/* Reference — most important */}
+        {/* Reference â€” most important */}
         <div className="mt-2 pt-2 border-t border-[var(--color-status-warning-tint)]">
           <div className="flex items-center justify-between gap-2 bg-[var(--color-status-warning-tint)] rounded-lg px-3 py-2">
             <div>
-              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">⚠️ Transfer Reference (Required)</p>
+              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">âš ï¸ Transfer Reference (Required)</p>
               <p className="text-sm font-semibold text-[#78350F] font-mono m-0">{orderId}</p>
             </div>
             <CopyBtn text={orderId} />
@@ -71,7 +71,7 @@ function BankTransferConfirmation({ orderId }) {
 
       <div className="px-4 pb-3">
         <p className="text-xs text-[var(--color-status-warning)] m-0">
-          Your order will be confirmed within <strong>1–2 business hours</strong> after payment is received.
+          Your order will be confirmed within <strong>1â€“2 business hours</strong> after payment is received.
           Email us at <strong>mahimrahman07@gmail.com</strong> with your transaction screenshot if needed.
         </p>
       </div>
@@ -106,25 +106,25 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
   };
 
   return (
-    <div className="bg-white rounded-lg p-8 text-center max-w-[500px] mx-auto mt-8">
+    <div className="bg-white rounded-lg p-6 text-center max-w-[500px] mx-auto mt-6">
       {/* Success Icon */}
-      <div className="w-16 h-16 bg-brand-teal-tint rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="w-14 h-14 bg-brand-teal-tint rounded-full flex items-center justify-center mx-auto mb-3">
         <svg className="w-8 h-8 text-brand-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </div>
 
       {/* Title */}
-      <h2 className="text-xl font-semibold mb-2 font-[family-name:var(--font-lora)]">
+      <h2 className="text-lg font-semibold mb-2 font-[family-name:var(--font-lora)]">
         Order placed successfully!
       </h2>
       
-      <p className="text-sm text-[var(--color-text-secondary)] mb-6 font-[family-name:var(--font-plus-jakarta)]">
+      <p className="text-sm text-[var(--color-text-secondary)] mb-5 font-[family-name:var(--font-plus-jakarta)]">
         Thank you for your order. We&apos;ve sent a confirmation email with your order details.
       </p>
 
       {/* Order Details */}
-      <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4 mb-6">
+      <div className="bg-[var(--color-background-tertiary)] rounded-lg p-3.5 mb-5">
         <div className="grid grid-cols-2 gap-4 text-left">
           <div>
             <div className="text-xs text-[var(--color-text-secondary)] mb-1">
@@ -145,15 +145,15 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         </div>
       </div>
 
-      {/* Bank Transfer Instructions — shown when payment method is bank_transfer */}
+      {/* Bank Transfer Instructions â€” shown when payment method is bank_transfer */}
       {paymentMethod === 'bank_transfer' && (
         <BankTransferConfirmation orderId={orderId} />
       )}
 
       {/* Info Messages */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-5">
         <div className="flex items-start gap-3 text-left bg-[var(--color-status-info-tint)] rounded-lg p-3">
-          <span className="text-base">📦</span>
+          <span className="text-base">ðŸ“¦</span>
           <div className="flex-1">
             <div className="text-xs font-medium text-[var(--color-status-info)] mb-1">
               Track your order
@@ -165,7 +165,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         </div>
 
         <div className="flex items-start gap-3 text-left bg-brand-teal-tint rounded-lg p-3">
-          <span className="text-base">❄️</span>
+          <span className="text-base">â„ï¸</span>
           <div className="flex-1">
             <div className="text-xs font-medium text-[var(--color-status-success)] mb-1">
               Cold chain delivery
@@ -182,13 +182,13 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         <button 
           onClick={handleDownloadInvoice}
           disabled={downloading}
-          className="flex-1 px-4 py-3 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-50"
+          className="flex-1 px-4 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-50"
         >
-          {downloading ? 'Downloading...' : '📄 Download invoice'}
+          {downloading ? 'Downloading...' : 'ðŸ“„ Download invoice'}
         </button>
         <button 
           onClick={() => router.push('/products')}
-          className="flex-1 px-4 py-3 bg-brand-navy text-white rounded-lg text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)]">
+          className="flex-1 px-4 py-2.5 bg-brand-navy text-white rounded-lg text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)]">
           Continue shopping
         </button>
       </div>
@@ -203,7 +203,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
             href="tel:+8801646886795" 
             className="text-brand-teal font-medium hover:underline"
           >
-            📞 Call support
+            ðŸ“ž Call support
           </a>
           <span className="text-[var(--color-border-secondary)]">|</span>
           <a 
@@ -212,7 +212,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
             rel="noopener noreferrer"
             className="text-brand-teal font-medium hover:underline"
           >
-            💬 Live chat
+            ðŸ’¬ Live chat
           </a>
         </div>
       </div>

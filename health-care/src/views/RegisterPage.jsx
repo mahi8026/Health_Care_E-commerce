@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -162,17 +162,17 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
       )}
       
       {/* Full-width form panel */}
-      <div className="w-full flex items-center justify-center p-6 sm:p-10 overflow-y-auto">
-        <div className="w-full max-w-lg py-6">
+      <div className="w-full flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div className="w-full max-w-lg py-4">
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-5">
             <BrandLogo />
             <p className="text-[var(--color-text-secondary)] text-xs mt-1">Bangladesh&apos;s trusted medical equipment platform</p>
           </div>
 
           {/* Heading */}
           <div className="mb-7">
-            <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-text-primary">
               Create your account
             </h1>
             <p className="text-[var(--color-text-secondary)] text-sm mt-1">
@@ -187,7 +187,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
             </p>
           </div>
 
-          {/* Error — aria-live ensures screen readers announce submit failures */}
+          {/* Error â€” aria-live ensures screen readers announce submit failures */}
           <div role="alert" aria-live="polite" aria-atomic="true">
             {errors.submit && (
               <div className="mb-5 flex items-start gap-3 p-4 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-xl text-[var(--color-status-danger)] text-sm">
@@ -207,8 +207,8 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               </label>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: 'Retail', icon: '👤', title: 'Retail Customer', sub: 'Individual purchases' },
-                  { value: 'B2B', icon: '🏢', title: 'B2B Account', sub: 'Bulk orders & credit terms' },
+                  { value: 'Retail', icon: 'ðŸ‘¤', title: 'Retail Customer', sub: 'Individual purchases' },
+                  { value: 'B2B', icon: 'ðŸ¢', title: 'B2B Account', sub: 'Bulk orders & credit terms' },
                 ].map((type) => (
                   <label key={type.value} className="cursor-pointer">
                     <input
@@ -240,7 +240,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
             </div>
 
             {/* Name + Email */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label htmlFor="register-name" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
                   Full Name <span className="text-[var(--color-status-danger)]">*</span>
@@ -295,7 +295,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
             </div>
 
             {/* Password + Confirm */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label htmlFor="register-password" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
                   Password <span className="text-[var(--color-status-danger)]">*</span>
@@ -385,7 +385,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
             </div>
 
             {/* Phone + Company */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label htmlFor="register-phone" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
                   Phone Number <span className="text-[var(--color-status-danger)]">*</span>
@@ -445,7 +445,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white font-semibold rounded-xl text-sm transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white font-semibold rounded-xl text-sm transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

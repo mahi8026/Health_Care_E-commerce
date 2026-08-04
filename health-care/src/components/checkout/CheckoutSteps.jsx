@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { FaCheck } from 'react-icons/fa';
@@ -14,7 +14,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
   return (
     <nav
       aria-label="Checkout progress"
-      className="bg-white rounded-2xl border border-[var(--color-border-primary)] px-4 py-4 sm:px-6 mb-4"
+      className="bg-white rounded-2xl border border-[var(--color-border-primary)] px-4 py-3 sm:px-6 mb-3"
     >
       <ol className="flex items-center m-0 p-0 list-none">
         {STEPS.map((step, idx) => {
@@ -67,7 +67,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
       {STEPS[0].href && currentStep > 1 && (
         <p className="text-xs text-[var(--color-text-secondary)] mt-3 mb-0 sm:hidden">
           <Link href="/cart" className="text-brand-teal font-medium hover:underline">
-            ← Edit cart
+            â† Edit cart
           </Link>
         </p>
       )}

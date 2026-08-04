@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -109,17 +109,17 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
       )}
       
       {/* Full-width form panel */}
-      <div className="w-full flex items-center justify-center p-6 sm:p-10">
+      <div className="w-full flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-5">
             <BrandLogo />
             <p className="text-[var(--color-text-secondary)] text-xs mt-1">Bangladesh&apos;s trusted medical equipment platform</p>
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-text-primary">
               Sign in to your account
             </h1>
             <p className="text-[var(--color-text-secondary)] text-sm mt-1">
@@ -134,7 +134,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
             </p>
           </div>
 
-          {/* Error — aria-live ensures screen readers announce login failures */}
+          {/* Error â€” aria-live ensures screen readers announce login failures */}
           <div role="alert" aria-live="polite" aria-atomic="true">
             {error && (
               <div className="mb-5 flex items-start gap-3 p-4 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-xl text-[var(--color-status-danger)] text-sm">
@@ -147,7 +147,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
               <label htmlFor="login-email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
@@ -232,7 +232,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white font-semibold rounded-xl text-sm transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white font-semibold rounded-xl text-sm transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -284,7 +284,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           )}
 
           {/* Bottom register link (mobile-friendly duplicate) */}
-          <p className="mt-8 text-center text-sm text-[var(--color-text-secondary)]">
+          <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
             New to MediportBD?{' '}
             <button
               type="button"

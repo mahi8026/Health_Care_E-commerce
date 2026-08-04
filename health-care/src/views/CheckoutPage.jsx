@@ -318,14 +318,14 @@ export default function CheckoutPage({ onBackToCart }) {
 
   if (cart.length === 0 && !isConfirmed) {
     return (
-      <div className="min-h-[60vh] bg-[var(--color-background-tertiary)] flex items-center justify-center px-4 py-16">
-        <div className="text-center max-w-sm bg-white rounded-2xl border border-[var(--color-border-primary)] p-8">
-          <div className="text-5xl mb-4">🛒</div>
+      <div className="min-h-[60vh] bg-[var(--color-background-tertiary)] flex items-center justify-center px-4 py-12">
+        <div className="text-center max-w-sm bg-white rounded-2xl border border-[var(--color-border-primary)] p-6">
+          <div className="text-4xl mb-3">🛒</div>
           <h2 className="text-lg font-semibold text-brand-navy mb-2">{t('cart.empty')}</h2>
-          <p className="text-sm text-[var(--color-text-secondary)] mb-6">{t('cart.emptyDesc')}</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-5">{t('cart.emptyDesc')}</p>
           <Link
             href="/products"
-            className="inline-block w-full py-3 rounded-xl bg-brand-teal text-white text-sm font-semibold hover:bg-[var(--color-brand-teal-hover)]"
+            className="inline-block w-full py-2.5 rounded-xl bg-brand-teal text-white text-sm font-semibold hover:bg-[var(--color-brand-teal-hover)]"
           >
             {t('product.browseProducts')}
           </Link>
@@ -366,8 +366,8 @@ export default function CheckoutPage({ onBackToCart }) {
 
   return (
     <div className="min-h-screen bg-[var(--color-background-tertiary)] pb-24 lg:pb-10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
-        <div className="flex items-center justify-between gap-4 mb-5">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex items-center justify-between gap-4 mb-4">
           <div>
             <Link
               href="/cart"
@@ -376,14 +376,14 @@ export default function CheckoutPage({ onBackToCart }) {
               <FaArrowLeft size={11} />
               {t('checkout.backToCart')}
             </Link>
-            <h1 className="text-2xl md:text-3xl font-semibold text-text-primary m-0">
+            <h1 className="text-xl md:text-2xl font-semibold text-text-primary m-0">
               {t('checkout.title')}
             </h1>
           </div>
         </div>
 
         {!isConfirmed ? (
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 lg:gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-4 lg:gap-5 items-start">
             <div className="space-y-4 min-w-0">
               <CheckoutSteps currentStep={currentStep} itemCount={cart.length} />
 
@@ -426,7 +426,7 @@ export default function CheckoutPage({ onBackToCart }) {
                 <button
                   type="button"
                   onClick={() => (onBackToCart ? onBackToCart() : router.push('/cart'))}
-                  className="px-5 py-3 rounded-xl border border-[var(--color-border-primary)] bg-white text-sm font-semibold text-brand-navy hover:bg-[var(--color-background-secondary)]"
+                  className="px-4 py-2 rounded-xl border border-[var(--color-border-primary)] bg-white text-sm font-semibold text-brand-navy hover:bg-[var(--color-background-secondary)]"
                 >
                   {t('checkout.backToCart')}
                 </button>
@@ -452,7 +452,7 @@ export default function CheckoutPage({ onBackToCart }) {
             </aside>
           </div>
         ) : (
-          <div className="max-w-lg mx-auto bg-white rounded-2xl border border-[var(--color-border-primary)] p-6 sm:p-8">
+          <div className="max-w-lg mx-auto bg-white rounded-2xl border border-[var(--color-border-primary)] p-5 sm:p-6">
             <OrderConfirmation
               orderId={orderId || 'ORD-XXXX'}
               mongoId={createdOrderId}
@@ -476,7 +476,7 @@ export default function CheckoutPage({ onBackToCart }) {
             type="button"
             onClick={handlePlaceOrder}
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

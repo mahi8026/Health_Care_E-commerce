@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { showToast } from '@/components/ui/Toast';
 
@@ -177,23 +177,23 @@ export default function OrderSummary({
   return (
     <div className="lg:sticky lg:top-[calc(var(--site-nav-height)+1rem)]">
       <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] shadow-sm overflow-hidden">
-        <div className="px-4 py-4 sm:px-5 border-b border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
+        <div className="px-4 py-3 sm:px-5 border-b border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
           <h2 className="text-base font-semibold text-brand-navy m-0">Order summary</h2>
           <p className="text-xs text-[var(--color-text-secondary)] m-0 mt-0.5">
             {items.length} {items.length === 1 ? 'item' : 'items'}
           </p>
         </div>
 
-        <div className="px-4 py-4 sm:px-5 max-h-[240px] overflow-y-auto space-y-3">
+        <div className="px-4 py-3 sm:px-5 max-h-[220px] overflow-y-auto space-y-2.5">
           {itemsWithPricing.map((item) => {
             const img = getItemImage(item);
             return (
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
+                    <Image src={img} alt={`${item.name}${item.brand ? ` â€” ${item.brand}` : ''} â€” Price à§³${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
-                    <span className="text-lg">📦</span>
+                    <span className="text-lg">ðŸ“¦</span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -210,9 +210,9 @@ export default function OrderSummary({
                     </span>
                   )}
                   <div className="flex justify-between items-center mt-1.5">
-                    <span className="text-xs text-[var(--color-text-secondary)]">×{item.quantity}</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">Ã—{item.quantity}</span>
                     <span className="text-sm font-semibold text-brand-navy">
-                      ৳{(item.displayPrice * item.quantity).toLocaleString()}
+                      à§³{(item.displayPrice * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -240,13 +240,13 @@ export default function OrderSummary({
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                 placeholder="CODE"
-                className="flex-1 px-3 py-2 min-h-[48px] text-base sm:text-xs font-mono uppercase border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
+                className="flex-1 px-3 py-2 min-h-[40px] text-base sm:text-xs font-mono uppercase border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
               />
               <button
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={couponLoading}
-                className="px-4 py-2 min-h-[48px] text-xs font-semibold bg-brand-teal text-white rounded-lg hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-50"
+                className="px-4 py-2 min-h-[40px] text-xs font-semibold bg-brand-teal text-white rounded-lg hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-50"
               >
                 Apply
               </button>
@@ -272,8 +272,8 @@ export default function OrderSummary({
               {pointsDiscount > 0 ? (
                 <div className="flex justify-between items-center p-2.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-warning/30">
                   <div>
-                    <span className="text-xs font-semibold text-[var(--color-status-warning)]">⭐ {pointsDiscount} pts redeemed</span>
-                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
+                    <span className="text-xs font-semibold text-[var(--color-status-warning)]">â­ {pointsDiscount} pts redeemed</span>
+                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">âˆ’à§³{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
                     type="button"
@@ -289,15 +289,15 @@ export default function OrderSummary({
                   onClick={() => setShowPointsInput(true)}
                   className="flex items-center gap-1.5 text-xs font-semibold text-warning hover:underline"
                 >
-                  ⭐ Redeem loyalty points ({availablePoints} available)
+                  â­ Redeem loyalty points ({availablePoints} available)
                 </button>
               ) : (
                 <div>
                   <p className="text-xs text-[var(--color-text-secondary)] mb-1.5">
-                    You have <strong>{availablePoints} points</strong> = ৳{(availablePoints * 0.1).toFixed(2)} discount value
+                    You have <strong>{availablePoints} points</strong> = à§³{(availablePoints * 0.1).toFixed(2)} discount value
                   </p>
                   <p className="text-xs text-[var(--color-text-tertiary)] mb-2">
-                    100 points = ৳10 • Minimum 50 points to redeem • Max 20% of order
+                    100 points = à§³10 â€¢ Minimum 50 points to redeem â€¢ Max 20% of order
                   </p>
                   <div className="flex gap-2">
                     <input
@@ -345,7 +345,7 @@ export default function OrderSummary({
         <div className="px-4 sm:px-5 py-3 border-t border-[var(--color-border-tertiary)] space-y-2 text-sm">
           <div className="flex justify-between text-[var(--color-text-secondary)]">
             <span>Subtotal</span>
-            <span className="font-medium text-brand-navy">৳{subtotal.toLocaleString()}</span>
+            <span className="font-medium text-brand-navy">à§³{subtotal.toLocaleString()}</span>
           </div>
           {b2bSavings > 0 && (
             <div className="flex justify-between text-[#7C3AED]">
@@ -353,48 +353,48 @@ export default function OrderSummary({
                 <FaShieldAlt size={11} />
                 <span>B2B discount</span>
               </div>
-              <span className="font-medium">−৳{b2bSavings.toLocaleString()}</span>
+              <span className="font-medium">âˆ’à§³{b2bSavings.toLocaleString()}</span>
             </div>
           )}
           {couponDiscount > 0 && (
             <div className="flex justify-between text-brand-teal">
               <span>Coupon discount</span>
-              <span className="font-medium">−৳{couponDiscount.toLocaleString()}</span>
+              <span className="font-medium">âˆ’à§³{couponDiscount.toLocaleString()}</span>
             </div>
           )}
           {pointsDiscount > 0 && (
             <div className="flex justify-between text-warning">
-              <span>⭐ Points discount</span>
-              <span className="font-medium">−৳{(pointsDiscount * 0.1).toFixed(2)}</span>
+              <span>â­ Points discount</span>
+              <span className="font-medium">âˆ’à§³{(pointsDiscount * 0.1).toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between text-[var(--color-text-secondary)]">
             <span>Delivery <span className="text-xs text-[var(--color-text-tertiary)]">(Steadfast Courier)</span></span>
-            <span className="font-medium text-brand-navy">৳{deliveryFee.toLocaleString()}</span>
+            <span className="font-medium text-brand-navy">à§³{deliveryFee.toLocaleString()}</span>
           </div>
         </div>
 
-        <div className="px-4 sm:px-5 py-4 border-t-2 border-brand-navy/10 flex justify-between items-center">
+    <div className="px-4 sm:px-5 py-3 border-t-2 border-brand-navy/10 flex justify-between items-center">
           <span className="text-sm font-semibold text-[var(--color-text-secondary)]">Total</span>
           <span className="text-xl font-semibold text-brand-navy font-[family-name:var(--font-lora)]">
-            ৳{displayTotal.toLocaleString()}
+            à§³{displayTotal.toLocaleString()}
           </span>
         </div>
 
         {showPlaceOrder && onPlaceOrder && (
-          <div className="hidden lg:block px-4 sm:px-5 pb-5">
+    <div className="hidden lg:block px-4 sm:px-5 pb-4">
             <button
               type="button"
               onClick={onPlaceOrder}
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold shadow-lg shadow-brand-teal/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-3 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold shadow-lg shadow-brand-teal/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Processing…' : `Place order · ৳${displayTotal.toLocaleString()}`}
+              {loading ? 'Processingâ€¦' : `Place order Â· à§³${displayTotal.toLocaleString()}`}
             </button>
           </div>
         )}
 
-        <div className="px-4 sm:px-5 pb-4 flex items-start gap-2 text-xs text-[var(--color-text-secondary)]">
+    <div className="px-4 sm:px-5 pb-3 flex items-start gap-2 text-xs text-[var(--color-text-secondary)]">
           <FaLock className="text-brand-teal mt-0.5 shrink-0" size={12} />
           <span>Secure, encrypted checkout. Your data is never shared.</span>
         </div>
