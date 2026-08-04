@@ -286,10 +286,10 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
       />
 
       {/* ── Main Content ───────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
+      <div className="max-w-7xl mx-auto px-3 md:px-4 py-3">
 
-        {/* Two-column: image left, info right */}
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-5 xl:gap-6">
+        {/* Two-column: image left, info right - Compact */}
+        <div className="grid grid-cols-1 lg:grid-cols-[50%_50%] gap-3 xl:gap-4">
           <div>
             <ProductImageGalleryEnhanced
               images={(product.images || []).map(img =>
@@ -353,12 +353,12 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
 
         {/* AI-Powered Recommendations */}
         {loadingRecommendations && (
-          <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="mt-4 bg-white rounded-lg shadow-sm border border-[var(--color-border-tertiary)] p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🤖</span>
               <h2 className="text-sm font-semibold text-brand-navy">Loading Recommendations...</h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
               {[...Array(6)].map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
@@ -367,8 +367,8 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
         )}
         
         {!loadingRecommendations && recommendedProducts.length > 0 && (
-          <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
-            <div className="flex items-center gap-2 mb-3">
+          <div className="mt-4 bg-white rounded-lg shadow-sm border border-[var(--color-border-tertiary)] p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🤖</span>
               <h2 className="text-sm font-semibold text-brand-navy">You Might Also Like</h2>
               <span className="text-xs text-[var(--color-text-secondary)] bg-purple-50 px-2 py-0.5 rounded-full font-medium">
@@ -376,7 +376,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
               </span>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
               {recommendedProducts.map((recProduct) => {
                 const recImageData = recProduct.images?.find(img => typeof img === 'object' && img.isPrimary) || recProduct.images?.[0];
                 const recImageUrl = typeof recImageData === 'string' ? recImageData : recImageData?.url;
