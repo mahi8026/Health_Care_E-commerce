@@ -91,28 +91,9 @@ export default function RankingBadge({ rank, size = 'medium', className = '' }) 
         <span className="sr-only">Ranked number {rank} in best sellers</span>
       </div>
 
-      {/* Pulse animation for rank 1 */}
-      {rank === 1 && (
-        <style jsx>{`
-          @keyframes badgePulse {
-            0%, 100% {
-              transform: scale(1);
-              box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-            }
-            50% {
-              transform: scale(1.05);
-              box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6), 0 0 0 10px rgba(255, 215, 0, 0);
-            }
-          }
-
-          .ranking-badge-1 {
-            animation: badgePulse 2s infinite;
-          }
-        `}</style>
-      )}
-
-      {/* Screen reader only class */}
+      {/* Styles - combined to avoid nested styled-jsx tags */}
       <style jsx global>{`
+        /* Screen reader only class */
         .sr-only {
           position: absolute;
           width: 1px;
@@ -123,6 +104,22 @@ export default function RankingBadge({ rank, size = 'medium', className = '' }) 
           clip: rect(0, 0, 0, 0);
           white-space: nowrap;
           border-width: 0;
+        }
+
+        /* Pulse animation for rank 1 */
+        @keyframes badgePulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6), 0 0 0 10px rgba(255, 215, 0, 0);
+          }
+        }
+
+        .ranking-badge-1 {
+          animation: badgePulse 2s infinite;
         }
       `}</style>
     </>
