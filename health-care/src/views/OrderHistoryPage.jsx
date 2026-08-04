@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -104,15 +104,15 @@ export default function OrderHistoryPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
-      <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-6">
+    <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-6">
+      <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-4">
         {t('orders.title')}
       </h1>
 
       {loading ? (
         <div className="space-y-4 animate-fade-in">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl p-6 border border-[var(--color-border-tertiary)] animate-pulse">
+            <div key={i} className="bg-white rounded-xl p-4 border border-[var(--color-border-tertiary)] animate-pulse">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-5 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-32 animate-shimmer" />
                 <div className="h-5 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-24 animate-shimmer" />
@@ -123,17 +123,17 @@ export default function OrderHistoryPage() {
           ))}
         </div>
       ) : error ? (
-        <div className="text-center py-12 text-sm text-danger">{error}</div>
+        <div className="text-center py-8 text-sm text-danger">{error}</div>
       ) : orders.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4">📦</div>
+        <div className="text-center py-10">
+          <div className="text-5xl mb-4">ðŸ“¦</div>
           <p className="text-sm font-medium mb-2">{t('orders.noOrders')}</p>
           <p className="text-xs text-[var(--color-text-secondary)] mb-6">
             {t('orders.noOrdersDesc')}
           </p>
           <button
             onClick={() => router.push('/reagent-store')}
-            className="px-6 py-3 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-brand-navy-hover)]"
+            className="px-5 py-2.5 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-[var(--color-brand-navy-hover)]"
           >
             {t('orders.browseCatalog')}
           </button>
@@ -159,20 +159,20 @@ export default function OrderHistoryPage() {
                       {order.orderNumber}
                     </td>
                     <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'â€”'}
                     </td>
                     <td className="px-4 py-3 text-xs">
                       {order.items?.length || 0} {(order.items?.length || 0) !== 1 ? t('orders.items') : t('orders.items')}
                     </td>
                     <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       <div className="flex flex-col gap-0.5">
-                        <span>৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
+                        <span>à§³{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                         {order.isB2BOrder && order.b2bDiscount > 0 && (
                           <span className="text-xs text-[#7C3AED] font-medium flex items-center gap-1">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
                             </svg>
-                            B2B saved ৳{order.b2bDiscount.toLocaleString()}
+                            B2B saved à§³{order.b2bDiscount.toLocaleString()}
                           </span>
                         )}
                       </div>
@@ -190,7 +190,7 @@ export default function OrderHistoryPage() {
                         >
                           {t('orders.track')}
                         </button>
-                        <span className="text-[var(--color-border-secondary)]">·</span>
+                        <span className="text-[var(--color-border-secondary)]">Â·</span>
                         <button
                           onClick={() => handleInvoice(order)}
                           className="text-xs text-brand-navy font-medium hover:underline"
@@ -199,7 +199,7 @@ export default function OrderHistoryPage() {
                         </button>
                         {canRequestReturn(order) && (
                           <>
-                            <span className="text-[var(--color-border-secondary)]">·</span>
+                            <span className="text-[var(--color-border-secondary)]">Â·</span>
                             <button
                               onClick={() => handleRequestReturn(order._id)}
                               className="text-xs text-danger font-medium hover:underline"
@@ -210,7 +210,7 @@ export default function OrderHistoryPage() {
                         )}
                         {order.status === 'delivered' && order.items?.slice(0, 1).map(item => (
                           <span key={item.product?._id || item.product} className="flex items-center gap-1">
-                            <span className="text-[var(--color-border-secondary)]">·</span>
+                            <span className="text-[var(--color-border-secondary)]">Â·</span>
                             <button
                               onClick={() => setReviewModal({
                                 productId: item.product?._id || item.product,
@@ -218,7 +218,7 @@ export default function OrderHistoryPage() {
                               })}
                               className="text-xs text-warning font-medium hover:underline flex items-center gap-0.5"
                             >
-                              ★ {t('orders.writeReview')}
+                              â˜… {t('orders.writeReview')}
                             </button>
                           </span>
                         ))}
@@ -240,7 +240,7 @@ export default function OrderHistoryPage() {
                       {order.orderNumber}
                     </div>
                     <div className="text-xs text-[var(--color-text-secondary)]">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'â€”'}
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
@@ -254,14 +254,14 @@ export default function OrderHistoryPage() {
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
                     <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                      ৳{(order.totalAmount || order.total || 0).toLocaleString()}
+                      à§³{(order.totalAmount || order.total || 0).toLocaleString()}
                     </div>
                     {order.isB2BOrder && order.b2bDiscount > 0 && (
                       <div className="text-xs text-[#7C3AED] font-medium flex items-center gap-1">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
                         </svg>
-                        B2B saved ৳{order.b2bDiscount.toLocaleString()}
+                        B2B saved à§³{order.b2bDiscount.toLocaleString()}
                       </div>
                     )}
                   </div>
@@ -296,7 +296,7 @@ export default function OrderHistoryPage() {
                       })}
                       className="flex-1 min-h-[44px] py-2 text-xs text-warning font-medium border-[0.5px] border-warning rounded-lg hover:bg-[var(--color-status-warning-tint)] transition-colors"
                     >
-                      ★ {t('orders.writeReview')}
+                      â˜… {t('orders.writeReview')}
                     </button>
                   )}
                 </div>
@@ -315,7 +315,7 @@ export default function OrderHistoryPage() {
                 {t('orders.previous')}
               </button>
               <span className="text-xs text-[var(--color-text-secondary)]">
-                {t('orders.page')} {page} {t('orders.of')} {totalPages} · {total} orders
+                {t('orders.page')} {page} {t('orders.of')} {totalPages} Â· {total} orders
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}

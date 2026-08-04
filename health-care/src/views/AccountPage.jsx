@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -115,7 +115,7 @@ export default function AccountPage() {
       <div className="min-h-screen bg-[var(--color-background-secondary)] p-4">
         <div className="max-w-6xl mx-auto space-y-6 animate-fade-in">
           {/* Header skeleton */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[var(--color-border-tertiary)]">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-[var(--color-border-tertiary)]">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full animate-shimmer" />
               <div className="flex-1 space-y-3">
@@ -135,9 +135,9 @@ export default function AccountPage() {
           </div>
           
           {/* Menu items skeleton */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[var(--color-border-tertiary)] space-y-4">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-[var(--color-border-tertiary)] space-y-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-16 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
+              <div key={i} className="h-12 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-lg animate-shimmer" />
             ))}
           </div>
         </div>
@@ -176,14 +176,14 @@ export default function AccountPage() {
     <div className="min-h-screen bg-page">
       {/* Header */}
       <div className="bg-white border-b border-[var(--color-border-tertiary)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-brand-teal rounded-full flex items-center justify-center text-white text-xl sm:text-2xl font-semibold flex-shrink-0">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 bg-brand-teal rounded-full flex items-center justify-center text-white text-lg font-semibold flex-shrink-0">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">
+                <h1 className="text-xl md:text-2xl font-semibold text-text-primary">
                   {user?.name || 'User'}
                 </h1>
                 <p className="text-xs sm:text-xs md:text-sm text-[var(--color-text-secondary)] mt-0.5">
@@ -208,7 +208,7 @@ export default function AccountPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
         {/* B2B Status Card - Shows approval status and pricing eligibility */}
         <B2BStatusCard user={user} />
 
@@ -219,9 +219,9 @@ export default function AccountPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-brand-navy mb-1">
+            <div className="text-lg sm:text-xl md:text-2xl font-semibold text-brand-navy mb-1">
               {stats.totalOrders}
             </div>
             <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
@@ -229,7 +229,7 @@ export default function AccountPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-warning mb-1">
+            <div className="text-lg sm:text-xl md:text-2xl font-semibold text-warning mb-1">
               {stats.pendingOrders}
             </div>
             <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
@@ -237,7 +237,7 @@ export default function AccountPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-danger mb-1">
+            <div className="text-lg sm:text-xl md:text-2xl font-semibold text-danger mb-1">
               {stats.wishlistItems}
             </div>
             <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
@@ -245,7 +245,7 @@ export default function AccountPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg p-3 sm:p-4 border border-[var(--color-border-tertiary)]">
-            <div className="text-xl sm:text-2xl md:text-3xl font-semibold text-brand-teal mb-1">
+            <div className="text-lg sm:text-xl md:text-2xl font-semibold text-brand-teal mb-1">
               {stats.reviewsWritten}
             </div>
             <div className="text-xs sm:text-xs text-[var(--color-text-secondary)]">
@@ -255,7 +255,7 @@ export default function AccountPage() {
         </div>
 
         {/* Menu Sections */}
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-3 sm:space-y-4">
           {menuItems.map((section) => (
             <div key={section.section}>
               <h2 className="text-sm sm:text-sm font-semibold text-[var(--color-text-secondary)] mb-2 sm:mb-3 px-1">
@@ -266,7 +266,7 @@ export default function AccountPage() {
                   <button
                     key={item.href}
                     onClick={() => router.push(item.href)}
-                    className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-[var(--color-background-tertiary)] transition-colors text-left"
+                    className="w-full flex items-center justify-between p-2.5 sm:p-3 hover:bg-[var(--color-background-tertiary)] transition-colors text-left"
                   >
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                       <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[var(--color-background-secondary)] rounded-lg flex items-center justify-center text-brand-navy flex-shrink-0">
@@ -295,10 +295,10 @@ export default function AccountPage() {
         </div>
 
         {/* Logout Button */}
-        <div className="mt-6">
+        <div className="mt-4">
           <button
             onClick={handleLogout}
-            className="w-full bg-white border border-[var(--color-border-tertiary)] rounded-lg p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 text-danger hover:bg-[var(--color-status-danger-tint)] transition-colors font-medium text-sm sm:text-sm"
+            className="w-full bg-white border border-[var(--color-border-tertiary)] rounded-lg p-2.5 sm:p-3 flex items-center justify-center gap-2 sm:gap-3 text-danger hover:bg-[var(--color-status-danger-tint)] transition-colors font-medium text-sm sm:text-sm"
           >
             <FaSignOutAlt size={16} />
             {t('account.logout')}

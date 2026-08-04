@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import AccountPageShell from '@/components/account/AccountPageShell';
@@ -96,7 +96,7 @@ export default function NotificationsPage() {
       title="Notification Preferences"
       description="Choose how and when you want to hear from us."
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         {PREFS.map(({ group, items }) => (
           <div key={group} className="bg-white rounded-lg border border-[var(--color-border-tertiary)] overflow-hidden">
             <div className="px-5 py-3 border-b border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
@@ -138,7 +138,7 @@ export default function NotificationsPage() {
             disabled={saving}
             className="px-5 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
           >
-            {saving ? 'Saving…' : 'Save preferences'}
+            {saving ? 'Savingâ€¦' : 'Save preferences'}
           </button>
           {saved && (
             <span className="text-xs text-brand-teal font-medium flex items-center gap-1.5">

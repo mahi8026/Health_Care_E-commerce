@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Alert from '@/components/ui/Alert';
 import BrandLogo from '@/components/ui/BrandLogo';
@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
       
       <div className="max-w-md w-full">
         {/* Logo */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-5">
           <BrandLogo size="lg" />
           <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-2">
             Set your new password
@@ -98,23 +98,23 @@ export default function ResetPasswordPage() {
         <div className="bg-white rounded-lg p-5 sm:p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">✅</div>
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">âœ…</div>
               <h3 className="text-base sm:text-base font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 Password reset successfully
               </h3>
               <p className="text-xs sm:text-xs text-[var(--color-text-secondary)] mb-3 sm:mb-4">
-                Redirecting you to login…
+                Redirecting you to loginâ€¦
               </p>
               <button
                 onClick={() => router.push('/login')}
                 className="text-xs sm:text-xs text-brand-teal font-medium hover:underline"
               >
-                Go to login →
+                Go to login â†’
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              {/* Error — aria-live ensures screen readers announce validation failures */}
+              {/* Error â€” aria-live ensures screen readers announce validation failures */}
               <div aria-live="polite" aria-atomic="true">
                 {error && (
                   <Alert className="mb-3 sm:mb-4">{error}</Alert>
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
                 {loading ? (
                   <>
                     <ButtonLoader />
-                    Resetting…
+                    Resettingâ€¦
                   </>
                 ) : (
                   'Reset Password'
@@ -183,7 +183,7 @@ export default function ResetPasswordPage() {
               onClick={() => router.push('/login')}
               className="text-xs sm:text-xs text-[var(--color-text-secondary)] hover:text-brand-teal"
             >
-              ← Back to login
+              â† Back to login
             </button>
           </div>
         </div>

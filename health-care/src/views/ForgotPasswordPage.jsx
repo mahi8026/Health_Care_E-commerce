@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Alert from '@/components/ui/Alert';
 import BrandLogo from '@/components/ui/BrandLogo';
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
       
       <div className="max-w-md w-full">
         {/* Logo */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-5">
           <BrandLogo size="lg" />
           <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-2">
             Reset your password
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
         <div className="bg-white rounded-lg p-5 sm:p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">📧</div>
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">ðŸ“§</div>
               <h3 className="text-base sm:text-base font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 Check your email
               </h3>
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
                 onClick={() => router.push('/login')}
                 className="text-xs sm:text-xs text-brand-teal font-medium hover:underline"
               >
-                ← Back to login
+                â† Back to login
               </button>
             </div>
           ) : (
@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
-              {/* Error — aria-live ensures screen readers announce failures */}
+              {/* Error â€” aria-live ensures screen readers announce failures */}
               <div aria-live="polite" aria-atomic="true">
                 {error && (
                   <Alert className="mb-3 sm:mb-4">{error}</Alert>
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
                 {loading ? (
                   <>
                     <ButtonLoader />
-                    Sending…
+                    Sendingâ€¦
                   </>
                 ) : (
                   'Send Reset Link'
@@ -159,7 +159,7 @@ export default function ForgotPasswordPage() {
               onClick={() => router.push('/login')}
               className="text-xs sm:text-xs text-[var(--color-text-secondary)] hover:text-brand-teal"
             >
-              ← Back to login
+              â† Back to login
             </button>
           </div>
         </div>
