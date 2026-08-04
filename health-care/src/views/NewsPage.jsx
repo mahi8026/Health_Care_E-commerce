@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { FaNewspaper, FaCalendarAlt, FaTag, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
@@ -45,13 +45,13 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-brand-navy text-white py-12 md:py-16 px-4">
+      <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaNewspaper className="text-brand-teal-light" />
             News &amp; Updates
           </div>
-          <h1 className="text-3xl md:text-4xl font-semibold mb-4">Latest from MediportBD</h1>
+          <h1 className="text-xl md:text-2xl font-semibold mb-2">Latest from MediportBD</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
             Company announcements, new product ranges, and updates that matter to hospitals, clinics, and suppliers across Bangladesh.
           </p>
@@ -85,8 +85,8 @@ export default function NewsPage() {
           </div>
 
           {/* CTA */}
-          <div className="mt-8 bg-brand-navy rounded-2xl p-8 text-white text-center">
-            <FaArrowRight className="text-3xl text-brand-teal-light mx-auto mb-3" />
+          <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
+            <FaArrowRight className="text-2xl text-brand-teal-light mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Want to stay in the loop?</h3>
             <p className="text-white/70 text-sm mb-5">
               Subscribe to our newsletter in the footer to receive product launches and company updates in your inbox.

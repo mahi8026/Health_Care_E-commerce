@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, Component } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,7 +22,7 @@ class ReagentErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center bg-page">
-          <div className="text-5xl mb-4">🧪</div>
+          <div className="text-5xl mb-4">ðŸ§ª</div>
           <h2 className="text-lg font-semibold text-brand-navy mb-2">Reagent Store Unavailable</h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-6 max-w-md">
             We couldn&apos;t load the reagent catalog right now. Please try again.
@@ -42,8 +42,8 @@ class ReagentErrorBoundary extends Component {
 }
 
 const STORAGE_LEGEND = [
-  { label: 'Cold 2–8°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
-  { label: 'Frozen −20°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#EEEDFE] to-[#DDD9FE] text-[#3C3489] border-[#C5C0F5]' },
+  { label: 'Cold 2â€“8Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
+  { label: 'Frozen âˆ’20Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#EEEDFE] to-[#DDD9FE] text-[#3C3489] border-[#C5C0F5]' },
   { label: 'Room temp', icon: <FaTint />, className: 'bg-gradient-to-br from-brand-teal-tint to-[#C8EBDD] text-[var(--color-status-success)] border-[#B0E1CE]' },
 ];
 
@@ -170,7 +170,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-1">
+                <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-1">
                   Laboratory Reagents
                 </h1>
                 <p className="text-xs text-[var(--color-text-secondary)]">
@@ -253,8 +253,8 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
               </div>
             ) : fetchError ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm">
-                <div className="w-16 h-16 bg-gradient-to-br from-[var(--color-status-danger-tint)] to-[var(--color-status-danger-tint)] rounded-full flex items-center justify-center mb-4">
-                  <span className="text-3xl">⚠️</span>
+                <div className="w-14 h-14 bg-gradient-to-br from-[var(--color-status-danger-tint)] to-[var(--color-status-danger-tint)] rounded-full flex items-center justify-center mb-4">
+                  <span className="text-3xl">âš ï¸</span>
                 </div>
                 <p className="text-base font-semibold text-brand-navy mb-1">Could not load products</p>
                 <p className="text-sm text-[var(--color-text-secondary)] mb-4 max-w-sm">Check your connection and try again.</p>
@@ -268,8 +268,8 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
               </div>
             ) : reagents.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-gradient-to-br from-white to-blue-50 rounded-2xl border border-blue-100 shadow-sm">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-4xl">🔬</span>
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
+                  <span className="text-4xl">ðŸ”¬</span>
                 </div>
                 <p className="text-base font-semibold text-brand-navy mb-2">No laboratory reagents found</p>
                 <p className="text-sm text-[var(--color-text-secondary)] mb-6 max-w-md">

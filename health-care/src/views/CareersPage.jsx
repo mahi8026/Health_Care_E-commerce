@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { FaBriefcase, FaMapPin, FaClock, FaEnvelope, FaAward, FaChalkboardTeacher, FaTruck, FaHeartbeat } from 'react-icons/fa';
 import { CONTACT } from '@/constants/api';
@@ -19,7 +19,7 @@ const PERKS = [
   {
     icon: <FaAward />,
     title: 'Growth opportunities',
-    desc: 'We promote from within — sales, service, and operations teams grow into leadership roles as the company expands.',
+    desc: 'We promote from within â€” sales, service, and operations teams grow into leadership roles as the company expands.',
     color: 'bg-amber-50 text-amber-600',
   },
   {
@@ -61,13 +61,13 @@ export default function CareersPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-brand-navy text-white py-12 md:py-16 px-4">
+      <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaBriefcase className="text-brand-teal-light" />
             Careers
           </div>
-          <h1 className="text-3xl md:text-4xl font-semibold mb-4">Build a career that saves lives</h1>
+          <h1 className="text-xl md:text-2xl font-semibold mb-2">Build a career that saves lives</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
             Join MediportBD and help supply Bangladesh&apos;s hospitals, clinics, and diagnostic centres with trusted medical equipment.
           </p>
@@ -123,11 +123,11 @@ export default function CareersPage() {
           </div>
 
           {/* Apply CTA */}
-          <div className="mt-8 bg-brand-navy rounded-2xl p-8 text-white text-center">
-            <FaEnvelope className="text-3xl text-brand-teal-light mx-auto mb-3" />
+          <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
+            <FaEnvelope className="text-2xl text-brand-teal-light mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Didn&apos;t find your role?</h3>
             <p className="text-white/70 text-sm mb-5">
-              Send your CV with the subject line &quot;Application — [Role Name]&quot; and we&apos;ll keep you in mind for upcoming openings.
+              Send your CV with the subject line &quot;Application â€” [Role Name]&quot; and we&apos;ll keep you in mind for upcoming openings.
             </p>
             <a
               href={`mailto:${CONTACT.supportEmail}?subject=Application%20%E2%80%94%20[Role%20Name]`}

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -225,12 +225,12 @@ export default function B2BRegisterPage() {
   if (step === 3) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-brand-teal to-[var(--color-brand-teal-hover)] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center mx-auto mb-4">
             <FaCheckCircle className="w-12 h-12 text-[var(--color-status-success)]" />
           </div>
           
-          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-4">
+          <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-3">
             Application Submitted!
           </h1>
           
@@ -241,10 +241,10 @@ export default function B2BRegisterPage() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
             <h3 className="font-semibold text-blue-900 mb-2">What&apos;s Next?</h3>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Your B2B application is under review</li>
-              <li>• We&apos;ll verify your business details</li>
-              <li>• You&apos;ll receive approval within 24-48 hours</li>
-              <li>• Check your email for updates</li>
+              <li>â€¢ Your B2B application is under review</li>
+              <li>â€¢ We&apos;ll verify your business details</li>
+              <li>â€¢ You&apos;ll receive approval within 24-48 hours</li>
+              <li>â€¢ Check your email for updates</li>
             </ul>
           </div>
 
@@ -268,11 +268,11 @@ export default function B2BRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-secondary)] py-12 px-4">
+    <div className="min-h-screen bg-[var(--color-background-secondary)] py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">
+        <div className="text-center mb-5">
+          <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-2">
             B2B Registration
           </h1>
           <p className="text-[var(--color-text-secondary)]">
@@ -281,7 +281,7 @@ export default function B2BRegisterPage() {
         </div>
 
         {/* Benefits Banner */}
-        <div className="bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-xl p-5 mb-6 text-white">
           <h3 className="text-xl font-semibold mb-4">B2B Benefits:</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -300,7 +300,7 @@ export default function B2BRegisterPage() {
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-8">
+        <div className="mb-5">
           <div className="flex items-center justify-center">
             <div className={`flex items-center ${step >= 1 ? 'text-brand-teal' : 'text-[var(--color-text-secondary)]'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
@@ -323,7 +323,7 @@ export default function B2BRegisterPage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="bg-white rounded-xl shadow-lg p-5 md:p-6">
           {error && (
             <div className="bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] px-4 py-3 rounded-lg mb-6">
               {error}
@@ -333,7 +333,7 @@ export default function B2BRegisterPage() {
           <form onSubmit={handleSubmit}>
             {/* Step 1: Personal Information */}
             {step === 1 && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">Personal Information</h2>
 
                 <div>
@@ -442,7 +442,7 @@ export default function B2BRegisterPage() {
 
             {/* Step 2: Business Details */}
             {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">Business Information</h2>
 
                 <div>

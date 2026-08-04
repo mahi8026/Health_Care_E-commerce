@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { showToast } from '@/components/ui/Toast';
 
@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
 import Spinner from '@/components/ui/Spinner';
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function StatCard({ icon, label, value, sub, color = 'var(--color-brand-teal)' }) {
   return (
@@ -37,7 +37,7 @@ function StatusBadge({ status }) {
     converted:   { bg: '#EDE9FE', text: '#5B21B6', label: 'Converted' },
     'in transit':{ bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)', label: 'In Transit' },
   };
-  const s = map[status?.toLowerCase()] || { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-primary)', label: status || '—' };
+  const s = map[status?.toLowerCase()] || { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-primary)', label: status || 'â€”' };
   return (
     <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
       style={{ background: s.bg, color: s.text }}>
@@ -46,14 +46,14 @@ function StatusBadge({ status }) {
   );
 }
 
-// ── Marketing landing page (unauthenticated) ──────────────────────────────────
+// â”€â”€ Marketing landing page (unauthenticated) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // Default tiers used as fallback if settings don't override
 const DEFAULT_TIERS = [
-  { name: 'Standard', min: '৳0',     discount: 8,  credit: 0,  color: 'var(--color-text-secondary)', bg: 'var(--color-background-secondary)' },
-  { name: 'Silver',   min: '৳5L/yr', discount: 15, credit: 30, color: 'var(--color-text-secondary)', bg: 'var(--color-background-tertiary)' },
-  { name: 'Gold',     min: '৳15L/yr',discount: 22, credit: 60, color: 'var(--color-status-warning)', bg: 'var(--color-status-warning-tint)' },
-  { name: 'Platinum', min: '৳30L/yr',discount: 30, credit: 90, color: '#7C3AED', bg: '#F5F3FF' },
+  { name: 'Standard', min: 'à§³0',     discount: 8,  credit: 0,  color: 'var(--color-text-secondary)', bg: 'var(--color-background-secondary)' },
+  { name: 'Silver',   min: 'à§³5L/yr', discount: 15, credit: 30, color: 'var(--color-text-secondary)', bg: 'var(--color-background-tertiary)' },
+  { name: 'Gold',     min: 'à§³15L/yr',discount: 22, credit: 60, color: 'var(--color-status-warning)', bg: 'var(--color-status-warning-tint)' },
+  { name: 'Platinum', min: 'à§³30L/yr',discount: 30, credit: 90, color: '#7C3AED', bg: '#F5F3FF' },
 ];
 
 function B2BLanding() {
@@ -128,8 +128,8 @@ function B2BLanding() {
   const maxDiscount = settings?.b2bMaxDiscount ?? 30;
   const creditDays  = settings?.b2bCreditDays  ?? 90;
   const deliveryThreshold = settings?.freeDeliveryThreshold
-    ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
-    : '৳50K';
+    ? `à§³${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
+    : 'à§³50K';
   const supportHours = settings?.supportHours ?? '24/7';
   const contactPhone = settings?.contactPhone ?? '+880 1800-Mediport';
   const contactEmail = settings?.contactEmail ?? 'b2b@MediportBD.com';
@@ -141,15 +141,15 @@ function B2BLanding() {
     : '500+';
 
   const benefits = [
-    { icon: '💰', title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
-    { icon: '🏦', title: `Credit Terms up to ${creditDays} Days`, desc: `Net-30, Net-60, or Net-${creditDays} payment terms for approved accounts.` },
-    { icon: '👤', title: 'Dedicated Account Manager', desc: `${supportHours} support from a dedicated B2B executive who knows your needs.` },
-    { icon: '🚚', title: 'Free Priority Delivery', desc: `Free delivery on all B2B orders over ${deliveryThreshold} within Dhaka metro area.` },
-    { icon: '🔧', title: 'Free Installation & Training', desc: 'Professional installation and staff training for all diagnostic equipment.' },
-    { icon: '📋', title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
+    { icon: 'ðŸ’°', title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
+    { icon: 'ðŸ¦', title: `Credit Terms up to ${creditDays} Days`, desc: `Net-30, Net-60, or Net-${creditDays} payment terms for approved accounts.` },
+    { icon: 'ðŸ‘¤', title: 'Dedicated Account Manager', desc: `${supportHours} support from a dedicated B2B executive who knows your needs.` },
+    { icon: 'ðŸšš', title: 'Free Priority Delivery', desc: `Free delivery on all B2B orders over ${deliveryThreshold} within Dhaka metro area.` },
+    { icon: 'ðŸ”§', title: 'Free Installation & Training', desc: 'Professional installation and staff training for all diagnostic equipment.' },
+    { icon: 'ðŸ“‹', title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
   ];
 
-  // Build tiers from settings — scale discounts proportionally from maxDiscount
+  // Build tiers from settings â€” scale discounts proportionally from maxDiscount
   const tiers = DEFAULT_TIERS.map((t) => ({
     ...t,
     discount: t.name === 'Platinum' ? maxDiscount
@@ -171,18 +171,18 @@ function B2BLanding() {
     <div className="bg-white">
       {/* Hero */}
       <div className="bg-brand-navy text-white">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 bg-brand-teal/20 text-[#4ADE80] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
                 <span className="w-2 h-2 bg-[#4ADE80] rounded-full animate-pulse"/>
-                B2B Portal — Bangladesh&apos;s #1 Medical Supplier
+                B2B Portal â€” Bangladesh&apos;s #1 Medical Supplier
               </div>
-              <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5">
+              <h1 className="text-2xl md:text-3xl font-semibold leading-tight mb-3">
                 Medical Equipment<br/>
                 <span className="text-brand-teal">for Healthcare Professionals</span>
               </h1>
-              <p className="text-base text-[var(--color-text-tertiary)] leading-relaxed mb-8">
+              <p className="text-sm text-[var(--color-text-tertiary)] leading-relaxed mb-5">
                 Join {totalB2BClients} hospitals, clinics, and diagnostic centers across Bangladesh. Get exclusive B2B pricing, credit terms, and a dedicated account manager.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -195,10 +195,10 @@ function B2BLanding() {
                   Browse Catalog
                 </button>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-xs text-[var(--color-text-secondary)]">
-                <span>✓ DGDA Registered</span>
-                <span>✓ ISO 13485 Certified</span>
-                <span>✓ 10,000+ Products</span>
+              <div className="mt-5 flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
+                <span>âœ“ DGDA Registered</span>
+                <span>âœ“ ISO 13485 Certified</span>
+                <span>âœ“ 10,000+ Products</span>
               </div>
             </div>
             {/* Stats */}
@@ -210,7 +210,7 @@ function B2BLanding() {
                 { n: supportHours,    l: 'Support' },
               ].map(({ n, l }) => (
                 <div key={l} className="bg-[#0E1E35] rounded-2xl p-6 text-center border border-[#1E3A5F]">
-                  <div className="text-3xl font-semibold text-brand-teal mb-1">{n}</div>
+                  <div className="text-2xl font-semibold text-brand-teal mb-1">{n}</div>
                   <div className="text-xs text-[var(--color-text-secondary)]">{l}</div>
                 </div>
               ))}
@@ -232,15 +232,15 @@ function B2BLanding() {
       </div>
 
       {/* Benefits */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-semibold text-brand-navy mb-3">Why Choose Mediport B2B?</h2>
+          <h2 className="text-xl md:text-2xl font-semibold text-brand-navy mb-2">Why Choose Mediport B2B?</h2>
           <p className="text-sm text-[var(--color-text-secondary)] max-w-xl mx-auto">Everything your healthcare facility needs, with the pricing and support you deserve.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {benefits.map(({ icon, title, desc }) => (
             <div key={title} className="p-6 rounded-2xl border border-[var(--color-border-primary)] hover:shadow-md hover:border-brand-teal/30 transition-all">
-              <div className="text-4xl mb-4">{icon}</div>
+              <div className="text-3xl mb-3">{icon}</div>
               <h3 className="text-base font-semibold text-brand-navy mb-2">{title}</h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{desc}</p>
             </div>
@@ -249,10 +249,10 @@ function B2BLanding() {
       </div>
 
       {/* Pricing tiers */}
-      <div className="bg-page py-16">
+      <div className="bg-page py-8">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-semibold text-brand-navy mb-3">B2B Pricing Tiers</h2>
+            <h2 className="text-xl md:text-2xl font-semibold text-brand-navy mb-2">B2B Pricing Tiers</h2>
             <p className="text-sm text-[var(--color-text-secondary)]">Unlock better pricing as your business grows with us.</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -273,10 +273,10 @@ function B2BLanding() {
       </div>
 
       {/* Application form */}
-      <div id="b2b-form" className="max-w-7xl mx-auto px-4 md:px-8 py-16">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+      <div id="b2b-form" className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+        <div className="grid md:grid-cols-2 gap-8 items-start">
           <div>
-            <h2 className="text-3xl md:text-4xl font-semibold text-brand-navy mb-4">Apply for a B2B Account</h2>
+            <h2 className="text-xl md:text-2xl font-semibold text-brand-navy mb-3">Apply for a B2B Account</h2>
             <p className="text-sm text-[var(--color-text-secondary)] mb-6 leading-relaxed">
               Fill in the form and our B2B team will contact you within 24 hours to set up your account and discuss pricing.
             </p>
@@ -290,9 +290,9 @@ function B2BLanding() {
                 </div>
               ))}
             </div>
-            <div className="mt-8 p-5 bg-brand-navy rounded-2xl text-white">
+            <div className="mt-6 p-4 bg-brand-navy rounded-2xl text-white">
               <div className="text-sm font-semibold mb-1">Need immediate assistance?</div>
-              <div className="text-xs text-[var(--color-text-tertiary)] mb-3">Our B2B team is available Mon–Sat, 9am–6pm</div>
+              <div className="text-xs text-[var(--color-text-tertiary)] mb-3">Our B2B team is available Monâ€“Sat, 9amâ€“6pm</div>
               <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="text-brand-teal font-semibold text-sm">{contactPhone}</a>
               <div className="mt-1">
                 <a href={`mailto:${contactEmail}`} className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-tertiary)]">{contactEmail}</a>
@@ -303,7 +303,7 @@ function B2BLanding() {
           <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-6 shadow-sm">
             {submitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-14 h-14 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center mx-auto mb-3">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-teal)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <h3 className="text-lg font-semibold text-brand-navy mb-2">Application Submitted!</h3>
@@ -349,7 +349,7 @@ function B2BLanding() {
                 </div>
                 <button type="submit" disabled={submitting}
                   className="w-full h-12 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors">
-                  {submitting ? 'Submitting…' : 'Submit Application'}
+                  {submitting ? 'Submittingâ€¦' : 'Submit Application'}
                 </button>
                 <p className="text-xs text-[var(--color-text-tertiary)] text-center">
                   By submitting, you agree to our Terms of Service and Privacy Policy.
@@ -363,7 +363,7 @@ function B2BLanding() {
   );
 }
 
-// ── Authenticated B2B Dashboard ───────────────────────────────────────────────
+// â”€â”€ Authenticated B2B Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function B2BDashboard({ data, onRefresh }) {
   const router = useRouter();
@@ -406,7 +406,7 @@ function B2BDashboard({ data, onRefresh }) {
           <div className="flex items-center gap-3">
             <span className="hidden md:inline-flex items-center gap-1.5 text-xs bg-brand-teal/20 text-[#4ADE80] px-3 py-1.5 rounded-full font-semibold">
               <span className="w-1.5 h-1.5 bg-[#4ADE80] rounded-full"/>
-              {data.tier} Tier · {data.discount}% off
+              {data.tier} Tier Â· {data.discount}% off
             </span>
             <button onClick={() => router.push('/products')}
               className="px-4 py-2 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-xl text-xs font-semibold transition-colors">
@@ -416,30 +416,30 @@ function B2BDashboard({ data, onRefresh }) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 space-y-4">
 
         {/* KPI cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard icon="💰" label="Total Spend" value={`৳${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
-          <StatCard icon="📦" label="Active Orders" value={data.activeOrders || 0} sub="in progress" color="var(--color-status-info)"/>
-          <StatCard icon="🚚" label="In Delivery" value={data.ordersInDelivery || 0} sub="on the way" color="var(--color-status-warning)"/>
-          <StatCard icon="🏷️" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
+          <StatCard icon="ðŸ’°" label="Total Spend" value={`à§³${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
+          <StatCard icon="ðŸ“¦" label="Active Orders" value={data.activeOrders || 0} sub="in progress" color="var(--color-status-info)"/>
+          <StatCard icon="ðŸšš" label="In Delivery" value={data.ordersInDelivery || 0} sub="on the way" color="var(--color-status-warning)"/>
+          <StatCard icon="ðŸ·ï¸" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
 
           {/* Left column */}
-          <div className="space-y-6">
+          <div className="space-y-4">
 
             {/* Quick actions */}
             <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-5">
               <h2 className="text-base font-semibold text-brand-navy mb-4">Quick Actions</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { icon: '🛒', label: 'New Order', onClick: () => router.push('/products') },
-                  { icon: '📋', label: 'Request Quote', onClick: () => router.push('/products') },
-                  { icon: '📦', label: 'Track Orders', onClick: () => router.push('/orders') },
-                  { icon: '↩', label: 'Returns', onClick: () => router.push('/returns/my-returns') },
+                  { icon: 'ðŸ›’', label: 'New Order', onClick: () => router.push('/products') },
+                  { icon: 'ðŸ“‹', label: 'Request Quote', onClick: () => router.push('/products') },
+                  { icon: 'ðŸ“¦', label: 'Track Orders', onClick: () => router.push('/orders') },
+                  { icon: 'â†©', label: 'Returns', onClick: () => router.push('/returns/my-returns') },
                 ].map(({ icon, label, onClick }) => (
                   <button key={label} onClick={onClick}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[var(--color-border-primary)] hover:border-brand-teal/40 hover:bg-[var(--color-status-success-tint)] transition-all">
@@ -456,7 +456,7 @@ function B2BDashboard({ data, onRefresh }) {
                 <h2 className="text-base font-semibold text-brand-navy">Recent Orders</h2>
                 <button onClick={() => router.push('/orders')}
                   className="text-xs text-brand-teal font-semibold hover:underline">
-                  View all →
+                  View all â†’
                 </button>
               </div>
               {orders.length === 0 ? (
@@ -468,21 +468,21 @@ function B2BDashboard({ data, onRefresh }) {
                   {orders.slice(0, 5).map((order) => {
                     const id = order._id || order.id;
                     const displayId = order.orderNumber || `ORD-${String(id).slice(-5).toUpperCase()}`;
-                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : order.date || '—';
+                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : order.date || 'â€”';
                     const itemCount = order.items?.length || order.itemCount || 0;
                     const total = order.totalAmount || order.total || 0;
                     return (
                       <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--color-border-primary)] hover:bg-surface-subtle transition-colors">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-[var(--color-status-info-tint)] rounded-lg flex items-center justify-center text-base">📦</div>
+                          <div className="w-9 h-9 bg-[var(--color-status-info-tint)] rounded-lg flex items-center justify-center text-base">ðŸ“¦</div>
                           <div>
                             <div className="text-sm font-semibold text-brand-navy">{displayId}</div>
-                            <div className="text-xs text-[var(--color-text-tertiary)]">{date} · {itemCount} item{itemCount !== 1 ? 's' : ''}</div>
+                            <div className="text-xs text-[var(--color-text-tertiary)]">{date} Â· {itemCount} item{itemCount !== 1 ? 's' : ''}</div>
                           </div>
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <div>
-                            <div className="text-sm font-semibold text-brand-navy">৳{total.toLocaleString()}</div>
+                            <div className="text-sm font-semibold text-brand-navy">à§³{total.toLocaleString()}</div>
                             <StatusBadge status={order.status}/>
                           </div>
                           <button onClick={() => handleDownloadInvoice(id)}
@@ -503,7 +503,7 @@ function B2BDashboard({ data, onRefresh }) {
                 <h2 className="text-base font-semibold text-brand-navy">Recent Quotations</h2>
                 <button onClick={() => router.push('/products')}
                   className="text-xs text-brand-teal font-semibold hover:underline">
-                  Request quote →
+                  Request quote â†’
                 </button>
               </div>
               {quotes.length === 0 ? (
@@ -515,7 +515,7 @@ function B2BDashboard({ data, onRefresh }) {
                   {quotes.slice(0, 4).map((q) => {
                     const id = q._id || q.id;
                     const displayId = q.quoteNumber || `QUO-${String(id).slice(-5).toUpperCase()}`;
-                    const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : q.date || '—';
+                    const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : q.date || 'â€”';
                     const total = q.totalAmount || q.total || 0;
                     return (
                       <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--color-border-primary)]">
@@ -524,7 +524,7 @@ function B2BDashboard({ data, onRefresh }) {
                           <div className="text-xs text-[var(--color-text-tertiary)]">{date}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-semibold text-brand-navy">৳{total.toLocaleString()}</div>
+                          <div className="text-sm font-semibold text-brand-navy">à§³{total.toLocaleString()}</div>
                           <StatusBadge status={q.status}/>
                         </div>
                       </div>
@@ -577,7 +577,7 @@ function B2BDashboard({ data, onRefresh }) {
                 <>
                   <div className="flex justify-between text-xs mb-2">
                     <span className="text-[var(--color-text-secondary)]">Used</span>
-                    <span className="font-semibold text-brand-navy">৳{(data.creditUsed || 0).toLocaleString()}</span>
+                    <span className="font-semibold text-brand-navy">à§³{(data.creditUsed || 0).toLocaleString()}</span>
                   </div>
                   <div className="h-2.5 bg-[var(--color-background-muted)] rounded-full overflow-hidden mb-2">
                     <div className="h-full rounded-full transition-all"
@@ -585,11 +585,11 @@ function B2BDashboard({ data, onRefresh }) {
                   </div>
                   <div className="flex justify-between text-xs mb-4">
                     <span className="text-[var(--color-text-secondary)]">Available</span>
-                    <span className="font-semibold text-brand-teal">৳{((data.creditLimit || 0) - (data.creditUsed || 0)).toLocaleString()}</span>
+                    <span className="font-semibold text-brand-teal">à§³{((data.creditLimit || 0) - (data.creditUsed || 0)).toLocaleString()}</span>
                   </div>
                   <div className="pt-3 border-t border-[var(--color-border-primary)]">
                     <div className="text-xs text-[var(--color-text-tertiary)]">Credit Limit</div>
-                    <div className="text-lg font-semibold text-brand-navy">৳{(data.creditLimit || 0).toLocaleString()}</div>
+                    <div className="text-lg font-semibold text-brand-navy">à§³{(data.creditLimit || 0).toLocaleString()}</div>
                   </div>
                 </>
               ) : (
@@ -597,7 +597,7 @@ function B2BDashboard({ data, onRefresh }) {
                   <div className="text-sm text-[var(--color-text-tertiary)] mb-3">No credit line yet</div>
                   <a href="mailto:b2b@MediportBD.com"
                     className="text-xs text-brand-teal font-semibold hover:underline">
-                    Request credit terms →
+                    Request credit terms â†’
                   </a>
                 </div>
               )}
@@ -607,7 +607,7 @@ function B2BDashboard({ data, onRefresh }) {
             {data.loyaltyPoints > 0 && (
               <div className="bg-gradient-to-br from-brand-navy to-[#1E3A5F] rounded-2xl p-5 text-white">
                 <div className="text-xs text-[var(--color-text-secondary)] mb-1">Loyalty Points</div>
-                <div className="text-3xl font-semibold text-brand-teal">{data.loyaltyPoints.toLocaleString()}</div>
+                <div className="text-2xl font-semibold text-brand-teal">{data.loyaltyPoints.toLocaleString()}</div>
                 <div className="text-xs text-[var(--color-text-tertiary)] mt-1">Redeem on your next order</div>
               </div>
             )}
@@ -618,7 +618,7 @@ function B2BDashboard({ data, onRefresh }) {
   );
 }
 
-// ── Main export ───────────────────────────────────────────────────────────────
+// â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function B2BDashboardPage() {
   const { user, isAuthenticated } = useAuth();
@@ -678,14 +678,14 @@ export default function B2BDashboardPage() {
     fetchB2BData();
   }, [authed, user]);
 
-  // Not logged in → show marketing landing page
+  // Not logged in â†’ show marketing landing page
   if (!authed) return <B2BLanding />;
 
   // Check if user is actually a B2B customer
   // B2B users have a tier property or accountType === 'b2b'
   const isB2BUser = user?.tier || user?.accountType === 'b2b' || user?.role === 'b2b';
   
-  // Regular B2C customer trying to access B2B portal → show landing page with message
+  // Regular B2C customer trying to access B2B portal â†’ show landing page with message
   if (authed && !isB2BUser) {
     return (
       <div className="min-h-screen bg-white">
@@ -694,21 +694,21 @@ export default function B2BDashboardPage() {
             <h1 className="text-lg font-semibold">B2B Portal</h1>
           </div>
         </div>
-        <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-          <div className="text-6xl mb-6">🏢</div>
-          <h2 className="text-3xl font-semibold text-brand-navy mb-4">
+        <div className="max-w-3xl mx-auto px-4 py-10 text-center">
+          <div className="text-6xl mb-6">ðŸ¢</div>
+          <h2 className="text-xl font-semibold text-brand-navy mb-3">
             B2B Portal Access Required
           </h2>
           <p className="text-base text-[var(--color-text-secondary)] leading-relaxed mb-6">
             This section is exclusively for B2B customers (hospitals, clinics, diagnostic centers). 
             If you&apos;re interested in bulk orders and special pricing, please apply for a B2B account.
           </p>
-          <div className="bg-[var(--color-status-success-tint)] border border-brand-teal/20 rounded-2xl p-6 mb-8">
+          <div className="bg-[var(--color-status-success-tint)] border border-brand-teal/20 rounded-2xl p-5 mb-6">
             <h3 className="text-base font-semibold text-brand-navy mb-3">B2B Benefits:</h3>
             <div className="grid md:grid-cols-2 gap-3 text-left text-sm text-[var(--color-text-primary)]">
               {['Up to 30% bulk discounts', 'Credit terms (30-90 days)', 'Dedicated account manager', 'Free installation & training'].map(benefit => (
                 <div key={benefit} className="flex items-center gap-2">
-                  <span className="text-brand-teal">✓</span>
+                  <span className="text-brand-teal">âœ“</span>
                   {benefit}
                 </div>
               ))}
@@ -740,7 +740,7 @@ export default function B2BDashboardPage() {
       <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <Spinner size="xl" variant="medical" />
-          <p className="text-sm text-[var(--color-text-secondary)] mt-4">Loading your dashboard…</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-4">Loading your dashboardâ€¦</p>
         </div>
       </div>
     );
@@ -751,7 +751,7 @@ export default function B2BDashboardPage() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <div className="text-5xl mb-4">⚠️</div>
+          <div className="text-4xl mb-3">âš ï¸</div>
           <h2 className="text-lg font-semibold text-brand-navy mb-2">Failed to load dashboard</h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-4">{fetchError}</p>
           <button onClick={() => window.location.reload()}
@@ -766,7 +766,7 @@ export default function B2BDashboardPage() {
   // Logged in but data not yet loaded (first render)
   const data = dashboardData || {
     name: user?.name || 'Your Account',
-    accountId: '—', tier: 'Standard', discount: 8,
+    accountId: 'â€”', tier: 'Standard', discount: 8,
     totalSpend: 0, activeOrders: 0, ordersInDelivery: 0,
     creditUsed: 0, creditLimit: 0, loyaltyPoints: 0,
     recentOrders: [], recentQuotes: [],

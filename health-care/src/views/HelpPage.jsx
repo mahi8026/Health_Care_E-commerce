@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ const CONTACT_OPTIONS = [
     icon: <FaPhone className="text-xl" />,
     label: 'Call Us',
     value: '+880 1646-886795',
-    sub: 'Sun – Thu, 9 AM – 6 PM',
+    sub: 'Sun â€“ Thu, 9 AM â€“ 6 PM',
     href: 'tel:+8801646886795',
     color: 'bg-blue-50 text-blue-600',
     cta: 'Call Now',
@@ -54,11 +54,11 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: 'How long does delivery take?',
-        a: 'Standard delivery within Dhaka takes 1–2 business days. Chittagong and Sylhet take 2–3 business days. For other districts, allow 3–5 business days. Cold-chain items are dispatched same day if ordered before 12 PM.',
+        a: 'Standard delivery within Dhaka takes 1â€“2 business days. Chittagong and Sylhet take 2â€“3 business days. For other districts, allow 3â€“5 business days. Cold-chain items are dispatched same day if ordered before 12 PM.',
       },
       {
         q: 'Is free delivery available?',
-        a: 'Yes — free delivery on all orders over ৳50,000 within Dhaka, Chittagong, and Sylhet. Orders below this threshold have a flat delivery fee based on your location.',
+        a: 'Yes â€” free delivery on all orders over à§³50,000 within Dhaka, Chittagong, and Sylhet. Orders below this threshold have a flat delivery fee based on your location.',
       },
       {
         q: 'How do I track my order?',
@@ -119,7 +119,7 @@ const FAQ_SECTIONS = [
       },
       {
         q: 'When will I receive my refund?',
-        a: 'Refunds are processed within 5–7 business days after the returned item is received and inspected. The amount is credited back to the original payment method.',
+        a: 'Refunds are processed within 5â€“7 business days after the returned item is received and inspected. The amount is credited back to the original payment method.',
       },
     ],
   },
@@ -130,7 +130,7 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: 'How do I register as a B2B customer?',
-        a: 'Click "B2B Portal" in the top navigation and complete the institutional registration form. You will need your trade licence, TIN certificate, and DGDA licence (if applicable). Approval takes 1–2 business days.',
+        a: 'Click "B2B Portal" in the top navigation and complete the institutional registration form. You will need your trade licence, TIN certificate, and DGDA licence (if applicable). Approval takes 1â€“2 business days.',
       },
       {
         q: 'What discounts are available for bulk orders?',
@@ -167,15 +167,15 @@ export default function HelpPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-brand-navy text-white py-12 md:py-16 px-4">
+      <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaHeadset className="text-[#1DB954]" />
             Customer Support
           </div>
-          <h1 className="text-3xl md:text-4xl font-semibold mb-4">How can we help you?</h1>
+          <h1 className="text-xl md:text-2xl font-semibold mb-2">How can we help you?</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
-            Browse our frequently asked questions or reach out directly — our support team is available Sunday through Thursday, 9 AM to 6 PM.
+            Browse our frequently asked questions or reach out directly â€” our support team is available Sunday through Thursday, 9 AM to 6 PM.
           </p>
         </div>
       </section>
@@ -236,8 +236,8 @@ export default function HelpPage() {
           </div>
 
           {/* Still need help */}
-          <div className="mt-8 bg-brand-navy rounded-2xl p-8 text-white text-center">
-            <FaHeadset className="text-3xl text-[#1DB954] mx-auto mb-3" />
+          <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
+            <FaHeadset className="text-2xl text-[#1DB954] mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Still need help?</h3>
             <p className="text-white/70 text-sm mb-5">
               Our support team is ready to assist with any question not covered above.

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { FaShieldAlt, FaTools, FaFileAlt, FaExclamationTriangle, FaEnvelope } from 'react-icons/fa';
 import { CONTACT } from '@/constants/api';
@@ -49,15 +49,15 @@ export default function WarrantyPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-brand-navy text-white py-12 md:py-16 px-4">
+      <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaShieldAlt className="text-brand-teal-light" />
             Warranty &amp; Claims
           </div>
-          <h1 className="text-3xl md:text-4xl font-semibold mb-4">Every device, backed by a warranty</h1>
+          <h1 className="text-xl md:text-2xl font-semibold mb-2">Every device, backed by a warranty</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
-            Every product sold by MediportBD is covered by a manufacturer warranty plus our own service warranty — so you can buy with confidence.
+            Every product sold by MediportBD is covered by a manufacturer warranty plus our own service warranty â€” so you can buy with confidence.
           </p>
         </div>
       </section>
@@ -93,7 +93,7 @@ export default function WarrantyPage() {
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {EXCLUSIONS.map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                  <span className="text-[var(--color-status-danger)] mt-0.5 flex-shrink-0">•</span>
+                  <span className="text-[var(--color-status-danger)] mt-0.5 flex-shrink-0">â€¢</span>
                   {item}
                 </li>
               ))}
@@ -124,11 +124,11 @@ export default function WarrantyPage() {
           </div>
 
           {/* CTA */}
-          <div className="mt-8 bg-brand-navy rounded-2xl p-8 text-white text-center">
-            <FaEnvelope className="text-3xl text-brand-teal-light mx-auto mb-3" />
+          <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
+            <FaEnvelope className="text-2xl text-brand-teal-light mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Need to start a warranty claim?</h3>
             <p className="text-white/70 text-sm mb-5">
-              Email our support team with your order number and serial number — we respond within one business day.
+              Email our support team with your order number and serial number â€” we respond within one business day.
             </p>
             <a
               href={`mailto:${CONTACT.supportEmail}?subject=Warranty%20Claim`}

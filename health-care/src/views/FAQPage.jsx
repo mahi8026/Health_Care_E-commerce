@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { FaChevronDown, FaChevronUp, FaSearch, FaPhone, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
@@ -6,7 +6,7 @@ import { FaChevronDown, FaChevronUp, FaSearch, FaPhone, FaEnvelope, FaWhatsapp }
 const FAQ_CATEGORIES = [
   {
     category: 'Orders & Payment',
-    icon: '🛒',
+    icon: 'ðŸ›’',
     faqs: [
       {
         question: 'How do I place an order?',
@@ -32,11 +32,11 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Delivery & Shipping',
-    icon: '🚚',
+    icon: 'ðŸšš',
     faqs: [
       {
         question: 'What are your delivery areas?',
-        answer: 'We deliver across Bangladesh. Free delivery for orders above ৳50,000 in Dhaka, Chittagong, and Sylhet. Delivery charges apply for other areas and smaller orders.'
+        answer: 'We deliver across Bangladesh. Free delivery for orders above à§³50,000 in Dhaka, Chittagong, and Sylhet. Delivery charges apply for other areas and smaller orders.'
       },
       {
         question: 'How long does delivery take?',
@@ -52,13 +52,13 @@ const FAQ_CATEGORIES = [
       },
       {
         question: 'What about cold chain delivery for reagents?',
-        answer: 'All temperature-sensitive reagents are shipped with proper cold chain packaging (ice packs, insulated boxes) to maintain 2-8°C throughout transit. Door-to-door cold chain delivery available.'
+        answer: 'All temperature-sensitive reagents are shipped with proper cold chain packaging (ice packs, insulated boxes) to maintain 2-8Â°C throughout transit. Door-to-door cold chain delivery available.'
       }
     ]
   },
   {
     category: 'Products & Stock',
-    icon: '📦',
+    icon: 'ðŸ“¦',
     faqs: [
       {
         question: 'Are all products DGDA registered?',
@@ -84,7 +84,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Returns & Refunds',
-    icon: '↩️',
+    icon: 'â†©ï¸',
     faqs: [
       {
         question: 'What is your return policy?',
@@ -110,7 +110,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'B2B & Bulk Orders',
-    icon: '🏥',
+    icon: 'ðŸ¥',
     faqs: [
       {
         question: 'Do you offer bulk discounts?',
@@ -136,7 +136,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Account & Security',
-    icon: '🔐',
+    icon: 'ðŸ”',
     faqs: [
       {
         question: 'How do I create an account?',
@@ -188,11 +188,11 @@ export default function FAQPage() {
     : filteredCategories.filter(cat => cat.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--color-background-secondary)] to-[var(--color-background-tertiary)] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--color-background-secondary)] to-[var(--color-background-tertiary)] py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-semibold text-[var(--color-text-primary)] mb-4">
+          <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] mb-3">
             Frequently Asked Questions
           </h1>
           <p className="text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto">
@@ -215,7 +215,7 @@ export default function FAQPage() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex flex-wrap gap-2 mb-8 justify-center">
+        <div className="flex flex-wrap gap-2 mb-6 justify-center">
           <button
             onClick={() => setActiveCategory('all')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
@@ -243,11 +243,11 @@ export default function FAQPage() {
 
         {/* FAQ Sections */}
         {displayCategories.length > 0 ? (
-          <div className="space-y-8">
+          <div className="space-y-5">
             {displayCategories.map((category) => (
               <div key={category.category} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] px-6 py-4">
-                  <h2 className="text-2xl font-semibold text-white flex items-center gap-3">
+                  <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                     <span className="text-3xl">{category.icon}</span>
                     {category.category}
                   </h2>
@@ -289,8 +289,8 @@ export default function FAQPage() {
         )}
 
         {/* Still have questions? */}
-        <div className="mt-12 bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-2xl shadow-lg p-8 text-white">
-          <h3 className="text-2xl font-semibold mb-4 text-center">Still have questions?</h3>
+        <div className="mt-8 bg-gradient-to-r from-brand-teal to-[var(--color-brand-teal-hover)] rounded-2xl shadow-lg p-5 text-white">
+          <h3 className="text-lg font-semibold mb-3 text-center">Still have questions?</h3>
           <p className="text-center mb-6 text-white/90">
             Our support team is here to help you with any inquiries.
           </p>

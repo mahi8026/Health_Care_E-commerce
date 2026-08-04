@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import {
@@ -57,13 +57,13 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-page">
       {/* Hero */}
-      <section className="bg-brand-navy text-white py-12 md:py-16 px-4">
+      <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
             <FaShieldAlt className="text-[#1DB954]" />
             Regulatory Compliance
           </div>
-          <h1 className="text-3xl md:text-4xl font-semibold mb-4">
+          <h1 className="text-xl md:text-2xl font-semibold mb-2">
             DGDA Compliance &amp; Regulatory Information
           </h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
@@ -75,7 +75,7 @@ export default function AboutPage() {
       {/* About DGDA */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-4xl">
-          <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] p-5">
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-3">What is DGDA?</h2>
             <p className="text-[var(--color-text-secondary)] leading-relaxed mb-4">
               The Directorate General of Drug Administration (DGDA) is the national regulatory authority of Bangladesh responsible for regulating drugs, medical devices, cosmetics, and related products. It operates under the Ministry of Health and Family Welfare.
@@ -138,7 +138,7 @@ export default function AboutPage() {
       {/* Contact for Regulatory Queries */}
       <section className="py-4 px-4 pb-16">
         <div className="container mx-auto max-w-4xl">
-          <div className="bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm p-8">
+          <div className="bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm p-5">
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">Regulatory Enquiries</h2>
             <p className="text-[var(--color-text-secondary)] text-sm mb-6">
               For questions about product registration, import documentation, or compliance certificates, contact our regulatory affairs team.
