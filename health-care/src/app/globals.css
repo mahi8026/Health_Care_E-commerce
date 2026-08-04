@@ -79,8 +79,8 @@
   --z-toast: 10000;
 
   /* Site nav */
-  --site-topbar-height: 2.25rem;
-  --site-header-height: 3.625rem;
+  --site-topbar-height: 2rem;
+  --site-header-height: 3.25rem;
   --site-nav-height: calc(var(--site-topbar-height) + var(--site-header-height));
 
   /* Glassmorphism tokens - OPTIMIZED for performance */
@@ -280,7 +280,7 @@
 @media (max-width: 640px) {
   .site-topbar {
     height: auto;
-    min-height: 2.75rem;
+    min-height: 2.5rem;
   }
 }
 
@@ -467,14 +467,14 @@ html.nav-scrolled .site-nav-shell::after {
 /* Desktop: pull hero up behind the fixed nav, then push content back down */
 .home-hero--padded {
   margin-top: calc(-1 * var(--site-nav-height));
-  padding: calc(56px + var(--site-nav-height)) 0 clamp(32px, 5vw, 56px);
+  padding: calc(40px + var(--site-nav-height)) 0 clamp(24px, 4vw, 40px);
 }
 
 /* Mobile: hero still pulls up behind nav to provide dark background for glass effect */
 @media (max-width: 767px) {
   .home-hero--padded {
     margin-top: calc(-1 * var(--site-nav-height));
-    padding: calc(var(--site-nav-height) + clamp(28px, 5vw, 40px)) 0 clamp(28px, 5vw, 40px);
+    padding: calc(var(--site-nav-height) + clamp(20px, 4vw, 32px)) 0 clamp(20px, 4vw, 32px);
   }
 }
 
@@ -2203,4 +2203,50 @@ html.lang-bn {
 html.lang-bn body,
 html.lang-bn .font-primary {
   font-family: var(--font-noto-bengali), 'Noto Sans Bengali', sans-serif;
+}
+
+/* ── Compact Design System ──────────────────────────────────────────────────── */
+/* Reusable density utilities — reduce visual weight by 30-50% site-wide */
+
+.compact-card {
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+}
+
+.compact-section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .compact-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+.compact-grid {
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .compact-grid {
+    gap: 0.75rem;
+  }
+}
+
+.compact-text {
+  font-size: 0.875rem;
+  line-height: 1.375;
+}
+
+.compact-heading {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .compact-heading {
+    font-size: 1.25rem;
+  }
 }

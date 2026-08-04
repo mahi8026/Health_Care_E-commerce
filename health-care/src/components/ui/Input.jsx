@@ -35,7 +35,7 @@ export default function Input({
         aria-required={required}
         aria-invalid={!!error}
         aria-describedby={errorId}
-        className={`w-full px-3 py-2.5 border-[0.5px] rounded-lg text-base sm:text-sm font-[family-name:var(--font-plus-jakarta)] focus:outline-none transition-colors min-h-[48px] ${
+        className={`w-full px-3 py-2 border-[0.5px] rounded-lg text-base sm:text-sm font-[family-name:var(--font-plus-jakarta)] focus:outline-none transition-colors min-h-[40px] ${
           error
             ? 'border-danger focus:border-danger focus:ring-1 focus:ring-danger'
             : 'border-[var(--color-border-secondary)] focus:border-brand-teal focus:ring-1 focus:ring-brand-teal'

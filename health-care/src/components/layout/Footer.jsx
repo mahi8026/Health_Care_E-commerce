@@ -83,10 +83,10 @@ export default function Footer() {
 
   return (
     <footer className="bg-brand-navy text-white">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
 
         {/* ── Desktop: 5-column grid ── */}
-        <div className="hidden md:grid md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-8 items-start">
+        <div className="hidden md:grid md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-6 items-start">
 
           {/* 4 link columns */}
           <nav aria-label="Footer navigation" className="contents">
@@ -111,16 +111,16 @@ export default function Footer() {
           {/* MediportBD column — only logo + description + newsletter */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
+              <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
                   fill
-                  sizes="56px"
+                  sizes="44px"
                   className="object-contain"
                 />
               </div>
-              <div className="font-[family-name:var(--font-lora)] text-2xl font-semibold text-white">
+              <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
                 Mediport<span className="text-brand-teal">BD</span>
               </div>
             </div>
@@ -171,20 +171,20 @@ export default function Footer() {
         </div>
 
         {/* ── Mobile layout ── */}
-        <div className="md:hidden space-y-8">
+        <div className="md:hidden space-y-6">
           {/* Logo */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
                   fill
-                  sizes="64px"
+                  sizes="56px"
                   className="object-contain"
                 />
               </div>
-              <div className="font-[family-name:var(--font-lora)] text-2xl font-semibold text-white">
+              <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
                 Mediport<span className="text-brand-teal">BD</span>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function Footer() {
             </p>
           </div>
           {/* Links 2x2 */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-4">
             {links.map((col) => (
               <div key={col.heading}>
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
@@ -235,7 +235,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3">
           {/* Desktop: Single row with all items */}
           <div className="hidden xl:flex items-center justify-between gap-4">
             <p className="text-xs text-white/50 whitespace-nowrap">

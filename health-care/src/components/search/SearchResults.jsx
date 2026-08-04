@@ -135,7 +135,7 @@ export default function SearchResults({
         )}
 
         {/* Grid with staggered fade-in */}
-        <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 transition-opacity duration-300 ${loading ? 'opacity-40' : 'opacity-100'}`}>
+        <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3 transition-opacity duration-300 ${loading ? 'opacity-40' : 'opacity-100'}`}>
           {displayedProducts.map((product, index) => (
             <div
               key={product._id || product.id}
@@ -177,7 +177,7 @@ export default function SearchResults({
 
       {/* Pagination */}
       {totalPages > 1 ? (
-        <div className="mt-10 mb-4">
+        <div className="mt-6 mb-3">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -185,7 +185,7 @@ export default function SearchResults({
           />
         </div>
       ) : (
-        <div className="mt-10 mb-4 text-center text-sm text-[var(--color-text-secondary)]">
+        <div className="mt-6 mb-3 text-center text-sm text-[var(--color-text-secondary)]">
           Showing all {displayedProducts.length} products
         </div>
       )}

@@ -212,25 +212,25 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
         }
       `}</style>
       <header className="glass-nav">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[58px] nav-header-row gap-2 md:gap-3">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[52px] nav-header-row gap-2 md:gap-3">
 
           {/* Logo */}
           <button
             onClick={() => router.push('/')}
-            className="flex-shrink-0 cursor-pointer group flex items-center gap-2.5"
+            className="flex-shrink-0 cursor-pointer group flex items-center gap-2"
             aria-label="MediportBD home"
           >
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-brand-teal-light/60 transition-all bg-white flex items-center justify-center p-1">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-brand-teal-light/60 transition-all bg-white flex items-center justify-center p-1">
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
                 fill
-                sizes="56px"
+                sizes="44px"
                 priority
                 className="object-contain"
               />
             </div>
-            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-xl font-semibold text-white group-hover:text-brand-teal-light transition-colors">
+            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-lg font-semibold text-white group-hover:text-brand-teal-light transition-colors">
               Mediport<span className="text-brand-teal-light">BD</span>
             </span>
           </button>
@@ -432,7 +432,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           />
           {/* Modal panel: higher z-index, stopPropagation on the white card only */}
           <div 
-            className="fixed top-[70px] left-0 right-0 z-modal px-4 animate-slide-down-modal pointer-events-none"
+            className="fixed top-[62px] left-0 right-0 z-modal px-4 animate-slide-down-modal pointer-events-none"
           >
             <div className="max-w-[680px] mx-auto pointer-events-none">
               {/* White card — re-enable pointer events here so all children are clickable */}

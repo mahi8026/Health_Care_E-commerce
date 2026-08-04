@@ -43,10 +43,10 @@ const Button = forwardRef(function Button(
   };
 
   const sizeStyles = {
-    sm: 'text-xs px-3 py-1.5 min-h-[32px] touch-compact',
-    md: 'text-sm px-4 py-2 min-h-[40px] touch-compact',
-    lg: 'text-base px-6 py-3 min-h-[48px]',
-    xl: 'text-lg px-8 py-4 min-h-[56px]',
+    sm: 'text-xs px-2.5 py-1 min-h-[28px] touch-compact',
+    md: 'text-sm px-3.5 py-1.5 min-h-[36px] touch-compact',
+    lg: 'text-sm px-5 py-2 min-h-[40px]',
+    xl: 'text-base px-6 py-2.5 min-h-[46px]',
   };
 
   const handleClick = (e) => {

@@ -92,7 +92,7 @@ export default function CartSidebar({ isOpen, onClose }) {
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18)',
           }}
         >
-          <h2 id="cart-sidebar-title" className="text-lg font-semibold text-white flex items-center gap-2.5">
+          <h2 id="cart-sidebar-title" className="text-base font-semibold text-white flex items-center gap-2.5">
             <FaShoppingCart size={16} className="text-brand-teal-light" />
             Shopping Cart
             {getCartCount() > 0 && (
@@ -259,16 +259,16 @@ export default function CartSidebar({ isOpen, onClose }) {
               borderTop: '1px solid rgba(255,255,255,0.7)',
               boxShadow: '0 -8px 24px rgba(11,37,69,0.06)',
             }}>
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-3">
               <span className="text-sm font-medium text-[var(--color-text-secondary)]">
                 Subtotal ({getCartCount()} {getCartCount() === 1 ? 'item' : 'items'})
               </span>
-              <span className="text-xl font-semibold text-brand-navy">৳{subtotal.toLocaleString()}</span>
+              <span className="text-lg font-semibold text-brand-navy">৳{subtotal.toLocaleString()}</span>
             </div>
 
             <div className="space-y-2">
               <button onClick={handleCheckout}
-                className="w-full h-12 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+                className="w-full h-10 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3060 100%)',
                   boxShadow: '0 4px 20px rgba(11,37,69,0.30), inset 0 1px 0 rgba(255,255,255,0.12)',

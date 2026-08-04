@@ -27,7 +27,7 @@ export default function ProductFilters({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] overflow-hidden sticky top-4">
       {/* Sidebar header */}
-      <div className="px-5 py-4 bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] flex items-center justify-between">
+      <div className="px-4 py-3 bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/>
@@ -44,7 +44,7 @@ export default function ProductFilters({
         )}
       </div>
 
-      <div className="p-4 space-y-5">
+      <div className="p-3 space-y-4">
         {/* Category */}
         <div role="group" aria-labelledby="pf-category">
           <h3 id="pf-category" className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">

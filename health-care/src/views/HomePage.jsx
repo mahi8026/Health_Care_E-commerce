@@ -708,14 +708,14 @@ export default function HomePage() {
           z-index: 2; 
           display: grid; 
           grid-template-columns: minmax(0, 1fr) minmax(480px, 52%); 
-          gap: 32px; 
+          gap: 24px; 
           align-items: center; 
         }
         .hero-left-content { order: 1; }
         .hero-right-panel { 
           order: 2; 
           position: relative; 
-          height: 460px; 
+          height: 400px; 
           border-radius: 16px; 
           overflow: hidden; 
           background: #1a3a5c; 
@@ -725,18 +725,18 @@ export default function HomePage() {
         @media (max-width: 1279px) and (min-width: 769px) {
           .hero-grid-container { 
             grid-template-columns: minmax(0, 1fr) minmax(0, 48%); 
-            gap: 20px; 
+            gap: 16px; 
             padding: 0 16px; 
           }
-          .hero-right-panel { height: 380px; }
+          .hero-right-panel { height: 330px; }
         }
         @media (min-width: 1280px) {
-          .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 36px; }
-          .hero-right-panel { height: 500px; }
+          .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 28px; }
+          .hero-right-panel { height: 440px; }
         }
         @media (min-width: 1536px) {
           .hero-grid-container { grid-template-columns: minmax(0, 1fr) 640px; }
-          .hero-right-panel { height: 520px; }
+          .hero-right-panel { height: 460px; }
         }
         /* Custom scrollbar for category navigation */
         *::-webkit-scrollbar { height: 6px; }
@@ -744,14 +744,14 @@ export default function HomePage() {
         *::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 10px; }
         *::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
         /* Category section styles */
-        .category-section { padding: 40px 0; border-bottom: 1px solid var(--color-border-primary); }
-        .category-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 24px; }
-        .category-title-accent { display: flex; align-items: center; gap: 12px; }
-        .category-title-accent::before { content: ''; width: 4px; height: 24px; background: var(--color-brand-teal); border-radius: 2px; }
-        .category-product-row { display: flex; gap: 16px; overflow-x: auto; padding: 0 24px 8px; scrollbar-width: none; -ms-overflow-style: none; }
+        .category-section { padding: 28px 0; border-bottom: 1px solid var(--color-border-primary); }
+        .category-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 24px; }
+        .category-title-accent { display: flex; align-items: center; gap: 10px; }
+        .category-title-accent::before { content: ''; width: 4px; height: 20px; background: var(--color-brand-teal); border-radius: 2px; }
+        .category-product-row { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 6px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-product-row::-webkit-scrollbar { display: none; }
         /* Top selling card styles */
-        .top-selling-card { display: flex; gap: 16px; padding: 16px; background: #fff; border: 1px solid var(--color-border-primary); border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
+        .top-selling-card { display: flex; gap: 12px; padding: 12px; background: #fff; border: 1px solid var(--color-border-primary); border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
         .top-selling-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .best-selling-badge { position: absolute; top: -1px; right: -1px; background: #F97316; color: #fff; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 0 12px 0 8px; }
         @media (max-width: 768px) {
@@ -791,20 +791,20 @@ export default function HomePage() {
 
           {/* LEFT: Text + Search */}
           <div className="hero-left-content">
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 999, marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              <span style={{ width: 7, height: 7, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ width: 6, height: 6, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
               {t('home.tagline')}
             </div>
-            <h1 style={{ fontSize: 'clamp(26px, 3.5vw, 48px)', fontWeight: 600, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>
+            <h1 style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: 600, color: '#fff', lineHeight: 1.15, marginBottom: 12 }}>
               {t('home.heroTitle')}<br />
               <span style={{ color: 'var(--color-brand-teal-light)' }}>
                 <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
               </span>
             </h1>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: 28, maxWidth: 480, lineHeight: 1.7 }}>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 20, maxWidth: 480, lineHeight: 1.6 }}>
               {t('home.heroSubtitle')}
             </p>
-            <div style={{ maxWidth: 520, marginBottom: 24, width: '100%' }}>
+            <div style={{ maxWidth: 520, marginBottom: 16, width: '100%' }}>
               <EnhancedSearchBox placeholder={searchPlaceholder} variant="hero" />
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

@@ -81,13 +81,13 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
             </svg>
           </div>
-          <h2 className="text-2xl font-semibold text-brand-navy mb-2">{t('cart.empty')}</h2>
-          <p className="text-sm text-[var(--color-text-secondary)] mb-6 leading-relaxed">
+          <h2 className="text-xl font-semibold text-brand-navy mb-2">{t('cart.empty')}</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-5 leading-relaxed">
             {t('cart.emptyDesc')}
           </p>
           <button
             onClick={handleContinueShopping}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
@@ -102,7 +102,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
   // ── Main cart ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-page py-6 md:py-8">
+    <div className="min-h-screen bg-page py-4 md:py-6">
 
       {/* Clear Cart Modal */}
       <Modal
@@ -139,9 +139,9 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
       <div className="max-w-7xl mx-auto px-4 md:px-6">
 
         {/* Page header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">{t('cart.title')}</h1>
+            <h1 className="text-xl md:text-2xl font-semibold text-text-primary">{t('cart.title')}</h1>
             <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
               {getCartCount()} {getCartCount() === 1 ? t('cart.item') : t('cart.items')}
             </p>
@@ -152,7 +152,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(320px,380px)] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(320px,380px)] gap-4 items-start">
 
           {/* ── Cart items ─────────────────────────────────────────────────── */}
           <div className="space-y-3">
@@ -171,22 +171,22 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 >
                   <div className="flex gap-0">
                     {/* Image panel */}
-                    <div className="w-28 md:w-36 flex-shrink-0 bg-surface-subtle flex items-center justify-center border-r border-[var(--color-border-primary)] p-3 relative">
+                    <div className="w-24 md:w-32 flex-shrink-0 bg-surface-subtle flex items-center justify-center border-r border-[var(--color-border-primary)] p-2 relative">
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
                           alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MediportBD`}
                           fill
-                          sizes="(max-width: 768px) 112px, 144px"
-                          style={{ objectFit: 'contain', padding: '12px' }}
+                          sizes="(max-width: 768px) 96px, 128px"
+                          style={{ objectFit: 'contain', padding: '8px' }}
                         />
                       ) : (
-                        <div className="text-5xl flex items-center justify-center h-24 md:h-28">📦</div>
+                        <div className="text-4xl flex items-center justify-center h-20 md:h-24">📦</div>
                       )}
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 p-4 md:p-5 min-w-0">
+                    <div className="flex-1 p-3 md:p-4 min-w-0">
                       <div className="flex items-start justify-between gap-3">
                         {/* Product details */}
                         <div className="flex-1 min-w-0">
@@ -228,7 +228,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
                         {/* Price (desktop) */}
                         <div className="hidden md:block text-right flex-shrink-0">
-                          <div className="text-lg font-semibold text-brand-navy">
+                          <div className="text-base font-semibold text-brand-navy">
                             ৳{itemTotal.toLocaleString()}
                           </div>
                           <div className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
@@ -238,29 +238,29 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       </div>
 
                       {/* Price (mobile) */}
-                      <div className="md:hidden mb-3">
-                        <span className="text-base font-semibold text-brand-navy">৳{itemTotal.toLocaleString()}</span>
+                      <div className="md:hidden mb-2">
+                        <span className="text-sm font-semibold text-brand-navy">৳{itemTotal.toLocaleString()}</span>
                         <span className="text-xs text-[var(--color-text-tertiary)] ml-2">৳{(item.price || 0).toLocaleString()} each</span>
                       </div>
 
                       {/* Bottom row: qty + actions */}
                       <div className="flex items-center justify-between gap-3 flex-wrap">
-                        {/* Quantity stepper - 44x44px touch targets */}
+                        {/* Quantity stepper - 40px touch targets */}
                         <div className="flex items-center border border-[var(--color-border-primary)] rounded-lg overflow-hidden">
                           <button
                             onClick={() => updateQuantity(id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
                             aria-label="Decrease quantity"
-                            className="w-11 h-11 flex items-center justify-center text-lg font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="w-10 h-10 flex items-center justify-center text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >−</button>
-                          <span className="w-12 text-center text-sm font-semibold text-brand-navy border-x border-[var(--color-border-primary)]">
+                          <span className="w-10 text-center text-sm font-semibold text-brand-navy border-x border-[var(--color-border-primary)]">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(id, item.quantity + 1)}
                             disabled={item.stock !== undefined && item.quantity >= item.stock}
                             aria-label="Increase quantity"
-                            className="w-11 h-11 flex items-center justify-center text-lg font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            className="w-10 h-10 flex items-center justify-center text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           >+</button>
                         </div>
 
@@ -302,7 +302,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
             <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] overflow-hidden shadow-sm">
 
               {/* Free delivery progress bar */}
-              <div className="px-5 pt-5 pb-4 border-b border-[var(--color-border-primary)]">
+              <div className="px-4 pt-4 pb-3 border-b border-[var(--color-border-primary)]">
                 {amountToFreeDelivery === 0 ? (
                   <div className="flex items-center gap-2 text-brand-teal">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -331,8 +331,8 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               </div>
 
               {/* Summary rows */}
-              <div className="px-5 py-4 space-y-3 border-b border-[var(--color-border-primary)]">
-                <h3 className="text-base font-semibold text-brand-navy mb-3">{t('cart.orderSummary')}</h3>
+              <div className="px-4 py-3 space-y-2 border-b border-[var(--color-border-primary)]">
+                <h3 className="text-sm font-semibold text-brand-navy mb-2">{t('cart.orderSummary')}</h3>
 
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--color-text-secondary)]">{t('cart.subtotal')} ({getCartCount()} {getCartCount() === 1 ? 'item' : 'items'})</span>
@@ -364,10 +364,10 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               </div>
 
               {/* Total */}
-              <div className="px-5 py-4 border-b border-[var(--color-border-primary)]">
+              <div className="px-4 py-3 border-b border-[var(--color-border-primary)]">
                 <div className="flex justify-between items-center">
-                  <span className="text-base font-semibold text-brand-navy">{t('cart.total')}</span>
-                  <span className="text-2xl font-semibold text-brand-navy">৳{total.toLocaleString()}</span>
+                  <span className="text-sm font-semibold text-brand-navy">{t('cart.total')}</span>
+                  <span className="text-xl font-semibold text-brand-navy">৳{total.toLocaleString()}</span>
                 </div>
                 {b2bDiscount > 0 && (
                   <div className="mt-2 text-xs text-brand-teal font-medium">
@@ -377,10 +377,10 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               </div>
 
               {/* CTA buttons */}
-              <div className="px-5 py-4 space-y-3">
+              <div className="px-4 py-3 space-y-2">
                 <button
                   onClick={handleCheckout}
-                  className="w-full h-12 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="w-full h-10 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
@@ -390,21 +390,21 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                 </button>
                 <button
                   onClick={handleContinueShopping}
-                  className="w-full h-11 border border-[var(--color-border-primary)] hover:bg-surface-subtle text-[var(--color-text-primary)] rounded-xl text-sm font-semibold transition-colors"
+                  className="w-full h-10 border border-[var(--color-border-primary)] hover:bg-surface-subtle text-[var(--color-text-primary)] rounded-xl text-sm font-semibold transition-colors"
                 >
                   {t('cart.continueShopping')}
                 </button>
               </div>
 
               {/* Trust badges */}
-              <div className="px-5 pb-5 grid grid-cols-3 gap-2">
+              <div className="px-4 pb-4 grid grid-cols-3 gap-2">
                 {[
                   { icon: '🔒', label: t('cart.secureCheckout') },
                   { icon: '↩', label: t('cart.returns') },
                   { icon: '📞', label: t('cart.support') },
                 ].map(({ icon, label }) => (
                   <div key={label} className="flex flex-col items-center gap-1 p-2 bg-surface-subtle rounded-xl">
-                    <span className="text-xl">{icon}</span>
+                    <span className="text-lg">{icon}</span>
                     <span className="text-xs text-[var(--color-text-secondary)] font-medium text-center leading-tight whitespace-pre-line">{label}</span>
                   </div>
                 ))}
@@ -413,7 +413,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
 
             {/* B2B upsell */}
             {!isB2BCustomer() && (
-              <div className="mt-3 p-4 bg-brand-navy rounded-2xl text-white">
+              <div className="mt-3 p-3 bg-brand-navy rounded-2xl text-white">
                 <div className="text-xs font-semibold mb-1">🏢 {t('cart.b2bUpsell')}</div>
                 <div className="text-xs text-[var(--color-text-tertiary)] mb-3">
                   {t('cart.b2bUpsellDesc')}

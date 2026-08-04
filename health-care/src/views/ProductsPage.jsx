@@ -365,7 +365,7 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
 
             {/* SEO Content */}
             {CATEGORY_CONTENT[searchCategory] && (
-              <section className="mt-8 bg-white border border-[var(--color-border-tertiary)] rounded-2xl p-6 shadow-sm">
+              <section className="mt-6 bg-white border border-[var(--color-border-tertiary)] rounded-2xl p-4 shadow-sm">
                 <h2 className="text-base font-semibold text-brand-navy mb-3">
                   About {searchCategory} in Bangladesh
                 </h2>
