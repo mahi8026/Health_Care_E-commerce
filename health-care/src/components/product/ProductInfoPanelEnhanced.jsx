@@ -113,86 +113,86 @@ export default function ProductInfoPanelEnhanced({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Brand & Category */}
-      <div className="flex items-center gap-2 flex-wrap">
+    <div className="space-y-2">
+      {/* Brand & Category - Compact */}
+      <div className="flex items-center gap-1.5 flex-wrap">
         {brandName && (
-          <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors cursor-pointer">
+          <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[11px] font-medium hover:bg-blue-100 transition-colors cursor-pointer">
             {brandName}
           </span>
         )}
         {categoryName && (
-          <span className="px-3 py-1 bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] rounded-full text-sm font-medium">
+          <span className="px-2 py-0.5 bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] rounded-full text-[11px] font-medium">
             {categoryName}
           </span>
         )}
         {product.sku && (
-          <span className="px-3 py-1 bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] rounded-full text-xs font-mono">
+          <span className="px-2 py-0.5 bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] rounded-full text-[10px] font-mono">
             SKU: {product.sku}
           </span>
         )}
       </div>
 
-      {/* Product Name */}
-      <h1 className="text-xl md:text-2xl font-semibold text-[var(--color-text-primary)] leading-tight">
+      {/* Product Name - Compact */}
+      <h1 className="text-lg md:text-xl font-semibold text-[var(--color-text-primary)] leading-tight">
         {product.name}
       </h1>
 
-      {/* Stock Status */}
-      <div className="flex items-center gap-3">
+      {/* Stock Status - Compact */}
+      <div className="flex items-center gap-2">
         {inStock ? (
           <>
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md ${
               lowStock ? 'bg-orange-50 text-orange-700' : 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
             }`}>
-              <FaCheck size={14} />
-              <span className="text-sm font-semibold">
+              <FaCheck size={12} />
+              <span className="text-[11px] font-semibold">
                 {lowStock ? `Only ${product.stock} left!` : 'In Stock'}
               </span>
             </div>
             {lowStock && (
-              <span className="flex items-center gap-1 text-orange-600 text-sm font-medium animate-pulse">
-                <FaBolt size={12} />
+              <span className="flex items-center gap-1 text-orange-600 text-[11px] font-medium animate-pulse">
+                <FaBolt size={10} />
                 Order soon!
               </span>
             )}
           </>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]">
-            <span className="text-sm font-semibold">Out of Stock</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]">
+            <span className="text-[11px] font-semibold">Out of Stock</span>
           </div>
         )}
       </div>
 
-      {/* Pricing */}
-      <div className="bg-gradient-to-br from-blue-50 to-brand-teal-tint rounded-xl p-4 border border-blue-100">
+      {/* Pricing - Compact */}
+      <div className="bg-gradient-to-br from-blue-50 to-brand-teal-tint rounded-lg p-2.5 border border-blue-100">
         {hasDiscount && (
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-base text-[var(--color-text-secondary)] line-through">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-sm text-[var(--color-text-secondary)] line-through">
               ৳{displayOldPrice?.toLocaleString()}
             </span>
-            <span className={`px-2.5 py-0.5 ${hasB2BDiscount ? 'bg-purple-500' : 'bg-[var(--color-status-danger-tint)]'} text-white rounded-full text-xs font-semibold`}>
+            <span className={`px-2 py-0.5 ${hasB2BDiscount ? 'bg-purple-500' : 'bg-[var(--color-status-danger-tint)]'} text-white rounded-full text-[10px] font-semibold`}>
               {hasB2BDiscount ? 'B2B' : 'Save'} {discountPercent}%
             </span>
           </div>
         )}
         
-        <div className="flex items-baseline gap-2 mb-1.5">
-          <span className="text-3xl font-semibold text-[var(--color-text-primary)]">
+        <div className="flex items-baseline gap-1.5 mb-1">
+          <span className="text-2xl font-bold text-[var(--color-text-primary)]">
             {finalPrice > 0 ? `৳${finalPrice?.toLocaleString()}` : 'Contact for Price'}
           </span>
           {hasDiscount && savings > 0 && (
-            <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-[var(--color-status-success)]'} text-base font-semibold`}>
+            <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-[var(--color-status-success)]'} text-sm font-semibold`}>
               -৳{savings.toLocaleString()}
             </span>
           )}
         </div>
 
-        {/* B2B Badge */}
+        {/* B2B Badge - Compact */}
         {priceDisplay.isB2BPrice && (
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="inline-flex items-center gap-1 text-xs text-purple-700 font-semibold bg-purple-100 px-2.5 py-0.5 rounded-full">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className="inline-flex items-center gap-1 text-[10px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-full">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
               B2B Price Applied
@@ -201,7 +201,7 @@ export default function ProductInfoPanelEnhanced({
         )}
 
         {finalPrice > 0 && !priceDisplay.isB2BPrice && (
-          <p className="text-xs text-[var(--color-text-secondary)]">
+          <p className="text-[10px] text-[var(--color-text-secondary)]">
             B2B pricing available for bulk orders (8-30% off)
           </p>
         )}
