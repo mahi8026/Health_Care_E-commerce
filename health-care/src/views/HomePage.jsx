@@ -38,6 +38,8 @@ import CategoryProductSections from '@/components/home/CategoryProductSections';
 // Lazy load heavy components for better performance
 const SupportResources = lazy(() => import('@/components/home/SupportResources'));
 const VideoSection = lazy(() => import('@/components/home/VideoSection'));
+const NewArrivalSlider = lazy(() => import('@/components/home/NewArrivalSlider'));
+const BestSellingSection = lazy(() => import('@/components/home/BestSellingSection'));
 
 // ══════════════════════════════════════════════════════════════════════════════
 // FALLBACK DATA & CONSTANTS
@@ -1395,73 +1397,28 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {(newArrivalsLoading || newArrivals.length > 0) && (
-        <section className="home-section" style={{ padding: '40px 0' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '0 24px', marginBottom: 20 }}>
-              <div>
-                <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
-                  textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.justArrived')}</p>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 600, margin: 0 }}>
-                  {t('home.newArrivals')}
-                </h2>
-              </div>
-              {!newArrivalsLoading && (
-                <button onClick={() => router.push('/products?sortBy=newest')}
-                  style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none',
-                    border: 'none', cursor: 'pointer' }}>{t('home.viewAll')}</button>
-              )}
-            </div>
-            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', padding: '4px 24px 16px',
-              scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {newArrivalsLoading ? (
-                // Show 6 skeleton loaders
-                [...Array(6)].map((_, i) => <ProductCardSkeleton key={i} />)
-              ) : newArrivals.length === 0 ? (
-                <p className="text-[var(--color-text-secondary)] text-sm text-center py-8">No new arrivals available</p>
-              ) : (
-                newArrivals.map(p => {
-                const img = p.images?.[0]?.url || p.images?.[0];
-                return (
-                  <div key={p._id} className="product-card-hover"
-                    onClick={() => router.push(`/products/${p.slug || p._id}`)}
-                    style={{ minWidth: 180, maxWidth: 180, background: '#fff', borderRadius: 12,
-                      border: '1px solid var(--color-border-primary)', overflow: 'hidden', flexShrink: 0 }}>
-                    <div style={{ height: 160, background: 'var(--color-background-secondary)', position: 'relative', overflow: 'hidden' }}>
-                      {img ? (
-                        <Image 
-                          src={img} 
-                          alt={`${p.name}${typeof p.brand === 'object' ? ` — ${p.brand?.name}` : p.brand ? ` — ${p.brand}` : ''} — new arrival Bangladesh — MediportBD`}
-                          fill
-                          sizes="180px"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          height: '100%', fontSize: 40 }}>🏥</div>
-                      )}
-                      <span style={{ position: 'absolute', top: 8, left: 8, background: 'var(--color-brand-teal)',
-                        color: '#fff', fontSize: 9, padding: '3px 8px', borderRadius: 20, fontWeight: 600 }}>
-                        ✨ NEW
-                      </span>
-                    </div>
-                    <div style={{ padding: '10px 12px' }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 4,
-                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {p.name}
-                      </div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
-                        ৳{p.price?.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                );
-              }))}
-            </div>
+      {/* SECTION 9: NEW ARRIVALS - GoWell BD Style Auto Slider */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {!newArrivalsLoading && newArrivals.length > 0 && (
+        <Suspense fallback={
+          <div style={{ padding: '60px 0', textAlign: 'center' }}>
+            <Spinner />
           </div>
-        </section>
+        }>
+          <NewArrivalSlider products={newArrivals} />
+        </Suspense>
       )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 10: BEST SELLING PRODUCTS - Rankings & Auto Slider */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={
+        <div style={{ padding: '60px 0', textAlign: 'center' }}>
+          <Spinner />
+        </div>
+      }>
+        <BestSellingSection />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* RECENTLY VIEWED PRODUCTS */}

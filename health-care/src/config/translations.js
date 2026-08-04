@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MediportBD - Bilingual translations (English + Bengali)
  * Usage: const { t } = useLang(); then t('key')
  */
@@ -36,6 +36,7 @@ export const translations = {
       newArrivals: 'New Arrivals',
       justArrived: 'Just Arrived',
       topSelling: 'Top Selling Products',
+      bestSellingItems: 'Best Selling Items',
       mostPopular: ' Most Popular',
       whyMediport: 'The MediportBD Difference',
       whyChooseUs: 'Why Choose Us',
@@ -269,6 +270,7 @@ export const translations = {
       newArrivals: 'নতুন আগমন',
       justArrived: 'সদ্য এসেছে',
       topSelling: 'সর্বাধিক বিক্রীত পণ্য',
+      bestSellingItems: 'সর্বাধিক বিক্রিত পণ্য',
       mostPopular: ' সবচেয়ে জনপ্রিয়',
       whyMediport: 'মেডিপোর্টবিডির পার্থক্য',
       whyChooseUs: 'কেন আমাদের বেছে নেবেন',
