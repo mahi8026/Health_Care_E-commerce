@@ -92,12 +92,12 @@ export default function ProductImageGalleryEnhanced({
   }, [isLightboxOpen]);
 
   return (
-    <div className="space-y-4">
-      {/* Main Image Container */}
+    <div className="space-y-3">
+      {/* Main Image Container - Compact 4:3 ratio */}
       <div 
         ref={imageRef}
-        className="relative bg-white rounded-2xl overflow-hidden border border-[var(--color-border-primary)] shadow-sm group"
-        style={{ aspectRatio: '1/1' }}
+        className="relative bg-white rounded-lg overflow-hidden border border-[var(--color-border-primary)] shadow-sm group"
+        style={{ aspectRatio: '4/3' }}
         onMouseEnter={() => setIsZooming(true)}
         onMouseLeave={() => setIsZooming(false)}
         onMouseMove={handleMouseMove}
@@ -109,7 +109,7 @@ export default function ProductImageGalleryEnhanced({
               alt={product.name || 'Product'}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className={`object-contain p-8 transition-transform duration-300 ${
+              className={`object-contain p-4 transition-transform duration-300 ${
                 isZooming ? 'scale-150' : 'scale-100'
               }`}
               style={isZooming ? {
@@ -124,100 +124,100 @@ export default function ProductImageGalleryEnhanced({
           </div>
         )}
 
-        {/* Certification Badges - Top Left */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 max-w-[45%] z-10">
+        {/* Certification Badges - Top Left - Compact */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1.5 max-w-[45%] z-10">
           {badges.slice(0, 3).map((badge, idx) => {
             const config = badgeConfig[badge] || { icon: '✓', label: badge, color: 'bg-blue-100 text-blue-800' };
             return (
               <div 
                 key={idx}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg backdrop-blur-sm ${config.color} animate-fadeSlideUp`}
+                className={`flex items-center gap-1.5 px-2 py-1 rounded-md shadow-md backdrop-blur-sm ${config.color} animate-fadeSlideUp`}
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <span className="text-base">{config.icon}</span>
-                <span className="text-xs font-semibold whitespace-nowrap">{config.label}</span>
+                <span className="text-sm">{config.icon}</span>
+                <span className="text-[10px] font-semibold whitespace-nowrap">{config.label}</span>
               </div>
             );
           })}
         </div>
 
-        {/* Action Buttons - Top Right */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        {/* Action Buttons - Top Right - Compact */}
+        <div className="absolute top-2 right-2 flex flex-col gap-1.5 z-10">
           {/* Wishlist Button */}
           <button
             onClick={handleToggleWishlist}
             disabled={togglingWishlist}
-            className={`w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
+            className={`w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
               inWishlist ? 'text-[var(--color-status-danger)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-status-danger)]'
             }`}
             aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             {togglingWishlist ? (
-              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
             ) : (
-              <FaHeart size={20} className={inWishlist ? 'fill-current' : ''} />
+              <FaHeart size={16} className={inWishlist ? 'fill-current' : ''} />
             )}
           </button>
 
           {/* Fullscreen Button */}
           <button
             onClick={() => setIsLightboxOpen(true)}
-            className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 text-[var(--color-text-secondary)] hover:text-brand-teal"
+            className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center transition-all duration-300 hover:scale-110 text-[var(--color-text-secondary)] hover:text-brand-teal"
             aria-label="View fullscreen"
           >
-            <FaExpand size={18} />
+            <FaExpand size={14} />
           </button>
         </div>
 
-        {/* Zoom Indicator */}
+        {/* Zoom Indicator - Compact */}
         {isZooming && (
-          <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 backdrop-blur-sm">
-            <FaSearchPlus size={14} />
+          <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-[10px] font-medium flex items-center gap-1.5 backdrop-blur-sm">
+            <FaSearchPlus size={12} />
             <span>Hover to zoom</span>
           </div>
         )}
 
-        {/* Image Counter */}
+        {/* Image Counter - Compact */}
         {images.length > 1 && (
-          <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-2 rounded-lg text-xs font-medium backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-[10px] font-medium backdrop-blur-sm">
             {activeIndex + 1} / {images.length}
           </div>
         )}
       </div>
 
-      {/* Thumbnail Strip */}
+      {/* Thumbnail Strip - Compact */}
       {images.length > 1 && (
         <div className="relative">
           {/* Previous Button */}
           {images.length > 4 && (
             <button
               onClick={handlePrevImage}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center text-[var(--color-text-secondary)] hover:text-brand-teal hover:scale-110 transition-all"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-[var(--color-text-secondary)] hover:text-brand-teal hover:scale-110 transition-all"
               aria-label="Previous image"
             >
-              <FaChevronLeft size={14} />
+              <FaChevronLeft size={12} />
             </button>
           )}
 
-          {/* Thumbnails */}
-          <div className="flex gap-3 overflow-x-auto pb-2 px-10 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          {/* Thumbnails - Compact */}
+          <div className="flex gap-2 overflow-x-auto pb-1 px-8 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             {images.map((img, idx) => (
               <button
                 key={img.publicId || idx}
                 onClick={() => setActiveIndex(idx)}
                 aria-current={activeIndex === idx}
                 aria-label={`${product.name} view ${idx + 1}`}
-                className={`relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden transition-all duration-300 ${
+                className={`relative flex-shrink-0 w-16 h-16 md:w-18 md:h-18 rounded-lg overflow-hidden transition-all duration-300 ${
                   activeIndex === idx
-                    ? 'ring-4 ring-brand-teal ring-offset-2 scale-105 shadow-xl'
-                    : 'ring-2 ring-[var(--color-border-primary)] hover:ring-[var(--color-border-secondary)] hover:scale-105'
+                    ? 'ring-3 ring-brand-teal ring-offset-1 scale-105 shadow-lg'
+                    : 'ring-1 ring-[var(--color-border-primary)] hover:ring-[var(--color-border-secondary)] hover:scale-105'
                 }`}
               >
                 <Image
                   src={img.url}
                   alt={`${product.name} view ${idx + 1}`}
                   fill
-                  sizes="100px"
+                  sizes="80px"
                   className="object-cover"
                 />
                 {activeIndex === idx && (
@@ -231,10 +231,10 @@ export default function ProductImageGalleryEnhanced({
           {images.length > 4 && (
             <button
               onClick={handleNextImage}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center text-[var(--color-text-secondary)] hover:text-brand-teal hover:scale-110 transition-all"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-[var(--color-text-secondary)] hover:text-brand-teal hover:scale-110 transition-all"
               aria-label="Next image"
             >
-              <FaChevronRight size={14} />
+              <FaChevronRight size={12} />
             </button>
           )}
         </div>
