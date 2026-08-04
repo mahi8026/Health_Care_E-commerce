@@ -49,8 +49,10 @@ export default function AutoSlider({
     if (typeof window === 'undefined') return itemsToShow;
     const width = window.innerWidth;
     if (width < 640) return 2; // Mobile
-    if (width < 1024) return 3; // Tablet
-    return itemsToShow; // Desktop
+    if (width < 768) return 3; // Small tablet
+    if (width < 1024) return 4; // Tablet
+    if (width < 1280) return 5; // Small desktop
+    return itemsToShow; // Large desktop (6)
   }, [itemsToShow]);
 
   const [visibleItems, setVisibleItems] = useState(getVisibleItems());
@@ -286,8 +288,8 @@ export default function AutoSlider({
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '8px',
-            marginTop: '16px',
+            gap: '6px',
+            marginTop: '12px',
           }}
         >
           {Array.from({ length: maxIndex + 1 }).map((_, index) => (
@@ -296,13 +298,13 @@ export default function AutoSlider({
               onClick={() => goToIndex(index)}
               className="auto-slider-dot"
               style={{
-                width: currentIndex === index ? '24px' : '8px',
-                height: '8px',
-                borderRadius: '4px',
+                width: currentIndex === index ? '16px' : '6px',
+                height: '6px',
+                borderRadius: '3px',
                 border: 'none',
                 backgroundColor: currentIndex === index 
                   ? 'var(--color-brand-teal)' 
-                  : 'var(--color-border-primary)',
+                  : '#D1D5DB',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
                 padding: 0,

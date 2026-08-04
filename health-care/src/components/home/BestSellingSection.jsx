@@ -190,8 +190,8 @@ export default function BestSellingSection() {
         {loading && (
           <AutoSlider
             itemsToShow={6}
-            itemsToScroll={1}
-            gap="16px"
+            itemsToScroll={2}
+            gap="12px"
             autoPlayInterval={0}
             showArrows={false}
           >
@@ -270,8 +270,8 @@ export default function BestSellingSection() {
           <div style={{ paddingTop: '12px' }}>
             <AutoSlider
               itemsToShow={6}
-              itemsToScroll={1}
-              gap="16px"
+              itemsToScroll={2}
+              gap="12px"
               autoPlayInterval={5000}
               pauseOnHover={true}
               showArrows={true}
