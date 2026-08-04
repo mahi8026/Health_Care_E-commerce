@@ -112,17 +112,17 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
       <div className="w-full flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <div className="text-center mb-5">
+          <div className="text-center mb-4">
             <BrandLogo />
-            <p className="text-[var(--color-text-secondary)] text-xs mt-1">Bangladesh&apos;s trusted medical equipment platform</p>
+            <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">Bangladesh&apos;s trusted medical equipment platform</p>
           </div>
 
           {/* Heading */}
-          <div className="mb-8">
-            <h1 className="text-xl md:text-2xl font-semibold text-text-primary">
+          <div className="mb-4">
+            <h1 className="text-lg md:text-xl font-semibold text-text-primary">
               Sign in to your account
             </h1>
-            <p className="text-[var(--color-text-secondary)] text-sm mt-1">
+            <p className="text-[var(--color-text-secondary)] text-sm mt-0.5">
               Don&apos;t have an account?{' '}
               <button
                 type="button"
@@ -137,8 +137,8 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           {/* Error â€” aria-live ensures screen readers announce login failures */}
           <div role="alert" aria-live="polite" aria-atomic="true">
             {error && (
-              <div className="mb-5 flex items-start gap-3 p-4 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-xl text-[var(--color-status-danger)] text-sm">
-                <svg className="w-5 h-5 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <div className="mb-4 flex items-start gap-2 p-3 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-xl text-[var(--color-status-danger)] text-sm">
+                <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 <span>{error}</span>
@@ -147,10 +147,10 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* Email */}
             <div>
-              <label htmlFor="login-email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
+              <label htmlFor="login-email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
                 Email Address <span className="text-[var(--color-status-danger)]">*</span>
               </label>
               <div className="relative">
@@ -169,7 +169,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   placeholder="your@email.com"
                   required
                   autoComplete="email"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-[var(--color-border-primary)] rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-[var(--color-border-primary)] rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal transition-all"
                 />
               </div>
               {errors.email && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.email}</p>}
@@ -177,7 +177,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
 
             {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center justify-between mb-1">
                 <label htmlFor="login-password" className="block text-sm font-medium text-[var(--color-text-primary)]">
                   Password <span className="text-[var(--color-status-danger)]">*</span>
                 </label>
@@ -204,7 +204,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
-                  className="w-full pl-11 pr-12 py-3 bg-white border border-[var(--color-border-primary)] rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal transition-all"
+                  className="w-full pl-11 pr-12 py-2.5 bg-white border border-[var(--color-border-primary)] rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal transition-all"
                 />
                 <button
                   type="button"
@@ -246,7 +246,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           </form>
 
           {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[var(--color-border-primary)]" />
             </div>
@@ -263,7 +263,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           {/* Dev quick login */}
           {process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL && (
             <>
-              <div className="relative my-6">
+              <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-[var(--color-border-primary)]" />
                 </div>
@@ -284,7 +284,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           )}
 
           {/* Bottom register link (mobile-friendly duplicate) */}
-          <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
+          <p className="mt-4 text-center text-sm text-[var(--color-text-secondary)]">
             New to MediportBD?{' '}
             <button
               type="button"
