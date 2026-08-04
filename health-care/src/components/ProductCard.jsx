@@ -124,7 +124,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
       role="link"
       tabIndex={0}
       aria-label={`${product.name} — view details`}
-      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-lg overflow-hidden flex flex-col hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
+      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-md overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1"
       onClick={handleCardClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -133,16 +133,16 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         }
       }}
     >
-      {/* Image Container - 1:1 aspect policy with hover zoom */}
-      <div className="aspect-square w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
+      {/* Image Container - Compact 4:3 aspect ratio with hover zoom */}
+      <div className="aspect-[4/3] w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {isVisible && primaryImage ? (
           <>
             <Image
               src={primaryImage.url}
               alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
               fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
-              className="object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+              className="object-contain p-2 group-hover:scale-105 transition-transform duration-200 ease-out"
               loading="lazy"
               decoding="async"
               unoptimized={!primaryImage.url.includes('res.cloudinary.com')}
@@ -170,46 +170,44 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           </div>
         )}
         
-        {/* Save Badge - Top Left - Responsive with entrance animation */}
+        {/* Save Badge - Top Left - Compact version */}
         {hasDiscount && (
-          <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-[#7C3AED] text-white px-2 py-1 sm:px-3 sm:py-1.5 rounded-md shadow-md animate-bounce-in">
-            <span className="text-xs sm:text-xs font-semibold">
-              {priceDisplay.isB2BPrice ? 'B2B Save' : 'Save'}: {savings.toLocaleString()}৳ (-{discountPercent}%)
-            </span>
+          <div className="absolute top-1 left-1 bg-[#7C3AED] text-white px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm">
+            -{discountPercent}%
           </div>
         )}
         
-        {/* Other Badges */}
-        <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 flex flex-col gap-1" style={{ marginTop: hasDiscount ? '32px' : '0' }}>
+        {/* Other Badges - Compact */}
+        <div className="absolute top-1 left-1 flex flex-col gap-0.5" style={{ marginTop: hasDiscount ? '20px' : '0' }}>
           {product.badges?.map((badge, idx) => (
-            <span key={idx} className={`text-xs sm:text-xs px-[6px] py-[2px] sm:px-[7px] sm:py-[3px] rounded font-medium ${badge.className}`}>
+            <span key={idx} className={`text-[10px] px-1 py-0.5 rounded font-medium ${badge.className}`}>
               {badge.text}
             </span>
           ))}
           {showFeaturedBadge && product.isFeatured && !hasDiscount && (
-            <span className="bg-warning text-white text-xs font-semibold px-2 py-0.5 rounded-md shadow-sm">
-              ⭐ Featured
+            <span className="bg-warning text-white text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-sm">
+              ⭐
             </span>
           )}
         </div>
 
-        {/* Stock badge - Top Right (optional) */}
+        {/* Stock badge - Top Right (optional) - Compact */}
         {showStockBadge && (
-          <div className={`absolute top-1.5 right-8 sm:top-2 sm:right-8 px-2 py-0.5 rounded-md text-xs font-semibold shadow-sm ${
+          <div className={`absolute top-1 right-7 px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm ${
             product.stock > 0 ? 'bg-[var(--color-status-success-tint)] text-white' : 'bg-[var(--color-status-danger-tint)] text-white'
           }`}>
-            {product.stock > 0 ? `${product.stock > 99 ? '99+' : product.stock} in stock` : 'Out of stock'}
+            {product.stock > 0 ? `${product.stock > 99 ? '99+' : product.stock}` : 'Out'}
           </div>
         )}
         
-        {/* Wishlist Button - Top Right */}
-        <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1">
+        {/* Wishlist Button - Top Right - Compact */}
+        <div className="absolute top-1 right-1 flex gap-0.5">
           <WishlistButton productId={product._id || product.id} size="small" />
-          {/* Compare Button */}
+          {/* Compare Button - Compact */}
           <button
             onClick={handleCompareToggle}
             disabled={isComparing}
-            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all shadow-md ${
+            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shadow-sm ${
               inCompareList
                 ? 'bg-[#7C3AED] text-white'
                 : 'bg-white/90 text-[var(--color-text-secondary)] hover:bg-white'
@@ -218,113 +216,103 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
             aria-label={inCompareList ? 'Remove from compare' : 'Add to compare'}
             aria-pressed={inCompareList}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
             </svg>
           </button>
         </div>
       </div>
       
-      {/* Content - Responsive Padding */}
-      <div className="p-2.5 sm:p-3 flex-1 flex flex-col">
+      {/* Content - Compact Padding */}
+      <div className="p-2 flex-1 flex flex-col">
         {/* Category (optional) + Brand */}
         {showCategory && (
-          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-            <span className="text-xs font-semibold text-brand-teal uppercase tracking-wider">
+          <div className="flex items-center gap-1 mb-0.5 flex-wrap">
+            <span className="text-[10px] font-semibold text-brand-teal uppercase tracking-wide">
               {typeof product.category === 'object' ? product.category?.name : product.category}
             </span>
-            <span className="text-[var(--color-text-tertiary)] text-xs">·</span>
+            <span className="text-[var(--color-text-tertiary)] text-[10px]">·</span>
           </div>
         )}
-        {/* Brand */}
-        <div className="text-xs sm:text-xs text-brand-teal font-medium uppercase tracking-[0.5px] mb-[3px]">
+        {/* Brand - Compact */}
+        <div className="text-[10px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
           {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </div>
         
-        {/* Product Name - Responsive Font */}
-        <div className="text-xs sm:text-xs font-medium leading-[1.35] text-[var(--color-text-primary)] mb-[6px] flex-1 line-clamp-2">
+        {/* Product Name - Compact with 2 lines */}
+        <div className="text-xs font-medium leading-tight text-[var(--color-text-primary)] mb-1 flex-1 line-clamp-2 min-h-[2.25rem]">
           {product.name}
         </div>
         
-        {/* Rating */}
-        <RatingStars rating={product.rating || 0} count={product.reviews} />
+        {/* Rating - Compact */}
+        <div className="mb-1.5">
+          <RatingStars rating={product.rating || 0} count={product.reviews} size="sm" />
+        </div>
         
-        {/* Price - Responsive Font with B2B indicator */}
-        <div className="flex flex-col gap-1 mb-[10px]">
-          <div className="flex items-baseline gap-[6px]">
-            <span className="font-[family-name:var(--font-lora)] text-base sm:text-base text-brand-navy font-semibold">
+        {/* Price - Compact with B2B indicator */}
+        <div className="flex flex-col gap-0.5 mb-1.5">
+          <div className="flex items-baseline gap-1">
+            <span className="font-[family-name:var(--font-lora)] text-sm font-bold text-brand-navy">
               {priceDisplay.formatted}
             </span>
             {priceDisplay.showOriginalPrice && (
-              <span className="text-xs sm:text-xs text-[var(--color-text-secondary)] line-through">
+              <span className="text-[10px] text-[var(--color-text-secondary)] line-through">
                 {priceDisplay.originalPriceFormatted}
               </span>
             )}
             {!priceDisplay.isB2BPrice && product.oldPrice && (
-              <span className="text-xs sm:text-xs text-[var(--color-text-secondary)] line-through">
+              <span className="text-[10px] text-[var(--color-text-secondary)] line-through">
                 {product.oldPrice}
               </span>
             )}
-            {product.discount && !priceDisplay.isB2BPrice && (
-              <span className="text-xs sm:text-xs text-brand-teal font-medium">
-                {product.discount}
-              </span>
-            )}
           </div>
-          {/* B2B Price Badge */}
+          {/* B2B Price Badge - Compact */}
           {priceDisplay.isB2BPrice && (
-            <span className="inline-flex items-center gap-1 text-xs sm:text-xs text-[#7C3AED] font-semibold bg-purple-50 px-2 py-0.5 rounded-full w-fit">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <span className="inline-flex items-center gap-0.5 text-[9px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
-              B2B Price
+              B2B
             </span>
           )}
         </div>
         
-        {/* Stock Status */}
-        <div className="flex items-center gap-[5px] mb-[10px]">
-          <div className="w-[5px] h-[5px] sm:w-[6px] sm:h-[6px] rounded-full bg-[#639922] flex-shrink-0"></div>
-          <span className="text-xs sm:text-xs text-[var(--color-text-secondary)]">{product.stock}</span>
+        {/* Stock Status - Compact */}
+        <div className="flex items-center gap-1 mb-1.5">
+          <div className="w-1 h-1 rounded-full bg-[#639922] flex-shrink-0"></div>
+          <span className="text-[10px] text-[var(--color-text-secondary)]">{product.stock}</span>
         </div>
         
-        {/* Action Buttons - Responsive with enhanced interactions */}
-        <div className="grid grid-cols-2 gap-[5px] sm:gap-[6px]">
+        {/* Action Buttons - Compact single row */}
+        <div className="grid grid-cols-2 gap-1">
           <button 
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="relative overflow-hidden bg-brand-navy text-white border-none px-2 py-1.5 sm:py-2 rounded-md text-xs sm:text-xs font-medium cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)] hover:shadow-lg active:scale-95 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1 group/btn"
+            className="relative overflow-hidden bg-brand-navy text-white border-none px-2 py-1.5 rounded text-[11px] font-medium cursor-pointer hover:bg-[var(--color-brand-navy-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
           >
-            {/* Ripple effect container */}
-            <span className="absolute inset-0 overflow-hidden">
-              <span className="absolute inset-0 opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-pulse-glow"></span>
-            </span>
-            <span className="relative flex items-center gap-1">
-              {addingToCart ? (
-                <>
-                  <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                  <span className="hidden sm:inline">{t('common.loading')}</span>
-                </>
-              ) : (
-                <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hidden sm:inline group-hover/btn:animate-cart-bounce">
-                    <circle cx="9" cy="21" r="1"/>
-                    <circle cx="20" cy="21" r="1"/>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-                  </svg>
-                  {t('products.addToCart')}
-                </>
-              )}
-            </span>
+            {addingToCart ? (
+              <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+            ) : (
+              <>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="9" cy="21" r="1"/>
+                  <circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                </svg>
+                <span className="hidden sm:inline">{t('products.addToCart')}</span>
+                <span className="sm:hidden">Add</span>
+              </>
+            )}
           </button>
           <button 
             onClick={handleViewDetails}
-            className="bg-transparent text-brand-navy border-[0.5px] border-brand-navy px-2 py-1.5 sm:py-2 rounded-md text-xs sm:text-xs cursor-pointer font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-secondary)] hover:border-[var(--color-brand-navy-hover)] active:scale-95 transition-all duration-200"
+            className="bg-transparent text-brand-navy border border-brand-navy px-2 py-1.5 rounded text-[11px] font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
           >
-            {t('products.viewDetails')}
+            <span className="hidden sm:inline">{t('products.viewDetails')}</span>
+            <span className="sm:hidden">View</span>
           </button>
         </div>
       </div>

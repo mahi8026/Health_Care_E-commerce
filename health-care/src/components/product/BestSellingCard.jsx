@@ -87,10 +87,10 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
       style={{
         position: 'relative',
         background: '#fff',
-        borderRadius: '12px',
+        borderRadius: '8px',
         border: '1px solid #E5E7EB',
         cursor: 'pointer',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -106,10 +106,10 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
         <RankingBadge rank={rank} />
       </div>
 
-      {/* Image Container */}
+      {/* Image Container - Compact 4:3 ratio */}
       <div style={{
         position: 'relative',
-        aspectRatio: '1 / 1',
+        aspectRatio: '4 / 3',
         background: '#F9FAFB',
         overflow: 'hidden',
         flexShrink: 0,
@@ -120,7 +120,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Best Seller Rank ${rank} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: 'contain', padding: '8px' }}
             className="product-image"
             onError={() => setImageError(true)}
             loading="lazy"
@@ -235,80 +235,80 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
         )}
       </div>
 
-      {/* Product Info */}
+      {/* Product Info - Compact */}
       <div style={{
-        padding: '14px',
+        padding: '10px',
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
       }}>
-        {/* Brand Name */}
+        {/* Brand Name - Compact */}
         {brandName && (
           <div style={{
-            fontSize: '10px',
+            fontSize: '9px',
             color: 'var(--color-brand-teal)',
             fontWeight: 600,
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
-            marginBottom: '6px',
+            marginBottom: '4px',
           }}>
             {brandName}
           </div>
         )}
 
-        {/* Product Name */}
+        {/* Product Name - Compact */}
         <h3 style={{
-          fontSize: '14px',
+          fontSize: '12px',
           fontWeight: 600,
-          lineHeight: '1.4',
+          lineHeight: '1.3',
           color: '#1F2937',
           flex: 1,
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
-          minHeight: '40px',
-          margin: '0 0 10px 0',
+          minHeight: '32px',
+          margin: '0 0 6px 0',
         }}>
           {product.name}
         </h3>
 
-        {/* Rating */}
+        {/* Rating - Compact */}
         {ratingVal > 0 && (
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '4px',
-            marginBottom: '10px',
+            gap: '3px',
+            marginBottom: '6px',
           }}>
             {[1, 2, 3, 4, 5].map(star => (
               <span
                 key={star}
                 style={{
                   color: star <= Math.round(ratingVal) ? '#FBBF24' : '#E5E7EB',
-                  fontSize: '13px',
+                  fontSize: '11px',
                 }}
               >
                 ★
               </span>
             ))}
-            <span style={{ fontSize: '10px', color: '#9CA3AF', marginLeft: '2px' }}>
+            <span style={{ fontSize: '9px', color: '#9CA3AF', marginLeft: '2px' }}>
               ({reviewCount})
             </span>
           </div>
         )}
 
-        {/* Price */}
+        {/* Price - Compact */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '8px',
+          gap: '6px',
           marginTop: 'auto',
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
             <span style={{
-              fontSize: '18px',
+              fontSize: '15px',
               fontWeight: 700,
               color: 'var(--color-brand-navy)',
             }}>
@@ -316,7 +316,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
             </span>
             {hasDiscount && (
               <span style={{
-                fontSize: '12px',
+                fontSize: '10px',
                 color: '#9CA3AF',
                 textDecoration: 'line-through',
               }}>
