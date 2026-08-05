@@ -1079,6 +1079,17 @@ export default function HomePage() {
       <FlashDealsSection />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 7.5: BEST SELLING PRODUCTS - Rankings & Auto Slider */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={
+        <div style={{ padding: '60px 0', textAlign: 'center' }}>
+          <Spinner />
+        </div>
+      }>
+        <BestSellingSection />
+      </Suspense>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '48px 0' }}>
@@ -1319,17 +1330,6 @@ export default function HomePage() {
           <NewArrivalSlider products={newArrivals} />
         </Suspense>
       )}
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 10: BEST SELLING PRODUCTS - Rankings & Auto Slider */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={
-        <div style={{ padding: '60px 0', textAlign: 'center' }}>
-          <Spinner />
-        </div>
-      }>
-        <BestSellingSection />
-      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* RECENTLY VIEWED PRODUCTS */}
