@@ -295,6 +295,8 @@ export default function BestSellingSection() {
             }}>
               Showing {products.length} best selling products
             </div>
+            
+            {/* Note: Pagination dots have been removed for cleaner mobile experience */}
           </div>
         )}
       </div>

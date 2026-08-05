@@ -40,6 +40,7 @@ const SupportResources = lazy(() => import('@/components/home/SupportResources')
 const VideoSection = lazy(() => import('@/components/home/VideoSection'));
 const NewArrivalSlider = lazy(() => import('@/components/home/NewArrivalSlider'));
 const BestSellingSection = lazy(() => import('@/components/home/BestSellingSection'));
+const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
 
 // ══════════════════════════════════════════════════════════════════════════════
 // FALLBACK DATA & CONSTANTS
@@ -1355,6 +1356,13 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 8.3: PROMOTIONAL BANNERS - GoWell BD Style */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={null}>
+        <PromoBannerSection />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8.5: CATEGORY PRODUCT SECTIONS (horizontal scrolls per category) */}

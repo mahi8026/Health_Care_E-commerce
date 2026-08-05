@@ -281,40 +281,8 @@ export default function AutoSlider({
         </>
       )}
 
-      {/* Progress Dots (optional - shows on mobile) */}
-      {totalItems > visibleItems && (
-        <div
-          className="auto-slider-dots"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '4px',
-            marginTop: '16px',
-          }}
-        >
-          {Array.from({ length: maxIndex + 1 }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToIndex(index)}
-              className="auto-slider-dot"
-              style={{
-                width: currentIndex === index ? '20px' : '8px',
-                height: '8px',
-                borderRadius: '4px',
-                border: 'none',
-                backgroundColor: currentIndex === index 
-                  ? 'var(--color-brand-teal)' 
-                  : '#D1D5DB',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                padding: 0,
-              }}
-              aria-label={`Go to slide ${index + 1}`}
-              aria-current={currentIndex === index ? 'true' : 'false'}
-            />
-          ))}
-        </div>
-      )}
+      {/* Progress Dots removed - taking up too much space */}
+      {/* Pagination dots hidden for cleaner design */}
 
       {/* Hover styles */}
       <style jsx>{`
@@ -325,12 +293,6 @@ export default function AutoSlider({
         @media (max-width: 640px) {
           .auto-slider-arrow {
             display: none !important;
-          }
-        }
-
-        @media (min-width: 641px) {
-          .auto-slider-dots {
-            display: none;
           }
         }
       `}</style>

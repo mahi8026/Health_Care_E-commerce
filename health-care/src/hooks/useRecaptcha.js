@@ -15,6 +15,8 @@ export function useRecaptcha(siteKey) {
       return;
     }
 
+    console.log('[reCAPTCHA] Initializing with site key:', siteKey ? 'present' : 'missing');
+
     if (scriptLoaded) return;
 
     // Check if reCAPTCHA is already loaded
@@ -32,9 +34,11 @@ export function useRecaptcha(siteKey) {
     script.defer = true;
     
     script.onload = () => {
+      console.log('[reCAPTCHA] Script loaded successfully');
       setScriptLoaded(true);
       if (window.grecaptcha) {
         window.grecaptcha.ready(() => {
+          console.log('[reCAPTCHA] Ready!');
           setReady(true);
         });
       }
@@ -67,12 +71,14 @@ export function useRecaptcha(siteKey) {
       }
 
       if (!ready || !window.grecaptcha) {
-        console.warn('[reCAPTCHA] reCAPTCHA not ready');
+        console.warn('[reCAPTCHA] reCAPTCHA not ready. Ready:', ready, 'grecaptcha:', !!window.grecaptcha);
         return null;
       }
 
       try {
+        console.log('[reCAPTCHA] Executing reCAPTCHA for action:', action);
         const token = await window.grecaptcha.execute(siteKey, { action });
+        console.log('[reCAPTCHA] Token received:', token ? 'yes' : 'no');
         return token;
       } catch (error) {
         console.error('[reCAPTCHA] Error executing reCAPTCHA:', error);
