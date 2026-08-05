@@ -825,7 +825,7 @@ export default function HomePage() {
       `}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* HERO — left: text+search  |  right: image slider */}
+      {/* SECTION 1: HERO — left: text+search  |  right: image slider */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-hero home-hero--padded">
         <div className="hero-grid-container">
@@ -942,7 +942,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 5: CATEGORY NAVIGATION (Othoba-style circular icons) */}
+      {/* SECTION 2: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '32px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
@@ -1049,66 +1049,12 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 6: PROMO BANNER (conditional) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {promo && (
-        <div style={{
-          background: 'linear-gradient(90deg, #085041, var(--color-brand-teal), #085041)',
-          padding: '12px 16px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-          position: 'relative',
-          textAlign: 'center',
-        }}>
-          {/* Top row: icon + text */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 18 }}>🏷️</span>
-            <div style={{ color: '#fff', fontSize: 13, fontWeight: 500, lineHeight: 1.4 }}>
-              Limited time: Use code{' '}
-              <span style={{
-                background: 'rgba(255,255,255,0.2)', padding: '2px 8px',
-                borderRadius: 5, fontWeight: 600, fontSize: 14, letterSpacing: '0.05em',
-                display: 'inline-block',
-              }}>
-                {promo.code}
-              </span>
-              {' '}for {promo.type === 'percentage' ? `${promo.value}% ${t('home.off')}` : `৳${promo.value} ${t('home.off')}`}
-              {promo.description ? ` — ${promo.description}` : ''}
-            </div>
-          </div>
-          {/* Bottom row: buttons */}
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button
-              onClick={() => { navigator.clipboard.writeText(promo.code); showToast.success('Code copied!'); }}
-              style={{
-                background: '#fff', color: 'var(--color-brand-teal)', border: 'none',
-                padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              }}>
-              {t('home.copyCode')}
-            </button>
-            <button
-              onClick={() => router.push('/products')}
-              style={{
-                background: 'transparent', color: '#fff',
-                border: '1.5px solid rgba(255,255,255,0.6)',
-                padding: '7px 18px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              }}>
-              {t('home.shopNow')}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 7: DEAL OF THE DAY - FLASH DEALS */}
+      {/* SECTION 3: FLASH DEALS (Time-sensitive, creates urgency) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <FlashDealsSection />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 7.5: BEST SELLING PRODUCTS - Rankings & Auto Slider */}
+      {/* SECTION 4: BEST SELLING PRODUCTS (Social proof, rankings) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <div style={{ padding: '60px 0', textAlign: 'center' }}>
@@ -1119,7 +1065,7 @@ export default function HomePage() {
       </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
+      {/* SECTION 5: FEATURED PRODUCTS (Curated selection with tabs) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '48px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
@@ -1358,28 +1304,19 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* PROMOTIONAL BANNER 1 - Full-Width Hero (GoWell BD Style) */}
+      {/* SECTION 6: PROMOTIONAL BANNER 1 (Visual break after featured products) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={null}>
         <PromoBannerSection bannerId={0} />
       </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 8.5: CATEGORY PRODUCT SECTIONS (horizontal scrolls per category) */}
+      {/* SECTION 7: CATEGORY PRODUCT SECTIONS (Deep product discovery) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <CategoryProductSections categories={categories} />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* PROMOTIONAL BANNER 2 - Full-Width Hero (GoWell BD Style) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={null}>
-        <PromoBannerSection bannerId={1} />
-      </Suspense>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 9: NEW ARRIVALS - GoWell BD Style Auto Slider */}
+      {/* SECTION 8: NEW ARRIVALS (Fresh inventory, auto slider) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {!newArrivalsLoading && newArrivals.length > 0 && (
         <Suspense fallback={
@@ -1392,7 +1329,14 @@ export default function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* RECENTLY VIEWED PRODUCTS */}
+      {/* SECTION 9: PROMOTIONAL BANNER 2 (Second marketing push) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={null}>
+        <PromoBannerSection bannerId={1} />
+      </Suspense>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 10: RECENTLY VIEWED (Personalized recommendations) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px 32px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -1401,7 +1345,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* WHY MediportBD */}
+      {/* SECTION 11: WHY CHOOSE US (Trust building, credibility) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -1429,7 +1373,46 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* B2B PROGRAM BANNER */}
+      {/* SECTION 12: HOW IT WORKS (Process clarity, user guidance) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <section className="home-section" style={{ padding: '56px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0 }}>
+              {t('home.howItWorks')}
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}
+            className="how-it-works-grid">
+            {HOW_IT_WORKS.map((step, i) => (
+              <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
+                {i < HOW_IT_WORKS.length - 1 && (
+                  <div className="how-it-works-step-line" style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
+                    height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
+                )}
+                <div style={{ position: 'relative', zIndex: 1, background: '#fff',
+                  borderRadius: 16, padding: '28px 20px', border: '1px solid var(--color-border-primary)' }}>
+                  <div style={{ width: 60, height: 60, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 16px', fontSize: 28, color: '#fff' }}>
+                    {step.icon}
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)',
+                    marginBottom: 8 }}>{step.step}</div>
+                  <h4 style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{step.title}</h4>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 13: B2B PROGRAM (Business customer acquisition) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -1500,7 +1483,7 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SUPPORT & RESOURCES */}
+      {/* SECTION 14: SUPPORT & RESOURCES (Additional value, help center) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
@@ -1513,46 +1496,7 @@ export default function HomePage() {
       </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 15: HOW IT WORKS */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '56px 24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
-              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0 }}>
-              {t('home.howItWorks')}
-            </h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}
-            className="how-it-works-grid">
-            {HOW_IT_WORKS.map((step, i) => (
-              <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
-                {i < HOW_IT_WORKS.length - 1 && (
-                  <div className="how-it-works-step-line" style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
-                    height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
-                )}
-                <div style={{ position: 'relative', zIndex: 1, background: '#fff',
-                  borderRadius: 16, padding: '28px 20px', border: '1px solid var(--color-border-primary)' }}>
-                  <div style={{ width: 60, height: 60, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 16px', fontSize: 28, color: '#fff' }}>
-                    {step.icon}
-                  </div>
-                  <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)',
-                    marginBottom: 8 }}>{step.step}</div>
-                  <h4 style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{step.title}</h4>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* VIDEO SECTION */}
+      {/* SECTION 15: VIDEO SECTION (Engagement, brand storytelling) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
@@ -1565,7 +1509,7 @@ export default function HomePage() {
       </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 16: CUSTOMER TESTIMONIALS */}
+      {/* SECTION 16: CUSTOMER TESTIMONIALS (Final social proof) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="bg-hero-gradient" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
