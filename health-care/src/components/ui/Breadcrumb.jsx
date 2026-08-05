@@ -21,7 +21,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           style={{
             display: 'flex',
             alignItems: 'center',
-            flexShrink: current ? 1 : 0,
+            flexShrink: 1,  // Allow all items to shrink
             minWidth: 0,
           }}
         >
@@ -59,7 +59,11 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 lineHeight: '1.4',
                 whiteSpace: 'nowrap',
                 textDecoration: 'none',
-                flexShrink: 0,
+                flexShrink: 1,  // Allow links to shrink too
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                minWidth: 0,
+                maxWidth: '100%',
               }}
             >
               {item.label}
