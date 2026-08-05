@@ -46,7 +46,9 @@ export default function Footer() {
     {
       heading: 'Company',
       items: [
-        { label: 'About Us', href: '/dgda-info' },
+        { label: 'About Us', href: '/about' },
+        { label: 'DGDA Compliance', href: '/dgda-info' },
+        { label: 'Certifications', href: '/certifications' },
         { label: 'Careers', href: '/careers' },
         { label: 'News', href: '/news' },
         { label: 'Contact', href: '/contact' },
@@ -59,6 +61,16 @@ export default function Footer() {
         { label: 'Surgical Instruments', href: '/products/category/surgical-instruments' },
         { label: 'Laboratory Reagents', href: '/reagent-store' },
         { label: 'Hospital Machines', href: '/products/category/hospital-machines' },
+      ],
+    },
+    {
+      heading: 'Guides',
+      items: [
+        { label: 'All Buying Guides', href: '/guides' },
+        { label: 'Medical Equipment Guide', href: '/guides/medical-equipment-bangladesh-guide' },
+        { label: 'ECG Machine Prices', href: '/guides/ecg-machine-price-bangladesh-2026' },
+        { label: 'BP Monitor Buying Guide', href: '/guides/bp-monitor-buying-guide-bangladesh' },
+        { label: 'Comparisons', href: '/compare' },
       ],
     },
     {
@@ -85,8 +97,8 @@ export default function Footer() {
     <footer className="bg-brand-navy text-white">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
 
-        {/* ── Desktop: 5-column grid ── */}
-        <div className="hidden md:grid md:grid-cols-[1fr_1fr_1fr_1fr_1.5fr] gap-6 items-start">
+        {/* ── Desktop: 6-column grid ── */}
+        <div className="hidden md:grid md:grid-cols-[1fr_1fr_1fr_1fr_1fr_1.5fr] gap-6 items-start">
 
           {/* 4 link columns */}
           <nav aria-label="Footer navigation" className="contents">

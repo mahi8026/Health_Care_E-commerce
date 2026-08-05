@@ -7,12 +7,24 @@
  *
  * Each page gets its own title, description, canonical URL, and OG tags
  * from CATEGORY_SEO config — making them fully indexable by Google.
+ *
+ * Server-rendered GEO elements: breadcrumb schema, FAQPage schema and a
+ * Quick Answer box (answer-first, AI-engine extractable) above the
+ * product grid.
  */
 
 import { notFound } from 'next/navigation';
 import ProductsPage from '@/views/ProductsPage';
 import { CATEGORY_SEO, SITE_CONFIG } from '@/config/seo';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import {
+  getCategoryFaqs,
+  getCategoryQuickAnswer,
+} from '@/config/categoryGEO';
+import StructuredData, {
+  generateBreadcrumbSchema,
+} from '@/utils/structuredData';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 // Allow dynamic params beyond pre-generated ones
 export const dynamicParams = true;
@@ -65,6 +77,54 @@ export default async function CategoryPage({ params }) {
     notFound();
   }
 
-  // Pass the resolved category name to ProductsPage so it pre-filters
-  return <ProductsPage initialCategory={categoryName} />;
+  const canonicalUrl = `${SITE_CONFIG.url}/products/category/${resolvedParams.slug}`;
+  const quickAnswer = getCategoryQuickAnswer(resolvedParams.slug);
+  const faqs = getCategoryFaqs(resolvedParams.slug);
+
+  const breadcrumbs = [
+    { name: 'Home', url: SITE_CONFIG.url },
+    { name: 'Products', url: `${SITE_CONFIG.url}/products` },
+    { name: categoryName, url: canonicalUrl },
+  ];
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs);
+
+  const webPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': canonicalUrl,
+    url: canonicalUrl,
+    name: categoryName,
+    speakable: {
+      '@type': 'Speakable',
+      cssSelector: ['#quick-answer'],
+    },
+  };
+
+  return (
+    <>
+      <StructuredData schema={breadcrumbSchema} />
+      <StructuredData schema={webPageSchema} />
+      <FAQSchema faqs={faqs} />
+
+      {/* Quick Answer box — answer-first for AI engines & users */}
+      {quickAnswer && (
+        <section className="bg-page px-4 pt-4">
+          <div
+            id="quick-answer"
+            className="container mx-auto max-w-[1400px] rounded-2xl border border-[var(--color-brand-teal)] bg-[var(--color-status-success-tint)] p-4 sm:p-5"
+          >
+            <p className="text-[var(--text-xs)] font-bold uppercase tracking-wider text-[var(--color-brand-teal)] mb-1.5">
+              Quick Answer
+            </p>
+            <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-primary)]">
+              {quickAnswer}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Pass the resolved category name to ProductsPage so it pre-filters */}
+      <ProductsPage initialCategory={categoryName} />
+    </>
+  );
 }

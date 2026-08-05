@@ -9,10 +9,19 @@ import {
   FaQuestionCircle,
   FaShippingFast,
   FaCertificate,
-  FaHeadset
+  FaHeadset,
+  FaBookOpen
 } from 'react-icons/fa';
 
 const SUPPORT_OPTIONS = [
+  {
+    icon: <FaBookOpen />,
+    title: 'Buying Guides',
+    desc: 'Prices, brands & comparisons',
+    action: '/guides',
+    color: '#0E8A6E',
+    bgColor: '#F0FDF9'
+  },
   {
     icon: <FaPhoneAlt />,
     title: 'Call Us',

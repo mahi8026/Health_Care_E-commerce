@@ -635,6 +635,14 @@ export default function HomePage() {
         }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
+        /* Stable product grid heights - reserve space so skeleton/empty-state
+           swaps never collapse the section (prevents CLS) */
+        .stable-product-grid, .featured-products-panel { min-height: 340px; }
+        @media (min-width: 768px) {
+          .stable-product-grid { min-height: 700px; }
+          .featured-products-panel { min-height: 700px; }
+        }
+        
         /* Marquee - CONVERTED to static scroll for better performance */
         .marquee-wrap { 
           overflow-x: auto;
@@ -1107,7 +1115,7 @@ export default function HomePage() {
             </div>
 
             {/* Horizontal scroll on mobile, 2×2 grid on desktop */}
-            <div className="flex overflow-x-auto gap-3 pb-2 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 md:gap-5 md:overflow-visible"
+            <div className="stable-product-grid flex overflow-x-auto gap-3 pb-2 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 md:gap-5 md:overflow-visible"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {topSellingLoading ? (
                 // Show 4 skeleton loaders
@@ -1377,7 +1385,7 @@ export default function HomePage() {
           </div>
 
           {/* Products - Horizontal scroll with arrow navigation */}
-          <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" style={{ position: 'relative' }}>
+          <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" className="featured-products-panel" style={{ position: 'relative' }}>
             {/* Left Arrow - Mobile Only */}
             {!featuredLoading && featuredProducts.length > 0 && (
               <button
