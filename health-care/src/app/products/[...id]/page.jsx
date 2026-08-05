@@ -5,7 +5,7 @@ import StructuredData, {
 import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
-import TrustBand from '@/components/seo/TrustBand';
+// import TrustBand from '@/components/seo/TrustBand'; // Removed - not needed on product pages
 import { API as API_BASE } from '@/constants/api';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
@@ -155,7 +155,7 @@ export default async function ProductPage({ params }) {
       {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
       {faqs             && <FAQSchema faqs={faqs} />}
 
-      <TrustBand />
+      {/* <TrustBand /> */}
       <ProductDetailPage productId={slug} heroPriority={true} />
     </>
   );
