@@ -755,6 +755,34 @@ export default function HomePage() {
           display: none; /* Chrome/Safari/Opera */
         }
         
+        /* Scroll fade indicators for horizontal scrolling sections */
+        @media (max-width: 768px) {
+          .featured-products-panel::before,
+          .featured-products-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 20px; /* Above the padding */
+            width: 30px;
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.3s;
+          }
+          .featured-products-panel::before {
+            left: 0;
+            background: linear-gradient(to right, rgba(255,255,255,0.9), transparent);
+          }
+          .featured-products-panel::after {
+            right: 0;
+            background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
+          }
+        }
+        
+        /* Smooth momentum scrolling on iOS */
+        #featured-scroll-container {
+          -webkit-overflow-scrolling: touch;
+        }
+        
         /* Smooth scrolling for horizontal sections */
         .scroll-smooth {
           scroll-behavior: smooth;
@@ -1194,90 +1222,98 @@ export default function HomePage() {
 
           {/* Products - Horizontal scroll with arrow navigation */}
           <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" className="featured-products-panel" style={{ position: 'relative' }}>
-            {/* Left Arrow - Mobile Only */}
+            {/* Left Arrow - Always visible on mobile when products exist */}
             {!featuredLoading && featuredProducts.length > 0 && (
               <button
                 onClick={() => {
                   const container = document.getElementById('featured-scroll-container');
                   if (container) {
-                    container.scrollBy({ left: -200, behavior: 'smooth' });
+                    const cardWidth = 170; // Card width + gap
+                    container.scrollBy({ left: -cardWidth, behavior: 'smooth' });
                   }
                 }}
                 className="md:hidden"
                 style={{
                   position: 'absolute',
-                  left: -8,
+                  left: 4,
                   top: '50%',
                   transform: 'translateY(-50%)',
                   zIndex: 10,
-                  width: 32,
-                  height: 32,
+                  width: 36,
+                  height: 36,
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid var(--color-border-primary)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  background: 'rgba(255, 255, 255, 0.98)',
+                  border: '1.5px solid var(--color-border-primary)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  fontSize: 14,
+                  fontSize: 20,
+                  fontWeight: 'bold',
                   color: 'var(--color-brand-navy)',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'var(--color-brand-teal)';
                   e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                  e.currentTarget.style.transform = 'translateY(-50%) scale(1.15)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.98)';
                   e.currentTarget.style.color = 'var(--color-brand-navy)';
                   e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
                 }}
                 aria-label="Scroll left">
                 ‹
               </button>
             )}
 
-            {/* Right Arrow - Mobile Only */}
+            {/* Right Arrow - Always visible on mobile when products exist */}
             {!featuredLoading && featuredProducts.length > 0 && (
               <button
                 onClick={() => {
                   const container = document.getElementById('featured-scroll-container');
                   if (container) {
-                    container.scrollBy({ left: 200, behavior: 'smooth' });
+                    const cardWidth = 170; // Card width + gap
+                    container.scrollBy({ left: cardWidth, behavior: 'smooth' });
                   }
                 }}
                 className="md:hidden"
                 style={{
                   position: 'absolute',
-                  right: -8,
+                  right: 4,
                   top: '50%',
                   transform: 'translateY(-50%)',
                   zIndex: 10,
-                  width: 32,
-                  height: 32,
+                  width: 36,
+                  height: 36,
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  border: '1px solid var(--color-border-primary)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  background: 'rgba(255, 255, 255, 0.98)',
+                  border: '1.5px solid var(--color-border-primary)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  fontSize: 14,
+                  fontSize: 20,
+                  fontWeight: 'bold',
                   color: 'var(--color-brand-navy)',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'var(--color-brand-teal)';
                   e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                  e.currentTarget.style.transform = 'translateY(-50%) scale(1.15)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.98)';
                   e.currentTarget.style.color = 'var(--color-brand-navy)';
                   e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
                 }}
                 aria-label="Scroll right">
                 ›
@@ -1285,7 +1321,7 @@ export default function HomePage() {
             )}
 
           {featuredLoading ? (
-            <div id="featured-scroll-container" className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-3 snap-x snap-mandatory scrollbar-hide scroll-smooth" style={{ padding: '0 4px' }}>
+            <div id="featured-scroll-container" className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide scroll-smooth" style={{ padding: '0 4px', WebkitOverflowScrolling: 'touch' }}>
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="flex-shrink-0 w-[160px] md:w-auto snap-start">
                   <ProductCardSkeleton />
@@ -1299,9 +1335,18 @@ export default function HomePage() {
               <p style={{ fontSize: 14 }}>Try selecting a different category or check back later</p>
             </div>
           ) : (
-            <div id="featured-scroll-container" className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-3 snap-x snap-mandatory scrollbar-hide scroll-smooth" style={{ padding: '0 4px', listStyle: 'none' }}>
+            <div 
+              id="featured-scroll-container" 
+              className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide scroll-smooth" 
+              style={{ 
+                padding: '0 4px', 
+                listStyle: 'none',
+                WebkitOverflowScrolling: 'touch', // iOS smooth scrolling
+                scrollPaddingLeft: '4px', // Proper snap alignment
+                scrollBehavior: 'smooth'
+              }}>
               {featuredProducts.map((p, index) => (
-                <div key={p._id || index} className="flex-shrink-0 w-[160px] md:w-auto snap-start">
+                <div key={p._id || index} className="flex-shrink-0 w-[160px] md:w-auto snap-start snap-always">
                   <ProductCard product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
                 </div>
               ))}
