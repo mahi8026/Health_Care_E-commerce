@@ -267,7 +267,6 @@ export default function HomePage() {
   const [bannersLoaded, setBannersLoaded] = useState(false);
   const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
   const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
-  const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [categoryProducts, setCategoryProducts] = useState({
     diagnostic: [],
     reagents: [],
@@ -280,7 +279,6 @@ export default function HomePage() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [dealLoading, setDealLoading] = useState(true);
   const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
-  const [topSellingLoading, setTopSellingLoading] = useState(true);
   const [categoryProductsLoading, setCategoryProductsLoading] = useState(true);
   
   // ── Memoized Values ────────────────────────────────────────────────────────
@@ -470,7 +468,6 @@ export default function HomePage() {
           setCategoryCounts(data.categoryCounts || {});
           setDealProducts(Array.isArray(data.dealProducts) ? data.dealProducts : []);
           setNewArrivals(Array.isArray(data.newArrivals) ? data.newArrivals : []);
-          setTopSellingProducts(Array.isArray(data.topSellingProducts) ? data.topSellingProducts : []);
           setLabEquipmentProducts(Array.isArray(data.labEquipmentProducts) ? data.labEquipmentProducts : []);
           setTestimonials(Array.isArray(data.testimonials) ? data.testimonials : []);
           setPromo(data.activePromo || null);
@@ -481,7 +478,6 @@ export default function HomePage() {
           setIsLoadingData(false);
           setDealLoading(false);
           setNewArrivalsLoading(false);
-          setTopSellingLoading(false);
         } else {
           throw new Error('Invalid response format');
         }
@@ -495,7 +491,6 @@ export default function HomePage() {
         setFeaturedProducts([]);
         setDealProducts([]);
         setNewArrivals([]);
-        setTopSellingProducts([]);
         setLabEquipmentProducts([]);
         
         // Update loading states
@@ -503,7 +498,6 @@ export default function HomePage() {
         setIsLoadingData(false);
         setDealLoading(false);
         setNewArrivalsLoading(false);
-        setTopSellingLoading(false);
       }
     };
 
@@ -772,10 +766,6 @@ export default function HomePage() {
         .category-title-accent::before { content: ''; width: 4px; height: 20px; background: var(--color-brand-teal); border-radius: 2px; }
         .category-product-row { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 6px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-product-row::-webkit-scrollbar { display: none; }
-        /* Top selling card styles */
-        .top-selling-card { display: flex; gap: 12px; padding: 12px; background: #fff; border: 1px solid var(--color-border-primary); border-radius: 12px; position: relative; cursor: pointer; transition: box-shadow 0.2s; }
-        .top-selling-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .best-selling-badge { position: absolute; top: -1px; right: -1px; background: #F97316; color: #fff; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 0 12px 0 8px; }
         @media (max-width: 768px) {
           .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; padding: 0 16px; }
           .hero-left-content { order: 2; }
@@ -1087,199 +1077,6 @@ export default function HomePage() {
       {/* SECTION 7: DEAL OF THE DAY - FLASH DEALS */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <FlashDealsSection />
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 7.5: TOP SELLING PRODUCTS */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {(topSellingLoading || topSellingProducts.length > 0) && (
-        <section className="home-section" style={{ padding: '56px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 32 }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-brand-teal)', textTransform: 'uppercase',
-                  letterSpacing: '0.08em', marginBottom: 6 }}>{t('home.mostPopular')}</div>
-                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 600, margin: 0,
-                  color: 'var(--color-brand-navy)', lineHeight: 1.2 }}>{t('home.topSelling')}</h2>
-              </div>
-              <button onClick={() => router.push('/products?sortBy=popular')}
-                style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 600, background: 'none',
-                  border: '1.5px solid var(--color-brand-teal)', borderRadius: 8, cursor: 'pointer',
-                  padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 6,
-                  transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-brand-teal)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--color-brand-teal)'; }}>
-                {t('home.viewAll')} <span>→</span>
-              </button>
-            </div>
-
-            {/* Horizontal scroll on mobile, 2×2 grid on desktop */}
-            <div className="stable-product-grid flex overflow-x-auto gap-3 pb-2 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 md:gap-5 md:overflow-visible"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {topSellingLoading ? (
-                // Show 4 skeleton loaders
-                [...Array(4)].map((_, i) => (
-                  <div key={i} className="flex-shrink-0 w-[280px] md:w-auto snap-start">
-                    <ProductCardSkeleton />
-                  </div>
-                ))
-              ) : topSellingProducts.length === 0 ? (
-                <p className="text-[var(--color-text-secondary)] text-sm text-center py-8 col-span-2">No top selling products available</p>
-              ) : (
-                topSellingProducts.slice(0, 4).map((product, idx) => {
-                const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
-                const imgUrl = typeof imageData === 'string' ? imageData : imageData?.url;
-                const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-                const catName = typeof product.category === 'object' ? product.category?.name : product.category;
-                const price = product.price || 0;
-                const oldPrice = product.oldPrice || 0;
-                const hasDiscount = oldPrice > price && oldPrice > 0;
-                const discountPct = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
-                const rank = idx + 1;
-
-                return (
-                  <div key={product._id} className="flex-shrink-0 w-[280px] md:w-auto snap-start">
-                    <div
-                    onClick={() => router.push(`/products/${product.slug || product._id}`)}
-                    style={{
-                      display: 'flex', gap: 0, background: '#fff',
-                      border: '1px solid var(--color-border-primary)', borderRadius: 16,
-                      overflow: 'hidden', cursor: 'pointer',
-                      transition: 'box-shadow 0.25s, transform 0.25s',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-                      height: '100%'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.boxShadow = '0 8px 32px rgba(11,37,69,0.12)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}>
-
-                    {/* Left: Image with rank badge */}
-                    <div style={{ width: 140, minHeight: 160, flexShrink: 0, position: 'relative',
-                      background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {imgUrl ? (
-                        <Image 
-                          src={imgUrl} 
-                          alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Top selling product #${rank} — MediportBD Bangladesh`}
-                          fill
-                          sizes="140px"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <div style={{ fontSize: 40, display: 'flex',
-                          alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>🏥</div>
-                      )}
-
-                      {/* Rank badge */}
-                      <div style={{
-                        position: 'absolute', top: 10, left: 10,
-                        width: 28, height: 28, borderRadius: '50%',
-                        background: rank === 1 ? 'var(--color-warning)' : rank === 2 ? '#94A3B8' : rank === 3 ? '#CD7C2F' : 'var(--color-brand-teal)',
-                        color: '#fff', fontSize: 12, fontWeight: 600,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
-                      }}>#{rank}</div>
-
-                      {/* Discount badge */}
-                      {hasDiscount && (
-                        <div style={{
-                          position: 'absolute', top: 10, right: 10,
-                          background: 'var(--color-status-danger)', color: '#fff', fontSize: 10,
-                          fontWeight: 600, padding: '3px 7px', borderRadius: 6
-                        }}>-{discountPct}%</div>
-                      )}
-                    </div>
-
-                    {/* Right: Content */}
-                    <div style={{ flex: 1, padding: '16px 18px', display: 'flex',
-                      flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
-                      <div>
-                        {/* Category + Brand */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
-                          {catName && (
-                            <span style={{ fontSize: 10, color: 'var(--color-brand-teal)', fontWeight: 600,
-                              textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                              {catName}
-                            </span>
-                          )}
-                          {catName && brandName && <span style={{ color: 'var(--color-border-primary)', fontSize: 10 }}>•</span>}
-                          {brandName && (
-                            <span style={{ fontSize: 10, color: 'var(--color-text-secondary)', fontWeight: 600 }}>{brandName}</span>
-                          )}
-                        </div>
-
-                        {/* Product name */}
-                        <div style={{
-                          fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)', lineHeight: 1.45,
-                          marginBottom: 10, display: '-webkit-box',
-                          WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
-                        }}>
-                          {product.name}
-                        </div>
-
-                        {/* Price row */}
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-navy)', letterSpacing: '-0.02em' }}>
-                            {price > 0 ? `৳${price.toLocaleString()}` : 'Contact for Price'}
-                          </span>
-                          {hasDiscount && (
-                            <span style={{ fontSize: 12, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
-                              ৳{oldPrice.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Stock indicator */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>
-                          <div style={{
-                            width: 6, height: 6, borderRadius: '50%',
-                            background: product.stock > 0 ? 'var(--color-status-success)' : 'var(--color-status-danger)'
-                          }} />
-                          <span style={{ fontSize: 11, color: product.stock > 0 ? 'var(--color-status-success)' : 'var(--color-status-danger)', fontWeight: 500 }}>
-                            {product.stock > 0 ? t('products.inStock') : t('products.outOfStock')}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Buttons */}
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                          onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
-                          style={{
-                            flex: 1, padding: '9px 10px', background: '#fff', color: 'var(--color-brand-teal)',
-                            border: '1.5px solid var(--color-brand-teal)', borderRadius: 8, fontSize: 12,
-                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#F0FDF4'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}>
-                          {t('products.addToCart')}
-                        </button>
-                        <button
-                          onClick={e => { e.stopPropagation(); router.push(`/products/${product.slug || product._id}`); }}
-                          style={{
-                            flex: 1, padding: '9px 10px', background: 'var(--color-brand-teal)', color: '#fff',
-                            border: 'none', borderRadius: 8, fontSize: 12,
-                            fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
-                          }}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-brand-teal-hover)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-brand-teal)'; }}>
-                          {t('products.viewDetails')}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  </div>
-                );
-              }))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
