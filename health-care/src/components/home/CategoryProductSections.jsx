@@ -74,7 +74,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
       className="snap-start flex-shrink-0 w-[180px] bg-white rounded-md border border-[var(--color-border-primary)] overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
       onClick={onCardClick}
     >
-      <div className="relative aspect-[4/3] w-full bg-[var(--color-background-secondary)] overflow-hidden">
+      <div className="relative aspect-square w-full bg-[var(--color-background-secondary)] overflow-hidden">
         {optimizedImg ? (
           <Image
             src={optimizedImg}

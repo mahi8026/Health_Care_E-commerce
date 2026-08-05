@@ -133,16 +133,16 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         }
       }}
     >
-      {/* Image Container - Extra compact on mobile: 3:2, desktop: 4:3 */}
-      <div className="aspect-[3/2] sm:aspect-[4/3] w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
+      {/* Image Container - Fixed aspect ratio 1:1 (square) for consistent sizing */}
+      <div className="aspect-square w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {isVisible && primaryImage ? (
           <>
             <Image
               src={primaryImage.url}
               alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
               fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
-              className="object-contain p-2 group-hover:scale-105 transition-transform duration-200 ease-out"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 250px"
+              className="object-cover p-3 group-hover:scale-105 transition-transform duration-200 ease-out"
               loading="lazy"
               decoding="async"
               unoptimized={!primaryImage.url.includes('res.cloudinary.com')}

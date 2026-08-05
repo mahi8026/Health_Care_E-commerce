@@ -106,10 +106,10 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
         <RankingBadge rank={rank} />
       </div>
 
-      {/* Image Container - Compact 4:3 ratio */}
+      {/* Image Container - Square 1:1 ratio for consistency */}
       <div style={{
         position: 'relative',
-        aspectRatio: '4 / 3',
+        aspectRatio: '1 / 1',
         background: '#F9FAFB',
         overflow: 'hidden',
         flexShrink: 0,
