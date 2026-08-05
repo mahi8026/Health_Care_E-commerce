@@ -133,8 +133,8 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         }
       }}
     >
-      {/* Image Container - Compact 4:3 aspect ratio with hover zoom */}
-      <div className="aspect-[4/3] w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
+      {/* Image Container - Extra compact on mobile: 3:2, desktop: 4:3 */}
+      <div className="aspect-[3/2] sm:aspect-[4/3] w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
         {isVisible && primaryImage ? (
           <>
             <Image
@@ -223,8 +223,8 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         </div>
       </div>
       
-      {/* Content - Compact Padding */}
-      <div className="p-2 flex-1 flex flex-col">
+      {/* Content - Extra Compact on Mobile */}
+      <div className="p-1.5 sm:p-2 flex-1 flex flex-col">
         {/* Category (optional) + Brand */}
         {showCategory && (
           <div className="flex items-center gap-1 mb-0.5 flex-wrap">
@@ -234,25 +234,25 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
             <span className="text-[var(--color-text-tertiary)] text-[10px]">·</span>
           </div>
         )}
-        {/* Brand - Compact */}
-        <div className="text-[10px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
+        {/* Brand - Extra Compact */}
+        <div className="text-[9px] sm:text-[10px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
           {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </div>
         
         {/* Product Name - Compact with 2 lines */}
-        <div className="text-xs font-medium leading-tight text-[var(--color-text-primary)] mb-1 flex-1 line-clamp-2 min-h-[2.25rem]">
+        <div className="text-[11px] sm:text-xs font-medium leading-tight text-[var(--color-text-primary)] mb-0.5 sm:mb-1 flex-1 line-clamp-2 min-h-[2rem] sm:min-h-[2.25rem]">
           {product.name}
         </div>
         
-        {/* Rating - Compact */}
-        <div className="mb-1.5">
+        {/* Rating - Extra Compact */}
+        <div className="mb-1 sm:mb-1.5">
           <RatingStars rating={product.rating || 0} count={product.reviews} size="sm" />
         </div>
         
-        {/* Price - Compact with B2B indicator */}
-        <div className="flex flex-col gap-0.5 mb-1.5">
+        {/* Price - Extra Compact with B2B indicator */}
+        <div className="flex flex-col gap-0.5 mb-1 sm:mb-1.5">
           <div className="flex items-baseline gap-1">
-            <span className="font-[family-name:var(--font-lora)] text-sm font-bold text-brand-navy">
+            <span className="font-[family-name:var(--font-lora)] text-sm sm:text-sm font-bold text-brand-navy">
               {priceDisplay.formatted}
             </span>
             {priceDisplay.showOriginalPrice && (
@@ -277,18 +277,18 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           )}
         </div>
         
-        {/* Stock Status - Compact */}
-        <div className="flex items-center gap-1 mb-1.5">
-          <div className="w-1 h-1 rounded-full bg-[#639922] flex-shrink-0"></div>
-          <span className="text-[10px] text-[var(--color-text-secondary)]">{product.stock}</span>
+        {/* Stock Status - Extra Compact */}
+        <div className="flex items-center gap-0.5 sm:gap-1 mb-1 sm:mb-1.5">
+          <div className="w-1 h-1 sm:w-1 sm:h-1 rounded-full bg-[#639922] flex-shrink-0"></div>
+          <span className="text-[10px] sm:text-xs text-[var(--color-text-secondary)]">{product.stock}</span>
         </div>
         
-        {/* Action Buttons - Compact single row */}
-        <div className="grid grid-cols-2 gap-1">
+        {/* Action Buttons - Extra Compact on mobile */}
+        <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
           <button 
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="relative overflow-hidden bg-brand-navy text-white border-none px-2 py-1.5 rounded text-[11px] font-medium cursor-pointer hover:bg-[var(--color-brand-navy-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+            className="relative overflow-hidden bg-brand-navy text-white border-none px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-[11px] font-medium cursor-pointer hover:bg-[var(--color-brand-navy-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-0.5 sm:gap-1"
           >
             {addingToCart ? (
               <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
@@ -309,7 +309,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           </button>
           <button 
             onClick={handleViewDetails}
-            className="bg-transparent text-brand-navy border border-brand-navy px-2 py-1.5 rounded text-[11px] font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
+            className="bg-transparent text-brand-navy border border-brand-navy px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-[11px] font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
           >
             <span className="hidden sm:inline">{t('products.viewDetails')}</span>
             <span className="sm:hidden">View</span>
