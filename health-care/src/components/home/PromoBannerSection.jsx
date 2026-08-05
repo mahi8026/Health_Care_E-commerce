@@ -3,21 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { FaArrowRight } from 'react-icons/fa';
 
 /**
- * PromoBannerSection Component - GoWell BD Style
+ * PromoBannerSection Component - GoWell BD Professional Style
  * 
- * Displays promotional banners integrated with product grid
- * LEFT COLUMN: 2 large stacked promotional banners (50% height each)
- * RIGHT COLUMNS: Regular product grid
+ * Large horizontal promotional banners placed between product sections
+ * Features lifestyle images, Bengali text, feature lists
  * 
- * Layout:
- * - Desktop: 1 promo column (300px) + product grid
- * - Tablet: Full-width banners above products
- * - Mobile: Horizontal scroll banners
+ * Layout: 3-column grid on desktop, horizontal scroll on mobile
  */
-export default function PromoBannerSection({ children }) {
+export default function PromoBannerSection() {
   const router = useRouter();
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,8 +21,6 @@ export default function PromoBannerSection({ children }) {
     // Fetch promotional banners from settings or use fallback
     const fetchBanners = async () => {
       try {
-        // You can add API call here to fetch dynamic banners
-        // For now, using static promotional content
         setBanners(PROMO_BANNERS);
       } catch (error) {
         console.error('[PromoBannerSection] Failed to load banners:', error);
@@ -54,204 +47,218 @@ export default function PromoBannerSection({ children }) {
     <section
       className="promo-banner-section"
       style={{
-        padding: '0',
+        padding: '40px 0',
         background: '#fff',
       }}
     >
-      {/* Desktop: Banners stacked vertically in left column */}
-      <div 
-        className="promo-banners-desktop"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-        }}
-      >
-        {banners.slice(0, 2).map((banner, index) => (
-          <div
-            key={index}
-            onClick={() => handleBannerClick(banner)}
-            className="promo-banner-card"
-            style={{
-              position: 'relative',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              cursor: 'pointer',
-              background: banner.bgColor || '#f8f9fa',
-              height: '400px',
-              transition: 'all 0.3s ease',
-              border: '1px solid #e5e7eb',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.02)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            {/* Background/Model Image */}
-            {banner.image && (
-              <div style={{
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '0 20px',
+      }}>
+        {/* 3-Column Grid on Desktop, Horizontal Scroll on Mobile */}
+        <div 
+          className="promo-banners-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '20px',
+          }}
+        >
+          {banners.map((banner, index) => (
+            <div
+              key={index}
+              onClick={() => handleBannerClick(banner)}
+              className="promo-banner-card"
+              style={{
                 position: 'relative',
-                width: '100%',
-                height: '100%',
-              }}>
-                <Image
-                  src={banner.image}
-                  alt={banner.title}
-                  fill
-                  style={{ objectFit: 'cover', objectPosition: banner.imagePosition || 'center' }}
-                  sizes="400px"
-                  priority={index === 0}
-                />
-              </div>
-            )}
+                borderRadius: '16px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                background: banner.bgColor || '#f8f9fa',
+                height: '420px',
+                transition: 'all 0.3s ease',
+                border: '1px solid #e5e7eb',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-6px)';
+                e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              {/* Background Image - Model/Lifestyle Photo */}
+              {banner.image && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: 1,
+                }}>
+                  <Image
+                    src={banner.image}
+                    alt={banner.title}
+                    fill
+                    style={{ objectFit: 'cover', objectPosition: banner.imagePosition || 'center' }}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority={index === 0}
+                  />
+                </div>
+              )}
 
-            {/* Content Overlay */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              padding: '24px',
-              background: banner.overlay || 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 50%, transparent 100%)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}>
-              {/* Top Content */}
-              <div>
-                {/* Brand Logo */}
+              {/* Content Overlay - Left Side for Text */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 2,
+                padding: '28px',
+                background: banner.overlay || 'linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.88) 45%, transparent 75%)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}>
+                {/* Top: Brand Logo */}
                 {banner.logo && (
-                  <div style={{
-                    marginBottom: '16px',
-                  }}>
-                    <img 
+                  <div style={{ marginBottom: '16px' }}>
+                    <Image 
                       src={banner.logo} 
-                      alt="Brand" 
-                      style={{ height: '32px', width: 'auto' }}
+                      alt="Brand Logo" 
+                      width={80}
+                      height={32}
+                      style={{ width: 'auto', height: '32px' }}
                     />
                   </div>
                 )}
 
-                {/* Title */}
-                <h3 style={{
-                  fontSize: banner.titleSize || '22px',
-                  fontWeight: 700,
-                  color: banner.titleColor || '#1F2937',
-                  marginBottom: '8px',
-                  lineHeight: 1.3,
-                  maxWidth: '70%',
-                }}>
-                  {banner.title}
-                </h3>
-
-                {/* Subtitle */}
-                {banner.subtitle && (
-                  <p style={{
-                    fontSize: '14px',
-                    color: banner.subtitleColor || '#6B7280',
-                    marginBottom: '12px',
-                    lineHeight: 1.5,
-                    maxWidth: '70%',
+                {/* Middle: Title, Subtitle, Features */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: '65%' }}>
+                  {/* Title */}
+                  <h3 style={{
+                    fontSize: banner.titleSize || '20px',
+                    fontWeight: 700,
+                    color: banner.titleColor || '#1F2937',
+                    marginBottom: '8px',
+                    lineHeight: 1.3,
                   }}>
-                    {banner.subtitle}
-                  </p>
-                )}
+                    {banner.title}
+                  </h3>
 
-                {/* Feature List with Icons */}
-                {banner.features && banner.features.length > 0 && (
-                  <ul style={{
-                    listStyle: 'none',
-                    padding: 0,
-                    margin: '0 0 16px 0',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '6px',
-                    maxWidth: '70%',
+                  {/* Subtitle */}
+                  {banner.subtitle && (
+                    <p style={{
+                      fontSize: '14px',
+                      color: banner.subtitleColor || '#6B7280',
+                      marginBottom: '16px',
+                      lineHeight: 1.5,
+                    }}>
+                      {banner.subtitle}
+                    </p>
+                  )}
+
+                  {/* Feature List with Check Icons */}
+                  {banner.features && banner.features.length > 0 && (
+                    <ul style={{
+                      listStyle: 'none',
+                      padding: 0,
+                      margin: '0 0 auto 0',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                    }}>
+                      {banner.features.map((feature, i) => (
+                        <li key={i} style={{
+                          fontSize: '13px',
+                          color: banner.featureColor || '#374151',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '10px',
+                        }}>
+                          <span style={{
+                            color: 'var(--color-brand-teal)',
+                            fontSize: '17px',
+                            flexShrink: 0,
+                            lineHeight: 1,
+                          }}>✓</span>
+                          <span style={{ paddingTop: '1px' }}>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Bottom: Website Badge */}
+                {banner.website && (
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '10px 20px',
+                    background: 'var(--color-brand-teal)',
+                    borderRadius: '24px',
+                    alignSelf: 'flex-start',
+                    boxShadow: '0 4px 12px rgba(13, 148, 136, 0.3)',
                   }}>
-                    {banner.features.map((feature, i) => (
-                      <li key={i} style={{
-                        fontSize: '13px',
-                        color: banner.featureColor || '#374151',
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '8px',
-                      }}>
-                        <span style={{
-                          color: 'var(--color-brand-teal)',
-                          fontSize: '16px',
-                          flexShrink: 0,
-                          marginTop: '1px',
-                        }}>✓</span>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                    <span style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: '#fff',
+                      display: 'inline-block',
+                    }} />
+                    <span style={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#fff',
+                    }}>
+                      {banner.website}
+                    </span>
+                  </div>
                 )}
               </div>
-
-              {/* Bottom: Website URL */}
-              {banner.website && (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 16px',
-                  background: 'var(--color-brand-teal)',
-                  borderRadius: '20px',
-                  alignSelf: 'flex-start',
-                }}>
-                  <span style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: '#fff',
-                  }} />
-                  <span style={{
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: '#fff',
-                  }}>
-                    {banner.website}
-                  </span>
-                </div>
-              )}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Responsive Styles */}
       <style jsx>{`
+        /* Mobile: Horizontal Scroll */}
         @media (max-width: 768px) {
-          .promo-banners-desktop {
-            flex-direction: row !important;
+          .promo-banners-grid {
+            display: flex !important;
             overflow-x: auto !important;
             scroll-snap-type: x mandatory !important;
             -webkit-overflow-scrolling: touch !important;
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
-            gap: 12px !important;
-            padding: 0 20px 16px !important;
-            margin-bottom: 24px !important;
+            gap: 16px !important;
+            padding-bottom: 16px !important;
           }
 
-          .promo-banners-desktop::-webkit-scrollbar {
+          .promo-banners-grid::-webkit-scrollbar {
             display: none;
           }
 
           .promo-banner-card {
-            flex: 0 0 90% !important;
+            flex: 0 0 88% !important;
             scroll-snap-align: start !important;
             min-width: 300px !important;
-            height: 350px !important;
+            height: 380px !important;
           }
         }
 
-        @media (min-width: 769px) {
-          .promo-banner-section {
-            margin-bottom: 40px;
+        /* Tablet: 2 Columns */}
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .promo-banners-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+
+        /* Desktop: 3 Columns */}
+        @media (min-width: 1025px) {
+          .promo-banners-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
           }
         }
       `}</style>
@@ -260,48 +267,69 @@ export default function PromoBannerSection({ children }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// PROMOTIONAL BANNERS DATA - GoWell BD Style
+// PROMOTIONAL BANNERS DATA - GoWell BD Professional Style
 // ══════════════════════════════════════════════════════════════════════════════
 
 const PROMO_BANNERS = [
   {
-    title: 'মার্চ মাসে নিন বিশেষ ইনফ্রারেড থেরাপি',
-    subtitle: 'যন্ত্রণামুক্ত সুস্থ জীবনের প্রথম ধাপ',
-    logo: null, // Add GoWell logo URL here
+    title: 'Smart Fat Vibration Slimming Machine',
+    subtitle: 'Fat Burning Vibration & Heating',
+    logo: null, // Can add brand logo here
     features: [
-      'Drug Processing-এর ঘাতে',
-      'Adjustable Stand & Angle',
-      'Heat & Light Mode',
-      'Perfect Head & Muscle Relaxation'
+      '4-level intensity modes',
+      'Built-in heating function',
+      'Rechargeable battery',
+      'Portable & lightweight'
     ],
-    website: 'gowellbd.com',
-    link: '/products?category=Physiotherapy & Rehabilitation',
+    website: 'mediportbd.com',
+    link: '/products?category=Physiotherapy & Rehabilitation&search=slimming',
     bgColor: '#FFF5F5',
     titleColor: '#7C2D12',
     subtitleColor: '#92400E',
     featureColor: '#451A03',
-    image: '/images/promo/infrared-lamp-lady.jpg', // Woman with infrared lamp
+    image: null, // Add Cloudinary URL for woman using slimming machine
     imagePosition: 'right center',
     overlay: 'linear-gradient(90deg, rgba(255,245,245,0.98) 0%, rgba(255,245,245,0.85) 50%, transparent 100%)',
   },
   {
-    title: 'Plastic Medicine Box',
-    subtitle: 'আপনার প্রয়োজন বাড়িতে থাকুক',
+    title: 'Premium Foldable Electric Foot Spa Massager',
+    subtitle: 'Folding Body, Red Light, Massage Rollers & Heating',
     logo: null,
     features: [
-      'Small & Pocket Fit',
-      'Secure Snap Lock',
-      'Travel Friendly'
+      'Red light therapy',
+      'Heated massage rollers',
+      'Foldable design',
+      'Digital temperature control'
     ],
-    website: 'gowellbd.com',
-    link: '/products?search=medicine box',
+    website: 'mediportbd.com',
+    link: '/products?search=foot spa massager',
     bgColor: '#F0F9FF',
     titleColor: '#0C4A6E',
     subtitleColor: '#075985',
     featureColor: '#0369A1',
-    image: '/images/promo/medicine-box-model.jpg', // Woman showing medicine box
+    image: null, // Add Cloudinary URL for person using foot spa
     imagePosition: 'right bottom',
     overlay: 'linear-gradient(90deg, rgba(240,249,255,0.98) 0%, rgba(240,249,255,0.85) 50%, transparent 100%)',
+  },
+  {
+    title: 'Double Head Alloy Shaver',
+    subtitle: 'Smooth, Easy & Reliable Grooming',
+    logo: null,
+    features: [
+      'Dual rotating heads',
+      'Rechargeable battery',
+      'Waterproof design',
+      'Travel-friendly'
+    ],
+    website: 'mediportbd.com',
+    link: '/products?search=shaver',
+    bgColor: '#F5F5F5',
+    titleColor: '#1F2937',
+    subtitleColor: '#4B5563',
+    featureColor: '#374151',
+    image: null, // Add Cloudinary URL for shaver product
+    imagePosition: 'right center',
+    overlay: 'linear-gradient(90deg, rgba(245,245,245,0.98) 0%, rgba(245,245,245,0.85) 50%, transparent 100%)',
   },
 ];
 

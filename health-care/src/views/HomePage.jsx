@@ -40,7 +40,7 @@ const SupportResources = lazy(() => import('@/components/home/SupportResources')
 const VideoSection = lazy(() => import('@/components/home/VideoSection'));
 const NewArrivalSlider = lazy(() => import('@/components/home/NewArrivalSlider'));
 const BestSellingSection = lazy(() => import('@/components/home/BestSellingSection'));
-const ProductGridWithPromoBanners = lazy(() => import('@/components/home/ProductGridWithPromoBanners'));
+const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
 
 // ══════════════════════════════════════════════════════════════════════════════
 // FALLBACK DATA & CONSTANTS
@@ -1119,26 +1119,20 @@ export default function HomePage() {
       </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 8: FEATURED PRODUCTS (tabbed) - GoWell BD Style with Promo Banners */}
+      {/* SECTION 8: FEATURED PRODUCTS (tabbed) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '48px 0' }}>
-        <Suspense fallback={
-          <div style={{ padding: '100px 0', textAlign: 'center' }}>
-            <Spinner size="lg" />
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div>
+              <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 600, margin: 0 }}>{t('home.featuredProducts')}</h2>
+            </div>
+            <button onClick={() => router.push('/products')}
+              style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+              {t('home.viewAll')}
+            </button>
           </div>
-        }>
-          <ProductGridWithPromoBanners>
-            <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
-                <div>
-                  <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
-                  <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 600, margin: 0 }}>{t('home.featuredProducts')}</h2>
-                </div>
-                <button onClick={() => router.push('/products')}
-                  style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-                  {t('home.viewAll')}
-                </button>
-              </div>
 
           {/* Tabs - Dynamic based on top categories */}
           <div role="tablist" aria-label="Product categories" style={{ 
@@ -1360,10 +1354,15 @@ export default function HomePage() {
             </div>
           )}
           </div>
-            </div>
-          </ProductGridWithPromoBanners>
-        </Suspense>
+        </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SECTION 8.3: PROMOTIONAL BANNERS - GoWell BD Professional Style */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={null}>
+        <PromoBannerSection />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8.5: CATEGORY PRODUCT SECTIONS (horizontal scrolls per category) */}
