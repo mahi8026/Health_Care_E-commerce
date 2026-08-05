@@ -288,8 +288,8 @@ export default function AutoSlider({
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '6px',
-            marginTop: '12px',
+            gap: '4px',
+            marginTop: '16px',
           }}
         >
           {Array.from({ length: maxIndex + 1 }).map((_, index) => (
@@ -298,9 +298,9 @@ export default function AutoSlider({
               onClick={() => goToIndex(index)}
               className="auto-slider-dot"
               style={{
-                width: currentIndex === index ? '16px' : '6px',
-                height: '6px',
-                borderRadius: '3px',
+                width: currentIndex === index ? '20px' : '8px',
+                height: '8px',
+                borderRadius: '4px',
                 border: 'none',
                 backgroundColor: currentIndex === index 
                   ? 'var(--color-brand-teal)' 
