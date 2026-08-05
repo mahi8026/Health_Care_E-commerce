@@ -1358,16 +1358,23 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 8.3: PROMOTIONAL BANNERS - GoWell BD Professional Style */}
+      {/* PROMOTIONAL BANNER 1 - Full-Width Hero (GoWell BD Style) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={null}>
-        <PromoBannerSection />
+        <PromoBannerSection bannerId={0} />
       </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8.5: CATEGORY PRODUCT SECTIONS (horizontal scrolls per category) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <CategoryProductSections categories={categories} />
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* PROMOTIONAL BANNER 2 - Full-Width Hero (GoWell BD Style) */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <Suspense fallback={null}>
+        <PromoBannerSection bannerId={1} />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: NEW ARRIVALS (horizontal scroll) */}

@@ -5,14 +5,19 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 /**
- * PromoBannerSection Component - GoWell BD Professional Style
+ * PromoBannerSection Component - GoWell BD Actual Style
  * 
- * Large horizontal promotional banners placed between product sections
- * Features lifestyle images, Bengali text, feature lists
+ * SINGLE full-width promotional hero banner
+ * Placed individually between product sections
  * 
- * Layout: 3-column grid on desktop, horizontal scroll on mobile
+ * Features:
+ * - Full-width hero-style banner (not 3-column grid)
+ * - Large lifestyle/model image
+ * - Text content overlay (left or right aligned)
+ * - Call-to-action button
+ * - Height: 350-400px
  */
-export default function PromoBannerSection() {
+export default function PromoBannerSection({ bannerId = 0 }) {
   const router = useRouter();
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,222 +48,209 @@ export default function PromoBannerSection() {
     return null;
   }
 
+  // Get specific banner by ID or default to first
+  const banner = banners[bannerId] || banners[0];
+  if (!banner) return null;
+
   return (
     <section
-      className="promo-banner-section"
+      className="promo-banner-hero"
       style={{
-        padding: '40px 0',
+        padding: '40px 20px',
         background: '#fff',
       }}
     >
       <div style={{
         maxWidth: '1280px',
         margin: '0 auto',
-        padding: '0 20px',
       }}>
-        {/* 3-Column Grid on Desktop, Horizontal Scroll on Mobile */}
-        <div 
-          className="promo-banners-grid"
+        {/* Single Full-Width Hero Banner */}
+        <div
+          onClick={() => handleBannerClick(banner)}
+          className="promo-hero-card"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
+            position: 'relative',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            background: banner.bgColor || '#f8f9fa',
+            height: '380px',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.01)';
+            e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = 'none';
           }}
         >
-          {banners.map((banner, index) => (
-            <div
-              key={index}
-              onClick={() => handleBannerClick(banner)}
-              className="promo-banner-card"
-              style={{
-                position: 'relative',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                background: banner.bgColor || '#f8f9fa',
-                height: '420px',
-                transition: 'all 0.3s ease',
-                border: '1px solid #e5e7eb',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-6px)';
-                e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              {/* Background Image - Model/Lifestyle Photo */}
-              {banner.image && (
-                <div style={{
-                  position: 'absolute',
-                  inset: 0,
-                  zIndex: 1,
-                }}>
-                  <Image
-                    src={banner.image}
-                    alt={banner.title}
-                    fill
-                    style={{ objectFit: 'cover', objectPosition: banner.imagePosition || 'center' }}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    priority={index === 0}
+          {/* Background Image - Full Width */}
+          {banner.image && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 1,
+            }}>
+              <Image
+                src={banner.image}
+                alt={banner.title}
+                fill
+                style={{ objectFit: 'cover', objectPosition: banner.imagePosition || 'center' }}
+                sizes="100vw"
+                priority
+              />
+            </div>
+          )}
+
+          {/* Content Overlay - Positioned Left or Right */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 2,
+            padding: '48px',
+            background: banner.overlay || `linear-gradient(${banner.textAlign === 'right' ? '-90deg' : '90deg'}, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.85) 40%, transparent 70%)`,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: banner.textAlign === 'right' ? 'flex-end' : 'flex-start',
+          }}>
+            <div style={{ 
+              maxWidth: '550px',
+              textAlign: banner.textAlign === 'right' ? 'right' : 'left',
+            }}>
+              {/* Brand Logo */}
+              {banner.logo && (
+                <div style={{ marginBottom: '20px' }}>
+                  <Image 
+                    src={banner.logo} 
+                    alt="Brand Logo" 
+                    width={100}
+                    height={40}
+                    style={{ width: 'auto', height: '40px' }}
                   />
                 </div>
               )}
 
-              {/* Content Overlay - Left Side for Text */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 2,
-                padding: '28px',
-                background: banner.overlay || 'linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.88) 45%, transparent 75%)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
+              {/* Title */}
+              <h2 style={{
+                fontSize: banner.titleSize || '36px',
+                fontWeight: 700,
+                color: banner.titleColor || '#1F2937',
+                marginBottom: '12px',
+                lineHeight: 1.2,
               }}>
-                {/* Top: Brand Logo */}
-                {banner.logo && (
-                  <div style={{ marginBottom: '16px' }}>
-                    <Image 
-                      src={banner.logo} 
-                      alt="Brand Logo" 
-                      width={80}
-                      height={32}
-                      style={{ width: 'auto', height: '32px' }}
-                    />
-                  </div>
-                )}
+                {banner.title}
+              </h2>
 
-                {/* Middle: Title, Subtitle, Features */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', maxWidth: '65%' }}>
-                  {/* Title */}
-                  <h3 style={{
-                    fontSize: banner.titleSize || '20px',
-                    fontWeight: 700,
-                    color: banner.titleColor || '#1F2937',
-                    marginBottom: '8px',
-                    lineHeight: 1.3,
-                  }}>
-                    {banner.title}
-                  </h3>
+              {/* Subtitle */}
+              {banner.subtitle && (
+                <p style={{
+                  fontSize: '18px',
+                  color: banner.subtitleColor || '#6B7280',
+                  marginBottom: '24px',
+                  lineHeight: 1.6,
+                }}>
+                  {banner.subtitle}
+                </p>
+              )}
 
-                  {/* Subtitle */}
-                  {banner.subtitle && (
-                    <p style={{
-                      fontSize: '14px',
-                      color: banner.subtitleColor || '#6B7280',
-                      marginBottom: '16px',
-                      lineHeight: 1.5,
-                    }}>
-                      {banner.subtitle}
-                    </p>
-                  )}
-
-                  {/* Feature List with Check Icons */}
-                  {banner.features && banner.features.length > 0 && (
-                    <ul style={{
-                      listStyle: 'none',
-                      padding: 0,
-                      margin: '0 0 auto 0',
+              {/* Feature List */}
+              {banner.features && banner.features.length > 0 && (
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: '0 0 28px 0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}>
+                  {banner.features.map((feature, i) => (
+                    <li key={i} style={{
+                      fontSize: '15px',
+                      color: banner.featureColor || '#374151',
                       display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
+                      alignItems: 'center',
+                      gap: '12px',
+                      justifyContent: banner.textAlign === 'right' ? 'flex-end' : 'flex-start',
                     }}>
-                      {banner.features.map((feature, i) => (
-                        <li key={i} style={{
-                          fontSize: '13px',
-                          color: banner.featureColor || '#374151',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '10px',
-                        }}>
-                          <span style={{
-                            color: 'var(--color-brand-teal)',
-                            fontSize: '17px',
-                            flexShrink: 0,
-                            lineHeight: 1,
-                          }}>✓</span>
-                          <span style={{ paddingTop: '1px' }}>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                      <span style={{
+                        color: 'var(--color-brand-teal)',
+                        fontSize: '20px',
+                        flexShrink: 0,
+                      }}>✓</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-                {/* Bottom: Website Badge */}
-                {banner.website && (
-                  <div style={{
+              {/* CTA Button */}
+              {banner.cta && (
+                <button
+                  style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 20px',
-                    background: 'var(--color-brand-teal)',
-                    borderRadius: '24px',
-                    alignSelf: 'flex-start',
-                    boxShadow: '0 4px 12px rgba(13, 148, 136, 0.3)',
-                  }}>
-                    <span style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      background: '#fff',
-                      display: 'inline-block',
-                    }} />
-                    <span style={{
-                      fontSize: '14px',
-                      fontWeight: 600,
-                      color: '#fff',
-                    }}>
-                      {banner.website}
-                    </span>
-                  </div>
-                )}
-              </div>
+                    gap: '12px',
+                    padding: '14px 32px',
+                    background: banner.ctaBg || 'var(--color-brand-teal)',
+                    color: banner.ctaColor || '#fff',
+                    border: 'none',
+                    borderRadius: '12px',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 14px rgba(13, 148, 136, 0.3)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(13, 148, 136, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 14px rgba(13, 148, 136, 0.3)';
+                  }}
+                >
+                  {banner.cta}
+                  <span style={{ fontSize: '18px' }}>→</span>
+                </button>
+              )}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
       {/* Responsive Styles */}
       <style jsx>{`
-        /* Mobile: Horizontal Scroll */}
+        /* Mobile: Reduce height and padding */}
         @media (max-width: 768px) {
-          .promo-banners-grid {
-            display: flex !important;
-            overflow-x: auto !important;
-            scroll-snap-type: x mandatory !important;
-            -webkit-overflow-scrolling: touch !important;
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-            gap: 16px !important;
-            padding-bottom: 16px !important;
+          .promo-hero-card {
+            height: 320px !important;
           }
 
-          .promo-banners-grid::-webkit-scrollbar {
-            display: none;
+          .promo-hero-card > div:last-child {
+            padding: 32px 24px !important;
           }
 
-          .promo-banner-card {
-            flex: 0 0 88% !important;
-            scroll-snap-align: start !important;
-            min-width: 300px !important;
-            height: 380px !important;
+          .promo-hero-card h2 {
+            font-size: 24px !important;
+          }
+
+          .promo-hero-card p {
+            font-size: 14px !important;
           }
         }
 
-        /* Tablet: 2 Columns */}
+        /* Tablet */}
         @media (min-width: 769px) and (max-width: 1024px) {
-          .promo-banners-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
+          .promo-hero-card {
+            height: 350px !important;
           }
-        }
 
-        /* Desktop: 3 Columns */}
-        @media (min-width: 1025px) {
-          .promo-banners-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
+          .promo-hero-card h2 {
+            font-size: 28px !important;
           }
         }
       `}</style>
@@ -267,69 +259,79 @@ export default function PromoBannerSection() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// PROMOTIONAL BANNERS DATA - GoWell BD Professional Style
+// PROMOTIONAL BANNERS DATA - GoWell BD Actual Style (Full-Width Heroes)
 // ══════════════════════════════════════════════════════════════════════════════
 
 const PROMO_BANNERS = [
   {
     title: 'Smart Fat Vibration Slimming Machine',
-    subtitle: 'Fat Burning Vibration & Heating',
-    logo: null, // Can add brand logo here
+    subtitle: 'Fat Burning Vibration & Heating for Effective Body Contouring',
+    logo: null,
     features: [
-      '4-level intensity modes',
-      'Built-in heating function',
-      'Rechargeable battery',
-      'Portable & lightweight'
+      '4-level vibration intensity modes',
+      'Built-in heating function for enhanced fat burning',
+      'Rechargeable battery with long runtime',
+      'Portable and easy to use at home'
     ],
-    website: 'mediportbd.com',
+    cta: 'Shop Now',
+    website: null,
     link: '/products?category=Physiotherapy & Rehabilitation&search=slimming',
-    bgColor: '#FFF5F5',
+    bgColor: '#FFE5E5',
     titleColor: '#7C2D12',
     subtitleColor: '#92400E',
     featureColor: '#451A03',
-    image: null, // Add Cloudinary URL for woman using slimming machine
+    ctaBg: '#DC2626',
+    ctaColor: '#fff',
+    image: null, // Add Cloudinary URL
     imagePosition: 'right center',
-    overlay: 'linear-gradient(90deg, rgba(255,245,245,0.98) 0%, rgba(255,245,245,0.85) 50%, transparent 100%)',
+    textAlign: 'left', // or 'right'
+    overlay: 'linear-gradient(90deg, rgba(255,229,229,0.98) 0%, rgba(255,229,229,0.85) 45%, transparent 75%)',
   },
   {
     title: 'Premium Foldable Electric Foot Spa Massager',
-    subtitle: 'Folding Body, Red Light, Massage Rollers & Heating',
+    subtitle: 'Relaxation & Therapy with Red Light and Heating Massage',
     logo: null,
     features: [
-      'Red light therapy',
-      'Heated massage rollers',
-      'Foldable design',
-      'Digital temperature control'
+      'Red light therapy for improved circulation',
+      'Heated massage rollers for deep relaxation',
+      'Foldable design for easy storage',
+      'Digital temperature & timer control'
     ],
-    website: 'mediportbd.com',
+    cta: 'View Details',
     link: '/products?search=foot spa massager',
-    bgColor: '#F0F9FF',
+    bgColor: '#E0F2FE',
     titleColor: '#0C4A6E',
     subtitleColor: '#075985',
     featureColor: '#0369A1',
-    image: null, // Add Cloudinary URL for person using foot spa
-    imagePosition: 'right bottom',
-    overlay: 'linear-gradient(90deg, rgba(240,249,255,0.98) 0%, rgba(240,249,255,0.85) 50%, transparent 100%)',
+    ctaBg: '#0284C7',
+    ctaColor: '#fff',
+    image: null, // Add Cloudinary URL
+    imagePosition: 'left center',
+    textAlign: 'right',
+    overlay: 'linear-gradient(-90deg, rgba(224,242,254,0.98) 0%, rgba(224,242,254,0.85) 45%, transparent 75%)',
   },
   {
-    title: 'Double Head Alloy Shaver',
-    subtitle: 'Smooth, Easy & Reliable Grooming',
+    title: 'Professional Double Head Alloy Shaver',
+    subtitle: 'Smooth & Reliable Grooming for Men',
     logo: null,
     features: [
-      'Dual rotating heads',
-      'Rechargeable battery',
-      'Waterproof design',
-      'Travel-friendly'
+      'Dual rotating heads for close shave',
+      'Rechargeable with LED indicator',
+      '100% waterproof design',
+      'Compact and travel-friendly'
     ],
-    website: 'mediportbd.com',
+    cta: 'Order Now',
     link: '/products?search=shaver',
-    bgColor: '#F5F5F5',
-    titleColor: '#1F2937',
+    bgColor: '#F3F4F6',
+    titleColor: '#111827',
     subtitleColor: '#4B5563',
     featureColor: '#374151',
-    image: null, // Add Cloudinary URL for shaver product
+    ctaBg: 'var(--color-brand-navy)',
+    ctaColor: '#fff',
+    image: null, // Add Cloudinary URL
     imagePosition: 'right center',
-    overlay: 'linear-gradient(90deg, rgba(245,245,245,0.98) 0%, rgba(245,245,245,0.85) 50%, transparent 100%)',
+    textAlign: 'left',
+    overlay: 'linear-gradient(90deg, rgba(243,244,246,0.98) 0%, rgba(243,244,246,0.85) 45%, transparent 75%)',
   },
 ];
 
