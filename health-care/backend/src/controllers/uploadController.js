@@ -136,23 +136,74 @@ exports.uploadImages = async (req, res) => {
 exports.deleteProductImage = async (req, res) => {
   try {
     const publicId = decodeURIComponent(req.params.publicId);
+    const { productId } = req.body;
 
+    // Step 1: Delete from Cloudinary
     if (CLOUDINARY_CONFIGURED && publicId && publicId !== 'undefined' && publicId !== '') {
-      await cloudinary.uploader.destroy(publicId);
-      logger.info(`[deleteProductImage] Deleted from Cloudinary: ${publicId}`);
+      try {
+        await cloudinary.uploader.destroy(publicId);
+        logger.info(`[deleteProductImage] Deleted from Cloudinary: ${publicId}`);
+      } catch (cloudinaryErr) {
+        logger.warn(`[deleteProductImage] Cloudinary delete warning: ${cloudinaryErr.message}`);
+        // Continue even if Cloudinary delete fails (image might not exist)
+      }
     }
 
-    // Remove from product if productId provided
-    if (req.body.productId) {
-      await Product.findByIdAndUpdate(req.body.productId, {
-        $pull: { images: { publicId } },
-      });
-      logger.info(`[deleteProductImage] Removed from product: ${req.body.productId}`);
+    // Step 2: Remove from product database
+    if (productId) {
+      const product = await Product.findByIdAndUpdate(
+        productId,
+        {
+          $pull: { images: { publicId } },
+        },
+        { new: true }
+      );
+      
+      if (!product) {
+        logger.warn(`[deleteProductImage] Product not found: ${productId}`);
+        return errorResponse(res, 'Product not found', null, 404);
+      }
+      
+      logger.info(`[deleteProductImage] Removed from product: ${productId}`);
+      
+      // Step 3: Clear Redis cache for this product and related caches
+      try {
+        const redisClient = require('../services/redisCache').client;
+        if (redisClient && redisClient.status === 'ready') {
+          // Clear individual product cache
+          await redisClient.del(`product:${productId}`);
+          await redisClient.del(`product:slug:${product.slug}`);
+          
+          // Clear products list caches (all variations)
+          const cacheKeys = await redisClient.keys('products:*');
+          if (cacheKeys && cacheKeys.length > 0) {
+            await redisClient.del(...cacheKeys);
+          }
+          
+          // Clear featured products cache
+          await redisClient.del('products:featured');
+          
+          // Clear category cache if product belongs to a category
+          if (product.category) {
+            await redisClient.del(`products:category:${product.category}`);
+          }
+          
+          // Clear brand cache if product belongs to a brand
+          if (product.brand) {
+            await redisClient.del(`products:brand:${product.brand}`);
+          }
+          
+          logger.info(`[deleteProductImage] Cleared Redis cache for product: ${productId}`);
+        }
+      } catch (cacheErr) {
+        logger.warn(`[deleteProductImage] Cache clear warning: ${cacheErr.message}`);
+        // Don't fail the request if cache clear fails
+      }
     }
 
-    return successResponse(res, null, 'Image deleted');
+    return successResponse(res, { message: 'Image deleted successfully' }, 'Image deleted');
   } catch (err) {
-    logger.error(`[deleteProductImage] ${err.message}`);
+    logger.error(`[deleteProductImage] Error: ${err.message}`);
     return errorResponse(res, 'Failed to delete image', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
   }
 };

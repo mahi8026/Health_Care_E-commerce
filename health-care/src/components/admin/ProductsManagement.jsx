@@ -490,6 +490,7 @@ export default function ProductsManagement({ openCreateRef }) {
 
   // ── Image upload (via Backend API) ─────────────────────────────────────────
   const [uploading, setUploading] = useState(false);
+  const [deletingImageIndex, setDeletingImageIndex] = useState(null);
   
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -568,15 +569,70 @@ export default function ProductsManagement({ openCreateRef }) {
     }
   };
 
-  const handleRemoveImage = (idx) => {
-    setCreateForm(f => {
-      const updated = f.images.filter((_, i) => i !== idx);
-      // If deleted was primary, make first remaining primary
-      if (f.images[idx]?.isPrimary && updated.length > 0) {
-        updated[0].isPrimary = true;
+  const handleRemoveImage = async (idx) => {
+    const imageToDelete = createForm.images[idx];
+    
+    // If this is an existing product with a saved image, delete from Cloudinary and database
+    if (modalMode === 'edit' && imageToDelete?.publicId && modalProduct?._id) {
+      setDeletingImageIndex(idx); // Set loading state
+      try {
+        const token = localStorage.getItem('Mediport_token');
+        const encodedPublicId = encodeURIComponent(imageToDelete.publicId);
+        
+        const response = await fetch(`${API}/upload/image/${encodedPublicId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ productId: modalProduct._id }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Failed to delete image from server');
+        }
+        
+        showMessage('Image deleted successfully', 'success');
+        
+        // Refresh the product data to get updated images from server
+        const productRes = await fetch(`${API}/products/${modalProduct._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        
+        if (productRes.ok) {
+          const productData = await productRes.json();
+          const updatedProduct = productData.data || productData;
+          
+          // Update modal product with fresh data
+          setModalProduct(updatedProduct);
+          
+          // Update form with fresh images
+          setCreateForm(f => ({
+            ...f,
+            images: updatedProduct.images || []
+          }));
+          
+          // Refresh products list to show updated product everywhere
+          await fetchProducts();
+        }
+      } catch (error) {
+        console.error('Error deleting image:', error);
+        showMessage(error.message || 'Failed to delete image. Please try again.', 'error');
+      } finally {
+        setDeletingImageIndex(null); // Clear loading state
       }
-      return { ...f, images: updated };
-    });
+    } else {
+      // For new products or images not yet saved, just remove from local state
+      setCreateForm(f => {
+        const updated = f.images.filter((_, i) => i !== idx);
+        // If deleted was primary, make first remaining primary
+        if (f.images[idx]?.isPrimary && updated.length > 0) {
+          updated[0].isPrimary = true;
+        }
+        return { ...f, images: updated };
+      });
+    }
   };
 
   // ── Create/Edit product ──────────────────────────────────────────────────────
@@ -774,11 +830,19 @@ export default function ProductsManagement({ openCreateRef }) {
                             e.stopPropagation(); // don't trigger primary selection
                             handleRemoveImage(idx);
                           }}
-                          className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ background: 'rgba(226,75,74,0.9)' }}
+                          disabled={deletingImageIndex === idx}
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-100"
+                          style={{ background: deletingImageIndex === idx ? 'rgba(156,163,175,0.9)' : 'rgba(226,75,74,0.9)' }}
                           aria-label="Remove image"
                         >
-                          ×
+                          {deletingImageIndex === idx ? (
+                            <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                            </svg>
+                          ) : (
+                            '×'
+                          )}
                         </button>
                       </div>
                     ))}
