@@ -19,55 +19,48 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           {idx > 0 && (
             <span
               style={{
-                color: '#A5B4FC',
+                color: '#9CA3AF',
                 fontSize: '16px',
                 fontWeight: 300,
-                margin: '0 10px',
-                opacity: 0.6,
+                margin: '0 8px',
+                lineHeight: '1',
               }}
               aria-hidden="true"
             >
               /
             </span>
           )}
-          <li
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
-          >
-            {current ? (
-              <span
-                style={{
-                  color: '#8B5CF6',
-                  fontWeight: 500,
-                  fontSize: '15px',
-                  lineHeight: '1.4',
-                  letterSpacing: '0.01em',
-                }}
-                aria-current="page"
-              >
-                {item.label}
-              </span>
-            ) : (
-              <Link
-                href={item.href}
-                style={{
-                  color: '#A5B4FC',
-                  fontWeight: 400,
-                  fontSize: '15px',
-                  lineHeight: '1.4',
-                  textDecoration: 'none',
-                  letterSpacing: '0.01em',
-                  transition: 'color 0.2s ease',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#8B5CF6'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#A5B4FC'}
-              >
-                {item.label}
-              </Link>
-            )}
-          </li>
+          {current ? (
+            <span
+              style={{
+                color: '#7C3AED',
+                fontWeight: 600,
+                fontSize: '15px',
+                lineHeight: '1',
+                letterSpacing: '0.01em',
+              }}
+              aria-current="page"
+            >
+              {item.label}
+            </span>
+          ) : (
+            <Link
+              href={item.href}
+              style={{
+                color: '#6B7280',
+                fontWeight: 500,
+                fontSize: '15px',
+                lineHeight: '1',
+                textDecoration: 'none',
+                letterSpacing: '0.01em',
+                transition: 'color 0.2s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#7C3AED'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}
+            >
+              {item.label}
+            </Link>
+          )}
         </React.Fragment>
       );
     });
@@ -89,11 +82,13 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                flexWrap: 'wrap',
+                flexWrap: 'nowrap',
                 alignItems: 'center',
                 listStyle: 'none',
                 margin: 0,
                 padding: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
               }}
             >
               {renderItems()}
@@ -110,11 +105,12 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         style={{
           display: 'flex',
           flexDirection: 'row',
-          flexWrap: 'wrap',
+          flexWrap: 'nowrap',
           alignItems: 'center',
           listStyle: 'none',
           margin: 0,
           padding: 0,
+          whiteSpace: 'nowrap',
         }}
       >
         {renderItems()}
