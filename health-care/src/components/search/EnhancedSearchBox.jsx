@@ -157,7 +157,7 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
   return (
     <div ref={wrapperRef} className="relative w-full">
       {/* Search Input */}
-      <div className={`relative px-5 py-4 ${isHero ? 'border-b border-white/20 bg-white/10 backdrop-blur-md rounded-2xl' : 'border-b border-[var(--color-border-tertiary)]'}`}>
+      <div className={`relative px-5 py-2.5 ${isHero ? 'border-b border-white/20 bg-white/10 backdrop-blur-md rounded-2xl' : 'border-b border-[var(--color-border-tertiary)]'}`}>
         <div className="flex items-center gap-3">
           <FaSearch size={18} className={isHero ? 'text-white/70 flex-shrink-0' : 'text-[var(--color-text-secondary)] flex-shrink-0'} />
           <input
