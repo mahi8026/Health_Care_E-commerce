@@ -24,6 +24,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 fontWeight: 300,
                 margin: '0 8px',
                 lineHeight: '1',
+                display: 'inline-block',
+                flexShrink: 0,
               }}
               aria-hidden="true"
             >
@@ -38,6 +40,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 fontSize: '15px',
                 lineHeight: '1',
                 letterSpacing: '0.01em',
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
               }}
               aria-current="page"
             >
@@ -54,6 +58,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 textDecoration: 'none',
                 letterSpacing: '0.01em',
                 transition: 'color 0.2s ease',
+                display: 'inline-block',
+                whiteSpace: 'nowrap',
               }}
               onMouseEnter={(e) => e.currentTarget.style.color = '#7C3AED'}
               onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}
