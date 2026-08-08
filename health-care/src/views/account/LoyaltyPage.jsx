@@ -121,7 +121,7 @@ export default function LoyaltyPage() {
                   {(summary?.currentPoints || user?.loyaltyPoints || 0).toLocaleString()}
                 </p>
                 <p className="text-blue-200 text-sm mt-1">
-                  â‰ˆ à§³{((summary?.currentPoints || 0) * 0.10).toFixed(0)} redeemable value
+                  â‰ˆ ৳{((summary?.currentPoints || 0) * 0.10).toFixed(0)} redeemable value
                 </p>
               </div>
               <div className="text-right">
@@ -162,7 +162,7 @@ export default function LoyaltyPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { label: 'Every à§³100 spent',     pts: '1 pt',   icon: 'ðŸ›’' },
+                { label: 'Every ৳100 spent',     pts: '1 pt',   icon: 'ðŸ›’' },
                 { label: 'First order bonus',     pts: '+200 pts', icon: 'ðŸŽ‰' },
                 { label: 'Leave a product review', pts: '+50 pts', icon: 'â­' },
                 { label: 'Refer a friend',         pts: '+500 pts', icon: 'ðŸ‘¥' },
@@ -212,7 +212,7 @@ export default function LoyaltyPage() {
             <FaInfoCircle className="text-[var(--color-status-warning)] w-4 h-4 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-[var(--color-status-warning)]">
               <p className="font-semibold mb-1">How to Redeem</p>
-              <p>1000 points = à§³10 discount Â· Minimum 500 points to redeem Â· Max 20% of order total Â· Redeem at checkout</p>
+              <p>1000 points = ৳10 discount Â· Minimum 500 points to redeem Â· Max 20% of order total Â· Redeem at checkout</p>
             </div>
           </div>
 

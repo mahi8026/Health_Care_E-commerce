@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
 import { FaLock, FaTag, FaShieldAlt } from 'react-icons/fa';
 import { calculateCartItemPrice, isEligibleForB2BPricing } from '@/utils/pricing';
+import { formatPrice, getCurrencySymbol } from '@/utils/currency';
 
 import { getDeliveryZone, DELIVERY_ZONE_INFO } from './DeliveryOptions';
 
@@ -191,7 +192,7 @@ export default function OrderSummary({
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <Image src={img} alt={`${item.name}${item.brand ? ` â€” ${item.brand}` : ''} â€” Price à§³${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
+                    <Image src={img} alt={`${item.name}${item.brand ? ` â€” ${item.brand}` : ''} â€” Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <span className="text-lg">ðŸ“¦</span>
                   )}
@@ -212,7 +213,7 @@ export default function OrderSummary({
                   <div className="flex justify-between items-center mt-1.5">
                     <span className="text-xs text-[var(--color-text-secondary)]">Ã—{item.quantity}</span>
                     <span className="text-sm font-semibold text-brand-navy">
-                      à§³{(item.displayPrice * item.quantity).toLocaleString()}
+                      ৳{(item.displayPrice * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -273,7 +274,7 @@ export default function OrderSummary({
                 <div className="flex justify-between items-center p-2.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-warning/30">
                   <div>
                     <span className="text-xs font-semibold text-[var(--color-status-warning)]">â­ {pointsDiscount} pts redeemed</span>
-                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">âˆ’à§³{(pointsDiscount * 0.1).toFixed(2)} discount</p>
+                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">âˆ’৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
                     type="button"
@@ -294,10 +295,10 @@ export default function OrderSummary({
               ) : (
                 <div>
                   <p className="text-xs text-[var(--color-text-secondary)] mb-1.5">
-                    You have <strong>{availablePoints} points</strong> = à§³{(availablePoints * 0.1).toFixed(2)} discount value
+                    You have <strong>{availablePoints} points</strong> = ৳{(availablePoints * 0.1).toFixed(2)} discount value
                   </p>
                   <p className="text-xs text-[var(--color-text-tertiary)] mb-2">
-                    100 points = à§³10 â€¢ Minimum 50 points to redeem â€¢ Max 20% of order
+                    100 points = ৳10 â€¢ Minimum 50 points to redeem â€¢ Max 20% of order
                   </p>
                   <div className="flex gap-2">
                     <input
@@ -345,7 +346,7 @@ export default function OrderSummary({
         <div className="px-4 sm:px-5 py-3 border-t border-[var(--color-border-tertiary)] space-y-2 text-sm">
           <div className="flex justify-between text-[var(--color-text-secondary)]">
             <span>Subtotal</span>
-            <span className="font-medium text-brand-navy">à§³{subtotal.toLocaleString()}</span>
+            <span className="font-medium text-brand-navy">৳{subtotal.toLocaleString()}</span>
           </div>
           {b2bSavings > 0 && (
             <div className="flex justify-between text-[#7C3AED]">
@@ -353,31 +354,31 @@ export default function OrderSummary({
                 <FaShieldAlt size={11} />
                 <span>B2B discount</span>
               </div>
-              <span className="font-medium">âˆ’à§³{b2bSavings.toLocaleString()}</span>
+              <span className="font-medium">âˆ’৳{b2bSavings.toLocaleString()}</span>
             </div>
           )}
           {couponDiscount > 0 && (
             <div className="flex justify-between text-brand-teal">
               <span>Coupon discount</span>
-              <span className="font-medium">âˆ’à§³{couponDiscount.toLocaleString()}</span>
+              <span className="font-medium">âˆ’৳{couponDiscount.toLocaleString()}</span>
             </div>
           )}
           {pointsDiscount > 0 && (
             <div className="flex justify-between text-warning">
               <span>â­ Points discount</span>
-              <span className="font-medium">âˆ’à§³{(pointsDiscount * 0.1).toFixed(2)}</span>
+              <span className="font-medium">âˆ’৳{(pointsDiscount * 0.1).toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between text-[var(--color-text-secondary)]">
             <span>Delivery <span className="text-xs text-[var(--color-text-tertiary)]">(Steadfast Courier)</span></span>
-            <span className="font-medium text-brand-navy">à§³{deliveryFee.toLocaleString()}</span>
+            <span className="font-medium text-brand-navy">৳{deliveryFee.toLocaleString()}</span>
           </div>
         </div>
 
     <div className="px-4 sm:px-5 py-3 border-t-2 border-brand-navy/10 flex justify-between items-center">
           <span className="text-sm font-semibold text-[var(--color-text-secondary)]">Total</span>
           <span className="text-xl font-semibold text-brand-navy font-[family-name:var(--font-lora)]">
-            à§³{displayTotal.toLocaleString()}
+            ৳{displayTotal.toLocaleString()}
           </span>
         </div>
 
@@ -389,7 +390,7 @@ export default function OrderSummary({
               disabled={loading}
               className="w-full py-3 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold shadow-lg shadow-brand-teal/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Processingâ€¦' : `Place order Â· à§³${displayTotal.toLocaleString()}`}
+              {loading ? 'Processingâ€¦' : `Place order Â· ৳${displayTotal.toLocaleString()}`}
             </button>
           </div>
         )}

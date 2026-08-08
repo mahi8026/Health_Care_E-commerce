@@ -166,13 +166,13 @@ export default function OrderHistoryPage() {
                     </td>
                     <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)]">
                       <div className="flex flex-col gap-0.5">
-                        <span>à§³{(order.totalAmount || order.total || 0).toLocaleString()}</span>
+                        <span>৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                         {order.isB2BOrder && order.b2bDiscount > 0 && (
                           <span className="text-xs text-[#7C3AED] font-medium flex items-center gap-1">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
                             </svg>
-                            B2B saved à§³{order.b2bDiscount.toLocaleString()}
+                            B2B saved ৳{order.b2bDiscount.toLocaleString()}
                           </span>
                         )}
                       </div>
@@ -254,14 +254,14 @@ export default function OrderHistoryPage() {
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
                     <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                      à§³{(order.totalAmount || order.total || 0).toLocaleString()}
+                      ৳{(order.totalAmount || order.total || 0).toLocaleString()}
                     </div>
                     {order.isB2BOrder && order.b2bDiscount > 0 && (
                       <div className="text-xs text-[#7C3AED] font-medium flex items-center gap-1">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
                         </svg>
-                        B2B saved à§³{order.b2bDiscount.toLocaleString()}
+                        B2B saved ৳{order.b2bDiscount.toLocaleString()}
                       </div>
                     )}
                   </div>

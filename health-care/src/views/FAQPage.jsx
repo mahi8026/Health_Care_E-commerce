@@ -36,7 +36,7 @@ const FAQ_CATEGORIES = [
     faqs: [
       {
         question: 'What are your delivery areas?',
-        answer: 'We deliver across Bangladesh. Free delivery for orders above à§³50,000 in Dhaka, Chittagong, and Sylhet. Delivery charges apply for other areas and smaller orders.'
+        answer: 'We deliver across Bangladesh. Free delivery for orders above ৳50,000 in Dhaka, Chittagong, and Sylhet. Delivery charges apply for other areas and smaller orders.'
       },
       {
         question: 'How long does delivery take?',

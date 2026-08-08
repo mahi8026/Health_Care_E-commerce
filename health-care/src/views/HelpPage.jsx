@@ -58,7 +58,7 @@ const FAQ_SECTIONS = [
       },
       {
         q: 'Is free delivery available?',
-        a: 'Yes â€” free delivery on all orders over à§³50,000 within Dhaka, Chittagong, and Sylhet. Orders below this threshold have a flat delivery fee based on your location.',
+        a: 'Yes â€” free delivery on all orders over ৳50,000 within Dhaka, Chittagong, and Sylhet. Orders below this threshold have a flat delivery fee based on your location.',
       },
       {
         q: 'How do I track my order?',

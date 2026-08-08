@@ -399,7 +399,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                       </div>
                       <div className="text-right">
                         <div className="text-sm text-[var(--color-text-secondary)]">Qty: {item.qty || item.quantity}</div>
-                        <div className="font-semibold">à§³{(item.price || 0).toLocaleString()}</div>
+                        <div className="font-semibold">৳{(item.price || 0).toLocaleString()}</div>
                       </div>
                     </div>
                   ))}
@@ -409,7 +409,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 <div className="mt-6 pt-4 border-t space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--color-text-secondary)]">Subtotal</span>
-                    <span>à§³{(order.subtotal || 0).toLocaleString()}</span>
+                    <span>৳{(order.subtotal || 0).toLocaleString()}</span>
                   </div>
                   {order.isB2BOrder && order.b2bDiscount > 0 && (
                     <div className="flex justify-between text-sm">
@@ -417,30 +417,30 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                         <span>ðŸ›¡ï¸</span>
                         <span>B2B Discount ({order.b2bDiscountPct || 0}%)</span>
                       </span>
-                      <span className="font-semibold text-purple-700">-à§³{order.b2bDiscount.toLocaleString()}</span>
+                      <span className="font-semibold text-purple-700">-৳{order.b2bDiscount.toLocaleString()}</span>
                     </div>
                   )}
                   {order.deliveryFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--color-text-secondary)]">Delivery Fee</span>
-                      <span>à§³{order.deliveryFee.toLocaleString()}</span>
+                      <span>৳{order.deliveryFee.toLocaleString()}</span>
                     </div>
                   )}
                   {order.vatAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--color-text-secondary)]">VAT (5%)</span>
-                      <span>à§³{order.vatAmount.toLocaleString()}</span>
+                      <span>৳{order.vatAmount.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                     <span>Total</span>
-                    <span className="text-brand-teal">à§³{(order.totalAmount || order.total || 0).toLocaleString()}</span>
+                    <span className="text-brand-teal">৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                   </div>
                   {order.isB2BOrder && order.b2bDiscount > 0 && (
                     <div className="flex justify-center pt-2">
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">
                         <span>ðŸ›¡ï¸</span>
-                        <span>You saved à§³{order.b2bDiscount.toLocaleString()} with B2B pricing!</span>
+                        <span>You saved ৳{order.b2bDiscount.toLocaleString()} with B2B pricing!</span>
                       </div>
                     </div>
                   )}

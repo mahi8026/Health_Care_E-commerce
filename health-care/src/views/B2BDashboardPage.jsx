@@ -50,10 +50,10 @@ function StatusBadge({ status }) {
 
 // Default tiers used as fallback if settings don't override
 const DEFAULT_TIERS = [
-  { name: 'Standard', min: 'à§³0',     discount: 8,  credit: 0,  color: 'var(--color-text-secondary)', bg: 'var(--color-background-secondary)' },
-  { name: 'Silver',   min: 'à§³5L/yr', discount: 15, credit: 30, color: 'var(--color-text-secondary)', bg: 'var(--color-background-tertiary)' },
-  { name: 'Gold',     min: 'à§³15L/yr',discount: 22, credit: 60, color: 'var(--color-status-warning)', bg: 'var(--color-status-warning-tint)' },
-  { name: 'Platinum', min: 'à§³30L/yr',discount: 30, credit: 90, color: '#7C3AED', bg: '#F5F3FF' },
+  { name: 'Standard', min: '৳0',     discount: 8,  credit: 0,  color: 'var(--color-text-secondary)', bg: 'var(--color-background-secondary)' },
+  { name: 'Silver',   min: '৳5L/yr', discount: 15, credit: 30, color: 'var(--color-text-secondary)', bg: 'var(--color-background-tertiary)' },
+  { name: 'Gold',     min: '৳15L/yr',discount: 22, credit: 60, color: 'var(--color-status-warning)', bg: 'var(--color-status-warning-tint)' },
+  { name: 'Platinum', min: '৳30L/yr',discount: 30, credit: 90, color: '#7C3AED', bg: '#F5F3FF' },
 ];
 
 function B2BLanding() {
@@ -128,8 +128,8 @@ function B2BLanding() {
   const maxDiscount = settings?.b2bMaxDiscount ?? 30;
   const creditDays  = settings?.b2bCreditDays  ?? 90;
   const deliveryThreshold = settings?.freeDeliveryThreshold
-    ? `à§³${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
-    : 'à§³50K';
+    ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
+    : '৳50K';
   const supportHours = settings?.supportHours ?? '24/7';
   const contactPhone = settings?.contactPhone ?? '+880 1800-Mediport';
   const contactEmail = settings?.contactEmail ?? 'b2b@MediportBD.com';
@@ -420,7 +420,7 @@ function B2BDashboard({ data, onRefresh }) {
 
         {/* KPI cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard icon="ðŸ’°" label="Total Spend" value={`à§³${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
+          <StatCard icon="ðŸ’°" label="Total Spend" value={`৳${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
           <StatCard icon="ðŸ“¦" label="Active Orders" value={data.activeOrders || 0} sub="in progress" color="var(--color-status-info)"/>
           <StatCard icon="ðŸšš" label="In Delivery" value={data.ordersInDelivery || 0} sub="on the way" color="var(--color-status-warning)"/>
           <StatCard icon="ðŸ·ï¸" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
@@ -482,7 +482,7 @@ function B2BDashboard({ data, onRefresh }) {
                         </div>
                         <div className="text-right flex items-center gap-3">
                           <div>
-                            <div className="text-sm font-semibold text-brand-navy">à§³{total.toLocaleString()}</div>
+                            <div className="text-sm font-semibold text-brand-navy">৳{total.toLocaleString()}</div>
                             <StatusBadge status={order.status}/>
                           </div>
                           <button onClick={() => handleDownloadInvoice(id)}
@@ -524,7 +524,7 @@ function B2BDashboard({ data, onRefresh }) {
                           <div className="text-xs text-[var(--color-text-tertiary)]">{date}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-semibold text-brand-navy">à§³{total.toLocaleString()}</div>
+                          <div className="text-sm font-semibold text-brand-navy">৳{total.toLocaleString()}</div>
                           <StatusBadge status={q.status}/>
                         </div>
                       </div>
@@ -577,7 +577,7 @@ function B2BDashboard({ data, onRefresh }) {
                 <>
                   <div className="flex justify-between text-xs mb-2">
                     <span className="text-[var(--color-text-secondary)]">Used</span>
-                    <span className="font-semibold text-brand-navy">à§³{(data.creditUsed || 0).toLocaleString()}</span>
+                    <span className="font-semibold text-brand-navy">৳{(data.creditUsed || 0).toLocaleString()}</span>
                   </div>
                   <div className="h-2.5 bg-[var(--color-background-muted)] rounded-full overflow-hidden mb-2">
                     <div className="h-full rounded-full transition-all"
@@ -585,11 +585,11 @@ function B2BDashboard({ data, onRefresh }) {
                   </div>
                   <div className="flex justify-between text-xs mb-4">
                     <span className="text-[var(--color-text-secondary)]">Available</span>
-                    <span className="font-semibold text-brand-teal">à§³{((data.creditLimit || 0) - (data.creditUsed || 0)).toLocaleString()}</span>
+                    <span className="font-semibold text-brand-teal">৳{((data.creditLimit || 0) - (data.creditUsed || 0)).toLocaleString()}</span>
                   </div>
                   <div className="pt-3 border-t border-[var(--color-border-primary)]">
                     <div className="text-xs text-[var(--color-text-tertiary)]">Credit Limit</div>
-                    <div className="text-lg font-semibold text-brand-navy">à§³{(data.creditLimit || 0).toLocaleString()}</div>
+                    <div className="text-lg font-semibold text-brand-navy">৳{(data.creditLimit || 0).toLocaleString()}</div>
                   </div>
                 </>
               ) : (
