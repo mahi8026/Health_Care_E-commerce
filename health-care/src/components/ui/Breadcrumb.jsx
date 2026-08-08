@@ -20,10 +20,10 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
             <span
               style={{
                 color: '#A5B4FC',
-                fontSize: '28px',
+                fontSize: '16px',
                 fontWeight: 300,
-                margin: '0 20px',
-                opacity: 0.7,
+                margin: '0 10px',
+                opacity: 0.6,
               }}
               aria-hidden="true"
             >
@@ -41,7 +41,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 style={{
                   color: '#8B5CF6',
                   fontWeight: 500,
-                  fontSize: '28px',
+                  fontSize: '15px',
                   lineHeight: '1.4',
                   letterSpacing: '0.01em',
                 }}
@@ -55,7 +55,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 style={{
                   color: '#A5B4FC',
                   fontWeight: 400,
-                  fontSize: '28px',
+                  fontSize: '15px',
                   lineHeight: '1.4',
                   textDecoration: 'none',
                   letterSpacing: '0.01em',
@@ -79,11 +79,11 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         style={{
           width: '100%',
           background: '#FFFFFF',
-          padding: '20px 0',
+          padding: '12px 0',
           overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 16px' }}>
           <nav aria-label="Breadcrumb">
             <ol
               style={{
