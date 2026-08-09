@@ -191,7 +191,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://www.google-analytics.com https://ssl.gstatic.com https://www.gstatic.com https://img.youtube.com",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://healthcaree-commerce-production.up.railway.app https://www.google-analytics.com https://analytics.google.com https://o4508309534613504.ingest.de.sentry.io https://res.cloudinary.com https://img.youtube.com https://onesignal.com https://api.onesignal.com https://cdn.onesignal.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
+              "connect-src 'self' https://api.mediportbd.com https://healthcaree-commerce-production.up.railway.app https://www.google-analytics.com https://analytics.google.com https://o4508309534613504.ingest.de.sentry.io https://res.cloudinary.com https://img.youtube.com https://onesignal.com https://api.onesignal.com https://cdn.onesignal.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
               "frame-src 'self' https://www.youtube.com https://www.google.com",
               "media-src 'self' https://res.cloudinary.com",
               "worker-src 'self' blob: https://cdn.onesignal.com https://api.onesignal.com",

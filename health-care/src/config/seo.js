@@ -16,14 +16,14 @@
 export const SITE_CONFIG = {
   name:         'MediportBD',
   fullName:     'MediportBD — Medical Equipment Supplier',
-  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com',
+  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://mediportbd.com',
   description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered. B2B & retail. Dhaka.",
   keywords:     'medical equipment Bangladesh, diagnostic equipment Dhaka, surgical instruments BD, laboratory reagents Bangladesh, hospital equipment supplier, DGDA registered medical devices, ECG machine price Bangladesh, reagent supplier Dhaka, B2B medical supplier Bangladesh',
   ogImage:      '/og-default.png',
   twitterHandle: '@mediportbd',
   locale:       'en_BD',
   phone:        '+880 1646-886795',
-  email:        'mahimrahman07@gmail.com',
+  email:        'info@mediportbd.com',
   address: {
     street:     '17/2/A Azad Tower, Shop-08 (Beside BMA Bhaban), Topkhana Road',
     city:       'Dhaka',
