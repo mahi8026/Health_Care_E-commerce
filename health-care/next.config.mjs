@@ -86,7 +86,11 @@ const nextConfig = {
     // API calls go directly to NEXT_PUBLIC_API_URL from the browser.
     // Only proxy in Node.js environments (local dev / Vercel).
     const isCloudflare = process.env.CF_PAGES === '1';
-    if (isCloudflare) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    // DISABLED PROXY IN PRODUCTION - Use direct API calls to avoid config issues
+    // Frontend will call https://api.mediportbd.com/api/* directly via NEXT_PUBLIC_API_URL
+    if (isCloudflare || isProduction) {
       return {
         beforeFiles: [
           {
@@ -98,6 +102,7 @@ const nextConfig = {
       };
     }
 
+    // Development only - proxy to localhost backend
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
     return {
       beforeFiles: [
