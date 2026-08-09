@@ -14,6 +14,9 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
+  // isSubmitting tracks the actual login action — separate from AuthContext's
+  // background auth-check loading (which would otherwise show the overlay on mount)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, loading, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -68,7 +71,9 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
     const result = await login(email, password);
+    setIsSubmitting(false);
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');
     } else {
@@ -81,7 +86,9 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     setEmail(testEmail);
     setPassword(testPassword);
     setError('');
+    setIsSubmitting(true);
     const result = await login(testEmail, testPassword);
+    setIsSubmitting(false);
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');
     } else {
@@ -100,8 +107,8 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
 
   return (
     <div className="min-h-screen flex bg-[var(--color-background-secondary)]">
-      {/* Loading Overlay */}
-      {loading && (
+      {/* Loading Overlay — only shown during active login submission, not on initial page load */}
+      {isSubmitting && (
         <LoadingOverlay 
           message="Signing you in..." 
           variant="medical"
@@ -231,10 +238,10 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting || loading}
               className="w-full py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white font-semibold rounded-xl text-sm transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? (
+              {isSubmitting ? (
                 <>
                   <ButtonLoader />
                   Signing in...
@@ -276,7 +283,8 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               <button
                 type="button"
                 onClick={() => quickLogin(process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL, process.env.NEXT_PUBLIC_DEV_LOGIN_PASSWORD)}
-                className="w-full py-3 bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                disabled={isSubmitting}
+                className="w-full py-3 bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60"
               >
                 Login as Dev User
               </button>

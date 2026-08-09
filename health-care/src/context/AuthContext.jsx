@@ -1,10 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import api, { setToken, getToken, removeToken } from '@/utils/api';
 import GA4Tracker from '@/services/GA4Tracker';
 
 const AuthContext = createContext();
+
+// Max time to wait for auth check before giving up (prevents infinite loading)
+const AUTH_CHECK_TIMEOUT = 5000; // 5 seconds
 
 function normalizeUser(u) {
   if (!u) return null;
@@ -14,6 +17,7 @@ function normalizeUser(u) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // Start with true to properly check auth on mount
+  const authCheckDone = useRef(false);
 
   // Rehydrate user from token on page refresh
   useEffect(() => {
@@ -21,25 +25,51 @@ export function AuthProvider({ children }) {
       const token = getToken();
       if (!token) {
         setLoading(false);
+        authCheckDone.current = true;
         return; // No token, no need to fetch
       }
+
+      // Safety timeout — never block the UI for more than AUTH_CHECK_TIMEOUT
+      const timeoutId = setTimeout(() => {
+        if (!authCheckDone.current) {
+          authCheckDone.current = true;
+          setLoading(false);
+        }
+      }, AUTH_CHECK_TIMEOUT);
       
       try {
-        const response = await api.getMe();
-        
-        const normalized = normalizeUser(response.user);
-        setUser(normalized);
-        if (normalized?.id) {
-          GA4Tracker.setUserId(normalized.id);
-        }
-      } catch (error) {
-        // Only clear tokens on auth errors, not network errors
-        if (error.status === 401 || error.status === 403) {
+        // Use a direct fetch with a short timeout instead of the retrying api.getMe()
+        // to avoid the 3-retry × 2s delay (6s+) on stale tokens
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => controller.abort(), 4000);
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: 'include',
+          signal: controller.signal,
+        });
+
+        clearTimeout(fetchTimeout);
+
+        if (response.ok) {
+          const data = await response.json();
+          const normalized = normalizeUser(data.user);
+          setUser(normalized);
+          if (normalized?.id) {
+            GA4Tracker.setUserId(normalized.id);
+          }
+        } else if (response.status === 401 || response.status === 403) {
+          // Token is invalid — clear it so user gets a clean login
           removeToken();
           setUser(null);
         }
-        process.env.NODE_ENV !== "production" && console.error('[AuthContext] Failed to load user:', error.message);
+        // For 5xx / network issues: keep the token, let the user retry naturally
+      } catch {
+        // Network error or abort — do NOT clear token, just stop loading
+        // User may just be offline temporarily
       } finally {
+        clearTimeout(timeoutId);
+        authCheckDone.current = true;
         setLoading(false);
       }
     };
