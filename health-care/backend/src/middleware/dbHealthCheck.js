@@ -9,7 +9,9 @@ const logger = require('../utils/logger');
 const dbHealthCheck = (req, res, next) => {
   // Mongoose connection states:
   // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
-  if (mongoose.connection.readyState !== 1) {
+  // Allow state 1 (connected) and 2 (connecting) — connecting means DB is coming up
+  const state = mongoose.connection.readyState;
+  if (state !== 1 && state !== 2) {
     const origin = req.headers.origin;
     if (origin) {
       res.setHeader('Access-Control-Allow-Origin', origin);
@@ -18,7 +20,7 @@ const dbHealthCheck = (req, res, next) => {
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
     }
 
-    logger.warn(`[dbHealthCheck] Database unavailable (state: ${mongoose.connection.readyState})`);
+    logger.warn(`[dbHealthCheck] Database unavailable (state: ${state})`);
     
     return res.status(503).json({
       success: false,

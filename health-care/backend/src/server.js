@@ -172,6 +172,8 @@ app.options('*', (req, res) => {
   const allowedOrigins = [
     process.env.FRONTEND_URL,
     process.env.ADMIN_URL,
+    'https://mediportbd.com',
+    'https://www.mediportbd.com',
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002',
