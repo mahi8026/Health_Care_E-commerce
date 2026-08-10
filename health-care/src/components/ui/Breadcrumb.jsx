@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 
 /**
- * Breadcrumb Navigation Component — minimal clean design with "/" separators
+ * Breadcrumb Navigation Component — mobile-friendly with truncation
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
@@ -14,18 +14,19 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   const renderItems = () =>
     items.map((item, idx) => {
       const current = isCurrent(item, idx);
+      const isLast = idx === items.length - 1;
+
       return (
         <React.Fragment key={`${item.label}-${idx}`}>
           {idx > 0 && (
             <span
               style={{
                 color: '#9CA3AF',
-                fontSize: '16px',
+                fontSize: '13px',
                 fontWeight: 300,
-                margin: '0 8px',
+                margin: '0 4px',
                 lineHeight: '1',
-                display: 'inline-block',
-                flexShrink: 0,
+                flexShrink: 0,         // separator never shrinks
               }}
               aria-hidden="true"
             >
@@ -37,11 +38,15 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               style={{
                 color: '#7C3AED',
                 fontWeight: 600,
-                fontSize: '15px',
-                lineHeight: '1',
+                fontSize: '13px',
+                lineHeight: '1.3',
                 letterSpacing: '0.01em',
-                display: 'inline-block',
+                // Last crumb truncates with ellipsis on mobile
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
+                minWidth: 0,           // needed for flex child to shrink
+                flexShrink: isLast ? 1 : 0,
               }}
               aria-current="page"
             >
@@ -53,16 +58,16 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               style={{
                 color: '#6B7280',
                 fontWeight: 500,
-                fontSize: '15px',
-                lineHeight: '1',
+                fontSize: '13px',
+                lineHeight: '1.3',
                 textDecoration: 'none',
                 letterSpacing: '0.01em',
                 transition: 'color 0.2s ease',
-                display: 'inline-block',
                 whiteSpace: 'nowrap',
+                flexShrink: 0,         // middle crumbs don't shrink
               }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#7C3AED'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#7C3AED')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#6B7280')}
             >
               {item.label}
             </Link>
@@ -71,6 +76,18 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
       );
     });
 
+  const olStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    minWidth: 0,        // allow flex container to shrink
+    overflow: 'hidden', // clip anything that still overflows
+  };
+
   if (variant === 'default') {
     return (
       <div
@@ -78,25 +95,13 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         style={{
           width: '100%',
           background: '#FFFFFF',
-          padding: '12px 0',
-          overflow: 'hidden',
+          padding: '10px 0',
+          minWidth: 0,
         }}
       >
-        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 16px' }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 16px', minWidth: 0 }}>
           <nav aria-label="Breadcrumb">
-            <ol
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                flexWrap: 'nowrap',
-                alignItems: 'center',
-                listStyle: 'none',
-                margin: 0,
-                padding: 0,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-              }}
-            >
+            <ol style={olStyle}>
               {renderItems()}
             </ol>
           </nav>
@@ -106,19 +111,8 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   }
 
   return (
-    <nav aria-label="Breadcrumb" className={className}>
-      <ol
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'nowrap',
-          alignItems: 'center',
-          listStyle: 'none',
-          margin: 0,
-          padding: 0,
-          whiteSpace: 'nowrap',
-        }}
-      >
+    <nav aria-label="Breadcrumb" className={className} style={{ minWidth: 0 }}>
+      <ol style={olStyle}>
         {renderItems()}
       </ol>
     </nav>
