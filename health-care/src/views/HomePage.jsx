@@ -645,6 +645,9 @@ export default function HomePage() {
           -ms-overflow-style: none;
         }
         .marquee-wrap::-webkit-scrollbar { display: none; }
+        
+        /* Hide scrollbar on tab row */
+        [role="tablist"]::-webkit-scrollbar { display: none; }
         .marquee-track { 
           display: flex; 
           width: max-content;
@@ -1084,11 +1087,16 @@ export default function HomePage() {
           <div role="tablist" aria-label="Product categories" style={{ 
             display: 'flex', 
             gap: 8, 
-            marginBottom: 24, 
-            flexWrap: 'wrap',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            scrollbarWidth: 'none',     /* Firefox */
+            msOverflowStyle: 'none',    /* IE/Edge */
+            WebkitOverflowScrolling: 'touch',
             listStyle: 'none',
-            padding: 0,
-            margin: '0 0 24px 0'
+            padding: '4px 0 12px 0',
+            margin: '0 0 12px 0',
+            scrollSnapType: 'x mandatory',
           }}>
             {/* Always show "All Products" first */}
             <button
@@ -1113,7 +1121,10 @@ export default function HomePage() {
                 listStyle: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
+                scrollSnapAlign: 'start',
               }}>
               All Products
             </button>
@@ -1158,7 +1169,10 @@ export default function HomePage() {
                       listStyle: 'none',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '6px'
+                      gap: '6px',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      scrollSnapAlign: 'start',
                     }}>
                     {icon} {categoryName.length > 20 ? categoryName.substring(0, 17) + '...' : categoryName}
                   </button>
