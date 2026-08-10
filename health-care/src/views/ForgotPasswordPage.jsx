@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email: email.toLowerCase().trim() }),
       });
       const data = await res.json();
-      
+
       // Always show success message to prevent email enumeration
       if (res.ok || res.status === 200) {
         setSuccess(true);
@@ -67,12 +67,12 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-page flex items-center justify-center p-4 sm:p-6">
       {/* Loading Overlay */}
       {loading && (
-        <LoadingOverlay 
-          message="Sending reset link..." 
+        <LoadingOverlay
+          message="Sending reset link..."
           variant="medical"
         />
       )}
-      
+
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-5">
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
         <div className="bg-white rounded-lg p-5 sm:p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">ðŸ“§</div>
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">&#128231;</div>
               <h3 className="text-base sm:text-base font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 Check your email
               </h3>
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
                 onClick={() => router.push('/login')}
                 className="text-xs sm:text-xs text-brand-teal font-medium hover:underline"
               >
-                â† Back to login
+                &larr; Back to login
               </button>
             </div>
           ) : (
@@ -110,7 +110,7 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
-              {/* Error â€” aria-live ensures screen readers announce failures */}
+              {/* Error — aria-live ensures screen readers announce failures */}
               <div aria-live="polite" aria-atomic="true">
                 {error && (
                   <Alert className="mb-3 sm:mb-4">{error}</Alert>
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
                 {loading ? (
                   <>
                     <ButtonLoader />
-                    Sendingâ€¦
+                    Sending&hellip;
                   </>
                 ) : (
                   'Send Reset Link'
@@ -159,7 +159,7 @@ export default function ForgotPasswordPage() {
               onClick={() => router.push('/login')}
               className="text-xs sm:text-xs text-[var(--color-text-secondary)] hover:text-brand-teal"
             >
-              â† Back to login
+              &larr; Back to login
             </button>
           </div>
         </div>
@@ -167,4 +167,3 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
-

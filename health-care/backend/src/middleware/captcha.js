@@ -10,12 +10,9 @@ const logger = require('../utils/logger');
 async function verifyRecaptcha(token, action) {
   try {
     if (!process.env.RECAPTCHA_SECRET_KEY) {
-      logger.warn('[CAPTCHA] reCAPTCHA secret key not configured');
-      // Only skip CAPTCHA when SKIP_CAPTCHA_DEV is explicitly set
-      if (process.env.SKIP_CAPTCHA_DEV === 'true') {
-        return { success: true, score: 1.0, bypass: true };
-      }
-      return { success: false, error: 'CAPTCHA not configured' };
+      logger.warn('[CAPTCHA] reCAPTCHA secret key not configured — skipping CAPTCHA check');
+      // Skip CAPTCHA entirely when not configured (no secret key set)
+      return { success: true, score: 1.0, bypass: true };
     }
 
     const response = await axios.post(
@@ -73,7 +70,6 @@ async function verifyRecaptcha(token, action) {
     if (process.env.SKIP_CAPTCHA_DEV === 'true') {
       return { success: true, score: 1.0, bypass: true };
     }
-    
     return { 
       success: false, 
       error: 'CAPTCHA verification error' 
@@ -92,9 +88,9 @@ function captchaMiddleware(action) {
       const token = req.headers['x-recaptcha-token'] || req.body.recaptchaToken;
 
       if (!token) {
-        // Only bypass when SKIP_CAPTCHA_DEV is explicitly set
-        if (process.env.SKIP_CAPTCHA_DEV === 'true') {
-          logger.debug('[CAPTCHA] Bypassing — SKIP_CAPTCHA_DEV is set');
+        // Bypass when CAPTCHA is not configured or SKIP_CAPTCHA_DEV is set
+        if (!process.env.RECAPTCHA_SECRET_KEY || process.env.SKIP_CAPTCHA_DEV === 'true') {
+          logger.debug('[CAPTCHA] Bypassing — RECAPTCHA_SECRET_KEY not configured');
           return next();
         }
 
