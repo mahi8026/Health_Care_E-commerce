@@ -13,8 +13,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://health-care-e-commerce-murex.vercel.app';
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce.onrender.com/api';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mediportbd.com';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://healthcaree-commerce-production.up.railway.app/api';
 const OUTPUT_FILE = path.join(__dirname, '../public/sitemap-products-static.xml');
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 5000; // 5 seconds
