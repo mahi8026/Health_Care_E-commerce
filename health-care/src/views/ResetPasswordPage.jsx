@@ -103,18 +103,18 @@ export default function ResetPasswordPage() {
                 Password reset successfully
               </h3>
               <p className="text-xs sm:text-xs text-[var(--color-text-secondary)] mb-3 sm:mb-4">
-                Redirecting you to loginâ€¦
+                Redirecting you to login…
               </p>
               <button
                 onClick={() => router.push('/login')}
                 className="text-xs sm:text-xs text-brand-teal font-medium hover:underline"
               >
-                Go to login â†’
+                Go to login →
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              {/* Error â€” aria-live ensures screen readers announce validation failures */}
+              {/* Error — aria-live ensures screen readers announce validation failures */}
               <div aria-live="polite" aria-atomic="true">
                 {error && (
                   <Alert className="mb-3 sm:mb-4">{error}</Alert>
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
                 {loading ? (
                   <>
                     <ButtonLoader />
-                    Resettingâ€¦
+                    Resetting…
                   </>
                 ) : (
                   'Reset Password'
@@ -183,7 +183,7 @@ export default function ResetPasswordPage() {
               onClick={() => router.push('/login')}
               className="text-xs sm:text-xs text-[var(--color-text-secondary)] hover:text-brand-teal"
             >
-              â† Back to login
+              ← Back to login
             </button>
           </div>
         </div>

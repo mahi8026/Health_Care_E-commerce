@@ -138,7 +138,7 @@ export default function NotificationsPage() {
             disabled={saving}
             className="px-5 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
           >
-            {saving ? 'Savingâ€¦' : 'Save preferences'}
+            {saving ? 'Saving…' : 'Save preferences'}
           </button>
           {saved && (
             <span className="text-xs text-brand-teal font-medium flex items-center gap-1.5">

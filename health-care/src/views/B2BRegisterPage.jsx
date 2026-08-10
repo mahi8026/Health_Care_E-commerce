@@ -241,10 +241,10 @@ export default function B2BRegisterPage() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
             <h3 className="font-semibold text-blue-900 mb-2">What&apos;s Next?</h3>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>â€¢ Your B2B application is under review</li>
-              <li>â€¢ We&apos;ll verify your business details</li>
-              <li>â€¢ You&apos;ll receive approval within 24-48 hours</li>
-              <li>â€¢ Check your email for updates</li>
+              <li>• Your B2B application is under review</li>
+              <li>• We&apos;ll verify your business details</li>
+              <li>• You&apos;ll receive approval within 24-48 hours</li>
+              <li>• Check your email for updates</li>
             </ul>
           </div>
 

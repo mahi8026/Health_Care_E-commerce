@@ -13,7 +13,7 @@ const TRACKING_STEPS = [
   { key: 'processing', icon: 'âš™ï¸', label: 'Processing', desc: 'Items being packed in our warehouse' },
   { key: 'shipped', icon: 'ðŸ“¦', label: 'Shipped', desc: 'Order dispatched from warehouse' },
   { key: 'out_for_delivery', icon: 'ðŸšš', label: 'Out for Delivery', desc: 'Your order is on the way' },
-  { key: 'delivered', icon: 'ðŸŽ‰', label: 'Delivered', desc: 'Order successfully delivered' },
+  { key: 'delivered', icon: '🎉', label: 'Delivered', desc: 'Order successfully delivered' },
 ];
 
 const ORDER_STATUS_INDEX = {
@@ -58,7 +58,7 @@ function TrackingTimeline({ status, timeline }) {
                 filter: isPending ? 'grayscale(100%)' : 'none',
                 animation: isCurrent ? 'pulse 2s ease-in-out infinite' : 'none',
               }}>
-                {isDone ? 'âœ“' : step.icon}
+                {isDone ? '✓' : step.icon}
               </div>
               {idx < TRACKING_STEPS.length - 1 && (
                 <div style={{

@@ -19,7 +19,7 @@ const PERKS = [
   {
     icon: <FaAward />,
     title: 'Growth opportunities',
-    desc: 'We promote from within â€” sales, service, and operations teams grow into leadership roles as the company expands.',
+    desc: 'We promote from within — sales, service, and operations teams grow into leadership roles as the company expands.',
     color: 'bg-amber-50 text-amber-600',
   },
   {
@@ -127,7 +127,7 @@ export default function CareersPage() {
             <FaEnvelope className="text-2xl text-brand-teal-light mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Didn&apos;t find your role?</h3>
             <p className="text-white/70 text-sm mb-5">
-              Send your CV with the subject line &quot;Application â€” [Role Name]&quot; and we&apos;ll keep you in mind for upcoming openings.
+              Send your CV with the subject line &quot;Application — [Role Name]&quot; and we&apos;ll keep you in mind for upcoming openings.
             </p>
             <a
               href={`mailto:${CONTACT.supportEmail}?subject=Application%20%E2%80%94%20[Role%20Name]`}

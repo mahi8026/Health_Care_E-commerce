@@ -31,6 +31,8 @@ export default function OrderHistoryPage() {
   const [error, setError] = useState(null);
   // Review modal state
   const [reviewModal, setReviewModal] = useState(null); // { productId, productName }
+  // Cancellation state
+  const [cancellingId, setCancellingId] = useState(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -77,6 +79,27 @@ export default function OrderHistoryPage() {
 
   const handleRequestReturn = (orderId) => {
     router.push(`/returns/request/${orderId}`);
+  };
+
+  const canCancel = (order) => ['placed', 'pending', 'confirmed'].includes(order.status);
+
+  const handleCancel = async (order) => {
+    if (!window.confirm(t('orders.cancelConfirm'))) return;
+    setCancellingId(order._id);
+    try {
+      const token = localStorage.getItem('Mediport_token');
+      const res = await fetch(`${API}/orders/${order._id}/cancel`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to cancel order');
+      setOrders(prev => prev.map(o => o._id === order._id ? { ...o, status: 'cancelled' } : o));
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setCancellingId(null);
+    }
   };
 
   const canRequestReturn = (order) => {
@@ -159,7 +182,7 @@ export default function OrderHistoryPage() {
                       {order.orderNumber}
                     </td>
                     <td className="px-4 py-3 text-xs text-[var(--color-text-secondary)]">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'â€”'}
+                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                     </td>
                     <td className="px-4 py-3 text-xs">
                       {order.items?.length || 0} {(order.items?.length || 0) !== 1 ? t('orders.items') : t('orders.items')}
@@ -190,16 +213,16 @@ export default function OrderHistoryPage() {
                         >
                           {t('orders.track')}
                         </button>
-                        <span className="text-[var(--color-border-secondary)]">Â·</span>
+                        <span className="text-[var(--color-border-secondary)]">·</span>
                         <button
                           onClick={() => handleInvoice(order)}
                           className="text-xs text-brand-navy font-medium hover:underline"
                         >
                           {t('orders.invoice')}
                         </button>
-                        {canRequestReturn(order) && (
+{canRequestReturn(order) && (
                           <>
-                            <span className="text-[var(--color-border-secondary)]">Â·</span>
+                            <span className="text-[var(--color-border-secondary)]">·</span>
                             <button
                               onClick={() => handleRequestReturn(order._id)}
                               className="text-xs text-danger font-medium hover:underline"
@@ -208,9 +231,21 @@ export default function OrderHistoryPage() {
                             </button>
                           </>
                         )}
+                        {canCancel(order) && (
+                          <>
+                            <span className="text-[var(--color-border-secondary)]">·</span>
+                            <button
+                              onClick={() => handleCancel(order)}
+                              disabled={cancellingId === order._id}
+                              className="text-xs text-danger font-medium hover:underline disabled:opacity-50"
+                            >
+                              {t('orders.cancel')}
+                            </button>
+                          </>
+                        )}
                         {order.status === 'delivered' && order.items?.slice(0, 1).map(item => (
                           <span key={item.product?._id || item.product} className="flex items-center gap-1">
-                            <span className="text-[var(--color-border-secondary)]">Â·</span>
+                            <span className="text-[var(--color-border-secondary)]">·</span>
                             <button
                               onClick={() => setReviewModal({
                                 productId: item.product?._id || item.product,
@@ -240,7 +275,7 @@ export default function OrderHistoryPage() {
                       {order.orderNumber}
                     </div>
                     <div className="text-xs text-[var(--color-text-secondary)]">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'â€”'}
+                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-[3px] rounded font-medium ${STATUS_COLORS[order.status] || STATUS_COLORS.placed}`}>
@@ -288,6 +323,15 @@ export default function OrderHistoryPage() {
                       {t('orders.return')}
                     </button>
                   )}
+                  {canCancel(order) && (
+                    <button
+                      onClick={() => handleCancel(order)}
+                      disabled={cancellingId === order._id}
+                      className="flex-1 min-h-[44px] py-2 text-xs text-danger font-medium border-[0.5px] border-danger rounded-lg hover:bg-[var(--color-status-danger-tint)] transition-colors disabled:opacity-50"
+                    >
+                      {t('orders.cancel')}
+                    </button>
+                  )}
                   {order.status === 'delivered' && order.items?.[0] && (
                     <button
                       onClick={() => setReviewModal({
@@ -315,7 +359,7 @@ export default function OrderHistoryPage() {
                 {t('orders.previous')}
               </button>
               <span className="text-xs text-[var(--color-text-secondary)]">
-                {t('orders.page')} {page} {t('orders.of')} {totalPages} Â· {total} orders
+                {t('orders.page')} {page} {t('orders.of')} {totalPages} · {total} orders
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}

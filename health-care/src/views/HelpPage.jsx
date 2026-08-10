@@ -21,7 +21,7 @@ const CONTACT_OPTIONS = [
     icon: <FaPhone className="text-xl" />,
     label: 'Call Us',
     value: '+880 1646-886795',
-    sub: 'Sun â€“ Thu, 9 AM â€“ 6 PM',
+    sub: 'Sun – Thu, 9 AM – 6 PM',
     href: 'tel:+8801646886795',
     color: 'bg-blue-50 text-blue-600',
     cta: 'Call Now',
@@ -54,11 +54,11 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: 'How long does delivery take?',
-        a: 'Standard delivery within Dhaka takes 1â€“2 business days. Chittagong and Sylhet take 2â€“3 business days. For other districts, allow 3â€“5 business days. Cold-chain items are dispatched same day if ordered before 12 PM.',
+        a: 'Standard delivery within Dhaka takes 1–2 business days. Chittagong and Sylhet take 2–3 business days. For other districts, allow 3–5 business days. Cold-chain items are dispatched same day if ordered before 12 PM.',
       },
       {
         q: 'Is free delivery available?',
-        a: 'Yes â€” free delivery on all orders over ৳50,000 within Dhaka, Chittagong, and Sylhet. Orders below this threshold have a flat delivery fee based on your location.',
+        a: 'Yes — free delivery on all orders over ৳50,000 within Dhaka, Chittagong, and Sylhet. Orders below this threshold have a flat delivery fee based on your location.',
       },
       {
         q: 'How do I track my order?',
@@ -119,7 +119,7 @@ const FAQ_SECTIONS = [
       },
       {
         q: 'When will I receive my refund?',
-        a: 'Refunds are processed within 5â€“7 business days after the returned item is received and inspected. The amount is credited back to the original payment method.',
+        a: 'Refunds are processed within 5–7 business days after the returned item is received and inspected. The amount is credited back to the original payment method.',
       },
     ],
   },
@@ -130,7 +130,7 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: 'How do I register as a B2B customer?',
-        a: 'Click "B2B Portal" in the top navigation and complete the institutional registration form. You will need your trade licence, TIN certificate, and DGDA licence (if applicable). Approval takes 1â€“2 business days.',
+        a: 'Click "B2B Portal" in the top navigation and complete the institutional registration form. You will need your trade licence, TIN certificate, and DGDA licence (if applicable). Approval takes 1–2 business days.',
       },
       {
         q: 'What discounts are available for bulk orders?',
@@ -175,7 +175,7 @@ export default function HelpPage() {
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">How can we help you?</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
-            Browse our frequently asked questions or reach out directly â€” our support team is available Sunday through Thursday, 9 AM to 6 PM.
+            Browse our frequently asked questions or reach out directly — our support team is available Sunday through Thursday, 9 AM to 6 PM.
           </p>
         </div>
       </section>

@@ -33,7 +33,7 @@ function TransactionRow({ tx }) {
           <p className="text-sm font-medium text-[var(--color-text-primary)]">{tx.description}</p>
           <p className="text-xs text-[var(--color-text-secondary)]">
             {tx.createdAt ? format(new Date(tx.createdAt), 'dd MMM yyyy, HH:mm') : ''}
-            {tx.order?.orderNumber && ` Â· ${tx.order.orderNumber}`}
+            {tx.order?.orderNumber && ` · ${tx.order.orderNumber}`}
           </p>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function LoyaltyPage() {
               </div>
             )}
             {!tierProgress?.next && (
-              <p className="text-sm text-blue-200 mt-2">ðŸŽ‰ You&apos;ve reached the highest tier!</p>
+              <p className="text-sm text-blue-200 mt-2">🎉 You&apos;ve reached the highest tier!</p>
             )}
           </div>
 
@@ -163,7 +163,7 @@ export default function LoyaltyPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { label: 'Every ৳100 spent',     pts: '1 pt',   icon: 'ðŸ›’' },
-                { label: 'First order bonus',     pts: '+200 pts', icon: 'ðŸŽ‰' },
+                { label: 'First order bonus',     pts: '+200 pts', icon: '🎉' },
                 { label: 'Leave a product review', pts: '+50 pts', icon: 'â­' },
                 { label: 'Refer a friend',         pts: '+500 pts', icon: 'ðŸ‘¥' },
               ].map(item => (
@@ -185,9 +185,9 @@ export default function LoyaltyPage() {
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: 'Bronze',   pts: '0â€“999',    icon: 'ðŸ¥‰', benefit: 'Earn points on every order' },
-                { label: 'Silver',   pts: '1Kâ€“4.9K',  icon: 'ðŸ¥ˆ', benefit: '5% extra discount' },
-                { label: 'Gold',     pts: '5Kâ€“9.9K',  icon: 'ðŸ¥‡', benefit: '10% extra + free shipping' },
+                { label: 'Bronze',   pts: '0–999',    icon: 'ðŸ¥‰', benefit: 'Earn points on every order' },
+                { label: 'Silver',   pts: '1K–4.9K',  icon: 'ðŸ¥ˆ', benefit: '5% extra discount' },
+                { label: 'Gold',     pts: '5K–9.9K',  icon: 'ðŸ¥‡', benefit: '10% extra + free shipping' },
                 { label: 'Platinum', pts: '10K+',     icon: 'ðŸ’Ž', benefit: '15% extra + priority support' },
               ].map(t => (
                 <div
@@ -212,7 +212,7 @@ export default function LoyaltyPage() {
             <FaInfoCircle className="text-[var(--color-status-warning)] w-4 h-4 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-[var(--color-status-warning)]">
               <p className="font-semibold mb-1">How to Redeem</p>
-              <p>1000 points = ৳10 discount Â· Minimum 500 points to redeem Â· Max 20% of order total Â· Redeem at checkout</p>
+              <p>1000 points = ৳10 discount · Minimum 500 points to redeem · Max 20% of order total · Redeem at checkout</p>
             </div>
           </div>
 

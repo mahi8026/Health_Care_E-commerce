@@ -57,7 +57,7 @@ export default function WarrantyPage() {
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">Every device, backed by a warranty</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
-            Every product sold by MediportBD is covered by a manufacturer warranty plus our own service warranty â€” so you can buy with confidence.
+            Every product sold by MediportBD is covered by a manufacturer warranty plus our own service warranty — so you can buy with confidence.
           </p>
         </div>
       </section>
@@ -93,7 +93,7 @@ export default function WarrantyPage() {
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {EXCLUSIONS.map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                  <span className="text-[var(--color-status-danger)] mt-0.5 flex-shrink-0">â€¢</span>
+                  <span className="text-[var(--color-status-danger)] mt-0.5 flex-shrink-0">•</span>
                   {item}
                 </li>
               ))}
@@ -128,7 +128,7 @@ export default function WarrantyPage() {
             <FaEnvelope className="text-2xl text-brand-teal-light mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Need to start a warranty claim?</h3>
             <p className="text-white/70 text-sm mb-5">
-              Email our support team with your order number and serial number â€” we respond within one business day.
+              Email our support team with your order number and serial number — we respond within one business day.
             </p>
             <a
               href={`mailto:${CONTACT.supportEmail}?subject=Warranty%20Claim`}

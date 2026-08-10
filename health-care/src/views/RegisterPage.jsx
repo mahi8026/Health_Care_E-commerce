@@ -187,7 +187,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
             </p>
           </div>
 
-          {/* Error â€” aria-live ensures screen readers announce submit failures */}
+          {/* Error — aria-live ensures screen readers announce submit failures */}
           <div role="alert" aria-live="polite" aria-atomic="true">
             {errors.submit && (
               <div className="mb-5 flex items-start gap-3 p-4 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-xl text-[var(--color-status-danger)] text-sm">

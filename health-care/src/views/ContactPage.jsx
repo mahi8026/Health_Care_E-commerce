@@ -9,7 +9,7 @@ const CHANNELS = [
     icon: <FaPhone className="text-xl" />,
     label: 'Call Us',
     value: CONTACT.phone,
-    sub: 'Sun â€“ Thu, 9 AM â€“ 6 PM',
+    sub: 'Sun – Thu, 9 AM – 6 PM',
     href: `tel:${CONTACT.phone.replace(/[\s\-]/g, '')}`,
     color: 'bg-blue-50 text-blue-600',
     cta: 'Call Now',
@@ -46,7 +46,7 @@ export default function ContactPage() {
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">We are here to help</h1>
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto">
-            Questions about a product, an order, or a B2B partnership? Reach our team directly â€” we typically respond within one business day.
+            Questions about a product, an order, or a B2B partnership? Reach our team directly — we typically respond within one business day.
           </p>
         </div>
       </section>
@@ -107,7 +107,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold text-[var(--color-text-primary)] text-sm mb-1">Business Hours</h3>
                 <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                  Saturday â€“ Thursday: 9:00 AM â€“ 6:00 PM
+                  Saturday – Thursday: 9:00 AM – 6:00 PM
                   <br />
                   Friday: Closed
                 </p>
@@ -120,7 +120,7 @@ export default function ContactPage() {
             <FaIndustry className="text-2xl text-brand-teal-light mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Looking for institutional pricing?</h3>
             <p className="text-white/70 text-sm mb-5">
-              Hospitals, clinics, and diagnostic centres â€” request bulk pricing and credit terms through the B2B portal.
+              Hospitals, clinics, and diagnostic centres — request bulk pricing and credit terms through the B2B portal.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <a

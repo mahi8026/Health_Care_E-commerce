@@ -23,7 +23,7 @@ function CopyBtn({ text }) {
         copied ? 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' : 'bg-[var(--color-background-muted)] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-muted)]'
       }`}
     >
-      {copied ? 'âœ“ Copied' : 'Copy'}
+      {copied ? '✓ Copied' : 'Copy'}
     </button>
   );
 }
@@ -57,11 +57,11 @@ function BankTransferConfirmation({ orderId }) {
           </div>
         ))}
 
-        {/* Reference â€” most important */}
+        {/* Reference — most important */}
         <div className="mt-2 pt-2 border-t border-[var(--color-status-warning-tint)]">
           <div className="flex items-center justify-between gap-2 bg-[var(--color-status-warning-tint)] rounded-lg px-3 py-2">
             <div>
-              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">âš ï¸ Transfer Reference (Required)</p>
+              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">⚠ï¸ Transfer Reference (Required)</p>
               <p className="text-sm font-semibold text-[#78350F] font-mono m-0">{orderId}</p>
             </div>
             <CopyBtn text={orderId} />
@@ -71,7 +71,7 @@ function BankTransferConfirmation({ orderId }) {
 
       <div className="px-4 pb-3">
         <p className="text-xs text-[var(--color-status-warning)] m-0">
-          Your order will be confirmed within <strong>1â€“2 business hours</strong> after payment is received.
+          Your order will be confirmed within <strong>1–2 business hours</strong> after payment is received.
           Email us at <strong>mahimrahman07@gmail.com</strong> with your transaction screenshot if needed.
         </p>
       </div>
@@ -145,7 +145,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         </div>
       </div>
 
-      {/* Bank Transfer Instructions â€” shown when payment method is bank_transfer */}
+      {/* Bank Transfer Instructions — shown when payment method is bank_transfer */}
       {paymentMethod === 'bank_transfer' && (
         <BankTransferConfirmation orderId={orderId} />
       )}

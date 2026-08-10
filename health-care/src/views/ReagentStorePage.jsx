@@ -42,7 +42,7 @@ class ReagentErrorBoundary extends Component {
 }
 
 const STORAGE_LEGEND = [
-  { label: 'Cold 2â€“8Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
+  { label: 'Cold 2–8Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
   { label: 'Frozen âˆ’20Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#EEEDFE] to-[#DDD9FE] text-[#3C3489] border-[#C5C0F5]' },
   { label: 'Room temp', icon: <FaTint />, className: 'bg-gradient-to-br from-brand-teal-tint to-[#C8EBDD] text-[var(--color-status-success)] border-[#B0E1CE]' },
 ];
@@ -254,7 +254,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
             ) : fetchError ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm">
                 <div className="w-14 h-14 bg-gradient-to-br from-[var(--color-status-danger-tint)] to-[var(--color-status-danger-tint)] rounded-full flex items-center justify-center mb-4">
-                  <span className="text-3xl">âš ï¸</span>
+                  <span className="text-3xl">⚠ï¸</span>
                 </div>
                 <p className="text-base font-semibold text-brand-navy mb-1">Could not load products</p>
                 <p className="text-sm text-[var(--color-text-secondary)] mb-4 max-w-sm">Check your connection and try again.</p>

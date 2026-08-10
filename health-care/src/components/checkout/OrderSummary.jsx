@@ -192,7 +192,7 @@ export default function OrderSummary({
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <Image src={img} alt={`${item.name}${item.brand ? ` â€” ${item.brand}` : ''} â€” Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
+                    <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <span className="text-lg">ðŸ“¦</span>
                   )}
@@ -298,7 +298,7 @@ export default function OrderSummary({
                     You have <strong>{availablePoints} points</strong> = ৳{(availablePoints * 0.1).toFixed(2)} discount value
                   </p>
                   <p className="text-xs text-[var(--color-text-tertiary)] mb-2">
-                    100 points = ৳10 â€¢ Minimum 50 points to redeem â€¢ Max 20% of order
+                    100 points = ৳10 • Minimum 50 points to redeem • Max 20% of order
                   </p>
                   <div className="flex gap-2">
                     <input
@@ -390,7 +390,7 @@ export default function OrderSummary({
               disabled={loading}
               className="w-full py-3 rounded-xl bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white text-sm font-semibold shadow-lg shadow-brand-teal/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Processingâ€¦' : `Place order Â· ৳${displayTotal.toLocaleString()}`}
+              {loading ? 'Processing…' : `Place order · ৳${displayTotal.toLocaleString()}`}
             </button>
           </div>
         )}

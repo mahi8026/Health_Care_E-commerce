@@ -67,7 +67,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
       {STEPS[0].href && currentStep > 1 && (
         <p className="text-xs text-[var(--color-text-secondary)] mt-3 mb-0 sm:hidden">
           <Link href="/cart" className="text-brand-teal font-medium hover:underline">
-            â† Edit cart
+            ← Edit cart
           </Link>
         </p>
       )}

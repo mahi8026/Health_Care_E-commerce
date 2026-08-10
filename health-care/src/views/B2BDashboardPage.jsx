@@ -37,7 +37,7 @@ function StatusBadge({ status }) {
     converted:   { bg: '#EDE9FE', text: '#5B21B6', label: 'Converted' },
     'in transit':{ bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)', label: 'In Transit' },
   };
-  const s = map[status?.toLowerCase()] || { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-primary)', label: status || 'â€”' };
+  const s = map[status?.toLowerCase()] || { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-primary)', label: status || '—' };
   return (
     <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
       style={{ background: s.bg, color: s.text }}>
@@ -149,7 +149,7 @@ function B2BLanding() {
     { icon: 'ðŸ“‹', title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
   ];
 
-  // Build tiers from settings â€” scale discounts proportionally from maxDiscount
+  // Build tiers from settings — scale discounts proportionally from maxDiscount
   const tiers = DEFAULT_TIERS.map((t) => ({
     ...t,
     discount: t.name === 'Platinum' ? maxDiscount
@@ -176,7 +176,7 @@ function B2BLanding() {
             <div>
               <div className="inline-flex items-center gap-2 bg-brand-teal/20 text-[#4ADE80] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
                 <span className="w-2 h-2 bg-[#4ADE80] rounded-full animate-pulse"/>
-                B2B Portal â€” Bangladesh&apos;s #1 Medical Supplier
+                B2B Portal — Bangladesh&apos;s #1 Medical Supplier
               </div>
               <h1 className="text-2xl md:text-3xl font-semibold leading-tight mb-3">
                 Medical Equipment<br/>
@@ -196,9 +196,9 @@ function B2BLanding() {
                 </button>
               </div>
               <div className="mt-5 flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
-                <span>âœ“ DGDA Registered</span>
-                <span>âœ“ ISO 13485 Certified</span>
-                <span>âœ“ 10,000+ Products</span>
+                <span>✓ DGDA Registered</span>
+                <span>✓ ISO 13485 Certified</span>
+                <span>✓ 10,000+ Products</span>
               </div>
             </div>
             {/* Stats */}
@@ -292,7 +292,7 @@ function B2BLanding() {
             </div>
             <div className="mt-6 p-4 bg-brand-navy rounded-2xl text-white">
               <div className="text-sm font-semibold mb-1">Need immediate assistance?</div>
-              <div className="text-xs text-[var(--color-text-tertiary)] mb-3">Our B2B team is available Monâ€“Sat, 9amâ€“6pm</div>
+              <div className="text-xs text-[var(--color-text-tertiary)] mb-3">Our B2B team is available Mon–Sat, 9am–6pm</div>
               <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="text-brand-teal font-semibold text-sm">{contactPhone}</a>
               <div className="mt-1">
                 <a href={`mailto:${contactEmail}`} className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-tertiary)]">{contactEmail}</a>
@@ -349,7 +349,7 @@ function B2BLanding() {
                 </div>
                 <button type="submit" disabled={submitting}
                   className="w-full h-12 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors">
-                  {submitting ? 'Submittingâ€¦' : 'Submit Application'}
+                  {submitting ? 'Submitting…' : 'Submit Application'}
                 </button>
                 <p className="text-xs text-[var(--color-text-tertiary)] text-center">
                   By submitting, you agree to our Terms of Service and Privacy Policy.
@@ -406,7 +406,7 @@ function B2BDashboard({ data, onRefresh }) {
           <div className="flex items-center gap-3">
             <span className="hidden md:inline-flex items-center gap-1.5 text-xs bg-brand-teal/20 text-[#4ADE80] px-3 py-1.5 rounded-full font-semibold">
               <span className="w-1.5 h-1.5 bg-[#4ADE80] rounded-full"/>
-              {data.tier} Tier Â· {data.discount}% off
+              {data.tier} Tier · {data.discount}% off
             </span>
             <button onClick={() => router.push('/products')}
               className="px-4 py-2 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-xl text-xs font-semibold transition-colors">
@@ -456,7 +456,7 @@ function B2BDashboard({ data, onRefresh }) {
                 <h2 className="text-base font-semibold text-brand-navy">Recent Orders</h2>
                 <button onClick={() => router.push('/orders')}
                   className="text-xs text-brand-teal font-semibold hover:underline">
-                  View all â†’
+                  View all →
                 </button>
               </div>
               {orders.length === 0 ? (
@@ -468,7 +468,7 @@ function B2BDashboard({ data, onRefresh }) {
                   {orders.slice(0, 5).map((order) => {
                     const id = order._id || order.id;
                     const displayId = order.orderNumber || `ORD-${String(id).slice(-5).toUpperCase()}`;
-                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : order.date || 'â€”';
+                    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : order.date || '—';
                     const itemCount = order.items?.length || order.itemCount || 0;
                     const total = order.totalAmount || order.total || 0;
                     return (
@@ -477,7 +477,7 @@ function B2BDashboard({ data, onRefresh }) {
                           <div className="w-9 h-9 bg-[var(--color-status-info-tint)] rounded-lg flex items-center justify-center text-base">ðŸ“¦</div>
                           <div>
                             <div className="text-sm font-semibold text-brand-navy">{displayId}</div>
-                            <div className="text-xs text-[var(--color-text-tertiary)]">{date} Â· {itemCount} item{itemCount !== 1 ? 's' : ''}</div>
+                            <div className="text-xs text-[var(--color-text-tertiary)]">{date} · {itemCount} item{itemCount !== 1 ? 's' : ''}</div>
                           </div>
                         </div>
                         <div className="text-right flex items-center gap-3">
@@ -503,7 +503,7 @@ function B2BDashboard({ data, onRefresh }) {
                 <h2 className="text-base font-semibold text-brand-navy">Recent Quotations</h2>
                 <button onClick={() => router.push('/products')}
                   className="text-xs text-brand-teal font-semibold hover:underline">
-                  Request quote â†’
+                  Request quote →
                 </button>
               </div>
               {quotes.length === 0 ? (
@@ -515,7 +515,7 @@ function B2BDashboard({ data, onRefresh }) {
                   {quotes.slice(0, 4).map((q) => {
                     const id = q._id || q.id;
                     const displayId = q.quoteNumber || `QUO-${String(id).slice(-5).toUpperCase()}`;
-                    const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : q.date || 'â€”';
+                    const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : q.date || '—';
                     const total = q.totalAmount || q.total || 0;
                     return (
                       <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--color-border-primary)]">
@@ -597,7 +597,7 @@ function B2BDashboard({ data, onRefresh }) {
                   <div className="text-sm text-[var(--color-text-tertiary)] mb-3">No credit line yet</div>
                   <a href="mailto:b2b@MediportBD.com"
                     className="text-xs text-brand-teal font-semibold hover:underline">
-                    Request credit terms â†’
+                    Request credit terms →
                   </a>
                 </div>
               )}
@@ -678,14 +678,14 @@ export default function B2BDashboardPage() {
     fetchB2BData();
   }, [authed, user]);
 
-  // Not logged in â†’ show marketing landing page
+  // Not logged in → show marketing landing page
   if (!authed) return <B2BLanding />;
 
   // Check if user is actually a B2B customer
   // B2B users have a tier property or accountType === 'b2b'
   const isB2BUser = user?.tier || user?.accountType === 'b2b' || user?.role === 'b2b';
   
-  // Regular B2C customer trying to access B2B portal â†’ show landing page with message
+  // Regular B2C customer trying to access B2B portal → show landing page with message
   if (authed && !isB2BUser) {
     return (
       <div className="min-h-screen bg-white">
@@ -708,7 +708,7 @@ export default function B2BDashboardPage() {
             <div className="grid md:grid-cols-2 gap-3 text-left text-sm text-[var(--color-text-primary)]">
               {['Up to 30% bulk discounts', 'Credit terms (30-90 days)', 'Dedicated account manager', 'Free installation & training'].map(benefit => (
                 <div key={benefit} className="flex items-center gap-2">
-                  <span className="text-brand-teal">âœ“</span>
+                  <span className="text-brand-teal">✓</span>
                   {benefit}
                 </div>
               ))}
@@ -740,7 +740,7 @@ export default function B2BDashboardPage() {
       <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <Spinner size="xl" variant="medical" />
-          <p className="text-sm text-[var(--color-text-secondary)] mt-4">Loading your dashboardâ€¦</p>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-4">Loading your dashboard…</p>
         </div>
       </div>
     );
@@ -751,7 +751,7 @@ export default function B2BDashboardPage() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <div className="text-4xl mb-3">âš ï¸</div>
+          <div className="text-4xl mb-3">⚠ï¸</div>
           <h2 className="text-lg font-semibold text-brand-navy mb-2">Failed to load dashboard</h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-4">{fetchError}</p>
           <button onClick={() => window.location.reload()}
@@ -766,7 +766,7 @@ export default function B2BDashboardPage() {
   // Logged in but data not yet loaded (first render)
   const data = dashboardData || {
     name: user?.name || 'Your Account',
-    accountId: 'â€”', tier: 'Standard', discount: 8,
+    accountId: '—', tier: 'Standard', discount: 8,
     totalSpend: 0, activeOrders: 0, ordersInDelivery: 0,
     creditUsed: 0, creditLimit: 0, loyaltyPoints: 0,
     recentOrders: [], recentQuotes: [],
