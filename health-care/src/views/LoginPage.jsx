@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { useAuth } from '@/context/AuthContext';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 import { ButtonLoader, LoadingOverlay } from '@/components/ui/Spinner';
 
@@ -18,6 +19,8 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   // background auth-check loading (which would otherwise show the overlay on mount)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, loading, user } = useAuth();
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha } = useRecaptcha(recaptchaSiteKey);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -72,7 +75,18 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
-    const result = await login(email, password);
+
+    let recaptchaToken = null;
+    if (recaptchaSiteKey) {
+      recaptchaToken = await executeRecaptcha('login');
+      if (!recaptchaToken) {
+        setError('Security verification failed. Please refresh the page and try again.');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    const result = await login(email, password, recaptchaToken);
     setIsSubmitting(false);
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');
@@ -87,7 +101,18 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     setPassword(testPassword);
     setError('');
     setIsSubmitting(true);
-    const result = await login(testEmail, testPassword);
+
+    let recaptchaToken = null;
+    if (recaptchaSiteKey) {
+      recaptchaToken = await executeRecaptcha('login');
+      if (!recaptchaToken) {
+        setError('Security verification failed. Please refresh the page and try again.');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    const result = await login(testEmail, testPassword, recaptchaToken);
     setIsSubmitting(false);
     if (!result.success) {
       setError(result.error || 'Login failed. Please try again.');

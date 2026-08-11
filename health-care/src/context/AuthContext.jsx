@@ -77,10 +77,10 @@ export function AuthProvider({ children }) {
     loadUser();
   }, []);
 
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (email, password, recaptchaToken) => {
     setLoading(true);
     try {
-      const response = await api.login(email, password);
+      const response = await api.login(email, password, recaptchaToken);
       const normalized = normalizeUser(response.user);
       setUser(normalized);
       if (normalized?.id) {
@@ -100,8 +100,8 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const loginAsAdmin = useCallback(async (email, password) => {
-    return login(email, password);
+  const loginAsAdmin = useCallback(async (email, password, recaptchaToken) => {
+    return login(email, password, recaptchaToken);
   }, [login]);
 
   const register = useCallback(async (userData) => {

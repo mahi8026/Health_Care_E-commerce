@@ -8,6 +8,7 @@ import {
   FaIdCard, FaFileAlt, FaCheckCircle, FaArrowRight 
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { ButtonLoader } from '@/components/ui/Spinner';
 
 export default function B2BRegisterPage() {
@@ -16,6 +17,8 @@ export default function B2BRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha } = useRecaptcha(recaptchaSiteKey);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -201,6 +204,16 @@ export default function B2BRegisterPage() {
           isDefault: true
         }]
       };
+
+      let recaptchaToken = null;
+      if (recaptchaSiteKey) {
+        recaptchaToken = await executeRecaptcha('register');
+        if (!recaptchaToken) {
+          setError('Security verification failed. Please refresh the page and try again.');
+          return;
+        }
+        registrationData.recaptchaToken = recaptchaToken;
+      }
 
       const res = await fetch(`${API}/auth/register`, {
         method: 'POST',

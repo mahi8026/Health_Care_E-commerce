@@ -542,11 +542,11 @@ export const api = {
   },
 
   // Authentication
-  async login(email, password) {
+  async login(email, password, recaptchaToken) {
     const response = await fetchWithAuth(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, ...(recaptchaToken && { recaptchaToken }) }),
       credentials: 'include'
     });
     const data = await handleResponse(response);

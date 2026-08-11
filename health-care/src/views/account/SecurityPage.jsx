@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import AccountPageShell from '@/components/account/AccountPageShell';
 import { useAuth } from '@/context/AuthContext';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { API } from '@/constants/api';
 import api from '@/utils/api';
 import Button from '@/components/ui/Button';
@@ -14,6 +15,8 @@ export default function SecurityPage() {
   const { user } = useAuth();
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha } = useRecaptcha(recaptchaSiteKey);
   
   // Password change form state
   const [passwordForm, setPasswordForm] = useState({
@@ -115,10 +118,19 @@ export default function SecurityPage() {
     setSending(true);
     setMessage({ text: '', type: '' });
     try {
+      let recaptchaToken = null;
+      if (recaptchaSiteKey) {
+        recaptchaToken = await executeRecaptcha('password_reset');
+        if (!recaptchaToken) {
+          setMessage({ text: 'Security verification failed. Please refresh the page and try again.', type: 'error' });
+          return;
+        }
+      }
+
       const res = await fetch(`${API}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email }),
+        body: JSON.stringify({ email: user.email, ...(recaptchaToken && { recaptchaToken }) }),
       });
       const data = await res.json();
       if (data.success) {
