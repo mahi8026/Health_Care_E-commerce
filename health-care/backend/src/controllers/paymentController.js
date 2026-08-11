@@ -1,4 +1,5 @@
-﻿const Order = require('../models/Order');
+﻿const crypto = require('crypto');
+const Order = require('../models/Order');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
@@ -452,37 +453,301 @@ return;
   }
 };
 
-// ── Nagad (stub – swap in real credentials when available) ───────────────────
+// ── Nagad (v3.x RSA flow: initialize → complete → verify) ────────────────────
+// Reference: Nagad Online Payment API Integration Guide v3.3 (KONA / Third Wave
+// Technologies). The merchant private key is used to sign payloads and decrypt
+// gateway responses; the Nagad public key encrypts the sensitiveData payloads.
+const NAGAD_API_VERSION = 'v-0.2.0';
+
+function nagadDateTime() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+function nagadChallenge() {
+  return crypto.randomBytes(20).toString('hex');
+}
+
+function rsaEncrypt(plainText, publicKeyPem) {
+  return crypto.publicEncrypt(
+    { key: publicKeyPem, padding: crypto.constants.RSA_PKCS1_PADDING },
+    Buffer.from(plainText, 'utf8')
+  ).toString('base64');
+}
+
+function rsaDecrypt(cipherText, privateKeyPem) {
+  return crypto.privateDecrypt(
+    { key: privateKeyPem, padding: crypto.constants.RSA_PKCS1_PADDING },
+    Buffer.from(cipherText, 'base64')
+  ).toString('utf8');
+}
+
+function rsaSign(plainText, privateKeyPem) {
+  return crypto.createSign('RSA-SHA256').update(plainText).sign(privateKeyPem, 'base64');
+}
+
+function getNagadConfig() {
+  const { NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY, NAGAD_PUBLIC_KEY, NAGAD_BASE_URL } = process.env;
+  const notConfigured =
+    !NAGAD_MERCHANT_ID || NAGAD_MERCHANT_ID === 'your_nagad_merchant_id' ||
+    !NAGAD_MERCHANT_KEY || NAGAD_MERCHANT_KEY === 'your_nagad_merchant_key' ||
+    !NAGAD_PUBLIC_KEY || NAGAD_PUBLIC_KEY === 'your_nagad_public_key' ||
+    !NAGAD_BASE_URL;
+  if (notConfigured) {
+    throw new Error('Nagad credentials not configured. Please set NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY, NAGAD_PUBLIC_KEY, NAGAD_BASE_URL in .env');
+  }
+  return { NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY, NAGAD_PUBLIC_KEY, NAGAD_BASE_URL };
+}
+
+async function nagadRequest(baseUrl, path, options = {}) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: options.method || 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-KM-Api-Version': NAGAD_API_VERSION,
+      'X-KM-IP-Version': 'v1',
+      ...options.headers,
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+  if (!res.ok) {
+    throw new Error(`Nagad API ${path} failed: HTTP ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
+
+// Extract the gateway-confirmed amount (C2) from a Nagad status response.
+function nagadConfirmedAmount(data, privateKeyPem) {
+  if (data && typeof data.sensitiveData === 'string') {
+    try {
+      const decrypted = JSON.parse(rsaDecrypt(data.sensitiveData, privateKeyPem));
+      if (decrypted && decrypted.amount !== undefined) {
+        return Number(decrypted.amount);
+      }
+    } catch (e) {
+      logger.warn(`[nagad] sensitiveData decrypt failed: ${e.message}`);
+    }
+  }
+  if (data && data.amount !== undefined) {
+    return Number(data.amount);
+  }
+  return NaN;
+}
+
+// ── Nagad: Initiate Payment ───────────────────────────────────────────────────
 exports.initiateNagadPayment = async (req, res) => {
   try {
-    const { orderId } = req.body;
-    const { NAGAD_MERCHANT_ID } = process.env;
+    const { NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY, NAGAD_PUBLIC_KEY, NAGAD_BASE_URL } = getNagadConfig();
 
-    if (!NAGAD_MERCHANT_ID || NAGAD_MERCHANT_ID === 'your_nagad_merchant_id') {
-      return errorResponse(res, 'Nagad payment is not available yet. Please use Bank Transfer or B2B Credit.', { code: 'NAGAD_NOT_CONFIGURED' }, 503);
+    const { orderId } = req.body;
+    if (!orderId) {
+      return errorResponse(res, 'Order ID is required', null, 400);
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
-return errorResponse(res, 'Order not found', null, 404);
-}
+      return errorResponse(res, 'Order not found', null, 404);
+    }
 
     // C3 — only the order owner (or staff) may initiate payment for this order
     if (!assertOrderOwnership(order, req.user, res)) {
-return;
-}
+      return;
+    }
 
     // C2 — amount derived server-side from the order, never from the client
-    const paymentAmount = order.totalAmount || order.total || 0;
+    const amount = Number(order.totalAmount || order.total || 0);
+    const invoiceNo = String(order.orderNumber || orderId).slice(0, 20);
+    const datetime = nagadDateTime();
+    const clientChallenge = nagadChallenge();
+    const callbackUrl = process.env.NAGAD_CALLBACK_URL || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment/nagad/callback`;
+
+    // Step 1 — initialize the payment session
+    const initSensitive = JSON.stringify({
+      merchantId: NAGAD_MERCHANT_ID,
+      datetime,
+      orderId: invoiceNo,
+      challenge: clientChallenge,
+    });
+    const initResponse = await nagadRequest(NAGAD_BASE_URL, `check-out/initialize/${NAGAD_MERCHANT_ID}/${invoiceNo}`, {
+      body: {
+        accountNumber: NAGAD_MERCHANT_ID,
+        dateTime: datetime,
+        sensitiveData: rsaEncrypt(initSensitive, NAGAD_PUBLIC_KEY),
+        signature: rsaSign(initSensitive, NAGAD_MERCHANT_KEY),
+      },
+    });
+
+    const initData = initResponse.sensitiveData
+      ? JSON.parse(rsaDecrypt(initResponse.sensitiveData, NAGAD_MERCHANT_KEY))
+      : initResponse;
+    let paymentReferenceId = initData.paymentReferenceId || initResponse.paymentReferenceId;
+    const gatewayChallenge = initData.challenge || clientChallenge;
+    if (!paymentReferenceId) {
+      throw new Error(`Nagad initialize returned no paymentReferenceId: ${JSON.stringify(initResponse)}`);
+    }
+
+    // Step 2 — place the order at the gateway to obtain the hosted payment URL
+    const completeSensitive = JSON.stringify({
+      merchantId: NAGAD_MERCHANT_ID,
+      orderId: invoiceNo,
+      currencyCode: '050',
+      amount: String(amount),
+      challenge: gatewayChallenge,
+    });
+    const completeResponse = await nagadRequest(NAGAD_BASE_URL, `check-out/complete/${paymentReferenceId}`, {
+      body: {
+        sensitiveData: rsaEncrypt(completeSensitive, NAGAD_PUBLIC_KEY),
+        signature: rsaSign(completeSensitive, NAGAD_MERCHANT_KEY),
+        merchantCallbackURL: callbackUrl,
+      },
+    });
+
+    let callBackUrl = completeResponse.callBackUrl || completeResponse.callbackURL || completeResponse.callbackUrl;
+    if (completeResponse.sensitiveData) {
+      const completeData = JSON.parse(rsaDecrypt(completeResponse.sensitiveData, NAGAD_MERCHANT_KEY));
+      paymentReferenceId = completeData.paymentReferenceId || paymentReferenceId;
+      callBackUrl = completeData.callBackUrl || completeData.callbackURL || completeData.callbackUrl || callBackUrl;
+    }
+    if (!callBackUrl) {
+      throw new Error(`Nagad complete returned no callBackUrl: ${JSON.stringify(completeResponse)}`);
+    }
+
+    // Persist the gateway session so the callback/verify can reconcile this order
+    order.paymentDetails = {
+      ...order.paymentDetails,
+      method: 'nagad',
+      nagadPaymentReference: paymentReferenceId,
+      nagadChallenge: gatewayChallenge,
+      nagadOrderId: invoiceNo,
+      initiatedAt: new Date(),
+    };
+    await order.save();
 
     return successResponse(res, {
-      redirectUrl: `${process.env.FRONTEND_URL}/checkout?payment=nagad&order=${orderId}`,
-      merchantOrderId: `NAGAD-${Date.now()}`,
-      amount: `Tk ${Number(paymentAmount).toFixed(2)}`,
-    }, 'Nagad payment initiated (sandbox)');
-  } catch (err) {
-    logger.error(`[initiateNagadPayment] ${err.message}`);
-    return errorResponse(res, 'Failed to initiate Nagad payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [err.message] : null, 500);
+      redirectUrl: callBackUrl,
+      paymentReferenceId,
+      merchantOrderId: invoiceNo,
+      amount: `Tk ${amount.toFixed(2)}`,
+    }, 'Nagad payment initiated successfully');
+  } catch (error) {
+    logger.error(`[initiateNagadPayment] ${error.message}`);
+    if (error.message.includes('not configured')) {
+      return errorResponse(res, 'Nagad payment is not available yet. Please use Bank Transfer or B2B Credit.', { code: 'NAGAD_NOT_CONFIGURED' }, 503);
+    }
+    return errorResponse(res, 'Failed to initiate Nagad payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
+  }
+};
+
+// ── Nagad: Verify Payment (client-side poll after redirect back) ──────────────
+exports.verifyNagadPayment = async (req, res) => {
+  try {
+    const { NAGAD_MERCHANT_KEY, NAGAD_BASE_URL } = getNagadConfig();
+
+    const { paymentReferenceId, orderId } = req.body;
+    if (!paymentReferenceId || !orderId) {
+      return errorResponse(res, 'paymentReferenceId and orderId are required', null, 400);
+    }
+
+    const data = await nagadRequest(NAGAD_BASE_URL, `check-out/payment/status/${paymentReferenceId}`, { method: 'GET' });
+
+    if (!data || (data.status !== 'Success' && data.status !== 'Completed')) {
+      return errorResponse(res, `Payment status: ${data ? data.status : 'Unknown'}`, null, 400);
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return errorResponse(res, 'Order not found', null, 404);
+    }
+
+    // C3 — only the order owner (or staff) may verify this payment
+    if (!assertOrderOwnership(order, req.user, res)) {
+      return;
+    }
+
+    // C2 — gateway-confirmed amount must match the server-side order total
+    const confirmedAmount = nagadConfirmedAmount(data, NAGAD_MERCHANT_KEY);
+    if (!Number.isFinite(confirmedAmount)) {
+      return errorResponse(res, 'Could not verify the Nagad payment amount. Please contact support.', null, 502);
+    }
+    if (!assertPaymentAmountMatches(order, confirmedAmount, res)) {
+      return;
+    }
+
+    order.paymentStatus = 'paid';
+    order.status = 'confirmed';
+    order.transactionId = data.issuerPaymentRefNo || `NAGAD-${paymentReferenceId}`;
+    order.paymentDetails = {
+      ...order.paymentDetails,
+      method: 'nagad',
+      nagadPaymentReference: paymentReferenceId,
+      paidAt: new Date(),
+    };
+    await order.save();
+
+    return successResponse(res, { order }, 'Nagad payment verified');
+  } catch (error) {
+    logger.error(`[verifyNagadPayment] ${error.message}`);
+    if (error.message.includes('not configured')) {
+      return errorResponse(res, 'Nagad not configured', { code: 'NAGAD_NOT_CONFIGURED' }, 503);
+    }
+    return errorResponse(res, 'Failed to verify Nagad payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
+  }
+};
+
+// ── Nagad: Gateway callback (server-to-server POST / browser GET fallback) ────
+exports.handleNagadCallback = async (req, res) => {
+  try {
+    const paymentReferenceId = req.body?.paymentReferenceId || req.query?.paymentReferenceId;
+    if (!paymentReferenceId) {
+      return errorResponse(res, 'paymentReferenceId is required', null, 400);
+    }
+
+    const order = await Order.findOne({ 'paymentDetails.nagadPaymentReference': paymentReferenceId });
+    if (!order) {
+      return errorResponse(res, 'Order not found for this payment', null, 404);
+    }
+
+    const { NAGAD_MERCHANT_KEY, NAGAD_BASE_URL } = getNagadConfig();
+    const data = await nagadRequest(NAGAD_BASE_URL, `check-out/payment/status/${paymentReferenceId}`, { method: 'GET' });
+
+    if (!data || (data.status !== 'Success' && data.status !== 'Completed')) {
+      return errorResponse(res, `Payment not successful: ${data ? data.status : 'Unknown'}`, null, 400);
+    }
+
+    // C2 — gateway-confirmed amount must match the server-side order total
+    const confirmedAmount = nagadConfirmedAmount(data, NAGAD_MERCHANT_KEY);
+    if (!Number.isFinite(confirmedAmount)) {
+      return errorResponse(res, 'Could not verify the Nagad payment amount. Please contact support.', null, 502);
+    }
+    if (!assertPaymentAmountMatches(order, confirmedAmount, res)) {
+      return;
+    }
+
+    order.paymentStatus = 'paid';
+    order.status = 'confirmed';
+    order.transactionId = data.issuerPaymentRefNo || `NAGAD-${paymentReferenceId}`;
+    order.paymentDetails = {
+      ...order.paymentDetails,
+      method: 'nagad',
+      nagadPaymentReference: paymentReferenceId,
+      verifiedAt: new Date(),
+      paidAt: new Date(),
+    };
+    await order.save();
+
+    if (req.method === 'GET') {
+      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/checkout?payment=nagad&status=success&order=${order._id}`);
+    }
+    // Nagad expects a plain acknowledgement on its server-to-server callback
+    return res.status(200).json({ success: true, message: 'ACK' });
+  } catch (error) {
+    logger.error(`[handleNagadCallback] ${error.message}`);
+    if (error.message.includes('not configured')) {
+      return errorResponse(res, 'Nagad not configured', { code: 'NAGAD_NOT_CONFIGURED' }, 503);
+    }
+    return errorResponse(res, 'Failed to process Nagad callback', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 

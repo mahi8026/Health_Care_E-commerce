@@ -6,6 +6,8 @@ const {
   executeBkashPayment,
   verifyBkashPayment,
   initiateNagadPayment,
+  verifyNagadPayment,
+  handleNagadCallback,
   submitChequePayment,
   processBankTransfer,
   processB2BCreditPayment,
@@ -20,6 +22,11 @@ router.post('/bkash/verify', protect, paymentLimiter, verifyBkashPayment);
 
 // Nagad routes (with rate limiting)
 router.post('/nagad/initiate', protect, paymentLimiter, initiateNagadPayment);
+router.post('/nagad/verify', protect, paymentLimiter, verifyNagadPayment);
+// Gateway callback — invoked by Nagad (server-to-server) and by the browser
+// redirect after payment; neither goes through the auth middleware.
+router.post('/nagad/callback', handleNagadCallback);
+router.get('/nagad/callback', handleNagadCallback);
 
 // Cheque routes (with rate limiting)
 router.post('/cheque', protect, paymentLimiter, submitChequePayment);
