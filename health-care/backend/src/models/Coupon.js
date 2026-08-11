@@ -172,7 +172,9 @@ couponSchema.virtual('isCurrentlyValid').get(function() {
 
 // Virtual for remaining uses
 couponSchema.virtual('remainingUses').get(function() {
-  if (this.usageLimit === 0) return Infinity;
+  if (this.usageLimit === 0) {
+return Infinity;
+}
   return Math.max(0, this.usageLimit - this.usageCount);
 });
 

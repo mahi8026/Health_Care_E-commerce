@@ -27,7 +27,9 @@ async function migrate() {
         product.slug = undefined;
         await product.save();
         fixed++;
-        if (fixed % 50 === 0) console.log(`Fixed ${fixed}/${products.length}...`);
+        if (fixed % 50 === 0) {
+console.log(`Fixed ${fixed}/${products.length}...`);
+}
       } catch (err) {
         console.error(`Failed for ${product.name}:`, err.message);
         errors++;
@@ -35,7 +37,9 @@ async function migrate() {
     }
 
     console.log(`\n✅ Done. Generated slugs for ${fixed} products.`);
-    if (errors > 0) console.log(`⚠️  ${errors} products failed.`);
+    if (errors > 0) {
+console.log(`⚠️  ${errors} products failed.`);
+}
     
     mongoose.connection.close();
   } catch (error) {

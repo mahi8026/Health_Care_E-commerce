@@ -11,12 +11,11 @@ jest.mock('../logger', () => ({
 
 describe('Mongoose Slow Query Plugin', () => {
   let TestModel;
-  let connection;
 
   beforeAll(async () => {
     // Connect to in-memory MongoDB for testing
     const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/test-slow-query';
-    connection = await mongoose.connect(mongoUri, {
+    await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

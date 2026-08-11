@@ -6,7 +6,7 @@ function initSentry(app) {
   }
 
   // Only load profiling integration if Sentry is configured
-  let integrations = [
+  const integrations = [
     new Sentry.Integrations.Http({ tracing: true }),
     new Sentry.Integrations.Express({ app }),
   ];
@@ -16,6 +16,7 @@ function initSentry(app) {
     const { ProfilingIntegration } = require('@sentry/profiling-node');
     integrations.push(new ProfilingIntegration());
   } catch (error) {
+    // Profiling integration is optional — skip if the package is unavailable
   }
 
   Sentry.init({

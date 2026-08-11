@@ -1,9 +1,8 @@
 ﻿const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { redisCacheMiddleware, cacheMiddleware } = require('../middleware/cache');
-const { CACHE_KEYS, CACHE_TTL } = require('../services/redisCache');
-const { etagMiddleware } = require('../middleware/etag');
+const { redisCacheMiddleware } = require('../middleware/cache');
+const { CACHE_TTL } = require('../services/redisCache');
 const {
   getCategories,
   getCategoryTree,

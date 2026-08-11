@@ -55,13 +55,16 @@ manufacturerSchema.pre('save', async function(next) {
     let slug = base;
     let count = 1;
     // Ensure slug is unique (append -2, -3, etc. if needed)
-    while (true) {
-      const existing = await mongoose.model('Manufacturer').findOne({
+    let existing = await mongoose.model('Manufacturer').findOne({
+      slug,
+      _id: { $ne: this._id }
+    }).lean();
+    while (existing) {
+      slug = `${base}-${++count}`;
+      existing = await mongoose.model('Manufacturer').findOne({
         slug,
         _id: { $ne: this._id }
       }).lean();
-      if (!existing) break;
-      slug = `${base}-${++count}`;
     }
     this.slug = slug;
   }

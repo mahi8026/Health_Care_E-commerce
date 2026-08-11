@@ -112,6 +112,21 @@ exports.optionalAuth = async (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // S9 — a revoked token (logout, rotation, password change) must not attach a user
+      const isBlacklisted = await tokenBlacklist.isBlacklisted(token);
+      if (!isBlacklisted && decoded.iat) {
+        const isFromBeforeRotation = await tokenBlacklist.isTokenFromBeforeRotation(decoded.iat);
+        const isUserTokenInvalidated = await tokenBlacklist.isUserTokenInvalidated(decoded.id, decoded.iat);
+        if (isFromBeforeRotation || isUserTokenInvalidated) {
+          logger.debug('[optionalAuth] Token revoked - continuing as anonymous');
+          return next();
+        }
+      } else if (isBlacklisted) {
+        logger.debug('[optionalAuth] Token blacklisted - continuing as anonymous');
+        return next();
+      }
+
       const user = await User.findById(decoded.id).select('-password');
       
       // Only attach user if found and active

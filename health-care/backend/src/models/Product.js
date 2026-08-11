@@ -145,10 +145,18 @@ productSchema.pre('save', async function (next) {
   }
   
   // Sync legacy aliases
-  if (!this.lowStockThreshold && this.minStock) this.lowStockThreshold = this.minStock;
-  if (!this.minStock && this.lowStockThreshold) this.minStock = this.lowStockThreshold;
-  if (!this.minOrderQty && this.minOrder) this.minOrderQty = this.minOrder;
-  if (!this.minOrder && this.minOrderQty) this.minOrder = this.minOrderQty;
+  if (!this.lowStockThreshold && this.minStock) {
+this.lowStockThreshold = this.minStock;
+}
+  if (!this.minStock && this.lowStockThreshold) {
+this.minStock = this.lowStockThreshold;
+}
+  if (!this.minOrderQty && this.minOrder) {
+this.minOrderQty = this.minOrder;
+}
+  if (!this.minOrder && this.minOrderQty) {
+this.minOrder = this.minOrderQty;
+}
   if (!this.storageTemp && this.temperature) {
     const map = { cold: 'cold', freeze: 'frozen', room: 'room' };
     this.storageTemp = map[this.temperature] || this.temperature;
@@ -157,14 +165,20 @@ productSchema.pre('save', async function (next) {
     const map = { bio: 'biohazard', chem: 'chemical', safe: 'safe' };
     this.hazardClass = map[this.hazard] || this.hazard;
   }
-  if (!this.expiryDate && this.expiry) this.expiryDate = this.expiry;
+  if (!this.expiryDate && this.expiry) {
+this.expiryDate = this.expiry;
+}
   next();
 });
 
 // ── Virtual: stock status ────────────────────────────────────────────────────
 productSchema.virtual('stockStatus').get(function () {
-  if (this.stock === 0) return 'out';
-  if (this.stock <= (this.lowStockThreshold || this.minStock || 10)) return 'low';
+  if (this.stock === 0) {
+return 'out';
+}
+  if (this.stock <= (this.lowStockThreshold || this.minStock || 10)) {
+return 'low';
+}
   return 'active';
 });
 

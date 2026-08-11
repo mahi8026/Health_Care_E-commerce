@@ -39,23 +39,20 @@ exports.trackOrder = async (req, res) => {
       timestamp: order.statusTimestamps?.[step.key] || null
     }));
 
+    // S4 — public endpoint: never expose customer PII or payment details
     return successResponse(res, {
       orderNumber: order.orderNumber || order.orderId,
       status: order.status,
-      paymentStatus: order.paymentStatus,
-      paymentMethod: order.paymentMethod,
-      items: order.items,
-      subtotal: order.subtotal,
-      deliveryFee: order.deliveryFee,
-      vatAmount: order.vatAmount,
+      items: (order.items || []).map(item => ({
+        product: item.product,
+        qty: item.qty || item.quantity,
+      })),
       totalAmount: order.totalAmount || order.total,
-      deliveryAddress: order.deliveryAddress,
       deliveryType: order.deliveryType,
       tracking: order.tracking,
       trackingNumber: order.trackingNumber,
       estimatedDelivery: order.estimatedDelivery,
       deliveredAt: order.deliveredAt,
-      receivedBy: order.receivedBy,
       coldChain: order.coldChain,
       createdAt: order.createdAt,
       timeline

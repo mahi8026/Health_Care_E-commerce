@@ -14,10 +14,12 @@ const logger = require('../utils/logger');
  * @returns {String} Formatted phone number with +880 prefix
  */
 function formatPhoneNumber(phone) {
-  if (!phone) return null;
+  if (!phone) {
+return null;
+}
   
   // Remove all non-digit characters
-  let cleaned = phone.replace(/\D/g, '');
+  const cleaned = phone.replace(/\D/g, '');
   
   // Handle different formats
   if (cleaned.startsWith('880')) {
@@ -45,10 +47,14 @@ function formatPhoneNumber(phone) {
  * @returns {String} Masked phone number
  */
 function maskPhoneNumber(phone) {
-  if (!phone) return 'N/A';
+  if (!phone) {
+return 'N/A';
+}
   
   const formatted = formatPhoneNumber(phone);
-  if (formatted.length < 10) return formatted;
+  if (formatted.length < 10) {
+return formatted;
+}
   
   // Show country code, mask middle digits, show last 3
   const countryCode = formatted.substring(0, 4); // +880

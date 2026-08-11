@@ -14,7 +14,7 @@ exports.getManufacturers = async (req, res) => {
     const { includeInactive, search } = req.query;
     
     // Build query
-    let query = {};
+    const query = {};
     
     // Only filter active if not explicitly requesting inactive
     // Note: GET /manufacturers is a public route with no auth middleware,
@@ -217,7 +217,6 @@ exports.deduplicateManufacturers = async (req, res) => {
     }
 
     let totalRemoved = 0;
-    const mongoose = require('mongoose');
 
     for (const group of duplicateGroups) {
       // Sort by _id ascending — oldest ObjectId = first created

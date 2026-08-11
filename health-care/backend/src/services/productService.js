@@ -5,10 +5,9 @@
  * Handles complex calculations, data transformations, and multi-model operations.
  */
 
-const logger = require('../utils/logger');
-const { CACHE_KEYS, CACHE_TTL } = require('./redisCache');
+const { CACHE_KEYS } = require('./redisCache');
 const redisCache = require('./redisCache');
-const { invalidateProductCache, invalidateProductListCache } = require('./cacheInvalidation');
+const { invalidateProductListCache } = require('./cacheInvalidation');
 
 /**
  * Category code mapping for SKU generation
@@ -47,11 +46,15 @@ const CATEGORY_CODES = {
  */
 function getCategoryCode(categoryName = '') {
   const lower = categoryName.toLowerCase().trim();
-  if (CATEGORY_CODES[lower]) return CATEGORY_CODES[lower];
+  if (CATEGORY_CODES[lower]) {
+return CATEGORY_CODES[lower];
+}
   
   // Try partial match
   for (const [key, code] of Object.entries(CATEGORY_CODES)) {
-    if (lower.includes(key) || key.includes(lower)) return code;
+    if (lower.includes(key) || key.includes(lower)) {
+return code;
+}
   }
   
   // Fallback: first 2 letters
@@ -94,7 +97,9 @@ async function generateSKU(category, brand, findExistingSKUs) {
   let maxSeq = 0;
   for (const p of existing) {
     const seq = parseInt(p.sku.replace(prefix, ''), 10);
-    if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    if (!isNaN(seq) && seq > maxSeq) {
+maxSeq = seq;
+}
   }
 
   const nextSeq = maxSeq + 1;
@@ -163,7 +168,7 @@ async function buildProductQuery(params, user, resolveCategoryId, resolveBrandId
     isActive
   } = params;
 
-  let query = {};
+  const query = {};
 
   // Active status filter
   if (isActive === 'true') {
@@ -251,7 +256,7 @@ async function buildProductQuery(params, user, resolveCategoryId, resolveBrandId
  * @returns {Object} MongoDB sort object
  */
 function buildSortOptions(sortBy) {
-  let sort = {};
+  const sort = {};
   
   if (sortBy === 'price-low' || sortBy === 'price_asc') {
     sort.price = 1;
@@ -304,8 +309,12 @@ function trackProductChanges(oldProduct, newData) {
   
   fieldsToTrack.forEach(field => {
     if (newData[field] !== undefined && String(oldProduct[field]) !== String(newData[field])) {
-      if (!changes.before) changes.before = {};
-      if (!changes.after) changes.after = {};
+      if (!changes.before) {
+changes.before = {};
+}
+      if (!changes.after) {
+changes.after = {};
+}
       changes.before[field] = oldProduct[field];
       changes.after[field] = newData[field];
     }

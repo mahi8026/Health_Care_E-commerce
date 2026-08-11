@@ -43,7 +43,7 @@ router.post('/import', protect, authorize('admin'), async (req, res) => {
     // Step 2: Import products
     let created = 0;
     let updated = 0;
-    let errors = [];
+    const errors = [];
 
     for (const productData of products) {
       try {

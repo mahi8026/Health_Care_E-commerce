@@ -28,7 +28,7 @@ const mockRes = () => {
 const mockReq = (overrides = {}) => ({
   body: {},
   params: {},
-  user: { id: 'user123' },
+  user: { _id: 'user123', id: 'user123', role: 'customer' },
   ...overrides,
 });
 
@@ -53,7 +53,7 @@ describe('initiateBkashPayment', () => {
   });
 
   it('returns 503 when bKash credentials not configured', async () => {
-    Order.findById.mockResolvedValue({ _id: 'order123', orderNumber: 'ORD-001' });
+    Order.findById.mockResolvedValue({ _id: 'order123', orderNumber: 'ORD-001', user: 'user123', totalAmount: 1000 });
     // Ensure BKASH_APP_KEY is not set
     const savedKey = process.env.BKASH_APP_KEY;
     delete process.env.BKASH_APP_KEY;
@@ -88,6 +88,7 @@ describe('processBankTransfer', () => {
   it('saves payment details and returns 200', async () => {
     const fakeOrder = {
       _id: 'order123',
+      user: 'user123',
       paymentStatus: null,
       paymentDetails: null,
       save: jest.fn().mockResolvedValue(true),
@@ -147,10 +148,22 @@ describe('processB2BCreditPayment', () => {
   it('returns 400 when insufficient credit', async () => {
     const fakeOrder = {
       _id: 'order123',
-      user: { _id: 'user123', role: 'b2b_customer', creditLimit: 5000, creditUsed: 4000 },
+      user: { _id: 'user123', role: 'b2b_customer', b2bApprovalStatus: 'approved', creditLimit: 5000, creditUsed: 4000 },
       totalAmount: 2000,
     };
     Order.findById.mockReturnValue({ populate: jest.fn().mockResolvedValue(fakeOrder) });
+    // Atomic order claim succeeds
+    Order.updateOne.mockResolvedValue({ matchedCount: 1 });
+    // Atomic credit check fails (findOneAndUpdate returns null) → insufficient credit path
+    User.findOneAndUpdate.mockResolvedValue(null);
+    User.findById.mockResolvedValue({
+      _id: 'user123',
+      email: 'b2b@test.com',
+      role: 'b2b_customer',
+      isActive: true,
+      creditLimit: 5000,
+      creditUsed: 4000,
+    });
     const req = mockReq({ body: { orderId: 'order123' } });
     const res = mockRes();
     await processB2BCreditPayment(req, res);
@@ -161,7 +174,7 @@ describe('processB2BCreditPayment', () => {
   it('processes payment and returns 200 when credit is sufficient', async () => {
     const fakeOrder = {
       _id: 'order123',
-      user: { _id: 'user123', role: 'b2b_customer', creditLimit: 100000, creditUsed: 0 },
+      user: { _id: 'user123', role: 'b2b_customer', b2bApprovalStatus: 'approved', creditLimit: 100000, creditUsed: 0 },
       totalAmount: 5000,
       paymentStatus: null,
       status: null,
@@ -169,7 +182,13 @@ describe('processB2BCreditPayment', () => {
       save: jest.fn().mockResolvedValue(true),
     };
     Order.findById.mockReturnValue({ populate: jest.fn().mockResolvedValue(fakeOrder) });
-    User.findByIdAndUpdate.mockResolvedValue(true);
+    // Atomic order claim succeeds, then credit is debited atomically
+    Order.updateOne.mockResolvedValue({ matchedCount: 1 });
+    User.findOneAndUpdate.mockResolvedValue({
+      _id: 'user123',
+      creditLimit: 100000,
+      creditUsed: 5000,
+    });
     const req = mockReq({ body: { orderId: 'order123' } });
     const res = mockRes();
     await processB2BCreditPayment(req, res);
@@ -179,7 +198,7 @@ describe('processB2BCreditPayment', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     const body = res.json.mock.calls[0][0];
     expect(body.success).toBe(true);
-    expect(body.remainingCredit).toBe(95000);
+    expect(body.data.remainingCredit).toBe(95000);
   });
 });
 
@@ -214,6 +233,7 @@ describe('submitChequePayment', () => {
   it('records cheque details and returns 200', async () => {
     const fakeOrder = {
       _id: 'order123',
+      user: 'user123',
       paymentMethod: null,
       paymentStatus: null,
       paymentDetails: null,

@@ -236,10 +236,18 @@ exports.updateReview = async (req, res) => {
     }
     
     // Update fields
-    if (rating) review.rating = rating;
-    if (title) review.title = title;
-    if (comment) review.comment = comment;
-    if (images !== undefined) review.images = images;
+    if (rating) {
+review.rating = rating;
+}
+    if (title) {
+review.title = title;
+}
+    if (comment) {
+review.comment = comment;
+}
+    if (images !== undefined) {
+review.images = images;
+}
     
     review.isEdited = true;
     review.editedAt = new Date();
@@ -430,10 +438,18 @@ exports.getAllReviews = async (req, res) => {
     // Build query
     const query = {};
     
-    if (status) query.status = status;
-    if (product) query.product = product;
-    if (user) query.user = user;
-    if (rating) query.rating = parseInt(rating);
+    if (status) {
+query.status = status;
+}
+    if (product) {
+query.product = product;
+}
+    if (user) {
+query.user = user;
+}
+    if (rating) {
+query.rating = parseInt(rating);
+}
     
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);

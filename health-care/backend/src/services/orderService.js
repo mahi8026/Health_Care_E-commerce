@@ -31,7 +31,9 @@ async function generateOrderNumber(checkOrderNumberExists) {
     const rand = Math.floor(Math.random() * 9000) + 1000;
     const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await checkOrderNumberExists(orderNumber);
-    if (!exists) return orderNumber;
+    if (!exists) {
+return orderNumber;
+}
   }
 
   throw new Error('Failed to generate unique order number');
@@ -170,8 +172,11 @@ function calculateDeliveryFee(district) {
   const SUBURBAN = new Set(['narayanganj', 'gazipur', 'manikganj', 'munshiganj', 'narsingdi']);
   const d = (district || '').trim().toLowerCase();
   let zone = 'outside_dhaka';
-  if (!d || d === 'dhaka') zone = 'inside_dhaka';
-  else if (SUBURBAN.has(d)) zone = 'dhaka_suburban';
+  if (!d || d === 'dhaka') {
+zone = 'inside_dhaka';
+} else if (SUBURBAN.has(d)) {
+zone = 'dhaka_suburban';
+}
   return DELIVERY_FEES[zone] ?? DELIVERY_FEES.outside_dhaka;
 }
 

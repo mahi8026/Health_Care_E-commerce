@@ -1,6 +1,5 @@
 ﻿const Coupon = require('../models/Coupon');
 const Order = require('../models/Order');
-const Product = require('../models/Product');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 

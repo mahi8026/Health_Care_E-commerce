@@ -11,7 +11,7 @@ const {
   generateSku
 } = require('../controllers/productController');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
-const { cacheMiddleware, redisCacheMiddleware } = require('../middleware/cache');
+const { redisCacheMiddleware } = require('../middleware/cache');
 const { CACHE_KEYS, CACHE_TTL } = require('../services/redisCache');
 const { etagMiddleware } = require('../middleware/etag');
 const {

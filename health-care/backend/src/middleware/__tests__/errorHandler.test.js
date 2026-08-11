@@ -55,7 +55,9 @@ describe('errorHandler middleware', () => {
 
   afterAll(() => {
     process.env.NODE_ENV = originalEnv;
-    if (originalSentryDsn) process.env.SENTRY_DSN = originalSentryDsn;
+    if (originalSentryDsn) {
+process.env.SENTRY_DSN = originalSentryDsn;
+}
   });
 
   // ── Requirement 11.1: Return user-friendly JSON response ──────────────────
@@ -366,6 +368,7 @@ describe('errorHandler middleware', () => {
   describe('development mode behaviour', () => {
     it('includes stack trace in response body for 5xx in development', () => {
       process.env.NODE_ENV = 'development';
+      process.env.ERROR_DETAIL_ENABLED = 'true';
       const { req, res, next } = buildMocks();
       const err = new Error('Dev error');
       err.status = 500;

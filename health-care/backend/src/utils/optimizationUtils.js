@@ -97,7 +97,7 @@ const memoryOptimization = {
  */
 const responseOptimization = {
   // Compress large responses
-  shouldCompress: (req, res) => {
+  shouldCompress: (req, _res) => {
     if (req.headers['x-no-compression']) {
       return false;
     }
@@ -190,7 +190,9 @@ const imageOptimization = {
 
   // Generate optimized URL
   getOptimizedUrl: (cloudinaryUrl, preset = 'medium') => {
-    if (!cloudinaryUrl) return null;
+    if (!cloudinaryUrl) {
+return null;
+}
     
     const transformation = imageOptimization.presets[preset];
     return cloudinaryUrl.replace('/upload/', `/upload/${transformation}/`);

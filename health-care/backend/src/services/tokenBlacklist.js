@@ -14,6 +14,10 @@ class TokenBlacklistService {
   constructor() {
     this.keyPrefix = 'blacklist:token:';
     this.secretRotationKey = 'jwt:secret:rotated_at';
+    // S8 — in-memory fail-safe mirrors so revocations still hold when Redis is down
+    this.memoryTokens = new Map();
+    this.memorySecretRotation = null;
+    this.memoryUserInvalidations = new Map();
   }
 
   /**
@@ -51,6 +55,9 @@ class TokenBlacklistService {
       // Store token in Redis with TTL
       // After expiration, token is automatically removed (no need to check blacklist)
       await client.setex(key, expiresIn, Date.now().toString());
+
+      // Mirror into memory so the revocation survives a Redis outage
+      this.memoryTokens.set(token, Date.now() + expiresIn * 1000);
       
       logger.info('[TokenBlacklist] Token blacklisted successfully', {
         tokenPrefix: token.substring(0, 20) + '...',
@@ -60,6 +67,8 @@ class TokenBlacklistService {
       return true;
     } catch (error) {
       logger.error(`[TokenBlacklist] Failed to blacklist token: ${error.message}`);
+      // Keep the memory mirror even if Redis failed
+      this.memoryTokens.set(token, Date.now() + (expiresIn || 604800) * 1000);
       return false;
     }
   }
@@ -77,8 +86,16 @@ class TokenBlacklistService {
 
       const client = this.getClient();
       if (!client) {
-        // Redis not connected - fail open (allow access for availability)
-        return false;
+        // S8 — Redis down: consult the in-memory mirror (fail-safe, not fail-open)
+        const expiresAt = this.memoryTokens.get(token);
+        if (!expiresAt) {
+          return false;
+        }
+        if (expiresAt < Date.now()) {
+          this.memoryTokens.delete(token);
+          return false;
+        }
+        return true;
       }
 
       const key = `${this.keyPrefix}${token}`;
@@ -87,9 +104,12 @@ class TokenBlacklistService {
       return exists === 1;
     } catch (error) {
       logger.error(`[TokenBlacklist] Failed to check blacklist: ${error.message}`);
-      // Fail open for availability (if Redis is down, allow access)
-      // In high-security scenarios, you might want to fail closed instead
-      return false;
+      // S8 — Redis error: fail safe via the in-memory mirror
+      const expiresAt = this.memoryTokens.get(token);
+      if (!expiresAt || expiresAt < Date.now()) {
+        return false;
+      }
+      return true;
     }
   }
 
@@ -108,12 +128,16 @@ class TokenBlacklistService {
 
       const timestamp = Date.now();
       await client.set(this.secretRotationKey, timestamp.toString());
+
+      // Mirror into memory so rotation checks hold during a Redis outage
+      this.memorySecretRotation = timestamp;
       
       logger.info('[TokenBlacklist] JWT secret rotation recorded', { timestamp });
       
       return true;
     } catch (error) {
       logger.error(`[TokenBlacklist] Failed to record secret rotation: ${error.message}`);
+      this.memorySecretRotation = Date.now();
       return false;
     }
   }
@@ -126,7 +150,8 @@ class TokenBlacklistService {
     try {
       const client = this.getClient();
       if (!client) {
-        return null;
+        // S8 — Redis down: use the mirrored rotation timestamp
+        return this.memorySecretRotation;
       }
 
       const timestamp = await client.get(this.secretRotationKey);
@@ -138,7 +163,7 @@ class TokenBlacklistService {
       return parseInt(timestamp, 10);
     } catch (error) {
       logger.error(`[TokenBlacklist] Failed to get rotation timestamp: ${error.message}`);
-      return null;
+      return this.memorySecretRotation;
     }
   }
 
@@ -187,12 +212,16 @@ class TokenBlacklistService {
       // Store timestamp when all user tokens were invalidated
       // Tokens issued before this timestamp are invalid
       await client.set(key, timestamp.toString());
+
+      // Mirror into memory for Redis-outage protection
+      this.memoryUserInvalidations.set(userId, timestamp);
       
       logger.info('[TokenBlacklist] All tokens invalidated for user', { userId });
       
       return true;
     } catch (error) {
       logger.error(`[TokenBlacklist] Failed to blacklist user tokens: ${error.message}`);
+      this.memoryUserInvalidations.set(userId, Date.now());
       return false;
     }
   }
@@ -207,7 +236,12 @@ class TokenBlacklistService {
     try {
       const client = this.getClient();
       if (!client) {
-        return false;
+        // S8 — Redis down: consult the in-memory mirror
+        const invalidationMs = this.memoryUserInvalidations.get(userId);
+        if (!invalidationMs) {
+          return false;
+        }
+        return tokenIssuedAt * 1000 < invalidationMs;
       }
 
       const key = `blacklist:user:${userId}`;
@@ -223,7 +257,11 @@ class TokenBlacklistService {
       return tokenIssuedAtMs < invalidationMs;
     } catch (error) {
       logger.error(`[TokenBlacklist] Failed to check user token invalidation: ${error.message}`);
-      return false;
+      const invalidationMs = this.memoryUserInvalidations.get(userId);
+      if (!invalidationMs) {
+        return false;
+      }
+      return tokenIssuedAt * 1000 < invalidationMs;
     }
   }
 
@@ -244,6 +282,10 @@ class TokenBlacklistService {
       if (keys.length > 0) {
         await client.del(...keys);
       }
+
+      this.memoryTokens.clear();
+      this.memorySecretRotation = null;
+      this.memoryUserInvalidations.clear();
       
       logger.info('[TokenBlacklist] Cleared all blacklisted tokens', { count: keys.length });
       

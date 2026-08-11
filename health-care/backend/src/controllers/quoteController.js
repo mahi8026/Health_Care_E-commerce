@@ -1,6 +1,5 @@
 ﻿const Quote = require('../models/Quote');
 const Product = require('../models/Product');
-const User = require('../models/User');
 const { sendQuotationReady } = require('../utils/emailService');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
@@ -40,9 +39,13 @@ exports.createQuote = async (req, res) => {
     // B2B tier discount
     const user = req.user;
     let discountPct = 0;
-    if (user.b2bTier === 'Silver') discountPct = 10;
-    else if (user.b2bTier === 'Gold') discountPct = 22;
-    else if (user.b2bTier === 'Platinum') discountPct = 30;
+    if (user.b2bTier === 'Silver') {
+discountPct = 10;
+} else if (user.b2bTier === 'Gold') {
+discountPct = 22;
+} else if (user.b2bTier === 'Platinum') {
+discountPct = 30;
+}
 
     const discountAmount = subtotal * (discountPct / 100);
     const finalAmount = subtotal - discountAmount;
@@ -90,7 +93,9 @@ exports.getQuote = async (req, res) => {
       .populate('user', 'name email company companyName')
       .populate('items.product', 'name sku brand');
 
-    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
+    if (!quote) {
+return errorResponse(res, 'Quote not found', null, 404);
+}
 
     if (quote.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return errorResponse(res, 'Not authorized', null, 403);
@@ -108,7 +113,9 @@ exports.getAllQuotes = async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
     const filter = {};
-    if (status) filter.status = status;
+    if (status) {
+filter.status = status;
+}
 
     const quotes = await Quote.find(filter)
       .populate('user', 'name email companyName company b2bTier b2bId')
@@ -140,18 +147,30 @@ exports.updateQuote = async (req, res) => {
     const { status, discountPct, finalAmount, validUntil, notes, accountManager } = req.body;
 
     const quote = await Quote.findById(req.params.id).populate('user', 'name email');
-    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
+    if (!quote) {
+return errorResponse(res, 'Quote not found', null, 404);
+}
 
-    if (status) quote.status = status;
+    if (status) {
+quote.status = status;
+}
     if (discountPct !== undefined) {
       quote.discountPct = discountPct;
       quote.discountAmount = quote.subtotal * (discountPct / 100);
       quote.finalAmount = quote.subtotal - quote.discountAmount;
     }
-    if (finalAmount !== undefined) quote.finalAmount = finalAmount;
-    if (validUntil) quote.validUntil = new Date(validUntil);
-    if (notes) quote.notes = notes;
-    if (accountManager) quote.accountManager = accountManager;
+    if (finalAmount !== undefined) {
+quote.finalAmount = finalAmount;
+}
+    if (validUntil) {
+quote.validUntil = new Date(validUntil);
+}
+    if (notes) {
+quote.notes = notes;
+}
+    if (accountManager) {
+quote.accountManager = accountManager;
+}
 
     await quote.save();
 
@@ -186,7 +205,9 @@ exports.convertQuoteToOrder = async (req, res) => {
       .populate('user')
       .populate('items.product');
 
-    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
+    if (!quote) {
+return errorResponse(res, 'Quote not found', null, 404);
+}
     if (quote.status === 'converted') {
       return errorResponse(res, 'Quote already converted', null, 400);
     }

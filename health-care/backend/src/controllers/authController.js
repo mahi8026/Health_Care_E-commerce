@@ -15,6 +15,33 @@ const generateRefreshToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
 };
 
+// ── 2FA brute-force protection (S6) ─────────────────────────────────────────
+const TWO_FA_MAX_ATTEMPTS = 5;
+const TWO_FA_LOCK_WINDOW_MS = 15 * 60 * 1000;
+const twoFactorAttempts = new Map();
+
+const is2FALocked = (userId) => {
+  const record = twoFactorAttempts.get(userId);
+  if (!record) {
+return false;
+}
+  if (Date.now() - record.windowStart > TWO_FA_LOCK_WINDOW_MS) {
+    twoFactorAttempts.delete(userId);
+    return false;
+  }
+  return record.count >= TWO_FA_MAX_ATTEMPTS;
+};
+
+const record2FAFailure = (userId) => {
+  const record = twoFactorAttempts.get(userId) || { count: 0, windowStart: Date.now() };
+  record.count += 1;
+  twoFactorAttempts.set(userId, record);
+};
+
+const clear2FAAttempts = (userId) => {
+  twoFactorAttempts.delete(userId);
+};
+
 /**
  * Register a new user account (B2B or Retail).
  * 
@@ -286,12 +313,24 @@ exports.updateProfile = async (req, res) => {
   try {
     const { name, phone, address, addresses, companyName, bkashPhone } = req.body;
     const updates = {};
-    if (name) updates.name = name.trim();
-    if (phone) updates.phone = phone.trim();
-    if (address) updates.address = address;
-    if (addresses) updates.addresses = addresses;
-    if (companyName) { updates.companyName = companyName.trim(); updates.company = companyName.trim(); }
-    if (typeof bkashPhone === 'string') updates.bkashPhone = bkashPhone.trim();
+    if (name) {
+updates.name = name.trim();
+}
+    if (phone) {
+updates.phone = phone.trim();
+}
+    if (address) {
+updates.address = address;
+}
+    if (addresses) {
+updates.addresses = addresses;
+}
+    if (companyName) {
+ updates.companyName = companyName.trim(); updates.company = companyName.trim(); 
+}
+    if (typeof bkashPhone === 'string') {
+updates.bkashPhone = bkashPhone.trim();
+}
 
     const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true });
     if (!user) {
@@ -841,6 +880,16 @@ exports.verify2FA = async (req, res) => {
       return res.status(400).json({ success: false, message: 'User ID required' });
     }
 
+    // S6 — only track attempts against real accounts
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid authentication code or backup code' });
+    }
+
+    if (is2FALocked(userId)) {
+      return res.status(429).json({ success: false, message: 'Too many failed attempts. Please try again in 15 minutes.' });
+    }
+
     const { verifyTwoFactorToken, verifyBackupCode } = require('../services/twoFactorService');
 
     let verified = false;
@@ -856,11 +905,14 @@ exports.verify2FA = async (req, res) => {
     }
 
     if (!verified) {
+      record2FAFailure(userId);
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid authentication code or backup code' 
       });
     }
+
+    clear2FAAttempts(userId);
 
     // Generate tokens
     const accessToken = generateAccessToken(userId);
@@ -868,9 +920,6 @@ exports.verify2FA = async (req, res) => {
 
     // Update user's refresh token
     await User.findByIdAndUpdate(userId, { refreshToken }, { validateBeforeSave: false });
-
-    // Get user data
-    const user = await User.findById(userId);
 
     // Log 2FA verification
     logActivityAsync({
@@ -1020,7 +1069,9 @@ exports.updateNotificationPreferences = async (req, res) => {
       { new: true, runValidators: false }
     );
 
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) {
+return res.status(404).json({ success: false, message: 'User not found' });
+}
 
     res.status(200).json({
       success: true,

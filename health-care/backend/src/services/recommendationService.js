@@ -140,7 +140,9 @@ async function getSimilarProducts(productId, limit = 8) {
         diversified.push(item.product);
         brandCount[brandName] = count + 1;
         
-        if (diversified.length >= limit) break;
+        if (diversified.length >= limit) {
+break;
+}
       }
     }
     
@@ -364,10 +366,31 @@ async function getPersonalizedRecommendations(userId, limit = 12) {
     // Extract category and brand preferences
     const categoryPreferences = {};
     const brandPreferences = {};
-    
+
+    // P1 — one batched query for ALL product category/brand lookups
+    // (previously a sequential Product.findById per item across 20 orders)
+    const productIds = [];
+    const productIdSet = new Set();
     for (const order of userOrders) {
       for (const item of order.items) {
-        const product = await Product.findById(item.product).select('category brand').lean();
+        const id = String(item.product || '');
+        if (id && !productIdSet.has(id)) {
+          productIdSet.add(id);
+          productIds.push(item.product);
+        }
+      }
+    }
+
+    const productInfos = productIds.length > 0
+      ? await Product.find({ _id: { $in: productIds } })
+          .select('category brand')
+          .lean()
+      : [];
+    const productInfoById = new Map(productInfos.map(p => [String(p._id), p]));
+
+    for (const order of userOrders) {
+      for (const item of order.items) {
+        const product = productInfoById.get(String(item.product));
         
         if (product) {
           if (product.category) {

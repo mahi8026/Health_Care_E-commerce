@@ -222,10 +222,12 @@ reviewSchema.pre('save', function(next) {
 });
 
 // Post-save: Update product rating stats
+// B5 — recompute on ANY save, not just 'approved': rejecting a review (or the
+// auto-report flow setting status back to 'pending') must immediately drop the
+// product's average. getProductStats() only aggregates approved reviews, so
+// recomputing on non-approved saves is exact.
 reviewSchema.post('save', async function(doc) {
-  if (doc.status === 'approved') {
-    await updateProductRating(doc.product);
-  }
+  await updateProductRating(doc.product);
 });
 
 // Post-remove: Update product rating stats

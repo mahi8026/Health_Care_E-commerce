@@ -854,7 +854,9 @@ module.exports = {
   // Hit-rate monitoring
   getCacheHitRate,
   resetCacheStats,
-  get cacheStats() { return { ...cacheStats }; },
+  get cacheStats() {
+ return { ...cacheStats }; 
+},
   // Cache warming
   warmFeaturedProducts,
   warmCategories,

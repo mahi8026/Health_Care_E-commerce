@@ -35,10 +35,12 @@ class WhatsAppService {
    * @returns {String} Formatted phone number (e.g., 8801712345678)
    */
   formatPhoneNumber(phone) {
-    if (!phone) return null;
+    if (!phone) {
+return null;
+}
     
     // Remove all non-digit characters
-    let cleaned = phone.replace(/\D/g, '');
+    const cleaned = phone.replace(/\D/g, '');
     
     // Handle different formats
     if (cleaned.startsWith('880')) {

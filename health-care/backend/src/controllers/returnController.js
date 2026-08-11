@@ -35,8 +35,14 @@ exports.createReturn = async (req, res) => {
       return errorResponse(res, 'Not authorized to request return for this order', null, 403);
     }
 
-    // Check if order is eligible for return (within 7 days)
-    const deliveryDate = new Date(order.deliveredAt || order.createdAt);
+    // B6 — only delivered orders are return-eligible
+    // (previously `deliveredAt || createdAt` let never-delivered or cancelled orders qualify)
+    if (!order.deliveredAt || order.status === 'cancelled') {
+      return errorResponse(res, 'Returns are only available for delivered orders', null, 400);
+    }
+
+    // Check if order is eligible for return (within 7 days of actual delivery)
+    const deliveryDate = new Date(order.deliveredAt);
     const daysSinceDelivery = Math.floor((Date.now() - deliveryDate) / (1000 * 60 * 60 * 24));
     
     if (daysSinceDelivery > 7) {
@@ -250,6 +256,15 @@ exports.getReturn = async (req, res) => {
   }
 };
 
+// Valid return-status transitions (S3: prevents rejected → approved re-entry and double stock restore)
+const RETURN_STATUS_TRANSITIONS = {
+  pending: ['approved', 'rejected', 'cancelled'],
+  approved: ['refunded', 'cancelled'],
+  rejected: ['approved', 'cancelled'],
+  refunded: [],
+  cancelled: [],
+};
+
 // @desc    Update return status (Admin)
 // @route   PATCH /api/returns/:id/status
 // @access  Private/Admin
@@ -269,32 +284,62 @@ exports.updateReturnStatus = async (req, res) => {
       return errorResponse(res, 'Return request not found', null, 404);
     }
 
+    // S3 — enforce valid transitions before mutating anything
+    const allowedNext = RETURN_STATUS_TRANSITIONS[returnRequest.status] || [];
+    if (status === returnRequest.status) {
+      return successResponse(res, returnRequest, `Return request is already ${status}`);
+    }
+    if (!allowedNext.includes(status)) {
+      return errorResponse(res, `Cannot change return status from '${returnRequest.status}' to '${status}'`, null, 400);
+    }
+
     // Update return request
     returnRequest.status = status;
-    if (adminNotes) returnRequest.adminNotes = adminNotes;
-    if (refundMethod) returnRequest.refundMethod = refundMethod;
-    if (refundTransactionId) returnRequest.refundTransactionId = refundTransactionId;
+    if (adminNotes) {
+returnRequest.adminNotes = adminNotes;
+}
+    if (refundMethod) {
+returnRequest.refundMethod = refundMethod;
+}
+    if (refundTransactionId) {
+returnRequest.refundTransactionId = refundTransactionId;
+}
 
     if (status === 'approved') {
       returnRequest.approvedBy = req.user._id;
       returnRequest.approvedAt = new Date();
-      
-      // Restore product stock
-      for (const product of returnRequest.products) {
-        await Product.findByIdAndUpdate(
-          product.product,
-          { $inc: { stock: product.quantity } }
-        );
-      }
     }
 
     if (status === 'refunded') {
+      // B8-style atomic claim — 'approved' → 'refunded' restores stock exactly
+      // once; a concurrent duplicate request (double-click, retry) loses with 409
+      // and touches no inventory
+      const claimed = await Return.updateOne(
+        { _id: returnRequest._id, status: 'approved' },
+        { $set: { status: 'refunded', refundedAt: new Date() } }
+      );
+      if (claimed.matchedCount === 0) {
+        return errorResponse(res, 'Return request was already processed by another request', null, 409);
+      }
+      returnRequest.status = 'refunded';
       returnRequest.refundedAt = new Date();
-      
+
+      // S3 — restore stock exactly once per return, at refund time
+      if (!returnRequest.stockRestored) {
+        for (const product of returnRequest.products) {
+          await Product.findByIdAndUpdate(
+            product.product,
+            { $inc: { stock: product.quantity } }
+          );
+        }
+        returnRequest.stockRestored = true;
+      }
+
       // Update order status
       const order = await Order.findById(returnRequest.order);
       if (order) {
         order.status = 'refunded';
+        order.statusTimestamps = { ...(order.statusTimestamps || {}), refunded: new Date() };
         await order.save();
         
         // Send push notification for refund processed

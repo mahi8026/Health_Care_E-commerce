@@ -98,7 +98,9 @@ flashDealSchema.virtual('isCurrentlyActive').get(function() {
 // Virtual for time remaining
 flashDealSchema.virtual('timeRemaining').get(function() {
   const now = new Date();
-  if (now > this.endTime) return 0;
+  if (now > this.endTime) {
+return 0;
+}
   return Math.max(0, this.endTime - now);
 });
 

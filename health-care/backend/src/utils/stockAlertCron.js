@@ -1,7 +1,6 @@
 ﻿const cron = require('node-cron');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
-const User = require('../models/User');
 const { sendLowStockAlert, sendAbandonedCartEmail } = require('./emailService');
 const { updateFlashDealStatuses } = require('../controllers/flashDealController');
 const logger = require('./logger');

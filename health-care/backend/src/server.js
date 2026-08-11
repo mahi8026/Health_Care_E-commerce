@@ -28,7 +28,6 @@ const swaggerSpec = require('./config/swagger');
 const http = require('http');
 const chatSocketService = require('./services/chatSocketService');
 const chatRoutingService = require('./services/chatRoutingService');
-const { etagMiddleware } = require('./middleware/etag');
 const { protect, authorize } = require('./middleware/auth');
 const { doubleCsrfProtection, csrfTokenMiddleware, getCsrfToken } = require('./middleware/csrf');
 
@@ -146,7 +145,9 @@ const corsOptions = {
     );
 
     // Allow requests with no origin (mobile apps, Postman, server-side, etc.)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+return callback(null, true);
+}
 
     if (allowedOrigins.includes(origin) || isVercelPreview || isCloudflarePreview) {
       callback(null, true);
@@ -208,7 +209,13 @@ app.options('*', (req, res) => {
 app.use(cors(corsOptions));
 
 // ── Body Parsers ─────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({
+  limit: '10mb',
+  // Capture raw body for webhook signature verification
+  verify: (req, res, buf) => {
+ req.rawBody = buf; 
+}
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // ── Cookie Parser ─────────────────────────────────────────────────────────────
@@ -392,16 +399,20 @@ app.get('/api/seed-products', protect, authorize('admin'), async (req, res) => {
     const Manufacturer = require('./models/Manufacturer');
     const Category = require('./models/Category');
 
-    async function ensureManufacturer(name) {
+    const ensureManufacturer = async (name) => {
       let m = await Manufacturer.findOne({ name });
-      if (!m) m = await Manufacturer.create({ name, slug: name.toLowerCase().replace(/\s+/g, '-'), description: `${name} - Medical equipment manufacturer`, isActive: true });
+      if (!m) {
+        m = await Manufacturer.create({ name, slug: name.toLowerCase().replace(/\s+/g, '-'), description: `${name} - Medical equipment manufacturer`, isActive: true });
+      }
       return m._id;
-    }
-    async function ensureCategory(name) {
+    };
+    const ensureCategory = async (name) => {
       let c = await Category.findOne({ name });
-      if (!c) c = await Category.create({ name, slug: name.toLowerCase().replace(/\s+/g, '-'), description: `${name} category`, isActive: true });
+      if (!c) {
+        c = await Category.create({ name, slug: name.toLowerCase().replace(/\s+/g, '-'), description: `${name} category`, isActive: true });
+      }
       return c._id;
-    }
+    };
 
     const productData = [
       { name: 'Siemens Cardiostat ECG 12-lead', brand: 'Siemens Healthineers', category: 'Diagnostic Equipment', sku: 'SIE-ECG-001', price: 95000, oldPrice: 110000, stock: 45, description: 'Professional 12-lead ECG machine', isFeatured: true, badge: 'sale' },
@@ -652,18 +663,6 @@ if (process.env.NODE_ENV !== 'test') {
 
     // Warm critical caches after DB is ready (3s delay for stability)
     setTimeout(warmCache, 3000);
-  });
-
-  // Handle unhandled promise rejections
-  process.on('unhandledRejection', (err, promise) => {
-    logger.error('Unhandled Promise Rejection detected:', {
-      error: err.message,
-      stack: err.stack,
-      promise: promise
-    });
-    console.error('❌ UNHANDLED REJECTION:', err);
-    console.error('Stack:', err.stack);
-    httpServer.close(() => process.exit(1));
   });
 
   // Handle uncaught exceptions

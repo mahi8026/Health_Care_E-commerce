@@ -174,7 +174,9 @@ function orderSummaryBox(order) {
 }
 
 function addressBlock(addr = {}) {
-  if (!addr || !addr.name) return '';
+  if (!addr || !addr.name) {
+return '';
+}
   return `
   <div style="margin-top:20px;padding:14px 16px;background:#F0FDF4;border-radius:8px;border:1px solid #BBF7D0;">
     <div style="font-size:11px;font-weight:700;color:#065F46;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Delivery Address</div>
@@ -364,7 +366,9 @@ async function sendQuotationReady(quote, user) {
 }
 
 async function sendLowStockAlert(products) {
-  if (!products || !products.length) return { skipped: true };
+  if (!products || !products.length) {
+return { skipped: true };
+}
   const { adminEmail, siteUrl } = getConfig();
 
   const rows = products.map(p => {

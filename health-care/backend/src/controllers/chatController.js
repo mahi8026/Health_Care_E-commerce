@@ -83,9 +83,15 @@ exports.getConversations = async (req, res) => {
 
     // Build query
     const query = {};
-    if (status) query.status = status;
-    if (assignedTo) query.assignedTo = assignedTo;
-    if (channel) query.channel = channel;
+    if (status) {
+query.status = status;
+}
+    if (assignedTo) {
+query.assignedTo = assignedTo;
+}
+    if (channel) {
+query.channel = channel;
+}
 
     // If agent (not admin), only show their conversations
     if (req.user.role === 'agent') {
@@ -549,7 +555,7 @@ exports.getChatConfig = async (req, res) => {
  */
 exports.updateChatConfig = async (req, res) => {
   try {
-    let config = await ChatConfig.getActiveConfig();
+    const config = await ChatConfig.getActiveConfig();
 
     // Update fields
     Object.keys(req.body).forEach(key => {

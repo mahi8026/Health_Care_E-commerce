@@ -3,6 +3,53 @@ const User = require('../models/User');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
+// ── Security helpers (C2/C3) ─────────────────────────────────────────────────
+
+// Any gateway-confirmed amount within this tolerance (BDT) of the order total is accepted.
+const ORDER_AMOUNT_TOLERANCE = 1;
+
+function isStaff(user) {
+  return !!user && (user.role === 'admin' || user.role === 'agent');
+}
+
+/**
+ * C3 — Require the authenticated user to own the order (admins/agents pass).
+ * Returns false and sends 403 when access is denied.
+ */
+function assertOrderOwnership(order, user, res) {
+  if (isStaff(user)) {
+return true;
+}
+  if (!order || !order.user) {
+    errorResponse(res, 'Order not found', null, 404);
+    return false;
+  }
+  const ownerId = typeof order.user === 'object' && order.user._id
+    ? String(order.user._id)
+    : String(order.user);
+  if (ownerId !== String(user._id)) {
+    logger.warn(`[payment] IDOR attempt blocked: user ${user._id} tried to pay order of ${ownerId}`);
+    errorResponse(res, 'Not authorized to access this order', null, 403);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * C2 — Verify a gateway-confirmed amount matches the server-side order total.
+ * Returns false and sends 400 on mismatch.
+ */
+function assertPaymentAmountMatches(order, paidAmount, res) {
+  const expected = Number(order.totalAmount || order.total || 0);
+  const paid = Number(paidAmount);
+  if (!Number.isFinite(paid) || Math.abs(paid - expected) > ORDER_AMOUNT_TOLERANCE) {
+    logger.warn(`[payment] Amount mismatch rejected: order ${order.orderNumber}, expected ৳${expected}, paid ৳${paid}`);
+    errorResponse(res, 'Payment amount does not match order total. Please contact support.', null, 400);
+    return false;
+  }
+  return true;
+}
+
 // Stripe has been removed as it doesn't work in Bangladesh
 // Available payment methods: bKash, Nagad, Bank Transfer, B2B Credit, Cheque
 
@@ -72,13 +119,21 @@ async function bkashRequest(endpoint, body) {
 // ── bKash: Initiate Payment ───────────────────────────────────────────────────
 exports.initiateBkashPayment = async (req, res) => {
   try {
-    const { amount, orderId } = req.body;
-    if (!amount || !orderId) {
-      return errorResponse(res, 'Amount and orderId are required', null, 400);
+    const { orderId } = req.body;
+    if (!orderId) {
+      return errorResponse(res, 'Order ID is required', null, 400);
     }
 
     const order = await Order.findById(orderId);
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
+
+    // C2 — amount always comes from the server-side order total, never the client
+    const amount = Number(order.totalAmount || order.total || 0);
 
     const callbackUrl = process.env.BKASH_CALLBACK_URL || `${process.env.FRONTEND_URL}/payment/bkash/callback`;
 
@@ -126,7 +181,9 @@ exports.initiateBkashPayment = async (req, res) => {
 exports.executeBkashPayment = async (req, res) => {
   try {
     const { paymentID } = req.body;
-    if (!paymentID) return errorResponse(res, 'paymentID is required', null, 400);
+    if (!paymentID) {
+return errorResponse(res, 'paymentID is required', null, 400);
+}
 
     const data = await bkashRequest('execute', { paymentID });
 
@@ -136,7 +193,19 @@ exports.executeBkashPayment = async (req, res) => {
 
     // Find order by bKash paymentID stored during initiation
     const order = await Order.findOne({ 'paymentDetails.bkashPaymentId': paymentID });
-    if (!order) return errorResponse(res, 'Order not found for this payment', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found for this payment', null, 404);
+}
+
+    // C3 — only the order owner (or staff) may execute this payment
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
+
+    // C2 — amount confirmed by bKash must match the server-side order total
+    if (!assertPaymentAmountMatches(order, data.amount, res)) {
+return;
+}
 
     order.paymentStatus = 'paid';
     order.status = 'confirmed';
@@ -173,7 +242,19 @@ exports.verifyBkashPayment = async (req, res) => {
 
     if (data.transactionStatus === 'Completed') {
       const order = await Order.findById(orderId);
-      if (!order) return errorResponse(res, 'Order not found', null, 404);
+      if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+
+      // C3 — only the order owner (or staff) may verify this payment
+      if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
+
+      // C2 — verified amount must match the server-side order total
+      if (!assertPaymentAmountMatches(order, data.amount, res)) {
+return;
+}
 
       order.paymentStatus = 'paid';
       order.status = 'confirmed';
@@ -207,7 +288,13 @@ exports.processBankTransfer = async (req, res) => {
       return errorResponse(res, 'Order ID and transaction reference are required', null, 400);
     }
     const order = await Order.findById(orderId);
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+    // C3 — only the order owner (or staff) may submit bank transfer details
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
     order.paymentStatus = 'pending';
     order.paymentDetails = { method: 'bank', transactionReference, submittedAt: new Date() };
     await order.save();
@@ -223,17 +310,37 @@ exports.processBankTransfer = async (req, res) => {
 exports.processB2BCreditPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
-    if (!orderId) return errorResponse(res, 'Order ID is required', null, 400);
+    if (!orderId) {
+return errorResponse(res, 'Order ID is required', null, 400);
+}
 
     const order = await Order.findById(orderId).populate('user');
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+
+    // C3 — only the order owner (or staff) may draw on this order's credit
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
 
     if (order.user.role !== 'b2b_customer') {
       return errorResponse(res, 'B2B credit is only available for B2B accounts', null, 403);
     }
 
-    // Verify order not already paid
-    if (order.paymentStatus === 'paid') {
+    // S5 — unapproved B2B accounts cannot draw credit
+    if (order.user.b2bApprovalStatus !== 'approved') {
+      return errorResponse(res, 'B2B account is not approved for credit payments', null, 403);
+    }
+
+    // D5 — atomically claim the order BEFORE debiting credit.
+    // Only one concurrent request can flip paymentStatus away from 'paid',
+    // so the credit debit below can never be double-applied for this order.
+    const claim = await Order.updateOne(
+      { _id: order._id, paymentStatus: { $ne: 'paid' } },
+      { $set: { paymentStatus: 'paid', status: 'confirmed' } }
+    );
+    if (claim.matchedCount === 0) {
       return errorResponse(res, 'Order already paid', null, 400);
     }
 
@@ -279,6 +386,12 @@ exports.processB2BCreditPayment = async (req, res) => {
 
     // ✅ If update returned null, credit limit was exceeded
     if (!updatedUser) {
+      // D5 — compensate: release the order claim so the customer can retry
+      await Order.updateOne(
+        { _id: order._id, paymentStatus: 'paid', status: 'confirmed' },
+        { $set: { paymentStatus: order.paymentStatus || 'pending', status: order.status || 'placed' } }
+      );
+
       // Get current user state to provide accurate error message
       const currentUser = await User.findById(order.user._id);
       
@@ -342,19 +455,30 @@ exports.processB2BCreditPayment = async (req, res) => {
 // ── Nagad (stub – swap in real credentials when available) ───────────────────
 exports.initiateNagadPayment = async (req, res) => {
   try {
-    const { orderId, amount } = req.body;
-    const { NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY } = process.env;
+    const { orderId } = req.body;
+    const { NAGAD_MERCHANT_ID } = process.env;
 
     if (!NAGAD_MERCHANT_ID || NAGAD_MERCHANT_ID === 'your_nagad_merchant_id') {
       return errorResponse(res, 'Nagad payment is not available yet. Please use Bank Transfer or B2B Credit.', { code: 'NAGAD_NOT_CONFIGURED' }, 503);
     }
 
     const order = await Order.findById(orderId);
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+
+    // C3 — only the order owner (or staff) may initiate payment for this order
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
+
+    // C2 — amount derived server-side from the order, never from the client
+    const paymentAmount = order.totalAmount || order.total || 0;
 
     return successResponse(res, {
       redirectUrl: `${process.env.FRONTEND_URL}/checkout?payment=nagad&order=${orderId}`,
       merchantOrderId: `NAGAD-${Date.now()}`,
+      amount: `Tk ${Number(paymentAmount).toFixed(2)}`,
     }, 'Nagad payment initiated (sandbox)');
   } catch (err) {
     logger.error(`[initiateNagadPayment] ${err.message}`);
@@ -366,10 +490,19 @@ exports.initiateNagadPayment = async (req, res) => {
 exports.processCODPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
-    if (!orderId) return errorResponse(res, 'Order ID is required', null, 400);
+    if (!orderId) {
+return errorResponse(res, 'Order ID is required', null, 400);
+}
 
     const order = await Order.findById(orderId);
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+
+    // C3 — only the order owner (or staff) may confirm the order for COD
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
 
     // Mark as pending payment - will be paid on delivery
     order.paymentMethod = 'cod';
@@ -403,7 +536,13 @@ exports.submitChequePayment = async (req, res) => {
   try {
     const { orderId, chequeNumber, bankName, chequeDate, accountName } = req.body;
     const order = await Order.findById(orderId);
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
+    // C3 — only the order owner (or staff) may submit cheque details
+    if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
     order.paymentMethod = 'cheque';
     order.paymentStatus = 'pending';
     order.paymentDetails = { chequeNumber, bankName, chequeDate, accountName, submittedAt: new Date() };

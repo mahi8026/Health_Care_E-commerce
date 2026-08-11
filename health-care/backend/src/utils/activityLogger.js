@@ -65,7 +65,9 @@ const ACTIONS = {
  * @returns {String} IP address
  */
 function getIpAddress(req) {
-  if (!req) return null;
+  if (!req) {
+return null;
+}
   
   // Check for proxy headers
   const forwarded = req.headers['x-forwarded-for'];
@@ -88,7 +90,9 @@ function getIpAddress(req) {
  * @returns {String} User agent string
  */
 function getUserAgent(req) {
-  if (!req || !req.headers) return null;
+  if (!req || !req.headers) {
+return null;
+}
   return req.headers['user-agent'] || null;
 }
 
@@ -137,12 +141,20 @@ async function logActivity({
     }
 
     // Add target information
-    if (targetModel) logEntry.targetModel = targetModel;
-    if (targetId) logEntry.targetId = targetId;
-    if (targetName) logEntry.targetName = targetName;
+    if (targetModel) {
+logEntry.targetModel = targetModel;
+}
+    if (targetId) {
+logEntry.targetId = targetId;
+}
+    if (targetName) {
+logEntry.targetName = targetName;
+}
 
     // Add changes
-    if (changes) logEntry.changes = changes;
+    if (changes) {
+logEntry.changes = changes;
+}
 
     // Extract request metadata
     if (req) {

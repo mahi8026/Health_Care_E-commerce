@@ -48,11 +48,15 @@ exports.syncCart = async (req, res) => {
     // Merge logic: for each localStorage item
     for (const localItem of items) {
       const productId = localItem.id || localItem._id;
-      if (!productId) continue;
+      if (!productId) {
+continue;
+}
 
       // Verify product exists and is active
       const product = await Product.findById(productId).lean();
-      if (!product || !product.isActive) continue;
+      if (!product || !product.isActive) {
+continue;
+}
 
       // Check if product already in DB cart
       const existingIndex = cart.items.findIndex(
@@ -130,7 +134,9 @@ exports.addItem = async (req, res) => {
     // For products with sizes, each size is a separate cart item
     const existingIndex = cart.items.findIndex(item => {
       const isSameProduct = item.product.toString() === productId.toString();
-      if (!selectedSize) return isSameProduct;
+      if (!selectedSize) {
+return isSameProduct;
+}
       
       // Match both product and size
       return isSameProduct && item.selectedSize?.name === selectedSize.name;
@@ -187,7 +193,9 @@ exports.updateItem = async (req, res) => {
 
     const itemIndex = cart.items.findIndex(item => {
       const isSameProduct = item.product.toString() === productId.toString();
-      if (!selectedSize) return isSameProduct;
+      if (!selectedSize) {
+return isSameProduct;
+}
       
       // Match both product and size
       return isSameProduct && item.selectedSize?.name === selectedSize.name;

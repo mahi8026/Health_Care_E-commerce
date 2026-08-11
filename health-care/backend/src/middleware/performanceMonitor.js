@@ -283,7 +283,9 @@ function getHealthStatus(serviceChecks = {}) {
     status = 'critical';
     issues.push(`High process memory (${rssPercent.toFixed(1)}% of system RAM)`);
   } else if (rssPercent > 80) {
-    if (status !== 'critical') status = 'warning';
+    if (status !== 'critical') {
+status = 'warning';
+}
     issues.push(`Elevated process memory (${rssPercent.toFixed(1)}% of system RAM)`);
   }
 
@@ -291,7 +293,9 @@ function getHealthStatus(serviceChecks = {}) {
     status = 'critical';
     issues.push(`High error rate (${errorRate.toFixed(1)}%)`);
   } else if (metrics.requests.total >= 10 && errorRate > 5) {
-    if (status !== 'critical') status = 'warning';
+    if (status !== 'critical') {
+status = 'warning';
+}
     issues.push(`Elevated error rate (${errorRate.toFixed(1)}%)`);
   }
 
@@ -299,7 +303,9 @@ function getHealthStatus(serviceChecks = {}) {
     status = 'critical';
     issues.push(`Very slow responses (avg ${Math.round(avgResponseTime)}ms)`);
   } else if (metrics.requests.total >= 5 && avgResponseTime > THRESHOLDS.SLOW_REQUEST) {
-    if (status !== 'critical') status = 'warning';
+    if (status !== 'critical') {
+status = 'warning';
+}
     issues.push(`Slow responses (avg ${Math.round(avgResponseTime)}ms)`);
   }
 

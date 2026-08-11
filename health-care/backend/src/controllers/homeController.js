@@ -13,7 +13,7 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Manufacturer = require('../models/Manufacturer');
 const logger = require('../utils/logger');
-const { get, set, CACHE_TTL } = require('../services/redisCache');
+const { get, set } = require('../services/redisCache');
 
 /**
  * Get aggregated homepage data in a single request
@@ -135,23 +135,62 @@ exports.getHomeData = async (req, res) => {
         .limit(10)
         .lean(),
 
-      // 6. Top selling products (by order count)
+      // 6. Top selling products (by units sold in non-cancelled orders)
+      // B1 — previously looked up a nonexistent 'orderitems' collection
+      // (order items are embedded in 'orders'), so orderCount was always 0
+      // and the section showed arbitrary products
       Product.aggregate([
         { $match: { isActive: true } },
         {
           $lookup: {
-            from: 'orderitems',
-            localField: '_id',
-            foreignField: 'product',
-            as: 'orders'
+            from: 'orders',
+            let: { pid: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $in: ['$$pid', '$items.product'] },
+                      { $nin: ['$status', ['cancelled', 'refunded', 'returned']] }
+                    ]
+                  }
+                }
+              },
+              {
+                $project: {
+                  unitsBought: {
+                    $sum: {
+                      $map: {
+                        input: {
+                          $filter: {
+                            input: '$items',
+                            as: 'it',
+                            cond: { $eq: ['$$it.product', '$$pid'] }
+                          }
+                        },
+                        as: 'f',
+                        in: {
+                          $add: [
+                            { $ifNull: ['$$f.quantity', 0] },
+                            { $ifNull: ['$$f.qty', 0] }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            as: 'orderMatches'
           }
         },
         {
           $addFields: {
-            orderCount: { $size: '$orders' }
+            orderCount: { $size: '$orderMatches' },
+            unitsSold: { $sum: '$orderMatches.unitsBought' }
           }
         },
-        { $sort: { orderCount: -1 } },
+        { $sort: { unitsSold: -1, orderCount: -1 } },
         { $limit: 4 },
         {
           $lookup: {
@@ -196,7 +235,9 @@ exports.getHomeData = async (req, res) => {
 
       // 7. Lab Equipment products
       Category.findOne({ name: 'Lab Equipment' }).then(async (labCategory) => {
-        if (!labCategory) return [];
+        if (!labCategory) {
+return [];
+}
         return Product.find({ category: labCategory._id, isActive: true })
           .populate('category', 'name slug')
           .populate('brand', 'name slug logo')
@@ -227,7 +268,7 @@ exports.getHomeData = async (req, res) => {
         Product.countDocuments({ isActive: true }),
         Manufacturer.countDocuments({ isActive: true }),
         Order.countDocuments({ status: 'delivered' }),
-        User.countDocuments({ role: 'B2B' })
+        User.countDocuments({ role: 'b2b_customer' })
       ]).then(([totalProducts, totalBrands, totalOrders, totalB2BClients]) => ({
         totalProducts,
         totalBrands,
@@ -288,6 +329,10 @@ exports.getCategoryProducts = async (req, res) => {
   const { category, limit = 10 } = req.query;
   
   try {
+    // P5 — clamp the limit BEFORE it enters the cache key: prevents
+    // cache flooding via ?limit=999999999 and unbounded category dumps
+    const rawLimit = parseInt(limit) || 10;
+    const safeLimit = Math.min(Math.max(1, rawLimit), 30);
     // Check MongoDB connection status first
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState !== 1) {
@@ -308,7 +353,7 @@ exports.getCategoryProducts = async (req, res) => {
     }
 
     const categories = category.split(',').map(c => c.trim());
-    const cacheKey = `homepage:category-products:${categories.join('-')}:${limit}`;
+    const cacheKey = `homepage:category-products:${categories.join('-')}:${safeLimit}`;
 
     // Try cache first
     const cached = await get(cacheKey);
@@ -335,13 +380,12 @@ exports.getCategoryProducts = async (req, res) => {
     }
 
     // Fetch products for each category in parallel
-    const categoryIds = categoryDocs.map(c => c._id);
     const productPromises = categoryDocs.map(cat =>
       Product.find({ category: cat._id, isActive: true })
         .populate('category', 'name slug')
         .populate('brand', 'name slug logo')
         .select('name price oldPrice images stock discount badge slug rating reviewCount')
-        .limit(parseInt(limit))
+        .limit(safeLimit)
         .lean()
         .then(products => ({ category: cat.name, products }))
     );

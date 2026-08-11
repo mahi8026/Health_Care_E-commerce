@@ -125,7 +125,9 @@ router.get('/verify-category-counts', protect, authorize('admin'), async (req, r
       const savedCount = category.productCount || 0;
       const isMatch = savedCount === actualCount;
       
-      if (!isMatch) mismatches++;
+      if (!isMatch) {
+mismatches++;
+}
       
       verification.push({
         id: category._id,

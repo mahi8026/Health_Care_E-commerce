@@ -11,8 +11,12 @@ function escapeRegex(str) {
 }
 
 function calcMonthGrowth(current, previous) {
-  if (previous === 0 && current === 0) return { pct: 0, trend: 'neutral' };
-  if (previous === 0) return { pct: null, trend: 'up' };
+  if (previous === 0 && current === 0) {
+return { pct: 0, trend: 'neutral' };
+}
+  if (previous === 0) {
+return { pct: null, trend: 'up' };
+}
   const pct = Math.round(((current - previous) / previous) * 100);
   return { pct, trend: pct >= 0 ? 'up' : 'down' };
 }
@@ -192,10 +196,15 @@ exports.getAnalytics = async (req, res) => {
     const now = new Date();
     let startDate;
 
-    if (period === 'week') startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    else if (period === 'month') startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    else if (period === 'year') startDate = new Date(now.getFullYear(), 0, 1);
-    else startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (period === 'week') {
+startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+} else if (period === 'month') {
+startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+} else if (period === 'year') {
+startDate = new Date(now.getFullYear(), 0, 1);
+} else {
+startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+}
 
     const [orderStats, topProducts, topCustomers] = await Promise.all([
       Order.aggregate([
@@ -287,8 +296,12 @@ exports.getCustomers = async (req, res) => {
   try {
     const { role, tier, page = 1, limit = 20, search } = req.query;
     const filter = {};
-    if (role) filter.role = role;
-    if (tier) filter.b2bTier = tier;
+    if (role) {
+filter.role = role;
+}
+    if (tier) {
+filter.b2bTier = tier;
+}
     if (search) {
       const escaped = escapeRegex(search);
       filter.$or = [
@@ -307,24 +320,29 @@ exports.getCustomers = async (req, res) => {
 
     const total = await User.countDocuments(filter);
 
-    // Enrich with order stats - preserve _id
-    const enriched = await Promise.all(customers.map(async (customer) => {
-      const orderAgg = await Order.aggregate([
-        { $match: { user: customer._id, status: { $nin: ['cancelled'] } } },
-        {
-          $group: {
-            _id: null,
-            totalSpend: { $sum: revenueExpr },
-            orderCount: { $sum: 1 },
-            lastOrder: { $max: '$createdAt' }
+// Enrich with order stats — P3: single aggregation for the whole page
+    // instead of a per-customer aggregation (N+1)
+    const customerIds = customers.map(c => c._id);
+    const orderStats = customerIds.length > 0
+      ? await Order.aggregate([
+          { $match: { user: { $in: customerIds }, status: { $nin: ['cancelled'] } } },
+          {
+            $group: {
+              _id: '$user',
+              totalSpend: { $sum: revenueExpr },
+              orderCount: { $sum: 1 },
+              lastOrder: { $max: '$createdAt' }
+            }
           }
-        }
-      ]);
-      const stats = orderAgg[0] || { totalSpend: 0, orderCount: 0, lastOrder: null };
-      // Remove the _id: null from stats to avoid overwriting customer._id
-      delete stats._id;
-      return { ...customer, ...stats };
-    }));
+        ])
+      : [];
+    const statsByUserId = new Map(orderStats.map(s => [String(s._id), s]));
+
+    const enriched = customers.map((customer) => {
+      const stats = statsByUserId.get(String(customer._id)) || { totalSpend: 0, orderCount: 0, lastOrder: null };
+      const { _id, ...rest } = stats; // customer keeps its own _id
+      return { ...customer, ...rest };
+    });
 
     return successResponse(res, { count: enriched.length, total, customers: enriched });
   } catch (error) {
@@ -347,15 +365,31 @@ exports.updateCustomer = async (req, res) => {
     }
     
     const updates = {};
-    if (b2bTier) updates.b2bTier = b2bTier;
-    if (creditLimit !== undefined) updates.creditLimit = creditLimit;
-    if (accountManager) updates.accountManager = accountManager;
-    if (paymentTerms) updates.paymentTerms = paymentTerms;
-    if (isActive !== undefined) updates.isActive = isActive;
-    if (role) updates.role = role;
+    if (b2bTier) {
+updates.b2bTier = b2bTier;
+}
+    if (creditLimit !== undefined) {
+updates.creditLimit = creditLimit;
+}
+    if (accountManager) {
+updates.accountManager = accountManager;
+}
+    if (paymentTerms) {
+updates.paymentTerms = paymentTerms;
+}
+    if (isActive !== undefined) {
+updates.isActive = isActive;
+}
+    if (role) {
+updates.role = role;
+}
     // B2B discount — admin controlled
-    if (b2bDiscountEnabled !== undefined) updates.b2bDiscountEnabled = b2bDiscountEnabled;
-    if (b2bDiscountPct !== undefined) updates.b2bDiscountPct = Math.min(100, Math.max(0, Number(b2bDiscountPct) || 0));
+    if (b2bDiscountEnabled !== undefined) {
+updates.b2bDiscountEnabled = b2bDiscountEnabled;
+}
+    if (b2bDiscountPct !== undefined) {
+updates.b2bDiscountPct = Math.min(100, Math.max(0, Number(b2bDiscountPct) || 0));
+}
 
     logger.info(`[adminController] Updates to apply:`, updates);
 
@@ -413,6 +447,14 @@ exports.deleteCustomer = async (req, res) => {
     if (customer.role === 'admin') {
       logger.warn(`[adminController] Attempted to delete admin: ${req.params.id}`);
       return errorResponse(res, 'Cannot delete admin users', null, 403);
+    }
+
+    // D7 — a customer with order history must not be hard-deleted without an
+    // explicit override: deletion orphans order/report references. Mirrors the
+    // manufacturer ?force=true pattern.
+    const orderCount = await Order.countDocuments({ user: req.params.id });
+    if (orderCount > 0 && req.query.force !== 'true') {
+      return errorResponse(res, `Cannot delete customer with ${orderCount} order(s). Use ?force=true to delete regardless (history will be orphaned).`, null, 400);
     }
 
     await User.findByIdAndDelete(req.params.id);

@@ -212,10 +212,15 @@ async function fixProductBrandReferences() {
 
         // Extract brand from SKU patterns
         if (product.sku) {
-          if (product.sku.startsWith('FC-')) manufacturerName = 'Finecare';
-          else if (product.sku.startsWith('LK-')) manufacturerName = 'LabKit';
-          else if (product.sku.startsWith('GPL-')) manufacturerName = 'GPL';
-          else if (product.sku.startsWith('BSMI-')) manufacturerName = 'BSMI';
+          if (product.sku.startsWith('FC-')) {
+manufacturerName = 'Finecare';
+} else if (product.sku.startsWith('LK-')) {
+manufacturerName = 'LabKit';
+} else if (product.sku.startsWith('GPL-')) {
+manufacturerName = 'GPL';
+} else if (product.sku.startsWith('BSMI-')) {
+manufacturerName = 'BSMI';
+}
         }
 
         // Extract brand from product name
@@ -291,18 +296,26 @@ async function syncData() {
     logger.info('📋 Syncing manufacturers...');
     for (const mfrData of CORE_MANUFACTURERS) {
       const result = await ensureManufacturer(mfrData);
-      if (result.created) stats.manufacturers.created++;
-      else if (result.activated) stats.manufacturers.activated++;
-      else stats.manufacturers.exists++;
+      if (result.created) {
+stats.manufacturers.created++;
+} else if (result.activated) {
+stats.manufacturers.activated++;
+} else {
+stats.manufacturers.exists++;
+}
     }
 
     // 2. Ensure all core categories exist
     logger.info('📋 Syncing categories...');
     for (const catData of CORE_CATEGORIES) {
       const result = await ensureCategory(catData);
-      if (result.created) stats.categories.created++;
-      else if (result.activated) stats.categories.activated++;
-      else stats.categories.exists++;
+      if (result.created) {
+stats.categories.created++;
+} else if (result.activated) {
+stats.categories.activated++;
+} else {
+stats.categories.exists++;
+}
     }
 
     // 3. Fix products with missing brand/category references

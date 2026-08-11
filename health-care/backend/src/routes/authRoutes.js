@@ -27,11 +27,8 @@ const { protect } = require('../middleware/auth');
 const { noStore } = require('../middleware/cache');
 const { loginCaptcha, registerCaptcha, passwordResetCaptcha } = require('../middleware/captcha');
 const {
-  loginLimiter,
-  registerLimiter,
   passwordResetLimiter,
-  otpLimiter,
-  authLimiter: enhancedAuthLimiter
+  otpLimiter
 } = require('../middleware/enhancedRateLimiter');
 // Auth rate limiter from rateLimiter.js: 5 req/15 min per IP (Req 10.1)
 const { authLimiter } = require('../middleware/rateLimiter');
@@ -241,7 +238,7 @@ router.get('/google/callback',
     passport.authenticate('google', { 
       failureRedirect: '/api/auth/google/failure',
       session: false
-    }, (err, user, info) => {
+    }, (err, user, _info) => {
       if (err) {
         logger.error(`[Google OAuth Callback] Error: ${err.message}`);
         return res.redirect(`${process.env.FRONTEND_URL}/login?error=authentication_failed`);

@@ -31,8 +31,12 @@
  */
 function successResponse(res, data, message, statusCode = 200) {
   const body = { success: true };
-  if (data !== undefined) body.data = data;
-  if (message !== undefined) body.message = message;
+  if (data !== undefined) {
+body.data = data;
+}
+  if (message !== undefined) {
+body.message = message;
+}
   return res.status(statusCode).json(body);
 }
 
@@ -64,6 +68,12 @@ function errorResponse(res, message, errors = null, statusCode = 500) {
     errors,
     requestId: res.locals?.requestId || res.req?.id || undefined,
   };
+  // Surface a machine-readable code at the root when provided, e.g.
+  // errorResponse(res, '...', { code: 'BKASH_NOT_CONFIGURED' }, 503)
+  // → { success: false, message, errors: { code }, code: 'BKASH_NOT_CONFIGURED', requestId }
+  if (errors && typeof errors === 'object' && !Array.isArray(errors) && errors.code) {
+    body.code = errors.code;
+  }
   return res.status(statusCode).json(body);
 }
 

@@ -8,9 +8,15 @@ const logger = require('../utils/logger');
  */
 function getTier(totalPointsEarned) {
   const { TIERS } = config;
-  if (totalPointsEarned >= TIERS.PLATINUM.min) return TIERS.PLATINUM;
-  if (totalPointsEarned >= TIERS.GOLD.min) return TIERS.GOLD;
-  if (totalPointsEarned >= TIERS.SILVER.min) return TIERS.SILVER;
+  if (totalPointsEarned >= TIERS.PLATINUM.min) {
+return TIERS.PLATINUM;
+}
+  if (totalPointsEarned >= TIERS.GOLD.min) {
+return TIERS.GOLD;
+}
+  if (totalPointsEarned >= TIERS.SILVER.min) {
+return TIERS.SILVER;
+}
   return TIERS.BRONZE;
 }
 
@@ -45,10 +51,14 @@ async function awardOrderPoints(userId, orderId, orderTotal, isFirstOrder = fals
     const bonusPoints = isFirstOrder ? config.BONUS_FIRST_ORDER : 0;
     const totalPoints = earnedPoints + bonusPoints;
 
-    if (totalPoints <= 0) return null;
+    if (totalPoints <= 0) {
+return null;
+}
 
     const user = await User.findById(userId).session(session);
-    if (!user) return null;
+    if (!user) {
+return null;
+}
 
     const newBalance = (user.loyaltyPoints || 0) + totalPoints;
 
@@ -96,7 +106,9 @@ async function redeemPoints(userId, pointsToRedeem, orderId, orderTotal, session
     }
 
     const user = await User.findById(userId).session(session);
-    if (!user) throw new Error('User not found');
+    if (!user) {
+throw new Error('User not found');
+}
 
     if ((user.loyaltyPoints || 0) < pointsToRedeem) {
       throw new Error('Insufficient loyalty points');
@@ -147,7 +159,9 @@ async function redeemPoints(userId, pointsToRedeem, orderId, orderTotal, session
 async function awardBonusPoints(userId, points, description, type = 'bonus') {
   try {
     const user = await User.findById(userId);
-    if (!user) return null;
+    if (!user) {
+return null;
+}
 
     const newBalance = (user.loyaltyPoints || 0) + points;
 
@@ -174,7 +188,9 @@ async function awardBonusPoints(userId, points, description, type = 'bonus') {
  */
 async function getUserLoyaltySummary(userId) {
   const user = await User.findById(userId).select('loyaltyPoints name email');
-  if (!user) throw new Error('User not found');
+  if (!user) {
+throw new Error('User not found');
+}
 
   const currentPoints = user.loyaltyPoints || 0;
 

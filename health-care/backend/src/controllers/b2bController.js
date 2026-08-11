@@ -1,6 +1,5 @@
 ﻿const User = require('../models/User');
 const Category = require('../models/Category');
-const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
@@ -81,9 +80,23 @@ exports.approveB2BUser = async (req, res) => {
     }
 
     // Generate B2B ID if not exists
+    // D6 — count-based IDs collide under concurrent approvals; verify with a
+    // retry loop (backstopped by the new unique sparse index on b2bId)
     if (!user.b2bId) {
-      const count = await User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'approved' });
-      user.b2bId = `B2B${String(count + 1).padStart(6, '0')}`; // B2B000001, B2B000002, etc.
+      const maxAttempts = 10;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const count = await User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'approved' });
+        const candidate = `B2B${String(count + 1).padStart(6, '0')}`;
+        const clash = await User.findOne({ b2bId: candidate }).select('_id').lean();
+        if (!clash) {
+          user.b2bId = candidate;
+          break;
+        }
+      }
+      // Fallback — random tail guarantees uniqueness even if every sequence slot is taken
+      if (!user.b2bId) {
+        user.b2bId = `B2B${String(Date.now()).slice(-6)}${Math.floor(1000 + Math.random() * 9000)}`;
+      }
     }
 
     user.b2bApprovalStatus = 'approved';
@@ -265,8 +278,12 @@ exports.bulkUpdateCategoryDiscounts = async (req, res) => {
         continue;
       }
 
-      if (b2bDiscountEnabled !== undefined) category.b2bDiscountEnabled = b2bDiscountEnabled;
-      if (b2bDiscountPct !== undefined) category.b2bDiscountPct = b2bDiscountPct;
+      if (b2bDiscountEnabled !== undefined) {
+category.b2bDiscountEnabled = b2bDiscountEnabled;
+}
+      if (b2bDiscountPct !== undefined) {
+category.b2bDiscountPct = b2bDiscountPct;
+}
 
       await category.save();
       results.push({ categoryId, success: true, name: category.name });

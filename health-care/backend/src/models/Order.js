@@ -88,7 +88,7 @@ const orderSchema = new mongoose.Schema({
   paymentDetails: { type: mongoose.Schema.Types.Mixed },
   status: {
     type: String,
-    enum: ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled',
+    enum: ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'refunded', 'returned',
            // legacy aliases
            'pending'],
     default: 'placed'
@@ -99,7 +99,8 @@ const orderSchema = new mongoose.Schema({
     processing: Date,
     shipped: Date,
     out_for_delivery: Date,
-    delivered: Date
+    delivered: Date,
+    refunded: Date
   },
   tracking: {
     courier: String,
@@ -160,17 +161,27 @@ orderSchema.pre('save', async function (next) {
     this.orderId = this.orderNumber; // keep legacy alias in sync
   }
   // Sync legacy aliases
-  if (!this.total && this.totalAmount) this.total = this.totalAmount;
-  if (!this.totalAmount && this.total) this.totalAmount = this.total;
-  if (!this.statusTimestamps) this.statusTimestamps = {};
-  if (this.isNew) this.statusTimestamps.placed = new Date();
+  if (!this.total && this.totalAmount) {
+this.total = this.totalAmount;
+}
+  if (!this.totalAmount && this.total) {
+this.totalAmount = this.total;
+}
+  if (!this.statusTimestamps) {
+this.statusTimestamps = {};
+}
+  if (this.isNew) {
+this.statusTimestamps.placed = new Date();
+}
   next();
 });
 
 // Update statusTimestamps when status changes
 orderSchema.pre('save', function (next) {
   if (this.isModified('status')) {
-    if (!this.statusTimestamps) this.statusTimestamps = {};
+    if (!this.statusTimestamps) {
+this.statusTimestamps = {};
+}
     const now = new Date();
     const statusMap = {
       confirmed: 'confirmed',

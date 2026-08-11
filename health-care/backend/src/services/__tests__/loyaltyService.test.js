@@ -127,7 +127,6 @@ describe('Loyalty Service', () => {
 
   describe('awardOrderPoints', () => {
     const mockUser = { _id: 'user123', loyaltyPoints: 100 };
-    const mockOrder = { _id: 'order123' };
 
     beforeEach(() => {
       User.findById.mockReturnValue({

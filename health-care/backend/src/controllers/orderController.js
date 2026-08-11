@@ -6,14 +6,79 @@ const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const mongoose = require('mongoose');
 const { DELIVERY_FEES } = require('../config/constants');
-const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 const emailService = require('../services/emailService');
-const { sendToUser, sendToAdmins, notifications } = require('../utils/oneSignalService');
+const pricingService = require('../services/pricingService');
+const { sendToUser, notifications } = require('../utils/oneSignalService');
 
 const cacheService = new CacheService();
 
-// Generate a human-friendly branded order number: MC-YYMMDD-XXXX
-// Example: MC-260623-4231  (14 chars, readable, unique per day)
+// B9 — roll back B2B credit and loyalty points when an order is cancelled.
+// Shared by cancelOrder and admin updateOrderStatus('cancelled').
+async function rollbackOrderFinances(order, performedByUserId) {
+  const orderUser = order.user?._id || order.user;
+
+  // Roll back B2B credit if used
+  if (order.paymentMethod === 'b2b_credit' && order.paymentStatus === 'paid' && orderUser) {
+    const refundAmount = order.totalAmount || order.total || 0;
+    await User.findByIdAndUpdate(orderUser, {
+      $inc: { creditUsed: -refundAmount },
+      $push: {
+        creditTransactions: {
+          orderId: order._id,
+          orderNumber: order.orderNumber,
+          amount: refundAmount,
+          type: 'refund',
+          timestamp: new Date()
+        }
+      }
+    });
+    logger.info(`[cancelOrder] B2B credit restored for order ${order.orderNumber}`);
+  }
+
+  // Roll back loyalty points
+  try {
+    const LoyaltyTransaction = require('../models/LoyaltyTransaction');
+    let pointsAdjustment = 0;
+    let adjustmentDescription = '';
+
+    if (order.loyaltyPointsEarned && order.loyaltyPointsEarned > 0) {
+      pointsAdjustment -= order.loyaltyPointsEarned;
+      adjustmentDescription += `Deducted ${order.loyaltyPointsEarned} pts earned from cancelled order`;
+    }
+
+    if (order.loyaltyPointsRedeemed && order.loyaltyPointsRedeemed > 0) {
+      pointsAdjustment += order.loyaltyPointsRedeemed;
+      if (adjustmentDescription) {
+adjustmentDescription += ' | ';
+}
+      adjustmentDescription += `Restored ${order.loyaltyPointsRedeemed} pts redeemed on cancelled order`;
+    }
+
+    if (pointsAdjustment !== 0 && orderUser) {
+      const updatedUser = await User.findByIdAndUpdate(
+        orderUser,
+        { $inc: { loyaltyPoints: pointsAdjustment } },
+        { new: true }
+      );
+
+      await LoyaltyTransaction.create({
+        user: orderUser,
+        type: 'adjust',
+        points: pointsAdjustment,
+        balance: updatedUser.loyaltyPoints,
+        description: adjustmentDescription,
+        order: order._id,
+        createdBy: performedByUserId
+      });
+    }
+  } catch (loyaltyErr) {
+    logger.error(`[cancelOrder] loyalty points rollback error (non-fatal): ${loyaltyErr.message}`);
+  }
+}
+
+// Generate a human-friendly branded order number: MC-YYMMDD-XXXXXX
+// Example: MC-260623-48K7Q9 (16 chars, readable, hard to enumerate — S4)
 async function generateOrderNumber() {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
@@ -21,12 +86,18 @@ async function generateOrderNumber() {
   const dd = String(now.getDate()).padStart(2, '0');
   const datePart = `${yy}${mm}${dd}`;
 
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I — unambiguous
   const maxAttempts = 10;
   for (let i = 0; i < maxAttempts; i++) {
-    const rand = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
+    let rand = '';
+    for (let c = 0; c < 6; c++) {
+rand += chars[Math.floor(Math.random() * chars.length)];
+}
     const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await Order.findOne({ orderNumber }).lean();
-    if (!exists) return orderNumber;
+    if (!exists) {
+return orderNumber;
+}
   }
   throw new Error('Failed to generate unique order number');
 }
@@ -60,13 +131,16 @@ exports.createOrder = async (req, res) => {
   const sessionOpt = session ? { session } : {};
 
   const abortAndError = async (res, msg, code = 400) => {
-    if (useTransaction && session) await session.abortTransaction();
+    if (useTransaction && session) {
+await session.abortTransaction();
+}
     return errorResponse(res, msg, null, code);
   };
 
 
   try {
-    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey, b2bDiscount: clientB2BDiscount, isB2BOrder } = req.body;
+    // eslint-disable-next-line no-unused-vars
+    const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey } = req.body;
 
     // ? Security Fix #4: Validate idempotency key to prevent double charging
     if (!idempotencyKey || typeof idempotencyKey !== 'string') {
@@ -97,39 +171,41 @@ exports.createOrder = async (req, res) => {
     let totalB2BSavings = 0; // Track total B2B savings across all items
     const orderItems = [];
 
-    // Validate all items and check stock atomically
-    for (const item of items) {
-      const product = await withSession(Product.findById(item.product));
-      if (!product) {
-        return abortAndError(res, `Product not found: ${item.product}`, 404);
-      }
-      const qty = item.qty || item.quantity || 1;
-      
-      // Use B2B price if provided from frontend
-      const itemPrice = item.price || product.price;
-      const isItemB2BPrice = item.isB2BPrice || false;
-      const itemB2BSavings = item.b2bSavings || 0;
+    // Load user early — needed for server-side B2B pricing
+    const user = await withSession(User.findById(req.user.id));
+    if (!user) {
+      return abortAndError(res, 'User not found', 404);
+    }
+
+    // ── SECURITY FIX (C1): server-side pricing ──────────────────────────────
+    // Client-supplied price / isB2BPrice / b2bSavings / b2bDiscount fields are
+    // NEVER trusted. All unit prices, size adjustments and B2B discounts are
+    // computed here from the database (see services/pricingService.js).
+    let quotedItems;
+    try {
+      quotedItems = await pricingService.quoteItems(items, user, session || undefined);
+    } catch (pricingErr) {
+      return abortAndError(res, pricingErr.message, 400);
+    }
+
+    // Validate stock atomically and build server-priced order items
+    for (const quoted of quotedItems) {
+      const product = quoted.product;
+      const qty = quoted.qty;
+      const itemPrice = quoted.unitPrice;
+      const isItemB2BPrice = quoted.isB2BPrice;
+      const itemB2BSavings = quoted.savings;
+      const sizeName = quoted.sizeName;
       totalB2BSavings += itemB2BSavings * qty;
       
       // Check if product has size variants
-      if (product.variants?.sizes && product.variants.sizes.length > 0) {
-        // Product has sizes - validate size selection
-        if (!item.selectedSize || !item.selectedSize.name) {
-          return abortAndError(res, `Size selection required for ${product.name}`, 400);
+      if (sizeName) {
+        // Size already validated by pricingService — re-check stock only
+        const sizeVariant = product.variants.sizes.find(s => s.name === sizeName);
+        if (!sizeVariant || sizeVariant.stock < qty) {
+          return abortAndError(res, `Insufficient stock for ${product.name} (Size: ${sizeName}). Available: ${sizeVariant ? sizeVariant.stock : 0}, Requested: ${qty}`, 400);
         }
         
-        // Find the selected size
-        const sizeVariant = product.variants.sizes.find(s => s.name === item.selectedSize.name);
-        if (!sizeVariant) {
-          return abortAndError(res, `Invalid size ${item.selectedSize.name} for ${product.name}`, 400);
-        }
-        
-        // Check size-specific stock
-        if (sizeVariant.stock < qty) {
-          return abortAndError(res, `Insufficient stock for ${product.name} (Size: ${item.selectedSize.name}). Available: ${sizeVariant.stock}, Requested: ${qty}`, 400);
-        }
-        
-        // Use price from frontend (already includes size adjustment and B2B discount)
         subtotal += itemPrice * qty;
         
         orderItems.push({ 
@@ -143,7 +219,7 @@ exports.createOrder = async (req, res) => {
           qty, 
           quantity: qty,
           variant: {
-            size: item.selectedSize.name
+            size: sizeName
           }
         });
       } else {
@@ -166,20 +242,15 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // B2B discount � use the discount calculated on frontend (already includes per-item B2B pricing)
-    // This section is kept for backwards compatibility with old orders that didn't calculate B2B on frontend
-    const user = await withSession(User.findById(req.user.id));
-    if (!user) {
-      return abortAndError(res, 'User not found', 404);
-    }
-    
-    // Use client-calculated B2B discount (more accurate as it's calculated with category discounts)
-    const b2bDiscount = clientB2BDiscount || totalB2BSavings || 0;
+    // B2B discount — computed server-side only (client B2B fields are ignored)
+    const b2bDiscount = totalB2BSavings;
+    const isB2BOrderFlag = pricingService.isEligibleForB2BPricing(user);
     const b2bDiscountPct = subtotal > 0 ? Math.round((b2bDiscount / (subtotal + b2bDiscount)) * 10000) / 100 : 0;
 
     // Promo code discount (Coupon validation and application)
     let couponDiscount = 0;
     let appliedCoupon = null;
+    let reservedCouponId = null;
     if (promoCode) {
       const Coupon = require('../models/Coupon');
       const coupon = await withSession(Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true }));
@@ -228,25 +299,50 @@ exports.createOrder = async (req, res) => {
             discountAmount: couponDiscount
           };
           
-          // Update coupon usage
-          coupon.usageCount += 1;
-          coupon.usedBy.push(req.user.id);
-          await coupon.save(sessionOpt);
+          // D2 — atomically reserve coupon usage (prevents exceeding usageLimit
+          // under concurrency); fails only if the limit is hit or user already used it
+          const couponReserved = await withSession(Coupon.updateOne(
+            {
+              _id: coupon._id,
+              ...(coupon.usageLimit ? { usageCount: { $lt: coupon.usageLimit } } : {}),
+              usedBy: { $ne: req.user.id }
+            },
+            { $inc: { usageCount: 1 }, $push: { usedBy: req.user.id } }
+          ));
+
+          if (couponReserved.matchedCount === 0) {
+            if (useTransaction && session) {
+await session.abortTransaction();
+}
+            return errorResponse(res, 'This coupon has reached its usage limit or was already used', null, 400);
+          }
+          reservedCouponId = coupon._id;
         } else {
-          if (useTransaction && session) await session.abortTransaction();
+          if (useTransaction && session) {
+await session.abortTransaction();
+}
           // Return specific error message
           let errorMessage = 'Invalid or expired coupon';
-          if (!isValid) errorMessage = 'This coupon has expired or is not yet valid';
-          else if (!hasUsageLeft) errorMessage = 'This coupon has reached its usage limit';
-          else if (!notUsedByUser) errorMessage = 'You have already used this coupon';
-          else if (!meetsMinimum) errorMessage = `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`;
-          else if (!roleMatches) errorMessage = 'This coupon is not applicable to your account type';
-          else if (!isFirstOrder) errorMessage = 'This coupon is only valid for first-time orders';
+          if (!isValid) {
+errorMessage = 'This coupon has expired or is not yet valid';
+} else if (!hasUsageLeft) {
+errorMessage = 'This coupon has reached its usage limit';
+} else if (!notUsedByUser) {
+errorMessage = 'You have already used this coupon';
+} else if (!meetsMinimum) {
+errorMessage = `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`;
+} else if (!roleMatches) {
+errorMessage = 'This coupon is not applicable to your account type';
+} else if (!isFirstOrder) {
+errorMessage = 'This coupon is only valid for first-time orders';
+}
           
           return errorResponse(res, errorMessage, null, 400);
         }
       } else {
-        if (useTransaction && session) await session.abortTransaction();
+        if (useTransaction && session) {
+await session.abortTransaction();
+}
         return errorResponse(res, 'Invalid coupon code', null, 404);
       }
     }
@@ -257,8 +353,11 @@ exports.createOrder = async (req, res) => {
     ]);
     const rawDistrict = (deliveryAddress?.district || '').trim().toLowerCase();
     let zone = 'outside_dhaka';
-    if (!rawDistrict || rawDistrict === 'dhaka') zone = 'inside_dhaka';
-    else if (SUBURBAN_DISTRICTS.has(rawDistrict)) zone = 'dhaka_suburban';
+    if (!rawDistrict || rawDistrict === 'dhaka') {
+zone = 'inside_dhaka';
+} else if (SUBURBAN_DISTRICTS.has(rawDistrict)) {
+zone = 'dhaka_suburban';
+}
     const deliveryFee = DELIVERY_FEES[zone] ?? DELIVERY_FEES.outside_dhaka;
 
     // Loyalty points redemption
@@ -266,14 +365,11 @@ exports.createOrder = async (req, res) => {
     let pointsRedeemed = 0;
     if (loyaltyPointsToRedeem && loyaltyPointsToRedeem > 0) {
       const loyaltyService = require('../services/loyaltyService');
-      const { MIN_REDEEM_POINTS, POINTS_TO_TAKA, MAX_REDEEM_PERCENT } = loyaltyService.config;
+      const { MIN_REDEEM_POINTS } = loyaltyService.config;
       const subtotalAfterDiscounts = subtotal - b2bDiscount - couponDiscount;
 
       if (loyaltyPointsToRedeem < MIN_REDEEM_POINTS) {
         return abortAndError(res, `Minimum ${MIN_REDEEM_POINTS} points required to redeem`, 400);
-      }
-      if ((user.loyaltyPoints || 0) < loyaltyPointsToRedeem) {
-        return abortAndError(res, 'Insufficient loyalty points', 400);
       }
       const maxPoints = loyaltyService.maxRedeemablePoints(subtotalAfterDiscounts);
       if (loyaltyPointsToRedeem > maxPoints) {
@@ -283,18 +379,29 @@ exports.createOrder = async (req, res) => {
       loyaltyDiscount = loyaltyService.pointsToTaka(loyaltyPointsToRedeem);
       pointsRedeemed = loyaltyPointsToRedeem;
 
-      // Deduct points from user within transaction
-      await User.findByIdAndUpdate(
-        req.user.id,
+      // D4 — atomic balance-guarded redemption: no check-then-spend race
+      const redemption = await User.findOneAndUpdate(
+        { _id: req.user.id, loyaltyPoints: { $gte: pointsRedeemed } },
         { $inc: { loyaltyPoints: -pointsRedeemed } },
         sessionOpt
       );
+      if (!redemption) {
+        return abortAndError(res, 'Insufficient loyalty points', 400);
+      }
     }
 
     // Total calculation without VAT
     const totalAmount = Math.round((subtotal - b2bDiscount - couponDiscount - loyaltyDiscount + deliveryFee) * 100) / 100;
 
     const orderNumber = await generateOrderNumber();
+
+    // D1 — pre-compute loyalty earnings so they persist on the order itself
+    // (cancelOrder later rolls back these exact values instead of guessing 0)
+    const loyaltyServiceForEarn = require('../services/loyaltyService');
+    const prevOrderCount = await withSession(Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } }));
+    const earnedPoints = loyaltyServiceForEarn.calculateEarnedPoints(totalAmount);
+    const firstOrderBonus = prevOrderCount === 0 ? loyaltyServiceForEarn.config.BONUS_FIRST_ORDER : 0;
+    const loyaltyPointsEarned = Math.round(earnedPoints + firstOrderBonus);
 
     const order = await Order.create([{
       orderNumber,
@@ -304,7 +411,7 @@ exports.createOrder = async (req, res) => {
       subtotal,
       b2bDiscount,
       b2bDiscountPct,
-      isB2BOrder: isB2BOrder || false,
+      isB2BOrder: isB2BOrderFlag,
       discount: b2bDiscount,
       promoDiscount: couponDiscount,
       couponDiscount,
@@ -320,6 +427,9 @@ exports.createOrder = async (req, res) => {
       promoCode: appliedCoupon?.code || null,
       notes,
       poNumber,
+      loyaltyPointsEarned,
+      loyaltyPointsRedeemed: pointsRedeemed,
+      loyaltyDiscount,
       statusTimestamps: { placed: new Date() },
       // ? Security Fix #4: Add metadata with idempotency key
       metadata: {
@@ -331,38 +441,83 @@ exports.createOrder = async (req, res) => {
       }
     }], sessionOpt);
 
+    // B7 — without a transaction, undo any partial writes on failure
+    const compensateFailedOrder = async () => {
+      try {
+        if (order?.[0]?._id) {
+          await Order.deleteOne({ _id: order[0]._id });
+        }
+      } catch (e) {
+        logger.error(`[createOrder] compensation: failed to delete order: ${e.message}`);
+      }
+
+      for (const done of decrementedItems) {
+        try {
+          if (done.isVariant) {
+            await Product.updateOne(
+              { _id: done.product, 'variants.sizes.name': done.size },
+              { $inc: { 'variants.sizes.$.stock': done.qty, stock: done.qty } }
+            );
+          } else {
+            await Product.updateOne({ _id: done.product }, { $inc: { stock: done.qty } });
+          }
+        } catch (e) {
+          logger.error(`[createOrder] compensation: failed to restore stock for ${done.product}: ${e.message}`);
+        }
+      }
+
+      if (reservedCouponId) {
+        try {
+          const CouponModel = require('../models/Coupon');
+          await CouponModel.updateOne(
+            { _id: reservedCouponId, usedBy: req.user.id },
+            { $inc: { usageCount: -1 }, $pull: { usedBy: req.user.id } }
+          );
+        } catch (e) {
+          logger.error(`[createOrder] compensation: failed to reverse coupon usage: ${e.message}`);
+        }
+      }
+
+      if (pointsRedeemed > 0) {
+        try {
+          await User.updateOne({ _id: req.user.id }, { $inc: { loyaltyPoints: pointsRedeemed } });
+        } catch (e) {
+          logger.error(`[createOrder] compensation: failed to restore loyalty points: ${e.message}`);
+        }
+      }
+    };
+
     // Decrement stock atomically within transaction
+    const decrementedItems = [];
     for (const item of orderItems) {
-      const product = await withSession(Product.findById(item.product));
-      
       // Check if this is a size variant order
       if (item.variant?.size) {
-        // Decrement size-specific stock
-        const sizeIndex = product.variants.sizes.findIndex(s => s.name === item.variant.size);
-        if (sizeIndex === -1) {
-          if (useTransaction && session) await session.abortTransaction();
-          return res.status(400).json({
-            success: false,
-            message: `Size variant not found during order processing. Please try again.`
-          });
-        }
-        
-        // Check if size has enough stock
-        if (product.variants.sizes[sizeIndex].stock < item.qty) {
-          if (useTransaction && session) await session.abortTransaction();
+        // D3 — atomic decrement: guard variant and main stock in a single
+        // conditional update (no read-modify-write race in the fallback path)
+        const result = await withSession(Product.findOneAndUpdate(
+          {
+            _id: item.product,
+            'variants.sizes.name': item.variant.size,
+            'variants.sizes.stock': { $gte: item.qty },
+            stock: { $gte: item.qty }
+          },
+          { $inc: { 'variants.sizes.$.stock': -item.qty, stock: -item.qty } },
+          { ...sessionOpt, new: true }
+        ));
+
+        if (!result) {
+          if (useTransaction && session) {
+            await session.abortTransaction();
+          } else {
+            await compensateFailedOrder();
+          }
           return res.status(400).json({
             success: false,
             message: `Stock changed during order processing for size ${item.variant.size}. Please try again.`
           });
         }
-        
-        // Decrement size-specific stock
-        product.variants.sizes[sizeIndex].stock -= item.qty;
-        
-        // Also decrement main product stock
-        product.stock = Math.max(0, product.stock - item.qty);
-        
-        await product.save(sessionOpt);
+
+        decrementedItems.push({ product: item.product, qty: item.qty, size: item.variant.size, isVariant: true });
       } else {
         // Regular product without sizes - use original logic
         const result = await Product.findOneAndUpdate(
@@ -372,46 +527,43 @@ exports.createOrder = async (req, res) => {
         );
         
         if (!result) {
-          if (useTransaction && session) await session.abortTransaction();
+          if (useTransaction && session) {
+            await session.abortTransaction();
+          } else {
+            await compensateFailedOrder();
+          }
           return res.status(400).json({
             success: false,
             message: `Stock changed during order processing. Please try again.`
           });
         }
+
+        decrementedItems.push({ product: item.product, qty: item.qty, size: null, isVariant: false });
       }
     }
 
-    if (useTransaction && session) await session.commitTransaction();
+    if (useTransaction && session) {
+await session.commitTransaction();
+}
 
     // Award loyalty points asynchronously (non-blocking)
     try {
       const loyaltyService = require('../services/loyaltyService');
       const LoyaltyTransaction = require('../models/LoyaltyTransaction');
-      const earnedPoints = loyaltyService.calculateEarnedPoints(totalAmount);
 
-      // Check if first order
-      const prevOrderCount = await Order.countDocuments({
-        user: req.user.id,
-        _id: { $ne: order[0]._id },
-        status: { $ne: 'cancelled' }
-      });
-      const isFirstOrder = prevOrderCount === 0;
-      const bonusPoints = isFirstOrder ? loyaltyService.config.BONUS_FIRST_ORDER : 0;
-      const totalPointsToAward = earnedPoints + bonusPoints;
-
-      if (totalPointsToAward > 0) {
+      if (loyaltyPointsEarned > 0) {
         const updatedUser = await User.findByIdAndUpdate(
           req.user.id,
-          { $inc: { loyaltyPoints: totalPointsToAward } },
+          { $inc: { loyaltyPoints: loyaltyPointsEarned } },
           { new: true }
         );
         await LoyaltyTransaction.create({
           user: req.user.id,
           type: 'earn',
-          points: totalPointsToAward,
+          points: loyaltyPointsEarned,
           balance: updatedUser.loyaltyPoints,
-          description: isFirstOrder
-            ? `Earned ${earnedPoints} pts for order ${orderNumber} + ${bonusPoints} first order bonus`
+          description: firstOrderBonus > 0
+            ? `Earned ${earnedPoints} pts for order ${orderNumber} + ${firstOrderBonus} first order bonus`
             : `Earned ${earnedPoints} pts for order ${orderNumber}`,
           order: order[0]._id,
           expiresAt: new Date(Date.now() + loyaltyService.config.POINTS_EXPIRY_DAYS * 24 * 60 * 60 * 1000)
@@ -481,17 +633,21 @@ exports.createOrder = async (req, res) => {
     // Send push notifications asynchronously (non-blocking)
     try {
       const userNotif = notifications.orderConfirmed(order[0]);
-      if (userNotif) Promise.resolve(userNotif).catch(err =>
+      if (userNotif) {
+Promise.resolve(userNotif).catch(err =>
         logger.error(`[createOrder] Push notification failed: ${err.message}`)
       );
+}
     } catch (notifErr) {
       logger.error(`[createOrder] Push notification error: ${notifErr.message}`);
     }
     try {
       const adminNotif = notifications.newOrderAdmin(order[0]);
-      if (adminNotif) Promise.resolve(adminNotif).catch(err =>
+      if (adminNotif) {
+Promise.resolve(adminNotif).catch(err =>
         logger.error(`[createOrder] Admin push notification failed: ${err.message}`)
       );
+}
     } catch (notifErr) {
       logger.error(`[createOrder] Admin push notification error: ${notifErr.message}`);
     }
@@ -514,7 +670,9 @@ exports.createOrder = async (req, res) => {
     return successResponse(res, { order: order[0] }, 'Order created successfully', 201);
   } catch (error) {
     if (useTransaction && session) {
-      try { await session.abortTransaction(); } catch { /* ignore */ }
+      try {
+ await session.abortTransaction(); 
+} catch { /* ignore */ }
     }
     
     // ? Security Fix #4: Handle duplicate key error gracefully
@@ -533,7 +691,9 @@ exports.createOrder = async (req, res) => {
     logger.error(`[createOrder] ${error.message}`);
     return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   } finally {
-    if (session) session.endSession();
+    if (session) {
+session.endSession();
+}
   }
 };
 
@@ -661,65 +821,96 @@ exports.updateOrderStatus = async (req, res) => {
       return errorResponse(res, `Cannot transition order from '${oldStatus}' to '${status}'`, null, 400);
     }
 
-    order.status = status;
-    // Update statusTimestamps using $set pattern
-    if (!order.statusTimestamps) order.statusTimestamps = {};
-    order.statusTimestamps = { ...order.statusTimestamps, [status]: new Date() };
-    order.markModified('statusTimestamps');
-
-    if (trackingNumber) {
-      order.trackingNumber = trackingNumber;
-      order.tracking = { ...order.tracking, trackingNumber, courier: courier || order.tracking?.courier };
-    }
-    if (status === 'delivered') {
-      order.deliveredAt = new Date();
-      
-      // -- Update Product soldCount when order is delivered --------------------
-      // Increment soldCount for all products in the order
-      const Product = require('../models/Product');
-      for (const item of order.items) {
-        try {
-          await Product.findByIdAndUpdate(
-            item.product,
-            { $inc: { soldCount: item.quantity || item.qty || 1 } },
-            { new: false, runValidators: false }
-          );
-        } catch (err) {
-          logger.error(`[updateOrderStatus] Failed to increment soldCount for product ${item.product}: ${err.message}`);
+    // B8 — 'cancelled' and 'delivered' perform side effects (stock restore,
+    // credit/loyalty rollback, soldCount) that must run exactly once, so their
+    // transitions are claimed atomically: only one concurrent request wins.
+    if (status === 'cancelled' || status === 'delivered') {
+      const claimed = await Order.updateOne(
+        { _id: order._id, status: oldStatus },
+        {
+          $set: {
+            status,
+            [`statusTimestamps.${status}`]: new Date(),
+            ...(status === 'delivered' ? { deliveredAt: new Date() } : {})
+          }
         }
+      );
+
+      if (claimed.matchedCount === 0) {
+        return errorResponse(res, `Order status was already changed by another request`, null, 409);
       }
-    }
 
-    await order.save();
+      order.status = status;
+      if (!order.statusTimestamps) {
+order.statusTimestamps = {};
+}
+      order.statusTimestamps[status] = new Date();
+      if (status === 'delivered') {
+        order.deliveredAt = new Date();
+      }
 
-    // -- Restore product stock when order is cancelled --------------------------
-    if (status === 'cancelled' && oldStatus !== 'cancelled') {
-      const Product = require('../models/Product');
-      const restorePromises = order.items.map(item => {
-        if (item.variant?.size) {
-          // Restore size-variant stock
-          return Product.findById(item.product).then(product => {
-            if (product && product.variants?.sizes) {
-              const sizeIndex = product.variants.sizes.findIndex(s => s.name === item.variant.size);
-              if (sizeIndex !== -1) {
-                product.variants.sizes[sizeIndex].stock += (item.qty || item.quantity || 1);
-                product.stock = (product.stock || 0) + (item.qty || item.quantity || 1);
-                return product.save();
-              }
-            }
-            // Fallback: restore main stock only
-            return Product.findByIdAndUpdate(
+      if (status === 'delivered') {
+        // -- Update Product soldCount when order is delivered --------------------
+        // Only the winning request increments soldCount
+        const Product = require('../models/Product');
+        for (const item of order.items) {
+          try {
+            await Product.findByIdAndUpdate(
               item.product,
-              { $inc: { stock: item.qty || item.quantity || 1 } }
+              { $inc: { soldCount: item.quantity || item.qty || 1 } },
+              { new: false, runValidators: false }
             );
-          });
+          } catch (err) {
+            logger.error(`[updateOrderStatus] Failed to increment soldCount for product ${item.product}: ${err.message}`);
+          }
         }
-        return Product.findByIdAndUpdate(
-          item.product,
-          { $inc: { stock: item.qty || item.quantity || 1 } }
-        );
-      });
-      await Promise.all(restorePromises);
+      } else {
+        // -- Restore product stock when order is cancelled ----------------------
+        const Product = require('../models/Product');
+        const restorePromises = order.items.map(item => {
+          if (item.variant?.size) {
+            // Restore size-variant stock
+            return Product.findById(item.product).then(product => {
+              if (product && product.variants?.sizes) {
+                const sizeIndex = product.variants.sizes.findIndex(s => s.name === item.variant.size);
+                if (sizeIndex !== -1) {
+                  product.variants.sizes[sizeIndex].stock += (item.qty || item.quantity || 1);
+                  product.stock = (product.stock || 0) + (item.qty || item.quantity || 1);
+                  return product.save();
+                }
+              }
+              // Fallback: restore main stock only
+              return Product.findByIdAndUpdate(
+                item.product,
+                { $inc: { stock: item.qty || item.quantity || 1 } }
+              );
+            });
+          }
+          return Product.findByIdAndUpdate(
+            item.product,
+            { $inc: { stock: item.qty || item.quantity || 1 } }
+          );
+        });
+        await Promise.all(restorePromises);
+
+        // B9 — admin cancellation must roll back B2B credit and loyalty points
+        await rollbackOrderFinances(order, req.user.id);
+      }
+    } else {
+      order.status = status;
+      // Update statusTimestamps using $set pattern
+      if (!order.statusTimestamps) {
+order.statusTimestamps = {};
+}
+      order.statusTimestamps = { ...order.statusTimestamps, [status]: new Date() };
+      order.markModified('statusTimestamps');
+
+      if (trackingNumber) {
+        order.trackingNumber = trackingNumber;
+        order.tracking = { ...order.tracking, trackingNumber, courier: courier || order.tracking?.courier };
+      }
+
+      await order.save();
     }
 
     // Send SMS notification for important status changes (non-blocking)
@@ -823,6 +1014,22 @@ exports.cancelOrder = async (req, res) => {
       return errorResponse(res, 'Cannot cancel order in current status', null, 400);
     }
 
+    // B8 — atomically claim the cancellation BEFORE any rollback, so a second
+    // concurrent request sees the new status and cannot double-restore stock
+    // or double-refund credit/loyalty
+    const claimed = await Order.updateOne(
+      { _id: order._id, status: { $in: ['placed', 'pending', 'confirmed'] } },
+      { $set: { status: 'cancelled', ['statusTimestamps.cancelled']: new Date() } }
+    );
+    if (claimed.matchedCount === 0) {
+      return errorResponse(res, 'Cannot cancel order in current status', null, 400);
+    }
+    order.status = 'cancelled';
+    if (!order.statusTimestamps) {
+order.statusTimestamps = {};
+}
+    order.statusTimestamps.cancelled = new Date();
+
     // Restore product stock (including size variants)
     await Promise.all(
       order.items.map(async (item) => {
@@ -841,62 +1048,8 @@ exports.cancelOrder = async (req, res) => {
       })
     );
 
-    // Roll back B2B credit if used
-    if (order.paymentMethod === 'b2b_credit' && order.paymentStatus === 'paid') {
-      await User.findByIdAndUpdate(order.user._id, {
-        $inc: { creditUsed: -(order.totalAmount || order.total || 0) }
-      });
-    }
-
-    // Roll back loyalty points
-    try {
-      const LoyaltyTransaction = require('../models/LoyaltyTransaction');
-      let pointsAdjustment = 0;
-      let adjustmentDescription = '';
-
-      // Deduct points that were earned from this order
-      if (order.loyaltyPointsEarned && order.loyaltyPointsEarned > 0) {
-        pointsAdjustment -= order.loyaltyPointsEarned;
-        adjustmentDescription += `Deducted ${order.loyaltyPointsEarned} pts earned from cancelled order`;
-      }
-
-      // Restore points that were redeemed for this order
-      if (order.loyaltyPointsRedeemed && order.loyaltyPointsRedeemed > 0) {
-        pointsAdjustment += order.loyaltyPointsRedeemed;
-        if (adjustmentDescription) adjustmentDescription += ' | ';
-        adjustmentDescription += `Restored ${order.loyaltyPointsRedeemed} pts redeemed on cancelled order`;
-      }
-
-      // Apply points adjustment if needed
-      if (pointsAdjustment !== 0) {
-        const updatedUser = await User.findByIdAndUpdate(
-          order.user._id,
-          { $inc: { loyaltyPoints: pointsAdjustment } },
-          { new: true }
-        );
-
-        // Create adjustment transaction
-        await LoyaltyTransaction.create({
-          user: order.user._id,
-          type: 'adjust',
-          points: pointsAdjustment,
-          balance: updatedUser.loyaltyPoints,
-          description: adjustmentDescription,
-          order: order._id,
-          createdBy: req.user.id
-        });
-
-        logger.info(`[cancelOrder] Loyalty points adjusted by ${pointsAdjustment} for order ${order.orderNumber}`);
-      }
-    } catch (loyaltyErr) {
-      logger.error(`[cancelOrder] loyalty points rollback error (non-fatal): ${loyaltyErr.message}`);
-    }
-
-    order.status = 'cancelled';
-    if (!order.statusTimestamps) order.statusTimestamps = {};
-    order.statusTimestamps = { ...order.statusTimestamps, cancelled: new Date() };
-    order.markModified('statusTimestamps');
-    await order.save();
+    // Roll back B2B credit and loyalty points
+    await rollbackOrderFinances(order, req.user.id);
 
     // Log order cancellation activity
     logActivityAsync({
@@ -1019,13 +1172,17 @@ exports.sendNotification = async (req, res) => {
       .populate('user', 'name email phone')
       .maxTimeMS(5000)
       .lean();
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
 
     // Get mutable order for updating (without .lean())
     const mutableOrder = await Order.findById(id);
     
     // Record that the admin triggered this notification
-    if (!mutableOrder.notifications) mutableOrder.notifications = {};
+    if (!mutableOrder.notifications) {
+mutableOrder.notifications = {};
+}
     mutableOrder.notifications[type] = new Date();
     mutableOrder.markModified('notifications');
     await mutableOrder.save();

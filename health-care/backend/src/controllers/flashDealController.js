@@ -9,8 +9,12 @@ exports.getAllFlashDeals = async (req, res) => {
     const { status, isActive } = req.query;
     const filter = {};
     
-    if (status) filter.status = status;
-    if (isActive !== undefined) filter.isActive = isActive === 'true';
+    if (status) {
+filter.status = status;
+}
+    if (isActive !== undefined) {
+filter.isActive = isActive === 'true';
+}
     
     const flashDeals = await FlashDeal.find(filter)
       .populate('products.product', 'name brand images price stock')
@@ -33,7 +37,9 @@ exports.getActiveFlashDeals = async (req, res) => {
     // Filter out products that are out of stock
     const activeDeals = flashDeals.map(deal => {
       const filteredProducts = deal.products.filter(item => {
-        if (!item.stockLimit) return true; // unlimited stock
+        if (!item.stockLimit) {
+return true;
+} // unlimited stock
         return item.soldCount < item.stockLimit;
       });
       
@@ -150,15 +156,29 @@ exports.updateFlashDeal = async (req, res) => {
     }
     
     // Update basic fields
-    if (title !== undefined) flashDeal.title = title;
-    if (description !== undefined) flashDeal.description = description;
-    if (badge !== undefined) flashDeal.badge = badge;
-    if (displayOrder !== undefined) flashDeal.displayOrder = displayOrder;
-    if (isActive !== undefined) flashDeal.isActive = isActive;
+    if (title !== undefined) {
+flashDeal.title = title;
+}
+    if (description !== undefined) {
+flashDeal.description = description;
+}
+    if (badge !== undefined) {
+flashDeal.badge = badge;
+}
+    if (displayOrder !== undefined) {
+flashDeal.displayOrder = displayOrder;
+}
+    if (isActive !== undefined) {
+flashDeal.isActive = isActive;
+}
     
     // Update time range if provided
-    if (startTime) flashDeal.startTime = startTime;
-    if (endTime) flashDeal.endTime = endTime;
+    if (startTime) {
+flashDeal.startTime = startTime;
+}
+    if (endTime) {
+flashDeal.endTime = endTime;
+}
     
     // Validate time range
     if (flashDeal.startTime >= flashDeal.endTime) {

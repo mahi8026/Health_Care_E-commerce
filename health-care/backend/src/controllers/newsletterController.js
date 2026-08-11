@@ -23,8 +23,12 @@ exports.subscribe = async (req, res) => {
         subscriber.isSubscribed = true;
         subscriber.subscribedAt = new Date();
         subscriber.unsubscribedAt = undefined;
-        if (name) subscriber.name = name;
-        if (source) subscriber.source = source;
+        if (name) {
+subscriber.name = name;
+}
+        if (source) {
+subscriber.source = source;
+}
         await subscriber.save();
 
         // Send welcome email

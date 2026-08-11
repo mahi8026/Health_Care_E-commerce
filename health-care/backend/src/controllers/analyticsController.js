@@ -37,6 +37,12 @@ exports.getSalesAnalytics = async (req, res) => {
       return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
+    // B3 — a date-only endDate means midnight; extend to end-of-day so the
+    // entire last day is included in every analytics range
+    if (typeof endDate === 'string' && endDate.length <= 10) {
+      end.setHours(23, 59, 59, 999);
+    }
+
     // Check cache first
     const cacheKey = cacheService.generateKey('sales', { startDate, endDate, groupBy });
     const cachedData = cacheService.get(cacheKey);
@@ -185,6 +191,12 @@ exports.getOrderAnalytics = async (req, res) => {
 
     if (start > end) {
       return errorResponse(res, 'Start date must be before end date', null, 400);
+    }
+
+    // B3 — a date-only endDate means midnight; extend to end-of-day so the
+    // entire last day is included in every analytics range
+    if (typeof endDate === 'string' && endDate.length <= 10) {
+      end.setHours(23, 59, 59, 999);
     }
 
     // Check cache first
@@ -365,6 +377,12 @@ exports.getCustomerAnalytics = async (req, res) => {
 
     if (start > end) {
       return errorResponse(res, 'Start date must be before end date', null, 400);
+    }
+
+    // B3 — a date-only endDate means midnight; extend to end-of-day so the
+    // entire last day is included in every analytics range
+    if (typeof endDate === 'string' && endDate.length <= 10) {
+      end.setHours(23, 59, 59, 999);
     }
 
     // Check cache first
@@ -621,6 +639,12 @@ exports.getProductAnalytics = async (req, res) => {
       return errorResponse(res, 'Start date must be before end date', null, 400);
     }
 
+    // B3 — a date-only endDate means midnight; extend to end-of-day so the
+    // entire last day is included in every analytics range
+    if (typeof endDate === 'string' && endDate.length <= 10) {
+      end.setHours(23, 59, 59, 999);
+    }
+
     // Validate limit parameter
     const limitNum = parseInt(limit);
     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
@@ -833,9 +857,10 @@ exports.getProductAnalytics = async (req, res) => {
     const recentlySoldProductIds = new Set(recentSales.map(item => item._id.toString()));
     
     // Get all active products
+    // P4 — no `.limit(100)`: every product after the first 100 (natural order)
+    // was never checked and silently missed from the slow-moving report
     const allActiveProducts = await Product.find({ isActive: true })
       .select('_id name')
-      .limit(100)
       .lean();
 
     // Filter products with no recent sales
@@ -891,6 +916,12 @@ exports.getPaymentAnalytics = async (req, res) => {
 
     if (start > end) {
       return errorResponse(res, 'Start date must be before end date', null, 400);
+    }
+
+    // B3 — a date-only endDate means midnight; extend to end-of-day so the
+    // entire last day is included in every analytics range
+    if (typeof endDate === 'string' && endDate.length <= 10) {
+      end.setHours(23, 59, 59, 999);
     }
 
     // Check cache first
@@ -1108,6 +1139,12 @@ exports.getTrafficAnalytics = async (req, res) => {
 
     if (start > end) {
       return errorResponse(res, 'Start date must be before end date', null, 400);
+    }
+
+    // B3 — a date-only endDate means midnight; extend to end-of-day so the
+    // entire last day is included in every analytics range
+    if (typeof endDate === 'string' && endDate.length <= 10) {
+      end.setHours(23, 59, 59, 999);
     }
 
     // Check cache first

@@ -2,7 +2,6 @@
 const Category = require('../models/Category');
 const Manufacturer = require('../models/Manufacturer');
 const mongoose = require('mongoose');
-const CacheService = require('../services/cacheService');
 const { invalidateProductCache, invalidateProductListCache } = require('../services/cacheInvalidation');
 const redisCache = require('../services/redisCache');
 const logger = require('../utils/logger');
@@ -10,11 +9,95 @@ const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const { PAGINATION } = require('../config/constants');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 
-const cacheService = new CacheService();
-
 // Helper: escape special regex characters
 function escapeRegex(str) {
   return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+// ── B4: composite keyset cursor pagination ────────────────────────────────────
+// The cursor must encode BOTH the primary sort key value and the _id, because
+// the pipeline sorts by `{ [sortKey]: dir, _id: 1 }`. Filtering by _id alone
+// (the old code) skips/duplicates pages on any non-_id sort.
+
+const SORT_CONFIGS = {
+  'price-low': { key: 'price', dir: 1 },
+  price_asc: { key: 'price', dir: 1 },
+  'price-high': { key: 'price', dir: -1 },
+  price_desc: { key: 'price', dir: -1 },
+  name: { key: 'name', dir: 1 },
+  name_asc: { key: 'name', dir: 1 },
+  name_desc: { key: 'name', dir: -1 },
+  newest: { key: 'createdAt', dir: -1 },
+  rating: { key: 'rating.average', dir: -1 },
+  popular: { key: 'soldCount', dir: -1 },
+};
+const DEFAULT_SORT = { key: 'createdAt', dir: -1 };
+
+function encodeCursor(doc, sortKey) {
+  const v = doc[sortKey] ?? null;
+  const payload = JSON.stringify({ id: doc._id.toString(), v });
+  return Buffer.from(payload).toString('base64url');
+}
+
+function decodeCursor(cursorStr) {
+  if (typeof cursorStr !== 'string' || !cursorStr) {
+return null;
+}
+  let parsed;
+  try {
+    parsed = JSON.parse(Buffer.from(cursorStr, 'base64url').toString('utf8'));
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== 'object' || !mongoose.isValidObjectId(parsed.id)) {
+return null;
+}
+  if (parsed.v !== null && parsed.v !== undefined && typeof parsed.v !== 'string' && typeof parsed.v !== 'number' && typeof parsed.v !== 'boolean') {
+return null;
+}
+  return { id: new mongoose.Types.ObjectId(parsed.id), v: parsed.v ?? null };
+}
+
+// Keyset filter for sort `{ [key]: dir, _id: 1 }` past the cursor doc.
+// Handles null/missing values (nulls sort first ascending, last descending).
+function applyCursorFilter(matchConditions, cursorState, sortKey, dir) {
+  const { id, v } = cursorState;
+  const byKey = {};
+  byKey[sortKey] = v;
+  const keyGt = {};
+  keyGt[sortKey] = { $gt: v };
+  const keyLt = {};
+  keyLt[sortKey] = { $lt: v };
+  const keyNull = {};
+  keyNull[sortKey] = null;
+  const keyNonNull = {};
+  keyNonNull[sortKey] = { $ne: null };
+
+  if (dir === 1) {
+    if (v === null) {
+      matchConditions.$or = [
+        { ...keyNull, _id: { $gt: id } }, // rest of the null group
+        keyNonNull // everything after the null group (ascending: nulls first)
+      ];
+    } else {
+      matchConditions.$or = [
+        keyGt,
+        { ...byKey, _id: { $gt: id } } // ties broken by _id ascending
+      ];
+    }
+  } else {
+    if (v === null) {
+      matchConditions.$or = [
+        { ...keyNull, _id: { $gt: id } } // rest of the null group (nulls sort last descending)
+      ];
+    } else {
+      matchConditions.$or = [
+        keyLt,
+        { ...byKey, _id: { $gt: id } },
+        keyNull // nulls come after every non-null value in descending order
+      ];
+    }
+  }
 }
 
 /**
@@ -56,7 +139,9 @@ exports.getProducts = async (req, res) => {
         .populate('category', 'name slug description')
         .populate('brand', 'name slug logo country website')
         .lean();
-      if (!product) return errorResponse(res, 'Product not found', null, 404);
+      if (!product) {
+return errorResponse(res, 'Product not found', null, 404);
+}
       return successResponse(res, product);
     }
 
@@ -185,9 +270,20 @@ exports.getProducts = async (req, res) => {
       ];
     }
 
-    // Cursor-based pagination: if cursor is provided, add _id filter
-    if (cursor && mongoose.isValidObjectId(cursor)) {
-      matchConditions._id = { $gt: new mongoose.Types.ObjectId(cursor) };
+    // ── Sort config (single source of truth for both the $sort stage and the
+    //    keyset cursor filter) ────────────────────────────────────────────────
+    const { key: sortKey, dir: sortDir } = SORT_CONFIGS[sortBy] || DEFAULT_SORT;
+
+    // Cursor-based pagination: decode the composite cursor and add its keyset
+    // filter (B4 — old code filtered by _id only, which was wrong for every
+    // sort except _id ascending)
+    let cursorState = null;
+    if (cursor) {
+      cursorState = decodeCursor(cursor);
+      if (!cursorState) {
+        return errorResponse(res, 'Invalid cursor', null, 400);
+      }
+      applyCursorFilter(matchConditions, cursorState, sortKey, sortDir);
     }
 
     // Add match stage
@@ -227,18 +323,7 @@ exports.getProducts = async (req, res) => {
     });
 
     // ── Sort stage ───────────────────────────────────────────────────────────
-    let sortStage = {};
-    if (sortBy === 'price-low' || sortBy === 'price_asc') sortStage.price = 1;
-    else if (sortBy === 'price-high' || sortBy === 'price_desc') sortStage.price = -1;
-    else if (sortBy === 'name' || sortBy === 'name_asc') sortStage.name = 1;
-    else if (sortBy === 'name_desc') sortStage.name = -1;
-    else if (sortBy === 'newest') sortStage.createdAt = -1;
-    else if (sortBy === 'rating') sortStage['rating.average'] = -1;
-    else if (sortBy === 'popular') sortStage.soldCount = -1; // Sort by sales count (highest first)
-    else sortStage.createdAt = -1;
-
-    // Always add _id as secondary sort for consistent cursor pagination
-    sortStage._id = 1;
+    const sortStage = { [sortKey]: sortDir, _id: 1 };
     pipeline.push({ $sort: sortStage });
 
     // ── Project stage: Select only needed fields ─────────────────────────────
@@ -328,9 +413,10 @@ exports.getProducts = async (req, res) => {
       products.pop(); // Remove the extra item
     }
 
-    // Get cursor for next page (last item's _id)
-    const nextCursor = hasNext && products.length > 0 
-      ? products[products.length - 1]._id.toString() 
+    // Get composite cursor for next page (sort key value + _id, so the keyset
+    // filter on the next request is exact regardless of the chosen sort)
+    const nextCursor = hasNext && products.length > 0
+      ? encodeCursor(products[products.length - 1], sortKey)
       : null;
 
     logger.info('[getProducts] Found', products.length, 'products out of', total, 'total');
@@ -442,10 +528,14 @@ const CATEGORY_CODES = {
  */
 function getCategoryCode(categoryName = '') {
   const lower = categoryName.toLowerCase().trim();
-  if (CATEGORY_CODES[lower]) return CATEGORY_CODES[lower];
+  if (CATEGORY_CODES[lower]) {
+return CATEGORY_CODES[lower];
+}
   // Try partial match
   for (const [key, code] of Object.entries(CATEGORY_CODES)) {
-    if (lower.includes(key) || key.includes(lower)) return code;
+    if (lower.includes(key) || key.includes(lower)) {
+return code;
+}
   }
   // Fallback: first 2 letters
   return categoryName.replace(/[^A-Za-z]/g, '').substring(0, 2).toUpperCase() || 'XX';
@@ -487,8 +577,12 @@ exports.generateSku = async (req, res) => {
       Manufacturer.findById(brandId).select('name').lean(),
     ]);
 
-    if (!category) return errorResponse(res, 'Category not found', null, 404);
-    if (!brand)    return errorResponse(res, 'Brand not found', null, 404);
+    if (!category) {
+return errorResponse(res, 'Category not found', null, 404);
+}
+    if (!brand)    {
+return errorResponse(res, 'Brand not found', null, 404);
+}
 
     const catCode   = getCategoryCode(category.name);
     const brandCode = getBrandCode(brand.name);
@@ -503,7 +597,9 @@ exports.generateSku = async (req, res) => {
     let maxSeq = 0;
     for (const p of existing) {
       const seq = parseInt(p.sku.replace(prefix, ''), 10);
-      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+      if (!isNaN(seq) && seq > maxSeq) {
+maxSeq = seq;
+}
     }
 
     const nextSeq = maxSeq + 1;
@@ -530,17 +626,23 @@ exports.createProduct = async (req, res) => {
   try {
     if (req.body.price !== undefined) {
       const price = Number(req.body.price);
-      if (isNaN(price)) return errorResponse(res, 'Invalid price value', null, 400);
+      if (isNaN(price)) {
+return errorResponse(res, 'Invalid price value', null, 400);
+}
       req.body.price = price;
     }
     if (req.body.oldPrice !== undefined) {
       const oldPrice = Number(req.body.oldPrice);
-      if (isNaN(oldPrice)) return errorResponse(res, 'Invalid oldPrice value', null, 400);
+      if (isNaN(oldPrice)) {
+return errorResponse(res, 'Invalid oldPrice value', null, 400);
+}
       req.body.oldPrice = oldPrice;
     }
     if (req.body.stock !== undefined) {
       const stock = Number(req.body.stock);
-      if (isNaN(stock)) return errorResponse(res, 'Invalid stock value', null, 400);
+      if (isNaN(stock)) {
+return errorResponse(res, 'Invalid stock value', null, 400);
+}
       req.body.stock = stock;
     }
 
@@ -622,17 +724,23 @@ exports.updateProduct = async (req, res) => {
   try {
     if (req.body.price !== undefined) {
       const price = Number(req.body.price);
-      if (isNaN(price)) return errorResponse(res, 'Invalid price value', null, 400);
+      if (isNaN(price)) {
+return errorResponse(res, 'Invalid price value', null, 400);
+}
       req.body.price = price;
     }
     if (req.body.oldPrice !== undefined) {
       const oldPrice = Number(req.body.oldPrice);
-      if (isNaN(oldPrice)) return errorResponse(res, 'Invalid oldPrice value', null, 400);
+      if (isNaN(oldPrice)) {
+return errorResponse(res, 'Invalid oldPrice value', null, 400);
+}
       req.body.oldPrice = oldPrice;
     }
     if (req.body.stock !== undefined) {
       const stock = Number(req.body.stock);
-      if (isNaN(stock)) return errorResponse(res, 'Invalid stock value', null, 400);
+      if (isNaN(stock)) {
+return errorResponse(res, 'Invalid stock value', null, 400);
+}
       req.body.stock = stock;
     }
 
@@ -659,8 +767,12 @@ exports.updateProduct = async (req, res) => {
     const fieldsToTrack = ['name', 'price', 'stock', 'isActive', 'category', 'images'];
     fieldsToTrack.forEach(field => {
       if (req.body[field] !== undefined && String(oldProduct[field]) !== String(req.body[field])) {
-        if (!changes.before) changes.before = {};
-        if (!changes.after) changes.after = {};
+        if (!changes.before) {
+changes.before = {};
+}
+        if (!changes.after) {
+changes.after = {};
+}
         changes.before[field] = oldProduct[field];
         changes.after[field] = req.body[field];
       }

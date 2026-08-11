@@ -27,11 +27,13 @@ const cartSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    sparse: true // Allow null for guest carts (though we won't use them)
+    sparse: true, // Allow null for guest carts (though we won't use them)
+    index: true   // P6 — sparse does NOT create an index; getCart by user needs one
   },
   sessionId: {
     type: String,
-    sparse: true // For guest users (future use)
+    sparse: true, // For guest users (future use)
+    index: true
   },
   items: [cartItemSchema],
   subtotal: {
@@ -67,8 +69,7 @@ const cartSchema = new mongoose.Schema({
 });
 
 // Indexes for efficient queries
-// Note: user and sessionId already have sparse: true which creates indexes
-// Only add compound indexes here
+// user and sessionId are indexed by `index: true` (P6); compound indexes below
 cartSchema.index({ isAbandoned: 1, lastActivity: 1 });
 cartSchema.index({ isAbandoned: 1, recoveryEmailSent: 1 });
 

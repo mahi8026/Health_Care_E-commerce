@@ -16,7 +16,9 @@ const cloudinary = require('cloudinary').v2;
  * Parse price string to number (handles ৳, BDT, commas)
  */
 function parsePrice(priceStr) {
-  if (!priceStr) return null;
+  if (!priceStr) {
+return null;
+}
   
   // Remove currency symbols and commas
   const cleaned = priceStr
@@ -31,7 +33,7 @@ function parsePrice(priceStr) {
 /**
  * Download image and upload to Cloudinary
  */
-async function uploadImageToCloudinary(imageUrl, productName) {
+async function uploadImageToCloudinary(imageUrl, _productName) {
   try {
     // Handle relative URLs
     if (imageUrl.startsWith('//')) {
@@ -62,7 +64,9 @@ async function uploadImageToCloudinary(imageUrl, productName) {
  * Find or create manufacturer by name
  */
 async function findOrCreateManufacturer(brandName) {
-  if (!brandName) return null;
+  if (!brandName) {
+return null;
+}
 
   const slug = slugify(brandName, { lower: true, strict: true });
 
@@ -87,7 +91,9 @@ async function findOrCreateManufacturer(brandName) {
  * Find or create category by name
  */
 async function findOrCreateCategory(categoryName) {
-  if (!categoryName) return null;
+  if (!categoryName) {
+return null;
+}
 
   const slug = slugify(categoryName, { lower: true, strict: true });
 

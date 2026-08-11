@@ -67,13 +67,17 @@ const sendToUser = async (userId, payload) => {
     user: userId,
     isActive: true,
   });
-  if (!subscriptions.length) return 0;
+  if (!subscriptions.length) {
+return 0;
+}
   
   let sent = 0;
   await Promise.all(
     subscriptions.map(async (sub) => {
       const success = await sendToSubscription(sub, payload);
-      if (success) sent++;
+      if (success) {
+sent++;
+}
     })
   );
   logger.info(`[Push] Sent to user ${userId}: ${sent}/${subscriptions.length} devices`);
@@ -84,7 +88,9 @@ const sendToUser = async (userId, payload) => {
 const sendToAll = async (payload, filter = {}) => {
   const query = { isActive: true, ...filter };
   const subscriptions = await PushSubscription.find(query);
-  if (!subscriptions.length) return 0;
+  if (!subscriptions.length) {
+return 0;
+}
   
   let sent = 0;
   // Send in batches of 50 to avoid rate limits
@@ -119,7 +125,9 @@ const sendToAdmins = async (payload) => {
   await Promise.all(
     subscriptions.map(async (sub) => {
       const success = await sendToSubscription(sub, payload);
-      if (success) sent++;
+      if (success) {
+sent++;
+}
     })
   );
   return sent;

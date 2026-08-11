@@ -21,9 +21,15 @@ const FOOTER_RESERVE = 52;
  */
 function textAt(doc, str, x, y, opts = {}) {
   const { fillColor, font, fontSize, ...textOpts } = opts;
-  if (font) doc.font(font);
-  if (fontSize != null) doc.fontSize(fontSize);
-  if (fillColor) doc.fillColor(fillColor);
+  if (font) {
+doc.font(font);
+}
+  if (fontSize != null) {
+doc.fontSize(fontSize);
+}
+  if (fillColor) {
+doc.fillColor(fillColor);
+}
   doc.text(String(str ?? ''), x, y, { lineBreak: false, ...textOpts });
 }
 
@@ -64,23 +70,37 @@ function itemLine(item) {
 }
 
 function resolveItemName(item) {
-  if (item.name) return item.name;
-  if (item.product && typeof item.product === 'object') return item.product.name || 'Product';
+  if (item.name) {
+return item.name;
+}
+  if (item.product && typeof item.product === 'object') {
+return item.product.name || 'Product';
+}
   return 'Product';
 }
 
 function resolveItemSku(item) {
-  if (item.sku) return item.sku;
-  if (item.product && typeof item.product === 'object') return item.product.sku || '—';
+  if (item.sku) {
+return item.sku;
+}
+  if (item.product && typeof item.product === 'object') {
+return item.product.sku || '—';
+}
   return '—';
 }
 
 function resolveBrand(item) {
   const brand = item.brand || item.product?.brand;
-  if (!brand) return null;
-  if (typeof brand === 'object') return brand.name || null;
+  if (!brand) {
+return null;
+}
+  if (typeof brand === 'object') {
+return brand.name || null;
+}
   const s = String(brand).trim();
-  if (/^[a-f0-9]{24}$/i.test(s)) return null;
+  if (/^[a-f0-9]{24}$/i.test(s)) {
+return null;
+}
   return s;
 }
 
@@ -88,18 +108,26 @@ function resolveBrand(item) {
 function formatShipLines(addr, user) {
   const lines = [];
   const name = addr.name || user?.name;
-  if (name) lines.push(name);
+  if (name) {
+lines.push(name);
+}
 
-  if (addr.street) lines.push(addr.street);
+  if (addr.street) {
+lines.push(addr.street);
+}
 
   const cityParts = [
     addr.thana || addr.area,
     addr.district || addr.city,
     addr.postcode || addr.postalCode,
   ].filter(Boolean);
-  if (cityParts.length) lines.push(cityParts.join(', '));
+  if (cityParts.length) {
+lines.push(cityParts.join(', '));
+}
 
-  if (addr.phone) lines.push(`Tel: ${addr.phone}`);
+  if (addr.phone) {
+lines.push(`Tel: ${addr.phone}`);
+}
 
   if (lines.length === 0) {
     lines.push(user?.name || 'Customer');
@@ -322,7 +350,9 @@ function generateInvoice(order, user) {
         y = drawTableHeader(y);
       }
 
-      if (idx % 2 === 1) doc.rect(MARGIN, y, CONTENT_W, rowH).fill(ROW_ALT);
+      if (idx % 2 === 1) {
+doc.rect(MARGIN, y, CONTENT_W, rowH).fill(ROW_ALT);
+}
       doc.strokeColor(BORDER).lineWidth(0.5);
       doc.moveTo(MARGIN, y + rowH).lineTo(MARGIN + CONTENT_W, y + rowH).stroke();
 
@@ -411,8 +441,12 @@ function generateInvoice(order, user) {
     };
 
     addTotalRow('Subtotal', formatBdt(subtotal));
-    if (b2bDiscount > 0) addTotalRow('B2B discount', `− ${formatBdt(b2bDiscount)}`, true);
-    if (couponDiscount > 0) addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
+    if (b2bDiscount > 0) {
+addTotalRow('B2B discount', `− ${formatBdt(b2bDiscount)}`, true);
+}
+    if (couponDiscount > 0) {
+addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
+}
     addTotalRow('Delivery', formatBdt(deliveryFee));
 
     y += 2;

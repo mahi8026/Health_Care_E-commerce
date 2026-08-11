@@ -1,5 +1,4 @@
 ﻿require('dotenv').config();
-const mongoose = require('mongoose');
 const connectDB = require('../config/database');
 const Product = require('../models/Product');
 const User = require('../models/User');
@@ -23,7 +22,7 @@ const seedDatabase = async () => {
     logger.info('Creating users...');
     
     // 3 Admin users
-    const admin1 = await User.create({
+    await User.create({
       name: 'Shahid Admin',
       email: 'admin@MediportBD.com',
       password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123!',
@@ -35,7 +34,7 @@ const seedDatabase = async () => {
       isVerified: true
     });
 
-    const admin2 = await User.create({
+    await User.create({
       name: 'Fatima Manager',
       email: 'manager@MediportBD.com',
       password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123!',
@@ -47,7 +46,7 @@ const seedDatabase = async () => {
       isVerified: true
     });
 
-    const admin3 = await User.create({
+    await User.create({
       name: 'Karim Support',
       email: 'karim.support@MediportBD.com',
       password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123!',

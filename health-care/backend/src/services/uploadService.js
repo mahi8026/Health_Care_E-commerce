@@ -29,7 +29,9 @@ const fileFilter = (_req, file, cb) => {
   ];
   const mime = mimeAllowed.includes(file.mimetype);
   
-  if (ext && mime) return cb(null, true);
+  if (ext && mime) {
+return cb(null, true);
+}
   cb(new Error('Only JPEG, PNG, and WebP images are allowed'));
 };
 

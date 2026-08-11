@@ -21,7 +21,7 @@ const { Sentry } = require('../config/sentry');
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   // ── 1. Determine HTTP status code ─────────────────────────────────────────
   // Normalise common error-type overrides first, then fall back to the status
   // already set on the error object, and finally default to 500.

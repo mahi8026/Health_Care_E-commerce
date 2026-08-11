@@ -79,12 +79,25 @@ const quoteSchema = new mongoose.Schema({
 });
 
 // Auto-generate quoteId before saving
+// D6 — collision-safe: quoteId has a unique index, so check-then-generate with
+// retries (a bare random draw could 500 on E11000 under concurrency)
 quoteSchema.pre('save', async function (next) {
   if (!this.quoteId) {
     const year = new Date().getFullYear();
-    const random = Math.floor(1000 + Math.random() * 9000);
-    const seq = Math.floor(100 + Math.random() * 900);
-    this.quoteId = `QT-${year}-${random}-${seq}`;
+    const maxAttempts = 5;
+    for (let i = 0; i < maxAttempts; i++) {
+      const random = Math.floor(1000 + Math.random() * 9000);
+      const seq = Math.floor(100 + Math.random() * 900);
+      const candidate = `QT-${year}-${random}-${seq}`;
+      const exists = await this.constructor.findOne({ quoteId: candidate }).select('_id').lean();
+      if (!exists) {
+        this.quoteId = candidate;
+        break;
+      }
+    }
+    if (!this.quoteId) {
+      throw new Error('Failed to generate a unique quote ID');
+    }
   }
   next();
 });

@@ -17,8 +17,12 @@ router.get('/:orderId', protect, async (req, res) => {
     if (order?.items) {
       order.items = order.items.map((item) => {
         let brand = item.brand || item.product?.brand;
-        if (brand && typeof brand === 'object') brand = brand.name;
-        if (brand && /^[a-f0-9]{24}$/i.test(String(brand))) brand = null;
+        if (brand && typeof brand === 'object') {
+brand = brand.name;
+}
+        if (brand && /^[a-f0-9]{24}$/i.test(String(brand))) {
+brand = null;
+}
         return {
           ...item,
           name: item.name || item.product?.name,

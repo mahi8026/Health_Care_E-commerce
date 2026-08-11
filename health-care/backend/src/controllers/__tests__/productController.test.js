@@ -134,7 +134,9 @@ describe('getProducts', () => {
   });
 
   it('returns 500 on database error', async () => {
-    Product.find.mockImplementation(() => { throw new Error('DB error'); });
+    Product.find.mockImplementation(() => {
+ throw new Error('DB error'); 
+});
     const req = mockReq({ query: {} });
     const res = mockRes();
     await getProducts(req, res);

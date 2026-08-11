@@ -52,7 +52,7 @@ function addIssue(product, severity, field, message) {
 /**
  * Validate required fields
  */
-function validateRequiredFields(product, index) {
+function validateRequiredFields(product, _index) {
   const requiredFields = ['name', 'description', 'category', 'price', 'stock'];
   
   requiredFields.forEach(field => {
@@ -71,7 +71,9 @@ function validateRequiredFields(product, index) {
  * Validate product name
  */
 function validateName(product) {
-  if (!product.name) return;
+  if (!product.name) {
+return;
+}
   
   // Check minimum length
   if (product.name.length < 10) {
@@ -108,7 +110,9 @@ function validateName(product) {
  * Validate description
  */
 function validateDescription(product) {
-  if (!product.description) return;
+  if (!product.description) {
+return;
+}
   
   // Check minimum length (SEO best practice)
   if (product.description.length < 200) {
@@ -135,7 +139,9 @@ function validateDescription(product) {
  * Validate category
  */
 async function validateCategory(product, validCategories) {
-  if (!product.category) return;
+  if (!product.category) {
+return;
+}
   
   const categoryExists = validCategories.some(
     cat => cat.name.toLowerCase() === product.category.toLowerCase()
@@ -155,7 +161,9 @@ async function validateCategory(product, validCategories) {
  * Validate price
  */
 function validatePrice(product) {
-  if (product.price === undefined || product.price === null) return;
+  if (product.price === undefined || product.price === null) {
+return;
+}
   
   // Check if price is a number
   if (typeof product.price !== 'number' || isNaN(product.price)) {
@@ -221,7 +229,9 @@ function validatePrice(product) {
  * Validate stock
  */
 function validateStock(product) {
-  if (product.stock === undefined || product.stock === null) return;
+  if (product.stock === undefined || product.stock === null) {
+return;
+}
   
   // Check if stock is a number
   if (typeof product.stock !== 'number' || isNaN(product.stock)) {

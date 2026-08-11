@@ -204,10 +204,14 @@ async function importProduct(raw, cfg, brand, manufacturer) {
 
     // Images
     const imgUrls = [];
-    if (raw.image) imgUrls.push(raw.image);
+    if (raw.image) {
+imgUrls.push(raw.image);
+}
     if (raw.galleryImages && raw.galleryImages.length) {
       raw.galleryImages.forEach((u) => {
-        if (!imgUrls.includes(u)) imgUrls.push(u);
+        if (!imgUrls.includes(u)) {
+imgUrls.push(u);
+}
       });
     }
 
@@ -216,7 +220,9 @@ async function importProduct(raw, cfg, brand, manufacturer) {
       console.log('   ↑ Uploading ' + imgUrls.length + ' image(s)...');
       for (let i = 0; i < imgUrls.length && i < 5; i++) {
         const up = await uploadImage(imgUrls[i], raw.name, i, brand);
-        if (up) uploadedImages.push(up);
+        if (up) {
+uploadedImages.push(up);
+}
       }
       console.log('   ✓ Uploaded ' + uploadedImages.length + ' image(s)');
     }
@@ -294,9 +300,11 @@ async function main() {
 
     for (const raw of rawProducts) {
       const result = await importProduct(raw, cfg, brand, manufacturer);
-      if (result.success) stats.success++;
-      else if (result.reason === 'duplicate') stats.skipped++;
-      else {
+      if (result.success) {
+stats.success++;
+} else if (result.reason === 'duplicate') {
+stats.skipped++;
+} else {
         stats.failed++;
         stats.errors.push({ product: raw.name, error: result.reason });
       }

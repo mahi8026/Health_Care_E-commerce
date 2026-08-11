@@ -61,7 +61,9 @@ function indexExists(existingIndexes, requiredIndex) {
   // Check by name first
   if (requiredIndex.name) {
     const found = existingIndexes.find(idx => idx.name === requiredIndex.name);
-    if (found) return true;
+    if (found) {
+return true;
+}
   }
 
   // Check by key structure

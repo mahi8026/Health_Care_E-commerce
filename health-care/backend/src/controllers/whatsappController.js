@@ -3,7 +3,32 @@ const whatsappBot = require('../services/whatsappBot');
 const WhatsAppConversation = require('../models/WhatsAppConversation');
 const WhatsAppMessage = require('../models/WhatsAppMessage');
 const logger = require('../utils/logger');
+const crypto = require('crypto');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
+
+// S7 — shipped default must never be accepted as a real configuration
+const DEFAULT_VERIFY_TOKEN = 'Mediport_whatsapp_verify_token';
+
+function verifyHubSignature(rawBody, appSecret, signatureHeader) {
+  const expected = 'sha256=' + crypto.createHmac('sha256', appSecret).update(rawBody).digest('hex');
+  if (typeof signatureHeader !== 'string' || signatureHeader.length !== expected.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signatureHeader));
+}
+
+function verifyTwilioSignature(req, authToken) {
+  const signature = req.headers['x-twilio-signature'];
+  if (typeof signature !== 'string') {
+    return false;
+  }
+  const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+  const payload = new URLSearchParams(req.body).toString();
+  const expected = crypto.createHmac('sha1', authToken).update(url + payload).digest('base64');
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 
 /**
  * @desc    Webhook verification (Meta Cloud API)
@@ -16,7 +41,12 @@ exports.verifyWebhook = async (req, res) => {
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
-    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'Mediport_whatsapp_verify_token';
+    const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
+
+    // S7 — if the token is missing or still the shipped default, the webhook is unconfigured
+    if (!verifyToken || verifyToken === DEFAULT_VERIFY_TOKEN) {
+      return errorResponse(res, 'WhatsApp webhook is not configured', { code: 'WHATSAPP_NOT_CONFIGURED' }, 503);
+    }
 
     if (mode === 'subscribe' && token === verifyToken) {
       logger.info('[WhatsApp] Webhook verified successfully');
@@ -38,10 +68,38 @@ exports.verifyWebhook = async (req, res) => {
  */
 exports.handleWebhook = async (req, res) => {
   try {
+    const body = req.body;
+
+    // S7 — verify the sender before acknowledging or processing anything
+    const isMetaPayload = body?.object === 'whatsapp_business_account';
+    const isTwilioPayload = body?.From && body?.Body;
+
+    if (isMetaPayload) {
+      const appSecret = process.env.WHATSAPP_APP_SECRET;
+      if (!appSecret) {
+        return errorResponse(res, 'WhatsApp webhook is not configured', { code: 'WHATSAPP_NOT_CONFIGURED' }, 503);
+      }
+      const signature = req.headers['x-hub-signature-256'];
+      const rawBody = req.rawBody || Buffer.from(JSON.stringify(body));
+      if (!verifyHubSignature(rawBody, appSecret, signature)) {
+        logger.warn('[WhatsApp] Rejected webhook with invalid signature');
+        return errorResponse(res, 'Invalid signature', null, 403);
+      }
+    } else if (isTwilioPayload) {
+      const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+      if (!twilioAuthToken) {
+        return errorResponse(res, 'WhatsApp webhook is not configured', { code: 'WHATSAPP_NOT_CONFIGURED' }, 503);
+      }
+      if (!verifyTwilioSignature(req, twilioAuthToken)) {
+        logger.warn('[WhatsApp] Rejected webhook with invalid Twilio signature');
+        return errorResponse(res, 'Invalid signature', null, 403);
+      }
+    } else {
+      return errorResponse(res, 'Unrecognized webhook payload', null, 400);
+    }
+
     // Acknowledge receipt immediately
     res.status(200).json({ success: true });
-
-    const body = req.body;
 
     // Meta Cloud API webhook format
     if (body.object === 'whatsapp_business_account') {
@@ -67,9 +125,8 @@ exports.handleWebhook = async (req, res) => {
           await processStatusUpdate(status);
         }
       }
-    }
-    // Twilio webhook format
-    else if (req.body.From && req.body.Body) {
+    } else if (req.body.From && req.body.Body) {
+      // Twilio webhook format
       await processTwilioMessage(req.body);
     }
   } catch (error) {
@@ -80,15 +137,14 @@ exports.handleWebhook = async (req, res) => {
 /**
  * Process incoming message from Meta Cloud API
  */
-async function processIncomingMessage(message, metadata) {
+async function processIncomingMessage(message, _metadata) {
   try {
     const from = message.from;
     const messageId = message.id;
-    const timestamp = message.timestamp;
 
     let text = '';
-    let type = message.type;
-    let content = {};
+    const type = message.type;
+    const content = {};
 
     // Extract message content based on type
     switch (type) {
@@ -258,10 +314,18 @@ exports.getConversations = async (req, res) => {
 
     const query = {};
 
-    if (status) query.status = status;
-    if (category) query.category = category;
-    if (isBot !== undefined) query.isBot = isBot === 'true';
-    if (assignedTo) query.assignedTo = assignedTo;
+    if (status) {
+query.status = status;
+}
+    if (category) {
+query.category = category;
+}
+    if (isBot !== undefined) {
+query.isBot = isBot === 'true';
+}
+    if (assignedTo) {
+query.assignedTo = assignedTo;
+}
     if (search) {
       const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
       query.$or = [
@@ -452,8 +516,12 @@ exports.getAnalytics = async (req, res) => {
     const { startDate, endDate } = req.query;
 
     const dateFilter = {};
-    if (startDate) dateFilter.$gte = new Date(startDate);
-    if (endDate) dateFilter.$lte = new Date(endDate);
+    if (startDate) {
+dateFilter.$gte = new Date(startDate);
+}
+    if (endDate) {
+dateFilter.$lte = new Date(endDate);
+}
 
     const query = Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {};
 

@@ -69,8 +69,6 @@ exports.sendTestSMSHandler = async (req, res) => {
  */
 exports.getSMSLogs = async (req, res) => {
   try {
-    const { limit = 20 } = req.query;
-
     // In a production environment, you would read from Winston log files
     // For now, return a placeholder response
     // You can implement log file reading using fs module if needed

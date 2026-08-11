@@ -40,7 +40,7 @@ function slowQueryPlugin(schema, options = {}) {
     next();
   });
 
-  schema.post('aggregate', function(result) {
+  schema.post('aggregate', function(_result) {
     const duration = Date.now() - this._startTime;
     const pipeline = this.pipeline();
     
@@ -131,7 +131,7 @@ function slowQueryPlugin(schema, options = {}) {
     next();
   });
 
-  schema.post('save', function(doc) {
+  schema.post('save', function(_doc) {
     const duration = Date.now() - this._startTime;
     
     if (logAll || duration > threshold) {
@@ -159,7 +159,7 @@ function slowQueryPlugin(schema, options = {}) {
     next();
   });
 
-  schema.post('remove', function(doc) {
+  schema.post('remove', function(_doc) {
     const duration = Date.now() - this._startTime;
     
     if (logAll || duration > threshold) {

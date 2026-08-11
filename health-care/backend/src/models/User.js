@@ -32,7 +32,9 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: function(v) {
         // Skip validation for OAuth users
-        if (this.googleId) return true;
+        if (this.googleId) {
+return true;
+}
         // Require uppercase, lowercase, number, and special character
         return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(v);
       },
@@ -168,7 +170,7 @@ userSchema.methods.getAvailableCredit = function() {
 
 // Indexes
 userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ b2bId: 1 }, { sparse: true });
+userSchema.index({ b2bId: 1 }, { unique: true, sparse: true }); // D6 — was non-unique; concurrent approvals could mint duplicate IDs
 userSchema.index({ role: 1 });
 userSchema.index({ googleId: 1 }, { sparse: true });
 // Compound indexes for common query patterns

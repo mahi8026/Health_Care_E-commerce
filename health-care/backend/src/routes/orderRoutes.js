@@ -14,7 +14,6 @@ const { protect, authorize } = require('../middleware/auth');
 const { noStore } = require('../middleware/cache');
 const { orderLimiter, adminLimiter } = require('../middleware/rateLimiter');
 const {
-  validateOrder,
   validateOrderStatusUpdate,
   validateOrderNote,
   validateMongoId,

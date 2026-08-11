@@ -22,7 +22,6 @@ jest.mock('mongoose', () => ({
 
 const { getSalesAnalytics, getOrderAnalytics } = require('../analyticsController');
 const Order = require('../../models/Order');
-const Product = require('../../models/Product');
 const CacheService = require('../../services/cacheService');
 
 // Mock dependencies

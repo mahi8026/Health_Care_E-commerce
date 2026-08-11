@@ -108,10 +108,14 @@ exports.sendDelivered = async (req, res) => {
   try {
     const { orderId } = req.body;
     const order = await Order.findById(orderId).lean();
-    if (!order) return errorResponse(res, 'Order not found', null, 404);
+    if (!order) {
+return errorResponse(res, 'Order not found', null, 404);
+}
 
     const user = await User.findById(order.user);
-    if (!user) return errorResponse(res, 'User not found', null, 404);
+    if (!user) {
+return errorResponse(res, 'User not found', null, 404);
+}
 
     await sendDeliveryConfirmation(order, user);
     return successResponse(res, null, 'Delivery confirmation sent');
@@ -126,7 +130,9 @@ exports.sendQuotationReady = async (req, res) => {
     const { quoteId } = req.body;
     const Quote = require('../models/Quote');
     const quote = await Quote.findById(quoteId).populate('user', 'name email');
-    if (!quote) return errorResponse(res, 'Quote not found', null, 404);
+    if (!quote) {
+return errorResponse(res, 'Quote not found', null, 404);
+}
 
     await sendQuotationReady(quote, quote.user);
     return successResponse(res, null, 'Quotation ready email sent');

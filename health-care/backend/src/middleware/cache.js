@@ -21,12 +21,15 @@ try {
     maxRetriesPerRequest: 3,
   });
 
-  redisClient.on('error', (err) => {
+  redisClient.on('error', () => {
+    // Errors are logged by ioredis itself; keep the process resilient
   });
 
   redisClient.on('connect', () => {
+    // No-op: connection state is observed via redisClient.status
   });
 } catch (error) {
+  // Redis unavailable — fall through to the in-memory/no-cache path
 }
 /**
  * Creates an Express middleware that sets Cache-Control headers.
@@ -101,7 +104,8 @@ const redisCacheMiddleware = (options = {}) => {
       res.json = function(data) {
         // Only cache successful responses
         if (res.statusCode === 200) {
-          redisClient.setex(cacheKey, ttl, JSON.stringify(data)).catch(err => {
+          redisClient.setex(cacheKey, ttl, JSON.stringify(data)).catch(() => {
+            // Cache write failure must never break the response path
           });
         }
         res.setHeader('X-Cache', 'MISS');
@@ -120,7 +124,9 @@ const redisCacheMiddleware = (options = {}) => {
  * @param {string} pattern - Redis key pattern (e.g., 'products:*')
  */
 const invalidateCache = async (pattern) => {
-  if (!redisClient) return;
+  if (!redisClient) {
+    return;
+  }
   
   try {
     const keys = await redisClient.keys(pattern);
@@ -128,6 +134,7 @@ const invalidateCache = async (pattern) => {
       await redisClient.del(...keys);
     }
   } catch (error) {
+    // Best-effort invalidation; stale entries expire via TTL anyway
   }
 };
 

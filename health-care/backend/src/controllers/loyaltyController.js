@@ -71,7 +71,7 @@ exports.validateRedeem = async (req, res) => {
 
     const user = await User.findById(req.user.id).select('loyaltyPoints');
     const currentPoints = user?.loyaltyPoints || 0;
-    const { MIN_REDEEM_POINTS, POINTS_TO_TAKA, MAX_REDEEM_PERCENT } = loyaltyService.config;
+    const { MIN_REDEEM_POINTS, MAX_REDEEM_PERCENT } = loyaltyService.config;
 
     if (points < MIN_REDEEM_POINTS) {
       return errorResponse(res, `Minimum ${MIN_REDEEM_POINTS} points required to redeem`, null, 400);
@@ -168,7 +168,9 @@ exports.adjustPoints = async (req, res) => {
     }
 
     const user = await User.findById(userId);
-    if (!user) return errorResponse(res, 'User not found', null, 404);
+    if (!user) {
+return errorResponse(res, 'User not found', null, 404);
+}
 
     const newBalance = Math.max(0, (user.loyaltyPoints || 0) + points);
     const actualPoints = newBalance - (user.loyaltyPoints || 0);

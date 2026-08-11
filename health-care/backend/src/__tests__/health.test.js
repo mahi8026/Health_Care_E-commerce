@@ -35,8 +35,8 @@ jest.mock('../services/redisCache', () => ({
   },
 }));
 
-// Mock database connection
-jest.mock('../config/database', () => jest.fn());
+// Mock database connection (must return a promise — server.js calls connectDB().catch())
+jest.mock('../config/database', () => jest.fn().mockResolvedValue(undefined));
 
 // Mock logger
 jest.mock('../utils/logger', () => ({

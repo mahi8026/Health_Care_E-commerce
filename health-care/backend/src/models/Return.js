@@ -83,7 +83,11 @@ const returnSchema = new mongoose.Schema({
     ref: 'User'
   },
   approvedAt: Date,
-  refundedAt: Date
+  refundedAt: Date,
+  stockRestored: {
+    type: Boolean,
+    default: false
+  }
 }, { 
   timestamps: true 
 });

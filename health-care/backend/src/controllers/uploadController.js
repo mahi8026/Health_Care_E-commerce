@@ -61,7 +61,9 @@ function uploadBufferToCloudinary(buffer, originalname) {
     const uploadStream = cloudinary.uploader.upload_stream(
       transformationOptions,
       (error, result) => {
-        if (error) return reject(error);
+        if (error) {
+return reject(error);
+}
         resolve(result);
       }
     );
@@ -227,7 +229,9 @@ exports.reorderProductImages = async (req, res) => {
 
     const reordered = imageOrder.map((pubId, idx) => {
       const img = product.images.find(i => i.publicId === pubId);
-      if (!img) return null;
+      if (!img) {
+return null;
+}
       return { 
         url: img.url,
         publicId: img.publicId,

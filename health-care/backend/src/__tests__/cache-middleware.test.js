@@ -25,10 +25,18 @@ function mockRes() {
     _headers: {},
     _body: null,
     statusCode: 200,
-    setHeader(name, value) { this._headers[name] = value; },
-    getHeader(name) { return this._headers[name]; },
-    status(code) { this.statusCode = code; return this; },
-    json(data) { this._body = data; return this; },
+    setHeader(name, value) {
+ this._headers[name] = value; 
+},
+    getHeader(name) {
+ return this._headers[name]; 
+},
+    status(code) {
+ this.statusCode = code; return this; 
+},
+    json(data) {
+ this._body = data; return this; 
+},
   };
   return res;
 }

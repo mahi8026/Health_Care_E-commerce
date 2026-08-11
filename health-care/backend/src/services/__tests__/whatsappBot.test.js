@@ -1,6 +1,5 @@
 ﻿const whatsappBot = require('../whatsappBot');
 const whatsappService = require('../whatsappService');
-const WhatsAppConversation = require('../../models/WhatsAppConversation');
 const User = require('../../models/User');
 const emailService = require('../../utils/emailService');
 
