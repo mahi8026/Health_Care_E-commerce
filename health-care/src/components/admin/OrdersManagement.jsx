@@ -162,7 +162,7 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
                     </td>
                     <td style={{ padding: '8px 12px', fontSize: 'var(--text-xs)', fontWeight: 600,
                       textAlign: 'right', color: 'var(--color-brand-navy)' }}>
-                      ৳{(item.price * item.quantity)?.toLocaleString()}
+                      ৳{((item.price || 0) * (item.quantity || 0)).toLocaleString()}
                     </td>
                   </tr>
                 ))}

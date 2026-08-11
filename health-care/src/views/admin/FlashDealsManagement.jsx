@@ -736,9 +736,9 @@ export default function FlashDealsManagement() {
                   <span className="font-medium text-right">{formatDate(previewDeal.startTime)} - {formatDate(previewDeal.endTime)}</span>
                 </div>
                 <div className="border-t pt-3">
-                  <div className="font-semibold mb-2">Products ({previewDeal.products.length}):</div>
+                  <div className="font-semibold mb-2">Products ({(previewDeal.products || []).length}):</div>
                   <div className="space-y-2">
-                    {previewDeal.products.map((item, idx) => (
+                    {(previewDeal.products || []).map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center p-2 bg-[var(--color-background-secondary)] rounded group">
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium truncate">{item.product?.name || 'Unknown Product'}</div>
@@ -749,8 +749,14 @@ export default function FlashDealsManagement() {
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right ml-2">
-                            <div className="text-sm font-semibold text-[var(--color-status-danger)]">৳{item.finalPrice?.toLocaleString()}</div>
-                            <div className="text-xs text-[var(--color-text-secondary)] line-through">৳{item.product?.price?.toLocaleString()}</div>
+                            <div className="text-sm font-semibold text-[var(--color-status-danger)]">
+                              {item.finalPrice != null
+                                ? `৳${item.finalPrice.toLocaleString()}`
+                                : item.product?.price != null
+                                  ? `৳${Math.round(item.product.price * (1 - (item.discountPercentage || 0) / 100)).toLocaleString()}`
+                                  : '—'}
+                            </div>
+                            <div className="text-xs text-[var(--color-text-secondary)] line-through">৳{item.product?.price?.toLocaleString() || '—'}</div>
                           </div>
                           <button
                             onClick={() => setShowRemoveProductModal({

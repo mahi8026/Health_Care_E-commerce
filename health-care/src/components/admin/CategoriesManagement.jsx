@@ -155,7 +155,7 @@ export default function CategoriesManagement() {
                       {category.description && <div className="text-xs text-[var(--color-text-secondary)] mt-1">{category.description.substring(0, 50)}...</div>}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap"><code className="text-xs bg-[var(--color-background-tertiary)] px-2 py-1 rounded text-[var(--color-text-primary)] font-mono">{category.slug}</code></td>
-                    <td className="px-4 py-3 whitespace-nowrap text-[var(--color-text-primary)] text-xs">{category.parent ? category.parent.name || '—' : '—'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-[var(--color-text-primary)] text-xs">{category.parent ? (typeof category.parent === 'object' ? category.parent.name : '—') : '—'}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-center"><span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{category.productCount || 0}</span></td>
                     <td className="px-4 py-3 whitespace-nowrap text-center text-[var(--color-text-primary)]">{category.order || '0'}</td>
                     <td className="px-4 py-3 whitespace-nowrap">

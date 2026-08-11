@@ -213,8 +213,16 @@ export default function OrderDetailModal({ orderId, onClose }) {
                 <div className="space-y-2">
                   {(order.items || []).map((item, index) => (
                     <div key={index} className="flex items-center gap-3 p-3 bg-[var(--color-background-tertiary)] rounded-lg">
-                      <div className="w-12 h-12 bg-white rounded flex items-center justify-center text-xl">
-                        {item.product?.images?.[0] || '📦'}
+                      <div className="w-12 h-12 bg-white rounded flex items-center justify-center text-xl overflow-hidden">
+                        {(() => {
+                          const img = item.product?.images?.[0];
+                          if (!img) return '📦';
+                          const src = typeof img === 'string' ? img : (img.url || img.secure_url || '');
+                          return src ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={src} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
+                          ) : '📦';
+                        })()}
                       </div>
                       <div className="flex-1">
                         <div className="text-xs font-medium mb-1">

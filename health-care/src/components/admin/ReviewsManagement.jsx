@@ -235,7 +235,19 @@ export default function ReviewsManagement() {
                   <tr key={review._id} className="border-b-[0.5px] border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-tertiary)]">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <img src={review.product?.images?.[0]?.url || '/placeholder.png'} alt={review.product?.name} className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]" loading="lazy" />
+                        <img 
+                          src={
+                            (() => {
+                              const img = review.product?.images?.[0];
+                              if (!img) return '/placeholder.png';
+                              if (typeof img === 'string') return img;
+                              return img.url || img.secure_url || '/placeholder.png';
+                            })()
+                          }
+                          alt={review.product?.name || 'Product'} 
+                          className="w-10 h-10 object-cover rounded border border-[var(--color-border-secondary)]" 
+                          loading="lazy" 
+                        />
                         <div>
                           <div className="text-xs font-semibold line-clamp-1 font-[family-name:var(--font-plus-jakarta)]">{review.product?.name}</div>
                           <div className="text-xs text-[var(--color-text-secondary)]">{review.product?.sku}</div>
