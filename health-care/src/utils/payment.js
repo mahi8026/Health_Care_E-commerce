@@ -93,6 +93,10 @@ export async function processCODPayment(orderId) {
   }
 }
 
+// TEMPORARY: payment methods open to customers. Mirrors the backend's
+// PAYMENT_METHODS_ENABLED default — edit both together when re-enabling.
+export const TEMPORARILY_ENABLED_PAYMENT_METHODS = ['cod', 'bank', 'credit'];
+
 // Payment method labels
 export const PAYMENT_METHODS = {
   cod: {

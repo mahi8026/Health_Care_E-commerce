@@ -9,6 +9,13 @@ jest.mock('../../models/Order');
 jest.mock('../../models/User');
 jest.mock('../../utils/logger', () => ({ error: jest.fn(), info: jest.fn(), warn: jest.fn() }));
 
+// TEMPORARY: the controller's default enabled list only keeps COD/bank/B2B credit.
+// The suite opts into ALL methods so existing tests exercise handler logic; the
+// guard itself is covered by dedicated PAYMENT_METHOD_DISABLED tests below.
+const ENABLED_ALL = 'cod,bank_transfer,npsb,b2b_credit,bkash,nagad,cheque';
+process.env.PAYMENT_METHODS_ENABLED = ENABLED_ALL;
+const clearEnabledMethods = () => delete process.env.PAYMENT_METHODS_ENABLED;
+
 const crypto = require('crypto');
 const { generateKeyPairSync } = require('crypto');
 
@@ -94,6 +101,16 @@ describe('initiateBkashPayment', () => {
     expect(res.status).toHaveBeenCalledWith(503);
     expect(res.json.mock.calls[0][0].code).toBe('BKASH_NOT_CONFIGURED');
     process.env.BKASH_APP_KEY = savedKey;
+  });
+
+  it('returns 503 PAYMENT_METHOD_DISABLED when bKash is temporarily closed', async () => {
+    clearEnabledMethods();
+    const req = mockReq({ body: { amount: 1000, orderId: 'order123' } });
+    const res = mockRes();
+    await initiateBkashPayment(req, res);
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json.mock.calls[0][0].code).toBe('PAYMENT_METHOD_DISABLED');
+    process.env.PAYMENT_METHODS_ENABLED = ENABLED_ALL;
   });
 });
 
@@ -258,6 +275,16 @@ describe('initiateNagadPayment', () => {
     await initiateNagadPayment(req, res);
     expect(res.status).toHaveBeenCalledWith(503);
     expect(res.json.mock.calls[0][0].code).toBe('NAGAD_NOT_CONFIGURED');
+  });
+
+  it('returns 503 PAYMENT_METHOD_DISABLED when Nagad is temporarily closed', async () => {
+    clearEnabledMethods();
+    const req = mockReq({ body: { orderId: 'order123' } });
+    const res = mockRes();
+    await initiateNagadPayment(req, res);
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json.mock.calls[0][0].code).toBe('PAYMENT_METHOD_DISABLED');
+    process.env.PAYMENT_METHODS_ENABLED = ENABLED_ALL;
   });
 
   it('returns 400 when orderId missing', async () => {
@@ -494,5 +521,17 @@ describe('submitChequePayment', () => {
     expect(fakeOrder.paymentDetails.chequeNumber).toBe('CHQ001');
     expect(fakeOrder.save).toHaveBeenCalled();
     expect(res.json.mock.calls[0][0].success).toBe(true);
+  });
+
+  it('returns 503 PAYMENT_METHOD_DISABLED when cheque is temporarily closed', async () => {
+    clearEnabledMethods();
+    const req = mockReq({
+      body: { orderId: 'order123', chequeNumber: 'CHQ001', bankName: 'DBBL', chequeDate: '2026-01-01', accountName: 'Test Corp' },
+    });
+    const res = mockRes();
+    await submitChequePayment(req, res);
+    expect(res.status).toHaveBeenCalledWith(503);
+    expect(res.json.mock.calls[0][0].code).toBe('PAYMENT_METHOD_DISABLED');
+    process.env.PAYMENT_METHODS_ENABLED = ENABLED_ALL;
   });
 });

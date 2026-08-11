@@ -22,7 +22,8 @@ const METHODS = [
     color: '#E2136E', 
     bg: '#FDF2F8', 
     icon: '📱',
-    disabled: false,
+    disabled: true,
+    disabledMessage: 'bKash payment is temporarily unavailable. Please use Cash on Delivery or Bank Transfer instead.',
   },
   { 
     id: 'nagad', 
@@ -30,7 +31,8 @@ const METHODS = [
     color: 'var(--color-brand-teal)', 
     bg: 'var(--color-status-success-tint)', 
     icon: '📱',
-    disabled: false,
+    disabled: true,
+    disabledMessage: 'Nagad payment is temporarily unavailable. Please use Cash on Delivery or Bank Transfer instead.',
   },
   { 
     id: 'npsb', 
@@ -39,7 +41,7 @@ const METHODS = [
     bg: 'var(--color-status-warning-tint)', 
     icon: '🚀',
     disabled: true,
-    disabledMessage: 'Rocket payment is temporarily unavailable. Please use Cash on Delivery, bKash, or Nagad instead.',
+    disabledMessage: 'Rocket payment is temporarily unavailable. Please use Cash on Delivery or Bank Transfer instead.',
   },
   { 
     id: 'bank_transfer', 
@@ -47,8 +49,6 @@ const METHODS = [
     color: 'var(--color-status-info)', 
     bg: 'var(--color-status-info-tint)', 
     icon: '🏦',
-    disabled: true,
-    disabledMessage: 'Bank transfer is temporarily unavailable. Please use Cash on Delivery, bKash, or Nagad instead.',
   },
   { 
     id: 'b2b_credit', 
@@ -56,8 +56,6 @@ const METHODS = [
     color: 'var(--color-brand-teal)', 
     bg: 'var(--color-status-success-tint)', 
     icon: '💼',
-    disabled: true,
-    disabledMessage: 'B2B Credit is temporarily unavailable. Please contact sales team for credit terms.',
   },
   { 
     id: 'cheque', 
@@ -66,7 +64,7 @@ const METHODS = [
     bg: '#F5F3FF', 
     icon: '📝',
     disabled: true,
-    disabledMessage: 'Cheque payment is temporarily unavailable. Please use Cash on Delivery, bKash, or Nagad instead.',
+    disabledMessage: 'Cheque payment is temporarily unavailable. Please use Cash on Delivery or Bank Transfer instead.',
   },
 ];
 

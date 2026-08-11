@@ -13,6 +13,25 @@ function isStaff(user) {
   return !!user && (user.role === 'admin' || user.role === 'agent');
 }
 
+// TEMPORARY: payment methods open to customers. Override via PAYMENT_METHODS_ENABLED
+// (comma-separated ids) to re-enable a method without a code change.
+function enabledPaymentMethods() {
+  const raw = process.env.PAYMENT_METHODS_ENABLED;
+  if (raw) {
+    return raw.split(',').map((m) => m.trim()).filter(Boolean);
+  }
+  return ['cod', 'bank_transfer', 'npsb', 'b2b_credit'];
+}
+
+// Fail-closed guard: returns false and sends 503 when the method is disabled.
+function assertPaymentMethodEnabled(method, res) {
+  if (!enabledPaymentMethods().includes(method)) {
+    errorResponse(res, `${method} payment is temporarily disabled. Please use Bank Transfer or Cash on Delivery.`, { code: 'PAYMENT_METHOD_DISABLED' }, 503);
+    return false;
+  }
+  return true;
+}
+
 /**
  * C3 — Require the authenticated user to own the order (admins/agents pass).
  * Returns false and sends 403 when access is denied.
@@ -120,6 +139,9 @@ async function bkashRequest(endpoint, body) {
 // ── bKash: Initiate Payment ───────────────────────────────────────────────────
 exports.initiateBkashPayment = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('bkash', res)) {
+      return;
+    }
     const { orderId } = req.body;
     if (!orderId) {
       return errorResponse(res, 'Order ID is required', null, 400);
@@ -181,6 +203,9 @@ return;
 // ── bKash: Execute Payment (called after user completes payment in bKash app) ─
 exports.executeBkashPayment = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('bkash', res)) {
+      return;
+    }
     const { paymentID } = req.body;
     if (!paymentID) {
 return errorResponse(res, 'paymentID is required', null, 400);
@@ -230,6 +255,9 @@ return;
 // ── bKash: Verify Payment ─────────────────────────────────────────────────────
 exports.verifyBkashPayment = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('bkash', res)) {
+      return;
+    }
     const { paymentID, orderId } = req.body;
     if (!paymentID || !orderId) {
       return errorResponse(res, 'paymentID and orderId are required', null, 400);
@@ -539,6 +567,9 @@ function nagadConfirmedAmount(data, privateKeyPem) {
 // ── Nagad: Initiate Payment ───────────────────────────────────────────────────
 exports.initiateNagadPayment = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('nagad', res)) {
+      return;
+    }
     const { NAGAD_MERCHANT_ID, NAGAD_MERCHANT_KEY, NAGAD_PUBLIC_KEY, NAGAD_BASE_URL } = getNagadConfig();
 
     const { orderId } = req.body;
@@ -643,6 +674,9 @@ exports.initiateNagadPayment = async (req, res) => {
 // ── Nagad: Verify Payment (client-side poll after redirect back) ──────────────
 exports.verifyNagadPayment = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('nagad', res)) {
+      return;
+    }
     const { NAGAD_MERCHANT_KEY, NAGAD_BASE_URL } = getNagadConfig();
 
     const { paymentReferenceId, orderId } = req.body;
@@ -699,6 +733,9 @@ exports.verifyNagadPayment = async (req, res) => {
 // ── Nagad: Gateway callback (server-to-server POST / browser GET fallback) ────
 exports.handleNagadCallback = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('nagad', res)) {
+      return;
+    }
     const paymentReferenceId = req.body?.paymentReferenceId || req.query?.paymentReferenceId;
     if (!paymentReferenceId) {
       return errorResponse(res, 'paymentReferenceId is required', null, 400);
@@ -799,6 +836,9 @@ return;
 // ── Cheque ────────────────────────────────────────────────────────────────────
 exports.submitChequePayment = async (req, res) => {
   try {
+    if (!assertPaymentMethodEnabled('cheque', res)) {
+      return;
+    }
     const { orderId, chequeNumber, bankName, chequeDate, accountName } = req.body;
     const order = await Order.findById(orderId);
     if (!order) {

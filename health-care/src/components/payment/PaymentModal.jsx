@@ -6,7 +6,7 @@ import BankTransferForm from './BankTransferForm';
 import B2BCreditForm from './B2BCreditForm';
 import BkashPaymentForm from './BkashPaymentForm';
 import NagadPaymentForm from './NagadPaymentForm';
-import { PAYMENT_METHODS } from '@/utils/payment';
+import { PAYMENT_METHODS, TEMPORARILY_ENABLED_PAYMENT_METHODS } from '@/utils/payment';
 
 export default function PaymentModal({ 
   isOpen, 
@@ -148,6 +148,7 @@ export default function PaymentModal({
         );
 
       case 'credit':
+      case 'b2b_credit':
         return (
           <B2BCreditForm
             amount={amount}
@@ -206,7 +207,9 @@ export default function PaymentModal({
             Payment Method
           </label>
           <div className="grid grid-cols-3 gap-2">
-            {Object.values(PAYMENT_METHODS).map((method) => (
+            {Object.values(PAYMENT_METHODS)
+              .filter((method) => TEMPORARILY_ENABLED_PAYMENT_METHODS.includes(method.id))
+              .map((method) => (
               <button
                 key={method.id}
                 type="button"
