@@ -5,11 +5,11 @@ import { submitBankTransfer } from '@/utils/payment';
 import Spinner from '@/components/ui/Spinner';
 
 const BANK_DETAILS = {
-  bankName: 'Dutch-Bangla Bank Ltd',
-  accountName: 'Mediport Bangladesh Ltd',
-  accountNo: '1721-2030-5678',
-  branch: 'Gulshan Branch, Dhaka',
-  routing: '090260123',
+  bankName: 'BRAC Bank PLC',
+  accountName: 'MAHI M RAHMAN',
+  accountNo: '1081267690001',
+  branch: 'Elephant Road Branch',
+  routing: '060261339',
 };
 
 export default function BankTransferForm({ amount, orderId, onSuccess, onError }) {
@@ -100,23 +100,23 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
         <div className="space-y-1.5 md:space-y-2 text-xs md:text-xs">
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Bank Name:</span>
-            <span className="font-semibold">Dutch-Bangla Bank Ltd</span>
+            <span className="font-semibold">BRAC Bank PLC</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Account Number:</span>
-            <span className="font-mono font-semibold text-xs md:text-xs">1721 2030 5678</span>
+            <span className="font-mono font-semibold text-xs md:text-xs">1081267690001</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Account Name:</span>
-            <span className="font-semibold">Mediport Bangladesh Ltd</span>
+            <span className="font-semibold">MAHI M RAHMAN</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Branch:</span>
-            <span className="font-semibold">Gulshan, Dhaka</span>
+            <span className="font-semibold">Elephant Road Branch</span>
           </div>
           <div className="flex justify-between flex-wrap gap-1">
             <span className="text-[var(--color-text-secondary)]">Routing Number:</span>
-            <span className="font-mono font-semibold text-xs md:text-xs">090260123</span>
+            <span className="font-mono font-semibold text-xs md:text-xs">060261339</span>
           </div>
         </div>
       </div>

@@ -159,9 +159,10 @@ export default function PaymentMethodsPage() {
                 Pay via NPSB, BEFTN, or direct bank transfer. Reference details provided at checkout.
               </p>
               <div className="mt-3 p-3 bg-[var(--color-background-secondary)] rounded-lg text-xs text-[var(--color-text-secondary)] space-y-1">
-                <p><span className="font-medium text-brand-navy">Bank:</span> Dutch-Bangla Bank Ltd</p>
-                <p><span className="font-medium text-brand-navy">Account:</span> MediportBD Ltd — 1234567890</p>
-                <p><span className="font-medium text-brand-navy">Branch:</span> Nawabpur Road, Dhaka</p>
+                <p><span className="font-medium text-brand-navy">Bank:</span> BRAC Bank PLC</p>
+                <p><span className="font-medium text-brand-navy">Account:</span> MAHI M RAHMAN — 1081267690001</p>
+                <p><span className="font-medium text-brand-navy">Branch:</span> Elephant Road Branch</p>
+                <p><span className="font-medium text-brand-navy">Routing:</span> 060261339</p>
               </div>
             </div>
           </div>

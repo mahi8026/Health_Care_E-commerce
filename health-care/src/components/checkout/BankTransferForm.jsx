@@ -3,11 +3,11 @@
 import { useState } from 'react';
 
 const BANK_DETAILS = [
-  { label: 'Bank Name', value: 'Dutch-Bangla Bank Ltd', icon: '🏦' },
-  { label: 'Account Name', value: 'Mediport Bangladesh Ltd', icon: '🏢' },
-  { label: 'Account Number', value: '1721 2030 5678', icon: '💳', mono: true },
-  { label: 'Branch', value: 'Nawabpur Road, Dhaka', icon: '📍' },
-  { label: 'Routing Number', value: '090261450', icon: '#️⃣', mono: true },
+  { label: 'Bank Name', value: 'BRAC Bank PLC', icon: '🏦' },
+  { label: 'Account Name', value: 'MAHI M RAHMAN', icon: '🏢' },
+  { label: 'Account Number', value: '1081267690001', icon: '💳', mono: true },
+  { label: 'Branch', value: 'Elephant Road Branch', icon: '📍' },
+  { label: 'Routing Number', value: '060261339', icon: '#️⃣', mono: true },
 ];
 
 function CopyButton({ text }) {
