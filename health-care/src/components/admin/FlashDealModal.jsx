@@ -38,13 +38,18 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
   });
 
   const [selectedProducts, setSelectedProducts] = useState(
-    deal?.products?.map(p => ({
-      productId: p.product._id || p.product,
-      product: p.product,
-      discountPercentage: p.discountPercentage,
-      stockLimit: p.stockLimit,
-      soldCount: p.soldCount || 0
-    })) || []
+    deal?.products?.map(p => {
+      // p.product may be a populated object OR just an ID string
+      const productObj = p.product && typeof p.product === 'object' ? p.product : null;
+      const productId = productObj?._id || p.product || p.productId;
+      return {
+        productId: String(productId),
+        product: productObj || { _id: String(productId), name: 'Loading...', price: 0, images: [] },
+        discountPercentage: p.discountPercentage ?? 0,
+        stockLimit: p.stockLimit ?? null,
+        soldCount: p.soldCount || 0,
+      };
+    }).filter(p => p.productId) || []
   );
 
   // Product search state
@@ -57,6 +62,32 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('basic'); // basic, products, timing, settings
+
+  // If editing and products have placeholder data (not populated), fetch full details
+  useEffect(() => {
+    if (!isEditing) return;
+    const unpopulated = selectedProducts.filter(p => p.product.name === 'Loading...');
+    if (unpopulated.length === 0) return;
+
+    const fetchDetails = async () => {
+      const updated = await Promise.all(
+        selectedProducts.map(async (p) => {
+          if (p.product.name !== 'Loading...') return p;
+          try {
+            const res = await api.get(`/products/${p.productId}`);
+            const prod = res.data || res.product || res;
+            return { ...p, product: prod };
+          } catch {
+            return p;
+          }
+        })
+      );
+      setSelectedProducts(updated);
+    };
+
+    void fetchDetails();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing]);
 
   // Search products
   const searchProducts = async (query) => {
@@ -130,9 +161,9 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
     );
   };
 
-  const calculateDiscountedPrice = (product) => {
-    const originalPrice = product.product.price || 0;
-    const discount = originalPrice * (product.discountPercentage / 100);
+  const calculateDiscountedPrice = (item) => {
+    const originalPrice = item.product?.price || 0;
+    const discount = originalPrice * ((item.discountPercentage || 0) / 100);
     const finalPrice = originalPrice - discount;
     return { originalPrice, discount, finalPrice };
   };
@@ -501,8 +532,8 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
                             <div className="relative w-20 h-20 bg-[var(--color-background-tertiary)] rounded-lg overflow-hidden flex-shrink-0">
                               {item.product.images?.[0] ? (
                                 <Image
-                                  src={item.product.images[0].url || item.product.images[0]}
-                                  alt={item.product.name}
+                                  src={typeof item.product.images[0] === 'string' ? item.product.images[0] : (item.product.images[0]?.url || item.product.images[0]?.secure_url || '')}
+                                  alt={item.product.name || 'Product'}
                                   fill
                                   className="object-cover"
                                   sizes="80px"
