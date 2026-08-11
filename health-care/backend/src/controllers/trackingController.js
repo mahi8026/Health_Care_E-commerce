@@ -40,6 +40,29 @@ exports.trackOrder = async (req, res) => {
     }));
 
     // S4 — public endpoint: never expose customer PII or payment details
+    let courierStatus = null;
+    if (order.tracking && order.tracking.courier === 'SteadFast' && (order.tracking.consignmentId || order.trackingNumber)) {
+      try {
+        const steadfastService = require('../services/steadfastService');
+        const statusCheck = order.tracking.consignmentId
+          ? await steadfastService.getStatusByCid(order.tracking.consignmentId)
+          : await steadfastService.getStatusByInvoice(order.trackingNumber);
+        const payload = statusCheck && statusCheck.data ? statusCheck.data : statusCheck;
+        if (payload && (payload.delivery_status || payload.status)) {
+          courierStatus = {
+            courier: 'SteadFast',
+            status: payload.delivery_status || payload.status,
+            timestamps: {
+              createdAt: payload.created_at || payload.createdAt || null,
+              updatedAt: payload.updated_at || payload.updatedAt || null
+            }
+          };
+        }
+      } catch (error) {
+        courierStatus = null;
+      }
+    }
+
     return successResponse(res, {
       orderNumber: order.orderNumber || order.orderId,
       status: order.status,
@@ -51,6 +74,7 @@ exports.trackOrder = async (req, res) => {
       deliveryType: order.deliveryType,
       tracking: order.tracking,
       trackingNumber: order.trackingNumber,
+      courierStatus,
       estimatedDelivery: order.estimatedDelivery,
       deliveredAt: order.deliveredAt,
       coldChain: order.coldChain,

@@ -13,6 +13,39 @@ const { sendToUser, notifications } = require('../utils/oneSignalService');
 
 const cacheService = new CacheService();
 
+// Auto-book a SteadFast shipment when an order transitions to 'shipped'.
+// Never throws: booking failures are logged and must not block the status flow.
+// Skips when a tracking number is already set (manual entry wins).
+async function bookSteadfastShipment(order) {
+  try {
+    const steadfastService = require('../services/steadfastService');
+    if (!steadfastService.isConfigured()) {
+      logger.info(`[updateOrderStatus] SteadFast not configured, skipping booking for ${order.orderNumber}`);
+      return;
+    }
+    const address = order.deliveryAddress || {};
+    if (!address.name || !address.phone || !(address.street || address.thana || address.district)) {
+      logger.warn(`[updateOrderStatus] Missing shipping address for SteadFast booking ${order.orderNumber}`);
+      return;
+    }
+    const payload = steadfastService.buildShipmentPayload(order);
+    const consignment = await steadfastService.createShipment(payload);
+    order.trackingNumber = consignment.tracking_code || consignment.invoice || order.trackingNumber;
+    order.tracking = {
+      ...(order.tracking || {}),
+      courier: 'SteadFast',
+      trackingNumber: order.trackingNumber,
+      consignmentId: consignment.consignment_id,
+      steadfastStatus: consignment.status,
+      dispatchedAt: new Date()
+    };
+    order.markModified('tracking');
+    logger.info(`[updateOrderStatus] SteadFast shipment booked for ${order.orderNumber}: consignment=${consignment.consignment_id} tracking=${consignment.tracking_code}`);
+  } catch (error) {
+    logger.error(`[updateOrderStatus] SteadFast booking failed for ${order.orderNumber}: ${error.message}`);
+  }
+}
+
 // B9 — roll back B2B credit and loyalty points when an order is cancelled.
 // Shared by cancelOrder and admin updateOrderStatus('cancelled').
 async function rollbackOrderFinances(order, performedByUserId) {
@@ -908,6 +941,11 @@ order.statusTimestamps = {};
       if (trackingNumber) {
         order.trackingNumber = trackingNumber;
         order.tracking = { ...order.tracking, trackingNumber, courier: courier || order.tracking?.courier };
+      }
+
+      // Auto-book SteadFast shipment (best effort, non-blocking)
+      if (status === 'shipped' && !order.trackingNumber && !order.tracking?.consignmentId) {
+        await bookSteadfastShipment(order);
       }
 
       await order.save();

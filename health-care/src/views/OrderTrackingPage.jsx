@@ -358,6 +358,12 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                       <div className="font-semibold">{formatDate(order.tracking.dispatchedAt)}</div>
                     </div>
                   )}
+                  {order.courierStatus && order.courierStatus.status && (
+                    <div>
+                      <div className="text-sm text-[var(--color-text-secondary)] mb-1">Courier Status</div>
+                      <div className="font-semibold capitalize">{order.courierStatus.status.replace(/_/g, ' ')}</div>
+                    </div>
+                  )}
                 </div>
                 {order.coldChain && (
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
