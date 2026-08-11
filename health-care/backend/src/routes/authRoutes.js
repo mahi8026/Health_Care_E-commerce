@@ -25,7 +25,7 @@ const {
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 const { noStore } = require('../middleware/cache');
-const { loginCaptcha, registerCaptcha, passwordResetCaptcha } = require('../middleware/captcha');
+const { loginCaptcha, registerCaptcha } = require('../middleware/captcha');
 const {
   passwordResetLimiter,
   otpLimiter
@@ -195,7 +195,7 @@ router.post('/refresh', authLimiter, refreshToken);
  *       404:
  *         description: User not found
  */
-router.post('/forgot-password', passwordResetLimiter, passwordResetCaptcha, validateForgotPassword, forgotPassword);
+router.post('/forgot-password', passwordResetLimiter, validateForgotPassword, forgotPassword);
 
 /**
  * @swagger
