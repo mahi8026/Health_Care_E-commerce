@@ -151,7 +151,7 @@ exports.getHomeData = async (req, res) => {
                   $expr: {
                     $and: [
                       { $in: ['$$pid', '$items.product'] },
-                      { $nin: ['$status', ['cancelled', 'refunded', 'returned']] }
+                      { $not: { $in: ['$status', ['cancelled', 'refunded', 'returned']] } }
                     ]
                   }
                 }
