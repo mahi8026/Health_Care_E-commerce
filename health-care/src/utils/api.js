@@ -918,8 +918,8 @@ export const api = {
     return this.post('/payments/nagad/initiate', { amount, orderId });
   },
 
-  async verifyNagadPayment(paymentId, orderId) {
-    return this.post('/payments/nagad/verify', { paymentId, orderId });
+  async verifyNagadPayment(paymentReferenceId, orderId) {
+    return this.post('/payments/nagad/verify', { paymentReferenceId, orderId });
   }
 };
 

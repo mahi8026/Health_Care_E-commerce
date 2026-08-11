@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Modal from '@/components/ui/Modal';
 import BankTransferForm from './BankTransferForm';
 import B2BCreditForm from './B2BCreditForm';
+import BkashPaymentForm from './BkashPaymentForm';
+import NagadPaymentForm from './NagadPaymentForm';
 import { PAYMENT_METHODS } from '@/utils/payment';
 
 export default function PaymentModal({ 
@@ -77,7 +79,25 @@ export default function PaymentModal({
         );
 
       case 'bkash':
+        return (
+          <BkashPaymentForm
+            amount={amount}
+            orderId={orderId}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
+        );
+
       case 'nagad':
+        return (
+          <NagadPaymentForm
+            amount={amount}
+            orderId={orderId}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
+        );
+
       case 'rocket':
         return (
           <div className="space-y-4">

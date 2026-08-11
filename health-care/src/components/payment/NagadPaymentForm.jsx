@@ -4,11 +4,11 @@ import { useState } from 'react';
 import api from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
 
-export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }) {
+export default function NagadPaymentForm({ amount, orderId, onSuccess, onError }) {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('initiate'); // initiate | redirect | verify
-  const [paymentID, setPaymentID] = useState('');
-  const [bkashURL, setBkashURL] = useState('');
+  const [paymentReferenceId, setPaymentReferenceId] = useState('');
+  const [redirectUrl, setRedirectUrl] = useState('');
   const [error, setError] = useState(null);
   const [notConfigured, setNotConfigured] = useState(false);
 
@@ -18,33 +18,33 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
     setError(null);
 
     try {
-      const response = await api.initiateBkashPayment(amount, orderId);
+      const response = await api.initiateNagadPayment(amount, orderId);
 
-      // Backend returns BKASH_NOT_CONFIGURED when credentials aren't set
-      if (response.code === 'BKASH_NOT_CONFIGURED') {
+      // Backend returns NAGAD_NOT_CONFIGURED when credentials aren't set
+      if (response.code === 'NAGAD_NOT_CONFIGURED') {
         setNotConfigured(true);
         return;
       }
 
       const data = response.data || response;
-      setPaymentID(data.paymentID);
-      setBkashURL(data.bkashURL);
+      setPaymentReferenceId(data.paymentReferenceId || '');
+      setRedirectUrl(data.redirectUrl || '');
 
-      // Open bKash payment page in a new tab
-      if (data.bkashURL) {
-        window.open(data.bkashURL, '_blank', 'noopener,noreferrer');
+      // Open the Nagad hosted payment page in a new tab
+      if (data.redirectUrl) {
+        window.open(data.redirectUrl, '_blank', 'noopener,noreferrer');
       }
 
       setStep('verify');
     } catch (err) {
       if (
         err.message?.includes('not configured') ||
-        err.message?.includes('BKASH_NOT_CONFIGURED') ||
-        err.data?.code === 'BKASH_NOT_CONFIGURED'
+        err.message?.includes('NAGAD_NOT_CONFIGURED') ||
+        err.data?.code === 'NAGAD_NOT_CONFIGURED'
       ) {
         setNotConfigured(true);
       } else {
-        setError(err.message || 'Failed to initiate bKash payment');
+        setError(err.message || 'Failed to initiate Nagad payment');
         onError && onError(err);
       }
     } finally {
@@ -58,8 +58,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
     setError(null);
 
     try {
-      // Execute the payment (confirms it on bKash side)
-      const response = await api.post('/payments/bkash/execute', { paymentID });
+      const response = await api.verifyNagadPayment(paymentReferenceId, orderId);
       onSuccess && onSuccess(response);
     } catch (err) {
       setError(err.message || 'Payment verification failed. Please contact support.');
@@ -69,7 +68,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
     }
   };
 
-  // Show clear message when bKash credentials aren't configured yet
+  // Show clear message when Nagad credentials aren't configured yet
   if (notConfigured) {
     return (
       <div className="space-y-3 md:space-y-4">
@@ -78,17 +77,17 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
             <span className="text-xl md:text-2xl">⚠️</span>
             <div>
               <h3 className="text-xs md:text-sm font-semibold text-[var(--color-status-warning)] mb-1">
-                bKash Not Available Yet
+                Nagad Not Available Yet
               </h3>
               <p className="text-xs md:text-xs text-[var(--color-status-warning)]">
-                bKash payment integration is pending configuration. Please use Bank Transfer or B2B Credit instead.
+                Nagad payment integration is pending configuration. Please use Bank Transfer or B2B Credit instead.
               </p>
             </div>
           </div>
         </div>
         <button
           type="button"
-          onClick={() => onError && onError(new Error('bKash not configured'))}
+          onClick={() => onError && onError(new Error('Nagad not configured'))}
           className="w-full text-xs md:text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] py-2"
         >
           ← Choose a different payment method
@@ -97,31 +96,31 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
     );
   }
 
-  // Step 2: User has been redirected to bKash, now verify
+  // Step 2: User has been redirected to Nagad, now verify
   if (step === 'verify') {
     return (
       <form onSubmit={handleVerify} className="space-y-3 md:space-y-4">
-        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[#E2136E] rounded-lg p-3 md:p-4 text-center">
+        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[#F26828] rounded-lg p-3 md:p-4 text-center">
           <div className="text-3xl md:text-4xl mb-2">📱</div>
-          <h3 className="text-sm md:text-sm font-semibold mb-1 text-[#E2136E]">
-            Complete Payment in bKash
+          <h3 className="text-sm md:text-sm font-semibold mb-1 text-[#F26828]">
+            Complete Payment in Nagad
           </h3>
           <p className="text-xs md:text-xs text-[var(--color-text-secondary)] mb-2 md:mb-3 px-2">
-            Payment ID: <span className="font-mono font-semibold text-xs md:text-xs">{paymentID}</span>
+            Payment Ref: <span className="font-mono font-semibold text-xs md:text-xs">{paymentReferenceId}</span>
           </p>
           <p className="text-xs md:text-xs text-[var(--color-text-secondary)] px-2">
-            1. Complete the payment in the bKash page that opened<br />
-            2. Enter your bKash PIN to confirm<br />
+            1. Complete the payment in the Nagad page that opened<br />
+            2. Enter your Nagad PIN to confirm<br />
             3. Click &ldquo;I&apos;ve Paid&rdquo; below once done
           </p>
-          {bkashURL && (
+          {redirectUrl && (
             <a
-              href={bkashURL}
+              href={redirectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-[#E2136E] underline"
+              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-[#F26828] underline"
             >
-              Re-open bKash payment page →
+              Re-open Nagad payment page →
             </a>
           )}
         </div>
@@ -135,7 +134,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
+          className="w-full bg-[#F26828] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#D95820] transition-colors"
         >
           {loading ? (
             <>
@@ -163,22 +162,16 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
     <form onSubmit={handleInitiate} className="space-y-3 md:space-y-4">
       <div className="bg-[var(--color-status-danger-tint)] rounded-lg p-3 md:p-4 text-center">
         <div className="text-4xl md:text-5xl mb-2">
-          <img
-            src="https://www.bkash.com/sites/default/files/bkash-logo.png"
-            alt="bKash"
-            className="h-6 md:h-8 mx-auto"
-            onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
-          />
-          <span style={{ display: 'none' }}>bKash</span>
+          <span className="font-extrabold text-[#F26828] tracking-tight">nagad</span>
         </div>
         <p className="text-xs md:text-xs text-[var(--color-text-secondary)] px-2">
-          You will be redirected to bKash to complete the payment of{' '}
+          You will be redirected to Nagad to complete the payment of{' '}
           <strong>৳{amount.toLocaleString()}</strong>
         </p>
       </div>
 
       <div className="bg-[var(--color-background-tertiary)] rounded-lg p-2 md:p-3 text-xs md:text-xs text-[var(--color-text-secondary)] space-y-1">
-        <div>✓ Secure payment via bKash Tokenized Checkout</div>
+        <div>✓ Secure payment via Nagad Online Payment</div>
         <div>✓ No card details required</div>
         <div>✓ Instant confirmation</div>
       </div>
@@ -192,22 +185,22 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
+        className="w-full bg-[#F26828] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#D95820] transition-colors"
       >
         {loading ? (
           <>
             <Spinner size="small" color="white" />
-            <span className="hidden sm:inline">Connecting to bKash…</span>
+            <span className="hidden sm:inline">Connecting to Nagad…</span>
             <span className="sm:hidden">Connecting…</span>
           </>
         ) : (
-          <>📱 Pay ৳{amount.toLocaleString()} with bKash</>
+          <>📱 Pay ৳{amount.toLocaleString()} with Nagad</>
         )}
       </button>
 
       <div className="flex items-center justify-center gap-1 text-xs md:text-xs text-[var(--color-text-secondary)]">
         <span>🔒</span>
-        <span>Secured by bKash Tokenized Checkout</span>
+        <span>Secured by Nagad Online Payment</span>
       </div>
     </form>
   );
