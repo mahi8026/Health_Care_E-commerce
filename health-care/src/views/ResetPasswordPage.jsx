@@ -24,6 +24,8 @@ export default function ResetPasswordPage() {
     if (name === 'password') {
       if (!value) newErrors.password = 'Password is required';
       else if (value.length < 8) newErrors.password = 'Minimum 8 characters';
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(value))
+        newErrors.password = 'Password must contain uppercase, lowercase, number, and special character';
       else delete newErrors.password;
     } else if (name === 'confirmPassword') {
       if (!value) newErrors.confirmPassword = 'Confirm password is required';
@@ -44,6 +46,10 @@ export default function ResetPasswordPage() {
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(password)) {
+      setError('Password must contain uppercase, lowercase, number, and special character.');
       return;
     }
     if (password !== confirmPassword) {
