@@ -32,7 +32,7 @@ const pushSubscriptionSchema = new mongoose.Schema({
 });
 
 pushSubscriptionSchema.index({ user: 1 });
-pushSubscriptionSchema.index({ endpoint: 1 }, { unique: true });
+// endpoint is uniquely indexed via `unique: true` on the field definition
 pushSubscriptionSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('PushSubscription', pushSubscriptionSchema);

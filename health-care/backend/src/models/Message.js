@@ -90,7 +90,7 @@ const messageSchema = new mongoose.Schema({
 // Indexes for performance
 messageSchema.index({ conversationId: 1, createdAt: 1 });
 messageSchema.index({ 'sender.userId': 1 });
-messageSchema.index({ status: 1 });
+// status is indexed via `index: true` on the field definition
 messageSchema.index({ createdAt: -1 });
 
 // Virtual for delivery time
