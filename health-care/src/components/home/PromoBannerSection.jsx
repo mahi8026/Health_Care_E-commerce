@@ -60,8 +60,8 @@ export default function PromoBannerSection({ bannerId = 0 }) {
   }, []);
 
   const handleBannerClick = (banner) => {
-    if (banner.link) {
-      router.push(banner.link);
+    if (banner.linkUrl || banner.link) {
+      router.push(banner.linkUrl || banner.link);
     }
   };
 
@@ -72,6 +72,13 @@ export default function PromoBannerSection({ bannerId = 0 }) {
   // Get specific banner by ID or default to first
   const banner = banners[bannerId] || banners[0];
   if (!banner) return null;
+  
+  // Map API fields to component fields for compatibility
+  const bannerData = {
+    ...banner,
+    image: banner.imageUrl || banner.image,
+    link: banner.linkUrl || banner.link,
+  };
 
   return (
     <section
@@ -87,14 +94,14 @@ export default function PromoBannerSection({ bannerId = 0 }) {
       }}>
         {/* Single Full-Width Hero Banner */}
         <div
-          onClick={() => handleBannerClick(banner)}
+          onClick={() => handleBannerClick(bannerData)}
           className="promo-hero-card"
           style={{
             position: 'relative',
             borderRadius: '16px',
             overflow: 'hidden',
             cursor: 'pointer',
-            background: banner.bgColor || '#f8f9fa',
+            background: bannerData.bgColor || '#f8f9fa',
             height: '380px',
             transition: 'all 0.3s ease',
           }}
@@ -108,17 +115,17 @@ export default function PromoBannerSection({ bannerId = 0 }) {
           }}
         >
           {/* Background Image - Full Width */}
-          {banner.image && (
+          {bannerData.image && (
             <div style={{
               position: 'absolute',
               inset: 0,
               zIndex: 1,
             }}>
               <Image
-                src={banner.image}
-                alt={banner.title}
+                src={bannerData.image}
+                alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
-                style={{ objectFit: 'contain', objectPosition: banner.imagePosition || 'center' }}
+                style={{ objectFit: 'contain', objectPosition: bannerData.imagePosition || 'center' }}
                 sizes="100vw"
                 priority
                 unoptimized
@@ -132,21 +139,21 @@ export default function PromoBannerSection({ bannerId = 0 }) {
             inset: 0,
             zIndex: 2,
             padding: '48px',
-            background: banner.overlay || `linear-gradient(${banner.textAlign === 'right' ? '-90deg' : '90deg'}, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.85) 40%, transparent 70%)`,
+            background: bannerData.overlay || `linear-gradient(${bannerData.textAlign === 'right' ? '-90deg' : '90deg'}, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.85) 40%, transparent 70%)`,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: banner.textAlign === 'right' ? 'flex-end' : 'flex-start',
+            alignItems: bannerData.textAlign === 'right' ? 'flex-end' : 'flex-start',
           }}>
             <div style={{ 
               maxWidth: '550px',
-              textAlign: banner.textAlign === 'right' ? 'right' : 'left',
+              textAlign: bannerData.textAlign === 'right' ? 'right' : 'left',
             }}>
               {/* Brand Logo */}
-              {banner.logo && (
+              {bannerData.logo && (
                 <div style={{ marginBottom: '20px' }}>
                   <Image 
-                    src={banner.logo} 
+                    src={bannerData.logo} 
                     alt="Brand Logo" 
                     width={100}
                     height={40}
@@ -157,29 +164,29 @@ export default function PromoBannerSection({ bannerId = 0 }) {
 
               {/* Title */}
               <h2 style={{
-                fontSize: banner.titleSize || '36px',
+                fontSize: bannerData.titleSize || '36px',
                 fontWeight: 700,
-                color: banner.titleColor || '#1F2937',
+                color: bannerData.titleColor || '#1F2937',
                 marginBottom: '12px',
                 lineHeight: 1.2,
               }}>
-                {banner.title}
+                {bannerData.title}
               </h2>
 
               {/* Subtitle */}
-              {banner.subtitle && (
+              {bannerData.subtitle && (
                 <p style={{
                   fontSize: '18px',
-                  color: banner.subtitleColor || '#6B7280',
+                  color: bannerData.subtitleColor || '#6B7280',
                   marginBottom: '24px',
                   lineHeight: 1.6,
                 }}>
-                  {banner.subtitle}
+                  {bannerData.subtitle}
                 </p>
               )}
 
               {/* Feature List */}
-              {banner.features && banner.features.length > 0 && (
+              {bannerData.features && bannerData.features.length > 0 && (
                 <ul style={{
                   listStyle: 'none',
                   padding: 0,
@@ -188,14 +195,14 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                   flexDirection: 'column',
                   gap: '10px',
                 }}>
-                  {banner.features.map((feature, i) => (
+                  {bannerData.features.map((feature, i) => (
                     <li key={i} style={{
                       fontSize: '15px',
-                      color: banner.featureColor || '#374151',
+                      color: bannerData.featureColor || '#374151',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '12px',
-                      justifyContent: banner.textAlign === 'right' ? 'flex-end' : 'flex-start',
+                      justifyContent: bannerData.textAlign === 'right' ? 'flex-end' : 'flex-start',
                     }}>
                       <span style={{
                         color: 'var(--color-brand-teal)',
@@ -209,15 +216,15 @@ export default function PromoBannerSection({ bannerId = 0 }) {
               )}
 
               {/* CTA Button */}
-              {banner.cta && (
+              {bannerData.cta && (
                 <button
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '12px',
                     padding: '14px 32px',
-                    background: banner.ctaBg || 'var(--color-brand-teal)',
-                    color: banner.ctaColor || '#fff',
+                    background: bannerData.ctaBg || 'var(--color-brand-teal)',
+                    color: bannerData.ctaColor || '#fff',
                     border: 'none',
                     borderRadius: '12px',
                     fontSize: '16px',
@@ -235,7 +242,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                     e.currentTarget.style.boxShadow = '0 4px 14px rgba(13, 148, 136, 0.3)';
                   }}
                 >
-                  {banner.cta}
+                  {bannerData.cta}
                   <span style={{ fontSize: '18px' }}>→</span>
                 </button>
               )}
