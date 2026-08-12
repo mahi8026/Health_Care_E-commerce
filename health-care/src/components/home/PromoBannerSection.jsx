@@ -23,10 +23,30 @@ export default function PromoBannerSection({ bannerId = 0 }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch promotional banners from settings or use fallback
+    // Fetch promotional banners from settings
     const fetchBanners = async () => {
       try {
-        setBanners(PROMO_BANNERS);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/settings`);
+        const data = await res.json();
+        
+        console.log('[PromoBannerSection] Fetched settings:', data);
+        console.log('[PromoBannerSection] promoBanners:', data.data?.promoBanners);
+        
+        if (data.success && data.data?.promoBanners && data.data.promoBanners.length > 0) {
+          // Filter only active banners
+          const activeBanners = data.data.promoBanners.filter(b => b.isActive);
+          console.log('[PromoBannerSection] Active banners:', activeBanners);
+          
+          if (activeBanners.length > 0) {
+            setBanners(activeBanners);
+          } else {
+            console.log('[PromoBannerSection] No active banners, using defaults');
+            setBanners(PROMO_BANNERS);
+          }
+        } else {
+          console.log('[PromoBannerSection] No promoBanners in response, using defaults');
+          setBanners(PROMO_BANNERS);
+        }
       } catch (error) {
         console.error('[PromoBannerSection] Failed to load banners:', error);
         setBanners(PROMO_BANNERS);

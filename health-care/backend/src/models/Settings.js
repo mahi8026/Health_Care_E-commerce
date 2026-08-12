@@ -63,6 +63,17 @@ const settingsSchema = new mongoose.Schema({
     linkUrl: { type: String, default: '/products' },
     isActive: { type: Boolean, default: true },
   },
+  promoBanners: {
+    type: [{
+      imageUrl: { type: String, default: '' },
+      altText: { type: String, default: '' },
+      title: { type: String, default: '' },
+      linkUrl: { type: String, default: '/products' },
+      order: { type: Number, default: 0 },
+      isActive: { type: Boolean, default: true },
+    }],
+    default: [],
+  },
   updatedAt: {
     type: Date,
     default: Date.now,
