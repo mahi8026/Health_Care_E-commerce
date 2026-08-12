@@ -8,9 +8,10 @@ const DEFAULT_SLIDE = { imageUrl: '', altText: '', linkUrl: '/products', order: 
 export default function BannersManagement() {
   const [slides, setSlides] = useState([]);
   const [promoBanner, setPromoBanner] = useState({ imageUrl: '', altText: '', linkUrl: '/products', isActive: true });
+  const [promoBanners, setPromoBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingIndex, setUploadingIndex] = useState(null); // index or 'promo'
+  const [uploadingIndex, setUploadingIndex] = useState(null); // index or 'promo' or 'promo-0', 'promo-1'
   const [message, setMessage] = useState({ text: '', type: '' });
 
   const token = () => localStorage.getItem('Mediport_token');
@@ -34,6 +35,10 @@ export default function BannersManagement() {
                { ...DEFAULT_SLIDE, order: 2 }, { ...DEFAULT_SLIDE, order: 3 }]
         );
         setPromoBanner(s.promoBanner || { imageUrl: '', altText: '', linkUrl: '/products', isActive: true });
+        setPromoBanners(s.promoBanners || [
+          { imageUrl: '', altText: '', title: 'Air Pressure Calf Massager', linkUrl: '/products?search=massager', isActive: true, order: 0 },
+          { imageUrl: '', altText: '', title: 'Smart Fat Vibration Machine', linkUrl: '/products?search=slimming', isActive: true, order: 1 },
+        ]);
       } catch {
         showMessage('Failed to load settings', 'error');
       } finally {
@@ -89,6 +94,42 @@ export default function BannersManagement() {
     }
   };
 
+  const handlePromoBannerImageUpload = async (e, index) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingIndex(`promo-${index}`);
+    try {
+      const url = await uploadImage(file, `promo-${index}`);
+      setPromoBanners(prev => prev.map((b, i) => i === index ? { ...b, imageUrl: url } : b));
+      showMessage('Promo banner image uploaded');
+    } catch (err) {
+      showMessage(err.message || 'Upload failed', 'error');
+    } finally {
+      setUploadingIndex(null);
+      e.target.value = '';
+    }
+  };
+
+  const handlePromoBannerChange = (index, field, value) => {
+    setPromoBanners(prev => prev.map((b, i) => i === index ? { ...b, [field]: value } : b));
+  };
+
+  const addPromoBanner = () => {
+    if (promoBanners.length >= 4) return showMessage('Maximum 4 promo banners allowed', 'error');
+    setPromoBanners(prev => [...prev, { 
+      imageUrl: '', 
+      altText: '', 
+      title: 'New Promo Banner',
+      linkUrl: '/products', 
+      isActive: true, 
+      order: prev.length 
+    }]);
+  };
+
+  const removePromoBanner = (index) => {
+    setPromoBanners(prev => prev.filter((_, i) => i !== index).map((b, i) => ({ ...b, order: i })));
+  };
+
   const handleSlideChange = (index, field, value) => {
     setSlides(prev => prev.map((s, i) => i === index ? { ...s, [field]: value } : s));
   };
@@ -111,6 +152,7 @@ export default function BannersManagement() {
         body: JSON.stringify({
           heroSlides: slides.map((s, i) => ({ ...s, order: i })),
           promoBanner,
+          promoBanners: promoBanners.map((b, i) => ({ ...b, order: i })),
         }),
       });
       const data = await res.json();
@@ -338,6 +380,130 @@ export default function BannersManagement() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Promotional Banners Section */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div>
+            <h2 className="text-base font-semibold text-[var(--color-text-primary)]">Promotional Banners</h2>
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+              Full-width promotional banners shown between sections. Recommended size: 1280×380px.
+            </p>
+          </div>
+          <button
+            onClick={addPromoBanner}
+            className="flex-1 sm:flex-none min-h-[44px] px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-medium hover:bg-[var(--color-background-secondary)] transition-colors"
+          >
+            + Add Promo Banner
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {promoBanners.map((banner, index) => (
+            <div key={index} className="bg-white border-[0.5px] border-[var(--color-border-tertiary)] rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 bg-red-600 text-white rounded-full text-xs font-semibold flex items-center justify-center">
+                    {index + 1}
+                  </span>
+                  <span className="text-sm font-semibold text-[var(--color-text-primary)]">
+                    Promo Banner {index + 1}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <div
+                      onClick={() => handlePromoBannerChange(index, 'isActive', !banner.isActive)}
+                      className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${banner.isActive ? 'bg-brand-teal' : 'bg-gray-300'}`}
+                    >
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${banner.isActive ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                    </div>
+                    <span className="text-xs text-[var(--color-text-secondary)]">{banner.isActive ? 'Active' : 'Hidden'}</span>
+                  </label>
+                  {promoBanners.length > 1 && (
+                    <button
+                      onClick={() => removePromoBanner(index)}
+                      className="text-red-600 text-xs hover:underline"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm text-[var(--color-text-secondary)] mb-2">Banner Image</label>
+                  {banner.imageUrl ? (
+                    <div className="relative group rounded-lg overflow-hidden border-[0.5px] border-[var(--color-border-secondary)]" style={{ height: 140 }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={banner.imageUrl} alt={banner.altText} className="w-full h-full object-cover" loading="lazy" />
+                      <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                        <span className="text-white text-xs font-medium">Change Image</span>
+                        <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                          onChange={(e) => handlePromoBannerImageUpload(e, index)}
+                          disabled={uploadingIndex !== null} />
+                      </label>
+                      {uploadingIndex === `promo-${index}` && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <span className="text-white text-xs">Uploading...</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <label className={`flex flex-col items-center justify-center border-2 border-dashed border-[var(--color-border-secondary)] rounded-lg cursor-pointer hover:border-brand-teal hover:bg-[var(--color-status-success-tint)] transition-colors ${uploadingIndex === `promo-${index}` ? 'opacity-50 pointer-events-none' : ''}`} style={{ height: 140 }}>
+                      <svg className="w-8 h-8 text-[var(--color-text-secondary)] mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-xs text-[var(--color-text-secondary)]">
+                        {uploadingIndex === `promo-${index}` ? 'Uploading...' : 'Click to upload (1280×380px)'}
+                      </span>
+                      <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                        onChange={(e) => handlePromoBannerImageUpload(e, index)}
+                        disabled={uploadingIndex !== null} />
+                    </label>
+                  )}
+                </div>
+
+                {/* Fields */}
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Banner Title</label>
+                    <input
+                      type="text"
+                      value={banner.title}
+                      onChange={e => handlePromoBannerChange(index, 'title', e.target.value)}
+                      placeholder="e.g. Air Pressure Calf Massager"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
+                    <input
+                      type="text"
+                      value={banner.altText}
+                      onChange={e => handlePromoBannerChange(index, 'altText', e.target.value)}
+                      placeholder="e.g. Medical Equipment"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
+                    <input
+                      type="text"
+                      value={banner.linkUrl}
+                      onChange={e => handlePromoBannerChange(index, 'linkUrl', e.target.value)}
+                      placeholder="/products"
+                      className="w-full px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm focus:outline-none focus:border-brand-teal"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
