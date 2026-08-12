@@ -50,27 +50,58 @@ export default function BannersManagement() {
 
   // Upload image to Cloudinary via backend
   const uploadImage = async (file, index) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    const res = await fetch(`${API}/upload/image`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token()}` },
-      body: formData,
-    });
-    const data = await res.json();
-    if (!data.success || !data.url) throw new Error(data.message || 'Upload failed');
-    return data.url;
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch(`${API}/upload/image`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token()}` },
+        body: formData,
+      });
+      const data = await res.json();
+      
+      console.log('[BannersManagement] Upload response:', data);
+      
+      if (!res.ok) {
+        throw new Error(data.message || `HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      if (!data.success || !data.url) {
+        throw new Error(data.message || 'Upload failed - no URL returned');
+      }
+      
+      return data.url;
+    } catch (error) {
+      console.error('[BannersManagement] Upload error:', error);
+      throw error;
+    }
   };
 
   const handleSlideImageUpload = async (e, index) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showMessage('Please select a valid image file', 'error');
+      e.target.value = '';
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showMessage('Image size must be less than 5MB', 'error');
+      e.target.value = '';
+      return;
+    }
+    
     setUploadingIndex(index);
     try {
       const url = await uploadImage(file, index);
       setSlides(prev => prev.map((s, i) => i === index ? { ...s, imageUrl: url } : s));
-      showMessage('Image uploaded');
+      showMessage('Image uploaded successfully');
     } catch (err) {
+      console.error('Upload error:', err);
       showMessage(err.message || 'Upload failed', 'error');
     } finally {
       setUploadingIndex(null);
@@ -97,12 +128,28 @@ export default function BannersManagement() {
   const handlePromoBannerImageUpload = async (e, index) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showMessage('Please select a valid image file', 'error');
+      e.target.value = '';
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showMessage('Image size must be less than 5MB', 'error');
+      e.target.value = '';
+      return;
+    }
+    
     setUploadingIndex(`promo-${index}`);
     try {
       const url = await uploadImage(file, `promo-${index}`);
       setPromoBanners(prev => prev.map((b, i) => i === index ? { ...b, imageUrl: url } : b));
-      showMessage('Promo banner image uploaded');
+      showMessage('Promo banner image uploaded successfully');
     } catch (err) {
+      console.error('Upload error:', err);
       showMessage(err.message || 'Upload failed', 'error');
     } finally {
       setUploadingIndex(null);
