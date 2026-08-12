@@ -809,6 +809,96 @@ exports.getOrder = async (req, res) => {
 };
 
 /**
+ * Admin-only: manually book a SteadFast shipment for an order on demand,
+ * regardless of its current status. Returns errors so the admin gets feedback.
+ *
+ * @route POST /api/orders/:id/steadfast/ship
+ * @access Private/Admin
+ */
+exports.shipViaSteadfast = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return errorResponse(res, 'Order not found', null, 404);
+    }
+
+    const steadfastService = require('../services/steadfastService');
+    if (!steadfastService.isConfigured()) {
+      return errorResponse(res, 'SteadFast is not configured. Set STEADFAST_API_KEY and STEADFAST_SECRET_KEY first.', null, 503);
+    }
+
+    if (order.tracking?.consignmentId || order.tracking?.courier === 'SteadFast') {
+      return errorResponse(res, `Shipment already booked for this order (consignment ${order.tracking.consignmentId || order.tracking.trackingNumber})`, null, 409);
+    }
+
+    const address = order.deliveryAddress || {};
+    if (!address.name || !address.phone || !(address.street || address.thana || address.district)) {
+      return errorResponse(res, 'Order is missing a complete shipping address (name, phone, street/area/district)', null, 400);
+    }
+
+    const payload = steadfastService.buildShipmentPayload(order);
+    const consignment = await steadfastService.createShipment(payload);
+
+    order.trackingNumber = consignment.tracking_code || consignment.invoice || order.trackingNumber;
+    order.tracking = {
+      ...(order.tracking || {}),
+      courier: 'SteadFast',
+      trackingNumber: order.trackingNumber,
+      consignmentId: consignment.consignment_id,
+      steadfastStatus: consignment.status,
+      dispatchedAt: new Date()
+    };
+    order.markModified('tracking');
+    await order.save();
+
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.ORDER.STATUS_CHANGED,
+      targetModel: 'Order',
+      targetId: order._id,
+      targetName: order.orderNumber,
+      req,
+      changes: { before: {}, after: { steedfastBooked: true } },
+      metadata: { consignmentId: consignment.consignment_id, trackingCode: consignment.tracking_code }
+    });
+
+    return successResponse(res, {
+      order,
+      shipment: { consignmentId: consignment.consignment_id, trackingCode: consignment.tracking_code, status: consignment.status }
+    }, 'SteadFast shipment booked successfully');
+  } catch (error) {
+    logger.error(`[shipViaSteadfast] ${error.message}`, { stack: error.stack });
+    if (error.name === 'SteadfastError') {
+      return errorResponse(res, `SteadFast booking failed: ${error.message}`, error.status ? [error.message] : null, error.status === 0 ? 502 : error.status);
+    }
+    return errorResponse(res, error.message || 'Failed to book shipment', null, 500);
+  }
+};
+
+/**
+ * Admin-only: current SteadFast account balance.
+ *
+ * @route GET /api/orders/steadfast/balance
+ * @access Private/Admin
+ */
+exports.getSteadfastBalance = async (_req, res) => {
+  try {
+    const steadfastService = require('../services/steadfastService');
+    if (!steadfastService.isConfigured()) {
+      return errorResponse(res, 'SteadFast is not configured', null, 503);
+    }
+    const balance = await steadfastService.getBalance();
+    return successResponse(res, { balance });
+  } catch (error) {
+    logger.error(`[getSteadfastBalance] ${error.message}`);
+    if (error.name === 'SteadfastError') {
+      return errorResponse(res, `SteadFast balance check failed: ${error.message}`, null, 502);
+    }
+    return errorResponse(res, 'Failed to fetch SteadFast balance', null, 500);
+  }
+};
+
+/**
  * Update order status and send notifications (admin only).
  * 
  * @param {Request} req - Express request object

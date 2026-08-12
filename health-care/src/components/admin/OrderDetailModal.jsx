@@ -49,6 +49,59 @@ export default function OrderDetailModal({ orderId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [showStatusUpdate, setShowStatusUpdate] = useState(false);
   const [generatingInvoice, setGeneratingInvoice] = useState(false);
+  const [steadfastBalance, setSteadfastBalance] = useState(null);
+  const [shipping, setShipping] = useState(null);
+  const [shippingViaSteadfast, setShippingViaSteadfast] = useState(false);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const token = localStorage.getItem('Mediport_token');
+        const res = await fetch(`${API}/orders/steadfast/balance`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setSteadfastBalance(data.data?.balance ?? null);
+        }
+      } catch {
+        setSteadfastBalance(null);
+      }
+    };
+    fetchBalance();
+  }, []);
+
+  const handleShipViaSteadfast = async () => {
+    try {
+      setShippingViaSteadfast(true);
+      const token = localStorage.getItem('Mediport_token');
+      if (!token) throw new Error('Not authenticated. Please log in again.');
+      const res = await fetch(`${API}/orders/${orderId}/steadfast/ship`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Server returned ${res.status} — invalid response`);
+      }
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `Failed to book shipment (${res.status})`);
+      }
+      const updated = data.order || data.data?.order || data.data;
+      if (updated) setOrder(updated);
+      setShipping(data.shipment || data.data?.shipment || null);
+      showToast.success('SteadFast shipment booked');
+    } catch (err) {
+      showToast.error(err.message || 'Failed to book SteadFast shipment');
+    } finally {
+      setShippingViaSteadfast(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -284,6 +337,61 @@ export default function OrderDetailModal({ orderId, onClose }) {
                       </span>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* SteadFast Courier */}
+              {order.tracking?.courier === 'SteadFast' || shipping ? (
+                <div className="bg-[var(--color-status-success-tint)] rounded-lg p-4">
+                  <h3 className="text-sm font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
+                    SteadFast Shipment
+                  </h3>
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-[var(--color-status-success)]">Tracking Code</span>
+                      <span className="font-mono font-semibold">
+                        {order.trackingNumber || order.tracking?.trackingNumber || shipping?.trackingCode}
+                      </span>
+                    </div>
+                    {order.tracking?.consignmentId && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--color-status-success)]">Consignment ID</span>
+                        <span className="font-mono">{order.tracking.consignmentId}</span>
+                      </div>
+                    )}
+                    {(order.tracking?.steadfastStatus || shipping?.status) && (
+                      <div className="flex justify-between">
+                        <span className="text-[var(--color-status-success)]">Courier Status</span>
+                        <span className="font-medium capitalize">
+                          {(order.tracking?.steadfastStatus || shipping?.status).replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-[var(--color-background-tertiary)] rounded-lg p-4">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <div>
+                      <h3 className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">SteadFast Courier</h3>
+                      <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
+                        {steadfastBalance !== null && steadfastBalance !== undefined
+                          ? `Account balance: ৳${Number(steadfastBalance).toLocaleString()}`
+                          : 'Balance unavailable'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleShipViaSteadfast}
+                      disabled={shippingViaSteadfast || order.status === 'cancelled' || order.status === 'delivered'}
+                      className="px-4 py-2 bg-brand-teal text-white rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {shippingViaSteadfast ? 'Booking...' : 'Book SteadFast Shipment'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    Books a consignment on demand using the order&apos;s shipping address (COD amount applies for COD orders).
+                  </p>
                 </div>
               )}
 
