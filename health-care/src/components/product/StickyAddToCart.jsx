@@ -15,6 +15,7 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
   const [dismissed, setDismissed] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
+  const [topbarHidden, setTopbarHidden] = useState(false);
   const barRef = useRef(null);
   const { addToCart } = useCart();
 
@@ -49,6 +50,25 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
     return () => window.removeEventListener('scroll', throttled);
   }, [scrollThreshold]);
 
+  // Watch for topbar visibility changes
+  useEffect(() => {
+    const checkTopbar = () => {
+      setTopbarHidden(document.documentElement.classList.contains('topbar-hidden'));
+    };
+    
+    // Check initial state
+    checkTopbar();
+    
+    // Watch for class changes on html element
+    const observer = new MutationObserver(checkTopbar);
+    observer.observe(document.documentElement, { 
+      attributes: true, 
+      attributeFilter: ['class'] 
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
   // Reset dismissed when product changes
   const prevProductId = useRef(null);
   useEffect(() => {
@@ -71,17 +91,21 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
   const inStock = product.stock > 0;
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
 
+  // Calculate top position based on whether topbar is hidden
+  // Topbar: 32px, Header: 52px → Total: 84px when topbar visible, 52px when hidden
+  const topPosition = topbarHidden ? '52px' : 'var(--site-nav-height, 84px)';
+
   return (
     <div
       ref={barRef}
       className="hidden lg:block fixed left-0 right-0 bg-white"
       aria-hidden={!show}
       style={{
-        top: 'var(--site-nav-height, 84px)',
+        top: topPosition,
         zIndex: 849,                           /* below navbar (z-header:900), above content */
         transform: show ? 'translateY(0)' : 'translateY(-120%)',
         opacity: show ? 1 : 0,
-        transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease',
+        transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, top 0.2s ease',
         pointerEvents: show ? 'auto' : 'none',
         borderBottom: '1px solid #e5e7eb',
         boxShadow: '0 4px 12px rgba(11,37,69,0.1)',
