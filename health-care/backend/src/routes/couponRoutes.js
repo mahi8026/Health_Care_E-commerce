@@ -22,7 +22,7 @@ router.get('/active-promo', async (req, res) => {
       endDate: { $gte: now },
     })
       .sort({ value: -1 })
-      .select('code type value description endDate')
+      .select('code type value description endDate minimumPurchase')
       .lean();
     res.json({ success: true, data: { coupon: coupon || null } });
   } catch (err) {

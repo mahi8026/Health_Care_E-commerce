@@ -1318,6 +1318,86 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* COUPON BANNER: Show active promo code when available */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {promo && (
+        <section style={{ padding: '0 24px 8px', maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #1a3a6b 100%)',
+            borderRadius: 14,
+            padding: '18px 28px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 12,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span style={{ fontSize: 28 }}>🎟️</span>
+              <div>
+                <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
+                  {promo.type === 'percentage'
+                    ? `${promo.value}% OFF your order`
+                    : `৳${promo.value?.toLocaleString()} OFF your order`}
+                  {promo.minPurchase > 0 && (
+                    <span style={{ fontWeight: 400, fontSize: 13, opacity: 0.8 }}>
+                      {' '}on orders over ৳{promo.minPurchase?.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+                {promo.description && (
+                  <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>{promo.description}</div>
+                )}
+                {promo.endDate && (
+                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>
+                    Expires: {new Date(promo.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.12)',
+                border: '2px dashed rgba(255,255,255,0.5)',
+                borderRadius: 8,
+                padding: '8px 18px',
+              }}>
+                <span style={{ color: '#fff', fontWeight: 800, fontSize: 18, letterSpacing: '0.1em' }}>
+                  {promo.code}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  if (typeof navigator !== 'undefined') {
+                    navigator.clipboard.writeText(promo.code).then(() => {
+                      // Show brief feedback
+                      const el = document.getElementById('coupon-copy-btn');
+                      if (el) { el.textContent = 'Copied!'; setTimeout(() => { el.textContent = 'Copy'; }, 2000); }
+                    }).catch(() => {});
+                  }
+                }}
+                id="coupon-copy-btn"
+                style={{
+                  background: 'var(--color-brand-teal)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '9px 18px',
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'background 0.2s',
+                }}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 6: PROMOTIONAL BANNER 1 (Visual break after featured products) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={null}>

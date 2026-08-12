@@ -260,7 +260,7 @@ return [];
         startDate: { $lte: new Date() },
         endDate: { $gte: new Date() }
       })
-        .select('code discount type minPurchase maxDiscount description')
+        .select('code value type minPurchase maximumDiscount description endDate')
         .lean(),
 
       // 10. Site stats
