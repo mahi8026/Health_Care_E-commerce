@@ -829,8 +829,9 @@ export default function HomePage() {
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HERO — left: text+search  |  right: image slider */}
+      {/* Hidden on mobile (< 1024px), visible on large devices (≥ 1024px) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-hero home-hero--padded">
+      <section className="home-hero home-hero--padded hidden lg:block">
         <div className="hero-grid-container">
 
           {/* LEFT: Text + Search */}
