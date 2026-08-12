@@ -97,9 +97,10 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                 src={banner.image}
                 alt={banner.title}
                 fill
-                style={{ objectFit: 'cover', objectPosition: banner.imagePosition || 'center' }}
+                style={{ objectFit: 'contain', objectPosition: banner.imagePosition || 'center' }}
                 sizes="100vw"
                 priority
+                unoptimized
               />
             </div>
           )}
@@ -276,16 +277,16 @@ const PROMO_BANNERS = [
     cta: 'Shop Now',
     website: null,
     link: '/products?search=massager',
-    bgColor: '#EBF5FF',
+    bgColor: '#FFFFFF',
     titleColor: '#003A70',
     subtitleColor: '#004C8C',
     featureColor: '#1E4976',
     ctaBg: '#DC2626',
     ctaColor: '#fff',
-    image: '/AD Banner.png',
-    imagePosition: 'right center',
+    image: '/AD%20Banner.png',
+    imagePosition: 'center',
     textAlign: 'left',
-    overlay: 'linear-gradient(90deg, rgba(235,245,255,0.98) 0%, rgba(235,245,255,0.88) 40%, transparent 70%)',
+    overlay: 'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 35%, transparent 65%)',
   },
   {
     title: 'Smart Fat Vibration Slimming Machine',
