@@ -83,9 +83,8 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
         opacity: show ? 1 : 0,
         transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease',
         pointerEvents: show ? 'auto' : 'none',
-        borderTop: '3px solid var(--color-brand-teal)',
         borderBottom: '1px solid #e5e7eb',
-        boxShadow: '0 6px 24px rgba(11,37,69,0.13)',
+        boxShadow: '0 4px 12px rgba(11,37,69,0.1)',
       }}
     >
       <div className="max-w-7xl mx-auto px-4 lg:px-6 py-2 flex items-center gap-4">
