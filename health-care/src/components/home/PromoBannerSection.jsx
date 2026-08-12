@@ -102,7 +102,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
             overflow: 'hidden',
             cursor: 'pointer',
             background: bannerData.bgColor || '#f8f9fa',
-            height: '500px',
+            height: '420px',
             transition: 'all 0.3s ease',
           }}
           onMouseEnter={(e) => {
@@ -125,7 +125,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                 src={bannerData.image}
                 alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
-                style={{ objectFit: 'contain', objectPosition: 'center' }}
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
                 sizes="100vw"
                 priority
                 unoptimized
@@ -260,14 +260,14 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         /* Mobile: Reduce height */}
         @media (max-width: 768px) {
           .promo-hero-card {
-            height: 350px !important;
+            height: 300px !important;
           }
         }
 
         /* Tablet */}
         @media (min-width: 769px) and (max-width: 1024px) {
           .promo-hero-card {
-            height: 400px !important;
+            height: 350px !important;
           }
         }
       `}</style>
