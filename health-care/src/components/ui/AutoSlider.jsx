@@ -176,9 +176,11 @@ export default function AutoSlider({
         className="auto-slider-track"
         style={{
           display: 'flex',
+          alignItems: 'stretch',      /* equal height cards */
           transform: `translateX(${translateX}%)`,
           transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
           willChange: 'transform',
+          paddingTop: '16px',         /* room for ranking badge that pokes above card */
         }}
       >
         {items.map((child, index) => (
@@ -189,9 +191,14 @@ export default function AutoSlider({
               flex: `0 0 calc(${100 / visibleItems}%)`,
               minWidth: 0,
               paddingRight: index < items.length - 1 ? gap : '0',
+              display: 'flex',         /* make child fill full height */
+              alignItems: 'stretch',
             }}
           >
-            {child}
+            {/* Inner wrapper stretches the card to full row height */}
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+              {child}
+            </div>
           </div>
         ))}
       </div>
@@ -221,18 +228,20 @@ export default function AutoSlider({
               cursor: 'pointer',
               zIndex: 10,
               transition: 'all 0.2s',
-              opacity: (!loop && !canGoPrev) ? 0.3 : 0,
+              opacity: (!loop && !canGoPrev) ? 0.3 : 0.5,   /* always slightly visible */
               pointerEvents: (!loop && !canGoPrev) ? 'none' : 'auto',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'var(--color-brand-teal)';
               e.currentTarget.style.color = '#fff';
               e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+              e.currentTarget.style.opacity = '1';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#fff';
               e.currentTarget.style.color = 'var(--color-text-primary)';
               e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+              e.currentTarget.style.opacity = '0.5';
             }}
             aria-label="Previous items"
           >
@@ -261,18 +270,20 @@ export default function AutoSlider({
               cursor: 'pointer',
               zIndex: 10,
               transition: 'all 0.2s',
-              opacity: (!loop && !canGoNext) ? 0.3 : 0,
+              opacity: (!loop && !canGoNext) ? 0.3 : 0.5,   /* always slightly visible */
               pointerEvents: (!loop && !canGoNext) ? 'none' : 'auto',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'var(--color-brand-teal)';
               e.currentTarget.style.color = '#fff';
               e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+              e.currentTarget.style.opacity = '1';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = '#fff';
               e.currentTarget.style.color = 'var(--color-text-primary)';
               e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+              e.currentTarget.style.opacity = '0.5';
             }}
             aria-label="Next items"
           >
@@ -284,7 +295,6 @@ export default function AutoSlider({
       {/* Progress Dots removed - taking up too much space */}
       {/* Pagination dots hidden for cleaner design */}
 
-      {/* Hover styles */}
       <style jsx>{`
         .auto-slider-container:hover .auto-slider-arrow {
           opacity: 1 !important;

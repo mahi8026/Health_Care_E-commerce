@@ -196,19 +196,7 @@ export default function BestSellingSection() {
             showArrows={false}
           >
             {[...Array(12)].map((_, i) => (
-              <div key={i} style={{ position: 'relative', paddingTop: '12px' }}>
-                <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: '#E5E7EB',
-                  position: 'absolute',
-                  top: '0',
-                  left: '12px',
-                  zIndex: 10,
-                }} />
-                <ProductCardSkeleton />
-              </div>
+              <ProductCardSkeleton key={i} />
             ))}
           </AutoSlider>
         )}
@@ -267,7 +255,7 @@ export default function BestSellingSection() {
 
         {/* Products Slider */}
         {!loading && products.length > 0 && (
-          <div style={{ paddingTop: '12px' }}>
+          <div>
             <AutoSlider
               itemsToShow={6}
               itemsToScroll={2}
