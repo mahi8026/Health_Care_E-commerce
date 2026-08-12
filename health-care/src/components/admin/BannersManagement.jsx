@@ -66,11 +66,18 @@ export default function BannersManagement() {
         throw new Error(data.message || `HTTP ${res.status}: ${res.statusText}`);
       }
       
-      if (!data.success || !data.url) {
-        throw new Error(data.message || 'Upload failed - no URL returned');
+      if (!data.success) {
+        throw new Error(data.message || 'Upload failed');
       }
       
-      return data.url;
+      // Backend returns { success: true, data: { url, publicId } }
+      const imageUrl = data.data?.url || data.url;
+      
+      if (!imageUrl) {
+        throw new Error('Upload failed - no URL returned');
+      }
+      
+      return imageUrl;
     } catch (error) {
       console.error('[BannersManagement] Upload error:', error);
       throw error;
