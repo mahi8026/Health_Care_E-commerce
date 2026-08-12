@@ -264,6 +264,30 @@ export default function PromoBannerSection({ bannerId = 0 }) {
 
 const PROMO_BANNERS = [
   {
+    title: 'Air Pressure Portable Calf Massager',
+    subtitle: 'Gentle air compression massage to relax tired & fatigued calf muscles',
+    logo: null,
+    features: [
+      'Air Compression Massage',
+      'Relieves Tired & Fatigued Calves',
+      'Portable & Lightweight',
+      'Easy-to-Use Controls'
+    ],
+    cta: 'Shop Now',
+    website: null,
+    link: '/products?search=massager',
+    bgColor: '#EBF5FF',
+    titleColor: '#003A70',
+    subtitleColor: '#004C8C',
+    featureColor: '#1E4976',
+    ctaBg: '#DC2626',
+    ctaColor: '#fff',
+    image: '/AD Banner.png',
+    imagePosition: 'right center',
+    textAlign: 'left',
+    overlay: 'linear-gradient(90deg, rgba(235,245,255,0.98) 0%, rgba(235,245,255,0.88) 40%, transparent 70%)',
+  },
+  {
     title: 'Smart Fat Vibration Slimming Machine',
     subtitle: 'Fat Burning Vibration & Heating for Effective Body Contouring',
     logo: null,
@@ -282,9 +306,9 @@ const PROMO_BANNERS = [
     featureColor: '#451A03',
     ctaBg: '#DC2626',
     ctaColor: '#fff',
-    image: null, // Add Cloudinary URL
+    image: null,
     imagePosition: 'right center',
-    textAlign: 'left', // or 'right'
+    textAlign: 'left',
     overlay: 'linear-gradient(90deg, rgba(255,229,229,0.98) 0%, rgba(255,229,229,0.85) 45%, transparent 75%)',
   },
   {
@@ -305,33 +329,10 @@ const PROMO_BANNERS = [
     featureColor: '#0369A1',
     ctaBg: '#0284C7',
     ctaColor: '#fff',
-    image: null, // Add Cloudinary URL
+    image: null,
     imagePosition: 'left center',
     textAlign: 'right',
     overlay: 'linear-gradient(-90deg, rgba(224,242,254,0.98) 0%, rgba(224,242,254,0.85) 45%, transparent 75%)',
-  },
-  {
-    title: 'Professional Double Head Alloy Shaver',
-    subtitle: 'Smooth & Reliable Grooming for Men',
-    logo: null,
-    features: [
-      'Dual rotating heads for close shave',
-      'Rechargeable with LED indicator',
-      '100% waterproof design',
-      'Compact and travel-friendly'
-    ],
-    cta: 'Order Now',
-    link: '/products?search=shaver',
-    bgColor: '#F3F4F6',
-    titleColor: '#111827',
-    subtitleColor: '#4B5563',
-    featureColor: '#374151',
-    ctaBg: 'var(--color-brand-navy)',
-    ctaColor: '#fff',
-    image: null, // Add Cloudinary URL
-    imagePosition: 'right center',
-    textAlign: 'left',
-    overlay: 'linear-gradient(90deg, rgba(243,244,246,0.98) 0%, rgba(243,244,246,0.85) 45%, transparent 75%)',
   },
 ];
 
