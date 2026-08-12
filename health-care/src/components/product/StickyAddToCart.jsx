@@ -72,22 +72,9 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
 
   return (
-    <>
-      {/* In-flow spacer that pushes content down when bar is visible (desktop only) */}
-      <div
-        className="hidden lg:block"
-        style={{
-          height: show ? '72px' : '0px',
-          transition: 'height 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-          flexShrink: 0,
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Fixed sticky bar */}
-      <div
-        ref={barRef}
-        className="hidden lg:block fixed left-0 right-0 bg-white"
+    <div
+      ref={barRef}
+      className="hidden lg:block fixed left-0 right-0 bg-white"
       aria-hidden={!show}
       style={{
         top: 'var(--site-nav-height, 84px)',
@@ -204,6 +191,5 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
         </button>
       </div>
     </div>
-    </>
   );
 }
