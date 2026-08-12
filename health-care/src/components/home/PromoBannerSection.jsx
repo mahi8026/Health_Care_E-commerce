@@ -84,12 +84,12 @@ export default function PromoBannerSection({ bannerId = 0 }) {
     <section
       className="promo-banner-hero"
       style={{
-        padding: '40px 20px',
+        padding: '0',
         background: '#fff',
       }}
     >
       <div style={{
-        maxWidth: '1280px',
+        width: '100%',
         margin: '0 auto',
       }}>
         {/* Single Full-Width Hero Banner */}
@@ -98,16 +98,16 @@ export default function PromoBannerSection({ bannerId = 0 }) {
           className="promo-hero-card"
           style={{
             position: 'relative',
-            borderRadius: '16px',
+            borderRadius: '0',
             overflow: 'hidden',
             cursor: 'pointer',
             background: bannerData.bgColor || '#f8f9fa',
-            height: '380px',
+            height: '400px',
             transition: 'all 0.3s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.01)';
-            e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.15)';
+            e.currentTarget.style.transform = 'scale(1.005)';
+            e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
@@ -125,7 +125,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                 src={bannerData.image}
                 alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
-                style={{ objectFit: 'contain', objectPosition: bannerData.imagePosition || 'center' }}
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
                 sizes="100vw"
                 priority
                 unoptimized
@@ -133,153 +133,141 @@ export default function PromoBannerSection({ bannerId = 0 }) {
             </div>
           )}
 
-          {/* Content Overlay - Positioned Left or Right */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 2,
-            padding: '48px',
-            background: bannerData.overlay || `linear-gradient(${bannerData.textAlign === 'right' ? '-90deg' : '90deg'}, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.85) 40%, transparent 70%)`,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: bannerData.textAlign === 'right' ? 'flex-end' : 'flex-start',
-          }}>
-            <div style={{ 
-              maxWidth: '550px',
-              textAlign: bannerData.textAlign === 'right' ? 'right' : 'left',
+          {/* Content Overlay - Only show if there's content */}
+          {(bannerData.subtitle || bannerData.features || bannerData.cta || bannerData.logo) && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 2,
+              padding: '48px',
+              background: bannerData.overlay || `linear-gradient(${bannerData.textAlign === 'right' ? '-90deg' : '90deg'}, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.85) 40%, transparent 70%)`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: bannerData.textAlign === 'right' ? 'flex-end' : 'flex-start',
             }}>
-              {/* Brand Logo */}
-              {bannerData.logo && (
-                <div style={{ marginBottom: '20px' }}>
-                  <Image 
-                    src={bannerData.logo} 
-                    alt="Brand Logo" 
-                    width={100}
-                    height={40}
-                    style={{ width: 'auto', height: '40px' }}
-                  />
-                </div>
-              )}
-
-              {/* Title */}
-              <h2 style={{
-                fontSize: bannerData.titleSize || '36px',
-                fontWeight: 700,
-                color: bannerData.titleColor || '#1F2937',
-                marginBottom: '12px',
-                lineHeight: 1.2,
+              <div style={{ 
+                maxWidth: '550px',
+                textAlign: bannerData.textAlign === 'right' ? 'right' : 'left',
               }}>
-                {bannerData.title}
-              </h2>
+                {/* Brand Logo */}
+                {bannerData.logo && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <Image 
+                      src={bannerData.logo} 
+                      alt="Brand Logo" 
+                      width={100}
+                      height={40}
+                      style={{ width: 'auto', height: '40px' }}
+                    />
+                  </div>
+                )}
 
-              {/* Subtitle */}
-              {bannerData.subtitle && (
-                <p style={{
-                  fontSize: '18px',
-                  color: bannerData.subtitleColor || '#6B7280',
-                  marginBottom: '24px',
-                  lineHeight: 1.6,
-                }}>
-                  {bannerData.subtitle}
-                </p>
-              )}
+                {/* Title */}
+                {bannerData.title && (
+                  <h2 style={{
+                    fontSize: bannerData.titleSize || '36px',
+                    fontWeight: 700,
+                    color: bannerData.titleColor || '#1F2937',
+                    marginBottom: '12px',
+                    lineHeight: 1.2,
+                  }}>
+                    {bannerData.title}
+                  </h2>
+                )}
 
-              {/* Feature List */}
-              {bannerData.features && bannerData.features.length > 0 && (
-                <ul style={{
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: '0 0 28px 0',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                }}>
-                  {bannerData.features.map((feature, i) => (
-                    <li key={i} style={{
-                      fontSize: '15px',
-                      color: bannerData.featureColor || '#374151',
-                      display: 'flex',
+                {/* Subtitle */}
+                {bannerData.subtitle && (
+                  <p style={{
+                    fontSize: '18px',
+                    color: bannerData.subtitleColor || '#6B7280',
+                    marginBottom: '24px',
+                    lineHeight: 1.6,
+                  }}>
+                    {bannerData.subtitle}
+                  </p>
+                )}
+
+                {/* Feature List */}
+                {bannerData.features && bannerData.features.length > 0 && (
+                  <ul style={{
+                    listStyle: 'none',
+                    padding: 0,
+                    margin: '0 0 28px 0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}>
+                    {bannerData.features.map((feature, i) => (
+                      <li key={i} style={{
+                        fontSize: '15px',
+                        color: bannerData.featureColor || '#374151',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        justifyContent: bannerData.textAlign === 'right' ? 'flex-end' : 'flex-start',
+                      }}>
+                        <span style={{
+                          color: 'var(--color-brand-teal)',
+                          fontSize: '20px',
+                          flexShrink: 0,
+                        }}>✓</span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* CTA Button */}
+                {bannerData.cta && (
+                  <button
+                    style={{
+                      display: 'inline-flex',
                       alignItems: 'center',
                       gap: '12px',
-                      justifyContent: bannerData.textAlign === 'right' ? 'flex-end' : 'flex-start',
-                    }}>
-                      <span style={{
-                        color: 'var(--color-brand-teal)',
-                        fontSize: '20px',
-                        flexShrink: 0,
-                      }}>✓</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {/* CTA Button */}
-              {bannerData.cta && (
-                <button
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '14px 32px',
-                    background: bannerData.ctaBg || 'var(--color-brand-teal)',
-                    color: bannerData.ctaColor || '#fff',
-                    border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 4px 14px rgba(13, 148, 136, 0.3)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(13, 148, 136, 0.4)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 14px rgba(13, 148, 136, 0.3)';
-                  }}
-                >
-                  {bannerData.cta}
-                  <span style={{ fontSize: '18px' }}>→</span>
-                </button>
-              )}
+                      padding: '14px 32px',
+                      background: bannerData.ctaBg || 'var(--color-brand-teal)',
+                      color: bannerData.ctaColor || '#fff',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: '0 4px 14px rgba(13, 148, 136, 0.3)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(13, 148, 136, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 4px 14px rgba(13, 148, 136, 0.3)';
+                    }}
+                  >
+                    {bannerData.cta}
+                    <span style={{ fontSize: '18px' }}>→</span>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Responsive Styles */}
       <style jsx>{`
-        /* Mobile: Reduce height and padding */}
+        /* Mobile: Reduce height */}
         @media (max-width: 768px) {
           .promo-hero-card {
-            height: 320px !important;
-          }
-
-          .promo-hero-card > div:last-child {
-            padding: 32px 24px !important;
-          }
-
-          .promo-hero-card h2 {
-            font-size: 24px !important;
-          }
-
-          .promo-hero-card p {
-            font-size: 14px !important;
+            height: 280px !important;
           }
         }
 
         /* Tablet */}
         @media (min-width: 769px) and (max-width: 1024px) {
           .promo-hero-card {
-            height: 350px !important;
-          }
-
-          .promo-hero-card h2 {
-            font-size: 28px !important;
+            height: 320px !important;
           }
         }
       `}</style>
@@ -293,75 +281,45 @@ export default function PromoBannerSection({ bannerId = 0 }) {
 
 const PROMO_BANNERS = [
   {
-    title: 'Air Pressure Portable Calf Massager',
-    subtitle: 'Gentle air compression massage to relax tired & fatigued calf muscles',
+    title: null,
+    subtitle: null,
     logo: null,
-    features: [
-      'Air Compression Massage',
-      'Relieves Tired & Fatigued Calves',
-      'Portable & Lightweight',
-      'Easy-to-Use Controls'
-    ],
-    cta: 'Shop Now',
+    features: null,
+    cta: null,
     website: null,
     link: '/products?search=massager',
     bgColor: '#FFFFFF',
-    titleColor: '#003A70',
-    subtitleColor: '#004C8C',
-    featureColor: '#1E4976',
-    ctaBg: '#DC2626',
-    ctaColor: '#fff',
     image: '/AD%20Banner.png',
     imagePosition: 'center',
     textAlign: 'left',
-    overlay: 'linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 35%, transparent 65%)',
+    overlay: null,
   },
   {
-    title: 'Smart Fat Vibration Slimming Machine',
-    subtitle: 'Fat Burning Vibration & Heating for Effective Body Contouring',
+    title: null,
+    subtitle: null,
     logo: null,
-    features: [
-      '4-level vibration intensity modes',
-      'Built-in heating function for enhanced fat burning',
-      'Rechargeable battery with long runtime',
-      'Portable and easy to use at home'
-    ],
-    cta: 'Shop Now',
+    features: null,
+    cta: null,
     website: null,
     link: '/products?category=Physiotherapy & Rehabilitation&search=slimming',
     bgColor: '#FFE5E5',
-    titleColor: '#7C2D12',
-    subtitleColor: '#92400E',
-    featureColor: '#451A03',
-    ctaBg: '#DC2626',
-    ctaColor: '#fff',
     image: null,
     imagePosition: 'right center',
     textAlign: 'left',
-    overlay: 'linear-gradient(90deg, rgba(255,229,229,0.98) 0%, rgba(255,229,229,0.85) 45%, transparent 75%)',
+    overlay: null,
   },
   {
-    title: 'Premium Foldable Electric Foot Spa Massager',
-    subtitle: 'Relaxation & Therapy with Red Light and Heating Massage',
+    title: null,
+    subtitle: null,
     logo: null,
-    features: [
-      'Red light therapy for improved circulation',
-      'Heated massage rollers for deep relaxation',
-      'Foldable design for easy storage',
-      'Digital temperature & timer control'
-    ],
-    cta: 'View Details',
+    features: null,
+    cta: null,
     link: '/products?search=foot spa massager',
     bgColor: '#E0F2FE',
-    titleColor: '#0C4A6E',
-    subtitleColor: '#075985',
-    featureColor: '#0369A1',
-    ctaBg: '#0284C7',
-    ctaColor: '#fff',
     image: null,
     imagePosition: 'left center',
     textAlign: 'right',
-    overlay: 'linear-gradient(-90deg, rgba(224,242,254,0.98) 0%, rgba(224,242,254,0.85) 45%, transparent 75%)',
+    overlay: null,
   },
 ];
 
