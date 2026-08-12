@@ -26,14 +26,14 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
               style={{
                 color: '#9CA3AF',
                 fontWeight: 500,
-                fontSize: '14px',
+                fontSize: '12px',
                 lineHeight: '1.3',
                 letterSpacing: '0.01em',
-                padding: '0 8px',
+                padding: '0 6px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                maxWidth: '300px',
+                maxWidth: '250px',
               }}
               aria-current="page"
             >
@@ -46,7 +46,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                marginRight: isLast ? '0' : '-8px',
+                marginRight: isLast ? '0' : '-6px',
                 zIndex: items.length - idx,
               }}
             >
@@ -55,22 +55,22 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  height: '36px',
-                  paddingLeft: isFirst ? '16px' : '28px',
-                  paddingRight: isLast ? '16px' : '36px',
+                  height: '28px',
+                  paddingLeft: isFirst ? '12px' : '20px',
+                  paddingRight: isLast ? '12px' : '26px',
                   background: isFirst ? '#4F46E5' : '#E5E7EB',
                   color: isFirst ? '#FFFFFF' : '#4B5563',
-                  fontSize: '14px',
+                  fontSize: '12px',
                   fontWeight: 500,
                   textDecoration: 'none',
                   position: 'relative',
                   transition: 'all 0.2s ease',
                   whiteSpace: 'nowrap',
                   clipPath: isFirst
-                    ? 'polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%)'
+                    ? 'polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%)'
                     : isLast
-                    ? 'polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%)'
-                    : 'polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%)',
+                    ? 'polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%)'
+                    : 'polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = isFirst ? '#4338CA' : '#D1D5DB';
@@ -87,10 +87,10 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           {/* Separator chevron for current item */}
           {!current && !isLast && (
             <FaChevronRight 
-              size={10} 
+              size={8} 
               style={{ 
                 color: '#D1D5DB', 
-                margin: '0 4px',
+                margin: '0 3px',
                 position: 'relative',
                 zIndex: 9999,
               }} 
@@ -118,7 +118,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         style={{
           width: '100%',
           background: '#F9FAFB',
-          padding: '12px 0',
+          padding: '8px 0',
           borderBottom: '1px solid #E5E7EB',
         }}
       >
