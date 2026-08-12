@@ -305,9 +305,16 @@ export default function BannersManagement() {
                     <img src={slide.imageUrl} alt={slide.altText} className="w-full h-full object-cover" loading="lazy" />
                     <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                       <span className="text-white text-xs font-medium">Change Image</span>
-                      <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                      <input 
+                        type="file" 
+                        id={`slide-${index}-image-change`}
+                        name={`slide-${index}-image-change`}
+                        accept="image/jpeg,image/png,image/webp" 
+                        className="hidden"
                         onChange={(e) => handleSlideImageUpload(e, index)}
-                        disabled={uploadingIndex !== null} />
+                        disabled={uploadingIndex !== null} 
+                        aria-label={`Change image for slide ${index + 1}`}
+                      />
                     </label>
                     {uploadingIndex === index && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -323,9 +330,16 @@ export default function BannersManagement() {
                     <span className="text-xs text-[var(--color-text-secondary)]">
                       {uploadingIndex === index ? 'Uploading...' : 'Click to upload (800×380px)'}
                     </span>
-                    <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                    <input 
+                      type="file" 
+                      id={`slide-${index}-image`}
+                      name={`slide-${index}-image`}
+                      accept="image/jpeg,image/png,image/webp" 
+                      className="hidden"
                       onChange={(e) => handleSlideImageUpload(e, index)}
-                      disabled={uploadingIndex !== null} />
+                      disabled={uploadingIndex !== null} 
+                      aria-label={`Upload image for slide ${index + 1}`}
+                    />
                   </label>
                 )}
               </div>
@@ -333,8 +347,10 @@ export default function BannersManagement() {
               {/* Fields */}
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
+                  <label htmlFor={`slide-${index}-alt`} className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
                   <input
+                    id={`slide-${index}-alt`}
+                    name={`slide-${index}-alt`}
                     type="text"
                     value={slide.altText}
                     onChange={e => handleSlideChange(index, 'altText', e.target.value)}
@@ -343,8 +359,10 @@ export default function BannersManagement() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
+                  <label htmlFor={`slide-${index}-link`} className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
                   <input
+                    id={`slide-${index}-link`}
+                    name={`slide-${index}-link`}
                     type="text"
                     value={slide.linkUrl}
                     onChange={e => handleSlideChange(index, 'linkUrl', e.target.value)}
@@ -413,8 +431,10 @@ export default function BannersManagement() {
 
             <div className="space-y-3">
               <div>
-                <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
+                <label htmlFor="promo-alt" className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
                 <input
+                  id="promo-alt"
+                  name="promo-alt"
                   type="text"
                   value={promoBanner.altText}
                   onChange={e => setPromoBanner(prev => ({ ...prev, altText: e.target.value }))}
@@ -423,8 +443,10 @@ export default function BannersManagement() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
+                <label htmlFor="promo-link" className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
                 <input
+                  id="promo-link"
+                  name="promo-link"
                   type="text"
                   value={promoBanner.linkUrl}
                   onChange={e => setPromoBanner(prev => ({ ...prev, linkUrl: e.target.value }))}
@@ -525,8 +547,10 @@ export default function BannersManagement() {
                 {/* Fields */}
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Banner Title</label>
+                    <label htmlFor={`promo-banner-${index}-title`} className="block text-sm text-[var(--color-text-secondary)] mb-1">Banner Title</label>
                     <input
+                      id={`promo-banner-${index}-title`}
+                      name={`promo-banner-${index}-title`}
                       type="text"
                       value={banner.title}
                       onChange={e => handlePromoBannerChange(index, 'title', e.target.value)}
@@ -535,8 +559,10 @@ export default function BannersManagement() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
+                    <label htmlFor={`promo-banner-${index}-alt`} className="block text-sm text-[var(--color-text-secondary)] mb-1">Alt Text</label>
                     <input
+                      id={`promo-banner-${index}-alt`}
+                      name={`promo-banner-${index}-alt`}
                       type="text"
                       value={banner.altText}
                       onChange={e => handlePromoBannerChange(index, 'altText', e.target.value)}
@@ -545,8 +571,10 @@ export default function BannersManagement() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
+                    <label htmlFor={`promo-banner-${index}-link`} className="block text-sm text-[var(--color-text-secondary)] mb-1">Link URL (on click)</label>
                     <input
+                      id={`promo-banner-${index}-link`}
+                      name={`promo-banner-${index}-link`}
                       type="text"
                       value={banner.linkUrl}
                       onChange={e => handlePromoBannerChange(index, 'linkUrl', e.target.value)}
