@@ -2,9 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { FaChevronRight } from 'react-icons/fa';
 
 /**
- * Breadcrumb Navigation Component — mobile-friendly with truncation
+ * Breadcrumb Navigation Component — arrow-style stepper design
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
@@ -14,63 +15,86 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   const renderItems = () =>
     items.map((item, idx) => {
       const current = isCurrent(item, idx);
+      const isFirst = idx === 0;
       const isLast = idx === items.length - 1;
 
       return (
         <React.Fragment key={`${item.label}-${idx}`}>
-          {idx > 0 && (
+          {current ? (
+            // Current page - plain text with lighter style
             <span
               style={{
                 color: '#9CA3AF',
-                fontSize: '13px',
-                fontWeight: 300,
-                margin: '0 4px',
-                lineHeight: '1',
-                flexShrink: 0,         // separator never shrinks
-              }}
-              aria-hidden="true"
-            >
-              /
-            </span>
-          )}
-          {current ? (
-            <span
-              style={{
-                color: '#7C3AED',
-                fontWeight: 600,
-                fontSize: '13px',
+                fontWeight: 500,
+                fontSize: '14px',
                 lineHeight: '1.3',
                 letterSpacing: '0.01em',
-                // Last crumb truncates with ellipsis on mobile
+                padding: '0 8px',
+                whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                minWidth: 0,           // needed for flex child to shrink
-                flexShrink: isLast ? 1 : 0,
+                maxWidth: '300px',
               }}
               aria-current="page"
             >
               {item.label}
             </span>
           ) : (
-            <Link
-              href={item.href}
+            // Clickable breadcrumb with arrow shape
+            <div
               style={{
-                color: '#6B7280',
-                fontWeight: 500,
-                fontSize: '13px',
-                lineHeight: '1.3',
-                textDecoration: 'none',
-                letterSpacing: '0.01em',
-                transition: 'color 0.2s ease',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,         // middle crumbs don't shrink
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: isLast ? '0' : '-8px',
+                zIndex: items.length - idx,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#7C3AED')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#6B7280')}
             >
-              {item.label}
-            </Link>
+              <Link
+                href={item.href}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '36px',
+                  paddingLeft: isFirst ? '16px' : '28px',
+                  paddingRight: isLast ? '16px' : '36px',
+                  background: isFirst ? '#4F46E5' : '#E5E7EB',
+                  color: isFirst ? '#FFFFFF' : '#4B5563',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  position: 'relative',
+                  transition: 'all 0.2s ease',
+                  whiteSpace: 'nowrap',
+                  clipPath: isFirst
+                    ? 'polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%)'
+                    : isLast
+                    ? 'polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%)'
+                    : 'polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = isFirst ? '#4338CA' : '#D1D5DB';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = isFirst ? '#4F46E5' : '#E5E7EB';
+                }}
+              >
+                {item.label}
+              </Link>
+            </div>
+          )}
+          
+          {/* Separator chevron for current item */}
+          {!current && !isLast && (
+            <FaChevronRight 
+              size={10} 
+              style={{ 
+                color: '#D1D5DB', 
+                margin: '0 4px',
+                position: 'relative',
+                zIndex: 9999,
+              }} 
+            />
           )}
         </React.Fragment>
       );
@@ -84,8 +108,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
     listStyle: 'none',
     margin: 0,
     padding: 0,
-    minWidth: 0,        // allow flex container to shrink
-    overflow: 'hidden', // clip anything that still overflows
+    gap: '0',
   };
 
   if (variant === 'default') {
@@ -94,12 +117,12 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
         className={className}
         style={{
           width: '100%',
-          background: '#FFFFFF',
-          padding: '10px 0',
-          minWidth: 0,
+          background: '#F9FAFB',
+          padding: '12px 0',
+          borderBottom: '1px solid #E5E7EB',
         }}
       >
-        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 16px', minWidth: 0 }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 16px' }}>
           <nav aria-label="Breadcrumb">
             <ol style={olStyle}>
               {renderItems()}
@@ -111,7 +134,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
   }
 
   return (
-    <nav aria-label="Breadcrumb" className={className} style={{ minWidth: 0 }}>
+    <nav aria-label="Breadcrumb" className={className}>
       <ol style={olStyle}>
         {renderItems()}
       </ol>
