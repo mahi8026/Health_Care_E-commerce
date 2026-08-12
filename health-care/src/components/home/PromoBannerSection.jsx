@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 /**
- * PromoBannerSection Component - GoWell BD Actual Style
+ * PromoBannerSection Component - Dynamic promotional banners from admin panel
  * 
  * SINGLE full-width promotional hero banner
- * Placed individually between product sections
+ * Fetches banner data from /api/settings endpoint
+ * Falls back to default banners if none configured
  * 
  * Features:
  * - Full-width hero-style banner (not 3-column grid)
