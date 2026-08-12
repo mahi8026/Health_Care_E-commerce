@@ -302,7 +302,7 @@ export default function ProductDetailPage({ productId, heroPriority = false }) {
               heroPriority={heroPriority}
             />
           </div>
-          <div id="add-to-cart" className="lg:sticky lg:top-24 lg:self-start">
+          <div id="add-to-cart" className="lg:sticky lg:top-[calc(var(--site-nav-height,84px)+8px)] lg:self-start">
             <ProductInfoPanelEnhanced
               product={product}
               quantity={quantity}
