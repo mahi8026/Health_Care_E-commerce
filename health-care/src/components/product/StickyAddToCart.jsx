@@ -56,11 +56,9 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
     <div
       className="hidden lg:block fixed left-0 right-0 bg-white shadow-md"
       style={{
-        top: 0,
+        top: 'var(--site-nav-height, 84px)',  /* sit just below the navbar */
         zIndex: 850,
-        transform: visible 
-          ? 'translateY(var(--site-nav-height))' 
-          : 'translateY(calc(-100% - var(--site-nav-height)))',
+        transform: visible ? 'translateY(0)' : 'translateY(-200%)',
         opacity: visible ? 1 : 0,
         transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
         pointerEvents: visible ? 'auto' : 'none',
@@ -73,7 +71,7 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
         <div className="relative w-16 h-16 bg-[var(--color-background-secondary)] rounded-lg overflow-hidden flex-shrink-0 border border-[var(--color-border-primary)]">
           {product.images && product.images[0] ? (
             <Image
-              src={product.images[0].url}
+              src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0]?.url || product.images[0]?.secure_url || '')}
               alt={product.name}
               fill
               sizes="64px"
