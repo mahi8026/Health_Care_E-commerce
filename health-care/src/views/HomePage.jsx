@@ -829,13 +829,12 @@ export default function HomePage() {
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HERO — left: text+search  |  right: image slider */}
-      {/* Hidden on mobile (< 1024px), visible on large devices (≥ 1024px) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-hero home-hero--padded hidden lg:block">
+      <section className="home-hero home-hero--padded">
         <div className="hero-grid-container">
 
-          {/* LEFT: Text + Search */}
-          <div className="hero-left-content">
+          {/* LEFT: Text + Search - Hidden on mobile, visible on desktop */}
+          <div className="hero-left-content hidden lg:block">
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               <span style={{ width: 6, height: 6, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
               {t('home.tagline')}
