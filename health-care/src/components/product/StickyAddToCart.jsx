@@ -54,10 +54,14 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
   useEffect(() => {
     if (product?._id && product._id !== prevProductId.current) {
       prevProductId.current = product._id;
+      setDismissed(false);
     }
-   
   }, [product?._id]);
 
+  // Calculate visibility state
+  const show = visible && !dismissed;
+
+  // Handle add to cart
   const handleAddToCart = async () => {
     setAdding(true);
     await addToCart(product, quantity);
@@ -66,12 +70,24 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
 
   const inStock = product.stock > 0;
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-  const show = visible && !dismissed;
 
   return (
-    <div
-      ref={barRef}
-      className="hidden lg:block fixed left-0 right-0 bg-white"
+    <>
+      {/* In-flow spacer that pushes content down when bar is visible (desktop only) */}
+      <div
+        className="hidden lg:block"
+        style={{
+          height: show ? '72px' : '0px',
+          transition: 'height 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          flexShrink: 0,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Fixed sticky bar */}
+      <div
+        ref={barRef}
+        className="hidden lg:block fixed left-0 right-0 bg-white"
       aria-hidden={!show}
       style={{
         top: 'var(--site-nav-height, 84px)',
@@ -188,5 +204,6 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
         </button>
       </div>
     </div>
+    </>
   );
 }
