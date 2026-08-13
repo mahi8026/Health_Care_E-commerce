@@ -128,7 +128,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                 src={bannerData.image}
                 alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
-                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1400px"
                 priority
                 unoptimized
