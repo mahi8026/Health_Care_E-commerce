@@ -84,13 +84,15 @@ export default function PromoBannerSection({ bannerId = 0 }) {
     <section
       className="promo-banner-hero"
       style={{
-        padding: '0',
-        background: '#fff',
+        padding: '20px 0',
+        background: '#f8f9fa',
       }}
     >
       <div style={{
+        maxWidth: '1400px',
         width: '100%',
         margin: '0 auto',
+        padding: '0 20px',
       }}>
         {/* Single Full-Width Hero Banner */}
         <div
@@ -98,20 +100,21 @@ export default function PromoBannerSection({ bannerId = 0 }) {
           className="promo-hero-card"
           style={{
             position: 'relative',
-            borderRadius: '0',
+            borderRadius: '12px',
             overflow: 'hidden',
             cursor: 'pointer',
-            background: bannerData.bgColor || '#f8f9fa',
+            background: bannerData.bgColor || '#ffffff',
             height: '420px',
             transition: 'all 0.3s ease',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.005)';
-            e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = 'none';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
           }}
         >
           {/* Background Image - Full Width */}
@@ -125,8 +128,8 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                 src={bannerData.image}
                 alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
-                style={{ objectFit: 'cover', objectPosition: 'center' }}
-                sizes="100vw"
+                style={{ objectFit: 'contain', objectPosition: 'center' }}
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1400px"
                 priority
                 unoptimized
               />
@@ -257,17 +260,39 @@ export default function PromoBannerSection({ bannerId = 0 }) {
 
       {/* Responsive Styles */}
       <style jsx>{`
-        /* Mobile: Reduce height */}
-        @media (max-width: 768px) {
+        /* Desktop large screens */
+        @media (min-width: 1441px) {
           .promo-hero-card {
-            height: 300px !important;
+            height: 450px !important;
           }
         }
 
-        /* Tablet */}
+        /* Desktop standard */
+        @media (min-width: 1025px) and (max-width: 1440px) {
+          .promo-hero-card {
+            height: 420px !important;
+          }
+        }
+
+        /* Tablet */
         @media (min-width: 769px) and (max-width: 1024px) {
           .promo-hero-card {
             height: 350px !important;
+          }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+          .promo-hero-card {
+            height: 280px !important;
+            border-radius: 8px !important;
+          }
+        }
+
+        /* Small mobile */
+        @media (max-width: 480px) {
+          .promo-hero-card {
+            height: 240px !important;
           }
         }
       `}</style>
