@@ -106,25 +106,25 @@ export default async function CategoryPage({ params }) {
       <StructuredData schema={webPageSchema} />
       <FAQSchema faqs={faqs} />
 
-      {/* Quick Answer box — answer-first for AI engines & users */}
+      {/* Pass the resolved category name to ProductsPage so it pre-filters */}
+      <ProductsPage initialCategory={categoryName} />
+
+      {/* Quick Answer box — Moved to bottom for better UX, still available for SEO/AI engines */}
       {quickAnswer && (
-        <section className="bg-page px-4 pt-4">
+        <section className="bg-page px-4 pb-8">
           <div
             id="quick-answer"
-            className="container mx-auto max-w-[1400px] rounded-2xl border border-[var(--color-brand-teal)] bg-[var(--color-status-success-tint)] p-4 sm:p-5"
+            className="container mx-auto max-w-[1280px] rounded-2xl border border-[var(--color-border-secondary)] bg-[var(--color-background-secondary)] p-4 sm:p-5"
           >
-            <p className="text-[var(--text-xs)] font-bold uppercase tracking-wider text-[var(--color-brand-teal)] mb-1.5">
-              Quick Answer
+            <p className="text-[var(--text-xs)] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1.5">
+              About This Category
             </p>
-            <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-primary)]">
+            <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
               {quickAnswer}
             </p>
           </div>
         </section>
       )}
-
-      {/* Pass the resolved category name to ProductsPage so it pre-filters */}
-      <ProductsPage initialCategory={categoryName} />
     </>
   );
 }
