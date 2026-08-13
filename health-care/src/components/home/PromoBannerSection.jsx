@@ -104,7 +104,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
             overflow: 'hidden',
             cursor: 'pointer',
             background: bannerData.bgColor || '#ffffff',
-            height: '450px',
+            height: '520px',
             transition: 'all 0.3s ease',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
           }}
@@ -263,28 +263,28 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         /* Desktop large screens */
         @media (min-width: 1441px) {
           .promo-hero-card {
-            height: 480px !important;
+            height: 550px !important;
           }
         }
 
         /* Desktop standard */
         @media (min-width: 1025px) and (max-width: 1440px) {
           .promo-hero-card {
-            height: 450px !important;
+            height: 520px !important;
           }
         }
 
         /* Tablet */
         @media (min-width: 769px) and (max-width: 1024px) {
           .promo-hero-card {
-            height: 380px !important;
+            height: 420px !important;
           }
         }
 
         /* Mobile */
         @media (max-width: 768px) {
           .promo-hero-card {
-            height: 320px !important;
+            height: 350px !important;
             border-radius: 8px !important;
           }
         }
@@ -292,7 +292,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         /* Small mobile */
         @media (max-width: 480px) {
           .promo-hero-card {
-            height: 280px !important;
+            height: 300px !important;
           }
         }
       `}</style>
