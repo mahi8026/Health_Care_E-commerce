@@ -1,5 +1,95 @@
 ﻿const Order = require('../models/Order');
+const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+
+// SteadFast statuses we safely map onto Mediport order statuses. Everything
+// else only updates tracking.steadfastStatus — nothing ever moves an order
+// backwards or un-cancels it.
+const STEADFAST_STATUS_MAP = {
+  out_for_delivery: 'out_for_delivery',
+  delivered: 'delivered',
+};
+
+const ORDER_STATUS_ORDER = ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+
+function extractWebhookPayload(body) {
+  const data = (body && (body.data || body)) || {};
+  return {
+    consignmentId: data.consignment_id || data.consignmentId || null,
+    trackingCode: data.tracking_code || data.trackingCode || null,
+    invoice: data.invoice || null,
+    status: data.delivery_status || data.status || null,
+  };
+}
+
+// POST /api/orders/webhooks/steadfast — public courier callback
+// SteadFast calls this URL on consignment status changes. Verified by a
+// shared secret when STEADFAST_WEBHOOK_SECRET is configured; otherwise the
+// lookup by consignment id still prevents arbitrary order tampering.
+exports.steadfastWebhook = async (req, res) => {
+  try {
+    const secret = process.env.STEADFAST_WEBHOOK_SECRET;
+    const provided = req.headers['x-steadfast-secret'] || (req.body && req.body.secret);
+    if (secret && provided !== secret) {
+      logger.warn('[steadfastWebhook] Rejected webhook with missing/invalid secret');
+      return errorResponse(res, 'Unauthorized', null, 401);
+    }
+
+    const { consignmentId, trackingCode, invoice, status } = extractWebhookPayload(req.body);
+    if (!status) {
+      return errorResponse(res, 'Unrecognized webhook payload', null, 400);
+    }
+
+    const clauses = [];
+    if (consignmentId) {
+      clauses.push({ 'tracking.consignmentId': consignmentId });
+    }
+    if (trackingCode) {
+      clauses.push({ 'tracking.trackingNumber': trackingCode }, { trackingNumber: trackingCode });
+    }
+    if (invoice) {
+      clauses.push({ orderNumber: invoice });
+    }
+    if (clauses.length === 0) {
+      return errorResponse(res, 'Unrecognized webhook payload', null, 400);
+    }
+
+    const order = await Order.findOne({ $or: clauses });
+
+    if (!order) {
+      logger.info(`[steadfastWebhook] No order matched consignment=${consignmentId} tracking=${trackingCode} invoice=${invoice}`);
+      return errorResponse(res, 'Order not found for webhook payload', null, 404);
+    }
+
+    // Always record the raw courier status regardless of mapping
+    order.tracking = {
+      ...(order.tracking || {}),
+      courier: order.tracking?.courier || 'SteadFast',
+      steadfastStatus: status,
+    };
+    order.markModified('tracking');
+
+    const mapped = STEADFAST_STATUS_MAP[status];
+    const currentIdx = ORDER_STATUS_ORDER.indexOf(order.status);
+    const mappedIdx = mapped ? ORDER_STATUS_ORDER.indexOf(mapped) : -1;
+
+    // Only advance forward and only from non-terminal statuses
+    if (mappedIdx > -1 && (currentIdx === -1 || mappedIdx > currentIdx)) {
+      order.status = mapped;
+      order.statusTimestamps = { ...(order.statusTimestamps || {}), [mapped]: new Date() };
+      if (mapped === 'delivered') {
+        order.deliveredAt = order.deliveredAt || new Date();
+      }
+      logger.info(`[steadfastWebhook] ${order.orderNumber} advanced to ${mapped} (courier: ${status})`);
+    }
+
+    await order.save();
+    return successResponse(res, { received: true, orderNumber: order.orderNumber, orderStatus: order.status });
+  } catch (error) {
+    logger.error(`[steadfastWebhook] ${error.message}`, { stack: error.stack });
+    return errorResponse(res, 'Failed to process SteadFast webhook', null, 500);
+  }
+};
 
 // GET /api/orders/track/:orderNumber  — public endpoint
 exports.trackOrder = async (req, res) => {

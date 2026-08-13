@@ -29,8 +29,8 @@ echo -e "${GREEN}Creating .env.production.local...${NC}"
 echo ""
 
 # API URL
-read -p "Enter your API URL (e.g., https://api.mediportbd.com/api): " API_URL
-API_URL=${API_URL:-https://api.mediportbd.com/api}
+read -p "Enter your API URL (e.g., https://health-care-e-commerce-ubyy.onrender.com/api): " API_URL
+API_URL=${API_URL:-https://health-care-e-commerce-ubyy.onrender.com/api}
 
 # Site URL
 read -p "Enter your site URL (e.g., https://mediportbd.com): " SITE_URL

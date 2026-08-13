@@ -453,6 +453,51 @@ export default function OrdersManagement() {
     }
   };
 
+  const [bulkShipping, setBulkShipping] = useState(false);
+
+  const handleBulkShip = async (ids, label) => {
+    if (ids.length === 0) {
+      showToast.warning('No orders to ship');
+      return;
+    }
+    const confirmed = await confirmAction(
+      `${label}. This books a SteadFast consignment with a cash-collection fee for each eligible order. Continue?`
+    );
+    if (!confirmed) return;
+
+    setBulkShipping(true);
+    try {
+      const token = localStorage.getItem('Mediport_token');
+      const response = await fetch(`${API}/orders/steadfast/bulk-ship`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Bulk shipping failed');
+      }
+      const { booked, skipped, failed, results = [] } = data.data || {};
+      if (booked > 0) {
+        showToast.success(`Bulk shipping complete: ${booked} booked, ${skipped} skipped, ${failed} failed`);
+      } else if (failed > 0) {
+        showToast.error(`Bulk shipping failed: ${failed} failed, ${skipped} skipped`);
+      } else {
+        showToast.info(`No eligible orders to ship (${skipped} skipped)`);
+      }
+      const fraudFlagged = results.filter(r => r.skipReason === 'fraud_flagged');
+      if (fraudFlagged.length > 0) {
+        showToast.warning(`${fraudFlagged.length} order(s) skipped: SteadFast flags the phone as fraud — review before shipping manually`);
+      }
+      setSelectedOrders([]);
+      fetchOrders();
+    } catch (error) {
+      showToast.error(error.message || 'Failed to run bulk shipping');
+    } finally {
+      setBulkShipping(false);
+    }
+  };
+
   const clearFilters = () => {
     setStatusFilter('');
     setSearch('');
@@ -535,6 +580,14 @@ export default function OrdersManagement() {
               className="text-sm px-4 py-1.5 bg-brand-teal text-white rounded-lg font-semibold hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-40 disabled:cursor-not-allowed min-h-[36px]"
             >
               Apply
+            </button>
+            <button
+              onClick={() => handleBulkShip(selectedOrders, `Ship ${selectedOrders.length} selected order(s) via SteadFast`)}
+              disabled={bulkShipping}
+              className="text-sm px-4 py-1.5 bg-brand-navy text-white rounded-lg font-semibold hover:bg-[#0a1e3a] disabled:opacity-40 disabled:cursor-not-allowed min-h-[36px]"
+              title="Book SteadFast consignments for selected orders"
+            >
+              {bulkShipping ? 'Shipping…' : '🚚 Bulk Ship'}
             </button>
             <button
               onClick={() => setSelectedOrders([])}
@@ -621,14 +674,24 @@ export default function OrdersManagement() {
           <div className="text-xs text-[var(--color-text-secondary)]">
             {total} order{total !== 1 ? 's' : ''} total
           </div>
-          {hasActiveFilters && (
+          <div className="flex items-center gap-3">
             <button
-              onClick={clearFilters}
-              className="text-xs text-[var(--color-status-danger)] font-medium hover:underline"
+              onClick={() => handleBulkShip([], `Ship all eligible orders${statusFilter ? ` (status: ${statusFilter})` : ''} via SteadFast`)}
+              disabled={bulkShipping}
+              className="text-xs font-semibold text-brand-teal hover:underline disabled:opacity-40"
+              title="Books SteadFast consignments for all currently eligible orders (max 200)"
             >
-              Clear all filters
+              {bulkShipping ? 'Shipping…' : '🚚 Bulk Ship (eligible)'}
             </button>
-          )}
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="text-xs text-[var(--color-status-danger)] font-medium hover:underline"
+              >
+                Clear all filters
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

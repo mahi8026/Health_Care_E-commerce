@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import OrderStatusUpdate from './OrderStatusUpdate';
 import { InvoiceGenerator } from '@/utils/invoiceGenerator';
 import { showToast } from '@/components/ui/Toast';
+import { confirmAction } from '@/components/ui/ConfirmDialog';
 import { API } from '@/constants/api';
 
 function useFocusTrap(containerRef, isActive, onClose) {
@@ -72,10 +73,31 @@ export default function OrderDetailModal({ orderId, onClose }) {
   }, []);
 
   const handleShipViaSteadfast = async () => {
+    setShippingViaSteadfast(true);
     try {
-      setShippingViaSteadfast(true);
       const token = localStorage.getItem('Mediport_token');
       if (!token) throw new Error('Not authenticated. Please log in again.');
+
+      // Fraud pre-check for at-risk (unpaid) orders — best-effort, never blocks
+      const phone = order?.deliveryAddress?.phone || order?.shippingAddress?.phone || order?.phone;
+      if (order && order.paymentStatus !== 'paid' && phone) {
+        try {
+          const fraudRes = await fetch(`${API}/orders/steadfast/fraud/${encodeURIComponent(phone)}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const fraudData = await fraudRes.json();
+          if (fraudData.data?.flagged) {
+            const reason = fraudData.data.reason || 'flagged by SteadFast';
+            const proceed = await confirmAction(
+              `SteadFast flags this phone number for fraud ("${reason}"). Book the shipment anyway?`
+            );
+            if (!proceed) return;
+          }
+        } catch {
+          // fraud lookup failure never blocks shipping
+        }
+      }
+
       const res = await fetch(`${API}/orders/${orderId}/steadfast/ship`, {
         method: 'POST',
         headers: {

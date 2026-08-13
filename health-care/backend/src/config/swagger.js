@@ -23,7 +23,7 @@ const options = {
         description: 'Development server'
       },
       {
-        url: 'https://api.MediportBD.com/api',
+        url: 'https://health-care-e-commerce-ubyy.onrender.com/api',
         description: 'Production server'
       }
     ],

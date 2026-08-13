@@ -3,10 +3,12 @@ const {
   SteadfastError,
   isConfigured,
   createShipment,
+  createReturn,
   getBalance,
   getStatusByInvoice,
   getStatusByCid,
   getStatusByTrackingCode,
+  checkFraud,
   normalizePhone,
   buildShipmentPayload
 } = require('../steadfastService');
@@ -171,5 +173,80 @@ describe('steadfastService - helpers', () => {
     const payload = buildShipmentPayload(order);
     expect(payload.codAmount).toBe(0);
     expect(payload.recipientAddress).toBe('Chittagong');
+  });
+});
+
+describe('steadfastService - checkFraud', () => {
+  it('should return clean result when the number is not flagged', async () => {
+    axios.mockResolvedValue({ data: { status: 200, data: { status: 'OK', fraud_reason: null } } });
+
+    const result = await checkFraud('01711111111');
+    expect(result).toEqual({ phone: '01711111111', status: 'OK', fraud: null });
+    expect(axios).toHaveBeenCalledWith(expect.objectContaining({
+      method: 'GET',
+      url: 'https://portal.packzy.com/api/v1/check_fraud/01711111111'
+    }));
+  });
+
+  it('should surface the fraud reason when the number is flagged', async () => {
+    axios.mockResolvedValue({ data: { status: 200, data: { status: 'Fraud', fraud_reason: 'This number is reported as fraud' } } });
+    const result = await checkFraud('01722222222');
+    expect(result.fraud).toBe('This number is reported as fraud');
+    expect(result.status).toBe('Fraud');
+  });
+
+  it('should reject invalid or empty phone numbers', async () => {
+    await expect(checkFraud('12345')).rejects.toMatchObject({ name: 'SteadfastError', status: 400 });
+    await expect(checkFraud()).rejects.toMatchObject({ name: 'SteadfastError' });
+    expect(axios).not.toHaveBeenCalled();
+  });
+
+  it('should throw SteadfastError when the fraud check call fails', async () => {
+    axios.mockRejectedValue({ response: { status: 401, data: 'Unauthorized Access' } });
+    await expect(checkFraud('01711111111')).rejects.toBeInstanceOf(SteadfastError);
+  });
+});
+
+describe('steadfastService - createReturn', () => {
+  it('should send the return payload and return the API data', async () => {
+    axios.mockResolvedValue({
+      data: {
+        status: 200,
+        message: 'Return created successfully.',
+        data: { id: 999, consignment_id: 131822154, tracking_code: 'RET123', status: 'in_review' }
+      }
+    });
+
+    const result = await createReturn({
+      consignmentId: 131822154,
+      recipientName: 'Rahim',
+      recipientPhone: '+8801711111111',
+      recipientAddress: 'House 5, Dhanmondi, Dhaka',
+      codAmount: 1200,
+      reason: 'Damaged product',
+      reference: 'ORD-00100-RABC12'
+    });
+
+    expect(result).toMatchObject({ status: 200, data: expect.objectContaining({ id: 999 }) });
+    expect(axios).toHaveBeenCalledWith(expect.objectContaining({
+      method: 'POST',
+      url: 'https://portal.packzy.com/api/v1/create_return',
+      data: expect.objectContaining({
+        consignment_id: 131822154,
+        recipient_name: 'Rahim',
+        recipient_phone: '01711111111',
+        cod_amount: '1200',
+        return_reason: 'Damaged product',
+        reference: 'ORD-00100-RABC12'
+      })
+    }));
+  });
+
+  it('should throw when the API responds without a return payload', async () => {
+    axios.mockResolvedValue({ data: { status: 422, message: 'INVALID_CONSIGNMENT' } });
+    await expect(createReturn({ consignmentId: 0 })).rejects.toMatchObject({
+      name: 'SteadfastError',
+      message: 'INVALID_CONSIGNMENT'
+    });
   });
 });

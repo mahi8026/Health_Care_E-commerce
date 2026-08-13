@@ -6,6 +6,62 @@ const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 const { sendToUser, sendToAdmins, notifications } = require('../utils/oneSignalService');
 
+const RETURN_REASON_LABELS = {
+  damaged: 'Product damaged in transit',
+  wrong_item: 'Wrong item delivered',
+  defective: 'Product defective / not working',
+  not_as_described: 'Product not as described',
+  changed_mind: 'Changed mind',
+  other: 'Other'
+};
+
+/**
+ * Book a SteadFast return pickup for an approved return request, using the
+ * original shipment consignment. Best-effort: resolves with a result object
+ * instead of throwing (except for hard infra errors like "not configured").
+ */
+async function bookSteadfastReturn(returnRequest) {
+  const steadfastService = require('../services/steadfastService');
+  if (!steadfastService.isConfigured()) {
+    return { success: false, skipped: 'not_configured', error: 'SteadFast is not configured' };
+  }
+
+  const order = await Order.findById(returnRequest.order)
+    .select('orderNumber deliveryAddress paymentMethod paymentStatus totalAmount tracking')
+    .lean();
+  if (!order) {
+    return { success: false, skipped: 'order_not_found', error: 'Original order not found' };
+  }
+  if (!order.tracking?.consignmentId || order.tracking?.courier !== 'SteadFast') {
+    return { success: false, skipped: 'no_consignment', error: 'Original order has no SteadFast consignment' };
+  }
+
+  const address = order.deliveryAddress || {};
+  const parts = [address.street, address.thana || address.area, address.district || address.city].filter(Boolean);
+  const isCod = order.paymentMethod === 'cod' && order.paymentStatus !== 'paid';
+
+  const data = await steadfastService.createReturn({
+    consignmentId: order.tracking.consignmentId,
+    recipientName: (address.name || '').trim(),
+    recipientPhone: address.phone,
+    recipientAddress: parts.join(', ') || 'Dhaka',
+    codAmount: isCod ? (order.totalAmount || 0) : 0,
+    reason: `${RETURN_REASON_LABELS[returnRequest.reason] || returnRequest.reason}. ${returnRequest.description || ''}`,
+    reference: `${order.orderNumber || order._id}-R${String(returnRequest._id).slice(-6).toUpperCase()}`
+  });
+
+  const info = (data && (data.data || data.return_consignment || data.consignment)) || {};
+
+  return {
+    success: true,
+    bookedAt: new Date(),
+    consignmentId: info.consignment_id || info.id,
+    trackingCode: info.tracking_code,
+    status: info.status,
+    raw: info
+  };
+}
+
 // @desc    Create return request
 // @route   POST /api/returns
 // @access  Private
@@ -350,6 +406,19 @@ returnRequest.refundTransactionId = refundTransactionId;
     }
 
     await returnRequest.save();
+
+    // S7 — when a return is approved, best-effort book a SteadFast return pickup
+    // against the original consignment. Never blocks the approval: failures are
+    // recorded on the return doc and surfaced in the admin UI. The updateOne
+    // guard makes a concurrent duplicate approval lose the write (atomic claim).
+    if (status === 'approved') {
+      bookSteadfastReturn(returnRequest)
+        .then(result => Return.updateOne(
+          { _id: returnRequest._id, steadfastReturn: null },
+          { $set: { steadfastReturn: result } }
+        ))
+        .catch(err => logger.error(`[updateReturnStatus] SteadFast return booking failed: ${err.message}`));
+    }
 
     // Send email notification to customer
     const statusMessages = {

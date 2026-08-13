@@ -175,7 +175,7 @@ This creates an HTML report with detailed metrics and charts.
 ### Run with Custom Target
 
 ```bash
-artillery run basic-load-test.yml --target https://api.MediportBD.com
+artillery run basic-load-test.yml --target https://health-care-e-commerce-ubyy.onrender.com
 ```
 
 ### Run Specific Scenario

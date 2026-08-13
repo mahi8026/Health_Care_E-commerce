@@ -116,6 +116,59 @@ async function getStatusByTrackingCode(trackingCode) {
 }
 
 /**
+ * Create a SteadFast return request for a previously booked consignment.
+ *
+ * @param {object} payload
+ * @param {string} payload.consignmentId - original shipment consignment ID
+ * @param {string} payload.recipientName - customer name for return pickup
+ * @param {string} payload.recipientPhone - customer phone (normalized)
+ * @param {string} payload.recipientAddress - pickup address for the return
+ * @param {number} payload.codAmount - COD amount to collect on return pickup
+ * @param {string} payload.reason - return reason
+ * @param {string} [payload.reference] - optional internal reference
+ * @returns {Promise<object>} { return_consignment, ... }
+ */
+async function createReturn(payload) {
+  const body = {
+    consignment_id: payload.consignmentId,
+    recipient_name: payload.recipientName,
+    recipient_phone: normalizePhone(payload.recipientPhone),
+    recipient_address: payload.recipientAddress,
+    cod_amount: String(payload.codAmount || 0),
+    return_reason: (payload.reason || '').slice(0, 255),
+    reference: payload.reference
+  };
+  const data = await request('/create_return', { method: 'POST', data: body });
+  if (data && (data.data || data.return_consignment || data.consignment)) {
+    return data;
+  }
+  throw new SteadfastError((data && data.message) || 'SteadFast create return failed', 200, data);
+}
+
+/**
+ * Best-effort SteadFast fraud check for a phone number.
+ * Throws SteadfastError when the account is unconfigured or the call fails —
+ * callers that must not block on fraud should catch and continue.
+ *
+ * @param {string} phone - BD phone (normalized to 11 digits)
+ * @returns {Promise<object>} { phone, status, fraud } — fraud is the reason
+ *   string when the number is flagged, otherwise null
+ */
+async function checkFraud(phone) {
+  const normalized = normalizePhone(phone);
+  if (!normalized) {
+    throw new SteadfastError('Invalid phone number for fraud check', 400, null);
+  }
+  const data = await request(`/check_fraud/${encodeURIComponent(normalized)}`);
+  const info = (data && (data.data || data)) || {};
+  return {
+    phone: normalized,
+    status: info.status || (data && data.status),
+    fraud: info.fraud_reason || info.fraudReason || null
+  };
+}
+
+/**
  * Normalize a BD phone number to 11 digits (0XXXXXXXXXX).
  */
 function normalizePhone(phone) {
@@ -160,10 +213,12 @@ module.exports = {
   SteadfastError,
   isConfigured,
   createShipment,
+  createReturn,
   getBalance,
   getStatusByInvoice,
   getStatusByCid,
   getStatusByTrackingCode,
+  checkFraud,
   normalizePhone,
   buildShipmentPayload
 };

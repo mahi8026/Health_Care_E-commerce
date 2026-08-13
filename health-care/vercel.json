@@ -32,7 +32,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://api.mediportbd.com/api/:path*"
+      "destination": "https://health-care-e-commerce-ubyy.onrender.com/api/:path*"
     }
   ]
 }

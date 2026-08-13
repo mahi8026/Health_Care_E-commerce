@@ -78,6 +78,10 @@ const returnSchema = new mongoose.Schema({
     enum: ['original_payment', 'bank_transfer', 'store_credit']
   },
   refundTransactionId: String,
+  steadfastReturn: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
   approvedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

@@ -899,6 +899,188 @@ exports.getSteadfastBalance = async (_req, res) => {
 };
 
 /**
+ * Admin-only: check a phone number against SteadFast's fraud reports.
+ * Used by the order detail modal before booking a single shipment.
+ *
+ * @route GET /api/orders/steadfast/fraud/:phone
+ * @access Private/Admin
+ */
+exports.checkSteadfastFraud = async (req, res) => {
+  try {
+    const steadfastService = require('../services/steadfastService');
+    if (!steadfastService.isConfigured()) {
+      return errorResponse(res, 'SteadFast is not configured', null, 503);
+    }
+    const result = await steadfastService.checkFraud(req.params.phone);
+    return successResponse(res, {
+      phone: result.phone,
+      flagged: Boolean(result.fraud),
+      reason: result.fraud,
+      status: result.status,
+    });
+  } catch (error) {
+    logger.error(`[checkSteadfastFraud] ${error.message}`);
+    if (error.name === 'SteadfastError') {
+      return errorResponse(res, `SteadFast fraud check failed: ${error.message}`, null, 502);
+    }
+    return errorResponse(res, 'Failed to check fraud status', null, 500);
+  }
+};
+
+/**
+ * Run `fn` over `items` with at most `limit` promises in flight, preserving
+ * input order of results.
+ */
+async function runWithConcurrency(items, limit, fn) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  async function worker() {
+    while (cursor < items.length) {
+      const idx = cursor;
+      cursor += 1;
+      results[idx] = await fn(items[idx], idx);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
+/**
+ * Admin-only: bulk-book SteadFast shipments for orders that are eligible
+ * (match the optional status filter, have a complete delivery address, are
+ * not cancelled/delivered/refunded, and have no existing SteadFast booking).
+ * One failed order never aborts the batch — every order is reported
+ * individually so the admin can retry just the failures.
+ *
+ * @route POST /api/orders/steadfast/bulk-ship
+ * @access Private/Admin
+ */
+exports.bulkShipViaSteadfast = async (req, res) => {
+  try {
+    const { status, ids } = req.body || {};
+
+    const query = {
+      status: { $nin: ['cancelled', 'delivered', 'refunded'] },
+      'tracking.courier': { $ne: 'SteadFast' }
+    };
+    if (Array.isArray(ids) && ids.length > 0) {
+      query._id = { $in: ids.map(id => String(id)) };
+    } else if (status && typeof status === 'string') {
+      query.status = status;
+    }
+
+    const orders = await Order.find(query).limit(200);
+    if (orders.length === 0) {
+      return successResponse(res, { booked: 0, skipped: 0, failed: 0, results: [] }, 'No eligible orders found for bulk shipping');
+    }
+
+    const steadfastService = require('../services/steadfastService');
+    if (!steadfastService.isConfigured()) {
+      return errorResponse(res, 'SteadFast is not configured. Set STEADFAST_API_KEY and STEADFAST_SECRET_KEY first.', null, 503);
+    }
+
+    // S6 — fraud pre-check for at-risk (COD, unpaid) orders only. Best-effort:
+    // a failed fraud lookup never blocks business, and prepaid orders skip the
+    // check entirely. Disable with { checkFraud: false }.
+    const fraudByOrder = new Map();
+    const doFraudCheck = (req.body || {}).checkFraud !== false;
+    if (doFraudCheck) {
+      const atRisk = orders.filter(o => {
+        const address = o.deliveryAddress || {};
+        return o.paymentStatus !== 'paid'
+          && !(o.tracking?.consignmentId || o.tracking?.courier === 'SteadFast')
+          && address.name && address.phone && (address.street || address.thana || address.district);
+      });
+      const checked = await runWithConcurrency(atRisk, 5, async order => {
+        const phone = steadfastService.normalizePhone(order.deliveryAddress.phone);
+        if (!phone) {
+          return { id: order._id, flagged: false };
+        }
+        try {
+          const result = await steadfastService.checkFraud(phone);
+          return { id: order._id, flagged: Boolean(result.fraud), reason: result.fraud };
+        } catch (error) {
+          logger.warn(`[bulkShipViaSteadfast] Fraud check failed for ${order.orderNumber}: ${error.message}`);
+          return { id: order._id, flagged: false };
+        }
+      });
+      for (const check of checked) {
+        fraudByOrder.set(check.id.toString(), check);
+      }
+    }
+
+    const results = [];
+    let booked = 0;
+    let skipped = 0;
+    let failed = 0;
+    let fraudFlagged = 0;
+
+    for (const order of orders) {
+      const result = { orderId: order._id, orderNumber: order.orderNumber, status: order.status };
+
+      if (order.tracking?.consignmentId || order.tracking?.courier === 'SteadFast') {
+        result.skipReason = 'already_booked';
+        skipped += 1;
+        results.push(result);
+        continue;
+      }
+
+      const address = order.deliveryAddress || {};
+      if (!address.name || !address.phone || !(address.street || address.thana || address.district)) {
+        result.skipReason = 'incomplete_address';
+        skipped += 1;
+        results.push(result);
+        continue;
+      }
+
+      const fraud = fraudByOrder.get(order._id.toString());
+      if (doFraudCheck && fraud && fraud.flagged) {
+        result.skipReason = 'fraud_flagged';
+        result.fraudReason = fraud.reason;
+        fraudFlagged += 1;
+        skipped += 1;
+        results.push(result);
+        continue;
+      }
+
+      try {
+        const payload = steadfastService.buildShipmentPayload(order);
+        const consignment = await steadfastService.createShipment(payload);
+
+        order.trackingNumber = consignment.tracking_code || consignment.invoice || order.trackingNumber;
+        order.tracking = {
+          ...(order.tracking || {}),
+          courier: 'SteadFast',
+          trackingNumber: order.trackingNumber,
+          consignmentId: consignment.consignment_id,
+          steadfastStatus: consignment.status,
+          dispatchedAt: new Date()
+        };
+        order.markModified('tracking');
+        await order.save();
+
+        result.shipment = {
+          consignmentId: consignment.consignment_id,
+          trackingCode: consignment.tracking_code,
+          status: consignment.status
+        };
+        booked += 1;
+      } catch (error) {
+        failed += 1;
+        result.error = error.name === 'SteadfastError' ? error.message : 'Booking failed';
+        logger.error(`[bulkShipViaSteadfast] ${order.orderNumber}: ${error.message}`);
+      }
+      results.push(result);
+    }
+
+    return successResponse(res, { booked, skipped, failed, fraudFlagged, results }, `Bulk shipping complete: ${booked} booked, ${skipped} skipped, ${failed} failed`);
+  } catch (error) {
+    logger.error(`[bulkShipViaSteadfast] ${error.message}`, { stack: error.stack });
+    return errorResponse(res, error.message || 'Failed to run bulk shipping', null, 500);
+  }
+};
+
+/**
  * Update order status and send notifications (admin only).
  * 
  * @param {Request} req - Express request object
