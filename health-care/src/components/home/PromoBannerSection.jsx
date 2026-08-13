@@ -89,7 +89,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
       }}
     >
       <div style={{
-        maxWidth: '1400px',
+        maxWidth: '1280px',
         width: '100%',
         margin: '0 auto',
         padding: '0 20px',

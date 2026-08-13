@@ -707,7 +707,7 @@ export default function HomePage() {
         /* Hero layout - Optimized grid */
         .hero-grid-container { 
           width: 100%; 
-          max-width: 1400px; 
+          max-width: 1280px; 
           margin: 0 auto; 
           padding: 0 24px; 
           position: relative; 
@@ -948,7 +948,7 @@ export default function HomePage() {
       {/* SECTION 2: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '32px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
               <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
@@ -1071,7 +1071,7 @@ export default function HomePage() {
       {/* SECTION 5: FEATURED PRODUCTS (Curated selection with tabs) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '48px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
               <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
@@ -1321,7 +1321,7 @@ export default function HomePage() {
       {/* COUPON BANNER: Show active promo code when available */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {promo && (
-        <section style={{ padding: '0 24px 8px', maxWidth: 1200, margin: '0 auto' }}>
+        <section style={{ padding: '0 24px 8px', maxWidth: 1280, margin: '0 auto' }}>
           <div style={{
             background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #1a3a6b 100%)',
             borderRadius: 14,
@@ -1433,7 +1433,7 @@ export default function HomePage() {
       {/* SECTION 10: RECENTLY VIEWED (Personalized recommendations) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px 32px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <RecentlyViewed limit={8} title="Continue Where You Left Off" />
         </div>
       </section>
@@ -1442,7 +1442,7 @@ export default function HomePage() {
       {/* SECTION 11: WHY CHOOSE US (Trust building, credibility) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
@@ -1470,7 +1470,7 @@ export default function HomePage() {
       {/* SECTION 12: HOW IT WORKS (Process clarity, user guidance) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
               textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
@@ -1509,7 +1509,7 @@ export default function HomePage() {
       {/* SECTION 13: B2B PROGRAM (Business customer acquisition) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
           borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
           {/* Background decoration */}
@@ -1581,7 +1581,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', textAlign: 'center' }}>
             <Spinner size="lg" variant="medical" />
           </div>
         </div>
@@ -1594,7 +1594,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
         <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
             <Spinner size="lg" variant="medical" />
           </div>
         </section>
@@ -1606,7 +1606,7 @@ export default function HomePage() {
       {/* SECTION 16: CUSTOMER TESTIMONIALS (Final social proof) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="bg-hero-gradient" style={{ padding: '56px 24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.testimonials')}</p>
@@ -1667,3 +1667,4 @@ export default function HomePage() {
     </div>
   );
 }
+
