@@ -104,7 +104,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
             overflow: 'hidden',
             cursor: 'pointer',
             background: bannerData.bgColor || '#ffffff',
-            height: '420px',
+            height: '450px',
             transition: 'all 0.3s ease',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
           }}
@@ -128,7 +128,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
                 src={bannerData.image}
                 alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
-                style={{ objectFit: 'contain', objectPosition: 'center' }}
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1400px"
                 priority
                 unoptimized
@@ -263,28 +263,28 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         /* Desktop large screens */
         @media (min-width: 1441px) {
           .promo-hero-card {
-            height: 450px !important;
+            height: 480px !important;
           }
         }
 
         /* Desktop standard */
         @media (min-width: 1025px) and (max-width: 1440px) {
           .promo-hero-card {
-            height: 420px !important;
+            height: 450px !important;
           }
         }
 
         /* Tablet */
         @media (min-width: 769px) and (max-width: 1024px) {
           .promo-hero-card {
-            height: 350px !important;
+            height: 380px !important;
           }
         }
 
         /* Mobile */
         @media (max-width: 768px) {
           .promo-hero-card {
-            height: 280px !important;
+            height: 320px !important;
             border-radius: 8px !important;
           }
         }
@@ -292,7 +292,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         /* Small mobile */
         @media (max-width: 480px) {
           .promo-hero-card {
-            height: 240px !important;
+            height: 280px !important;
           }
         }
       `}</style>
