@@ -8,6 +8,21 @@ import { API } from '@/constants/api';
 
 const STATUS_OPTIONS = ['All', 'placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
 
+// Mirrors the backend transition table (orderController.validTransitions) so
+// admins can only pick legal next statuses — prevents 400 "Cannot transition"
+// errors from the select.
+const STATUS_TRANSITIONS = {
+  placed:           ['confirmed', 'cancelled'],
+  confirmed:        ['processing', 'shipped', 'cancelled'],
+  processing:       ['shipped', 'cancelled'],
+  shipped:          ['out_for_delivery', 'cancelled'],
+  out_for_delivery: ['delivered'],
+  delivered:        [],
+  cancelled:        [],
+};
+
+const nextStatusOptions = (current) => STATUS_TRANSITIONS[current] || [];
+
 const STATUS_COLORS = {
   placed:           { bg: 'var(--color-status-info-tint)', color: 'var(--color-status-info)' },
   confirmed:        { bg: 'var(--color-status-warning-tint)', color: 'var(--color-status-warning)' },
@@ -814,7 +829,12 @@ export default function OrdersManagement() {
                         disabled={actionLoading[`status-${order._id}`]}
                         className={`text-xs px-2 py-1 rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
                       >
-                        {['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'].map(s => (
+                        {!nextStatusOptions(order.status).includes(order.status) && (
+                          <option value={order.status} disabled>
+                            {order.status.replace(/_/g, ' ')} (current)
+                          </option>
+                        )}
+                        {nextStatusOptions(order.status).map(s => (
                           <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
                         ))}
                       </select>
@@ -932,7 +952,12 @@ export default function OrdersManagement() {
                       disabled={actionLoading[`status-${order._id}`]}
                       className={`w-full text-xs px-2 py-1.5 rounded-lg font-medium border cursor-pointer ${getStatusColor(order.status)}`}
                     >
-                      {['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'].map(s => (
+                      {!nextStatusOptions(order.status).includes(order.status) && (
+                        <option value={order.status} disabled>
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ')} (current)
+                        </option>
+                      )}
+                      {nextStatusOptions(order.status).map(s => (
                         <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}</option>
                       ))}
                     </select>

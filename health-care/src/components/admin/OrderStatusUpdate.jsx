@@ -49,6 +49,18 @@ const STATUS_OPTIONS = [
   { value: 'cancelled',        label: 'Cancelled',        color: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',  icon: '✗'  },
 ];
 
+// Mirrors the backend transition table — only legal next statuses are shown
+const STATUS_TRANSITIONS = {
+  placed:           ['confirmed', 'cancelled'],
+  confirmed:        ['processing', 'shipped', 'cancelled'],
+  processing:       ['shipped', 'cancelled'],
+  shipped:          ['out_for_delivery', 'cancelled'],
+  out_for_delivery: ['delivered'],
+  delivered:        [],
+  cancelled:        [],
+  pending:          ['placed', 'cancelled'],
+};
+
 export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
   const containerRef = useRef(null);
   useFocusTrap(containerRef, true, onClose);
@@ -150,7 +162,9 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
               Order Status <span className="text-danger">*</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {STATUS_OPTIONS.map((option) => (
+              {STATUS_OPTIONS
+                .filter(option => (STATUS_TRANSITIONS[order.status] || []).includes(option.value) || option.value === order.status)
+                .map((option) => (
                 <button
                   key={option.value}
                   type="button"

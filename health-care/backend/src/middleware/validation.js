@@ -212,10 +212,13 @@ const validateProductUpdate = [
 ];
 
 // Order status update validation (admin)
+// NOTE: must stay in sync with the controller's validStatuses list — including
+// 'placed' and 'out_for_delivery', which the admin UI offers for the first and
+// second-to-last transitions.
 const validateOrderStatusUpdate = [
   param('id').isMongoId().withMessage('Invalid order ID'),
   body('status').trim().isIn([
-    'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded', 'returned'
+    'pending', 'placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'refunded', 'returned'
   ]).withMessage('Invalid order status'),
   body('note').optional().trim().escape().isLength({ max: 500 }).withMessage('Note must not exceed 500 characters'),
   handleValidationErrors

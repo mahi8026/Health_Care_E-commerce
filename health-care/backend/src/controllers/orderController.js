@@ -1113,7 +1113,9 @@ exports.updateOrderStatus = async (req, res) => {
     // Validate status transitions
     const validTransitions = {
       placed:          ['confirmed', 'cancelled'],
-      confirmed:       ['processing', 'cancelled'],
+      // 'confirmed -> shipped' allowed: SteadFast bulk booking happens at
+      // 'confirmed', so admins skip straight to shipping without 'processing'
+      confirmed:       ['processing', 'shipped', 'cancelled'],
       processing:      ['shipped', 'cancelled'],
       shipped:         ['out_for_delivery', 'cancelled'],
       out_for_delivery: ['delivered'],
