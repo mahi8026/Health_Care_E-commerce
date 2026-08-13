@@ -254,7 +254,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
             ) : fetchError ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-2xl border border-[var(--color-border-tertiary)] shadow-sm">
                 <div className="w-14 h-14 bg-gradient-to-br from-[var(--color-status-danger-tint)] to-[var(--color-status-danger-tint)] rounded-full flex items-center justify-center mb-4">
-                  <span className="text-3xl">⚠ï¸</span>
+                  <span className="text-3xl">⚠️</span>
                 </div>
                 <p className="text-base font-semibold text-brand-navy mb-1">Could not load products</p>
                 <p className="text-sm text-[var(--color-text-secondary)] mb-4 max-w-sm">Check your connection and try again.</p>

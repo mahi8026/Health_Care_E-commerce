@@ -273,7 +273,7 @@ export default function OrderSummary({
               {pointsDiscount > 0 ? (
                 <div className="flex justify-between items-center p-2.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-warning/30">
                   <div>
-                    <span className="text-xs font-semibold text-[var(--color-status-warning)]">â­ {pointsDiscount} pts redeemed</span>
+                    <span className="text-xs font-semibold text-[var(--color-status-warning)]">⭐ {pointsDiscount} pts redeemed</span>
                     <p className="text-xs text-[var(--color-status-warning)] mt-0.5">âˆ’৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
@@ -290,7 +290,7 @@ export default function OrderSummary({
                   onClick={() => setShowPointsInput(true)}
                   className="flex items-center gap-1.5 text-xs font-semibold text-warning hover:underline"
                 >
-                  â­ Redeem loyalty points ({availablePoints} available)
+                  ⭐ Redeem loyalty points ({availablePoints} available)
                 </button>
               ) : (
                 <div>
@@ -365,7 +365,7 @@ export default function OrderSummary({
           )}
           {pointsDiscount > 0 && (
             <div className="flex justify-between text-warning">
-              <span>â­ Points discount</span>
+              <span>⭐ Points discount</span>
               <span className="font-medium">âˆ’৳{(pointsDiscount * 0.1).toFixed(2)}</span>
             </div>
           )}

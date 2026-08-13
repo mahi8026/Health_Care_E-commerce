@@ -84,7 +84,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Returns & Refunds',
-    icon: 'â†©ï¸',
+    icon: 'â†©️',
     faqs: [
       {
         question: 'What is your return policy?',

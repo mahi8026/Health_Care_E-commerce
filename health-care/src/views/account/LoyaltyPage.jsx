@@ -164,7 +164,7 @@ export default function LoyaltyPage() {
               {[
                 { label: 'Every ৳100 spent',     pts: '1 pt',   icon: 'ðŸ›’' },
                 { label: 'First order bonus',     pts: '+200 pts', icon: '🎉' },
-                { label: 'Leave a product review', pts: '+50 pts', icon: 'â­' },
+                { label: 'Leave a product review', pts: '+50 pts', icon: '⭐' },
                 { label: 'Refer a friend',         pts: '+500 pts', icon: 'ðŸ‘¥' },
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-3 p-3 bg-[var(--color-background-secondary)] rounded-lg">

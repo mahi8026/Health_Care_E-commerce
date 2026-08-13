@@ -423,7 +423,7 @@ function B2BDashboard({ data, onRefresh }) {
           <StatCard icon="ðŸ’°" label="Total Spend" value={`৳${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
           <StatCard icon="ðŸ“¦" label="Active Orders" value={data.activeOrders || 0} sub="in progress" color="var(--color-status-info)"/>
           <StatCard icon="ðŸšš" label="In Delivery" value={data.ordersInDelivery || 0} sub="on the way" color="var(--color-status-warning)"/>
-          <StatCard icon="ðŸ·ï¸" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
+          <StatCard icon="ðŸ·️" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
@@ -751,7 +751,7 @@ export default function B2BDashboardPage() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
-          <div className="text-4xl mb-3">⚠ï¸</div>
+          <div className="text-4xl mb-3">⚠️</div>
           <h2 className="text-lg font-semibold text-brand-navy mb-2">Failed to load dashboard</h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-4">{fetchError}</p>
           <button onClick={() => window.location.reload()}
