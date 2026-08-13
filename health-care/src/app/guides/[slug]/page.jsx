@@ -177,19 +177,6 @@ export default async function GuidePage({ params }) {
           </div>
         </div>
 
-        {/* Quick Answer box — answer-first, extractable by AI engines */}
-        <div
-          id="quick-answer"
-          className="rounded-2xl border border-[var(--color-brand-teal)] bg-[var(--color-status-success-tint)] p-5 mb-8"
-        >
-          <p className="text-[var(--text-xs)] font-bold uppercase tracking-wider text-[var(--color-brand-teal)] mb-2">
-            Quick Answer
-          </p>
-          <p className="text-sm leading-relaxed text-[var(--color-text-primary)]">
-            {guide.quickAnswer}
-          </p>
-        </div>
-
         {/* Body sections */}
         {guide.sections.map((section) => (
           <section key={section.heading} className="mb-10">
@@ -322,6 +309,19 @@ export default async function GuidePage({ params }) {
               B2B Pricing
             </Link>
           </div>
+        </div>
+
+        {/* Quick Answer box — Moved to bottom for better UX, still available for SEO/AI engines */}
+        <div
+          id="quick-answer"
+          className="rounded-2xl border border-[var(--color-border-secondary)] bg-[var(--color-background-secondary)] p-5 mb-8"
+        >
+          <p className="text-[var(--text-xs)] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2">
+            About This Guide
+          </p>
+          <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            {guide.quickAnswer}
+          </p>
         </div>
       </div>
     </article>
