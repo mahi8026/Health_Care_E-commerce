@@ -155,6 +155,17 @@ export default function CheckoutPage({ onBackToCart }) {
       return;
     }
 
+    // Validate cart items have valid product IDs
+    const invalidItems = cart.filter(item => {
+      const productId = item.id || item._id;
+      return !productId || !productId.match(/^[0-9a-fA-F]{24}$/);
+    });
+
+    if (invalidItems.length > 0) {
+      setError(`Invalid product${invalidItems.length > 1 ? 's' : ''} in cart. Please remove and add again: ${invalidItems.map(i => i.name).join(', ')}`);
+      return;
+    }
+
     // ── Front-end validation before hitting the API ──────────────────────────
     const BD_PHONE = /^(\+880|880|0)?1[3-9]\d{8}$/;
     const fieldErrors = [];
@@ -181,6 +192,21 @@ export default function CheckoutPage({ onBackToCart }) {
 
     setLoading(true);
     setError(null);
+
+    // Log cart data for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Checkout] Placing order with cart:', {
+        itemCount: cart.length,
+        items: cart.map(item => ({
+          id: item.id || item._id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        user: req.user?.id || req.user?._id,
+        paymentMethod: selectedPayment
+      });
+    }
 
     try {
       const orderData = {
@@ -268,7 +294,23 @@ export default function CheckoutPage({ onBackToCart }) {
           console.error('[Checkout] Validation errors:', err.data.errors);
         }
       }
-      setError(err.data?.errors?.length ? err.data.errors : err.message || 'Could not place order. Please try again.');
+      
+      // Provide more helpful error messages based on error type
+      let errorMessage = 'Could not place order. Please try again.';
+      
+      if (err.status === 500 || err.message?.includes('500')) {
+        errorMessage = 'Server error occurred. One or more products in your cart may no longer be available. Please refresh the page and try again.';
+      } else if (err.status === 404) {
+        errorMessage = 'One or more products in your cart are no longer available. Please remove them and try again.';
+      } else if (err.status === 400) {
+        errorMessage = err.data?.message || err.message || 'Invalid order data. Please check all fields.';
+      } else if (err.message?.includes('network') || err.message?.includes('fetch') || err.message?.includes('Failed to fetch')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(err.data?.errors?.length ? err.data.errors : errorMessage);
     } finally {
       setLoading(false);
     }
