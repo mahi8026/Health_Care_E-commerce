@@ -803,19 +803,27 @@ export const api = {
   // Invoices
   async downloadInvoice(orderId) {
     const token = getToken();
-    const response = await fetchWithAuth(`${API_BASE_URL}/invoices/${orderId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new ApiError(error.message || 'Failed to download invoice', response.status, error);
+    if (!token) {
+      throw new ApiError('Not authenticated. Please log in and try again.', 401);
     }
-    
-    // Return blob for PDF download
+
+    const response = await fetch(`${API_BASE_URL}/invoices/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      let message = 'Failed to download invoice';
+      try {
+        const error = await response.json();
+        message = error.message || message;
+      } catch { /* ignore parse error */ }
+      throw new ApiError(message, response.status);
+    }
+
     return response.blob();
   },
 
