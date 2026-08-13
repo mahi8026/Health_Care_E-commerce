@@ -36,7 +36,6 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 const lora = Lora({
   weight: ['500', '600'],
-  style: ['normal', 'italic'],
   subsets: ["latin"],
   variable: "--font-lora",
   display: 'swap',
