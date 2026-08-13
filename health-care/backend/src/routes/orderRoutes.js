@@ -33,6 +33,12 @@ router.get('/track/:orderNumber', trackOrder);
 // and the consignment lookup prevents arbitrary order tampering.
 router.post('/webhooks/steadfast', noStore, express.json({ limit: '10kb' }), steadfastWebhook);
 
+// GET answers with a liveness confirmation so the endpoint can be verified
+// by opening it in a browser; SteadFast itself always POSTs.
+router.get('/webhooks/steadfast', noStore, (_req, res) => {
+  res.json({ success: true, message: 'SteadFast webhook endpoint is live. Expects POST status updates from the courier.' });
+});
+
 // ✅ Security Enhancement: Add order rate limiter and comprehensive validation
 router.post('/', protect, orderLimiter, noStore, validateCreateOrder, createOrder);
 router.get('/', protect, noStore, validatePagination, getOrders);
