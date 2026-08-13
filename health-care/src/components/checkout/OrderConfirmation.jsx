@@ -39,7 +39,7 @@ function BankTransferConfirmation({ orderId }) {
   return (
     <div className="rounded-xl border border-[var(--color-status-warning-tint)] bg-[var(--color-status-warning-tint)] overflow-hidden mb-6 text-left">
       <div className="px-4 py-3 bg-[var(--color-status-warning-tint)] border-b border-[var(--color-status-warning-tint)] flex items-center gap-2">
-        <span className="text-lg">ðŸ¦</span>
+        <span className="text-lg">🏦</span>
         <div>
           <p className="text-sm font-semibold text-[var(--color-status-warning)] m-0">Complete Your Bank Transfer</p>
           <p className="text-xs text-[#B45309] m-0">Transfer within 24 hours to confirm your order</p>
@@ -61,7 +61,7 @@ function BankTransferConfirmation({ orderId }) {
         <div className="mt-2 pt-2 border-t border-[var(--color-status-warning-tint)]">
           <div className="flex items-center justify-between gap-2 bg-[var(--color-status-warning-tint)] rounded-lg px-3 py-2">
             <div>
-              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">⚠ï¸ Transfer Reference (Required)</p>
+              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">⚠️ Transfer Reference (Required)</p>
               <p className="text-sm font-semibold text-[#78350F] font-mono m-0">{orderId}</p>
             </div>
             <CopyBtn text={orderId} />
@@ -88,7 +88,19 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
     try {
       // Use mongoId for API call if available, otherwise fall back to orderId
       const idForDownload = mongoId || orderId;
+      
+      if (!idForDownload) {
+        throw new Error('Order ID is missing');
+      }
+      
+      console.log('[OrderConfirmation] Downloading invoice for:', idForDownload);
+      
       const blob = await api.downloadInvoice(idForDownload);
+      
+      if (!blob || blob.size === 0) {
+        throw new Error('Received empty response');
+      }
+      
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -97,9 +109,11 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+      
+      showToast.success('Invoice downloaded successfully');
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Failed to download invoice:', error);
-      showToast.error('Failed to download invoice. Please try again.');
+      console.error('[OrderConfirmation] Failed to download invoice:', error);
+      showToast.error(error.message || 'Failed to download invoice. Please try again or contact support.');
     } finally {
       setDownloading(false);
     }
@@ -153,7 +167,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
       {/* Info Messages */}
       <div className="space-y-3 mb-5">
         <div className="flex items-start gap-3 text-left bg-[var(--color-status-info-tint)] rounded-lg p-3">
-          <span className="text-base">ðŸ“¦</span>
+          <span className="text-base">📦</span>
           <div className="flex-1">
             <div className="text-xs font-medium text-[var(--color-status-info)] mb-1">
               Track your order
@@ -165,7 +179,7 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         </div>
 
         <div className="flex items-start gap-3 text-left bg-brand-teal-tint rounded-lg p-3">
-          <span className="text-base">â„ï¸</span>
+          <span className="text-base">❄️</span>
           <div className="flex-1">
             <div className="text-xs font-medium text-[var(--color-status-success)] mb-1">
               Cold chain delivery
@@ -182,13 +196,13 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         <button 
           onClick={handleDownloadInvoice}
           disabled={downloading}
-          className="flex-1 px-4 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-50"
+          className="flex-1 px-4 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {downloading ? 'Downloading...' : 'ðŸ“„ Download invoice'}
+          {downloading ? '⏳ Downloading...' : '📄 Download invoice'}
         </button>
         <button 
           onClick={() => router.push('/products')}
-          className="flex-1 px-4 py-2.5 bg-brand-navy text-white rounded-lg text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)]">
+          className="flex-1 px-4 py-2.5 bg-brand-navy text-white rounded-lg text-sm font-semibold font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-brand-navy-hover)] transition-colors">
           Continue shopping
         </button>
       </div>
@@ -203,16 +217,16 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
             href="tel:+8801646886795" 
             className="text-brand-teal font-medium hover:underline"
           >
-            ðŸ“ž Call support
+            📞 Call support
           </a>
           <span className="text-[var(--color-border-secondary)]">|</span>
           <a 
-            href="https://wa.me/8801646886795?text=Hi%2C%20I%20need%20help%20with%20my%20order%20%23{orderId}" 
+            href={`https://wa.me/8801646886795?text=Hi%2C%20I%20need%20help%20with%20my%20order%20%23${orderId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-brand-teal font-medium hover:underline"
           >
-            ðŸ’¬ Live chat
+            💬 Live chat
           </a>
         </div>
       </div>
