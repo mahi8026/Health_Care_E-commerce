@@ -243,19 +243,19 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-modal flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-lg max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col relative z-10">
+    <div className="fixed inset-0 z-modal flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-lg max-w-5xl w-full my-4 sm:my-8 max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative z-10">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[var(--color-border-primary)] flex items-center justify-between bg-gradient-to-r from-[var(--color-status-danger-tint)] to-orange-50">
+        <div className="flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--color-border-primary)] flex items-center justify-between bg-gradient-to-r from-[var(--color-status-danger-tint)] to-orange-50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--color-status-danger-tint)] rounded-xl flex items-center justify-center">
               <FaFire className="text-white text-xl" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+              <h2 className="text-lg sm:text-xl font-semibold text-[var(--color-text-primary)]">
                 {isEditing ? 'Edit Flash Deal' : 'Create Flash Deal'}
               </h2>
-              <p className="text-sm text-[var(--color-text-secondary)]">Set up limited-time product discounts</p>
+              <p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">Set up limited-time product discounts</p>
             </div>
           </div>
           <button
@@ -267,8 +267,8 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
         </div>
 
         {/* Tabs */}
-        <div className="px-6 py-3 border-b border-[var(--color-border-primary)] bg-[var(--color-background-secondary)]">
-          <div className="flex gap-2">
+        <div className="flex-shrink-0 px-4 sm:px-6 py-2 sm:py-3 border-b border-[var(--color-border-primary)] bg-[var(--color-background-secondary)]">
+          <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-thin">
             {[
               { id: 'basic', label: 'Basic Info', icon: FaTag },
               { id: 'products', label: 'Products', icon: FaBoxes, badge: selectedProducts.length },
@@ -278,7 +278,7 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-[var(--color-status-danger-tint)] text-white'
                     : 'bg-white text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]'
@@ -300,13 +300,27 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
 
         {/* Error Message */}
         {error && (
-          <div className="mx-6 mt-4 p-4 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-lg text-[var(--color-status-danger)] text-sm">
-            {error}
+          <div className="flex-shrink-0 mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start gap-3 shadow-sm">
+            <div className="flex-shrink-0 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center mt-0.5">
+              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">{error}</p>
+            </div>
+            <button
+              onClick={() => setError('')}
+              className="flex-shrink-0 text-red-400 hover:text-red-600 transition-colors"
+              aria-label="Dismiss error"
+            >
+              <FaTimes className="w-4 h-4" />
+            </button>
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 min-h-0">
           {/* Basic Info Tab */}
           {activeTab === 'basic' && (
             <div className="space-y-4">
@@ -833,11 +847,11 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-between">
+        <div className="flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 border-t border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0">
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] rounded-lg transition-colors font-medium disabled:opacity-50"
+            className="px-4 py-2 text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] rounded-lg transition-colors font-medium disabled:opacity-50 w-full sm:w-auto order-2 sm:order-1"
           >
             Cancel
           </button>
@@ -845,7 +859,7 @@ export default function FlashDealModal({ deal, onClose, onSave }) {
           <button
             onClick={handleSubmit}
             disabled={loading || selectedProducts.length === 0}
-            className="flex items-center gap-2 px-6 py-2 bg-[var(--color-status-danger-tint)] text-white rounded-lg hover:bg-danger transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-6 py-2 bg-[var(--color-status-danger-tint)] text-white rounded-lg hover:bg-danger transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto order-1 sm:order-2"
           >
             {loading ? (
               <>
