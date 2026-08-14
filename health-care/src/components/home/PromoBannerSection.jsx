@@ -84,7 +84,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
     <section
       className="promo-banner-hero"
       style={{
-        padding: '20px 0',
+        padding: '0',
         background: '#f8f9fa',
       }}
     >
@@ -92,7 +92,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         maxWidth: '1280px',
         width: '100%',
         margin: '0 auto',
-        padding: '0 20px',
+        padding: '0',
       }}>
         {/* Single Full-Width Hero Banner */}
         <div
@@ -100,21 +100,19 @@ export default function PromoBannerSection({ bannerId = 0 }) {
           className="promo-hero-card"
           style={{
             position: 'relative',
-            borderRadius: '12px',
+            borderRadius: '0',
             overflow: 'hidden',
             cursor: 'pointer',
             background: bannerData.bgColor || '#ffffff',
             height: '520px',
             transition: 'all 0.3s ease',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            boxShadow: 'none',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
+            e.currentTarget.style.transform = 'scale(1.01)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+            e.currentTarget.style.transform = 'scale(1)';
           }}
         >
           {/* Background Image - Full Width */}
@@ -283,9 +281,14 @@ export default function PromoBannerSection({ bannerId = 0 }) {
 
         /* Mobile */
         @media (max-width: 768px) {
+          .promo-banner-hero {
+            padding: 0 !important;
+            background: transparent !important;
+          }
           .promo-hero-card {
             height: 350px !important;
-            border-radius: 8px !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
           }
         }
 
