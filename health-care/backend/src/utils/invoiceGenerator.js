@@ -475,7 +475,7 @@ addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
       fontSize: 8,
       fillColor: NAVY,
     });
-    textAt(doc, 'BRAC Bank PLC  ·  MAHI M RAHMAN  ·  A/C 1081267690001', MARGIN + 12, y + 22, {
+    textAt(doc, 'BRAC Bank PLC  ·  MEDIPORT BANGLADESH LTD  ·  A/C 1081267690001', MARGIN + 12, y + 22, {
       fontSize: 8,
       fillColor: '#475569',
     });
