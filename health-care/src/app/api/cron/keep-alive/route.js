@@ -37,14 +37,27 @@ export async function GET(request) {
     }
 
     const startTime = Date.now();
-    const response = await fetch(`${backendUrl}/api/products?limit=1`, {
-      signal: AbortSignal.timeout(10000), // 10 second timeout
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'Mediport-KeepAlive-Cron',
-      },
-    });
+    // Ping the aggregated homepage endpoint (10-min cache TTL matches this
+    // cron schedule, so the homepage cache never expires cold). The products
+    // ping is kept for rate-limiter/DB warm-up.
+    const [homeRes, productsRes] = await Promise.all([
+      fetch(`${backendUrl}/api/home/data`, {
+        signal: AbortSignal.timeout(45000), // allow for cold start
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Mediport-KeepAlive-Cron',
+        },
+      }),
+      fetch(`${backendUrl}/api/products?limit=1`, {
+        signal: AbortSignal.timeout(10000),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Mediport-KeepAlive-Cron',
+        },
+      }),
+    ]);
     const duration = Date.now() - startTime;
+    const response = homeRes.ok ? homeRes : productsRes;
 
     if (response.ok) {
       return Response.json({

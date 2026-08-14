@@ -210,5 +210,7 @@ orderSchema.index({ user: 1, status: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 // ✅ Security Fix: Idempotency index to prevent duplicate orders
 orderSchema.index({ user: 1, 'metadata.idempotencyKey': 1 }, { unique: true, sparse: true });
+// Top-selling aggregation ($lookup on items.product) scans every order without this
+orderSchema.index({ 'items.product': 1 });
 
 module.exports = mongoose.model('Order', orderSchema);

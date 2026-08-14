@@ -37,6 +37,12 @@ const REQUIRED_INDEXES = {
   manufacturers: [
     { key: { slug: 1 }, name: 'slug_1', unique: true },
     { key: { isActive: 1 }, name: 'isActive_1' }
+  ],
+  reviews: [
+    { key: { status: 1, createdAt: -1 }, name: 'status_1_createdAt_-1' }
+  ],
+  orders: [
+    { key: { 'items.product': 1 }, name: 'items.product_1' }
   ]
 };
 

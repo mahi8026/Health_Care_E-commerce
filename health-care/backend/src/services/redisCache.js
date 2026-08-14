@@ -604,6 +604,35 @@ async function warmPopularProducts() {
 }
 
 /**
+ * Warm the aggregated homepage payload.
+ * Caches under the exact key homeController reads ('homepage:aggregated:v1'),
+ * so the first visitor after a restart gets a cache HIT instead of paying
+ * the full multi-query DB storm (~2s on free-tier Atlas).
+ */
+async function warmHomepageData() {
+  try {
+    if (!isRedisConnected()) {
+      logger.warn('[Redis] Not connected, skipping homepage cache warming');
+      return false;
+    }
+
+    logger.info('[Redis] Warming aggregated homepage cache...');
+
+    // Lazy require to avoid a circular dependency (homeController requires redisCache)
+    const { buildHomeDataPayload } = require('../controllers/homeController');
+    const data = await buildHomeDataPayload();
+
+    await set('homepage:aggregated:v1', data, 600);
+
+    logger.info(`[Redis] Warmed homepage cache (${data.featuredProducts?.length || 0} featured, ${data.newArrivals?.length || 0} new arrivals)`);
+    return true;
+  } catch (error) {
+    logger.error(`[Redis] Homepage cache warming error: ${error.message}`);
+    return false;
+  }
+}
+
+/**
  * Warm all caches on server startup
  * Calls all cache warming functions in parallel
  * 
@@ -618,7 +647,8 @@ async function warmAllCaches() {
     const results = await Promise.allSettled([
       warmFeaturedProducts(),
       warmCategories(),
-      warmPopularProducts()
+      warmPopularProducts(),
+      warmHomepageData()
     ]);
 
     // Log results
@@ -861,6 +891,7 @@ module.exports = {
   warmFeaturedProducts,
   warmCategories,
   warmPopularProducts,
+  warmHomepageData,
   warmAllCaches,
   // Cache invalidation
   invalidateProductList,

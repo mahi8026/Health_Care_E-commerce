@@ -3,9 +3,10 @@ const logger = require('../utils/logger');
 const { slowQueryPlugin } = require('../utils/mongooseSlowQueryPlugin');
 
 // Apply slow query logging plugin globally to all schemas
-// Logs queries exceeding 100ms — Requirements 4.5, 4.8
+// Logs queries exceeding 500ms — free-tier Atlas (M0) has a 100-300ms baseline,
+// so 100ms would log nearly every query as noise
 mongoose.plugin(slowQueryPlugin, {
-  threshold: 100, // Log queries slower than 100ms
+  threshold: 500, // Log queries slower than 500ms
   logAll: false   // Only log slow queries, not all queries
 });
 

@@ -24,6 +24,7 @@ import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
 import NotificationBanner from "@/components/pwa/NotificationBanner";
 import OneSignalProvider from "@/components/pwa/OneSignalProvider";
+import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
 
 export const dynamic = 'force-dynamic';
 
@@ -227,6 +228,9 @@ export default function RootLayout({ children }) {
 
         {/* PWA Install Prompt */}
         <InstallPWA />
+
+        {/* Brave Browser Warning */}
+        <BraveBrowserWarning />
 
         {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (

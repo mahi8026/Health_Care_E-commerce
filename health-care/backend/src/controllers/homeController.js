@@ -16,8 +16,10 @@ const logger = require('../utils/logger');
 const { get, set } = require('../services/redisCache');
 
 /**
- * Get aggregated homepage data in a single request
- * 
+ * Build the aggregated homepage payload (queries only, no caching).
+ * Shared by getHomeData and the Redis cache warmer so the warmed key
+ * contains exactly what the endpoint would return.
+ *
  * Returns:
  * - Featured products (25 items)
  * - Categories with counts (all active)
@@ -28,60 +30,22 @@ const { get, set } = require('../services/redisCache');
  * - Testimonials (3 approved reviews)
  * - Active promo (1 coupon)
  * - Site stats (products, brands, orders, clients)
- * 
- * @route GET /api/home/data
- * @access Public
  */
-exports.getHomeData = async (req, res) => {
-  const cacheKey = 'homepage:aggregated:v1';
-  
+async function buildHomeDataPayload() {
   try {
-    // Check MongoDB connection status first
-    const mongoose = require('mongoose');
-    if (mongoose.connection.readyState !== 1) {
-      logger.warn('[homeController] MongoDB not connected yet, returning empty data');
-      return res.json({
-        success: true,
-        data: {
-          featuredProducts: [],
-          categories: [],
-          categoryCounts: {},
-          dealProducts: [],
-          newArrivals: [],
-          topSellingProducts: [],
-          labEquipmentProducts: [],
-          testimonials: [],
-          activePromo: null,
-          stats: { totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 }
-        },
-        cached: false,
-        dbConnecting: true
-      });
-    }
-
-    // Try cache first
-    const cached = await get(cacheKey);
-    if (cached) {
-      return res.json({
-        success: true,
-        data: cached,
-        cached: true
-      });
-    }
-
-    // Run all queries in parallel for maximum performance
-    const [
-      featuredProducts,
-      categories,
-      categoryCounts,
-      dealProducts,
-      newArrivals,
-      topSellingProducts,
-      labEquipmentProducts,
-      testimonials,
-      activePromo,
-      stats
-    ] = await Promise.all([
+  // Run all queries in parallel for maximum performance
+  const [
+    featuredProducts,
+    categories,
+    categoryCounts,
+    dealProducts,
+    newArrivals,
+    topSellingProducts,
+    labEquipmentProducts,
+    testimonials,
+    activePromo,
+    stats
+  ] = await Promise.all([
       // 1. Featured products
       Product.find({ isFeatured: true, isActive: true })
         .populate('category', 'name slug')
@@ -284,7 +248,7 @@ return [];
     });
 
     // Build response object
-    const data = {
+    return {
       featuredProducts,
       categories,
       categoryCounts: categoryCountsMap,
@@ -296,9 +260,54 @@ return [];
       activePromo,
       stats
     };
+  } catch (error) {
+    logger.error('[homeController] buildHomeDataPayload error:', error);
+    throw error;
+  }
+}
 
-    // Cache for 5 minutes (homepage changes frequently)
-    await set(cacheKey, data, 300);
+exports.getHomeData = async (req, res) => {
+  const cacheKey = 'homepage:aggregated:v1';
+  
+  try {
+    // Check MongoDB connection status first
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      logger.warn('[homeController] MongoDB not connected yet, returning empty data');
+      return res.json({
+        success: true,
+        data: {
+          featuredProducts: [],
+          categories: [],
+          categoryCounts: {},
+          dealProducts: [],
+          newArrivals: [],
+          topSellingProducts: [],
+          labEquipmentProducts: [],
+          testimonials: [],
+          activePromo: null,
+          stats: { totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 }
+        },
+        cached: false,
+        dbConnecting: true
+      });
+    }
+
+    // Try cache first
+    const cached = await get(cacheKey);
+    if (cached) {
+      return res.json({
+        success: true,
+        data: cached,
+        cached: true
+      });
+    }
+
+    const data = await buildHomeDataPayload();
+
+    // Cache for 10 minutes — matches the 10-minute Vercel keep-alive cron,
+    // so the homepage cache is continuously refreshed and never expires cold
+    await set(cacheKey, data, 600);
 
     res.json({
       success: true,
@@ -415,3 +424,5 @@ exports.getCategoryProducts = async (req, res) => {
     });
   }
 };
+
+module.exports = { getHomeData: exports.getHomeData, getCategoryProducts: exports.getCategoryProducts, buildHomeDataPayload };

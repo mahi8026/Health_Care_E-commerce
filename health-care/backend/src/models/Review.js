@@ -119,6 +119,7 @@ reviewSchema.index({ product: 1, user: 1 }, { unique: true });
 reviewSchema.index({ product: 1, status: 1 });
 reviewSchema.index({ createdAt: -1 });
 reviewSchema.index({ helpfulCount: -1 });
+reviewSchema.index({ status: 1, createdAt: -1 }); // global approved-reviews listing sorted by date (homepage testimonials)
 // Optimization spec indexes (Requirements 4.1, 4.2)
 reviewSchema.index({ product: 1, createdAt: -1 }); // product review listing sorted by date
 
