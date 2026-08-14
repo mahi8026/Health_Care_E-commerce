@@ -799,6 +799,10 @@ export default function HomePage() {
         .category-product-row { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 6px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-product-row::-webkit-scrollbar { display: none; }
         @media (max-width: 768px) {
+          /* Remove extra spacing on mobile */
+          .coupon-banner-section { padding: 0 !important; margin: 0 !important; }
+          .category-section { padding: 16px 0 !important; }
+          
           .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; padding: 0 16px; }
           .hero-left-content { order: 2; }
           .hero-right-panel { order: 1; display: block !important; height: 260px !important; border-radius: 14px !important; }
@@ -1321,10 +1325,10 @@ export default function HomePage() {
       {/* COUPON BANNER: Show active promo code when available */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {promo && (
-        <section style={{ padding: '0 24px 8px', maxWidth: 1280, margin: '0 auto' }}>
+        <section style={{ padding: '0 0 0', maxWidth: 1280, margin: '0 auto' }} className="coupon-banner-section">
           <div style={{
             background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #1a3a6b 100%)',
-            borderRadius: 14,
+            borderRadius: 0,
             padding: '18px 28px',
             display: 'flex',
             alignItems: 'center',

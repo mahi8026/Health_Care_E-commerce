@@ -175,8 +175,8 @@ const CategorySection = memo(function CategorySection({ categoryName, categoryDa
   };
 
   return (
-    <section className="py-10 bg-white border-b border-[var(--color-border-tertiary)]">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="category-section py-0 md:py-10 bg-white border-b border-[var(--color-border-tertiary)]">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-0">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
