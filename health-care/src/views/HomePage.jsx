@@ -28,6 +28,7 @@ import {
   FaShoppingCart,
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { fetchWithRetry } from '@/utils/api';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
@@ -389,7 +390,7 @@ export default function HomePage() {
   useEffect(() => {
     const loadBanners = async () => {
       try {
-        const res = await fetch(`${API}/settings`);
+        const res = await fetchWithRetry(`${API}/settings`);
         const data = await res.json();
         const s = data.data || {};
         if (s.heroSlides?.length) {
@@ -452,7 +453,7 @@ export default function HomePage() {
     const fetchHomeData = async () => {
       try {
         // SINGLE AGGREGATED REQUEST - Replaces 10+ separate API calls
-        const response = await fetch(`${API}/home/data`, {
+        const response = await fetchWithRetry(`${API}/home/data`, {
           credentials: 'include'
         });
         
@@ -505,7 +506,7 @@ export default function HomePage() {
     // DEFERRED: Category products (only loaded when user scrolls to category tabs)
     const fetchCategoryProducts = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithRetry(
           `${API}/home/category-products?category=Diagnostic Equipment,Laboratory Reagents,Hospital Machines,PPE & Safety,Lab Equipment&limit=10`,
           { credentials: 'include' }
         );
@@ -546,7 +547,7 @@ export default function HomePage() {
     // Check user auth (separate lightweight call)
     const token = localStorage.getItem('Mediport_token');
     if (token) {
-      fetch(`${API}/auth/me`, { 
+      fetchWithRetry(`${API}/auth/me`, { 
         headers: { Authorization: `Bearer ${token}` },
         credentials: 'include'
       })
@@ -591,8 +592,8 @@ export default function HomePage() {
       try {
         // Try featured first, fallback to all products if not enough
         const [featuredData, fallbackData] = await Promise.all([
-          fetch(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
-          fetch(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
+          fetchWithRetry(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
+          fetchWithRetry(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
         ]);
         
         const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);

@@ -188,11 +188,77 @@ async function handleResponse(response) {
   }
 }
 
+// Cold-start aware fetch: retries on 503/429/network errors with backoff.
+// Render free tier spins down after ~15 min of inactivity; the first request
+// after idle returns 503 while the server boots (30-60s), so retry generously.
+export async function fetchWithRetry(
+  url,
+  options = {},
+  { maxRetries = 5, baseDelay = 5000, timeout = TIMEOUTS.API_REQUEST } = {}
+) {
+  const externalSignal = options.signal;
+
+  const sleep = (ms) =>
+    new Promise((resolve, reject) => {
+      const onAbort = () => {
+        clearTimeout(timer);
+        const err = new Error('Aborted');
+        err.name = 'AbortError';
+        reject(err);
+      };
+      const timer = setTimeout(() => {
+        if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
+        resolve();
+      }, ms);
+      if (externalSignal) {
+        if (externalSignal.aborted) return onAbort();
+        externalSignal.addEventListener('abort', onAbort, { once: true });
+      }
+    });
+
+  for (let attempt = 0; ; attempt++) {
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    if (externalSignal) {
+      if (externalSignal.aborted) {
+        const err = new Error('Aborted');
+        err.name = 'AbortError';
+        throw err;
+      }
+      externalSignal.addEventListener('abort', onAbort, { once: true });
+    }
+    const timeoutId = timeout ? setTimeout(() => controller.abort(), timeout) : null;
+
+    try {
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
+
+      const retriable = response.status === 503 || response.status === 429;
+      if (!retriable || attempt >= maxRetries) return response;
+
+      const retryAfter = response.headers.get('Retry-After');
+      const delay = retryAfter ? parseInt(retryAfter) * 1000 : baseDelay * (attempt + 1);
+      await sleep(delay);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
+
+      // Stop retrying if the caller unmounted or cancelled
+      if (externalSignal?.aborted) throw error;
+      if (attempt >= maxRetries) throw error;
+
+      await sleep(baseDelay * (attempt + 1));
+    }
+  }
+}
+
 // Enhanced fetch with auto-retry on 401, 503, 429, and timeout
 // Includes request deduplication and caching to prevent rate limiting
 async function fetchWithAuth(url, options = {}, retryCount = 0) {
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000; // 2 seconds
+  const COLD_START_DELAY = 5000; // Render free tier needs 30-60s to boot
   const method = options.method || 'GET';
   
   // ── Request Deduplication ──────────────────────────────────────────────────
@@ -240,11 +306,13 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         return fetchWithAuth(url, options, retryCount + 1);
       }
       
-      // Handle 503 (Service Unavailable - Backend sleeping)
+      // Handle 503 (Service Unavailable - Backend sleeping or DB reconnecting)
       if (response.status === 503 && retryCount < MAX_RETRIES) {
         clearTimeout(timeoutId);
-        // Backend is sleeping, retry with delay
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
+        const retryAfter = response.headers.get('Retry-After');
+        // Backend cold-starting or DB reconnecting, retry with backoff
+        const delay = retryAfter ? parseInt(retryAfter) * 1000 : COLD_START_DELAY * (retryCount + 1);
+        await new Promise(resolve => setTimeout(resolve, delay));
         return fetchWithAuth(url, options, retryCount + 1);
       }
       

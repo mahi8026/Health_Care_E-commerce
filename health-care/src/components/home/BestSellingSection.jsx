@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/hooks/useT';
 import { API } from '@/constants/api';
+import { fetchWithRetry } from '@/utils/api';
 import AutoSlider from '@/components/ui/AutoSlider';
 import BestSellingCard from '@/components/product/BestSellingCard';
 import { ProductCardSkeleton } from '@/components/ui/Spinner';
@@ -30,7 +31,7 @@ export default function BestSellingSection() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
+        const response = await fetchWithRetry(
           `${API}/products?sortBy=topSelling&limit=20`,
           {
             credentials: 'include',
@@ -59,7 +60,7 @@ export default function BestSellingSection() {
         
         // Try fallback to featured products
         try {
-          const fallbackResponse = await fetch(
+          const fallbackResponse = await fetchWithRetry(
             `${API}/products?isFeatured=true&limit=20`,
             { credentials: 'include' }
           );

@@ -50,10 +50,19 @@ const getPoolMetrics = () => {
     let waiting = 0;
 
     servers.forEach((server) => {
-      const pool = server.s && server.s.pool;
+      // Driver 5/6+: ConnectionPool instance lives on server.pool with getters.
+      // Older drivers (<4.x) exposed it at server.s.pool with count properties.
+      const pool = server.pool || (server.s && server.s.pool);
       if (pool) {
-        active += pool.currentCheckedOutCount || 0;
-        idle += (pool.totalConnectionCount || 0) - (pool.currentCheckedOutCount || 0);
+        const checkedOut = typeof pool.currentCheckedOutCount === 'number'
+          ? pool.currentCheckedOutCount
+          : 0;
+        const available = typeof pool.availableConnectionCount === 'number'
+          ? pool.availableConnectionCount
+          : (pool.totalConnectionCount || 0) - checkedOut;
+
+        active += checkedOut;
+        idle += available;
         waiting += pool.waitQueueSize || 0;
       }
     });

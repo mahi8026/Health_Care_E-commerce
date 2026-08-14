@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { fetchWithRetry } from '@/utils/api';
 
 /**
  * Fetches paginated product list with filters and sorting.
@@ -59,7 +60,7 @@ export function useProductList(filters, page) {
       params.set('page', page);
       params.set('limit', 20);
 
-      const res = await fetch(
+      const res = await fetchWithRetry(
         `${process.env.NEXT_PUBLIC_API_URL}/products?${params.toString()}`,
         { signal }
       );
