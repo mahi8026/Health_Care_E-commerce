@@ -282,149 +282,151 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
     }
   }
   
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
-  
-  // Create the fetch promise
+  const cacheKey = getCacheKey(url, options);
+
+  // Create the fetch promise. Retries run as an in-loop retry so the promise
+  // never re-enters the dedup gate above (recursing previously made the
+  // promise await itself and hang forever on 503/429 responses).
   const fetchPromise = (async () => {
-    try {
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      // Handle 429 (Too Many Requests - Rate Limited)
-      if (response.status === 429 && retryCount < MAX_RETRIES) {
+    let attempts = retryCount;
+    let response;
+
+    while (true) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
+
+      try {
+        response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
         clearTimeout(timeoutId);
-        // Get retry-after header or use exponential backoff
-        const retryAfter = response.headers.get('Retry-After');
-        const delay = retryAfter ? parseInt(retryAfter) * 1000 : RETRY_DELAY * Math.pow(2, retryCount);
-        devLog.error(`[API] Rate limited. Retrying after ${delay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return fetchWithAuth(url, options, retryCount + 1);
-      }
-      
-      // Handle 503 (Service Unavailable - Backend sleeping or DB reconnecting)
-      if (response.status === 503 && retryCount < MAX_RETRIES) {
-        clearTimeout(timeoutId);
-        const retryAfter = response.headers.get('Retry-After');
-        // Backend cold-starting or DB reconnecting, retry with backoff
-        const delay = retryAfter ? parseInt(retryAfter) * 1000 : COLD_START_DELAY * (retryCount + 1);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return fetchWithAuth(url, options, retryCount + 1);
-      }
-      
-      // Cache successful GET responses
-      if (method === 'GET' && response.ok) {
-        const cacheKey = getCacheKey(url, options);
-        const clone = response.clone();
-        const data = await clone.json();
-        const ttl = getCacheTTL(url);
-        setCachedResponse(cacheKey, data, ttl);
-      }
-      
-      // If 401 and we have a refresh token, try to refresh
-      if (response.status === 401 && getRefreshToken()) {
-      if (!isRefreshing) {
-        isRefreshing = true;
-        
-        try {
-          // Attempt to refresh the token
-          const refreshToken = getRefreshToken();
-          const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refreshToken }),
-            credentials: 'include'
-          });
-          
-          if (refreshResponse.ok) {
-            const data = await refreshResponse.json();
-            if (data.token) {
-              setToken(data.token);
-              if (data.refreshToken) {
-                setRefreshToken(data.refreshToken);
-              }
-              isRefreshing = false;
-              onTokenRefreshed(data.token);
-              
-              // Retry original request with new token
-              const newOptions = {
-                ...options,
-                headers: {
-                  ...options.headers,
-                  'Authorization': `Bearer ${data.token}`
-                }
-              };
-              return fetch(url, newOptions);
-            }
-          }
-          
-          // Refresh failed, clear tokens and redirect to login (only in browser)
-          isRefreshing = false;
-          removeToken();
-          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
-          return response;
-        } catch (error) {
-          isRefreshing = false;
-          removeToken();
-          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
-          return response;
+
+        // Handle 429 (Too Many Requests - Rate Limited) and 503 (Service
+        // Unavailable - Backend sleeping or DB reconnecting)
+        const retriable = response.status === 429 || response.status === 503;
+        if (retriable && attempts < MAX_RETRIES) {
+          const retryAfter = response.headers.get('Retry-After');
+          const delay = retryAfter
+            ? parseInt(retryAfter) * 1000
+            : response.status === 503
+              ? COLD_START_DELAY * (attempts + 1)
+              : RETRY_DELAY * Math.pow(2, attempts);
+          devLog.error(`[API] ${response.status} for ${url}. Retrying after ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          attempts += 1;
+          continue;
         }
-      } else {
-        // Wait for the refresh to complete
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token) => {
+        break;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        // Network error or timeout - retry if not max retries
+        if (error.name === 'AbortError' || error.message.includes('fetch')) {
+          if (attempts < MAX_RETRIES) {
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            attempts += 1;
+            continue;
+          }
+          devLog.error('[API] Request failed after retries:', url);
+          throw new ApiError(
+            'Unable to connect to server. Please check your connection.',
+            0,
+            { originalError: error.message }
+          );
+        }
+        throw error;
+      }
+    }
+
+    // Cache successful GET responses
+    if (method === 'GET' && response.ok) {
+      const clone = response.clone();
+      const data = await clone.json();
+      const ttl = getCacheTTL(url);
+      setCachedResponse(cacheKey, data, ttl);
+    }
+    
+    // If 401 and we have a refresh token, try to refresh
+    if (response.status === 401 && getRefreshToken()) {
+    if (!isRefreshing) {
+      isRefreshing = true;
+      
+      try {
+        // Attempt to refresh the token
+        const refreshToken = getRefreshToken();
+        const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+          credentials: 'include'
+        });
+        
+        if (refreshResponse.ok) {
+          const data = await refreshResponse.json();
+          if (data.token) {
+            setToken(data.token);
+            if (data.refreshToken) {
+              setRefreshToken(data.refreshToken);
+            }
+            isRefreshing = false;
+            onTokenRefreshed(data.token);
+            
+            // Retry original request with new token
             const newOptions = {
               ...options,
               headers: {
                 ...options.headers,
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${data.token}`
               }
             };
-            resolve(fetch(url, newOptions));
-          });
+            return fetch(url, newOptions);
+          }
+        }
+        
+        // Refresh failed, clear tokens and redirect to login (only in browser)
+        isRefreshing = false;
+        removeToken();
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        return response;
+      } catch (error) {
+        isRefreshing = false;
+        removeToken();
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        return response;
+      }
+    } else {
+      // Wait for the refresh to complete
+      return new Promise((resolve) => {
+        subscribeTokenRefresh((token) => {
+          const newOptions = {
+            ...options,
+            headers: {
+              ...options.headers,
+              'Authorization': `Bearer ${token}`
+            }
+          };
+          resolve(fetch(url, newOptions));
         });
-      }
-    }
-    
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    // Network error or timeout - retry if not max retries
-    if (error.name === 'AbortError' || error.message.includes('fetch')) {
-      if (retryCount < MAX_RETRIES) {
-        // Retry with delay
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-        return fetchWithAuth(url, options, retryCount + 1);
-      }
-      devLog.error('[API] Request failed after retries:', url);
-      throw new ApiError(
-        'Unable to connect to server. Please check your connection.',
-        0,
-        { originalError: error.message }
-      );
-    }
-    throw error;
-  } finally {
-    // Clean up pending request tracking
-    if (method === 'GET') {
-      const cacheKey = getCacheKey(url, options);
-      pendingRequests.delete(cacheKey);
+      });
     }
   }
+  
+  return response;
   })();
   
-  // Store pending request for deduplication
-  if (method === 'GET') {
-    const cacheKey = getCacheKey(url, options);
+  // Store pending request for deduplication (only if not already pending)
+  if (method === 'GET' && !pendingRequests.has(cacheKey)) {
     pendingRequests.set(cacheKey, fetchPromise);
+  }
+
+  // Clean up pending request tracking once the promise settles
+  if (method === 'GET') {
+    const settle = () => pendingRequests.delete(cacheKey);
+    fetchPromise.then(settle, settle);
   }
   
   return fetchPromise;
