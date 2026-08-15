@@ -3,13 +3,13 @@ import { SITE_CONFIG } from '@/config/seo';
 import { COMPARISON_GUIDES } from '@/config/guides';
 
 export const metadata = {
-  title: 'Medical Equipment Comparisons & Price Guides Bangladesh | MediportBD',
+  title: 'Medical Equipment Comparisons & Price Guides Bangladesh',
   description:
     'Side-by-side medical equipment comparisons for Bangladesh: ECG machine brands, BP monitors, HbA1c reagents — with 2026 price ranges, spec tables and clear recommendations.',
   keywords: 'medical equipment comparison Bangladesh, ECG machine brand comparison, BP monitor comparison, HbA1c reagent comparison, medical equipment price BD',
   alternates: { canonical: `${SITE_CONFIG.url}/compare` },
   openGraph: {
-    title: 'Medical Equipment Comparisons & Price Guides Bangladesh | MediportBD',
+    title: 'Medical Equipment Comparisons & Price Guides Bangladesh',
     description: 'Brand-by-brand comparisons and 2026 price guides for medical equipment in Bangladesh.',
     url: `${SITE_CONFIG.url}/compare`,
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],

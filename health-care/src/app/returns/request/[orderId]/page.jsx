@@ -347,7 +347,7 @@ export default function ReturnRequestPage() {
                   <div key={idx} className="relative group h-24">
                     <Image
                       src={img.url}
-                      alt={`Return evidence photo ${idx + 1} — MediportBD`}
+                      alt={`Return evidence photo ${idx + 1} `}
                       fill
                       sizes="(max-width: 768px) 20vw, 15vw"
                       style={{ objectFit: 'cover' }}

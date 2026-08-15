@@ -6,7 +6,7 @@ import Image from 'next/image';
 import {
   FaTimes, FaChevronRight, FaUser, FaBox, FaHeart, FaSignOutAlt,
   FaCog, FaStethoscope, FaSyringe, FaFlask, FaHospital, FaMicroscope,
-  FaShieldAlt, FaTooth, FaBone, FaBuilding, FaSearch, FaUserShield,
+  FaShieldAlt, FaTooth, FaBone, FaBuilding, FaUserShield,
 } from 'react-icons/fa';
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
@@ -55,7 +55,6 @@ export default function MobileMenu({ isOpen, onClose }) {
   const { user, isAuthenticated, isAdmin, isB2BCustomer, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -75,16 +74,12 @@ export default function MobileMenu({ isOpen, onClose }) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
-      const t = setTimeout(() => { setMounted(false); setCategoriesExpanded(false); setSearchQuery(''); }, 300);
+      const t = setTimeout(() => { setMounted(false); setCategoriesExpanded(false); }, 300);
       return () => clearTimeout(t);
     }
   }, [isOpen]);
 
   const handleNavigate = (path) => { router.push(path); onClose(); };
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) { router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`); onClose(); }
-  };
   const handleLogout = () => { logout(); onClose(); router.push('/'); };
 
   const authed = isAuthenticated();
@@ -168,34 +163,6 @@ export default function MobileMenu({ isOpen, onClose }) {
           >
             <FaTimes size={14} />
           </button>
-        </div>
-
-        {/* Search */}
-        <div style={{ padding: '12px 16px', ...glass.section }}>
-          <form onSubmit={handleSearch} style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.08)',
-            borderRadius: 10, padding: '8px 12px',
-            border: '1px solid rgba(255,255,255,0.14)',
-          }}>
-            <button type="submit" aria-label="Search" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
-              <FaSearch size={13} color="rgba(255,255,255,0.4)" />
-            </button>
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search products…"
-              style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: 'var(--text-base)', color: '#fff' }}
-              aria-label="Search products"
-            />
-            {searchQuery && (
-              <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.4)' }}>
-                <FaTimes size={12} />
-              </button>
-            )}
-          </form>
         </div>
 
         {/* User card */}

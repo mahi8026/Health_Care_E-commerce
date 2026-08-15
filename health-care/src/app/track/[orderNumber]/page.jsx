@@ -1,7 +1,7 @@
 import OrderTrackingPage from '@/views/OrderTrackingPage';
 
 export const metadata = {
-  title: 'Track Order — MediportBD',
+  title: 'Track Order',
   description: 'Track your order status and delivery progress in real-time'
 };
 

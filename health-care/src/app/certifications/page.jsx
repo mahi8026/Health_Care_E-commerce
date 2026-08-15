@@ -13,13 +13,13 @@ const BIN_NUMBER = process.env.NEXT_PUBLIC_BIN_NUMBER || '';
 const ISO_CERT = process.env.NEXT_PUBLIC_ISO_CERT_NUMBER || '';
 
 export const metadata = {
-  title: 'Certifications & Regulatory Registration | MediportBD',
+  title: 'Certifications & Regulatory Registration',
   description:
     'MediportBD certifications: DGDA-registered medical equipment supplier in Dhaka, ISO 13485 compliant, with trade license and BIN/VAT registration. Verification documents available on request.',
   keywords: 'MediportBD certifications, DGDA registration Bangladesh, ISO 13485 Bangladesh, medical equipment supplier license BD, BIN number Dhaka',
   alternates: { canonical: `${SITE_CONFIG.url}/certifications` },
   openGraph: {
-    title: 'Certifications & Regulatory Registration | MediportBD',
+    title: 'Certifications & Regulatory Registration',
     description:
       'Verify MediportBD\u2019s regulatory registrations: DGDA, ISO 13485, trade license and BIN — certificates available on request for institutional buyers.',
     url: `${SITE_CONFIG.url}/certifications`,
@@ -27,7 +27,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Certifications & Regulatory Registration | MediportBD',
+    title: 'Certifications & Regulatory Registration',
     description: 'DGDA-registered, ISO 13485 compliant medical equipment supplier in Dhaka, Bangladesh.',
   },
 };
@@ -62,7 +62,7 @@ export default function CertificationsPage() {
         schema={{
           '@context': 'https://schema.org',
           '@type': 'WebPage',
-          name: 'Certifications & Regulatory Registration | MediportBD',
+          name: 'Certifications & Regulatory Registration ',
           url: `${SITE_CONFIG.url}/certifications`,
           speakable: { '@type': 'Speakable', cssSelector: ['#cert-summary'] },
           about: {

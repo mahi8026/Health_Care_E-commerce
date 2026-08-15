@@ -1,7 +1,7 @@
 import LoadingDemo from '@/components/ui/LoadingDemo';
 
 export const metadata = {
-  title: 'Loading Components Demo — MediportBD',
+  title: 'Loading Components Demo',
   description: 'Showcase of attractive medical-themed loading animations and skeleton loaders',
   robots: {
     index: false,

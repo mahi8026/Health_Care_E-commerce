@@ -202,7 +202,7 @@ export default function CategoriesPage() {
                         {category.image?.url ? (
                           <Image
                             src={category.image.url}
-                            alt={`${category.name} supplier Bangladesh — MediportBD`}
+                            alt={`${category.name} supplier Bangladesh `}
                             width={48}
                             height={48}
                             className="object-cover rounded"
@@ -276,7 +276,7 @@ export default function CategoriesPage() {
                     {category.image?.url ? (
                       <Image
                         src={category.image.url}
-                        alt={`${category.name} supplier Bangladesh — MediportBD`}
+                        alt={`${category.name} supplier Bangladesh `}
                         width={64}
                         height={64}
                         className="object-cover rounded flex-shrink-0"

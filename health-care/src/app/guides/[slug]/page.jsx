@@ -23,7 +23,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const guide = getGuideBySlug(slug);
 
-  if (!guide) return { title: 'Guide Not Found | MediportBD', robots: { index: false } };
+  if (!guide) return { title: 'Guide Not Found', robots: { index: false } };
 
   const canonicalUrl = `${SITE_CONFIG.url}/guides/${guide.slug}`;
 

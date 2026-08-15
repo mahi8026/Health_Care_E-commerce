@@ -220,7 +220,7 @@ export default function ReturnDetailPage() {
                     >
                       <Image
                         src={img.url}
-                        alt={`${returnRequest.products?.[0]?.product?.name || 'Product'} — Return evidence photo ${idx + 1} — MediportBD`}
+                        alt={`${returnRequest.products?.[0]?.product?.name || 'Product'} — Return evidence photo ${idx + 1} `}
                         fill
                         sizes="(max-width: 768px) 33vw, 20vw"
                         style={{ objectFit: 'cover' }}

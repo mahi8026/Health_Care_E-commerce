@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import ResetPasswordPage from '@/views/ResetPasswordPage';
 
 export const metadata = {
-  title: 'Reset Password | MediportBD',
+  title: 'Reset Password',
   description: 'Set a new password for your MediportBD account.',
   robots: { index: false, follow: false },
   alternates: { canonical: `${SITE_CONFIG.url}/reset-password` },

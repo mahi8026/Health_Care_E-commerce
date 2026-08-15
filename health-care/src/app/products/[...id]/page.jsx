@@ -79,7 +79,7 @@ export async function generateMetadata({ params }) {
   const product = await fetchProduct(slug);
 
   if (!product) {
-    return { title: 'Product Not Found | MediportBD', robots: { index: false } };
+    return { title: 'Product Not Found', robots: { index: false } };
   }
 
   const name      = product.name || 'Product';
@@ -89,7 +89,7 @@ export async function generateMetadata({ params }) {
   // Canonical always uses the clean slug stored on the product (no slashes)
   const canonicalSlug = product.slug || slug;
 
-  const title       = `${name} — Price in Bangladesh | MediportBD`;
+  const title       = `${name} — Price in Bangladesh`;
   const description = buildDescription(name, brandName, catName, product.price);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
