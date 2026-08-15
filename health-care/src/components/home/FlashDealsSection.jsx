@@ -13,6 +13,7 @@ import { getProductCardImage } from '@/utils/cloudinary';
 
 const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick }) {
   const { addToCart } = useCart();
+  const [imgError, setImgError] = useState(false);
   const product = item.product;
   
   if (!product) return null;
@@ -36,7 +37,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
 
       {/* Image */}
       <div style={{ position: 'relative', aspectRatio: '1 / 1', background: 'var(--color-background-secondary)', overflow: 'hidden', flexShrink: 0 }}>
-        {optimizedImg ? (
+        {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
@@ -44,6 +45,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
             sizes="(max-width: 640px) 50vw, 25vw"
             style={{ objectFit: 'cover', transition: 'transform 0.3s' }}
             className="flash-deal-img"
+            onError={() => setImgError(true)}
           />
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>

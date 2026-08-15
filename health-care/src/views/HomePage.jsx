@@ -332,7 +332,7 @@ const HeroSlider = memo(function HeroSlider({ slides }) {
 
   // Keyboard navigation
   useEffect(() => {
-    const handleKeyDown = (e) => {
+const handleKeyDown = (e) => {
       const total = slides.length > 0 ? slides.length : 1;
       if (e.key === 'ArrowLeft') {
         setCurrentSlide(prev => (prev - 1 + total) % total);
@@ -347,6 +347,7 @@ const HeroSlider = memo(function HeroSlider({ slides }) {
   }, [slides]);
 
   const total = slides.length > 0 ? slides.length : 1;
+  const [failedSlide, setFailedSlide] = useState(null);
 
   return (
     <div
@@ -357,14 +358,19 @@ const HeroSlider = memo(function HeroSlider({ slides }) {
       {slides.length > 0 ? (
         slides.map((slide, i) => currentSlide === i && (
           <div key={slide._id || slide.imageUrl || i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-            <Image
-              src={slide.imageUrl}
-              alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
-              fill
-              sizes="(max-width: 768px) 100vw, 52vw"
-              style={{ objectFit: 'cover' }}
-              priority={i === 0}
-            />
+            {failedSlide === i ? (
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(77,219,184,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(14,138,110,0.5), transparent 60%), linear-gradient(140deg, #0b2545 0%, #12355f 60%, #0e8a6e 140%)' }} />
+            ) : (
+              <Image
+                src={slide.imageUrl}
+                alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
+                fill
+                sizes="(max-width: 768px) 100vw, 52vw"
+                style={{ objectFit: 'cover' }}
+                priority={i === 0}
+                onError={() => setFailedSlide(i)}
+              />
+            )}
           </div>
         ))
       ) : (
