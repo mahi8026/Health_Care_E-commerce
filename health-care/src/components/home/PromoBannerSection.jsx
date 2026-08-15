@@ -83,6 +83,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
       style={{
         padding: '0',
         background: '#f8f9fa',
+        marginBottom: '0',
       }}
     >
       <div style={{
@@ -282,7 +283,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
             background: transparent !important;
           }
           .promo-hero-card {
-            height: 350px !important;
+            height: 280px !important;
             border-radius: 0 !important;
             box-shadow: none !important;
           }
@@ -291,7 +292,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
         /* Small mobile */
         @media (max-width: 480px) {
           .promo-hero-card {
-            height: 300px !important;
+            height: 240px !important;
           }
         }
       `}</style>

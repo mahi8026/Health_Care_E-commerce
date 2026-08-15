@@ -29,9 +29,9 @@ export default function CategoryGrid({ categories, categoryCounts }) {
     : FALLBACK_CATEGORIES;
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-6 sm:py-8 md:py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-10">
+        <div className="text-center mb-6 sm:mb-8 md:mb-10">
           <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
             Shop by Category
           </h2>
@@ -40,7 +40,7 @@ export default function CategoryGrid({ categories, categoryCounts }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {displayCategories.map((cat) => {
             const categoryName = cat.name || cat._id;
             const slug = CATEGORY_NAME_TO_SLUG[categoryName];
@@ -50,22 +50,22 @@ export default function CategoryGrid({ categories, categoryCounts }) {
               <Link
                 key={categoryName}
                 href={slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(categoryName)}`}
-                className="group bg-white rounded-2xl p-6 border-2 border-[var(--color-border-tertiary)] hover:border-brand-teal hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
+                className="group bg-white rounded-2xl p-3 sm:p-6 border-2 border-[var(--color-border-tertiary)] hover:border-brand-teal hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
               >
                 <div 
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4 text-3xl text-brand-teal group-hover:scale-110 transition-transform"
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 sm:mb-4 text-xl sm:text-3xl text-brand-teal group-hover:scale-110 transition-transform"
                   style={{ backgroundColor: cat.color || 'var(--color-status-success-tint)' }}
                 >
                   {getCategoryIcon(categoryName)}
                 </div>
-                <h3 className="font-semibold text-[var(--color-text-primary)] mb-2 text-sm md:text-base">
+                <h3 className="font-semibold text-[var(--color-text-primary)] mb-1 sm:mb-2 text-xs sm:text-sm md:text-base">
                   {categoryName}
                 </h3>
-                <p className="text-xs text-[var(--color-text-secondary)] mb-3">
+                <p className="text-[10px] sm:text-xs text-[var(--color-text-secondary)] mb-2 sm:mb-3">
                   {cat.description || cat.desc || 'Medical equipment'}
                 </p>
                 {count > 0 && (
-                  <span className="text-xs text-brand-teal font-medium">
+                  <span className="text-[10px] sm:text-xs text-brand-teal font-medium">
                     {count} products
                   </span>
                 )}

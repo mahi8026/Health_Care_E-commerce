@@ -27,14 +27,14 @@ export default function NewArrivalSlider({ products = [] }) {
   };
 
   return (
-    <section style={{ padding: '60px 0', background: '#fff' }}>
+    <section style={{ padding: '32px 0', background: '#fff' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 20px' }}>
         {/* Section Header */}
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
-          marginBottom: '32px'
+          marginBottom: '20px'
         }}>
           <div>
             <h2 style={{ 
@@ -361,12 +361,22 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
         }
 
         @media (max-width: 640px) {
+          section {
+            padding: 24px 0 !important;
+          }
+          
           .quick-add-btn {
             opacity: 1 !important;
             position: static !important;
             transform: none !important;
             margin-top: 8px;
             width: 100%;
+          }
+        }
+        
+        @media (min-width: 641px) and (max-width: 1023px) {
+          section {
+            padding: 32px 0 !important;
           }
         }
       `}</style>

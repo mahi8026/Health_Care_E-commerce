@@ -105,7 +105,7 @@ export default function BestSellingSection() {
       className="best-selling-section"
       aria-labelledby="best-selling-title"
       style={{
-        padding: '60px 0',
+        padding: '24px 0',
         background: '#fff',
       }}
     >
@@ -121,7 +121,7 @@ export default function BestSellingSection() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '32px',
+            marginBottom: '20px',
             flexWrap: 'wrap',
             gap: '16px',
           }}
@@ -294,7 +294,7 @@ export default function BestSellingSection() {
       <style jsx>{`
         @media (max-width: 640px) {
           .best-selling-section {
-            padding: 40px 0 !important;
+            padding: 24px 0 !important;
           }
 
           .section-header {
@@ -313,7 +313,7 @@ export default function BestSellingSection() {
 
         @media (min-width: 641px) and (max-width: 1023px) {
           .best-selling-section {
-            padding: 50px 0 !important;
+            padding: 32px 0 !important;
           }
 
           .section-header h2 {

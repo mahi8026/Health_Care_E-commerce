@@ -107,7 +107,8 @@ export default function TopBar() {
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5"
           title="Track Order"
         >
-          <FaTruck size={11} />
+          <FaTruck size={16} className="sm:hidden" />
+          <FaTruck size={11} className="hidden sm:inline" />
           <span className="hidden md:inline">Track Order</span>
         </Link>
 
@@ -131,7 +132,8 @@ export default function TopBar() {
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5 font-medium"
           title={`Call ${contactPhone}`}
         >
-          <FaPhone size={10} />
+          <FaPhone size={16} className="sm:hidden" />
+          <FaPhone size={10} className="hidden sm:inline" />
           <span className="hidden sm:inline text-xs">{contactPhone}</span>
         </a>
       </div>
