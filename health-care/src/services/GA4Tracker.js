@@ -1,41 +1,71 @@
 // health-care/src/services/GA4Tracker.js
-import ReactGA from 'react-ga4';
+
+let reactGAPromise = null;
+
+/**
+ * Lazily load react-ga4 — keeps ~40KB out of the main bundle until the first
+ * tracking call. The SDK is fetched exactly once and reused for the page's
+ * lifetime.
+ */
+function getReactGA() {
+  if (!reactGAPromise) {
+    reactGAPromise = import('react-ga4').then((mod) => mod.default);
+  }
+  return reactGAPromise;
+}
 
 /**
  * GA4Tracker - Singleton class for Google Analytics 4 tracking
- * 
+ *
  * This class provides a centralized wrapper for all GA4 tracking calls.
  * It ensures consistent event tracking with session IDs and proper error handling.
- * 
+ *
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5
+ *
+ * Because react-ga4 is now loaded lazily (dynamic import), all tracking calls
+ * queue behind the initialization promise instead of bailing out — so events
+ * fired immediately after initialize() are no longer dropped.
  */
 class GA4Tracker {
   static isInitialized = false;
   static sessionId = null;
-  
+  static _initPromise = null;
+
   /**
    * Initialize GA4 with measurement ID
    * @param {string} measurementId - GA4 measurement ID (e.g., G-XXXXXXXXXX)
    */
   static initialize(measurementId) {
-    if (!measurementId) {
+    if (!measurementId || this.isInitialized) {
       return;
     }
-    
-    try {
-      ReactGA.initialize(measurementId, {
-        gaOptions: {
-          send_page_view: false // Manual page view tracking
-        }
+
+    this._initPromise = getReactGA()
+      .then((ReactGA) => {
+        ReactGA.initialize(measurementId, {
+          gaOptions: {
+            send_page_view: false // Manual page view tracking
+          }
+        });
+
+        this.isInitialized = true;
+        this.sessionId = this.generateSessionId();
+        return ReactGA;
+      })
+      .catch((error) => {
+        this._initPromise = null;
+        if (process.env.NODE_ENV !== 'production') console.error('GA4 Initialization Error:', error);
       });
-      
-      this.isInitialized = true;
-      this.sessionId = this.generateSessionId();
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Initialization Error:', error);
-    }
   }
-  
+
+  /**
+   * Returns the init promise (which resolves to ReactGA) or null when
+   * initialize() was never called.
+   */
+  static _whenReady() {
+    return this._initPromise || null;
+  }
+
   /**
    * Generate a unique session ID
    * @returns {string} Session ID in format: timestamp-randomstring
@@ -43,7 +73,7 @@ class GA4Tracker {
   static generateSessionId() {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
-  
+
   /**
    * Track page view event
    * @param {string} path - Page path (e.g., /products)
@@ -51,29 +81,31 @@ class GA4Tracker {
    * Requirements: 1.1, 1.2, 1.4, 1.5
    */
   static trackPageView(path, title) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.send({
         hitType: 'pageview',
         page: path,
         title: title,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Page View Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Page View Error:', error);
+    });
   }
-  
+
   /**
    * Track product view event
    * @param {Object} product - Product object with id, name, price, category
    * Requirements: 2.1
    */
   static trackViewItem(product) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('view_item', {
         currency: 'BDT',
         value: product.price,
@@ -85,11 +117,11 @@ class GA4Tracker {
         }],
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 View Item Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 View Item Error:', error);
+    });
   }
-  
+
   /**
    * Track add to cart event
    * @param {Object} product - Product object
@@ -97,9 +129,10 @@ class GA4Tracker {
    * Requirements: 2.2, 2.6
    */
   static trackAddToCart(product, quantity) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('add_to_cart', {
         currency: 'BDT',
         value: product.price * quantity,
@@ -112,11 +145,11 @@ class GA4Tracker {
         }],
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Add to Cart Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Add to Cart Error:', error);
+    });
   }
-  
+
   /**
    * Track remove from cart event
    * @param {Object} product - Product object
@@ -124,9 +157,10 @@ class GA4Tracker {
    * Requirements: 2.5, 2.6
    */
   static trackRemoveFromCart(product, quantity) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('remove_from_cart', {
         currency: 'BDT',
         value: product.price * quantity,
@@ -139,11 +173,11 @@ class GA4Tracker {
         }],
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Remove from Cart Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Remove from Cart Error:', error);
+    });
   }
-  
+
   /**
    * Track begin checkout event
    * @param {Array} cart - Array of cart items
@@ -151,9 +185,10 @@ class GA4Tracker {
    * Requirements: 2.3, 2.6
    */
   static trackBeginCheckout(cart, value) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('begin_checkout', {
         currency: 'BDT',
         value: value,
@@ -166,20 +201,21 @@ class GA4Tracker {
         })),
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Begin Checkout Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Begin Checkout Error:', error);
+    });
   }
-  
+
   /**
    * Track purchase event
    * @param {Object} order - Order object with orderId, total, items, paymentMethod
    * Requirements: 2.4, 2.6
    */
   static trackPurchase(order) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('purchase', {
         transaction_id: order.orderId,
         currency: 'BDT',
@@ -194,11 +230,11 @@ class GA4Tracker {
         payment_method: order.paymentMethod,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Purchase Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Purchase Error:', error);
+    });
   }
-  
+
   /**
    * Track search event
    * @param {string} searchTerm - Search query
@@ -206,19 +242,20 @@ class GA4Tracker {
    * Requirements: 3.1
    */
   static trackSearch(searchTerm, resultCount) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('search', {
         search_term: searchTerm,
         result_count: resultCount,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Search Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Search Error:', error);
+    });
   }
-  
+
   /**
    * Track filter applied event
    * @param {string} filterType - Type of filter (e.g., category, price)
@@ -226,75 +263,79 @@ class GA4Tracker {
    * Requirements: 3.2
    */
   static trackFilterApplied(filterType, filterValue) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('filter_applied', {
         filter_type: filterType,
         filter_value: filterValue,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Filter Applied Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Filter Applied Error:', error);
+    });
   }
-  
+
   /**
    * Track sort applied event
    * @param {string} sortMethod - Sort method (e.g., price_asc, name_desc)
    * Requirements: 3.3
    */
   static trackSortApplied(sortMethod) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('sort_applied', {
         sort_method: sortMethod,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Sort Applied Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Sort Applied Error:', error);
+    });
   }
-  
+
   /**
    * Track payment method selected event
    * @param {string} method - Payment method (e.g., card, cash, bkash)
    * Requirements: 3.4
    */
   static trackPaymentMethodSelected(method) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('payment_method_selected', {
         payment_method: method,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Payment Method Selected Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Payment Method Selected Error:', error);
+    });
   }
-  
+
   /**
    * Track quotation request event (B2B)
    * @param {Object} quotation - Quotation object with id, total, items
    * Requirements: 3.5
    */
   static trackQuotationRequest(quotation) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('quotation_request', {
         quotation_id: quotation.id,
         value: quotation.total,
         item_count: quotation.items.length,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Quotation Request Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Quotation Request Error:', error);
+    });
   }
-  
+
   /**
    * Track credit usage event (B2B)
    * @param {number} amount - Amount of credit used
@@ -302,19 +343,20 @@ class GA4Tracker {
    * Requirements: 3.5
    */
   static trackCreditUsage(amount, remaining) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event('credit_usage', {
         amount: amount,
         remaining: remaining,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Credit Usage Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Credit Usage Error:', error);
+    });
   }
-  
+
   /**
    * Track generic custom event
    * @param {string} eventName - Event name (e.g., 'cart_sidebar_open', 'scroll_to_top_click')
@@ -322,47 +364,49 @@ class GA4Tracker {
    * Requirements: Generic event tracking for UI interactions
    */
   static trackEvent(eventName, params = {}) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.event(eventName, {
         ...params,
         session_id: this.sessionId
       });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('GA4 Track Event Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Track Event Error:', error);
+    });
   }
-  
+
   /**
    * Set user ID for authenticated users
    * @param {string} userId - User ID
    * Requirements: 1.3
    */
   static setUserId(userId) {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.set({ user_id: userId });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Set User ID Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Set User ID Error:', error);
+    });
   }
-  
+
   /**
    * Clear user ID on logout
    * Requirements: 1.3
    */
   static clearUserId() {
-    if (!this.isInitialized) return;
-    
-    try {
+    const p = this._whenReady();
+    if (!p) return;
+
+    p.then((ReactGA) => {
       ReactGA.set({ user_id: null });
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "production" && console.error('GA4 Clear User ID Error:', error);
-    }
+    }).catch((error) => {
+      if (process.env.NODE_ENV !== 'production') console.error('GA4 Clear User ID Error:', error);
+    });
   }
 }
 
 export default GA4Tracker;
-

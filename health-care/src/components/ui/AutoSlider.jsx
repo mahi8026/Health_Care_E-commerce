@@ -36,10 +36,10 @@ export default function AutoSlider({
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
   const sliderRef = useRef(null);
   const autoPlayRef = useRef(null);
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
 
   const items = Array.isArray(children) ? children : [children];
   const totalItems = items.length;
@@ -57,12 +57,23 @@ export default function AutoSlider({
 
   const [visibleItems, setVisibleItems] = useState(getVisibleItems());
 
-  // Update visible items on resize
+  // Update visible items on resize — debounced so only the last resize of a
+  // burst triggers a re-render (prevents re-rendering all cards per tick).
   useEffect(() => {
-    const handleResize = () => setVisibleItems(getVisibleItems());
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setVisibleItems(getVisibleItems());
+        setCurrentIndex(prev => Math.min(prev, Math.max(0, totalItems - getVisibleItems())));
+      }, 150);
+    };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [getVisibleItems]);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, [getVisibleItems, totalItems]);
 
   const maxIndex = Math.max(0, totalItems - visibleItems);
 
@@ -105,22 +116,23 @@ export default function AutoSlider({
     };
   }, [autoPlayInterval, isHovered, pauseOnHover, totalItems, visibleItems, goToNext]);
 
-  // Touch handlers for mobile swipe
+  // Touch handlers for mobile swipe — positions tracked in refs so per-pixel
+  // touchmove events never trigger React re-renders.
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
   };
 
   const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    touchEndRef.current = e.targetTouches[0].clientX;
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
+    if (touchStartRef.current === null || touchEndRef.current === null) return;
+
+    const distance = touchStartRef.current - touchEndRef.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 

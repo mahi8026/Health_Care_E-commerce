@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import GA4Tracker from '@/services/GA4Tracker';
 import { showToast } from '@/components/ui/Toast';
 import { API } from '@/constants/api';
@@ -9,6 +9,27 @@ import { CART_CONFIG } from '@/constants/config';
 
 const MAX_CART_ITEMS = CART_CONFIG.MAX_ITEMS;
 const CartContext = createContext();
+
+const EMPTY_CART = [];
+
+// Debounced localStorage persistence — avoids a synchronous JSON.stringify
+// + write on every cart mutation (rapid quantity clicks, multi-add).
+const persistQueue = new Map();
+function schedulePersist(key, value) {
+  persistQueue.set(key, value);
+  if (persistQueue.size === 1) {
+    setTimeout(() => {
+      persistQueue.forEach((v, k) => {
+        try {
+          localStorage.setItem(k, JSON.stringify(v));
+        } catch {
+          // localStorage may be blocked (Safari private mode, etc.)
+        }
+      });
+      persistQueue.clear();
+    }, 250);
+  }
+}
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
@@ -116,12 +137,19 @@ export function CartProvider({ children }) {
   }, [isLoggedIn, cart, syncPending]);
 
   // Listen for login event to trigger cart sync
+  // syncCartToBackendRef keeps this listener stable so it is not torn
+  // down/re-added on every cart mutation.
+  const syncCartToBackendRef = useRef(syncCartToBackend);
+  useEffect(() => {
+    syncCartToBackendRef.current = syncCartToBackend;
+  }, [syncCartToBackend]);
+
   useEffect(() => {
     const handleLogin = () => {
       setIsLoggedIn(true);
       // Sync cart after a short delay to ensure token is set
       setTimeout(() => {
-        syncCartToBackend();
+        syncCartToBackendRef.current();
       }, 500);
     };
 
@@ -129,7 +157,7 @@ export function CartProvider({ children }) {
       window.addEventListener('user-logged-in', handleLogin);
       return () => window.removeEventListener('user-logged-in', handleLogin);
     }
-  }, [syncCartToBackend]);
+  }, []);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -153,13 +181,9 @@ export function CartProvider({ children }) {
     loadCart();
   }, []);
 
-  // Persist cart to localStorage whenever it changes
+  // Persist cart to localStorage (debounced — rapid mutations coalesce)
   useEffect(() => {
-    try {
-      localStorage.setItem('Mediport_cart', JSON.stringify(cart));
-    } catch {
-      // localStorage may be blocked (Safari private mode, etc.)
-    }
+    schedulePersist('Mediport_cart', cart);
   }, [cart]);
 
   const addToCart = useCallback((product, quantity = 1, options = {}) => {
@@ -201,68 +225,63 @@ export function CartProvider({ children }) {
       };
     }
 
-    setCart(prevCart => {
-      if (prevCart.length >= MAX_CART_ITEMS) {
-        showToast.warning(`Cart is full! Maximum ${MAX_CART_ITEMS} items allowed.`);
-        return prevCart;
+    // For products with sizes, treat each size as a unique cart item
+    const cartKey = size ? `${productId}-${size.name}` : productId;
+    const existingItem = cart.find(item => {
+      const itemId = item.id || item._id;
+      const itemSize = item.selectedSize?.name;
+      const currentSize = size?.name;
+
+      if (size) {
+        return itemId === productId && itemSize === currentSize;
       }
-      
-      // For products with sizes, treat each size as a unique cart item
-      const cartKey = size ? `${productId}-${size.name}` : productId;
-      const existingItem = prevCart.find(item => {
+      return itemId === productId && !itemSize;
+    });
+
+    if (cart.length >= MAX_CART_ITEMS) {
+      showToast.warning(`Cart is full! Maximum ${MAX_CART_ITEMS} items allowed.`);
+      return;
+    }
+
+    let newCart;
+    if (existingItem) {
+      newCart = cart.map(item => {
         const itemId = item.id || item._id;
         const itemSize = item.selectedSize?.name;
         const currentSize = size?.name;
-        
+
         if (size) {
-          return itemId === productId && itemSize === currentSize;
-        }
-        return itemId === productId && !itemSize;
-      });
-      
-      GA4Tracker.trackAddToCart(product, safeQty);
-      
-      let newCart;
-      if (existingItem) {
-        newCart = prevCart.map(item => {
-          const itemId = item.id || item._id;
-          const itemSize = item.selectedSize?.name;
-          const currentSize = size?.name;
-          
-          if (size) {
-            return (itemId === productId && itemSize === currentSize)
-              ? { ...item, quantity: item.quantity + safeQty }
-              : item;
-          }
-          return (itemId === productId && !itemSize)
+          return (itemId === productId && itemSize === currentSize)
             ? { ...item, quantity: item.quantity + safeQty }
             : item;
-        });
-        showToast.success(`Updated ${product.name}${size ? ` (${size.name})` : ''} quantity in cart`);
-      } else {
-        newCart = [...prevCart, { ...normalizedProduct, quantity: safeQty }];
-        showToast.success(`${product.name}${size ? ` (${size.name})` : ''} added to cart!`);
-      }
+        }
+        return (itemId === productId && !itemSize)
+          ? { ...item, quantity: item.quantity + safeQty }
+          : item;
+      });
+      showToast.success(`Updated ${product.name}${size ? ` (${size.name})` : ''} quantity in cart`);
+    } else {
+      newCart = [...cart, { ...normalizedProduct, quantity: safeQty }];
+      showToast.success(`${product.name}${size ? ` (${size.name})` : ''} added to cart!`);
+    }
 
-      updateBackendCart('add', productId, safeQty, size);
-      return newCart;
-    });
-  }, [updateBackendCart]);
+    // Side effects live OUTSIDE the state updater so React can never run them
+    // twice (StrictMode double-invoke) — no duplicate analytics or sync calls.
+    setCart(newCart);
+    GA4Tracker.trackAddToCart(product, safeQty);
+    updateBackendCart('add', productId, safeQty, size);
+  }, [cart, updateBackendCart]);
 
   const removeFromCart = useCallback((productId) => {
-    setCart(prevCart => {
-      const item = prevCart.find(i => i.id === productId);
-      if (item) {
-        GA4Tracker.trackRemoveFromCart(item, item.quantity);
-        showToast.info(`${item.name} removed from cart`);
-      }
-      
-      // Update backend if logged in
-      updateBackendCart('remove', productId);
-      
-      return prevCart.filter(item => item.id !== productId);
-    });
-  }, [updateBackendCart]);
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+      GA4Tracker.trackRemoveFromCart(item, item.quantity);
+      showToast.info(`${item.name} removed from cart`);
+    }
+
+    setCart(cart.filter(i => i.id !== productId));
+    updateBackendCart('remove', productId);
+  }, [cart, updateBackendCart]);
 
   const updateQuantity = useCallback((productId, quantity) => {
     // Enforce minimum quantity of 1
@@ -271,17 +290,11 @@ export function CartProvider({ children }) {
       removeFromCart(productId);
       return;
     }
-    setCart(prevCart => {
-      const newCart = prevCart.map(item =>
-        item.id === productId ? { ...item, quantity: safeQty } : item
-      );
-      
-      // Update backend if logged in
-      updateBackendCart('update', productId, safeQty);
-      
-      return newCart;
-    });
-  }, [removeFromCart, updateBackendCart]);
+    setCart(cart.map(item =>
+      item.id === productId ? { ...item, quantity: safeQty } : item
+    ));
+    updateBackendCart('update', productId, safeQty);
+  }, [cart, removeFromCart, updateBackendCart]);
 
   const clearCart = useCallback(() => {
     setCart([]);
@@ -304,7 +317,7 @@ export function CartProvider({ children }) {
   const cartTotal = useMemo(() => getCartTotal(), [getCartTotal]);
   const cartCount = useMemo(() => getCartCount(), [getCartCount]);
 
-  const value = {
+  const value = useMemo(() => ({
     cart,
     cartTotal,
     cartCount,
@@ -315,7 +328,7 @@ export function CartProvider({ children }) {
     getCartTotal,
     getCartCount,
     syncCartToBackend
-  };
+  }), [cart, cartTotal, cartCount, addToCart, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartCount, syncCartToBackend]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

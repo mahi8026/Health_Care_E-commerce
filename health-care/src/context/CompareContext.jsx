@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 const CompareContext = createContext();
 
@@ -40,10 +40,13 @@ export function CompareProvider({ children }) {
     [isInCompare, addToCompare, removeFromCompare]
   );
 
+  const value = useMemo(
+    () => ({ compareList, addToCompare, removeFromCompare, clearCompare, isInCompare, toggleCompare, MAX_COMPARE }),
+    [compareList, addToCompare, removeFromCompare, clearCompare, isInCompare, toggleCompare]
+  );
+
   return (
-    <CompareContext.Provider
-      value={{ compareList, addToCompare, removeFromCompare, clearCompare, isInCompare, toggleCompare, MAX_COMPARE }}
-    >
+    <CompareContext.Provider value={value}>
       {children}
     </CompareContext.Provider>
   );

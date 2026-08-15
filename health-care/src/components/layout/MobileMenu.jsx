@@ -11,6 +11,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
+import { fetchCached } from '@/utils/api';
 
 const MAIN_LINKS = [
   { label: 'Home', path: '/' },
@@ -58,8 +59,8 @@ export default function MobileMenu({ isOpen, onClose }) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch(`${API}/categories`)
-      .then(r => r.json())
+    // Shared cache dedupes this with Header's identical /categories call
+    fetchCached(`${API}/categories`)
       .then(data => setCategories(data.data?.categories || data.categories || []))
       .catch(() => {});
   }, []);

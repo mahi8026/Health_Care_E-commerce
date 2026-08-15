@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { FaPlay, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
 
 export default function VideoSection() {
   // YouTube video URL - Opens in new tab since embedding is disabled by owner
   const youtubeWatchUrl = 'https://www.youtube.com/watch?v=xWaEQ_YPNy0';
-  const youtubeThumbnail = `https://img.youtube.com/vi/xWaEQ_YPNy0/maxresdefault.jpg`;
+  // maxresdefault (1280px) sometimes 404s — fall back to hqdefault (480px)
+  const [thumbnail, setThumbnail] = useState('https://img.youtube.com/vi/xWaEQ_YPNy0/maxresdefault.jpg');
 
   const features = [
     'DGDA Certified Products',
@@ -46,22 +48,24 @@ export default function VideoSection() {
             >
               {/* YouTube Thumbnail */}
               <div style={{ position: 'absolute', inset: 0 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={youtubeThumbnail}
-                  alt="MediportBD — Leading medical equipment supplier in Bangladesh"
-                  style={{ 
-                    position: 'absolute', 
-                    inset: 0, 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover',
-                    transition: 'transform 0.3s'
-                  }}
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                {thumbnail ? (
+                  <Image
+                    src={thumbnail}
+                    alt="MediportBD — Leading medical equipment supplier in Bangladesh"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 640px"
+                    style={{ objectFit: 'cover', transition: 'transform 0.3s' }}
+                    onError={() => {
+                      if (thumbnail.includes('maxresdefault')) {
+                        setThumbnail('https://img.youtube.com/vi/xWaEQ_YPNy0/hqdefault.jpg');
+                      } else {
+                        setThumbnail('');
+                      }
+                    }}
+                  />
+                ) : (
+                  <div style={{ position: 'absolute', inset: 0, background: '#000' }} />
+                )}
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', transition: 'background 0.3s' }} className="video-overlay" />
                 
                 {/* Play Button */}

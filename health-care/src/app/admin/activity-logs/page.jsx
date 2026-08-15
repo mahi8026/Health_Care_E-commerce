@@ -70,8 +70,20 @@ export default function ActivityLogsPage() {
 
   useEffect(() => {
     if (!autoRefresh) return;
-    const id = setInterval(() => { fetchLogs(); fetchStats(); }, 30000);
-    return () => clearInterval(id);
+    // Visibility-aware polling: skip ticks while the tab is hidden and
+    // refresh immediately when it becomes visible again.
+    let isActive = true;
+    const tick = () => {
+      if (!isActive || document.hidden) return;
+      fetchLogs(); fetchStats();
+    };
+    const id = setInterval(tick, 30000);
+    document.addEventListener('visibilitychange', tick);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', tick);
+      isActive = false;
+    };
   }, [autoRefresh, fetchLogs, fetchStats]);
 
   const handleExport = async () => {

@@ -26,7 +26,10 @@ import NotificationBanner from "@/components/pwa/NotificationBanner";
 import OneSignalProvider from "@/components/pwa/OneSignalProvider";
 import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
 
-export const dynamic = 'force-dynamic';
+// NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
+// static so pages can be statically rendered / ISR-cached. Pages that need
+// per-request freshness (cart, checkout, admin, b2b, login, quotes) opt in
+// individually.
 
 const plusJakarta = Plus_Jakarta_Sans({
   weight: ['400', '500', '600'],
@@ -254,28 +257,39 @@ export default function RootLayout({ children }) {
         <Script id="a11y-fixes" strategy="afterInteractive">
           {`
             (function() {
+              var pending = false;
               function fixThirdPartyA11y() {
+                pending = false;
                 try {
-                  const hiddenElements = document.querySelectorAll('[aria-hidden="true"]');
-                  hiddenElements.forEach(function(el) {
-                    const focusable = el.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
-                    if (focusable.length > 0) {
-                      const isGoogleWidget = el.classList.contains('wuMMb') || el.hasAttribute('jscontroller');
-                      if (isGoogleWidget) {
-                        focusable.forEach(function(f) {
-                          f.setAttribute('tabindex', '-1');
-                          f.setAttribute('aria-hidden', 'true');
-                        });
-                        if ('inert' in el) el.inert = true;
-                      }
+                  // Only Google widgets (recaptcha, translate) carry these
+                  // markers — avoid a full-document scan on every mutation.
+                  var nodes = document.querySelectorAll('.wuMMb, [jscontroller]');
+                  for (var i = 0; i < nodes.length; i++) {
+                    var el = nodes[i];
+                    var focusable = el.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
+                    for (var j = 0; j < focusable.length; j++) {
+                      var f = focusable[j];
+                      f.setAttribute('tabindex', '-1');
+                      f.setAttribute('aria-hidden', 'true');
                     }
-                  });
+                    if ('inert' in el) el.inert = true;
+                  }
                 } catch(e) {}
               }
               fixThirdPartyA11y();
-              new MutationObserver(fixThirdPartyA11y).observe(document.body, { childList: true, subtree: true });
+              // rAF-coalesced observer: at most one scan per frame, only
+              // triggered when nodes are actually added to the DOM.
+              new MutationObserver(function(mutations) {
+                if (pending) return;
+                var interesting = false;
+                for (var i = 0; i < mutations.length; i++) {
+                  if (mutations[i].addedNodes && mutations[i].addedNodes.length) { interesting = true; break; }
+                }
+                if (!interesting) return;
+                pending = true;
+                requestAnimationFrame(fixThirdPartyA11y);
+              }).observe(document.body, { childList: true, subtree: true });
               setTimeout(function() { fixThirdPartyA11y(); }, 1000);
-              setTimeout(function() { fixThirdPartyA11y(); }, 3000);
             })();
           `}
         </Script>

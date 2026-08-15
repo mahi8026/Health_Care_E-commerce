@@ -76,7 +76,7 @@ export default function ReagentFilters({ filters, setFilters }) {
           Brand
         </h4>
         {loading ? (
-          <div className="space-y-2">
+          <div className="space-y-2 min-h-[240px]">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-4 bg-[var(--color-background-tertiary)] rounded animate-pulse" />
             ))}
@@ -84,7 +84,7 @@ export default function ReagentFilters({ filters, setFilters }) {
         ) : brands.length === 0 ? (
           <p className="text-xs text-[var(--color-text-tertiary)]">No brands available</p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
             {brands.map((brand) => (
               <label key={brand} className="flex items-center gap-2 cursor-pointer group">
                 <input

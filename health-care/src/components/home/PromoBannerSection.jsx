@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { fetchCached } from '@/utils/api';
+import { getHeroImage } from '@/utils/cloudinary';
 
 /**
  * PromoBannerSection Component - Dynamic promotional banners from admin panel
  * 
  * SINGLE full-width promotional hero banner
- * Fetches banner data from /api/settings endpoint
+ * Fetches banner data from /api/settings endpoint (cached + deduped)
  * Falls back to default banners if none configured
  * 
  * Features:
@@ -24,32 +26,27 @@ export default function PromoBannerSection({ bannerId = 0 }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch promotional banners from settings
+    // Fetch promotional banners from settings — routed through the shared
+    // cache so TopBar/HomePage/PromoBannerSection's identical /settings
+    // calls hit the network exactly once.
     const fetchBanners = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/settings`);
-        const data = await res.json();
-        
-        console.log('[PromoBannerSection] Fetched settings:', data);
-        console.log('[PromoBannerSection] promoBanners:', data.data?.promoBanners);
+        const data = await fetchCached(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/settings`);
         
         if (data.success && data.data?.promoBanners && data.data.promoBanners.length > 0) {
           // Filter only active banners
           const activeBanners = data.data.promoBanners.filter(b => b.isActive);
-          console.log('[PromoBannerSection] Active banners:', activeBanners);
           
           if (activeBanners.length > 0) {
             setBanners(activeBanners);
           } else {
-            console.log('[PromoBannerSection] No active banners, using defaults');
             setBanners(PROMO_BANNERS);
           }
         } else {
-          console.log('[PromoBannerSection] No promoBanners in response, using defaults');
           setBanners(PROMO_BANNERS);
         }
       } catch (error) {
-        console.error('[PromoBannerSection] Failed to load banners:', error);
+        if (process.env.NODE_ENV !== 'production') console.error('[PromoBannerSection] Failed to load banners:', error);
         setBanners(PROMO_BANNERS);
       } finally {
         setLoading(false);
@@ -123,13 +120,12 @@ export default function PromoBannerSection({ bannerId = 0 }) {
               zIndex: 1,
             }}>
               <Image
-                src={bannerData.image}
+                src={getHeroImage(bannerData.image)}
                 alt={bannerData.title || bannerData.altText || 'Promotional Banner'}
                 fill
                 style={{ objectFit: 'contain', objectPosition: 'center' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1400px"
-                priority
-                unoptimized
+                loading="lazy"
               />
             </div>
           )}
@@ -317,7 +313,7 @@ const PROMO_BANNERS = [
     website: null,
     link: '/products?search=massager',
     bgColor: '#FFFFFF',
-    image: '/AD%20Banner.png',
+    image: '/AD%20Banner.jpg',
     imagePosition: 'center',
     textAlign: 'left',
     overlay: null,

@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const LanguageContext = createContext();
 
@@ -22,13 +22,19 @@ export function LanguageProvider({ children }) {
     }
   }, [lang]);
 
-  const switchLang = (l) => {
+  const switchLang = useCallback((l) => {
     setLang(l);
-    localStorage.setItem('Mediport_lang', l);
-  };
+    try {
+      localStorage.setItem('Mediport_lang', l);
+    } catch {
+      // localStorage may be unavailable (private mode)
+    }
+  }, []);
+
+  const value = useMemo(() => ({ lang, switchLang }), [lang, switchLang]);
 
   return (
-    <LanguageContext.Provider value={{ lang, switchLang }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

@@ -191,12 +191,32 @@ async function handleResponse(response) {
 // Cold-start aware fetch: retries on 503/429/network errors with backoff.
 // Render free tier spins down after ~15 min of inactivity; the first request
 // after idle returns 503 while the server boots (30-60s), so retry generously.
+// GET requests use the shared cache + dedup layer so concurrent/duplicate
+// calls (e.g. /settings from TopBar + HomePage + banners) hit the network once.
 export async function fetchWithRetry(
   url,
   options = {},
-  { maxRetries = 5, baseDelay = 5000, timeout = TIMEOUTS.API_REQUEST } = {}
+  { maxRetries = 5, baseDelay = 5000, timeout = TIMEOUTS.API_REQUEST, cache = true } = {}
 ) {
   const externalSignal = options.signal;
+
+  const method = options.method || 'GET';
+  const cacheKey = getCacheKey(url, options);
+
+  // Serve from cache first (GET only)
+  if (cache && method === 'GET') {
+    const cached = getCachedResponse(cacheKey);
+    if (cached) {
+      return new Response(JSON.stringify(cached), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    // Deduplicate concurrent identical GET requests
+    if (pendingRequests.has(cacheKey)) {
+      return pendingRequests.get(cacheKey);
+    }
+  }
 
   const sleep = (ms) =>
     new Promise((resolve, reject) => {
@@ -218,6 +238,8 @@ export async function fetchWithRetry(
 
   for (let attempt = 0; ; attempt++) {
     const controller = new AbortController();
+    // Link the caller's signal to the internal controller so timeouts and
+    // caller-initiated aborts both cancel the request.
     const onAbort = () => controller.abort();
     if (externalSignal) {
       if (externalSignal.aborted) {
@@ -235,7 +257,16 @@ export async function fetchWithRetry(
       if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
 
       const retriable = response.status === 503 || response.status === 429;
-      if (!retriable || attempt >= maxRetries) return response;
+      if (!retriable || attempt >= maxRetries) {
+        // Cache successful GET responses
+        if (cache && method === 'GET' && response.ok) {
+          const clone = response.clone();
+          const data = await clone.json();
+          const ttl = getCacheTTL(url);
+          setCachedResponse(cacheKey, data, ttl);
+        }
+        return response;
+      }
 
       const retryAfter = response.headers.get('Retry-After');
       const delay = retryAfter ? parseInt(retryAfter) * 1000 : baseDelay * (attempt + 1);
@@ -260,6 +291,7 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
   const RETRY_DELAY = 2000; // 2 seconds
   const COLD_START_DELAY = 5000; // Render free tier needs 30-60s to boot
   const method = options.method || 'GET';
+  const externalSignal = options.signal;
   
   // ── Request Deduplication ──────────────────────────────────────────────────
   // For GET requests, check cache first
@@ -294,6 +326,18 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
     while (true) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.API_REQUEST);
+      // Link the caller's signal so caller-initiated aborts cancel the request
+      // (previously the internal controller silently replaced it).
+      const onExternalAbort = () => controller.abort();
+      if (externalSignal) {
+        if (externalSignal.aborted) {
+          clearTimeout(timeoutId);
+          const err = new Error('Aborted');
+          err.name = 'AbortError';
+          throw err;
+        }
+        externalSignal.addEventListener('abort', onExternalAbort, { once: true });
+      }
 
       try {
         response = await fetch(url, {
@@ -301,6 +345,7 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
           signal: controller.signal
         });
         clearTimeout(timeoutId);
+        if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
 
         // Handle 429 (Too Many Requests - Rate Limited) and 503 (Service
         // Unavailable - Backend sleeping or DB reconnecting)
@@ -320,6 +365,7 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         break;
       } catch (error) {
         clearTimeout(timeoutId);
+        if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
         // Network error or timeout - retry if not max retries
         if (error.name === 'AbortError' || error.message.includes('fetch')) {
           if (attempts < MAX_RETRIES) {
@@ -1002,4 +1048,50 @@ export const api = {
 };
 
 export { setToken, getToken, removeToken, getRefreshToken, setRefreshToken };
+
+/**
+ * fetchCached — cache + dedup aware fetch for GET requests, returning parsed
+ * JSON. Use this instead of raw `fetch()` for frequently-read public endpoints
+ * (settings, categories, banners) so identical requests from multiple
+ * components hit the network once and are served from memory afterwards.
+ * Returns the raw JSON body (same shape the backend returns).
+ */
+export async function fetchCached(url, options = {}) {
+  const method = options.method || 'GET';
+  const cacheKey = getCacheKey(url, options);
+
+  if (method === 'GET') {
+    const cached = getCachedResponse(cacheKey);
+    if (cached) return cached;
+    if (pendingRequests.has(cacheKey)) return pendingRequests.get(cacheKey);
+  }
+
+  const promise = (async () => {
+    const res = await fetch(url, options);
+    if (method === 'GET' && res.ok) {
+      try {
+        const clone = res.clone();
+        const data = await clone.json();
+        setCachedResponse(cacheKey, data, getCacheTTL(url));
+        return data;
+      } catch {
+        // Non-JSON response — fall through to normal handling
+      }
+    }
+    return res.json();
+  })();
+
+  if (method === 'GET') {
+    pendingRequests.set(cacheKey, promise);
+    const settle = () => pendingRequests.delete(cacheKey);
+    promise.then(settle, settle);
+  }
+
+  return promise;
+}
+
+/** Clear the in-memory request cache (e.g. after admin mutations). */
+export function clearRequestCache(urlPattern) {
+  clearCache(urlPattern);
+}
 export default api;

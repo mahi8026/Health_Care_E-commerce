@@ -11,6 +11,11 @@ jest.mock('react-ga4', () => ({
 import GA4Tracker from '../GA4Tracker';
 import ReactGA from 'react-ga4';
 
+// react-ga4 is now lazy-loaded via dynamic import, so tracking calls queue
+// behind the init promise. Flush the microtask/macrotask queue before
+// asserting on the mocked SDK.
+const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('GA4Tracker - User Identification', () => {
   let consoleLogSpy;
   let consoleWarnSpy;
@@ -22,6 +27,7 @@ describe('GA4Tracker - User Identification', () => {
     
     // Reset initialization state
     GA4Tracker.isInitialized = false;
+    GA4Tracker._initPromise = null;
     
     // Create spies for console methods
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
@@ -37,7 +43,7 @@ describe('GA4Tracker - User Identification', () => {
   });
 
   describe('setUserId', () => {
-    it('should set user ID when tracker is initialized', () => {
+    it('should set user ID when tracker is initialized', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
@@ -48,20 +54,24 @@ describe('GA4Tracker - User Identification', () => {
       const userId = 'user123';
       GA4Tracker.setUserId(userId);
       
+      await flush();
+      
       // Verify ReactGA.set was called with user_id
       expect(ReactGA.set).toHaveBeenCalledWith({ user_id: userId });
       // Note: console.log assertion removed as it tests implementation detail
     });
 
-    it('should not set user ID when tracker is not initialized', () => {
+    it('should not set user ID when tracker is not initialized', async () => {
       // Try to set user ID without initialization
       GA4Tracker.setUserId('user123');
+      
+      await flush();
       
       // Verify ReactGA.set was not called
       expect(ReactGA.set).not.toHaveBeenCalled();
     });
 
-    it('should handle errors when setting user ID', () => {
+    it('should handle errors when setting user ID', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
@@ -74,30 +84,35 @@ describe('GA4Tracker - User Identification', () => {
       // Set user ID
       GA4Tracker.setUserId('user123');
       
+      await flush();
+      
       // Verify error was logged
       expect(console.error).toHaveBeenCalledWith('GA4 Set User ID Error:', error);
     });
 
-    it('should accept different user ID formats', () => {
+    it('should accept different user ID formats', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
       // Test with numeric string
       GA4Tracker.setUserId('12345');
-      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: '12345' });
       
       // Test with UUID format
       GA4Tracker.setUserId('550e8400-e29b-41d4-a716-446655440000');
-      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: '550e8400-e29b-41d4-a716-446655440000' });
       
       // Test with alphanumeric
       GA4Tracker.setUserId('user_abc_123');
+      
+      await flush();
+      
+      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: '12345' });
+      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: '550e8400-e29b-41d4-a716-446655440000' });
       expect(ReactGA.set).toHaveBeenCalledWith({ user_id: 'user_abc_123' });
     });
   });
 
   describe('clearUserId', () => {
-    it('should clear user ID when tracker is initialized', () => {
+    it('should clear user ID when tracker is initialized', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
@@ -107,20 +122,24 @@ describe('GA4Tracker - User Identification', () => {
       // Clear user ID
       GA4Tracker.clearUserId();
       
+      await flush();
+      
       // Verify ReactGA.set was called with null user_id
       expect(ReactGA.set).toHaveBeenCalledWith({ user_id: null });
       // Note: console.log assertion removed as it tests implementation detail
     });
 
-    it('should not clear user ID when tracker is not initialized', () => {
+    it('should not clear user ID when tracker is not initialized', async () => {
       // Try to clear user ID without initialization
       GA4Tracker.clearUserId();
+      
+      await flush();
       
       // Verify ReactGA.set was not called
       expect(ReactGA.set).not.toHaveBeenCalled();
     });
 
-    it('should handle errors when clearing user ID', () => {
+    it('should handle errors when clearing user ID', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
@@ -133,38 +152,46 @@ describe('GA4Tracker - User Identification', () => {
       // Clear user ID
       GA4Tracker.clearUserId();
       
+      await flush();
+      
       // Verify error was logged
       expect(console.error).toHaveBeenCalledWith('GA4 Clear User ID Error:', error);
     });
   });
 
   describe('User identification workflow', () => {
-    it('should support login/logout workflow', () => {
+    it('should support login/logout workflow', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
       // Simulate login - set user ID
       GA4Tracker.setUserId('user123');
-      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: 'user123' });
       
       // Simulate logout - clear user ID
       GA4Tracker.clearUserId();
+      
+      await flush();
+      
+      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: 'user123' });
       expect(ReactGA.set).toHaveBeenCalledWith({ user_id: null });
       
       // Verify both calls were made
       expect(ReactGA.set).toHaveBeenCalledTimes(2);
     });
 
-    it('should allow changing user ID without clearing first', () => {
+    it('should allow changing user ID without clearing first', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
       // Set first user ID
       GA4Tracker.setUserId('user123');
-      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: 'user123' });
       
       // Set different user ID (e.g., user switches accounts)
       GA4Tracker.setUserId('user456');
+      
+      await flush();
+      
+      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: 'user123' });
       expect(ReactGA.set).toHaveBeenCalledWith({ user_id: 'user456' });
       
       // Verify both calls were made
@@ -173,7 +200,7 @@ describe('GA4Tracker - User Identification', () => {
   });
 
   describe('Requirements validation', () => {
-    it('should validate Requirement 1.3 - user_id in authenticated events', () => {
+    it('should validate Requirement 1.3 - user_id in authenticated events', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
@@ -181,17 +208,19 @@ describe('GA4Tracker - User Identification', () => {
       const userId = 'authenticated_user_123';
       GA4Tracker.setUserId(userId);
       
-      // Verify user ID was set
-      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: userId });
-      
       // Track a page view (should include user_id in subsequent events)
       GA4Tracker.trackPageView('/products', 'Products');
+      
+      await flush();
+      
+      // Verify user ID was set
+      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: userId });
       
       // Verify page view was tracked (user_id is automatically included by GA4)
       expect(ReactGA.send).toHaveBeenCalled();
     });
 
-    it('should validate Requirement 1.3 - clear user_id on logout', () => {
+    it('should validate Requirement 1.3 - clear user_id on logout', async () => {
       // Initialize tracker
       GA4Tracker.initialize('G-TEST123');
       
@@ -201,11 +230,13 @@ describe('GA4Tracker - User Identification', () => {
       // Clear user ID on logout
       GA4Tracker.clearUserId();
       
-      // Verify user ID was cleared
-      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: null });
-      
       // Track a page view after logout (should not include user_id)
       GA4Tracker.trackPageView('/home', 'Home');
+      
+      await flush();
+      
+      // Verify user ID was cleared
+      expect(ReactGA.set).toHaveBeenCalledWith({ user_id: null });
       
       // Verify page view was tracked without user_id
       expect(ReactGA.send).toHaveBeenCalled();

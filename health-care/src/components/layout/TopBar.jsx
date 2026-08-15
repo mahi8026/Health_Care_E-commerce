@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaTruck, FaSnowflake, FaTag, FaPhone, FaHeadset, FaShieldAlt } from 'react-icons/fa';
 import { API } from '@/constants/api';
+import { fetchCached } from '@/utils/api';
 
 // Fallback announcements used before settings load
 const DEFAULT_ANNOUNCEMENTS = [
@@ -55,10 +56,9 @@ export default function TopBar() {
   const [settings, setSettings] = useState(null);
   const [contactPhone, setContactPhone] = useState('+8801646886795');
 
-  // Fetch settings once on mount
+  // Fetch settings once on mount — shared cache dedupes with Header/HomePage
   useEffect(() => {
-    fetch(`${API}/settings`)
-      .then((r) => r.json())
+    fetchCached(`${API}/settings`)
       .then((data) => {
         const s = data.data || {};
         setSettings(s);

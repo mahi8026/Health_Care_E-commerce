@@ -1,4 +1,5 @@
-﻿import { useLang } from '@/context/LanguageContext';
+﻿import { useMemo } from 'react';
+import { useLang } from '@/context/LanguageContext';
 import { getT } from '@/config/translations';
 
 /**
@@ -14,5 +15,7 @@ import { getT } from '@/config/translations';
 export function useT() {
   // Always call the hook unconditionally
   const { lang } = useLang();
-  return getT(lang);
+  // getT returns a new closure each call — memoize so React.memo consumers
+  // receiving `t` as a prop don't re-render on every parent render.
+  return useMemo(() => getT(lang), [lang]);
 }

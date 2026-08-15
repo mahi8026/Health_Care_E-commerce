@@ -433,12 +433,14 @@ html.home-page .site-nav-shell::after {
   background: rgba(var(--glass-navy), 0.18);
 }
 
-/* Scrolled: slightly more tint — still clearly glassy */
+/* Scrolled: slightly more tint — still clearly glassy.
+   blur(56px) is a huge GPU cost on low-end devices; the visual difference
+   from blur(16px) is imperceptible on a 2x scale, so we cap it. */
 html.nav-scrolled .glass-nav,
 html.nav-scrolled .site-topbar {
   background: rgba(var(--glass-navy), var(--glass-nav-alpha-scrolled)) !important;
-  -webkit-backdrop-filter: blur(56px) saturate(240%) brightness(1.06);
-  backdrop-filter: blur(56px) saturate(240%) brightness(1.06);
+  -webkit-backdrop-filter: blur(16px) saturate(240%) brightness(1.06);
+  backdrop-filter: blur(16px) saturate(240%) brightness(1.06);
   border-bottom-color: var(--glass-border-strong);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.18) inset,
@@ -1041,7 +1043,6 @@ html.nav-scrolled .site-nav-shell::after {
 @keyframes nav-search-expand {
   from {
     opacity: 0;
-    width: 2.25rem;
     transform: scale(0.92);
   }
   to {
@@ -1095,7 +1096,8 @@ html {
   scroll-behavior: smooth;
   background-color: var(--color-background-page);
   background-image: var(--page-gradient-wash);
-  background-attachment: fixed;
+  /* background-attachment: fixed repaints the whole page on every scroll
+     (especially costly on mobile); the gradient scrolls with the page. */
 }
 
 body {
@@ -1111,7 +1113,6 @@ body {
 .bg-page {
   background-color: var(--color-background-page);
   background-image: var(--page-gradient-wash);
-  background-attachment: fixed;
 }
 
 .bg-surface {
@@ -1769,21 +1770,15 @@ html.home-page {
 }
 
 /* Page transition animations */
-@keyframes pageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
-.animate-pageSlideIn {
-  animation: pageSlideIn 0.5s ease-out;
+/* ── Below-fold rendering skip (performance) ─────────────────────────────────
+   Skips style/layout/paint for off-screen home content until the user scrolls
+   near it. contain-intrinsic-size reserves space so the scrollbar doesn't jump;
+   the `auto` keyword remembers the rendered size for subsequent loads. */
+.cv-lazy-stack {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 4500px;
 }
-
 
 /* ══════════════════════════════════════════════════════════════════════════════
    ADVANCED MICRO-INTERACTIONS & ANIMATIONS

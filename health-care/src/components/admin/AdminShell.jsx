@@ -62,8 +62,14 @@ export default function AdminShell({ children, title, action, onAction }) {
     };
     if (user?.role === 'admin') {
       fetchBadges();
-      const id = setInterval(fetchBadges, 30000);
-      return () => clearInterval(id);
+      // Visibility-aware polling — skip ticks in hidden tabs, refresh on return
+      const tick = () => { if (!document.hidden) fetchBadges(); };
+      const id = setInterval(tick, 30000);
+      document.addEventListener('visibilitychange', tick);
+      return () => {
+        clearInterval(id);
+        document.removeEventListener('visibilitychange', tick);
+      };
     }
   }, [user]);
 

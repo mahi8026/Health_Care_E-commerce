@@ -85,11 +85,26 @@ export default function ChatWidget({ onClose }) {
   }, [token]);
 
   // ── Start polling once we have a conversationId ─────────────────────────
+  // Polling is visibility-aware: the timer only runs while the tab is
+  // visible, so background tabs don't burn network/CPU every 3s.
   useEffect(() => {
     clearInterval(pollRef.current);
     if (!conversationId) return;
-    pollRef.current = setInterval(() => fetchMessages(conversationId), 3000);
-    return () => clearInterval(pollRef.current);
+
+    let isActive = true;
+    const startPolling = () => {
+      if (!isActive || document.hidden) return;
+      fetchMessages(conversationId);
+    };
+
+    pollRef.current = setInterval(startPolling, 3000);
+    document.addEventListener('visibilitychange', startPolling);
+
+    return () => {
+      clearInterval(pollRef.current);
+      document.removeEventListener('visibilitychange', startPolling);
+      isActive = false;
+    };
   }, [conversationId, fetchMessages]);
 
   // ── Create conversation (lazy — only on first message) ──────────────────

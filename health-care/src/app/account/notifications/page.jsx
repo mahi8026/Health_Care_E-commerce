@@ -12,7 +12,9 @@ export default function NotificationSettingsPage() {
     quoteUpdates:  true,
   });
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null;
+  // Read lazily inside the click handler — avoids localStorage (a synchronous
+  // blocking call) during render and keeps the page SSR-hydration safe.
+  const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('medcore_token') : null);
 
   const SETTINGS = [
     { key: 'orderUpdates',  icon: '📦', label: 'Order Updates',  desc: 'Confirmed, shipped, delivered notifications' },
@@ -49,7 +51,7 @@ export default function NotificationSettingsPage() {
           </div>
         </div>
         <button
-          onClick={() => isSubscribed ? unsubscribe() : subscribe(token)}
+          onClick={() => isSubscribed ? unsubscribe() : subscribe(getToken())}
           disabled={isLoading || !isSupported}
           style={{
             padding: '9px 18px', borderRadius: 8, fontSize: 'var(--text-sm)', fontWeight: 600,

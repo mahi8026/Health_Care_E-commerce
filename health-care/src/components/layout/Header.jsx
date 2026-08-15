@@ -13,6 +13,7 @@ import LanguageSwitcher from '../ui/LanguageSwitcher';
 import EnhancedSearchBox from '../search/EnhancedSearchBox';
 import { API } from '@/constants/api';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
+import { fetchCached } from '@/utils/api';
 import {
   FaSearch,
   FaShoppingCart,
@@ -109,12 +110,11 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
   const isActive = (href) => pathname === href || pathname?.startsWith(href + '/');
   const authed = isAuthenticated();
 
-  // Fetch categories from API
+  // Fetch categories from API — shared cache dedupes with MobileMenu/HomePage
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${API}/categories`);
-        const data = await response.json();
+        const data = await fetchCached(`${API}/categories`);
         if (data.success && data.data?.categories) {
           // Map categories to the format expected by the dropdown
           const mappedCategories = data.data.categories.map(cat => {

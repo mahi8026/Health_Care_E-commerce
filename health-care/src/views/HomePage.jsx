@@ -1,20 +1,18 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, memo, useMemo, lazy, Suspense } from 'react';
-import { showToast } from '@/components/ui/Toast';
+import { useState, useEffect, useCallback, memo, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
-import Spinner, { ProductCardSkeleton, LoadingOverlay } from '@/components/ui/Spinner';
-import { 
-  FaStethoscope, 
-  FaSyringe, 
-  FaFlask, 
-  FaHospital, 
-  FaMicroscope, 
-  FaShieldAlt, 
-  FaTooth, 
+import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
+import {
+  FaStethoscope,
+  FaSyringe,
+  FaFlask,
+  FaHospital,
+  FaMicroscope,
+  FaShieldAlt,
+  FaTooth,
   FaBone,
   FaTruck,
   FaSnowflake,
@@ -33,8 +31,6 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
 import RecentlyViewed from '@/components/product/RecentlyViewed';
-import FlashDealsSection from '@/components/home/FlashDealsSection';
-import CategoryProductSections from '@/components/home/CategoryProductSections';
 
 // Lazy load heavy components for better performance
 const SupportResources = lazy(() => import('@/components/home/SupportResources'));
@@ -42,6 +38,8 @@ const VideoSection = lazy(() => import('@/components/home/VideoSection'));
 const NewArrivalSlider = lazy(() => import('@/components/home/NewArrivalSlider'));
 const BestSellingSection = lazy(() => import('@/components/home/BestSellingSection'));
 const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
+const FlashDealsSection = lazy(() => import('@/components/home/FlashDealsSection'));
+const CategoryProductSections = lazy(() => import('@/components/home/CategoryProductSections'));
 
 // ══════════════════════════════════════════════════════════════════════════════
 // FALLBACK DATA & CONSTANTS
@@ -84,24 +82,6 @@ const B2B_STATS = [
   { val: '24/7', label: 'Dedicated Support' },
 ];
 
-const ANNOUNCEMENTS = [
-  { icon: <FaTruck />, text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet' },
-  { icon: <FaSnowflake />, text: 'Cold chain delivery available for temperature-sensitive reagents' },
-  { icon: <FaTag />, text: 'B2B institutions get up to 30% bulk discount — Register today' },
-];
-
-function buildAnnouncements(settings) {
-  const threshold = settings?.freeDeliveryThreshold
-    ? `৳${settings.freeDeliveryThreshold.toLocaleString()}`
-    : '৳50,000';
-  const maxDiscount = settings?.b2bMaxDiscount ?? 30;
-  return [
-    { icon: <FaTruck />, text: `Free delivery on orders over ${threshold} — Dhaka, Chittagong & Sylhet` },
-    { icon: <FaSnowflake />, text: 'Cold chain delivery available for temperature-sensitive reagents' },
-    { icon: <FaTag />, text: `B2B institutions get up to ${maxDiscount}% bulk discount — Register today` },
-  ];
-}
-
 // WHY_US is built dynamically from settings — see buildWhyUs() below
 const HOW_IT_WORKS = [
   { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 50+ global brands' },
@@ -128,7 +108,7 @@ function buildWhyUs(settings) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// HELPER COMPONENTS  
+// HELPER COMPONENTS
 // ══════════════════════════════════════════════════════════════════════════════
 
 // Using ProductCardSkeleton from @/components/ui/Spinner for consistency
@@ -163,8 +143,8 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       {/* Image */}
       <div style={{ position: 'relative', aspectRatio: '1 / 1', background: 'var(--color-background-secondary)', overflow: 'hidden', flexShrink: 0 }}>
         {optimizedImg ? (
-          <Image 
-            src={optimizedImg} 
+          <Image
+            src={optimizedImg}
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -235,134 +215,105 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// MAIN HOMEPAGE COMPONENT
+// ISOLATED ANIMATION COMPONENTS
+// Each owns its own timer/scroll state so ticking never re-renders the whole
+// homepage (previously 4 intervals + 2 scroll listeners re-rendered the full
+// 1600-line tree every few seconds).
 // ══════════════════════════════════════════════════════════════════════════════
 
-export default function HomePage() {
-  const router = useRouter();
-  const { addToCart } = useCart();
-  const t = useT();
+const TYPEWRITER_WORDS = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'];
+const SEARCH_PLACEHOLDERS = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
 
-  // ── State ──────────────────────────────────────────────────────────────────
-  const [searchQuery, setSearchQuery] = useState('');
-  const [scrolled, setScrolled] = useState(false);
-  const [typewriterText, setTypewriterText] = useState('Diagnostic Equipment');
-  const [categories, setCategories] = useState([]);
-  const [categoryCounts, setCategoryCounts] = useState({});
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [featuredLoading, setFeaturedLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
-  const [dealProducts, setDealProducts] = useState([]);
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [promo, setPromo] = useState(null);
-  const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
-  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
-  const [testimonials, setTestimonials] = useState([]);
-  const [siteSettings, setSiteSettings] = useState(null);
-  const [user, setUser] = useState(null);
-  const [cartCount, setCartCount] = useState(0);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isSliderHovered, setIsSliderHovered] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [heroSlides, setHeroSlides] = useState([]);
-  const [promoBanner, setPromoBanner] = useState(null);
-  const [bannersLoaded, setBannersLoaded] = useState(false);
-  const [searchPlaceholder, setSearchPlaceholder] = useState('Search ECG machine...');
-  const [labEquipmentProducts, setLabEquipmentProducts] = useState([]);
-  const [categoryProducts, setCategoryProducts] = useState({
-    diagnostic: [],
-    reagents: [],
-    machines: [],
-    ppe: [],
-    labEquipment: [],
-  });
-  
-  // Loading states for all sections
-  const [isLoadingData, setIsLoadingData] = useState(true);
-  const [dealLoading, setDealLoading] = useState(true);
-  const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
-  const [categoryProductsLoading, setCategoryProductsLoading] = useState(true);
-  
-  // ── Memoized Values ────────────────────────────────────────────────────────
-  const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
-  const announcementItems = useMemo(() => buildAnnouncements(siteSettings), [siteSettings]);
-  const navCategories = useMemo(() => {
-    if (categories.length > 0) return categories.slice(0, 16);
-    return [
-      { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
-      { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
-      { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
-      { name: 'PPE & Safety', emoji: '🛡️', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
-      { name: 'Implants', emoji: '🦴', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
-      { name: 'Diagnostic', emoji: '🩺', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
-      { name: 'Surgical', emoji: '💉', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
-    ];
-  }, [categories]);
-  const topCategories = useMemo(() =>
-    categories.filter(cat => cat.productCount && cat.productCount > 0)
-      .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
-      .slice(0, 5),
-    [categories]
-  );
-  
-  // ── Effects ────────────────────────────────────────────────────────────────
+const TypewriterText = memo(function TypewriterText() {
+  const [text, setText] = useState('Diagnostic Equipment');
 
-  // Sticky navbar - throttled for better performance
   useEffect(() => {
-    let ticking = false;
-    const handler = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 60);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
-
-  // Typewriter effect - increased interval for better performance
-  useEffect(() => {
-    const words = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'];
     let i = 0;
     const interval = setInterval(() => {
-      i = (i + 1) % words.length;
-      setTypewriterText(words[i]);
-    }, 5000); // Increased from 3000ms to 5000ms for performance
+      i = (i + 1) % TYPEWRITER_WORDS.length;
+      setText(TYPEWRITER_WORDS[i]);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Hero slider auto-play - paused during hover or scroll for performance
+  return <span key={text} className="typewriter-text" style={{ display: 'inline-block' }}>{text}</span>;
+});
+
+// Hero left column — owns the cycling search placeholder; the search box
+// manages its own query state.
+const HeroSearch = memo(function HeroSearch() {
+  const router = useRouter();
+  const t = useT();
+  const [placeholder, setPlaceholder] = useState(SEARCH_PLACEHOLDERS[0]);
+
   useEffect(() => {
-    if (isSliderHovered || isScrolling) return;
-    const count = heroSlides.filter(s => s.isActive).length || 1;
+    let i = 0;
     const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % count);
-    }, 7000); // Increased from 5000ms to 7000ms for performance
+      i = (i + 1) % SEARCH_PLACEHOLDERS.length;
+      setPlaceholder(SEARCH_PLACEHOLDERS[i]);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [isSliderHovered, isScrolling, heroSlides]);
-  
-  // Pause animations during scroll for better performance
+  }, []);
+
+  return (
+    <div className="hero-left-content hidden lg:block">
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <span style={{ width: 6, height: 6, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
+        {t('home.tagline')}
+      </div>
+      <h1 style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: 600, color: '#fff', lineHeight: 1.15, marginBottom: 12 }}>
+        {t('home.heroTitle')}<br />
+        <span style={{ color: 'var(--color-brand-teal-light)' }}>
+          <TypewriterText />
+        </span>
+      </h1>
+      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 20, maxWidth: 480, lineHeight: 1.6 }}>
+        {t('home.heroSubtitle')}
+      </p>
+      <div style={{ maxWidth: 520, marginBottom: 16, width: '100%' }}>
+        <EnhancedSearchBox placeholder={placeholder} variant="hero" />
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {SEARCH_SUGGESTIONS.map(q => (
+          <button key={q} onClick={() => router.push(`/products?q=${encodeURIComponent(q)}`)}
+            style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
+            {q}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+// Hero right panel — owns slide index, hover state, scroll-pause and autoplay
+// so scroll/hover/timer churn never touches the rest of the page.
+const HeroSlider = memo(function HeroSlider({ slides }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const activeSlides = slides.filter(s => s.isActive).length || 1;
+
+  // Pause autoplay while the user is scrolling — state lives here, not the page
   useEffect(() => {
     let scrollTimeout;
     let ticking = false;
-    
+
     const handleScroll = () => {
       setIsScrolling(true);
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => setIsScrolling(false), 200);
       ticking = false;
     };
-    
+
     const throttledScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(handleScroll);
         ticking = true;
       }
     };
-    
+
     window.addEventListener('scroll', throttledScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', throttledScroll);
@@ -370,267 +321,120 @@ export default function HomePage() {
     };
   }, []);
 
-  // Hero slider keyboard navigation (Left/Right arrow keys)
+  useEffect(() => {
+    if (isHovered || isScrolling) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % activeSlides);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [isHovered, isScrolling, activeSlides]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const total = heroSlides.length > 0 ? heroSlides.length : 1;
+      const total = slides.length > 0 ? slides.length : 1;
       if (e.key === 'ArrowLeft') {
         setCurrentSlide(prev => (prev - 1 + total) % total);
       } else if (e.key === 'ArrowRight') {
         setCurrentSlide(prev => (prev + 1) % total);
       }
     };
-    
+
     const sliderEl = document.querySelector('.hero-right-panel');
     sliderEl?.addEventListener('keydown', handleKeyDown);
     return () => sliderEl?.removeEventListener('keydown', handleKeyDown);
-  }, [heroSlides]);
+  }, [slides]);
 
-  // Load banner settings
-  useEffect(() => {
-    const loadBanners = async () => {
-      try {
-        const res = await fetchWithRetry(`${API}/settings`);
-        const data = await res.json();
-        const s = data.data || {};
-        if (s.heroSlides?.length) {
-          setHeroSlides(s.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order));
-        }
-        if (s.promoBanner?.imageUrl) {
-          setPromoBanner(s.promoBanner);
-        }
-        // Store full settings for WHY_US and dynamic announcements
-        setSiteSettings(s);
-      } catch {
-        if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Failed to load banners');
-      } finally {
-        setBannersLoaded(true);
-      }
-    };
-    loadBanners();
-  }, []);
-
-  // Search placeholder cycling - increased interval for performance
-  useEffect(() => {
-    const placeholders = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
-    let i = 0;
-    const interval = setInterval(() => {
-      i = (i + 1) % placeholders.length;
-      setSearchPlaceholder(placeholders[i]);
-    }, 4000); // Increased from 2s to 4s
-    return () => clearInterval(interval);
-  }, []);
-
-  // Countdown timer - counts to midnight (reduced frequency for performance)
-  useEffect(() => {
-    const getTimeUntilMidnight = () => {
-      const now = new Date();
-      const midnight = new Date();
-      midnight.setHours(24, 0, 0, 0);  // next midnight
-      const diff = midnight - now;
-      return {
-        h: Math.floor(diff / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      };
-    };
-    
-    // Use a function to initialize state instead of calling setState directly
-    const updateTime = () => setTimeLeft(getTimeUntilMidnight());
-    updateTime(); // set immediately on mount
-    
-    // Update every 5 seconds instead of every second to reduce re-renders
-    const t = setInterval(updateTime, 5000);
-    return () => clearInterval(t);
-  }, []);
-
-  // ══════════════════════════════════════════════════════════════════════════════
-  // OPTIMIZED DATA FETCHING - Single aggregated endpoint instead of 15+ calls
-  // ══════════════════════════════════════════════════════════════════════════════
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchHomeData = async () => {
-      try {
-        // SINGLE AGGREGATED REQUEST - Replaces 10+ separate API calls
-        const response = await fetchWithRetry(`${API}/home/data`, {
-          credentials: 'include'
-        });
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const { success, data } = await response.json();
-        
-        if (!isMounted) return;
-        
-        if (success && data) {
-          // Unpack all data from single response
-          setFeaturedProducts(Array.isArray(data.featuredProducts) ? data.featuredProducts : []);
-          setCategories(Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : FALLBACK_CATEGORIES);
-          setCategoryCounts(data.categoryCounts || {});
-          setDealProducts(Array.isArray(data.dealProducts) ? data.dealProducts : []);
-          setNewArrivals(Array.isArray(data.newArrivals) ? data.newArrivals : []);
-          setLabEquipmentProducts(Array.isArray(data.labEquipmentProducts) ? data.labEquipmentProducts : []);
-          setTestimonials(Array.isArray(data.testimonials) ? data.testimonials : []);
-          setPromo(data.activePromo || null);
-          setStats(data.stats || { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
-          
-          // Update all loading states
-          setFeaturedLoading(false);
-          setIsLoadingData(false);
-          setDealLoading(false);
-          setNewArrivalsLoading(false);
-        } else {
-          throw new Error('Invalid response format');
-        }
-      } catch (error) {
-        if (!isMounted) return;
-        
-        console.error('[HomePage] Failed to load data:', error);
-        
-        // Set fallback data on error
-        setCategories(FALLBACK_CATEGORIES);
-        setFeaturedProducts([]);
-        setDealProducts([]);
-        setNewArrivals([]);
-        setLabEquipmentProducts([]);
-        
-        // Update loading states
-        setFeaturedLoading(false);
-        setIsLoadingData(false);
-        setDealLoading(false);
-        setNewArrivalsLoading(false);
-      }
-    };
-
-    // DEFERRED: Category products (only loaded when user scrolls to category tabs)
-    const fetchCategoryProducts = async () => {
-      try {
-        const response = await fetchWithRetry(
-          `${API}/home/category-products?category=Diagnostic Equipment,Laboratory Reagents,Hospital Machines,PPE & Safety,Lab Equipment&limit=10`,
-          { credentials: 'include' }
-        );
-        
-        if (!isMounted) return;
-        
-        if (response.ok) {
-          const { success, data } = await response.json();
-          if (success && data) {
-            setCategoryProducts({
-              diagnostic: data['Diagnostic Equipment'] || [],
-              reagents: data['Laboratory Reagents'] || [],
-              machines: data['Hospital Machines'] || [],
-              ppe: data['PPE & Safety'] || [],
-              labEquipment: data['Lab Equipment'] || [],
-            });
-          }
-        }
-      } catch (error) {
-        console.error('[HomePage] Failed to load category products:', error);
-      } finally {
-        if (isMounted) setCategoryProductsLoading(false);
-      }
-    };
-
-    // Execute main data fetch immediately
-    fetchHomeData();
-
-    // Defer category products until idle
-    if (typeof window !== 'undefined') {
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => fetchCategoryProducts(), { timeout: 2000 });
-      } else {
-        setTimeout(fetchCategoryProducts, 500);
-      }
-    }
-
-    // Check user auth (separate lightweight call)
-    const token = localStorage.getItem('Mediport_token');
-    if (token) {
-      fetchWithRetry(`${API}/auth/me`, { 
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: 'include'
-      })
-        .then(r => r.json())
-        .then(data => {
-          if (isMounted && data.user) setUser(data.user);
-        })
-        .catch(() => { if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Auth check failed'); });
-    }
-
-    // Get cart count from localStorage (instant, no API call)
-    const cartData = localStorage.getItem('cart');
-    if (cartData) {
-      try {
-        const cart = JSON.parse(cartData);
-        const count = cart.items?.length || 0;
-        Promise.resolve().then(() => setCartCount(count));
-      } catch { if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Failed to parse cart from localStorage'); }
-    }
-
-    return () => { isMounted = false; };
-  }, []);
-
-  // ── Handlers ───────────────────────────────────────────────────────────────
-
-  const handleSearch = useCallback(() => {
-    if (searchQuery.trim()) router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
-  }, [searchQuery, router]);
-
-  const handleTabChange = useCallback((tab) => {
-    setActiveTab(tab);
-    setFeaturedLoading(true);
-    
-    const fetchTabData = async () => {
-      const featuredUrl = tab === 'all' 
-        ? `${API}/products?isFeatured=true&limit=24`
-        : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
-      const fallbackUrl = tab === 'all' 
-        ? `${API}/products?limit=24`
-        : `${API}/products?category=${encodeURIComponent(tab)}&limit=24`;
-      
-      try {
-        // Try featured first, fallback to all products if not enough
-        const [featuredData, fallbackData] = await Promise.all([
-          fetchWithRetry(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
-          fetchWithRetry(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
-        ]);
-        
-        const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
-        const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
-        const products = featured.length >= 8 ? featured : fallback;
-        // Ensure always an array
-        setFeaturedProducts(Array.isArray(products) ? products : []);
-      } catch (error) {
-        setFeaturedProducts([]);
-      } finally {
-        setFeaturedLoading(false);
-      }
-    };
-    
-    fetchTabData();
-  }, []);
-
-  // ══════════════════════════════════════════════════════════════════════════════
-  // RENDER
-  // ══════════════════════════════════════════════════════════════════════════════
+  const total = slides.length > 0 ? slides.length : 1;
 
   return (
-    <div className="min-h-screen home-page-root">
-      {/* Global Styles */}
-      <style>{`
+    <div
+      className="hero-right-panel"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {slides.length > 0 ? (
+        slides.map((slide, i) => currentSlide === i && (
+          <div key={slide._id || slide.imageUrl || i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
+            <Image
+              src={slide.imageUrl}
+              alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
+              fill
+              sizes="(max-width: 768px) 100vw, 52vw"
+              style={{ objectFit: 'cover' }}
+              priority={i === 0}
+            />
+          </div>
+        ))
+      ) : (
+        <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(77,219,184,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(14,138,110,0.5), transparent 60%), linear-gradient(140deg, #0b2545 0%, #12355f 60%, #0e8a6e 140%)' }} />
+      )}
+      {/* Bottom gradient */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', zIndex: 5 }} />
+      {/* Dots */}
+      <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 10 }}>
+        {Array.from({ length: total }).map((_, i) => (
+          <span
+            key={`dot-${i}`}
+            onClick={() => setCurrentSlide(i)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setCurrentSlide(i);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Go to slide ${i + 1}`}
+            aria-current={currentSlide === i ? 'true' : 'false'}
+            style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.5)', transition: 'width 0.3s ease, background 0.3s ease' }}
+          />
+        ))}
+      </div>
+      {/* Counter */}
+      <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 10, color: '#fff', fontSize: 11, fontWeight: 600, background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: 20 }}>
+        {String(currentSlide + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+      </div>
+      {/* Arrows */}
+      <button
+        onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
+        aria-label="Previous slide"
+        style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
+        className="hero-slider-arrows"
+      >
+        ‹
+      </button>
+      <button
+        onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
+        aria-label="Next slide"
+        style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
+        className="hero-slider-arrows"
+      >
+        ›
+      </button>
+    </div>
+  );
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN HOMEPAGE COMPONENT
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Homepage-scoped styles — hoisted to module scope so the 200-line style string
+// is created ONCE instead of on every HomePage render.
+const HOME_STYLES = `
         /* OPTIMIZED ANIMATIONS - Phase 3 */
         /* Kept only essential animations, removed expensive continuous animations */
-        
+
         /* Skeleton shimmer - DISABLED in production for performance */
-        .skeleton { 
-          background: ${process.env.NODE_ENV === 'production' ? '#f0f0f0' : 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)'}; 
-          background-size: 200% 100%; 
+        .skeleton {
+          background: ${process.env.NODE_ENV === 'production' ? '#f0f0f0' : 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)'};
+          background-size: 200% 100%;
           ${process.env.NODE_ENV !== 'production' ? 'animation: shimmer 1.4s infinite;' : ''}
-          border-radius: 6px; 
+          border-radius: 6px;
         }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        
+
         /* Stable product grid heights - reserve space so skeleton/empty-state
            swaps never collapse the section (prevents CLS) */
         .stable-product-grid, .featured-products-panel { min-height: 340px; }
@@ -638,102 +442,102 @@ export default function HomePage() {
           .stable-product-grid { min-height: 700px; }
           .featured-products-panel { min-height: 700px; }
         }
-        
+
         /* Marquee - CONVERTED to static scroll for better performance */
-        .marquee-wrap { 
+        .marquee-wrap {
           overflow-x: auto;
           scrollbar-width: none;
           -ms-overflow-style: none;
         }
         .marquee-wrap::-webkit-scrollbar { display: none; }
-        
+
         /* Hide scrollbar on tab row */
         [role="tablist"]::-webkit-scrollbar { display: none; }
-        .marquee-track { 
-          display: flex; 
+        .marquee-track {
+          display: flex;
           width: max-content;
           /* animation: marquee 25s linear infinite; - REMOVED for performance */
         }
-        
+
         /* Product cards - Simplified transitions */
-        .product-card-hover { 
-          transition: box-shadow 0.2s ease, transform 0.15s ease; 
-          contain: layout style paint; 
+        .product-card-hover {
+          transition: box-shadow 0.2s ease, transform 0.15s ease;
+          contain: layout style paint;
         }
-        .product-card-hover:hover { 
-          box-shadow: 0 8px 32px rgba(0,0,0,0.12); 
-          transform: translateY(-3px); 
+        .product-card-hover:hover {
+          box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+          transform: translateY(-3px);
         }
-        
+
         /* Category tiles - Kept (lightweight) */
-        .cat-tile { transition: all 0.2s ease; }
+        .cat-tile { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
         .cat-tile:hover { border-color: var(--color-brand-teal) !important; }
         .cat-tile:hover .cat-tile-arrow { opacity: 1 !important; transform: translateX(3px) !important; }
-        
+
         /* Section entrance - SIMPLIFIED (removed fadeInUp animation) */
         .section-in { opacity: 1; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
+
         /* Button states - Kept (essential UX) */
         .tab-active { background: var(--color-brand-navy) !important; color: #fff !important; }
         .pill-hover:hover { background: rgba(255,255,255,0.2) !important; }
         .btn-primary-hover:hover { background: #0a1f3d !important; }
         .btn-teal-hover:hover { background: var(--color-brand-teal-hover) !important; transform: scale(1.02); }
-        
+
         /* Trust badges - Kept (lightweight) */
         .trust-item { transition: transform 0.2s ease; }
         .trust-item:hover { transform: translateY(-2px); }
-        
+
         /* Hero content - SIMPLIFIED stagger animation */
         .hero-content > * { opacity: 1; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
+
         /* REMOVED expensive continuous animations */
         /* .floating-card - REMOVED (constant GPU work) */
         /* .orb-drift - REMOVED (expensive transform animation) */
         .floating-card { /* animation removed for performance */ }
         .orb-drift { /* animation removed for performance */ }
-        
+
         /* Slider transitions - Kept but simplified */
         .slide-active { opacity: 1; }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        
+
         /* Typewriter - Kept (essential feature) */
         .typewriter-text { opacity: 1; }
         @keyframes fadeSlide { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        
+
         /* Quick add button - Kept (essential UX) */
         div:hover .quick-add-btn { opacity: 1 !important; }
-        
+
         /* Hero layout - Optimized grid */
-        .hero-grid-container { 
-          width: 100%; 
-          max-width: 1280px; 
-          margin: 0 auto; 
-          padding: 0 24px; 
-          position: relative; 
-          z-index: 2; 
-          display: grid; 
-          grid-template-columns: minmax(0, 1fr) minmax(480px, 52%); 
-          gap: 24px; 
-          align-items: center; 
+        .hero-grid-container {
+          width: 100%;
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 0 24px;
+          position: relative;
+          z-index: 2;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(480px, 52%);
+          gap: 24px;
+          align-items: center;
         }
         .hero-left-content { order: 1; }
-        .hero-right-panel { 
-          order: 2; 
-          position: relative; 
-          height: 400px; 
-          border-radius: 16px; 
-          overflow: hidden; 
-          background: #1a3a5c; 
-          box-shadow: 0 20px 60px rgba(0,0,0,0.4); 
+        .hero-right-panel {
+          order: 2;
+          position: relative;
+          height: 400px;
+          border-radius: 16px;
+          overflow: hidden;
+          background: #1a3a5c;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
         /* Tablet breakpoint: prevent horizontal overflow */
         @media (max-width: 1279px) and (min-width: 769px) {
-          .hero-grid-container { 
-            grid-template-columns: minmax(0, 1fr) minmax(0, 48%); 
-            gap: 16px; 
-            padding: 0 16px; 
+          .hero-grid-container {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 48%);
+            gap: 16px;
+            padding: 0 16px;
           }
           .hero-right-panel { height: 330px; }
         }
@@ -750,7 +554,7 @@ export default function HomePage() {
         *::-webkit-scrollbar-track { background: var(--color-background-muted); border-radius: 10px; }
         *::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 10px; }
         *::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
-        
+
         /* Hide scrollbars for horizontal scroll sections (mobile) */
         .scrollbar-hide {
           scrollbar-width: none; /* Firefox */
@@ -759,7 +563,7 @@ export default function HomePage() {
         .scrollbar-hide::-webkit-scrollbar {
           display: none; /* Chrome/Safari/Opera */
         }
-        
+
         /* Scroll fade indicators for horizontal scrolling sections */
         @media (max-width: 768px) {
           .featured-products-panel::before,
@@ -782,12 +586,12 @@ export default function HomePage() {
             background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
           }
         }
-        
+
         /* Smooth momentum scrolling on iOS */
         #featured-scroll-container {
           -webkit-overflow-scrolling: touch;
         }
-        
+
         /* Smooth scrolling for horizontal sections */
         .scroll-smooth {
           scroll-behavior: smooth;
@@ -803,7 +607,7 @@ export default function HomePage() {
           /* Remove extra spacing on mobile */
           .coupon-banner-section { padding: 0 !important; margin: 0 !important; }
           .category-section { padding: 16px 0 !important; }
-          
+
           .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; padding: 0 16px; }
           .hero-left-content { order: 2; }
           .hero-right-panel { order: 1; display: block !important; height: 260px !important; border-radius: 14px !important; }
@@ -830,122 +634,176 @@ export default function HomePage() {
           .b2b-cols { grid-template-columns: 1fr !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
         }
-      `}</style>
+      `;
+
+export default function HomePage() {
+  const router = useRouter();
+  const t = useT();
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [categories, setCategories] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [promo, setPromo] = useState(null);
+  const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+  const [testimonials, setTestimonials] = useState([]);
+  const [siteSettings, setSiteSettings] = useState(null);
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
+
+  // ── Memoized Values ────────────────────────────────────────────────────────
+  const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
+  const navCategories = useMemo(() => {
+    if (categories.length > 0) return categories.slice(0, 16);
+    return [
+      { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
+      { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
+      { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
+      { name: 'PPE & Safety', emoji: '🛡️', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
+      { name: 'Implants', emoji: '🦴', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
+      { name: 'Diagnostic', emoji: '🩺', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
+      { name: 'Surgical', emoji: '💉', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
+    ];
+  }, [categories]);
+  const topCategories = useMemo(() =>
+    categories.filter(cat => cat.productCount && cat.productCount > 0)
+      .sort((a, b) => (b.productCount || 0) - (a.productCount || 0))
+      .slice(0, 5),
+    [categories]
+  );
+
+  // ── Effects ────────────────────────────────────────────────────────────────
+
+  // Load banner settings (deduped/cached via fetchWithRetry)
+  useEffect(() => {
+    const loadBanners = async () => {
+      try {
+        const res = await fetchWithRetry(`${API}/settings`);
+        const data = await res.json();
+        const s = data.data || {};
+        if (s.heroSlides?.length) {
+          setHeroSlides(s.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order));
+        }
+        // Store full settings for WHY_US
+        setSiteSettings(s);
+      } catch {
+        if (process.env.NODE_ENV !== 'production') console.warn('[HomePage] Failed to load banners');
+      }
+    };
+    loadBanners();
+  }, []);
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // OPTIMIZED DATA FETCHING - Single aggregated endpoint instead of 15+ calls
+  // ══════════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchHomeData = async () => {
+      try {
+        // SINGLE AGGREGATED REQUEST - Replaces 10+ separate API calls
+        const response = await fetchWithRetry(`${API}/home/data`, {
+          credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const { success, data } = await response.json();
+
+        if (!isMounted) return;
+
+        if (success && data) {
+          // Unpack all data from single response
+          setFeaturedProducts(Array.isArray(data.featuredProducts) ? data.featuredProducts : []);
+          setCategories(Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : FALLBACK_CATEGORIES);
+          setCategoryCounts(data.categoryCounts || {});
+          setNewArrivals(Array.isArray(data.newArrivals) ? data.newArrivals : []);
+          setTestimonials(Array.isArray(data.testimonials) ? data.testimonials : []);
+          setPromo(data.activePromo || null);
+          setStats(data.stats || { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+
+          // Update all loading states
+          setFeaturedLoading(false);
+          setNewArrivalsLoading(false);
+        } else {
+          throw new Error('Invalid response format');
+        }
+      } catch (error) {
+        if (!isMounted) return;
+
+        if (process.env.NODE_ENV !== 'production') console.error('[HomePage] Failed to load data:', error);
+
+        // Set fallback data on error
+        setCategories(FALLBACK_CATEGORIES);
+        setFeaturedProducts([]);
+        setNewArrivals([]);
+
+        // Update loading states
+        setFeaturedLoading(false);
+        setNewArrivalsLoading(false);
+      }
+    };
+
+    fetchHomeData();
+
+    return () => { isMounted = false; };
+  }, []);
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
+
+  const handleTabChange = useCallback((tab) => {
+    setActiveTab(tab);
+    setFeaturedLoading(true);
+
+    const fetchTabData = async () => {
+      const featuredUrl = tab === 'all'
+        ? `${API}/products?isFeatured=true&limit=24`
+        : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
+      const fallbackUrl = tab === 'all'
+        ? `${API}/products?limit=24`
+        : `${API}/products?category=${encodeURIComponent(tab)}&limit=24`;
+
+      try {
+        // Try featured first, fallback to all products if not enough
+        const [featuredData, fallbackData] = await Promise.all([
+          fetchWithRetry(featuredUrl).then(r => r.json()).catch(() => ({ products: [] })),
+          fetchWithRetry(fallbackUrl).then(r => r.json()).catch(() => ({ products: [] }))
+        ]);
+
+        const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
+        const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
+        const products = featured.length >= 8 ? featured : fallback;
+        // Ensure always an array
+        setFeaturedProducts(Array.isArray(products) ? products : []);
+      } catch (error) {
+        setFeaturedProducts([]);
+      } finally {
+        setFeaturedLoading(false);
+      }
+    };
+
+    fetchTabData();
+  }, []);
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  return (
+    <div className="min-h-screen home-page-root">
+      {/* Global Styles — static string, not recreated per render */}
+      <style>{HOME_STYLES}</style>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 1: HERO — left: text+search  |  right: image slider */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-hero home-hero--padded">
         <div className="hero-grid-container">
-
-          {/* LEFT: Text + Search - Hidden on mobile, visible on desktop */}
-          <div className="hero-left-content hidden lg:block">
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              <span style={{ width: 6, height: 6, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
-              {t('home.tagline')}
-            </div>
-            <h1 style={{ fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: 600, color: '#fff', lineHeight: 1.15, marginBottom: 12 }}>
-              {t('home.heroTitle')}<br />
-              <span style={{ color: 'var(--color-brand-teal-light)' }}>
-                <span key={typewriterText} className="typewriter-text" style={{ display: 'inline-block' }}>{typewriterText}</span>
-              </span>
-            </h1>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 20, maxWidth: 480, lineHeight: 1.6 }}>
-              {t('home.heroSubtitle')}
-            </p>
-            <div style={{ maxWidth: 520, marginBottom: 16, width: '100%' }}>
-              <EnhancedSearchBox placeholder={searchPlaceholder} variant="hero" />
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {SEARCH_SUGGESTIONS.map(q => (
-                <button key={q} onClick={() => router.push(`/products?q=${encodeURIComponent(q)}`)}
-                  style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
-                  {q}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* RIGHT: Image Slider */}
-          <div
-            className="hero-right-panel"
-            onMouseEnter={() => setIsSliderHovered(true)}
-            onMouseLeave={() => setIsSliderHovered(false)}
-          >
-            {heroSlides.length > 0 ? (
-              heroSlides.map((slide, i) => currentSlide === i && (
-                <div key={slide._id || slide.imageUrl || i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
-                  <Image 
-                    src={slide.imageUrl} 
-                    alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 52vw"
-                    style={{ objectFit: 'cover' }}
-                    priority={i === 0}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(77,219,184,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(14,138,110,0.5), transparent 60%), linear-gradient(140deg, #0b2545 0%, #12355f 60%, #0e8a6e 140%)' }} />
-            )}
-            {/* Bottom gradient */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', zIndex: 5 }} />
-            {/* Dots */}
-            {(() => {
-              const total = heroSlides.length > 0 ? heroSlides.length : 4;
-              return (
-                <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 10 }}>
-                  {Array.from({ length: total }).map((_, i) => (
-                    <span 
-                      key={`dot-${i}`} 
-                      onClick={() => setCurrentSlide(i)} 
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          setCurrentSlide(i);
-                        }
-                      }}
-                      role="button" 
-                      tabIndex={0}
-                      aria-label={`Go to slide ${i + 1}`}
-                      aria-current={currentSlide === i ? 'true' : 'false'}
-                      style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} 
-                    />
-                  ))}
-                </div>
-              );
-            })()}
-            {/* Counter */}
-            <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 10, color: '#fff', fontSize: 11, fontWeight: 600, background: 'rgba(0,0,0,0.5)', padding: '4px 10px', borderRadius: 20 }}>
-              {String(currentSlide + 1).padStart(2, '0')} / {String(heroSlides.length > 0 ? heroSlides.length : 1).padStart(2, '0')}
-            </div>
-            {/* Arrows */}
-            {(() => {
-              const total = heroSlides.length > 0 ? heroSlides.length : 1;
-              return (
-                <>
-                  <button 
-                    onClick={() => setCurrentSlide(prev => (prev - 1 + total) % total)}
-                    aria-label="Previous slide"
-                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
-                    className="hero-slider-arrows"
-                  >
-                    ‹
-                  </button>
-                  <button 
-                    onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
-                    aria-label="Next slide"
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isSliderHovered ? 1 : 0, transition: 'opacity 0.2s' }}
-                    className="hero-slider-arrows"
-                  >
-                    ›
-                  </button>
-                </>
-              );
-            })()}
-          </div>
+          <HeroSearch />
+          <HeroSlider slides={heroSlides} />
         </div>
       </section>
 
@@ -963,7 +821,7 @@ export default function HomePage() {
               </h2>
             </div>
           </div>
-          
+
           {/* Horizontal scrollable category circles - Dynamic from API */}
           <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
@@ -973,7 +831,7 @@ export default function HomePage() {
               const categorySlug = cat.slug || CATEGORY_NAME_TO_SLUG[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');
               const categoryPath = `/products/category/${categorySlug}`;
               const productCount = cat.productCount || categoryCounts[categoryName] || 0;
-              
+
               // Category icons mapping
               const iconMap = {
                 'Lab Reagents': '🧪', 'Laboratory Reagents': '🧪',
@@ -995,11 +853,11 @@ export default function HomePage() {
                 'Respiratory Equipment': '😷',
                 'Compression Garments': '👕',
               };
-              
+
               const emoji = cat.emoji || iconMap[categoryName] || '🏥';
               const colors = ['#FAF5FF', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', '#FFF1F2', '#F8FAFC', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
               const color = cat.color || colors[index % colors.length];
-              
+
               return (
                 <div key={categoryName} onClick={() => router.push(categoryPath)}
                   role="button" tabIndex={0}
@@ -1012,7 +870,7 @@ export default function HomePage() {
                   <div style={{ width: 80, height: 80, borderRadius: '50%', background: color,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 36, marginBottom: 10, border: '2px solid var(--color-border-primary)',
-                    transition: 'all 0.2s' }}>
+                    transition: 'transform 0.2s ease' }}>
                     {emoji}
                   </div>
                   {/* Category name */}
@@ -1031,7 +889,7 @@ export default function HomePage() {
                 </div>
               );
             })}
-            
+
             {/* View All button */}
             <div onClick={() => router.push('/products')}
               role="button" tabIndex={0}
@@ -1056,10 +914,14 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Below-fold content is skipped until scrolled near — see .cv-lazy-stack in globals.css */}
+      <div className="cv-lazy-stack">
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 3: FLASH DEALS (Time-sensitive, creates urgency) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <FlashDealsSection />
+      <Suspense fallback={null}>
+        <FlashDealsSection />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 4: BEST SELLING PRODUCTS (Social proof, rankings) */}
@@ -1089,9 +951,9 @@ export default function HomePage() {
           </div>
 
           {/* Tabs - Dynamic based on top categories */}
-          <div role="tablist" aria-label="Product categories" style={{ 
-            display: 'flex', 
-            gap: 8, 
+          <div role="tablist" aria-label="Product categories" style={{
+            display: 'flex',
+            gap: 8,
             flexWrap: 'nowrap',
             overflowX: 'auto',
             overflowY: 'hidden',
@@ -1111,16 +973,16 @@ export default function HomePage() {
               aria-controls="featured-products-panel"
               aria-label="View All Products"
               className={activeTab === 'all' ? 'tab-active' : ''}
-              style={{ 
-                padding: '10px 20px', 
-                borderRadius: 8, 
+              style={{
+                padding: '10px 20px',
+                borderRadius: 8,
                 border: '1.5px solid var(--color-border-primary)',
                 background: activeTab === 'all' ? 'var(--color-brand-navy)' : '#fff',
                 color: activeTab === 'all' ? '#fff' : '#374151',
-                fontSize: 14, 
-                fontWeight: 600, 
-                cursor: 'pointer', 
-                transition: 'all 0.2s',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'box-shadow 0.2s ease, transform 0.2s ease',
                 boxShadow: activeTab === 'all' ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
                 transform: activeTab === 'all' ? 'translateY(-1px)' : 'none',
                 listStyle: 'none',
@@ -1149,7 +1011,7 @@ export default function HomePage() {
                   'Surgical Instruments': '💉',
                 };
                 const icon = iconMap[categoryName] || '📦';
-                
+
                 return (
                   <button
                     key={categoryName}
@@ -1159,16 +1021,16 @@ export default function HomePage() {
                     aria-controls="featured-products-panel"
                     aria-label={`View ${categoryName}`}
                     className={activeTab === categoryName ? 'tab-active' : ''}
-                    style={{ 
-                      padding: '10px 20px', 
-                      borderRadius: 8, 
+                    style={{
+                      padding: '10px 20px',
+                      borderRadius: 8,
                       border: '1.5px solid var(--color-border-primary)',
                       background: activeTab === categoryName ? 'var(--color-brand-navy)' : '#fff',
                       color: activeTab === categoryName ? '#fff' : '#374151',
-                      fontSize: 14, 
-                      fontWeight: 600, 
-                      cursor: 'pointer', 
-                      transition: 'all 0.2s',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
                       boxShadow: activeTab === categoryName ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
                       transform: activeTab === categoryName ? 'translateY(-1px)' : 'none',
                       listStyle: 'none',
@@ -1215,7 +1077,7 @@ export default function HomePage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
                   fontSize: 20,
                   fontWeight: 'bold',
                   color: 'var(--color-brand-navy)',
@@ -1223,13 +1085,11 @@ export default function HomePage() {
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'var(--color-brand-teal)';
                   e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.transform = 'translateY(-50%) scale(1.15)';
                   e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.98)';
                   e.currentTarget.style.color = 'var(--color-brand-navy)';
-                  e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
                 }}
                 aria-label="Scroll left">
@@ -1264,7 +1124,7 @@ export default function HomePage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
                   fontSize: 20,
                   fontWeight: 'bold',
                   color: 'var(--color-brand-navy)',
@@ -1272,13 +1132,11 @@ export default function HomePage() {
                 onMouseEnter={e => {
                   e.currentTarget.style.background = 'var(--color-brand-teal)';
                   e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.transform = 'translateY(-50%) scale(1.15)';
                   e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.98)';
                   e.currentTarget.style.color = 'var(--color-brand-navy)';
-                  e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
                 }}
                 aria-label="Scroll right">
@@ -1301,11 +1159,11 @@ export default function HomePage() {
               <p style={{ fontSize: 14 }}>Try selecting a different category or check back later</p>
             </div>
           ) : (
-            <div 
-              id="featured-scroll-container" 
-              className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide scroll-smooth" 
-              style={{ 
-                padding: '0 4px', 
+            <div
+              id="featured-scroll-container"
+              className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide scroll-smooth"
+              style={{
+                padding: '0 4px',
                 listStyle: 'none',
                 WebkitOverflowScrolling: 'touch', // iOS smooth scrolling
                 scrollPaddingLeft: '4px', // Proper snap alignment
@@ -1412,7 +1270,9 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 7: CATEGORY PRODUCT SECTIONS (Deep product discovery) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <CategoryProductSections categories={categories} />
+      <Suspense fallback={null}>
+        <CategoryProductSections categories={categories} />
+      </Suspense>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: NEW ARRIVALS (Fresh inventory, auto slider) */}
@@ -1457,7 +1317,7 @@ export default function HomePage() {
           <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {whyUsItems.map(({ icon, title, desc }) => (
               <div key={title} className="trust-item"
-                style={{ padding: '24px', borderRadius: 16, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'all 0.2s' }}
+                style={{ padding: '24px', borderRadius: 16, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.background = 'var(--color-background-secondary)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 22, marginBottom: 16 }}>
@@ -1627,10 +1487,10 @@ export default function HomePage() {
             const userName = review.user?.name || review.userName || 'Anonymous';
             const companyName = review.user?.companyName || review.companyName || '';
             const rating = review.rating || 5;
-            
+
             return (
               <div key={review._id} style={{ background: '#fff', borderRadius: 16,
-                border: '1px solid var(--color-border-primary)', padding: '28px 24px', transition: 'all 0.2s' }}
+                border: '1px solid var(--color-border-primary)', padding: '28px 24px', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 {/* Stars */}
@@ -1665,11 +1525,7 @@ export default function HomePage() {
         </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* FOOTER - Add your footer component here */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      </div>
     </div>
   );
 }
-
