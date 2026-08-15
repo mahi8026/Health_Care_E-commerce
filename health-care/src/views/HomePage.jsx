@@ -85,7 +85,7 @@ const B2B_STATS = [
 
 // WHY_US is built dynamically from settings — see buildWhyUs() below
 const HOW_IT_WORKS = [
-  { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 50+ global brands' },
+  { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 40+ global brands' },
   { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
   { step: 3, icon: <FaCreditCard />, title: 'Secure Checkout', desc: 'Multiple payment options available' },
   { step: 4, icon: <FaTruck />, title: 'Fast Delivery', desc: 'Free installation & training included' },
@@ -664,7 +664,13 @@ export default function HomePage() {
   // ── Memoized Values ────────────────────────────────────────────────────────
   const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
   const navCategories = useMemo(() => {
-    if (categories.length > 0) return categories.slice(0, 16);
+    if (categories.length > 0) {
+      // Hide empty categories (productCount 0) so visitors never land on
+      // an empty grid; fall back treats missing productCount as populated.
+      return categories
+        .filter(cat => (cat.productCount ?? 1) > 0)
+        .slice(0, 16);
+    }
     return [
       { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
       { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
@@ -1477,6 +1483,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 16: CUSTOMER TESTIMONIALS (Final social proof) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
+      {testimonials.length > 0 && (
       <section className="bg-hero-gradient" style={{ padding: '56px 24px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -1488,9 +1495,7 @@ export default function HomePage() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}
           className="testimonials-grid">
-          {testimonials.length === 0 ? (
-            <p className="text-[var(--color-text-secondary)] text-sm text-center py-8">No testimonials available</p>
-          ) : (testimonials.slice(0, 3).map((review) => {
+          {testimonials.slice(0, 3).map((review) => {
             const userName = review.user?.name || review.userName || 'Anonymous';
             const companyName = review.user?.companyName || review.companyName || '';
             const rating = review.rating || 5;
@@ -1528,10 +1533,11 @@ export default function HomePage() {
                 </div>
               </div>
             );
-          }))}
+          })}
         </div>
         </div>
       </section>
+      )}
       </div>
     </div>
   );

@@ -116,8 +116,11 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
       try {
         const data = await fetchCached(`${API}/categories`);
         if (data.success && data.data?.categories) {
-          // Map categories to the format expected by the dropdown
-          const mappedCategories = data.data.categories.map(cat => {
+          // Map categories to the format expected by the dropdown,
+          // hiding empty categories (productCount 0)
+          const mappedCategories = data.data.categories
+            .filter(cat => (cat.productCount ?? 1) > 0)
+            .map(cat => {
             const slug = CATEGORY_NAME_TO_SLUG[cat.name] || cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-');
             // Special case: Laboratory Reagents goes to reagent-store
             const href = cat.name === 'Laboratory Reagents' 
@@ -442,7 +445,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               >
                 <div className="relative">
                   <EnhancedSearchBox 
-                    placeholder="Search 10,000+ medical products..." 
+                    placeholder="Search 350+ medical products..." 
                     autoFocus 
                     onClose={() => setSearchOpen(false)}
                   />

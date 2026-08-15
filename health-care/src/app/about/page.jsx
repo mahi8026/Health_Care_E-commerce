@@ -15,7 +15,7 @@ const ISO_CERT = process.env.NEXT_PUBLIC_ISO_CERT_NUMBER || '';
 export const metadata = {
   title: 'About MediportBD — Medical Equipment Supplier in Dhaka, Bangladesh',
   description:
-    'Mediport Bangladesh Ltd. (MediportBD) is a DGDA-registered medical equipment supplier on Topkhana Road, Dhaka — serving 500+ hospitals, clinics and diagnostic centres across Bangladesh since 2020.',
+    'Mediport Bangladesh Ltd. (MediportBD) is a DGDA-registered medical equipment supplier on Topkhana Road, Dhaka — serving hospitals, clinics and diagnostic centres across Bangladesh since 2020.',
   keywords: 'about MediportBD, medical equipment supplier Dhaka, DGDA registered supplier Bangladesh, Mediport Bangladesh Ltd, medical equipment company BD',
   alternates: { canonical: `${SITE_CONFIG.url}/about` },
   openGraph: {
@@ -33,10 +33,10 @@ export const metadata = {
 };
 
 const STATS = [
-  { value: '10,000+', label: 'Products in catalogue' },
-  { value: '50+', label: 'Global brands supplied' },
-  { value: '500+', label: 'Active B2B clients' },
+  { value: '350+', label: 'Products in catalogue' },
+  { value: '40+', label: 'Global brands supplied' },
   { value: '18+', label: 'Product categories' },
+  { value: 'DGDA', label: 'Registered importer' },
 ];
 
 const VALUES = [
@@ -166,8 +166,8 @@ export default function AboutPage() {
           </p>
           <p className="text-sm md:text-[15px] leading-relaxed text-[var(--color-text-primary)]">
             Today MediportBD serves GP chambers, clinics, diagnostic centres, hospitals and
-            government and private health programmes with over 10,000 products across 18+
-            categories and 50+ global brands, including Rossmax, Omron, Microlife, Beurer,
+            government and private health programmes with 350+ products across 18+
+            categories and 40+ global brands, including Rossmax, Omron, Microlife, Beurer,
             Accu-Chek, Tynor, JMS, Romsons, B.Braun and ConvaTec.
           </p>
         </div>

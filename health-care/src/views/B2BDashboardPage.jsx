@@ -134,8 +134,8 @@ function B2BLanding() {
   const contactPhone = settings?.contactPhone ?? '+880 1800-Mediport';
   const contactEmail = settings?.contactEmail ?? 'b2b@MediportBD.com';
   const totalProducts = siteStats?.totalProducts
-    ? `${(siteStats.totalProducts / 1000).toFixed(0)}K+`
-    : '10,000+';
+    ? `${siteStats.totalProducts.toLocaleString()}+`
+    : '350+';
   const totalB2BClients = siteStats?.totalB2BClients
     ? `${siteStats.totalB2BClients}+`
     : '500+';
@@ -198,7 +198,7 @@ function B2BLanding() {
               <div className="mt-5 flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
                 <span>✓ DGDA Registered</span>
                 <span>✓ ISO 13485 Certified</span>
-                <span>✓ 10,000+ Products</span>
+                <span>{totalProducts} Products</span>
               </div>
             </div>
             {/* Stats */}

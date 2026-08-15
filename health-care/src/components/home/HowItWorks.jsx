@@ -10,9 +10,9 @@ import { FaSearch, FaShoppingCart, FaCreditCard, FaTruck } from 'react-icons/fa'
  */
 export default function HowItWorks() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-6 sm:py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
           <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
             How It Works
           </h2>
@@ -62,7 +62,7 @@ const STEPS = [
     step: 1, 
     icon: <FaSearch />, 
     title: 'Browse & Search', 
-    desc: 'Find products from 50+ global brands' 
+    desc: 'Find products from 40+ global brands' 
   },
   { 
     step: 2, 

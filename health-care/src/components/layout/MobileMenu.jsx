@@ -61,7 +61,10 @@ export default function MobileMenu({ isOpen, onClose }) {
   useEffect(() => {
     // Shared cache dedupes this with Header's identical /categories call
     fetchCached(`${API}/categories`)
-      .then(data => setCategories(data.data?.categories || data.categories || []))
+      .then(data => {
+        const all = data.data?.categories || data.categories || [];
+        setCategories(all.filter(cat => (cat.productCount ?? 1) > 0));
+      })
       .catch(() => {});
   }, []);
 

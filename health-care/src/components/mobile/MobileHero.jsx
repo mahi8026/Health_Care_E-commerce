@@ -42,13 +42,13 @@ export default function MobileHero() {
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
           <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
-            {stats.totalProducts > 0 ? `${stats.totalProducts.toLocaleString()}+` : '500+'}
+            {stats.totalProducts > 0 ? `${stats.totalProducts.toLocaleString()}+` : '350+'}
           </div>
           <div className="text-xs opacity-80">Products</div>
         </div>
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 text-center">
           <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
-            {stats.totalBrands > 0 ? `${stats.totalBrands}+` : '50+'}
+            {stats.totalBrands > 0 ? `${stats.totalBrands}+` : '40+'}
           </div>
           <div className="text-xs opacity-80">Brands</div>
         </div>

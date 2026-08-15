@@ -21,9 +21,9 @@ export default function WhyChooseUs({ settings }) {
   const features = buildFeatures(settings);
 
   return (
-    <section className="py-16 bg-gradient-to-br from-[var(--color-background-secondary)] to-white">
+    <section className="py-6 sm:py-12 md:py-16 bg-gradient-to-br from-[var(--color-background-secondary)] to-white">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
           <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
             Why Choose MediportBD?
           </h2>

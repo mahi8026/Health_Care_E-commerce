@@ -22,7 +22,7 @@ export const translations = {
     home: {
       tagline: "Bangladesh's #1 Medical Equipment Platform",
       heroTitle: 'Medical Equipment &',
-      heroSubtitle: '10,000+ DGDA-registered products from 50+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals & clinics.',
+      heroSubtitle: '350+ DGDA-registered products from 40+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals & clinics.',
       searchBtn: ' Search',
       shopByCategory: 'Shop by Category',
       ourCatalog: 'Our Catalog',
@@ -258,7 +258,7 @@ export const translations = {
     home: {
       tagline: 'বাংলাদেশের #১ মেডিকেল ইকুইপমেন্ট প্ল্যাটফর্ম',
       heroTitle: 'মেডিকেল ইকুইপমেন্ট ও',
-      heroSubtitle: '৫০+ গ্লোবাল ব্র্যান্ডের ১০,০০০+ ডিজিডিএ নিবন্ধিত পণ্য। হাসপাতাল ও ক্লিনিকের জন্য বিনামূল্যে ইনস্টলেশন, কোল্ড-চেইন ডেলিভারি এবং বিটুবি ক্রেডিট সুবিধা।',
+      heroSubtitle: '৪০+ গ্লোবাল ব্র্যান্ডের ৩৫০+ ডিজিডিএ নিবন্ধিত পণ্য। হাসপাতাল ও ক্লিনিকের জন্য বিনামূল্যে ইনস্টলেশন, কোল্ড-চেইন ডেলিভারি এবং বিটুবি ক্রেডিট সুবিধা।',
       searchBtn: ' খুঁজুন',
       shopByCategory: 'ক্যাটাগরি অনুযায়ী কেনাকাটা',
       ourCatalog: 'আমাদের ক্যাটালগ',
