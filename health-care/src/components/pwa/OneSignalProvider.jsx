@@ -3,23 +3,39 @@ import { useCallback, useEffect, useState } from 'react';
 import Script from 'next/script';
 
 const ONESIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
-const IDLE_TIMEOUT_MS = 3000;
+// OneSignal is only needed when the user interacts (subscribe bell, admin
+// login tags). Load the SDK on the first user interaction, or after this
+// fallback delay for sessions with no interaction — keeping ~200KB of
+// third-party JS out of the page-load/TBT window entirely.
+const FALLBACK_LOAD_MS = 30000;
+const LOAD_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
 
 export default function OneSignalProvider() {
   const [retryKey, setRetryKey] = useState(0);
   const [canLoad, setCanLoad] = useState(false);
 
-  // Hold the SDK out of the hydration window: load only after the browser is
-  // idle (or 3s at the latest) so ~200KB of third-party JS never competes with
-  // React hydration for main-thread time.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(() => setCanLoad(true), { timeout: IDLE_TIMEOUT_MS });
-      return () => window.cancelIdleCallback(id);
-    }
-    const id = setTimeout(() => setCanLoad(true), IDLE_TIMEOUT_MS);
-    return () => clearTimeout(id);
+
+    let loaded = false;
+    let timer;
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+      LOAD_EVENTS.forEach((ev) => window.removeEventListener(ev, load, { capture: true }));
+      clearTimeout(timer);
+      setCanLoad(true);
+    };
+
+    LOAD_EVENTS.forEach((ev) =>
+      window.addEventListener(ev, load, { passive: true, capture: true })
+    );
+    timer = setTimeout(load, FALLBACK_LOAD_MS);
+
+    return () => {
+      LOAD_EVENTS.forEach((ev) => window.removeEventListener(ev, load, { capture: true }));
+      clearTimeout(timer);
+    };
   }, []);
 
   // Called directly from the Script tag's onLoad — no polling needed.

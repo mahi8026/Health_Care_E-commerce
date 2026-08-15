@@ -27,7 +27,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
   const discountPct = item.discountPercentage || 0;
 
   return (
-    <div onClick={onClick} className="group"
+    <div onClick={() => onClick?.(product._id)} className="group"
       style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
         border: '1px solid var(--color-border-primary)', cursor: 'pointer',
         transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
@@ -94,6 +94,61 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
   );
 });
 
+// Countdown owns its own state so the 1s tick never re-renders the deal cards
+// (previously the section held timeLeft and re-rendered the whole grid every
+// second — a major main-thread churn source).
+const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = new Date(endTime).getTime() - new Date().getTime();
+      if (difference <= 0) return { h: 0, m: 0, s: 0 };
+      return {
+        h: Math.floor(difference / (1000 * 60 * 60)),
+        m: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        s: Math.floor((difference % (1000 * 60)) / 1000),
+      };
+    };
+
+    const updateTime = () => {
+      const next = calculateTimeLeft();
+      setTimeLeft(next);
+      if (next.h === 0 && next.m === 0 && next.s === 0) {
+        window.dispatchEvent(new Event('flashDealExpired'));
+      }
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, [endTime]);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>Ends in</span>
+      {[
+        { val: timeLeft.h, label: 'hrs' },
+        { val: timeLeft.m, label: 'min' },
+        { val: timeLeft.s, label: 'sec' },
+      ].map((t, i) => (
+        <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
+          {i > 0 && <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600, fontSize: 16 }}>:</span>}
+          <div style={{
+            background: 'rgba(255,255,255,0.1)', borderRadius: 8,
+            padding: '6px 10px', textAlign: 'center', minWidth: 46,
+          }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)', lineHeight: 1 }}>
+              {String(t.val).padStart(2, '0')}
+            </div>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 // MAIN FLASH DEALS SECTION COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
@@ -102,7 +157,6 @@ export default function FlashDealsSection() {
   const router = useRouter();
   const [flashDeals, setFlashDeals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
 
   const fetchFlashDeals = useCallback(async () => {
     try {
@@ -141,40 +195,10 @@ export default function FlashDealsSection() {
     };
   }, [fetchFlashDeals]);
 
-  // Countdown timer
-  useEffect(() => {
-    if (flashDeals.length === 0) return;
-
-    const calculateTimeLeft = () => {
-      const now = new Date().getTime();
-      const end = new Date(flashDeals[0].endTime).getTime();
-      const difference = end - now;
-
-      if (difference <= 0) {
-        return { h: 0, m: 0, s: 0 };
-      }
-
-      return {
-        h: Math.floor(difference / (1000 * 60 * 60)),
-        m: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-        s: Math.floor((difference % (1000 * 60)) / 1000),
-      };
-    };
-
-    const updateTime = () => {
-      const newTimeLeft = calculateTimeLeft();
-      setTimeLeft(newTimeLeft);
-
-      if (newTimeLeft.h === 0 && newTimeLeft.m === 0 && newTimeLeft.s === 0) {
-        window.dispatchEvent(new Event('flashDealExpired'));
-      }
-    };
-
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-
-    return () => clearInterval(timer);
-  }, [flashDeals]);
+  // Stable handler so FlashDealProductCard's memo can actually skip re-renders
+  const goToDeal = useCallback((productId) => {
+    if (productId) router.push(`/products/${productId}`);
+  }, [router]);
 
   if (loading) {
     return (
@@ -215,28 +239,8 @@ export default function FlashDealsSection() {
             </button>
           </div>
 
-          {/* Countdown timer */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>Ends in</span>
-            {[
-              { val: timeLeft.h, label: 'hrs' },
-              { val: timeLeft.m, label: 'min' },
-              { val: timeLeft.s, label: 'sec' },
-            ].map((t, i) => (
-              <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
-                {i > 0 && <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600, fontSize: 16 }}>:</span>}
-                <div style={{
-                  background: 'rgba(255,255,255,0.1)', borderRadius: 8,
-                  padding: '6px 10px', textAlign: 'center', minWidth: 46,
-                }}>
-                  <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)', lineHeight: 1 }}>
-                    {String(t.val).padStart(2, '0')}
-                  </div>
-                  <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Countdown timer — isolated so the 1s tick only re-renders digits */}
+          <FlashDealCountdown endTime={currentDeal.endTime} />
         </div>
 
         {/* Deal product cards — 2 cols on mobile, 4 on desktop */}
@@ -251,11 +255,7 @@ export default function FlashDealsSection() {
             <FlashDealProductCard
               key={item.product?._id || index}
               item={item}
-              onClick={() => {
-                if (item.product?._id) {
-                  router.push(`/products/${item.product._id}`);
-                }
-              }}
+              onClick={goToDeal}
             />
           ))}
         </div>
