@@ -14,7 +14,12 @@ const fs = require('fs');
 const path = require('path');
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mediportbd.com';
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce-ubyy.onrender.com/api';
+// Local dev uses a relative API URL (/api) that only works via Next's dev
+// proxy — fall back to the production backend when it is not absolute.
+const envApi = process.env.NEXT_PUBLIC_API_URL;
+const BACKEND_URL = envApi && /^https?:\/\//.test(envApi)
+  ? envApi
+  : 'https://health-care-e-commerce-ubyy.onrender.com/api';
 const OUTPUT_FILE = path.join(__dirname, '../public/sitemap-products-static.xml');
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 5000; // 5 seconds
@@ -178,7 +183,8 @@ async function main() {
     if (products.length === 0) {
       console.error('\n[Sitemap] ERROR: No products fetched!');
       console.error('[Sitemap] The backend may be down or unreachable.');
-      console.error('[Sitemap] Generating empty sitemap as fallback...\n');
+      console.error('[Sitemap] Keeping the existing sitemap file instead of overwriting it with an empty one...\n');
+      process.exit(0);
     }
     
     console.log(`\n[Sitemap] Fetched ${products.length} products in ${elapsed}s`);
@@ -223,17 +229,9 @@ async function main() {
     console.error('\nStack:', error.stack);
     console.error('\n=================================================\n');
     
-    // Generate empty sitemap as fallback
-    const emptyXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Build-time sitemap generation failed. Backend may be unreachable. -->
-  <!-- Products: 0 -->
-</urlset>`;
-    
-    fs.writeFileSync(OUTPUT_FILE, emptyXml, 'utf-8');
-    console.log('[Sitemap] Generated empty sitemap as fallback.');
-    
-    // Don't fail the build
+    // Don't fail the build; keep whatever sitemap already exists so a
+    // transient backend outage at build time cannot wipe the sitemap.
+    console.log('[Sitemap] Keeping existing sitemap file as fallback.');
     process.exit(0);
   }
 }
