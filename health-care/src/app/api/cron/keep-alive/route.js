@@ -1,15 +1,15 @@
 /**
- * Vercel Cron Job: Keep Backend Alive
- * 
- * This endpoint is called every 10 minutes by Vercel Cron to prevent
- * the Render.com free tier backend from spinning down after 15 minutes
- * of inactivity.
- * 
- * Configured in vercel.json:
+ * Keep-alive: ping the Render free-tier backend so it never spins down.
+ *
+ * Vercel Hobby crons can only run once per day, so this route is triggered
+ * by the GitHub Actions workflow `.github/workflows/keep-alive.yml` (public
+ * repo → free) every 5 minutes, which pings the backend directly. This route
+ * is kept as a single place that pings every home-page endpoint; to use it
+ * on a Pro plan, add to vercel.json:
  * {
  *   "crons": [{
  *     "path": "/api/cron/keep-alive",
- *     "schedule": "* /10 * * * *"
+ *     "schedule": "every 10 minutes"
  *   }]
  * }
  */

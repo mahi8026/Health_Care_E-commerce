@@ -14,6 +14,23 @@ const devLog = {
 const requestCache = new Map();
 const pendingRequests = new Map();
 
+// Shared "backend is booting" gate: when the free-tier instance cold-starts
+// it answers 503 for a while; all concurrent callers wait on ONE gate instead
+// of each stacking its own full retry backoff.
+const COLD_START_GATE_MS = 10000;
+let coldStartGate = null;
+function waitForColdStartGate() {
+  if (!coldStartGate) {
+    coldStartGate = new Promise((resolve) => {
+      setTimeout(() => {
+        coldStartGate = null;
+        resolve();
+      }, COLD_START_GATE_MS);
+    });
+  }
+  return coldStartGate;
+}
+
 // Cache configuration
 const CACHE_TTL = {
   products: 5 * 60 * 1000,      // 5 minutes
@@ -196,7 +213,7 @@ async function handleResponse(response) {
 export async function fetchWithRetry(
   url,
   options = {},
-  { maxRetries = 5, baseDelay = 5000, timeout = TIMEOUTS.API_REQUEST, cache = true } = {}
+  { maxRetries = 3, baseDelay = 2000, timeout = TIMEOUTS.API_REQUEST, cache = true } = {}
 ) {
   const externalSignal = options.signal;
 
@@ -212,9 +229,21 @@ export async function fetchWithRetry(
         headers: { 'Content-Type': 'application/json' }
       });
     }
-    // Deduplicate concurrent identical GET requests
+    // Deduplicate concurrent identical GET requests. The pending entry may
+    // have been created by fetchWithRetry (Response), fetchCached (parsed
+    // JSON) or fetchWithAuth (Response) — normalize to this function's
+    // contract and fall through to our own retry loop if it failed.
     if (pendingRequests.has(cacheKey)) {
-      return pendingRequests.get(cacheKey);
+      try {
+        const value = await pendingRequests.get(cacheKey);
+        if (value instanceof Response) return value;
+        return new Response(JSON.stringify(value), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch {
+        // Pending request failed — fall through and make our own request.
+      }
     }
   }
 
@@ -268,8 +297,27 @@ export async function fetchWithRetry(
         return response;
       }
 
-      const retryAfter = response.headers.get('Retry-After');
-      const delay = retryAfter ? parseInt(retryAfter) * 1000 : baseDelay * (attempt + 1);
+      // During a cold start every concurrent request sees 503 — share ONE
+      // wait so they all retry together instead of stacking backoffs.
+      if (response.status === 503) {
+        await waitForColdStartGate();
+        continue;
+      }
+
+      // Prefer the server's retry hint (Retry-After header or the retryAfter
+      // field the backend puts in the JSON body), fall back to local backoff.
+      let delay = baseDelay * (attempt + 1);
+      try {
+        const header = response.headers.get('Retry-After');
+        if (header && !Number.isNaN(parseInt(header, 10))) {
+          delay = parseInt(header, 10) * 1000;
+        } else {
+          const body = await response.json();
+          if (body && typeof body.retryAfter === 'number') {
+            delay = body.retryAfter * 1000;
+          }
+        }
+      } catch { /* non-JSON body — use local backoff */ }
       await sleep(delay);
     } catch (error) {
       clearTimeout(timeoutId);
@@ -307,10 +355,20 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
       });
     }
     
-    // Check if request is already pending (deduplication)
+    // Check if request is already pending (deduplication). The pending entry
+    // may come from fetchWithRetry/fetchWithAuth (Response) or fetchCached
+    // (parsed JSON) — normalize to a Response and fall through on failure.
     if (pendingRequests.has(cacheKey)) {
-      // Wait for the pending request to complete
-      return pendingRequests.get(cacheKey);
+      try {
+        const value = await pendingRequests.get(cacheKey);
+        if (value instanceof Response) return value;
+        return new Response(JSON.stringify(value), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch {
+        // Pending request failed — fall through and make our own request.
+      }
     }
   }
   
@@ -1063,7 +1121,16 @@ export async function fetchCached(url, options = {}) {
   if (method === 'GET') {
     const cached = getCachedResponse(cacheKey);
     if (cached) return cached;
-    if (pendingRequests.has(cacheKey)) return pendingRequests.get(cacheKey);
+    // Pending entry may be a Response (from fetchWithRetry/fetchWithAuth) or
+    // parsed JSON (from fetchCached) — normalize and fall through on failure.
+    if (pendingRequests.has(cacheKey)) {
+      try {
+        const value = await pendingRequests.get(cacheKey);
+        return value instanceof Response ? await value.json() : value;
+      } catch {
+        // Pending request failed — fall through and make our own request.
+      }
+    }
   }
 
   const promise = (async () => {

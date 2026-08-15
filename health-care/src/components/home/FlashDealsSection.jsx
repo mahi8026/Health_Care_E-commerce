@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { API } from '@/constants/api';
 import { getProductCardImage } from '@/utils/cloudinary';
+import { fetchWithRetry } from '@/utils/api';
 
 // ══════════════════════════════════════════════════════════════════════════════
 // PRODUCT CARD COMPONENT (matches existing ProductCard style)
@@ -163,12 +164,7 @@ export default function FlashDealsSection() {
   const fetchFlashDeals = useCallback(async () => {
     try {
       const timestamp = new Date().getTime();
-      const response = await fetch(`${API}/flash-deals/active?_t=${timestamp}`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
+      const response = await fetchWithRetry(`${API}/flash-deals/active?_t=${timestamp}`);
       const data = await response.json();
       
       if (data.success && data.data?.flashDeals?.length > 0) {
