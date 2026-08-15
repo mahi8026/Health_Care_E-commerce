@@ -29,6 +29,8 @@ export default function ProductImageGalleryEnhanced({
   const [activeIndex, setActiveIndex] = useState(
     images.findIndex(img => img.isPrimary) >= 0 ? images.findIndex(img => img.isPrimary) : 0
   );
+  const [failedIndex, setFailedIndex] = useState(null);
+  const [failedThumbs, setFailedThumbs] = useState(() => new Set());
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
@@ -102,7 +104,7 @@ export default function ProductImageGalleryEnhanced({
         onMouseLeave={() => setIsZooming(false)}
         onMouseMove={handleMouseMove}
       >
-        {activeImage ? (
+        {activeImage && failedIndex !== activeIndex ? (
           <div className="relative w-full h-full">
             <Image
               src={activeImage.url}
@@ -116,6 +118,7 @@ export default function ProductImageGalleryEnhanced({
                 transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
               } : {}}
               priority={heroPriority}
+              onError={() => setFailedIndex(activeIndex)}
             />
           </div>
         ) : (
@@ -213,13 +216,18 @@ export default function ProductImageGalleryEnhanced({
                     : 'ring-1 ring-[var(--color-border-primary)] hover:ring-[var(--color-border-secondary)] hover:scale-105'
                 }`}
               >
-                <Image
-                  src={img.url}
-                  alt={`${product.name} view ${idx + 1}`}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
+                {!failedThumbs.has(idx) ? (
+                  <Image
+                    src={img.url}
+                    alt={`${product.name} view ${idx + 1}`}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                    onError={() => setFailedThumbs(prev => new Set(prev).add(idx))}
+                  />
+                ) : (
+                  <span className="absolute inset-0 flex items-center justify-center text-lg bg-[var(--color-background-secondary)]">🏥</span>
+                )}
                 {activeIndex === idx && (
                   <div className="absolute inset-0 bg-brand-teal/10" />
                 )}
@@ -274,13 +282,20 @@ export default function ProductImageGalleryEnhanced({
             className="relative w-full h-full max-w-6xl max-h-[90vh] p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
-              src={activeImage.url}
-              alt={product.name || 'Product'}
-              fill
-              sizes="100vw"
-              className="object-contain"
-            />
+            {failedIndex !== activeIndex ? (
+              <Image
+                src={activeImage.url}
+                alt={product.name || 'Product'}
+                fill
+                sizes="100vw"
+                className="object-contain"
+                onError={() => setFailedIndex(activeIndex)}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-8xl">🏥</span>
+              </div>
+            )}
           </div>
 
           {/* Next Button */}
