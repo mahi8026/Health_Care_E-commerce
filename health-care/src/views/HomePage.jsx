@@ -27,6 +27,7 @@ import {
 } from 'react-icons/fa';
 import { API } from '@/constants/api';
 import { fetchWithRetry } from '@/utils/api';
+import { useCart } from '@/context/CartContext';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
