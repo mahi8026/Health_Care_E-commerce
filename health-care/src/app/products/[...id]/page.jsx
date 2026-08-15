@@ -156,7 +156,7 @@ export default async function ProductPage({ params }) {
       {faqs             && <FAQSchema faqs={faqs} />}
 
       {/* <TrustBand /> */}
-      <ProductDetailPage productId={slug} heroPriority={true} />
+      <ProductDetailPage key={canonicalSlug} productId={slug} initialProduct={product} heroPriority={true} />
     </>
   );
 }

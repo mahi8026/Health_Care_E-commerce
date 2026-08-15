@@ -5,40 +5,89 @@ import { API as API_BASE } from '@/constants/api';
 import GA4Tracker from '@/services/GA4Tracker';
 
 /**
+ * Normalizes a raw API product into the shape ProductDetailPage expects
+ * (rating -> average/count, brand/category objects -> names + ids).
+ * Deterministic, so it can run during SSR for seeded products.
+ */
+function normalizeProduct(p) {
+  if (!p) return p;
+
+  // Normalize rating object
+  if (p.rating && typeof p.rating === 'object') {
+    p.reviewCount = p.reviewCount || p.rating.count || 0;
+    p.rating = p.rating.average || 0;
+  }
+
+  // Normalize brand object
+  if (p.brand && typeof p.brand === 'object') {
+    p.brandId = p.brand._id;
+    p.brandName = p.brand.name;
+    p.brand = p.brand.name;
+  }
+
+  // Normalize category object
+  if (p.category && typeof p.category === 'object') {
+    p.categoryId = p.category._id;
+    p.categoryName = p.category.name;
+  }
+
+  // Clean specifications (remove MongoDB operators)
+  if (p.specifications && typeof p.specifications === 'object') {
+    const cleanSpecs = {};
+    for (const [k, v] of Object.entries(p.specifications)) {
+      if (typeof k === 'string' && !k.startsWith('$') && typeof v !== 'object') {
+        cleanSpecs[k] = String(v);
+      }
+    }
+    p.specifications = cleanSpecs;
+  }
+
+  return p;
+}
+
+/**
  * Fetches product data by ID or slug and returns normalized product details.
- * 
+ *
+ * When `initialProduct` (already fetched server-side for SSR) is provided it
+ * is used directly — no network round trip — so the visible content is part
+ * of the initial HTML instead of waiting for a client fetch.
+ *
  * Handles data normalization for:
  * - Rating objects (converts to average + count)
  * - Brand objects (extracts name and ID)
  * - Category objects (extracts name and ID)
  * - Specifications cleanup (removes MongoDB operators)
- * 
+ *
  * Automatically tracks product views with GA4.
- * 
+ *
  * @param {string} productId - MongoDB ObjectId or URL slug
+ * @param {Object|null} [initialProduct] - server-fetched product to seed (SSR)
  * @returns {{ product: Object|null, loading: boolean, error: string|null }}
- * 
- * @example
- * const { product, loading, error } = useProductDetail('siemens-ecg-pro-12');
- * if (loading) return <Spinner />;
- * if (error) return <ErrorMessage message={error} />;
- * return <ProductDisplay product={product} />;
  */
-export function useProductDetail(productId) {
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+export function useProductDetail(productId, initialProduct = null) {
+  const [product, setProduct] = useState(() =>
+    initialProduct ? normalizeProduct({ ...initialProduct }) : null
+  );
+  const [loading, setLoading] = useState(!initialProduct);
   const [error, setError] = useState(null);
-  const fetchedRef = useRef(false);
+  const fetchedRef = useRef(Boolean(initialProduct));
+
+  // Seeded products (SSR) skip the network fetch but still get tracked.
+  useEffect(() => {
+    if (initialProduct && product) {
+      GA4Tracker.trackViewItem(product);
+    }
+  }, [initialProduct, product]);
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     // Guard against double-fetch in React 18 strict mode
     if (fetchedRef.current) {
       controller.abort();
       return;
     }
-    
+
     if (!productId) {
       Promise.resolve().then(() => {
         setError('No product selected.');
@@ -51,7 +100,7 @@ export function useProductDetail(productId) {
       try {
         setLoading(true);
         setError(null);
-        
+
         // If the slug contains a slash (legacy slug), pass it as a query param
         // because Express won't match encoded slashes (%2F) in path segments.
         // For normal slugs and MongoDB IDs, use the standard path format.
@@ -63,45 +112,15 @@ export function useProductDetail(productId) {
         }
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error('Product not found');
-        
+
         const data = await res.json();
-        const p = data.data || data.product || data;
-
-        // Normalize rating object
-        if (p.rating && typeof p.rating === 'object') {
-          p.reviewCount = p.reviewCount || p.rating.count || 0;
-          p.rating = p.rating.average || 0;
-        }
-
-        // Normalize brand object
-        if (p.brand && typeof p.brand === 'object') {
-          p.brandId = p.brand._id;
-          p.brandName = p.brand.name;
-          p.brand = p.brand.name;
-        }
-
-        // Normalize category object
-        if (p.category && typeof p.category === 'object') {
-          p.categoryId = p.category._id;
-          p.categoryName = p.category.name;
-        }
-
-        // Clean specifications (remove MongoDB operators)
-        if (p.specifications && typeof p.specifications === 'object') {
-          const cleanSpecs = {};
-          for (const [k, v] of Object.entries(p.specifications)) {
-            if (typeof k === 'string' && !k.startsWith('$') && typeof v !== 'object') {
-              cleanSpecs[k] = String(v);
-            }
-          }
-          p.specifications = cleanSpecs;
-        }
+        const p = normalizeProduct(data.data || data.product || data);
 
         setProduct(p);
-        
+
         // Track product view in GA4
         GA4Tracker.trackViewItem(p);
-        
+
         fetchedRef.current = true;
       } catch (err) {
         if (err.name === 'AbortError') return;

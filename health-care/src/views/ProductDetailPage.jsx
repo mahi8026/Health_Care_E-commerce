@@ -32,14 +32,14 @@ import ProductVideo from '@/components/product/ProductVideo';
 import { getRecommendations } from '@/utils/recommendations';
 import { API } from '@/constants/api';
 
-export default function ProductDetailPage({ productId, heroPriority = false }) {
+export default function ProductDetailPage({ productId, initialProduct = null, heroPriority = false }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToCart } = useCart();
   const id = productId || searchParams?.get('id');
 
-  // Use custom hook for data fetching
-  const { product, loading, error: fetchError } = useProductDetail(id);
+  // Use custom hook for data fetching (seeded from server when available)
+  const { product, loading, error: fetchError } = useProductDetail(id, initialProduct);
 
   // Recently viewed hook
   const { addToRecentlyViewed, recentlyViewed } = useRecentlyViewed();
