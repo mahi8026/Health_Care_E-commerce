@@ -50,6 +50,9 @@ const notoBengali = Noto_Sans_Bengali({
   subsets: ["bengali"],
   variable: "--font-noto-bengali",
   display: 'swap',
+  // Only used when html.lang-bn is active (Bengali UI toggle) — skip the
+  // 105KB preload on English pages; the font loads on demand when needed.
+  preload: false,
 });
 
 // Viewport configuration for mobile optimization
