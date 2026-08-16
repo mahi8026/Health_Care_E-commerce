@@ -123,7 +123,7 @@ export default function AboutPage() {
           <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
             Mediport Bangladesh Ltd. (MediportBD) is a DGDA-registered medical equipment
             supplier based on Topkhana Road, Dhaka. We supply diagnostic equipment,
-            surgical instruments, laboratory reagents and hospital machines to 500+
+            surgical instruments, laboratory reagents and hospital machines to
             hospitals, clinics and diagnostic centres across Bangladesh — with genuine
             products, transparent B2B pricing and service after the sale.
           </p>

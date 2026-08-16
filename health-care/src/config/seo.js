@@ -70,12 +70,12 @@ export const organization = {
 export const PAGE_SEO = {
   home: {
     title:       'MediportBD — Medical Equipment Supplier Bangladesh | DGDA Certified',
-    description: 'Buy medical equipment online in Bangladesh. 10,000+ products: ECG machines, diagnostic kits, surgical instruments, lab reagents. B2B discounts up to 30%. Free delivery Dhaka. DGDA registered.',
+    description: 'Buy medical equipment online in Bangladesh. 350+ products: ECG machines, diagnostic kits, surgical instruments, lab reagents. B2B discounts up to 30%. Free delivery Dhaka. DGDA registered.',
     keywords:    'medical equipment Bangladesh, buy medical equipment online BD, ECG machine Bangladesh, diagnostic equipment price Bangladesh',
   },
   products: {
     title:       'Medical Equipment & Supplies — MediportBD Bangladesh',
-    description: 'Browse 10,000+ medical products: diagnostic machines, surgical instruments, laboratory reagents, hospital equipment. Genuine brands. DGDA certified. B2B pricing available.',
+    description: 'Browse 350+ medical products: diagnostic machines, surgical instruments, laboratory reagents, hospital equipment. Genuine brands. DGDA certified. B2B pricing available.',
     keywords:    'medical supplies Bangladesh, buy surgical instruments online, lab equipment price BD',
   },
   reagentStore: {

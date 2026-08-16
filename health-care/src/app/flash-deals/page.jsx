@@ -11,7 +11,7 @@ export const metadata = {
     title: '🔥 Flash Deals — Limited Time Offers',
     description: 'Grab amazing deals on medical equipment. Limited stock, limited time!',
     url: `${SITE_CONFIG.url}/flash-deals`,
-    images: [{ url: '/og-flash-deals.png', width: 1200, height: 630, alt: 'Flash Deals — MediportBD' }],
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'Flash Deals — MediportBD' }],
   },
   twitter: {
     card: 'summary_large_image',

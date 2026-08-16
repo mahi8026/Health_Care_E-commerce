@@ -138,7 +138,7 @@ function B2BLanding() {
     : '350+';
   const totalB2BClients = siteStats?.totalB2BClients
     ? `${siteStats.totalB2BClients}+`
-    : '500+';
+    : '1+';
 
   const benefits = [
     { icon: 'ðŸ’°', title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },

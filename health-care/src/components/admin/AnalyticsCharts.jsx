@@ -25,6 +25,10 @@ export default function AnalyticsCharts() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      {/* Sample-data notice */}
+      <div className="sm:col-span-2 bg-[var(--color-status-warning-tint)] rounded-lg px-4 py-2.5 text-xs text-[var(--color-status-warning)]">
+        Sample data — live analytics charts are coming soon.
+      </div>
       {/* Monthly Revenue Table */}
       <div className="bg-white rounded-lg p-5 border-[0.5px] border-[var(--color-border-tertiary)]">
         <h3 className="text-sm font-semibold mb-4 font-[family-name:var(--font-plus-jakarta)]">

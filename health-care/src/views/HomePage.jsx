@@ -657,7 +657,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
   const [activeTab, setActiveTab] = useState('all');
   const [newArrivals, setNewArrivals] = useState(() => initialData?.newArrivals?.length ? initialData.newArrivals : []);
   const [promo, setPromo] = useState(() => initialData?.activePromo || null);
-  const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+  const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 40, totalOrders: 0, totalB2BClients: 1 });
   const [testimonials, setTestimonials] = useState(() => initialData?.testimonials?.length ? initialData.testimonials : []);
   const [siteSettings, setSiteSettings] = useState(() => initialSettings);
   const [heroSlides, setHeroSlides] = useState(() => initialSettings?.heroSlides?.length
@@ -743,7 +743,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
           setNewArrivals(Array.isArray(data.newArrivals) ? data.newArrivals : []);
           setTestimonials(Array.isArray(data.testimonials) ? data.testimonials : []);
           setPromo(data.activePromo || null);
-          setStats(data.stats || { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+          setStats(data.stats || { totalProducts: 0, totalBrands: 40, totalOrders: 0, totalB2BClients: 1 });
 
           // Update all loading states
           setFeaturedLoading(false);
@@ -1444,7 +1444,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
               {B2B_STATS.map((s, i) => ({
                 ...s,
                 val: i === 0
-                  ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '500+')
+                  ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1+')
                   : s.val,
               })).map(s => (
                 <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
