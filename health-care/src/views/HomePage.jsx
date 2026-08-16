@@ -643,23 +643,27 @@ const HOME_STYLES = `
         }
       `;
 
-export default function HomePage() {
+export default function HomePage({ initialData = null, initialSettings = null }) {
   const router = useRouter();
   const t = useT();
 
   // ── State ──────────────────────────────────────────────────────────────────
-  const [categories, setCategories] = useState([]);
-  const [categoryCounts, setCategoryCounts] = useState({});
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [featuredLoading, setFeaturedLoading] = useState(true);
+  // Seeded from server-rendered (ISR) data when available — SSR HTML contains
+  // the full home content instead of an empty skeleton.
+  const [categories, setCategories] = useState(() => initialData?.categories?.length ? initialData.categories : []);
+  const [categoryCounts, setCategoryCounts] = useState(() => initialData?.categoryCounts || {});
+  const [featuredProducts, setFeaturedProducts] = useState(() => initialData?.featuredProducts?.length ? initialData.featuredProducts : []);
+  const [featuredLoading, setFeaturedLoading] = useState(() => !initialData);
   const [activeTab, setActiveTab] = useState('all');
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [promo, setPromo] = useState(null);
-  const [stats, setStats] = useState({ totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
-  const [testimonials, setTestimonials] = useState([]);
-  const [siteSettings, setSiteSettings] = useState(null);
-  const [heroSlides, setHeroSlides] = useState([]);
-  const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
+  const [newArrivals, setNewArrivals] = useState(() => initialData?.newArrivals?.length ? initialData.newArrivals : []);
+  const [promo, setPromo] = useState(() => initialData?.activePromo || null);
+  const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 50, totalOrders: 0, totalB2BClients: 1200 });
+  const [testimonials, setTestimonials] = useState(() => initialData?.testimonials?.length ? initialData.testimonials : []);
+  const [siteSettings, setSiteSettings] = useState(() => initialSettings);
+  const [heroSlides, setHeroSlides] = useState(() => initialSettings?.heroSlides?.length
+    ? initialSettings.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order)
+    : []);
+  const [newArrivalsLoading, setNewArrivalsLoading] = useState(() => !initialData);
 
   // ── Memoized Values ────────────────────────────────────────────────────────
   const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
@@ -692,6 +696,8 @@ export default function HomePage() {
 
   // Load banner settings (deduped/cached via fetchWithRetry)
   useEffect(() => {
+    if (initialSettings) return;
+
     const loadBanners = async () => {
       try {
         const res = await fetchWithRetry(`${API}/settings`);
@@ -707,12 +713,13 @@ export default function HomePage() {
       }
     };
     loadBanners();
-  }, []);
+  }, [initialSettings]);
 
   // ══════════════════════════════════════════════════════════════════════════════
   // OPTIMIZED DATA FETCHING - Single aggregated endpoint instead of 15+ calls
   // ══════════════════════════════════════════════════════════════════════════════
   useEffect(() => {
+    if (initialData) return;
     let isMounted = true;
 
     const fetchHomeData = async () => {
@@ -763,7 +770,7 @@ export default function HomePage() {
     fetchHomeData();
 
     return () => { isMounted = false; };
-  }, []);
+  }, [initialData]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 

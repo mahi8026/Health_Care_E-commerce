@@ -25,18 +25,47 @@ export const metadata = {
   },
 };
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce-ubyy.onrender.com/api';
+
+/**
+ * Fetch home data + settings server-side with ISR (5-min revalidation).
+ * Failure-safe: any error returns null and HomePage falls back to its own
+ * client-side fetch — the page never blocks on the backend.
+ */
+async function fetchJson(url) {
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Homepage — Server Component.
- * Schema injected server-side; data fetched client-side via HomePage.
- * Server-rendered guide band below links to the /guides content hub
- * (topical authority + internal linking from the highest-authority page).
+ * Home data + settings fetched server-side (ISR) so the initial HTML contains
+ * the full home content (hero slides, categories, featured, stats); HomePage
+ * seeds its state from these props and skips its own client fetch.
+ * Schema injected server-side; server-rendered guide band below links to the
+ * /guides content hub (topical authority + internal linking).
  */
-export default function Home() {
+export default async function Home() {
+  const [homeRes, settingsRes] = await Promise.all([
+    fetchJson(`${API_BASE}/home/data`),
+    fetchJson(`${API_BASE}/settings`),
+  ]);
+  const homeData = homeRes?.success ? homeRes.data : null;
+  const settings = settingsRes?.data || null;
+
   return (
     <>
       <StructuredData schema={generateOrganizationSchema()} />
       <StructuredData schema={generateWebSiteSchema()} />
-      <HomePage />
+      <HomePage initialData={homeData} initialSettings={settings} />
 
       {/* Server-rendered SEO content band — answer-first + internal links */}
       <section className="bg-white border-t border-[var(--color-border-primary)] py-12 px-4">

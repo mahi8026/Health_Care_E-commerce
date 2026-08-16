@@ -194,9 +194,16 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         {/* Stock badge - Top Right (optional) - Compact */}
         {showStockBadge && (
           <div className={`absolute top-1 right-7 px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm ${
-            product.stock > 0 ? 'bg-[var(--color-status-success-tint)] text-white' : 'bg-[var(--color-status-danger-tint)] text-white'
+            product.stock > 0
+              ? product.stock <= (product.lowStockThreshold || 10)
+                ? 'bg-warning text-white'
+                : 'bg-[var(--color-status-success-tint)] text-white'
+              : 'bg-[var(--color-status-danger-tint)] text-white'
           }`}>
-            {product.stock > 0 ? `${product.stock > 99 ? '99+' : product.stock}` : 'Out'}
+            {product.stock <= 0 ? 'Out'
+              : product.stock <= (product.lowStockThreshold || 10)
+                ? `Only ${product.stock} left`
+                : product.stock > 99 ? '99+' : `${product.stock} in stock`}
           </div>
         )}
         
