@@ -30,7 +30,8 @@ import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import RecentlyViewed from '@/components/product/RecentlyViewed';
 import ProductVideo from '@/components/product/ProductVideo';
 import { getRecommendations } from '@/utils/recommendations';
-import { API } from '@/constants/api';
+import { API, CONTACT } from '@/constants/api';
+import { FaWhatsapp } from 'react-icons/fa';
 
 export default function ProductDetailPage({ productId, initialProduct = null, heroPriority = false }) {
   const router = useRouter();
@@ -463,6 +464,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
             {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
           </div>
         </div>
+        {product.price > 0 ? (
         <button
           onClick={() => {
             // Validate size selection if product has sizes
@@ -487,6 +489,19 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
             </>
           ) : '🛒 Add to Cart'}
         </button>
+        ) : (
+          <a
+            href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
+              `Hi MediportBD, I'd like to know the price of ${product.name}${product.sku ? ` (SKU: ${product.sku})` : ''}.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[var(--color-status-success)] text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2 min-w-[130px] justify-center"
+          >
+            <FaWhatsapp size={16} />
+            Ask Price
+          </a>
+        )}
       </div>
     </div>
   );

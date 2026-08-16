@@ -21,7 +21,8 @@ import {
   FaMinus,
   FaPlus,
   FaBolt,
-  FaAward
+  FaAward,
+  FaTools
 } from 'react-icons/fa';
 
 /**
@@ -78,6 +79,17 @@ export default function ProductInfoPanelEnhanced({
     : (hasRegularDiscount ? Math.round((savings / product.oldPrice) * 100) : 0);
   
   const hasDiscount = hasB2BDiscount || hasRegularDiscount;
+
+  // Products without a published price get a WhatsApp price-request CTA
+  const unpriced = finalPrice <= 0;
+  const waPriceMsg = encodeURIComponent(
+    `Hi MediportBD, I'd like to know the price of ${product.name}${product.sku ? ` (SKU: ${product.sku})` : ''}.`
+  );
+  const waPriceLink = `https://wa.me/${CONTACT.whatsapp}?text=${waPriceMsg}`;
+  const waAmcMsg = encodeURIComponent(
+    `Hi MediportBD, I'd like an Annual Maintenance Contract (AMC) quote for ${product.name}${product.sku ? ` (SKU: ${product.sku})` : ''}.`
+  );
+  const waAmcLink = `https://wa.me/${CONTACT.whatsapp}?text=${waAmcMsg}`;
 
   const handleAddToCart = async () => {
     setAddingToCart(true);
@@ -305,7 +317,22 @@ export default function ProductInfoPanelEnhanced({
 
       {/* CTA Buttons */}
       <div className="space-y-2.5">
-        {inStock ? (
+        {unpriced ? (
+          <>
+            <a
+              href={waPriceLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-6 bg-gradient-to-r from-[var(--color-status-success)] to-[var(--color-status-success)] hover:from-[var(--color-status-success-tint)] hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-xl flex items-center justify-center gap-2.5"
+            >
+              <FaWhatsapp size={20} />
+              <span>Ask Price on WhatsApp</span>
+            </a>
+            <p className="text-xs text-[var(--color-text-secondary)] text-center">
+              Get the best price — we usually reply within minutes (Mon–Sat, 9am–9pm)
+            </p>
+          </>
+        ) : inStock ? (
           <>
             <button
               onClick={handleAddToCart}
@@ -419,6 +446,27 @@ export default function ProductInfoPanelEnhanced({
             <div className="text-sm font-semibold text-[var(--color-text-primary)]">Warranty Included</div>
             <div className="text-sm text-[var(--color-text-secondary)]">{product.warranty} manufacturer warranty</div>
           </div>
+        </div>
+      )}
+
+      {/* Annual Maintenance Contract (AMC) — shown when the product is flagged */}
+      {product.hasAMC && (
+        <div className="flex items-center gap-3 p-4 bg-purple-50 border border-purple-200 rounded-xl">
+          <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+            <FaTools className="text-purple-600" size={20} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold text-[var(--color-text-primary)]">AMC Available</div>
+            <div className="text-sm text-[var(--color-text-secondary)]">Annual maintenance contract & priority support</div>
+          </div>
+          <a
+            href={waAmcLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold transition-colors"
+          >
+            Request Quote
+          </a>
         </div>
       )}
     </div>
