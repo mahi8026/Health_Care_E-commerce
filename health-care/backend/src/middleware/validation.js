@@ -142,7 +142,7 @@ const validateProductQuery = [
   query('brand').optional().trim().escape(),
   query('search').optional().trim().escape().isLength({ max: 200 }).withMessage('Search term too long'),
   query('slug').optional().trim(),
-  query('sort').optional().isIn(['price_asc', 'price_desc', 'name_asc', 'name_desc', 'newest', 'rating'])
+  query('sort').optional().isIn(['price_asc', 'price_desc', 'name_asc', 'name_desc', 'newest', 'rating', 'popular', 'topSelling', 'price-low', 'price-high', 'name'])
     .withMessage('Invalid sort option'),
   query('fields').optional().trim().matches(/^[a-zA-Z0-9_,\s-]+$/).withMessage('Invalid fields parameter'),
   handleValidationErrors

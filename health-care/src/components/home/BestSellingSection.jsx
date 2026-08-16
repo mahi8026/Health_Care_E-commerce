@@ -92,7 +92,7 @@ export default function BestSellingSection() {
 
   // Handler for "See All" button
   const handleSeeAll = () => {
-    router.push('/products?sortBy=topSelling');
+    router.push('/products?sort=topSelling');
   };
 
   // Don't render if no products and not loading

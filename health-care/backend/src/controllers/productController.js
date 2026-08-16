@@ -30,6 +30,7 @@ const SORT_CONFIGS = {
   newest: { key: 'createdAt', dir: -1 },
   rating: { key: 'rating.average', dir: -1 },
   popular: { key: 'soldCount', dir: -1 },
+  topSelling: { key: 'soldCount', dir: -1 },
 };
 const DEFAULT_SORT = { key: 'createdAt', dir: -1 };
 
@@ -124,13 +125,14 @@ exports.getProducts = async (req, res) => {
       outOfStock,
       isFeatured,
       isActive,
-      sortBy,
       page = 1,
       limit = 20,
       cursor, // For cursor-based pagination
       fields, // For field filtering
       slug,   // Direct slug lookup for legacy slugs containing '/'
-    } = req.query;
+} = req.query;
+
+    const sortBy = req.query.sortBy || req.query.sort;
 
     // ── Direct slug lookup (for legacy slugs containing forward slashes) ─────
     // When ?slug=some/slug/with/slashes is passed, return the single product.
