@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import ReagentFilters from '@/components/reagent/ReagentFilters';
 import ReagentToolbar from '@/components/reagent/ReagentToolbar';
 import ReagentGrid from '@/components/reagent/ReagentGrid';
+import Pagination from '@/components/ui/Pagination';
 import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API as API_BASE } from '@/constants/api';
@@ -65,9 +66,25 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const debouncedSearch = useDebounce(searchQuery, 400);
+
+  // Reset to page 1 whenever filters, search or sort change
+  const handleFiltersChange = (f) => {
+    setFilters(f);
+    setPage(1);
+  };
+  const handleSearchChange = (q) => {
+    setSearchQuery(q);
+    setPage(1);
+  };
+  const handleSortChange = (s) => {
+    setSortBy(s);
+    setPage(1);
+  };
 
   const fetchReagents = useCallback(async (signal) => {
     setLoading(true);
@@ -76,6 +93,8 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       let params = new URLSearchParams({
         limit: '48', // Show more products
       });
+
+      params.set('page', String(page));
 
       // Default filter: Show only "Laboratory Reagents" category products
       // This filter is overridden if user selects different categories or searches
@@ -139,7 +158,9 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       }
 
       setReagents(Array.isArray(list) ? list : []);
-      setTotal(data.data?.total ?? data.total ?? data.pagination?.total ?? (Array.isArray(list) ? list.length : 0));
+      const pagination = data.pagination;
+      setTotal(pagination?.total ?? data.data?.total ?? data.total ?? (Array.isArray(list) ? list.length : 0));
+      setTotalPages(pagination?.totalPages ?? Math.ceil((pagination?.total ?? list.length) / 48));
     } catch (err) {
       if (err.name !== 'AbortError') {
         if (process.env.NODE_ENV === 'development') console.error('Fetch reagents error:', err);
@@ -147,10 +168,11 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       }
       setReagents([]);
       setTotal(0);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
-  }, [filters, debouncedSearch, sortBy]);
+  }, [filters, debouncedSearch, sortBy, page]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -195,7 +217,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
           {/* Desktop sidebar */}
           <aside className="hidden lg:block w-[260px] flex-shrink-0">
             <div className="sticky top-[62px] max-h-[calc(100vh-78px)] overflow-y-auto">
-              <ReagentFilters filters={filters} setFilters={setFilters} />
+              <ReagentFilters filters={filters} setFilters={handleFiltersChange} />
             </div>
           </aside>
 
@@ -212,7 +234,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                     </svg>
                   </button>
                 </div>
-                <ReagentFilters filters={filters} setFilters={(f) => { setFilters(f); setMobileFiltersOpen(false); }} />
+                <ReagentFilters filters={filters} setFilters={(f) => { handleFiltersChange(f); setMobileFiltersOpen(false); }} />
               </div>
             </div>
           )}
@@ -238,9 +260,9 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
 
             <ReagentToolbar
               searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
+              setSearchQuery={handleSearchChange}
               sortBy={sortBy}
-              setSortBy={setSortBy}
+              setSortBy={handleSortChange}
               totalCount={total}
               loading={loading}
             />
@@ -281,7 +303,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                 </p>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => { setFilters({ brands: [], categories: [], temperature: [], hazards: [], priceRange: 50000 }); setSearchQuery(''); }}
+                    onClick={() => { setFilters({ brands: [], categories: [], temperature: [], hazards: [], priceRange: 50000 }); setSearchQuery(''); setPage(1); }}
                     className="px-5 py-2.5 bg-white border border-[var(--color-border-primary)] text-brand-navy rounded-xl text-sm font-semibold hover:shadow-md transition-all"
                   >
                     Clear All
@@ -295,7 +317,21 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                 </div>
               </div>
             ) : (
-              <ReagentGrid reagents={reagents} onProductClick={handleProductClick} />
+              <>
+                <ReagentGrid reagents={reagents} onProductClick={handleProductClick} />
+                {totalPages > 1 && (
+                  <div className="mt-8">
+                    <Pagination
+                      currentPage={page}
+                      totalPages={totalPages}
+                      onPageChange={(p) => {
+                        setPage(p);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </main>
         </div>
