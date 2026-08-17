@@ -2,30 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import AdminShell from '@/components/admin/AdminShell';
+import api from '@/utils/api';
 
 export default function SMSSettingsPage() {
   const [config, setConfig] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [testPhone, setTestPhone] = useState('');
   const [testLoading, setTestLoading] = useState(false);
   const [testResult, setTestResult] = useState(null);
 
   const fetchConfig = async () => {
     try {
-      const token = localStorage.getItem('Mediport_token');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sms/config`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
+      const data = await api.get('/sms/config');
       if (data.success) {
         setConfig(data.config);
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Failed to fetch SMS config:', error);
+      setError(error.message || 'Failed to fetch SMS config');
     } finally {
       setLoading(false);
     }
@@ -33,19 +28,12 @@ export default function SMSSettingsPage() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('Mediport_token');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sms/stats`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
+      const data = await api.get('/sms/stats');
       if (data.success) {
         setStats(data.stats);
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Failed to fetch SMS stats:', error);
+      setError(error.message || 'Failed to fetch SMS stats');
     }
   };
 
@@ -62,27 +50,16 @@ export default function SMSSettingsPage() {
     setTestResult(null);
 
     try {
-      const token = localStorage.getItem('Mediport_token');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sms/test`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ phone: testPhone })
-      });
-
-      const data = await response.json();
+      const data = await api.post('/sms/test', { phone: testPhone });
       setTestResult(data);
-      
+
       if (data.success) {
         setTestPhone('');
       }
     } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Test SMS error:', error);
       setTestResult({
         success: false,
-        message: 'Failed to send test SMS'
+        message: error.message || 'Failed to send test SMS'
       });
     } finally {
       setTestLoading(false);
@@ -106,6 +83,15 @@ export default function SMSSettingsPage() {
           <h1 className="text-2xl md:text-3xl font-semibold text-text-primary">SMS Configuration</h1>
           <p className="text-[var(--color-text-secondary)] mt-1">Manage SMS service settings and send test messages</p>
         </div>
+
+        {error && (
+          <div className="mb-6 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] px-4 py-3 rounded-lg flex items-start">
+            <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
 
         {/* Configuration Card */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
