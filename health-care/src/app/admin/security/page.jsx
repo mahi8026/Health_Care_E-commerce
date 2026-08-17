@@ -55,8 +55,8 @@ export default function SecuritySettingsPage() {
       const data = await handleResponse(response);
       
       if (data.success) {
-        setTwoFactorStatus(data.data);
-        setSetupStep(data.data.isEnabled ? 'complete' : 'check');
+        setTwoFactorStatus(data.status);
+        setSetupStep(data.status?.isEnabled ? 'complete' : 'check');
       } else {
         setError(data.message || 'Failed to fetch 2FA status');
       }
@@ -89,8 +89,8 @@ export default function SecuritySettingsPage() {
       const data = await api.post('/auth/2fa/setup', {});
       
       if (data.success) {
-        setQrCode(data.data.qrCode);
-        setSecret(data.data.secret);
+        setQrCode(data.qrCode);
+        setSecret(data.secret);
         setSetupStep('verify');
       } else {
         setError(data.message || 'Failed to setup 2FA');
