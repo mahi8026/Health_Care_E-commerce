@@ -1,7 +1,7 @@
 'use client';
 import { confirmAction } from '@/components/ui/ConfirmDialog';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AccountPageShell from '@/components/account/AccountPageShell';
 import { useAuth } from '@/context/AuthContext';
@@ -37,20 +37,20 @@ export default function SecurityPage() {
   const [twoFactorMessage, setTwoFactorMessage] = useState({ text: '', type: '' });
 
   // Load 2FA status on mount
-  useState(() => {
+  useEffect(() => {
     const load = async () => {
       try {
         const data = await api.get('/auth/2fa/status');
         if (data.success) {
-          setTwoFactorStatus(data.data);
-          setSetupStep(data.data?.isEnabled ? 'complete' : 'idle');
+          setTwoFactorStatus(data.status);
+          setSetupStep(data.status?.isEnabled ? 'complete' : 'idle');
         }
       } catch {
         // 2FA status unavailable — silently ignore
       }
     };
     load();
-  });
+  }, []);
 
   const handleSetup2FA = async () => {
     setTwoFactorLoading(true);
@@ -58,8 +58,8 @@ export default function SecurityPage() {
     try {
       const data = await api.post('/auth/2fa/setup', {});
       if (data.success) {
-        setQrCode(data.data.qrCode);
-        setSecret(data.data.secret);
+        setQrCode(data.qrCode);
+        setSecret(data.secret);
         setSetupStep('verify');
       } else {
         setTwoFactorMessage({ text: data.message || 'Failed to setup 2FA', type: 'error' });
