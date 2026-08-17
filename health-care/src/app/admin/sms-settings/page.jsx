@@ -168,11 +168,13 @@ export default function SMSSettingsPage() {
                 <div>
                   <h3 className="font-semibold text-[var(--color-status-warning)]">SMS Service Not Configured</h3>
                   <p className="text-sm text-[var(--color-status-warning)] mt-1">
-                    Please add SMS_API_KEY to your environment variables to enable SMS functionality.
+                    Please add {config?.missingEnvVars?.length ? config.missingEnvVars.join(', ') : 'the provider credentials'} to your environment variables to enable SMS functionality.
                   </p>
-                  <p className="text-sm text-[var(--color-status-warning)] mt-2">
-                    Get your API key from <a href="https://sslwireless.com" target="_blank" rel="noopener noreferrer" className="underline">SSL Wireless</a>
-                  </p>
+                  {config?.provider === 'SSL Wireless' && (
+                    <p className="text-sm text-[var(--color-status-warning)] mt-2">
+                      Get your API key from <a href="https://sslwireless.com" target="_blank" rel="noopener noreferrer" className="underline">SSL Wireless</a>
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

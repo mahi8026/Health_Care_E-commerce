@@ -1,5 +1,5 @@
 ﻿const logger = require('../utils/logger');
-const { sendTestSMS, maskPhoneNumber } = require('../services/smsService');
+const { sendTestSMS, maskPhoneNumber, getSMSProviderStatus } = require('../services/smsService');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 /**
@@ -9,11 +9,13 @@ const { successResponse, errorResponse } = require('../utils/responseHelper');
  */
 exports.getSMSConfig = async (req, res) => {
   try {
+    const { provider, isConfigured, missingEnvVars } = getSMSProviderStatus();
     const config = {
-      provider: 'SSL Wireless',
+      provider,
       senderId: process.env.SMS_SENDER_ID || 'MediportBD',
-      isConfigured: !!process.env.SMS_API_KEY,
-      adminPhone: process.env.ADMIN_PHONE ? maskPhoneNumber(process.env.ADMIN_PHONE) : null
+      isConfigured,
+      adminPhone: process.env.ADMIN_PHONE ? maskPhoneNumber(process.env.ADMIN_PHONE) : null,
+      ...(missingEnvVars.length > 0 && { missingEnvVars })
     };
 
     return successResponse(res, config);
@@ -92,10 +94,11 @@ exports.getSMSStats = async (req, res) => {
   try {
     // In a production environment, you would track SMS sends in a separate collection
     // For now, return basic stats
+    const { provider, isConfigured } = getSMSProviderStatus();
     
     const stats = {
-      isConfigured: !!process.env.SMS_API_KEY,
-      provider: 'SSL Wireless',
+      isConfigured,
+      provider,
       senderId: process.env.SMS_SENDER_ID || 'MediportBD',
       // These would come from a tracking collection in production
       totalSent: 0,

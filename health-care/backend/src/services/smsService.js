@@ -266,6 +266,34 @@ async function sendSMS(phone, message) {
 }
 
 /**
+ * Resolve the active SMS provider and whether it is fully configured.
+ * @returns {{ provider: string, isConfigured: boolean, missingEnvVars: string[] }}
+ */
+function getSMSProviderStatus() {
+  const provider = (process.env.SMS_PROVIDER || 'mock').toLowerCase();
+
+  switch (provider) {
+    case 'twilio': {
+      const missing = [];
+      if (!process.env.TWILIO_ACCOUNT_SID) missing.push('TWILIO_ACCOUNT_SID');
+      if (!process.env.TWILIO_AUTH_TOKEN && !process.env.TWILIO_API_KEY_SID) missing.push('TWILIO_AUTH_TOKEN or TWILIO_API_KEY_SID');
+      if (!process.env.TWILIO_PHONE_NUMBER) missing.push('TWILIO_PHONE_NUMBER');
+      return { provider: 'Twilio', isConfigured: missing.length === 0, missingEnvVars: missing };
+    }
+    case 'ssl_wireless':
+    case 'ssl': {
+      const missing = [];
+      if (!process.env.SMS_API_KEY) missing.push('SMS_API_KEY');
+      return { provider: 'SSL Wireless', isConfigured: missing.length === 0, missingEnvVars: missing };
+    }
+    case 'mock':
+    case 'development':
+    default:
+      return { provider: 'Mock (dev)', isConfigured: true, missingEnvVars: [] };
+  }
+}
+
+/**
  * Send OTP via SMS
  * @param {String} phone - Recipient phone number
  * @param {String} otp - 6-digit OTP code
@@ -363,6 +391,7 @@ module.exports = {
   sendLowStockAlertSMS,
   sendTestSMS,
   sendSMSAsync,
+  getSMSProviderStatus,
   formatPhoneNumber,
   maskPhoneNumber
 };
