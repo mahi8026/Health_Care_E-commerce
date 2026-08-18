@@ -18,7 +18,6 @@ const MAIN_LINKS = [
   { label: 'All Products', path: '/products' },
   { label: 'Reagent Store', path: '/reagent-store', icon: <FaFlask size={13} /> },
   { label: 'B2B Portal', path: '/b2b', icon: <FaBuilding size={13} /> },
-  { label: 'Track Order', path: '/track' },
 ];
 
 const CATEGORY_ICON_MAP = {

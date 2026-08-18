@@ -85,7 +85,6 @@ const CATEGORY_DESC = {
 
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
-  { label: 'trackOrder', href: '/track' },
 ];
 
 const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate }) {
