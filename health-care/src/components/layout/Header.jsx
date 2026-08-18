@@ -85,6 +85,7 @@ const CATEGORY_DESC = {
 
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
+  { label: 'trackOrder', href: '/track' },
 ];
 
 const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, onCartClick, onNavigate }) {
@@ -239,7 +240,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
           <div className="hidden md:block nav-divider" />
 
-          {/* Tablet/Mobile Horizontal Nav (md to lg) */}
+          {/* Tablet/Mobile Horizontal Nav (md to lg) - Exclude Track Order */}
           <nav className="flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 px-2" aria-label="Main navigation">
             <button
               onClick={() => router.push('/products')}
@@ -248,19 +249,17 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             >
               {t('nav.products')}
             </button>
-            {NAV_LINKS.map(({ label, href }) => (
-              <button
-                key={href}
-                onClick={() => router.push(href)}
-                className={`nav-link-mobile whitespace-nowrap ${isActive(href) ? 'nav-link-active' : ''}`}
-                aria-current={isActive(href) ? 'page' : undefined}
-              >
-                {t(`nav.${label}`)}
-              </button>
-            ))}
+            {/* Only show Reagent Store on mobile/tablet, not Track Order */}
+            <button
+              onClick={() => router.push('/reagent-store')}
+              className={`nav-link-mobile whitespace-nowrap ${isActive('/reagent-store') ? 'nav-link-active' : ''}`}
+              aria-current={isActive('/reagent-store') ? 'page' : undefined}
+            >
+              {t('nav.reagentStore')}
+            </button>
           </nav>
 
-          {/* Desktop Nav (lg+) */}
+          {/* Desktop Nav (lg+) - Shows all links including Track Order */}
           <nav className="hidden lg:flex items-center gap-0.5 flex-1" aria-label="Main navigation">
             <div className="relative" ref={megaMenuRef}>
               <button
