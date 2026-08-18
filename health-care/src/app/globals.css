@@ -876,9 +876,9 @@ html.nav-scrolled .site-nav-shell::after {
 /* Mobile/Tablet Nav Links (md to lg screens) */
 .nav-link-mobile {
   position: relative;
-  padding: 0.4rem 0.8rem;
+  padding: 0.35rem 0.65rem;
   border-radius: 0.5rem;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
   background: rgba(255, 255, 255, 0.08);
@@ -894,26 +894,39 @@ html.nav-scrolled .site-nav-shell::after {
   flex-shrink: 0;
 }
 
-/* Reagent Store button same styling as Products */
+/* Reagent button same styling as Products */
 .nav-link-mobile--reagent {
-  padding: 0.4rem 0.8rem;
-  font-size: 11px;
+  padding: 0.35rem 0.65rem;
+  font-size: 10.5px;
 }
 
-/* Tablet and up: slightly larger */
-@media (min-width: 768px) {
+/* Small phones: extra compact */
+@media (min-width: 375px) {
   .nav-link-mobile {
-    font-size: 12px;
-    padding: 0.45rem 1rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 11px;
   }
   
   .nav-link-mobile--reagent {
-    padding: 0.45rem 1rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 11px;
+  }
+}
+
+/* Tablet: comfortable size */
+@media (min-width: 640px) {
+  .nav-link-mobile {
+    font-size: 12px;
+    padding: 0.45rem 0.95rem;
+  }
+  
+  .nav-link-mobile--reagent {
+    padding: 0.45rem 0.95rem;
     font-size: 12px;
   }
 }
 
-/* Large tablet: even more comfortable */
+/* Large tablet: full size */
 @media (min-width: 900px) {
   .nav-link-mobile {
     font-size: 12.5px;

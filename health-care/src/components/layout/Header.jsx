@@ -256,7 +256,8 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               aria-current={isActive('/reagent-store') ? 'page' : undefined}
               title="Reagent Store"
             >
-              Reagents
+              <span className="inline sm:hidden">Reagent</span>
+              <span className="hidden sm:inline">Reagent Store</span>
             </button>
           </nav>
 
