@@ -873,6 +873,40 @@ html.nav-scrolled .site-nav-shell::after {
   box-shadow: 0 0 6px rgba(77, 219, 184, 0.6);
 }
 
+/* Mobile/Tablet Nav Links (md to lg screens) */
+.nav-link-mobile {
+  position: relative;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.5rem;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition:
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.nav-link-mobile:hover {
+  color: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.nav-link-mobile.nav-link-active {
+  color: var(--glass-teal) !important;
+  font-weight: 600;
+  background: rgba(14, 138, 110, 0.16) !important;
+  border-color: rgba(77, 219, 184, 0.35) !important;
+  box-shadow: 0 0 12px rgba(77, 219, 184, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
 .nav-icon-btn {
   width: 2.25rem;
   height: 2.25rem;

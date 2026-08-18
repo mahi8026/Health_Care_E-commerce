@@ -240,7 +240,28 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
           <div className="hidden md:block nav-divider" />
 
-          {/* Desktop Nav */}
+          {/* Tablet/Mobile Horizontal Nav (md to lg) */}
+          <nav className="flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 px-2" aria-label="Main navigation">
+            <button
+              onClick={() => router.push('/products')}
+              className={`nav-link-mobile whitespace-nowrap ${isActive('/products') ? 'nav-link-active' : ''}`}
+              aria-current={isActive('/products') ? 'page' : undefined}
+            >
+              {t('nav.products')}
+            </button>
+            {NAV_LINKS.map(({ label, href }) => (
+              <button
+                key={href}
+                onClick={() => router.push(href)}
+                className={`nav-link-mobile whitespace-nowrap ${isActive(href) ? 'nav-link-active' : ''}`}
+                aria-current={isActive(href) ? 'page' : undefined}
+              >
+                {t(`nav.${label}`)}
+              </button>
+            ))}
+          </nav>
+
+          {/* Desktop Nav (lg+) */}
           <nav className="hidden lg:flex items-center gap-0.5 flex-1" aria-label="Main navigation">
             <div className="relative" ref={megaMenuRef}>
               <button
