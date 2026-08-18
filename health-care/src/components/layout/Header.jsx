@@ -215,7 +215,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
         }
       `}</style>
       <header className="glass-nav">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-[52px] nav-header-row gap-2 md:gap-3">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 md:px-6 h-[52px] nav-header-row gap-1.5 sm:gap-2 md:gap-3">
 
           {/* Logo */}
           <button
@@ -241,13 +241,13 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           <div className="hidden md:block nav-divider" />
 
           {/* Tablet/Mobile Horizontal Nav (md to lg) - Exclude Track Order */}
-          <nav className="flex lg:hidden items-center gap-3 overflow-x-auto scrollbar-hide flex-1 px-2" aria-label="Main navigation">
+          <nav className="flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0" aria-label="Main navigation">
             <button
               onClick={() => router.push('/products')}
               className={`nav-link-mobile whitespace-nowrap ${isActive('/products') ? 'nav-link-active' : ''}`}
               aria-current={isActive('/products') ? 'page' : undefined}
             >
-              {t('nav.products')}
+              Products
             </button>
             {/* Only show Reagent Store on mobile/tablet, not Track Order */}
             <button
@@ -256,7 +256,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               aria-current={isActive('/reagent-store') ? 'page' : undefined}
               title="Reagent Store"
             >
-              {t('nav.reagentStore')}
+              Reagents
             </button>
           </nav>
 
