@@ -255,7 +255,8 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               className={`nav-link-mobile whitespace-nowrap ${isActive('/reagent-store') ? 'nav-link-active' : ''}`}
               aria-current={isActive('/reagent-store') ? 'page' : undefined}
             >
-              {t('nav.reagentStore')}
+              <span className="hidden sm:inline">{t('nav.reagentStore')}</span>
+              <span className="sm:hidden">Reagents</span>
             </button>
           </nav>
 
