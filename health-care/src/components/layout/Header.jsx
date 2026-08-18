@@ -241,7 +241,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           <div className="hidden md:block nav-divider" />
 
           {/* Tablet/Mobile Horizontal Nav (md to lg) - Exclude Track Order */}
-          <nav className="flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 px-2" aria-label="Main navigation">
+          <nav className="flex lg:hidden items-center gap-3 overflow-x-auto scrollbar-hide flex-1 px-2" aria-label="Main navigation">
             <button
               onClick={() => router.push('/products')}
               className={`nav-link-mobile whitespace-nowrap ${isActive('/products') ? 'nav-link-active' : ''}`}

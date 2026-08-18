@@ -100,14 +100,14 @@ export default function TopBar() {
       </div>
 
       {/* Right links */}
-      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2 sm:ml-4">
+      <div className="flex items-center gap-3 sm:gap-3 flex-shrink-0 ml-2 sm:ml-4">
         {/* Track Order - Always visible, icon only on mobile */}
         <Link
           href="/track"
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5"
           title="Track Order"
         >
-          <FaTruck size={16} className="sm:hidden" />
+          <FaTruck size={18} className="sm:hidden" />
           <FaTruck size={11} className="hidden sm:inline" />
           <span className="hidden md:inline">Track Order</span>
         </Link>
@@ -132,7 +132,7 @@ export default function TopBar() {
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5 font-medium"
           title={`Call ${contactPhone}`}
         >
-          <FaPhone size={16} className="sm:hidden" />
+          <FaPhone size={18} className="sm:hidden" />
           <FaPhone size={10} className="hidden sm:inline" />
           <span className="hidden sm:inline text-xs">{contactPhone}</span>
         </a>
