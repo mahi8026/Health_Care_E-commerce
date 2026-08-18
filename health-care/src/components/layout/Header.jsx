@@ -241,7 +241,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           <div className="hidden md:block nav-divider" />
 
           {/* Tablet/Mobile Horizontal Nav (md to lg) - Exclude Track Order */}
-          <nav className="flex lg:hidden items-center gap-2.5 overflow-x-auto scrollbar-hide flex-1 px-1.5 md:px-2" aria-label="Main navigation">
+          <nav className="flex lg:hidden items-center gap-3 overflow-x-auto scrollbar-hide flex-1 px-2" aria-label="Main navigation">
             <button
               onClick={() => router.push('/products')}
               className={`nav-link-mobile whitespace-nowrap ${isActive('/products') ? 'nav-link-active' : ''}`}
@@ -252,12 +252,11 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             {/* Only show Reagent Store on mobile/tablet, not Track Order */}
             <button
               onClick={() => router.push('/reagent-store')}
-              className={`nav-link-mobile whitespace-nowrap ${isActive('/reagent-store') ? 'nav-link-active' : ''}`}
+              className={`nav-link-mobile nav-link-mobile--reagent whitespace-nowrap ${isActive('/reagent-store') ? 'nav-link-active' : ''}`}
               aria-current={isActive('/reagent-store') ? 'page' : undefined}
               title="Reagent Store"
             >
-              <span className="md:hidden">Reagents</span>
-              <span className="hidden md:inline">{t('nav.reagentStore')}</span>
+              {t('nav.reagentStore')}
             </button>
           </nav>
 
