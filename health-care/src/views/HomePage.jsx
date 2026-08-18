@@ -1165,7 +1165,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
             )}
 
           {featuredLoading ? (
-            <div id="featured-scroll-container" className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide scroll-smooth" style={{ padding: '0 4px', WebkitOverflowScrolling: 'touch' }}>
+            <div id="featured-scroll-container" className="flex md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] overflow-x-auto md:overflow-visible gap-3 md:gap-5 pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide scroll-smooth" style={{ padding: '0 4px', WebkitOverflowScrolling: 'touch' }}>
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="flex-shrink-0 w-[160px] md:w-auto snap-start">
                   <ProductCardSkeleton />
@@ -1181,7 +1181,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
           ) : (
             <div
               id="featured-scroll-container"
-              className="md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:gap-5 flex md:block overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide scroll-smooth"
+              className="flex md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] overflow-x-auto md:overflow-visible gap-3 md:gap-5 pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide scroll-smooth"
               style={{
                 padding: '0 4px',
                 listStyle: 'none',
