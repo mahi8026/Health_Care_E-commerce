@@ -182,6 +182,39 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
+        {/* Font Loading Detection Script - CRITICAL: Must run before body renders */}
+        <Script id="font-loading-detection" strategy="beforeInteractive">
+          {`
+            (function() {
+              // Immediately add fonts-loaded class to prevent FOUT
+              // This assumes fonts will load successfully from Next.js
+              document.documentElement.classList.add('fonts-loaded');
+              
+              // Verify fonts actually loaded after a short delay
+              setTimeout(function() {
+                if (document.fonts && document.fonts.check) {
+                  var plusJakartaLoaded = document.fonts.check('1em "Plus Jakarta Sans"');
+                  var loraLoaded = document.fonts.check('1em Lora');
+                  
+                  if (!plusJakartaLoaded || !loraLoaded) {
+                    console.warn('Web fonts failed to load, using system fonts');
+                    document.documentElement.classList.remove('fonts-loaded');
+                  }
+                }
+              }, 100);
+              
+              // Listen for actual font load events
+              if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(function() {
+                  document.documentElement.classList.add('fonts-loaded');
+                }).catch(function() {
+                  console.warn('Font loading failed, using system fonts');
+                  document.documentElement.classList.remove('fonts-loaded');
+                });
+              }
+            })();
+          `}
+        </Script>
       </head>
       <body className={`min-h-screen antialiased text-[var(--color-text-primary)]`}>
         {/* Skip to main content — keyboard/screen-reader accessibility */}
