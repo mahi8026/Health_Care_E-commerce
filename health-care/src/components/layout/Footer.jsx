@@ -95,12 +95,12 @@ export default function Footer() {
 
   return (
     <footer className="bg-brand-navy text-white">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
 
-        {/* ── Desktop: 6-column grid ── */}
-        <div className="hidden md:grid md:grid-cols-[1fr_1fr_1fr_1fr_1fr_1.5fr] gap-6 items-start">
+        {/* ── Desktop: Single horizontal row with all columns ── */}
+        <div className="hidden lg:grid lg:grid-cols-6 gap-8 items-start">
 
-          {/* 4 link columns */}
+          {/* 5 link columns */}
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
@@ -110,7 +110,7 @@ export default function Footer() {
                 <ul className="space-y-3">
                   {col.items.map((item) => (
                     <li key={item.label}>
-                      <a href={item.href} className="text-xs text-white/70 hover:text-white transition-colors">
+                      <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
                         {item.label}
                       </a>
                     </li>
@@ -120,7 +120,106 @@ export default function Footer() {
             ))}
           </nav>
 
-          {/* MediportBD column — only logo + description + newsletter */}
+          {/* MediportBD column — logo + description + newsletter */}
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1 flex-shrink-0">
+                <Image
+                  src="/Mediport_Logo.png"
+                  alt="MediportBD"
+                  fill
+                  sizes="44px"
+                  className="object-contain"
+                />
+              </div>
+              <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
+                Mediport<span className="text-brand-teal">BD</span>
+              </div>
+            </div>
+            <p className="text-sm text-white/70 mb-4 leading-relaxed">
+              Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
+            </p>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+              Newsletter
+            </h4>
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email"
+                  disabled={loading}
+                  aria-label="Email address for newsletter"
+                  className="flex-1 px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50"
+                >
+                  {loading ? '...' : 'Subscribe'}
+                </button>
+              </div>
+              {!showNameInput && !message && (
+                <button type="button" onClick={() => setShowNameInput(true)}
+                  className="text-xs text-white/50 hover:text-white/80 transition-colors">
+                  + Add your name (optional)
+                </button>
+              )}
+              {showNameInput && (
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name (optional)" disabled={loading}
+                  aria-label="Your name for newsletter"
+                  className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50" />
+              )}
+              {message && (
+                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
+                  {messageType === 'success' ? '✓' : '✗'} {message}
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+
+        {/* ── Tablet: 3 columns ── */}
+        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6">
+          {links.slice(0, 3).map((col) => (
+            <div key={col.heading}>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                {col.heading}
+              </h4>
+              <ul className="space-y-3">
+                {col.items.map((item) => (
+                  <li key={item.label}>
+                    <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        
+        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6 mt-6">
+          {links.slice(3).map((col) => (
+            <div key={col.heading}>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                {col.heading}
+              </h4>
+              <ul className="space-y-3">
+                {col.items.map((item) => (
+                  <li key={item.label}>
+                    <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          {/* Newsletter on tablet */}
           <div>
             <div className="flex items-center gap-3 mb-3">
               <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
@@ -136,10 +235,10 @@ export default function Footer() {
                 Mediport<span className="text-brand-teal">BD</span>
               </div>
             </div>
-            <p className="text-xs text-white/70 mb-4 leading-relaxed">
-              Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
+            <p className="text-sm text-white/70 mb-4 leading-relaxed">
+              Bangladesh&apos;s trusted source for premium medical equipment.
             </p>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-2 font-[family-name:var(--font-plus-jakarta)]">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
             </h4>
             <form onSubmit={handleSubscribe} className="space-y-2">
@@ -151,28 +250,16 @@ export default function Footer() {
                   placeholder="Your email"
                   disabled={loading}
                   aria-label="Email address for newsletter"
-                  className="flex-1 px-3 py-2 text-xs bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50"
+                  className="flex-1 px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-brand-teal text-white text-xs font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50"
                 >
                   {loading ? '...' : 'Subscribe'}
                 </button>
               </div>
-              {!showNameInput && !message && (
-                <button type="button" onClick={() => setShowNameInput(true)}
-                  className="text-xs text-white/50 hover:text-white/80 transition-colors">
-                  + Add your name (optional)
-                </button>
-              )}
-              {showNameInput && (
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name (optional)" disabled={loading}
-                  aria-label="Your name for newsletter"
-                  className="w-full px-3 py-2 text-xs bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50" />
-              )}
               {message && (
                 <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
                   {messageType === 'success' ? '✓' : '✗'} {message}
@@ -245,9 +332,9 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3">
+      {/* Bottom bar with enhanced separator line */}
+      <div className="border-t border-white/20 mt-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
           {/* Desktop: Single row with all items */}
           <div className="hidden xl:flex items-center justify-between gap-4">
             <p className="text-xs text-white/50 whitespace-nowrap">
