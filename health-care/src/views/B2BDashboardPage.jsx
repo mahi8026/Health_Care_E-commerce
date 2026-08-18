@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { showToast } from '@/components/ui/Toast';
+import { FaMoneyBillWave, FaCreditCard, FaUserTie, FaTruck, FaTools, FaFileInvoiceDollar } from 'react-icons/fa';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -141,12 +142,12 @@ function B2BLanding() {
     : '1+';
 
   const benefits = [
-    { icon: 'ðŸ’°', title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
-    { icon: 'ðŸ¦', title: `Credit Terms up to ${creditDays} Days`, desc: `Net-30, Net-60, or Net-${creditDays} payment terms for approved accounts.` },
-    { icon: 'ðŸ‘¤', title: 'Dedicated Account Manager', desc: `${supportHours} support from a dedicated B2B executive who knows your needs.` },
-    { icon: 'ðŸšš', title: 'Free Priority Delivery', desc: `Free delivery on all B2B orders over ${deliveryThreshold} within Dhaka metro area.` },
-    { icon: 'ðŸ”§', title: 'Free Installation & Training', desc: 'Professional installation and staff training for all diagnostic equipment.' },
-    { icon: 'ðŸ“‹', title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
+    { icon: <FaMoneyBillWave className="text-2xl" />, title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
+    { icon: <FaCreditCard className="text-2xl" />, title: `Credit Terms up to ${creditDays} Days`, desc: `Net-30, Net-60, or Net-${creditDays} payment terms for approved accounts.` },
+    { icon: <FaUserTie className="text-2xl" />, title: 'Dedicated Account Manager', desc: `${supportHours} support from a dedicated B2B executive who knows your needs.` },
+    { icon: <FaTruck className="text-2xl" />, title: 'Free Priority Delivery', desc: `Free delivery on all B2B orders over ${deliveryThreshold} within Dhaka metro area.` },
+    { icon: <FaTools className="text-2xl" />, title: 'Free Installation & Training', desc: 'Professional installation and staff training for all diagnostic equipment.' },
+    { icon: <FaFileInvoiceDollar className="text-2xl" />, title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
   ];
 
   // Build tiers from settings — scale discounts proportionally from maxDiscount
@@ -774,3 +775,4 @@ export default function B2BDashboardPage() {
 
   return <B2BDashboard data={data} />;
 }
+

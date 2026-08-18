@@ -183,8 +183,9 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
         {/* Font Loading Detection Script - CRITICAL: Must run before body renders */}
-        <Script id="font-loading-detection" strategy="beforeInteractive">
-          {`
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
             (function() {
               // Immediately add fonts-loaded class to prevent FOUT
               // This assumes fonts will load successfully from Next.js
@@ -213,8 +214,8 @@ export default function RootLayout({ children }) {
                 });
               }
             })();
-          `}
-        </Script>
+          `}}
+        />
       </head>
       <body className={`min-h-screen antialiased text-[var(--color-text-primary)]`}>
         {/* Skip to main content — keyboard/screen-reader accessibility */}
