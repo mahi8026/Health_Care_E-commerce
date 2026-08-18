@@ -3,6 +3,20 @@
 @tailwind utilities;
 
 /* ══════════════════════════════════════════════════════════════════════════════
+   FONT LOADING - Ensure proper fallbacks
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Ensure body always has a readable font */
+body {
+  font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Heading font with fallback */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-lora), Lora, Georgia, 'Times New Roman', Times, serif;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
    RESPONSIVE DESIGN SYSTEM - MediportBD
    ══════════════════════════════════════════════════════════════════════════════ */
 

@@ -36,6 +36,8 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-plus-jakarta",
   display: 'swap',
+  preload: true,
+  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
 });
 
 const lora = Lora({
@@ -43,6 +45,8 @@ const lora = Lora({
   subsets: ["latin"],
   variable: "--font-lora",
   display: 'swap',
+  preload: true,
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 
 const notoBengali = Noto_Sans_Bengali({
