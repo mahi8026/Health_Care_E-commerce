@@ -394,8 +394,10 @@ const handleKeyDown = (e) => {
             tabIndex={0}
             aria-label={`Go to slide ${i + 1}`}
             aria-current={currentSlide === i ? 'true' : 'false'}
-            style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, cursor: 'pointer', background: currentSlide === i ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.5)', transition: 'width 0.3s ease, background 0.3s ease' }}
-          />
+            style={{ display: 'flex', width: 24, height: 24, alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          >
+            <span style={{ display: 'block', width: currentSlide === i ? 20 : 7, height: 7, borderRadius: 999, background: currentSlide === i ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.5)', transition: 'width 0.3s ease, background 0.3s ease' }} />
+          </span>
         ))}
       </div>
       {/* Counter */}
@@ -947,7 +949,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* SECTION 4: BEST SELLING PRODUCTS (Social proof, rankings) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Suspense fallback={
-        <div style={{ padding: '60px 0', textAlign: 'center' }}>
+        <div className="best-selling-slot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Spinner />
         </div>
       }>
@@ -1343,7 +1345,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
                 <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 22, marginBottom: 16 }}>
                   {icon}
                 </div>
-                <h4 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 8 }}>{title}</h4>
+                <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 8 }}>{title}</h3>
                 <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>{desc}</p>
               </div>
             ))}
@@ -1381,7 +1383,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
                   </div>
                   <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)',
                     marginBottom: 8 }}>{step.step}</div>
-                  <h4 style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{step.title}</h4>
+                  <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{step.title}</h3>
                   <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
                 </div>
               </div>
@@ -1407,10 +1409,10 @@ export default function HomePage({ initialData = null, initialSettings = null })
               <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)',
                 padding: '4px 14px', borderRadius: 999, fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
-              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600,
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600,
                 color: '#fff', margin: '14px 0 12px' }}>
                 {t('home.b2bTitle')}
-              </h3>
+              </h2>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.8 }}>
                 {t('home.b2bDesc')}
               </p>

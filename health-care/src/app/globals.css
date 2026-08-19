@@ -87,12 +87,12 @@ html.fonts-loaded .font-heading {
 :root {
   /* Brand */
   --color-brand-navy: #0b2545;
-  --color-brand-teal: #0e8a6e;
+  --color-brand-teal: #0b7a60;
   --color-brand-teal-light: #4ddbb8;
 
   /* Hero gradient (same as home hero section) */
-  --gradient-hero: linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0e8a6e 100%);
-  --gradient-hero-glow-tr: radial-gradient(circle at 95% 5%, rgba(14, 138, 110, 0.25), transparent 70%);
+  --gradient-hero: linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%);
+  --gradient-hero-glow-tr: radial-gradient(circle at 95% 5%, rgba(11, 122, 96, 0.25), transparent 70%);
   --gradient-hero-glow-bl: radial-gradient(circle at 0% 100%, rgba(77, 219, 184, 0.12), transparent 70%);
 
   /* LIGHT MODE — Page & surfaces */
@@ -106,7 +106,7 @@ html.fonts-loaded .font-heading {
   --color-background-inset: #f1f5f9;
 
   --color-text-primary: #0f172a;
-  --color-text-secondary: #64748b;
+  --color-text-secondary: #475569;
   --color-text-tertiary: #94a3b8;
   --color-border-primary: #cfe0ec;
   --color-border-secondary: #b8cfdf;
@@ -131,7 +131,7 @@ html.fonts-loaded .font-heading {
 
   /* Brand interactive states */
   --color-brand-navy-hover: #0d2d52;
-  --color-brand-teal-hover: #0c7a61;
+  --color-brand-teal-hover: #096450;
 
   /* Storefront default — Clean white background */
   --page-gradient-wash: #ffffff;
@@ -187,7 +187,7 @@ html.fonts-loaded .font-heading {
 
   /* Accent gradients (beyond --gradient-hero) */
   --gradient-primary: linear-gradient(135deg, #0b2545 0%, #0d3162 100%);
-  --gradient-teal: linear-gradient(135deg, #0e8a6e 0%, #0c7359 100%);
+  --gradient-teal: linear-gradient(135deg, #0b7a60 0%, #096450 100%);
 
   /* Layout tokens */
   --container-width: 1200px;
@@ -1673,7 +1673,7 @@ html.home-page {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, rgba(14, 138, 110, 0.12), rgba(77, 219, 184, 0.15));
-  color: #0e8a6e;
+color: var(--color-brand-teal);
   flex-shrink: 0;
 }
 
@@ -1695,7 +1695,7 @@ html.home-page {
 
 .checkout-input:focus {
   outline: none;
-  border-color: #0e8a6e;
+  border-color: var(--color-brand-teal);
   background: #fff;
   box-shadow: 0 0 0 3px rgba(14, 138, 110, 0.12);
 }
@@ -1936,9 +1936,24 @@ html.home-page {
    Skips style/layout/paint for off-screen home content until the user scrolls
    near it. contain-intrinsic-size reserves space so the scrollbar doesn't jump;
    the `auto` keyword remembers the rendered size for subsequent loads. */
+/* Below-fold content — previously used `content-visibility: auto` with a
+   4500px intrinsic placeholder; the placeholder being replaced by real
+   height caused the page's dominant CLS (0.126). Sections now reserve
+   their own stable min-heights instead. */
 .cv-lazy-stack {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 4500px;
+  contain: layout style paint;
+}
+
+/* Best-selling section is React.lazy — its Suspense fallback must reserve
+   the same height as the loaded section or the swap causes CLS. */
+.best-selling-slot {
+  min-height: 560px;
+}
+
+@media (min-width: 641px) {
+  .best-selling-slot {
+    min-height: 520px;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════

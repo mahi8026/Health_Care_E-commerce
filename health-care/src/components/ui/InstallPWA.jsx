@@ -91,7 +91,7 @@ export default function InstallPWA() {
   if (!showPrompt || isStandalone) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-dropdown animate-slide-up">
+    <div className="fixed bottom-[76px] left-4 right-4 md:left-auto md:right-4 md:bottom-4 md:max-w-md z-dropdown animate-slide-up">
       <div className="bg-white rounded-2xl shadow-lg border border-[var(--color-border-primary)] overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-[var(--color-status-success)] px-5 py-3 flex items-center justify-between">
@@ -172,14 +172,14 @@ export default function InstallPWA() {
               <div className="flex gap-2">
                 <button
                   onClick={handleInstallClick}
-                  className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 min-h-[44px] px-4 rounded-lg text-sm transition-colors"
                 >
                   <FiDownload className="text-base" />
                   Install App
                 </button>
                 <button
                   onClick={handleDismiss}
-                  className="px-4 py-2.5 text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2.5 min-h-[44px] text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] rounded-lg text-sm font-medium transition-colors"
                 >
                   Maybe Later
                 </button>

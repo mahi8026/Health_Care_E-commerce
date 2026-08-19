@@ -106,9 +106,9 @@ export default function Footer() {
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
-                </h4>
+                </h3>
                 <ul className="space-y-3">
                   {col.items.map((item) => (
                     <li key={item.label}>
@@ -135,15 +135,15 @@ export default function Footer() {
                 />
               </div>
               <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
-                Mediport<span className="text-brand-teal">BD</span>
+                Mediport<span className="text-brand-teal-light">BD</span>
               </div>
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
-            </h4>
+            </h3>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="flex gap-2">
                 <input
@@ -188,9 +188,9 @@ export default function Footer() {
         <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6">
           {links.slice(0, 3).map((col) => (
             <div key={col.heading}>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
-              </h4>
+              </h3>
               <ul className="space-y-3">
                 {col.items.map((item) => (
                   <li key={item.label}>
@@ -207,9 +207,9 @@ export default function Footer() {
         <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6 mt-6">
           {links.slice(3).map((col) => (
             <div key={col.heading}>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
-              </h4>
+              </h3>
               <ul className="space-y-3">
                 {col.items.map((item) => (
                   <li key={item.label}>
@@ -234,15 +234,15 @@ export default function Footer() {
                 />
               </div>
               <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
-                Mediport<span className="text-brand-teal">BD</span>
+                Mediport<span className="text-brand-teal-light">BD</span>
               </div>
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment.
             </p>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
-            </h4>
+            </h3>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="flex gap-2">
                 <input
@@ -286,7 +286,7 @@ export default function Footer() {
                 />
               </div>
               <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
-                Mediport<span className="text-brand-teal">BD</span>
+                Mediport<span className="text-brand-teal-light">BD</span>
               </div>
             </div>
             <p className="text-xs text-white/70 leading-relaxed">
@@ -297,9 +297,9 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-4">
             {links.map((col) => (
               <div key={col.heading}>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
-                </h4>
+                </h3>
                 <ul className="space-y-2">
                   {col.items.map((item) => (
                     <li key={item.label}>
@@ -314,7 +314,7 @@ export default function Footer() {
           </div>
           {/* Newsletter */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h4>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h3>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email" disabled={loading}

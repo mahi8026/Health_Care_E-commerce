@@ -129,7 +129,7 @@ const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginRight: 2 }}>Ends in</span>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginRight: 2 }}>Ends in</span>
       {[
         { val: timeLeft.h, label: 'hrs' },
         { val: timeLeft.m, label: 'min' },
@@ -144,7 +144,7 @@ const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
             <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)', lineHeight: 1 }}>
               {String(t.val).padStart(2, '0')}
             </div>
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{t.label}</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>{t.label}</div>
           </div>
         </div>
       ))}

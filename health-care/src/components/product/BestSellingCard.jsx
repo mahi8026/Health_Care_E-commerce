@@ -292,7 +292,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
                 ★
               </span>
             ))}
-            <span style={{ fontSize: '9px', color: '#9CA3AF', marginLeft: '2px' }}>
+            <span style={{ fontSize: '10px', color: '#6B7280', marginLeft: '2px' }}>
               ({reviewCount})
             </span>
           </div>
@@ -316,8 +316,8 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
             </span>
             {hasDiscount && (
               <span style={{
-                fontSize: '10px',
-                color: '#9CA3AF',
+                fontSize: '11px',
+                color: '#6B7280',
                 textDecoration: 'line-through',
               }}>
                 ৳{oldPrice.toLocaleString()}

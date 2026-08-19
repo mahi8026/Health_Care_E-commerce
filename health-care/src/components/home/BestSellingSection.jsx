@@ -292,6 +292,10 @@ export default function BestSellingSection() {
 
       {/* Responsive Styles */}
       <style jsx>{`
+        .best-selling-section {
+          min-height: 560px;
+        }
+
         @media (max-width: 640px) {
           .best-selling-section {
             padding: 24px 0 !important;
@@ -314,10 +318,17 @@ export default function BestSellingSection() {
         @media (min-width: 641px) and (max-width: 1023px) {
           .best-selling-section {
             padding: 32px 0 !important;
+            min-height: 520px;
           }
 
           .section-header h2 {
             font-size: 28px !important;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .best-selling-section {
+            min-height: 520px;
           }
         }
       `}</style>

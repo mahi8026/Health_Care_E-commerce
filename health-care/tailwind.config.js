@@ -11,7 +11,7 @@ module.exports = {
       colors: {
         // Brand colors
         'brand-navy': '#0b2545',
-        'brand-teal': '#0e8a6e',
+        'brand-teal': '#0b7a60',
         'brand-teal-light': '#4ddbb8',
         'brand-teal-tint': '#e1f5ee',
         
