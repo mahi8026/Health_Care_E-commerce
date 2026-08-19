@@ -832,20 +832,20 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: CATEGORY NAVIGATION (Othoba-style circular icons) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '32px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
+      <section className="home-section" style={{ padding: '20px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
               <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
-                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.ourCatalog')}</p>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 24, fontWeight: 600, margin: 0 }}>
+                textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>{t('home.ourCatalog')}</p>
+              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 600, margin: 0 }}>
                 {t('home.shopByCategory')}
               </h2>
             </div>
           </div>
 
           {/* Horizontal scrollable category circles - Dynamic from API */}
-          <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8,
+          <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
             {/* Show first 16 categories from API, or fallback to hardcoded if loading */}
             {navCategories.map((cat, index) => {
@@ -885,26 +885,26 @@ export default function HomePage({ initialData = null, initialSettings = null })
                   role="button" tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push(categoryPath); } }}
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
+                    minWidth: 88, cursor: 'pointer', transition: 'transform 0.2s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
                   {/* Circular icon */}
-                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: color,
+                  <div style={{ width: 64, height: 64, borderRadius: '50%', background: color,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 36, marginBottom: 10, border: '2px solid var(--color-border-primary)',
+                    fontSize: 28, marginBottom: 6, border: '2px solid var(--color-border-primary)',
                     transition: 'transform 0.2s ease' }}>
                     {emoji}
                   </div>
                   {/* Category name */}
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-primary)',
-                    textAlign: 'center', lineHeight: 1.3, maxWidth: 100, overflow: 'hidden',
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-primary)',
+                    textAlign: 'center', lineHeight: 1.3, maxWidth: 88, overflow: 'hidden',
                     textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical' }}>
                     {categoryName}
                   </span>
                   {/* Product count */}
                   {productCount > 0 && (
-                    <span style={{ fontSize: 10, color: 'var(--color-text-secondary)', marginTop: 2 }}>
+                    <span style={{ fontSize: 10, color: 'var(--color-text-secondary)', marginTop: 1 }}>
                       {productCount} items
                     </span>
                   )}
@@ -917,17 +917,17 @@ export default function HomePage({ initialData = null, initialSettings = null })
               role="button" tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); router.push('/products'); } }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-                minWidth: 100, cursor: 'pointer', transition: 'transform 0.2s' }}
+                minWidth: 88, cursor: 'pointer', transition: 'transform 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
               onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-              <div style={{ width: 80, height: 80, borderRadius: '50%',
+              <div style={{ width: 64, height: 64, borderRadius: '50%',
                 background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 28, marginBottom: 10, border: '2px solid var(--color-brand-teal)',
+                fontSize: 24, marginBottom: 6, border: '2px solid var(--color-brand-teal)',
                 color: '#fff', fontWeight: 600 }}>
                 →
               </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-brand-teal)',
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand-teal)',
                 textAlign: 'center' }}>
                 {t('home.viewAll')}
               </span>
