@@ -22,7 +22,8 @@ import {
   FaPlus,
   FaBolt,
   FaAward,
-  FaTools
+  FaTools,
+  FaFileInvoiceDollar
 } from 'react-icons/fa';
 
 /**
@@ -435,6 +436,15 @@ export default function ProductInfoPanelEnhanced({
           Get instant answers about specifications, pricing, and availability
         </p>
       </div>
+
+      {/* Request formal quotation */}
+      <button
+        onClick={() => router.push(`/quotes/request?product=${product._id}&qty=${quantity}`)}
+        className="w-full py-2.5 px-4 border-2 border-dashed border-brand-teal/40 hover:border-brand-teal text-brand-teal rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2.5"
+      >
+        <FaFileInvoiceDollar size={16} />
+        <span>Request a Formal Quotation</span>
+      </button>
 
       {/* Warranty Badge */}
       {product.warranty && (

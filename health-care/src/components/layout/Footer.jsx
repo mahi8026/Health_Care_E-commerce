@@ -79,7 +79,7 @@ export default function Footer() {
         { label: 'Register B2B Account', href: '/register' },
         { label: 'Bulk Pricing', href: '/b2b' },
         { label: 'Credit Terms', href: '/b2b#credit' },
-        { label: 'Request a Quote', href: '/b2b#quote' },
+        { label: 'Request a Quote', href: '/quotes/request' },
       ],
     },
     {

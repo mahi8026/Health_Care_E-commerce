@@ -14,6 +14,7 @@ const {
 const { getMonitoringDashboard } = require('../controllers/monitoringController');
 const {
   getAllQuotes,
+  getQuote,
   updateQuote,
   convertQuoteToOrder
 } = require('../controllers/quoteController');
@@ -35,6 +36,7 @@ router.post('/stock-check', manualStockCheck);
 
 // Quote management
 router.get('/quotes', getAllQuotes);
+router.get('/quotes/:id', getQuote);
 router.patch('/quotes/:id', updateQuote);
 router.post('/quotes/:id/convert', convertQuoteToOrder);
 

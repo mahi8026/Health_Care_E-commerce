@@ -561,7 +561,7 @@ Hello ${user.name},
 
 Your quotation #${quote.quoteNumber} is ready for review.
 
-*Total Amount:* ৳${quote.totalAmount.toLocaleString('en-BD')}
+*Total Amount:* ৳${(quote.finalAmount || quote.totalAmount || 0).toLocaleString('en-BD')}
 *Valid Until:* ${quote.validUntil ? new Date(quote.validUntil).toLocaleDateString('en-BD') : 'N/A'}
 
 View your quote:

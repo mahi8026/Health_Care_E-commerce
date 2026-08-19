@@ -321,7 +321,7 @@ async function sendDeliveryConfirmation(order, customer) {
 async function sendQuotationReady(quote, user) {
   const { siteUrl } = getConfig();
   const name     = user?.name?.split(' ')[0] || 'Valued Customer';
-  const quoteUrl = `${siteUrl}/b2b?tab=quotes`;
+  const quoteUrl = `${siteUrl}/account/quotes/${quote._id}`;
 
   const rows = (quote.items || []).map(item => `
     <tr>
@@ -338,7 +338,7 @@ async function sendQuotationReady(quote, user) {
 
     <div style="background:#E6F4F0;border-radius:8px;padding:16px;margin-bottom:20px;">
       <div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:0.5px;">Quote ID</div>
-      <div style="font-size:20px;font-weight:800;color:#0B2545;font-family:monospace;">${quote.quoteId || quote._id}</div>
+      <div style="font-size:20px;font-weight:800;color:#0B2545;font-family:monospace;">${quote.quoteNumber || quote.quoteId || quote._id}</div>
       ${quote.validUntil ? `<div style="font-size:12px;color:#6B7280;margin-top:4px;">Valid until: ${new Date(quote.validUntil).toLocaleDateString('en-BD')}</div>` : ''}
     </div>
 
@@ -360,8 +360,8 @@ async function sendQuotationReady(quote, user) {
 
   return sendEmail({
     to:      user.email,
-    subject: `Quotation Ready - ${quote.quoteId || quote._id} | MediportBD`,
-    html:    emailLayout(`Quotation Ready - ${quote.quoteId || quote._id}`, body),
+    subject: `Quotation Ready - ${quote.quoteNumber || quote.quoteId || quote._id} | MediportBD`,
+    html:    emailLayout(`Quotation Ready - ${quote.quoteNumber || quote.quoteId || quote._id}`, body),
   });
 }
 

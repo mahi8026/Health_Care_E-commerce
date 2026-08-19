@@ -33,9 +33,12 @@ function StatusBadge({ status }) {
     shipped:     { bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)', label: 'Shipped' },
     processing:  { bg: 'var(--color-status-warning-tint)', text: 'var(--color-status-warning)', label: 'Processing' },
     pending:     { bg: 'var(--color-status-warning-tint)', text: 'var(--color-status-warning)', label: 'Pending' },
+    sent:        { bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)', label: 'Sent' },
     cancelled:   { bg: 'var(--color-status-danger-tint)', text: 'var(--color-status-danger)', label: 'Cancelled' },
     approved:    { bg: 'var(--color-status-success-tint)', text: 'var(--color-status-success)', label: 'Approved' },
     converted:   { bg: '#EDE9FE', text: '#5B21B6', label: 'Converted' },
+    rejected:    { bg: 'var(--color-status-danger-tint)', text: 'var(--color-status-danger)', label: 'Rejected' },
+    expired:     { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-secondary)', label: 'Expired' },
     'in transit':{ bg: 'var(--color-status-info-tint)', text: 'var(--color-status-info)', label: 'In Transit' },
   };
   const s = map[status?.toLowerCase()] || { bg: 'var(--color-background-tertiary)', text: 'var(--color-text-primary)', label: status || '—' };
@@ -437,8 +440,8 @@ function B2BDashboard({ data, onRefresh }) {
               <h2 className="text-base font-semibold text-brand-navy mb-4">Quick Actions</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { icon: '🛒', label: 'New Order', onClick: () => router.push('/products') },
-                  { icon: '📋', label: 'Request Quote', onClick: () => router.push('/products') },
+{ icon: '🛒', label: 'New Order', onClick: () => router.push('/products') },
+                  { icon: '📋', label: 'Request Quote', onClick: () => router.push('/quotes/request') },
                   { icon: '📦', label: 'Track Orders', onClick: () => router.push('/orders') },
                   { icon: '↩', label: 'Returns', onClick: () => router.push('/returns/my-returns') },
                 ].map(({ icon, label, onClick }) => (
@@ -498,11 +501,11 @@ function B2BDashboard({ data, onRefresh }) {
               )}
             </div>
 
-            {/* Recent quotations */}
+{/* Recent quotations */}
             <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base font-semibold text-brand-navy">Recent Quotations</h2>
-                <button onClick={() => router.push('/products')}
+                <button onClick={() => router.push('/quotes/request')}
                   className="text-xs text-brand-teal font-semibold hover:underline">
                   Request quote →
                 </button>
@@ -515,20 +518,26 @@ function B2BDashboard({ data, onRefresh }) {
                 <div className="space-y-2">
                   {quotes.slice(0, 4).map((q) => {
                     const id = q._id || q.id;
-                    const displayId = q.quoteNumber || `QUO-${String(id).slice(-5).toUpperCase()}`;
+                    const displayId = q.quoteNumber || q.quoteId || `QUO-${String(id).slice(-5).toUpperCase()}`;
                     const date = q.createdAt ? new Date(q.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short' }) : q.date || '—';
-                    const total = q.totalAmount || q.total || 0;
+                    const total = q.finalAmount ?? q.totalAmount ?? q.total ?? 0;
+                    const status = q.status?.toLowerCase();
+                    const isExpired = status === 'expired';
                     return (
-                      <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--color-border-primary)]">
-                        <div>
+                      <button key={id} onClick={() => router.push(`/account/quotes/${id}`)}
+                        className="w-full flex items-center justify-between p-3 rounded-xl border border-[var(--color-border-primary)] hover:border-brand-teal/40 hover:bg-[var(--color-status-success-tint)] transition-all">
+                        <div className="text-left">
                           <div className="text-sm font-semibold text-brand-navy">{displayId}</div>
-                          <div className="text-xs text-[var(--color-text-tertiary)]">{date}</div>
+                          <div className="text-xs text-[var(--color-text-tertiary)]">{date} · {q.items?.length || 0} item{q.items?.length === 1 ? '' : 's'}</div>
                         </div>
                         <div className="text-right">
                           <div className="text-sm font-semibold text-brand-navy">৳{total.toLocaleString()}</div>
-                          <StatusBadge status={q.status}/>
+                          {isExpired
+                            ? <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]">Expired</span>
+                            : <StatusBadge status={status}/>
+                          }
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -639,7 +648,7 @@ export default function B2BDashboardPage() {
         const token = localStorage.getItem('Mediport_token');
         const headers = { Authorization: `Bearer ${token}` };
 
-        const [ordersRes, quotesRes, profileRes] = await Promise.all([
+const [ordersRes, quotesRes, profileRes] = await Promise.all([
           fetch(`${API}/orders?limit=10`, { headers }),
           fetch(`${API}/quotes?limit=5`, { headers }),
           fetch(`${API}/auth/me`, { headers }),
@@ -653,7 +662,7 @@ export default function B2BDashboardPage() {
 
         const profile = profileData.data || profileData.user || {};
         const orders = ordersData.data?.orders || ordersData.orders || [];
-        const quotes = quotesData.data?.quotes || quotesData.quotes || [];
+        const quotes = quotesData.data || quotesData.data?.quotes || quotesData.quotes || [];
 
         setDashboardData({
           name: profile.companyName || profile.name || user.name || 'Your Account',

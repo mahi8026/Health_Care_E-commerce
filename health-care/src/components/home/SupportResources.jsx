@@ -58,7 +58,7 @@ const SUPPORT_OPTIONS = [
     icon: <FaFileAlt />,
     title: 'Request Quote',
     desc: 'Get B2B pricing',
-    action: '/b2b',
+    action: '/quotes/request',
     color: '#EA580C',
     bgColor: 'var(--color-status-warning-tint)'
   },
