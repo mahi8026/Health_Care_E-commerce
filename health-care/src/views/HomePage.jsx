@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, memo, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, memo, useMemo, useRef, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useT } from '@/hooks/useT';
@@ -158,7 +158,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         {/* Badges */}
         <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {hasDiscount && (
-            <span style={{ background: 'var(--color-status-danger)', color: '#fff', fontSize: 10, fontWeight: 600,
+            <span style={{ background: '#DC2626', color: '#fff', fontSize: 10, fontWeight: 600,
               padding: '3px 8px', borderRadius: 6 }}>-{discount}%</span>
           )}
           {!inStock && (
@@ -221,6 +221,42 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 // homepage (previously 4 intervals + 2 scroll listeners re-rendered the full
 // 1600-line tree every few seconds).
 // ══════════════════════════════════════════════════════════════════════════════
+
+// Mount-on-scroll: heavy sections are kept out of the initial hydration and
+// script-eval path entirely, then rendered when the user scrolls near them.
+// Reserved heights (cv-slot--* / best-selling-slot / featured-products-panel)
+// prevent CLS while they are unmounted.
+function useInViewOnce(rootMargin) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(() => typeof IntersectionObserver === 'undefined');
+
+  useEffect(() => {
+    if (inView) return;
+    const el = ref.current;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [inView, rootMargin]);
+
+  return [ref, inView];
+}
+
+function LazyMount({ rootMargin = '800px', fallback = null, className, style, children }) {
+  const [ref, inView] = useInViewOnce(rootMargin);
+  return (
+    <div ref={ref} className={className} style={style}>
+      {inView ? children : fallback}
+    </div>
+  );
+}
 
 const TYPEWRITER_WORDS = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'];
 const SEARCH_PLACEHOLDERS = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
@@ -942,21 +978,23 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* SECTION 3: FLASH DEALS (Time-sensitive, creates urgency) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <div className="cv-slot--flash">
-        <Suspense fallback={null}>
-          <FlashDealsSection />
-        </Suspense>
+        <LazyMount fallback={null}>
+          <Suspense fallback={null}>
+            <FlashDealsSection />
+          </Suspense>
+        </LazyMount>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 4: BEST SELLING PRODUCTS (Social proof, rankings) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={
+      <LazyMount fallback={
         <div className="best-selling-slot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Spinner />
         </div>
       }>
         <BestSellingSection />
-      </Suspense>
+      </LazyMount>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: FEATURED PRODUCTS (Curated selection with tabs) */}
@@ -1074,6 +1112,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
 
           {/* Products - Horizontal scroll with arrow navigation */}
           <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" className="featured-products-panel" style={{ position: 'relative' }}>
+            <LazyMount fallback={null}>
             {/* Left Arrow - Always visible on mobile when products exist */}
             {!featuredLoading && featuredProducts.length > 0 && (
               <button
@@ -1200,6 +1239,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
               ))}
             </div>
           )}
+            </LazyMount>
           </div>
         </div>
       </section>
@@ -1295,9 +1335,11 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* SECTION 7: CATEGORY PRODUCT SECTIONS (Deep product discovery) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <div className="cv-slot--category">
-        <Suspense fallback={null}>
-          <CategoryProductSections categories={categories} />
-        </Suspense>
+        <LazyMount fallback={null}>
+          <Suspense fallback={null}>
+            <CategoryProductSections categories={categories} />
+          </Suspense>
+        </LazyMount>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
@@ -1305,13 +1347,15 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {!newArrivalsLoading && newArrivals.length > 0 && (
         <div className="cv-slot--new-arrivals">
-          <Suspense fallback={
-            <div style={{ padding: '60px 0', textAlign: 'center' }}>
-              <Spinner />
-            </div>
-          }>
-            <NewArrivalSlider products={newArrivals} />
-          </Suspense>
+          <LazyMount fallback={null}>
+            <Suspense fallback={
+              <div style={{ padding: '60px 0', textAlign: 'center' }}>
+                <Spinner />
+              </div>
+            }>
+              <NewArrivalSlider products={newArrivals} />
+            </Suspense>
+          </LazyMount>
         </div>
       )}
 
@@ -1327,7 +1371,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <section className="home-section" style={{ padding: '56px 24px 32px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <RecentlyViewed limit={8} title="Continue Where You Left Off" />
+          <LazyMount fallback={null} style={{ minHeight: 560 }}>
+            <RecentlyViewed limit={8} title="Continue Where You Left Off" />
+          </LazyMount>
         </div>
       </section>
 
@@ -1473,30 +1519,34 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* SECTION 14: SUPPORT & RESOURCES (Additional value, help center) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <div className="cv-slot--support">
-        <Suspense fallback={
-          <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
-            <div style={{ maxWidth: 1280, margin: '0 auto', textAlign: 'center' }}>
-              <Spinner size="lg" variant="medical" />
+        <LazyMount fallback={null}>
+          <Suspense fallback={
+            <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
+              <div style={{ maxWidth: 1280, margin: '0 auto', textAlign: 'center' }}>
+                <Spinner size="lg" variant="medical" />
+              </div>
             </div>
-          </div>
-        }>
-          <SupportResources />
-        </Suspense>
+          }>
+            <SupportResources />
+          </Suspense>
+        </LazyMount>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 15: VIDEO SECTION (Engagement, brand storytelling) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <div className="cv-slot--video">
-        <Suspense fallback={
-          <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
-            <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
-              <Spinner size="lg" variant="medical" />
-            </div>
-          </section>
-        }>
-          <VideoSection />
-        </Suspense>
+        <LazyMount fallback={null}>
+          <Suspense fallback={
+            <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
+              <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
+                <Spinner size="lg" variant="medical" />
+              </div>
+            </section>
+          }>
+            <VideoSection />
+          </Suspense>
+        </LazyMount>
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}

@@ -53,7 +53,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         )}
         {/* Discount badge */}
         {discountPct > 0 && (
-          <div style={{ position: 'absolute', top: 10, left: 10, background: 'var(--color-status-danger)', color: '#fff', fontSize: 10, fontWeight: 600,
+          <div style={{ position: 'absolute', top: 10, left: 10, background: '#DC2626', color: '#fff', fontSize: 10, fontWeight: 600,
             padding: '3px 8px', borderRadius: 6 }}>-{discountPct}%</div>
         )}
         {/* Quick add button on hover */}

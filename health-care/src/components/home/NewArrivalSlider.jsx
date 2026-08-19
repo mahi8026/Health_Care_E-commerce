@@ -216,7 +216,7 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
             position: 'absolute',
             top: '10px',
             right: '10px',
-            background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+            background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
             color: '#fff',
             fontSize: '11px',
             fontWeight: 700,
