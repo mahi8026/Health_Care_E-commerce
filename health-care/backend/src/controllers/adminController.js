@@ -85,7 +85,14 @@ exports.getDashboard = async (req, res) => {
     const activeB2B = await User.countDocuments({ role: 'b2b_customer', isActive: true });
 
     // Pending B2B applications
-    const pendingB2BApplications = await User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'pending' });
+    const pendingB2BApplications = await User.countDocuments({
+      $or: [
+        { b2bAccount: true },
+        { role: 'b2b_customer' },
+        { accountType: 'B2B' }
+      ],
+      b2bApprovalStatus: 'pending'
+    });
 
     // Pending quotes
     const pendingQuotes = await Quote.countDocuments({ status: 'pending' });
@@ -515,7 +522,11 @@ exports.getBadges = async (req, res) => {
 
     // Count pending B2B applications
     const pendingB2B = await User.countDocuments({
-      b2bAccount: true,
+      $or: [
+        { b2bAccount: true },
+        { role: 'b2b_customer' },
+        { accountType: 'B2B' }
+      ],
       b2bApprovalStatus: 'pending'
     });
 

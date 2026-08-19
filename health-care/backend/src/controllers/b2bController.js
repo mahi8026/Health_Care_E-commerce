@@ -16,7 +16,14 @@ exports.getB2BUsers = async (req, res) => {
     const status = req.query.status; // pending, approved, rejected
     const search = req.query.search || '';
 
-    const query = { b2bAccount: true };
+    // Query for B2B users: either b2bAccount flag OR role is b2b_customer
+    const query = {
+      $or: [
+        { b2bAccount: true },
+        { role: 'b2b_customer' },
+        { accountType: 'B2B' }
+      ]
+    };
 
     if (status) {
       query.b2bApprovalStatus = status;
@@ -24,17 +31,20 @@ exports.getB2BUsers = async (req, res) => {
 
     if (search) {
       const escaped = search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-      query.$or = [
-        { name: { $regex: escaped, $options: 'i' } },
-        { email: { $regex: escaped, $options: 'i' } },
-        { companyName: { $regex: escaped, $options: 'i' } },
-        { b2bId: { $regex: escaped, $options: 'i' } }
-      ];
+      query.$and = [{
+        $or: [
+          { name: { $regex: escaped, $options: 'i' } },
+          { email: { $regex: escaped, $options: 'i' } },
+          { companyName: { $regex: escaped, $options: 'i' } },
+          { company: { $regex: escaped, $options: 'i' } },
+          { b2bId: { $regex: escaped, $options: 'i' } }
+        ]
+      }];
     }
 
     const [users, total] = await Promise.all([
       User.find(query)
-        .select('name email companyName institutionType b2bApprovalStatus b2bDiscountEnabled b2bId tradeLicense phone createdAt b2bApprovedAt')
+        .select('name email companyName company institutionType b2bApprovalStatus b2bDiscountEnabled b2bId tradeLicense phone createdAt b2bApprovedAt role accountType b2bAccount')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -306,6 +316,15 @@ category.b2bDiscountPct = b2bDiscountPct;
  */
 exports.getB2BStats = async (req, res) => {
   try {
+    // Query for B2B users: either b2bAccount flag OR role is b2b_customer
+    const b2bQuery = {
+      $or: [
+        { b2bAccount: true },
+        { role: 'b2b_customer' },
+        { accountType: 'B2B' }
+      ]
+    };
+
     const [
       totalB2B,
       pendingApplications,
@@ -313,11 +332,11 @@ exports.getB2BStats = async (req, res) => {
       rejectedB2B,
       activeB2B
     ] = await Promise.all([
-      User.countDocuments({ b2bAccount: true }),
-      User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'pending' }),
-      User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'approved' }),
-      User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'rejected' }),
-      User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'approved', b2bDiscountEnabled: true })
+      User.countDocuments(b2bQuery),
+      User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'pending' }),
+      User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'approved' }),
+      User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'rejected' }),
+      User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'approved', b2bDiscountEnabled: true })
     ]);
 
     return successResponse(res, {
