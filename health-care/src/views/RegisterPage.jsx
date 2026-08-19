@@ -207,8 +207,8 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
               </label>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: 'Retail', icon: 'ðŸ‘¤', title: 'Retail Customer', sub: 'Individual purchases' },
-                  { value: 'B2B', icon: 'ðŸ¢', title: 'B2B Account', sub: 'Bulk orders & credit terms' },
+                  { value: 'Retail', icon: '👤', title: 'Retail Customer', sub: 'Individual purchases' },
+                  { value: 'B2B', icon: '🏢', title: 'B2B Account', sub: 'Bulk orders & credit terms' },
                 ].map((type) => (
                   <label key={type.value} className="cursor-pointer">
                     <input

@@ -121,7 +121,7 @@ export default function LoyaltyPage() {
                   {(summary?.currentPoints || user?.loyaltyPoints || 0).toLocaleString()}
                 </p>
                 <p className="text-blue-200 text-sm mt-1">
-                  â‰ˆ ৳{((summary?.currentPoints || 0) * 0.10).toFixed(0)} redeemable value
+                  ≈ ৳{((summary?.currentPoints || 0) * 0.10).toFixed(0)} redeemable value
                 </p>
               </div>
               <div className="text-right">
@@ -162,10 +162,10 @@ export default function LoyaltyPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { label: 'Every ৳100 spent',     pts: '1 pt',   icon: 'ðŸ›’' },
+                { label: 'Every ৳100 spent',     pts: '1 pt',   icon: '🛒' },
                 { label: 'First order bonus',     pts: '+200 pts', icon: '🎉' },
                 { label: 'Leave a product review', pts: '+50 pts', icon: '⭐' },
-                { label: 'Refer a friend',         pts: '+500 pts', icon: 'ðŸ‘¥' },
+                { label: 'Refer a friend',         pts: '+500 pts', icon: '👥' },
               ].map(item => (
                 <div key={item.label} className="flex items-center gap-3 p-3 bg-[var(--color-background-secondary)] rounded-lg">
                   <span className="text-xl">{item.icon}</span>
@@ -185,10 +185,10 @@ export default function LoyaltyPage() {
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: 'Bronze',   pts: '0–999',    icon: 'ðŸ¥‰', benefit: 'Earn points on every order' },
-                { label: 'Silver',   pts: '1K–4.9K',  icon: 'ðŸ¥ˆ', benefit: '5% extra discount' },
-                { label: 'Gold',     pts: '5K–9.9K',  icon: 'ðŸ¥‡', benefit: '10% extra + free shipping' },
-                { label: 'Platinum', pts: '10K+',     icon: 'ðŸ’Ž', benefit: '15% extra + priority support' },
+                { label: 'Bronze',   pts: '0–999',    icon: '🥉', benefit: 'Earn points on every order' },
+                { label: 'Silver',   pts: '1K–4.9K',  icon: '🥈', benefit: '5% extra discount' },
+                { label: 'Gold',     pts: '5K–9.9K',  icon: '🥇', benefit: '10% extra + free shipping' },
+                { label: 'Platinum', pts: '10K+',     icon: '💎', benefit: '15% extra + priority support' },
               ].map(t => (
                 <div
                   key={t.label}

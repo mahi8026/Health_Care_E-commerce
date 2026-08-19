@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { API } from '@/constants/api';
 import Spinner from '@/components/ui/Spinner';
 
-// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function StatCard({ icon, label, value, sub, color = 'var(--color-brand-teal)' }) {
   return (
@@ -47,7 +47,7 @@ function StatusBadge({ status }) {
   );
 }
 
-// â”€â”€ Marketing landing page (unauthenticated) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Marketing landing page (unauthenticated) ──────────────────────────────────
 
 // Default tiers used as fallback if settings don't override
 const DEFAULT_TIERS = [
@@ -364,7 +364,7 @@ function B2BLanding() {
   );
 }
 
-// â”€â”€ Authenticated B2B Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Authenticated B2B Dashboard ───────────────────────────────────────────────
 
 function B2BDashboard({ data, onRefresh }) {
   const router = useRouter();
@@ -421,10 +421,10 @@ function B2BDashboard({ data, onRefresh }) {
 
         {/* KPI cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard icon="ðŸ’°" label="Total Spend" value={`৳${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
-          <StatCard icon="ðŸ“¦" label="Active Orders" value={data.activeOrders || 0} sub="in progress" color="var(--color-status-info)"/>
-          <StatCard icon="ðŸšš" label="In Delivery" value={data.ordersInDelivery || 0} sub="on the way" color="var(--color-status-warning)"/>
-          <StatCard icon="ðŸ·️" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
+          <StatCard icon="💰" label="Total Spend" value={`৳${(data.totalSpend || 0).toLocaleString()}`} color="var(--color-brand-teal)"/>
+          <StatCard icon="📦" label="Active Orders" value={data.activeOrders || 0} sub="in progress" color="var(--color-status-info)"/>
+          <StatCard icon="🚚" label="In Delivery" value={data.ordersInDelivery || 0} sub="on the way" color="var(--color-status-warning)"/>
+          <StatCard icon="🏷️" label="Your Discount" value={`${data.discount || 0}%`} sub={`${data.tier} tier`} color="#8B5CF6"/>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
@@ -437,10 +437,10 @@ function B2BDashboard({ data, onRefresh }) {
               <h2 className="text-base font-semibold text-brand-navy mb-4">Quick Actions</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { icon: 'ðŸ›’', label: 'New Order', onClick: () => router.push('/products') },
-                  { icon: 'ðŸ“‹', label: 'Request Quote', onClick: () => router.push('/products') },
-                  { icon: 'ðŸ“¦', label: 'Track Orders', onClick: () => router.push('/orders') },
-                  { icon: 'â†©', label: 'Returns', onClick: () => router.push('/returns/my-returns') },
+                  { icon: '🛒', label: 'New Order', onClick: () => router.push('/products') },
+                  { icon: '📋', label: 'Request Quote', onClick: () => router.push('/products') },
+                  { icon: '📦', label: 'Track Orders', onClick: () => router.push('/orders') },
+                  { icon: '↩', label: 'Returns', onClick: () => router.push('/returns/my-returns') },
                 ].map(({ icon, label, onClick }) => (
                   <button key={label} onClick={onClick}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[var(--color-border-primary)] hover:border-brand-teal/40 hover:bg-[var(--color-status-success-tint)] transition-all">
@@ -475,7 +475,7 @@ function B2BDashboard({ data, onRefresh }) {
                     return (
                       <div key={id} className="flex items-center justify-between p-3 rounded-xl border border-[var(--color-border-primary)] hover:bg-surface-subtle transition-colors">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-[var(--color-status-info-tint)] rounded-lg flex items-center justify-center text-base">ðŸ“¦</div>
+                          <div className="w-9 h-9 bg-[var(--color-status-info-tint)] rounded-lg flex items-center justify-center text-base">📦</div>
                           <div>
                             <div className="text-sm font-semibold text-brand-navy">{displayId}</div>
                             <div className="text-xs text-[var(--color-text-tertiary)]">{date} · {itemCount} item{itemCount !== 1 ? 's' : ''}</div>
@@ -619,7 +619,7 @@ function B2BDashboard({ data, onRefresh }) {
   );
 }
 
-// â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main export ───────────────────────────────────────────────────────────────
 
 export default function B2BDashboardPage() {
   const { user, isAuthenticated, isB2BCustomer } = useAuth();
@@ -703,7 +703,7 @@ export default function B2BDashboardPage() {
           </div>
         </div>
         <div className="max-w-3xl mx-auto px-4 py-10 text-center">
-          <div className="text-6xl mb-6">ðŸ¢</div>
+          <div className="text-6xl mb-6">🏢</div>
           <h2 className="text-xl font-semibold text-brand-navy mb-3">
             B2B Portal Access Required
           </h2>

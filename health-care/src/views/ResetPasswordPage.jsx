@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
         <div className="bg-white rounded-lg p-5 sm:p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">âœ…</div>
+              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">✅</div>
               <h3 className="text-base sm:text-base font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 Password reset successfully
               </h3>

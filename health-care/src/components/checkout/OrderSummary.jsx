@@ -194,7 +194,7 @@ export default function OrderSummary({
                   {img ? (
                     <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
-                    <span className="text-lg">ðŸ“¦</span>
+                    <span className="text-lg">📦</span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -211,7 +211,7 @@ export default function OrderSummary({
                     </span>
                   )}
                   <div className="flex justify-between items-center mt-1.5">
-                    <span className="text-xs text-[var(--color-text-secondary)]">Ã—{item.quantity}</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">×{item.quantity}</span>
                     <span className="text-sm font-semibold text-brand-navy">
                       ৳{(item.displayPrice * item.quantity).toLocaleString()}
                     </span>
@@ -274,7 +274,7 @@ export default function OrderSummary({
                 <div className="flex justify-between items-center p-2.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-warning/30">
                   <div>
                     <span className="text-xs font-semibold text-[var(--color-status-warning)]">⭐ {pointsDiscount} pts redeemed</span>
-                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">âˆ’৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
+                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
                     type="button"
@@ -354,19 +354,19 @@ export default function OrderSummary({
                 <FaShieldAlt size={11} />
                 <span>B2B discount</span>
               </div>
-              <span className="font-medium">âˆ’৳{b2bSavings.toLocaleString()}</span>
+              <span className="font-medium">−৳{b2bSavings.toLocaleString()}</span>
             </div>
           )}
           {couponDiscount > 0 && (
             <div className="flex justify-between text-brand-teal">
               <span>Coupon discount</span>
-              <span className="font-medium">âˆ’৳{couponDiscount.toLocaleString()}</span>
+              <span className="font-medium">−৳{couponDiscount.toLocaleString()}</span>
             </div>
           )}
           {pointsDiscount > 0 && (
             <div className="flex justify-between text-warning">
               <span>⭐ Points discount</span>
-              <span className="font-medium">âˆ’৳{(pointsDiscount * 0.1).toFixed(2)}</span>
+              <span className="font-medium">−৳{(pointsDiscount * 0.1).toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between text-[var(--color-text-secondary)]">

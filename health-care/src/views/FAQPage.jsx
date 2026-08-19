@@ -6,7 +6,7 @@ import { FaChevronDown, FaChevronUp, FaSearch, FaPhone, FaEnvelope, FaWhatsapp }
 const FAQ_CATEGORIES = [
   {
     category: 'Orders & Payment',
-    icon: 'ðŸ›’',
+    icon: '🛒',
     faqs: [
       {
         question: 'How do I place an order?',
@@ -32,7 +32,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Delivery & Shipping',
-    icon: 'ðŸšš',
+    icon: '🚚',
     faqs: [
       {
         question: 'What are your delivery areas?',
@@ -52,13 +52,13 @@ const FAQ_CATEGORIES = [
       },
       {
         question: 'What about cold chain delivery for reagents?',
-        answer: 'All temperature-sensitive reagents are shipped with proper cold chain packaging (ice packs, insulated boxes) to maintain 2-8Â°C throughout transit. Door-to-door cold chain delivery available.'
+        answer: 'All temperature-sensitive reagents are shipped with proper cold chain packaging (ice packs, insulated boxes) to maintain 2-8°C throughout transit. Door-to-door cold chain delivery available.'
       }
     ]
   },
   {
     category: 'Products & Stock',
-    icon: 'ðŸ“¦',
+    icon: '📦',
     faqs: [
       {
         question: 'Are all products DGDA registered?',
@@ -84,7 +84,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Returns & Refunds',
-    icon: 'â†©️',
+    icon: '↩️',
     faqs: [
       {
         question: 'What is your return policy?',
@@ -110,7 +110,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'B2B & Bulk Orders',
-    icon: 'ðŸ¥',
+    icon: '🏥',
     faqs: [
       {
         question: 'Do you offer bulk discounts?',
@@ -136,7 +136,7 @@ const FAQ_CATEGORIES = [
   },
   {
     category: 'Account & Security',
-    icon: 'ðŸ”',
+    icon: '🔐',
     faqs: [
       {
         question: 'How do I create an account?',

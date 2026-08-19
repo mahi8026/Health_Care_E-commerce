@@ -23,7 +23,7 @@ class ReagentErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center bg-page">
-          <div className="text-5xl mb-4">ðŸ§ª</div>
+          <div className="text-5xl mb-4">🧪</div>
           <h2 className="text-lg font-semibold text-brand-navy mb-2">Reagent Store Unavailable</h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-6 max-w-md">
             We couldn&apos;t load the reagent catalog right now. Please try again.
@@ -43,8 +43,8 @@ class ReagentErrorBoundary extends Component {
 }
 
 const STORAGE_LEGEND = [
-  { label: 'Cold 2–8Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
-  { label: 'Frozen âˆ’20Â°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#EEEDFE] to-[#DDD9FE] text-[#3C3489] border-[#C5C0F5]' },
+  { label: 'Cold 2–8°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
+  { label: 'Frozen −20°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#EEEDFE] to-[#DDD9FE] text-[#3C3489] border-[#C5C0F5]' },
   { label: 'Room temp', icon: <FaTint />, className: 'bg-gradient-to-br from-brand-teal-tint to-[#C8EBDD] text-[var(--color-status-success)] border-[#B0E1CE]' },
 ];
 
@@ -291,7 +291,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
             ) : reagents.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-gradient-to-br from-white to-blue-50 rounded-2xl border border-blue-100 shadow-sm">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
-                  <span className="text-4xl">ðŸ”¬</span>
+                  <span className="text-4xl">🔬</span>
                 </div>
                 <p className="text-base font-semibold text-brand-navy mb-2">No laboratory reagents found</p>
                 <p className="text-sm text-[var(--color-text-secondary)] mb-6 max-w-md">
