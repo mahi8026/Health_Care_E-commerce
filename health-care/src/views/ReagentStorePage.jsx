@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, useCallback, Component } from 'react';
+import { useState, useEffect, useCallback, useMemo, Component } from 'react';
 import { useRouter } from 'next/navigation';
 import ReagentFilters from '@/components/reagent/ReagentFilters';
 import ReagentToolbar from '@/components/reagent/ReagentToolbar';
@@ -9,6 +9,7 @@ import Pagination from '@/components/ui/Pagination';
 import Spinner, { ProductCardSkeleton } from '@/components/ui/Spinner';
 import { useDebounce } from '@/hooks/useDebounce';
 import { API as API_BASE } from '@/constants/api';
+import { getProductBrandName } from '@/utils/helpers';
 import { FaSnowflake, FaTint } from 'react-icons/fa';
 
 class ReagentErrorBoundary extends Component {
@@ -48,12 +49,44 @@ const STORAGE_LEGEND = [
   { label: 'Room temp', icon: <FaTint />, className: 'bg-gradient-to-br from-brand-teal-tint to-[#C8EBDD] text-[var(--color-status-success)] border-[#B0E1CE]' },
 ];
 
+// The /products API does not support brand / temperature / hazard filtering, so
+// the reagent catalog is fetched once (paged, API caps limit at 100) and
+// filtered client-side.
+const FETCH_PAGE_SIZE = 100; // API hard cap
+const PAGE_SIZE = 48;
+
+const TEMPERATURE_VALUE_MAP = {
+  'Cold (2–8°C)': 'cold',
+  'Frozen (−20°C)': 'frozen',
+  'Room temperature': 'room',
+};
+
+const HAZARD_VALUE_MAP = {
+  'Biohazard': 'bio',
+  'Chemical hazard': 'chem',
+  'Safe to handle': 'safe',
+};
+
+function resolveTemperatureKey(product) {
+  const raw = product.temperature || product.storageTemp;
+  if (raw === 'frozen' || raw === 'freeze') return 'frozen';
+  if (raw === 'cold') return 'cold';
+  return 'room';
+}
+
+function resolveHazardKey(product) {
+  const raw = product.hazard || product.hazardClass;
+  if (raw === 'bio' || raw === 'biohazard') return 'bio';
+  if (raw === 'chem' || raw === 'chemical') return 'chem';
+  return 'safe';
+}
+
 export default function ReagentStorePage({ onNavigateToProduct }) {
   const router = useRouter();
   const handleProductClick =
     onNavigateToProduct ?? ((id) => router.push(`/products/${id}`));
 
-  const [reagents, setReagents] = useState([]);
+const [reagents, setReagents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const [filters, setFilters] = useState({
@@ -65,9 +98,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const debouncedSearch = useDebounce(searchQuery, 400);
@@ -90,89 +121,58 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
     setLoading(true);
     setFetchError(false);
     try {
-      let params = new URLSearchParams({
-        limit: '48', // Show more products
-      });
+      const collected = [];
+      let fetchPage = 1;
 
-      params.set('page', String(page));
+      for (;;) {
+        const params = new URLSearchParams({
+          limit: String(FETCH_PAGE_SIZE),
+          page: String(fetchPage),
+          category: 'Laboratory Reagents',
+        });
 
-      // Default filter: Show only "Laboratory Reagents" category products
-      // This filter is overridden if user selects different categories or searches
-      if (!filters.categories?.length && !debouncedSearch.trim()) {
-        params.set('category', 'Laboratory Reagents');
+        const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
+          signal,
+          credentials: 'include',
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        // Handle multiple response formats from backend
+        let list = [];
+        if (data.data?.products) {
+          list = data.data.products;
+        } else if (data.products) {
+          list = data.products;
+        } else if (Array.isArray(data.data)) {
+          list = data.data;
+        } else if (Array.isArray(data)) {
+          list = data;
+        }
+        list = Array.isArray(list) ? list : [];
+
+        if (!list.length) break;
+        collected.push(...list);
+
+        if (list.length < FETCH_PAGE_SIZE) break;
+        fetchPage += 1;
       }
 
-      // Add search filter if user is searching
-      if (debouncedSearch.trim()) {
-        params.set('search', debouncedSearch.trim());
-      }
-
-      // Add brand filter
-      if (filters.brands?.length) {
-        params.set('brand', filters.brands.join(','));
-      }
-
-      // Add price filter
-      if (filters.priceRange && filters.priceRange < 50000) {
-        params.set('maxPrice', String(filters.priceRange));
-      }
-
-      // Add category filter if user selected specific categories
-      if (filters.categories?.length) {
-        params.set('category', filters.categories.join(','));
-      }
-
-      // Add sorting
-      if (sortBy === 'price-low') {
-        params.set('sortBy', 'price');
-        params.set('order', 'asc');
-      } else if (sortBy === 'price-high') {
-        params.set('sortBy', 'price');
-        params.set('order', 'desc');
-      } else if (sortBy === 'brand') {
-        params.set('sortBy', 'name');
-        params.set('order', 'asc');
-      }
-
-      const res = await fetch(`${API_BASE}/products?${params.toString()}`, {
-        signal,
-        credentials: 'include',
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
-      const data = await res.json();
-
-      // Handle multiple response formats from backend
-      let list = [];
-      if (data.data?.products) {
-        list = data.data.products;
-      } else if (data.products) {
-        list = data.products;
-      } else if (Array.isArray(data.data)) {
-        list = data.data;
-      } else if (Array.isArray(data)) {
-        list = data;
-      }
-
-      setReagents(Array.isArray(list) ? list : []);
-      const pagination = data.pagination;
-      setTotal(pagination?.total ?? data.data?.total ?? data.total ?? (Array.isArray(list) ? list.length : 0));
-      setTotalPages(pagination?.totalPages ?? Math.ceil((pagination?.total ?? list.length) / 48));
+      setReagents(collected);
     } catch (err) {
       if (err.name !== 'AbortError') {
         if (process.env.NODE_ENV === 'development') console.error('Fetch reagents error:', err);
         setFetchError(true);
       }
       setReagents([]);
-      setTotal(0);
-      setTotalPages(0);
     } finally {
       setLoading(false);
     }
-  }, [filters, debouncedSearch, sortBy, page]);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -183,6 +183,60 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
       controller.abort();
     };
   }, [fetchReagents]);
+
+  // Filter + sort the full catalog client-side — the API does not support
+  // brand / temperature / hazard query params.
+  const { total, totalPages, pageItems } = useMemo(() => {
+    const q = debouncedSearch.trim().toLowerCase();
+    const brandSet = new Set(filters.brands || []);
+    const tempSet = new Set((filters.temperature || []).map((t) => TEMPERATURE_VALUE_MAP[t]));
+    const hazardSet = new Set((filters.hazards || []).map((h) => HAZARD_VALUE_MAP[h]));
+    const priceCap = filters.priceRange && filters.priceRange < 50000 ? filters.priceRange : null;
+
+    let list = reagents.filter((p) => {
+      if (q) {
+        const hay = [
+          p.name,
+          p.sku,
+          p.description,
+          getProductBrandName(p),
+          Array.isArray(p.tags) ? p.tags.join(' ') : '',
+        ].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+
+      if (brandSet.size && !brandSet.has(getProductBrandName(p))) return false;
+
+      if (tempSet.size && !tempSet.has(resolveTemperatureKey(p))) return false;
+
+      if (hazardSet.size && !hazardSet.has(resolveHazardKey(p))) return false;
+
+      if (priceCap != null && (Number(p.price) || 0) > priceCap) return false;
+
+      return true;
+    });
+
+    if (sortBy === 'price-low') {
+      list = [...list].sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    } else if (sortBy === 'price-high') {
+      list = [...list].sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    } else if (sortBy === 'brand') {
+      list = [...list].sort((a, b) =>
+        getProductBrandName(a).localeCompare(getProductBrandName(b))
+      );
+    }
+
+    const computedTotal = list.length;
+    const computedTotalPages = Math.max(1, Math.ceil(computedTotal / PAGE_SIZE));
+    const safePage = Math.min(page, computedTotalPages);
+    const computedPageItems = list.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+    return {
+      total: computedTotal,
+      totalPages: computedTotalPages,
+      pageItems: computedPageItems,
+    };
+  }, [reagents, filters, debouncedSearch, sortBy, page]);
 
   return (
     <ReagentErrorBoundary>
@@ -288,7 +342,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
                   Retry
                 </button>
               </div>
-            ) : reagents.length === 0 ? (
+            ) : total === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center bg-gradient-to-br from-white to-blue-50 rounded-2xl border border-blue-100 shadow-sm">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full flex items-center justify-center mb-4">
                   <span className="text-4xl">🔬</span>
@@ -318,7 +372,7 @@ export default function ReagentStorePage({ onNavigateToProduct }) {
               </div>
             ) : (
               <>
-                <ReagentGrid reagents={reagents} onProductClick={handleProductClick} />
+                <ReagentGrid reagents={pageItems} onProductClick={handleProductClick} />
                 {totalPages > 1 && (
                   <div className="mt-8">
                     <Pagination
