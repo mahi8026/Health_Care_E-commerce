@@ -81,13 +81,19 @@ exports.approveB2BUser = async (req, res) => {
       return errorResponse(res, 'User not found', null, 404);
     }
 
-    if (!user.b2bAccount) {
+    // Check if user is B2B: b2bAccount OR role is b2b_customer OR accountType is B2B
+    const isB2BUser = user.b2bAccount || user.role === 'b2b_customer' || user.accountType === 'B2B';
+    
+    if (!isB2BUser) {
       return errorResponse(res, 'User is not a B2B applicant', null, 400);
     }
 
     if (user.b2bApprovalStatus === 'approved') {
       return errorResponse(res, 'User is already approved', null, 400);
     }
+
+    // Ensure b2bAccount flag is set (for consistency)
+    user.b2bAccount = true;
 
     // Generate B2B ID if not exists
     // D6 — count-based IDs collide under concurrent approvals; verify with a
@@ -114,6 +120,7 @@ exports.approveB2BUser = async (req, res) => {
     user.b2bApprovedBy = req.user.id;
     user.b2bDiscountEnabled = true; // Enable B2B pricing
     user.role = 'b2b_customer'; // Upgrade role
+    user.accountType = 'B2B'; // Set account type
 
     await user.save();
 
@@ -148,10 +155,15 @@ exports.rejectB2BUser = async (req, res) => {
       return errorResponse(res, 'User not found', null, 404);
     }
 
-    if (!user.b2bAccount) {
+    // Check if user is B2B: b2bAccount OR role is b2b_customer OR accountType is B2B
+    const isB2BUser = user.b2bAccount || user.role === 'b2b_customer' || user.accountType === 'B2B';
+    
+    if (!isB2BUser) {
       return errorResponse(res, 'User is not a B2B applicant', null, 400);
     }
 
+    // Ensure b2bAccount flag is set (for consistency)
+    user.b2bAccount = true;
     user.b2bApprovalStatus = 'rejected';
     user.b2bRejectedAt = new Date();
     user.b2bRejectionReason = reason;
