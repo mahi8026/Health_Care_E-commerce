@@ -9,6 +9,7 @@ export const translations = {
     nav: {
       products: 'Products',
       reagentStore: 'Reagent Store',
+      equipmentPrices: 'Price Guide',
       trackOrder: 'Track Order',
       b2bPortal: 'B2B Portal',
       login: 'Log in',
@@ -245,6 +246,7 @@ export const translations = {
     nav: {
       products: 'পণ্যসমূহ',
       reagentStore: 'রিএজেন্ট স্টোর',
+      equipmentPrices: 'প্রাইস গাইড',
       trackOrder: 'অর্ডার ট্র্যাক',
       b2bPortal: 'বি২বি পোর্টাল',
       login: 'লগ ইন',

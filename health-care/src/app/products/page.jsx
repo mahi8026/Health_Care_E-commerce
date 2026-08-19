@@ -1,12 +1,15 @@
 /**
- * Products listing page — Server Component wrapper.
+ * Products listing page — Server Component.
  *
- * Exports static metadata for the /products route.
- * ProductsPage is a Client Component and handles all filtering/fetching
- * client-side; onProductClick falls back to internal router navigation.
+ * Server-renders the first page of products (with filters from the URL)
+ * so the catalog is fully crawlable without JavaScript. ProductsPage is a
+ * Client Component that hydrates with this data and continues fetching
+ * client-side on subsequent filter/page changes.
  */
 import ProductsPage from '@/views/ProductsPage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
+import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
+import { fetchListing } from '@/lib/listingData';
 
 export const metadata = {
   title:       PAGE_SEO.products.title,
@@ -21,7 +24,32 @@ export const metadata = {
   },
 };
 
-export default function ProductsRoute() {
-  // ProductsPage uses its own internal router for navigation — no prop needed.
-  return <ProductsPage />;
+export default async function ProductsRoute({ searchParams }) {
+  const resolvedParams = await Promise.resolve(searchParams || {});
+  const val = (key) => {
+    const v = resolvedParams[key];
+    return Array.isArray(v) ? v[0] || '' : v || '';
+  };
+  const categoryName = val('category');
+  const category = CATEGORY_NAME_TO_SLUG[categoryName] || categoryName || '';
+  const listing = await fetchListing({
+    search: val('q'),
+    category,
+    brand: val('brand'),
+    minPrice: val('minPrice'),
+    maxPrice: val('maxPrice'),
+    inStock: val('inStock') === 'true',
+    sortBy: val('sort') || 'name',
+    page: val('page') || '1',
+  });
+
+  return (
+    <ProductsPage
+      initialData={listing.products}
+      initialPagination={listing.pagination}
+      initialCategories={listing.categories}
+      initialBrands={listing.brands}
+      initialFilters={listing.filters}
+    />
+  );
 }

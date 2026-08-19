@@ -31,16 +31,11 @@ async function fetchBrandProducts(name) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Static params — one page per active brand
-// ---------------------------------------------------------------------------
-export async function generateStaticParams() {
-  const brands = await fetchBrands();
-  return brands.filter(b => b.slug).map(b => ({ slug: b.slug }));
-}
-
 // Allow brands not present at build time (new manufacturers)
 export const dynamicParams = true;
+// ISR: render on first request, cache for 1 hour instead of pre-rendering
+// every brand at build time (avoids heavy backend load during builds).
+export const revalidate = 3600;
 
 // ---------------------------------------------------------------------------
 // Metadata

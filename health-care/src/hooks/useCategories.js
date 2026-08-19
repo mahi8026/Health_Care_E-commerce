@@ -17,12 +17,17 @@ import { useState, useEffect } from 'react';
  * if (error) return <ErrorMessage message={error} />;
  * return <CategoryList categories={categories} />;
  */
-export function useCategories() {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function useCategories(initialData = null) {
+  const [categories, setCategories] = useState(
+    Array.isArray(initialData) && initialData.length > 0 ? initialData : []
+  );
+  const [loading, setLoading] = useState(
+    !(Array.isArray(initialData) && initialData.length > 0)
+  );
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (Array.isArray(initialData) && initialData.length > 0) return;
     const controller = new AbortController();
 
     const fetchCategories = async () => {
@@ -52,6 +57,7 @@ export function useCategories() {
     fetchCategories();
 
     return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { categories, loading, error };

@@ -13,7 +13,15 @@ import ProductFiltersMobile from '@/components/product/ProductFiltersMobile';
 import { CATEGORY_CONTENT, CATEGORY_SEO } from '@/config/seo';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
-export default function ProductsPage({ onProductClick, initialCategory }) {
+export default function ProductsPage({
+  onProductClick,
+  initialCategory,
+  initialData = null,
+  initialPagination = null,
+  initialCategories = null,
+  initialBrands = null,
+  initialFilters = null,
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -35,7 +43,10 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     };
   });
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => {
+    const p = parseInt(searchParams.get('page') || '1', 10);
+    return Number.isNaN(p) || p < 1 ? 1 : p;
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sync URL search params back to state when URL changes (e.g. Header search navigation)
@@ -87,8 +98,8 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
   }, [searchParams, pathname]);
 
   // Use custom hooks for data fetching
-  const { categories, loading: categoriesLoading } = useCategories();
-  const { brands, loading: brandsLoading } = useBrands();
+  const { categories, loading: categoriesLoading } = useCategories(initialCategories);
+  const { brands, loading: brandsLoading } = useBrands(initialBrands);
 
   // Sync filters to URL - but preserve category page URLs (/products/category/slug)
   useEffect(() => {
@@ -138,7 +149,12 @@ export default function ProductsPage({ onProductClick, initialCategory }) {
     page
   }), [searchQuery, searchCategory, filters, sortBy, page]);
 
-  const { products, loading, pagination, error } = useProducts(productFilters);
+  const { products, loading, pagination, error } = useProducts(
+    productFilters,
+    initialData,
+    initialPagination,
+    initialFilters
+  );
 
   const handleSearch = useCallback((e) => {
     e.preventDefault();

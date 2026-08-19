@@ -67,6 +67,7 @@ export default function Footer() {
       heading: 'Guides',
       items: [
         { label: 'All Buying Guides', href: '/guides' },
+        { label: 'Equipment Price Guide', href: '/equipment' },
         { label: 'Medical Equipment Guide', href: '/guides/medical-equipment-bangladesh-guide' },
         { label: 'ECG Machine Prices', href: '/guides/ecg-machine-price-bangladesh-2026' },
         { label: 'BP Monitor Buying Guide', href: '/guides/bp-monitor-buying-guide-bangladesh' },

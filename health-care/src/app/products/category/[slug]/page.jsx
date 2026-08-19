@@ -17,6 +17,7 @@ import { notFound } from 'next/navigation';
 import ProductsPage from '@/views/ProductsPage';
 import { CATEGORY_SEO, SITE_CONFIG } from '@/config/seo';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import { fetchListing } from '@/lib/listingData';
 import {
   getCategoryFaqs,
   getCategoryQuickAnswer,
@@ -27,14 +28,11 @@ import StructuredData, {
 import FAQSchema from '@/components/seo/FAQSchema';
 import CollectionPageSchema from '@/components/seo/CollectionPageSchema';
 
-// Allow dynamic params beyond pre-generated ones
+// ISR: render on first request, cache for 1 hour. Avoids heavy backend
+// load during build-time static generation while still serving static HTML
+// to crawlers.
+export const revalidate = 3600;
 export const dynamicParams = true;
-
-// Generate static params at build time for all known category slugs
-export async function generateStaticParams() {
-  const slugs = Object.keys(CATEGORY_SLUG_MAP).map(slug => ({ slug }));
-  return slugs;
-}
 
 // Per-category metadata — full title, description, canonical, OG
 export async function generateMetadata({ params }) {
@@ -83,6 +81,8 @@ export default async function CategoryPage({ params }) {
   const faqs = getCategoryFaqs(resolvedParams.slug);
   const seo = CATEGORY_SEO[categoryName] || {};
 
+  const listing = await fetchListing({ category: resolvedParams.slug, page: '1' });
+
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
     { name: 'Products', url: `${SITE_CONFIG.url}/products` },
@@ -115,7 +115,14 @@ export default async function CategoryPage({ params }) {
       />
 
       {/* Pass the resolved category name to ProductsPage so it pre-filters */}
-      <ProductsPage initialCategory={categoryName} />
+      <ProductsPage
+        initialCategory={categoryName}
+        initialData={listing.products}
+        initialPagination={listing.pagination}
+        initialCategories={listing.categories}
+        initialBrands={listing.brands}
+        initialFilters={listing.filters}
+      />
 
       {/* Quick Answer box — Moved to bottom for better UX, still available for SEO/AI engines */}
       {quickAnswer && (

@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
 
+export const revalidate = 3600;
+
 export const metadata = {
   title: 'Medical Equipment Brands in Bangladesh | MediportBD',
   description:

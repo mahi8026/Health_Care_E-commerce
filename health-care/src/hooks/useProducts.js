@@ -12,6 +12,8 @@ import api from '@/utils/api';
  *
  * @param {Object}   [filters={}]      - Query params (category, brand, search, page, limit, sortBy, lastId, …)
  * @param {Object[]} [initialData=null] - Pre-fetched products from the server component
+ * @param {Object}   [initialPagination=null] - Pagination metadata from the server component
+ * @param {Object}   [initialFilters=null] - The exact filters used to fetch initialData; first fetch is skipped when it matches
  * @returns {{ products: Object[], loading: boolean, error: string|null, pagination: Object, refetch: () => Promise<void> }}
  *
  * @example
@@ -22,16 +24,15 @@ import api from '@/utils/api';
  * // Cursor-based pagination
  * const { products, loading, pagination } = useProducts({ category: 'Diagnostics', lastId: '507f1f77bcf86cd799439011' });
  */
-export function useProducts(filters = {}, initialData = null) {
+export function useProducts(filters = {}, initialData = null, initialPagination = null, initialFilters = null) {
   const [products, setProducts] = useState(
-    initialData && initialData.length > 0 ? initialData : []
+    Array.isArray(initialData) && initialData.length > 0 ? initialData : []
   );
   const [loading, setLoading] = useState(
-    // Only show loading spinner if we have no initial data
-    !(initialData && initialData.length > 0)
+    !(Array.isArray(initialData) && initialData.length > 0)
   );
   const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState(initialPagination || {
     total: 0,
     page: 1,
     pages: 0,
@@ -93,8 +94,10 @@ export function useProducts(filters = {}, initialData = null) {
   useEffect(() => {
     const currentFilters = JSON.stringify(filters);
 
-    // Skip first mount if no filters and we already have initial data
-    if (!isMountedRef.current && Object.keys(filters).length === 0 && initialData?.length > 0) {
+    // Skip first fetch when server already provided data for these exact filters
+    if (!isMountedRef.current && Array.isArray(initialData) && initialData.length > 0 && (
+      initialFilters === null || JSON.stringify(filters) === JSON.stringify(initialFilters)
+    )) {
       isMountedRef.current = true;
       return;
     }

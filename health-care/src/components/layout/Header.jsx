@@ -85,6 +85,7 @@ const CATEGORY_DESC = {
 
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
+  { label: 'equipmentPrices', href: '/equipment' },
   { label: 'trackOrder', href: '/track' },
 ];
 

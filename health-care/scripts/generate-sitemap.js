@@ -164,6 +164,169 @@ ${urls}
 </urlset>`;
 }
 
+// Fetch all categories from the API
+async function fetchAllCategories() {
+  console.log('[Sitemap] Fetching categories...');
+  try {
+    const data = await fetchWithRetry(`${BACKEND_URL}/categories?limit=100`);
+    const list = Array.isArray(data.data?.categories) ? data.data.categories
+      : (Array.isArray(data.categories) ? data.categories : []);
+    console.log(`[Sitemap] Fetched ${list.length} categories`);
+    return list;
+  } catch (err) {
+    console.error('[Sitemap] Category fetch failed:', err.message);
+    return [];
+  }
+}
+
+// Fetch all manufacturers from the API
+async function fetchAllManufacturers() {
+  console.log('[Sitemap] Fetching manufacturers...');
+  try {
+    const data = await fetchWithRetry(`${BACKEND_URL}/manufacturers?limit=100`);
+    const list = Array.isArray(data.data?.manufacturers) ? data.data.manufacturers
+      : (Array.isArray(data.manufacturers) ? data.manufacturers : []);
+    console.log(`[Sitemap] Fetched ${list.length} manufacturers`);
+    return list;
+  } catch (err) {
+    console.error('[Sitemap] Manufacturer fetch failed:', err.message);
+    return [];
+  }
+}
+
+// Import the guides config (ESM) for guide URLs
+async function loadGuides() {
+  try {
+    const mod = await import('../src/config/guides.js');
+    return Array.isArray(mod.GUIDES) ? mod.GUIDES : [];
+  } catch (err) {
+    console.error('[Sitemap] Guides config import failed:', err.message);
+    return [];
+  }
+}
+
+// Import the landing pages config (ESM) for equipment landing page URLs
+async function loadLandingPages() {
+  try {
+    const mod = await import('../src/config/landingPages.js');
+    return Array.isArray(mod.LANDING_PAGES) ? mod.LANDING_PAGES : [];
+  } catch (err) {
+    console.error('[Sitemap] Landing pages config import failed:', err.message);
+    return [];
+  }
+}
+
+// Generate a single combined sitemap covering all page types
+function generateFullSitemapXML(products, categories, manufacturers, guides, landingPages = []) {
+  const now = new Date().toISOString();
+  const urlset = [];
+
+  // Static pages
+  const staticPages = [
+    { url: `${SITE_URL}`, lastmod: now, freq: 'daily', pri: 1.0 },
+    { url: `${SITE_URL}/products`, lastmod: now, freq: 'daily', pri: 0.9 },
+    { url: `${SITE_URL}/brands`, lastmod: now, freq: 'weekly', pri: 0.8 },
+    { url: `${SITE_URL}/guides`, lastmod: now, freq: 'monthly', pri: 0.8 },
+    { url: `${SITE_URL}/compare`, lastmod: now, freq: 'monthly', pri: 0.7 },
+    { url: `${SITE_URL}/reagent-store`, lastmod: now, freq: 'daily', pri: 0.9 },
+    { url: `${SITE_URL}/b2b`, lastmod: now, freq: 'weekly', pri: 0.8 },
+    { url: `${SITE_URL}/about`, lastmod: now, freq: 'monthly', pri: 0.8 },
+    { url: `${SITE_URL}/dgda-info`, lastmod: now, freq: 'monthly', pri: 0.7 },
+    { url: `${SITE_URL}/certifications`, lastmod: now, freq: 'monthly', pri: 0.7 },
+    { url: `${SITE_URL}/faq`, lastmod: now, freq: 'monthly', pri: 0.6 },
+    { url: `${SITE_URL}/contact`, lastmod: now, freq: 'monthly', pri: 0.6 },
+    { url: `${SITE_URL}/careers`, lastmod: now, freq: 'monthly', pri: 0.6 },
+    { url: `${SITE_URL}/news`, lastmod: now, freq: 'weekly', pri: 0.6 },
+    { url: `${SITE_URL}/warranty`, lastmod: now, freq: 'monthly', pri: 0.6 },
+    { url: `${SITE_URL}/help`, lastmod: now, freq: 'monthly', pri: 0.5 },
+    { url: `${SITE_URL}/support`, lastmod: now, freq: 'monthly', pri: 0.5 },
+    { url: `${SITE_URL}/returns`, lastmod: now, freq: 'monthly', pri: 0.5 },
+    { url: `${SITE_URL}/track`, lastmod: now, freq: 'monthly', pri: 0.5 },
+    { url: `${SITE_URL}/privacy`, lastmod: now, freq: 'yearly', pri: 0.3 },
+    { url: `${SITE_URL}/terms`, lastmod: now, freq: 'yearly', pri: 0.3 },
+  ];
+
+  // Categories
+  const categoryUrls = categories
+    .filter(c => c.slug)
+    .map(c => ({
+      url: `${SITE_URL}/products/category/${c.slug}`,
+      lastmod: c.updatedAt || now,
+      freq: 'daily',
+      pri: 0.85,
+    }));
+
+  // Brands
+  const brandUrls = manufacturers
+    .filter(b => b.slug)
+    .map(b => ({
+      url: `${SITE_URL}/brands/${b.slug}`,
+      lastmod: b.updatedAt || now,
+      freq: 'weekly',
+      pri: 0.7,
+    }));
+
+  // Guides
+  const guideUrls = guides
+    .filter(g => g.slug)
+    .map(g => ({
+      url: `${SITE_URL}/guides/${g.slug}`,
+      lastmod: g.updatedAt || now,
+      freq: 'monthly',
+      pri: g.type === 'pillar' ? 0.9 : 0.7,
+    }));
+
+  // Equipment landing pages
+  const equipmentUrls = [
+    { url: `${SITE_URL}/equipment`, lastmod: now, freq: 'weekly', pri: 0.9 },
+    ...landingPages
+      .filter(p => p.slug)
+      .map(p => ({
+        url: `${SITE_URL}/equipment/${p.slug}`,
+        lastmod: now,
+        freq: 'weekly',
+        pri: 0.8,
+      })),
+  ];
+
+  // Products
+  const productUrls = products
+    .filter(p => p.slug || p._id)
+    .map(p => ({
+      url: `${SITE_URL}/products/${p.slug || p._id}`,
+      lastmod: p.updatedAt ? new Date(p.updatedAt).toISOString() : now,
+      freq: 'weekly',
+      pri: 0.7,
+    }));
+
+  const all = [...staticPages, ...equipmentUrls, ...categoryUrls, ...brandUrls, ...guideUrls, ...productUrls];
+
+  all.forEach(page => {
+    urlset.push(`  <url>
+    <loc>${page.url}</loc>
+    <lastmod>${new Date(page.lastmod).toISOString()}</lastmod>
+    <changefreq>${page.freq}</changefreq>
+    <priority>${page.pri}</priority>
+  </url>`);
+  });
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlset.join('\n')}
+</urlset>`;
+}
+
+// Ensure a file is written (skips empty results)
+function writeXmlFile(relPath, xml, label) {
+  const out = path.join(__dirname, relPath);
+  const dir = path.dirname(out);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(out, xml, 'utf-8');
+  const kb = (xml.length / 1024).toFixed(2);
+  const count = (xml.match(/<loc>/g) || []).length;
+  console.log(`[Sitemap] ✅ ${label}: ${out} (${kb} KB, ${count} URLs)`);
+}
+
 // Main execution
 async function main() {
   console.log('=================================================');
@@ -188,11 +351,20 @@ async function main() {
     }
     
     console.log(`\n[Sitemap] Fetched ${products.length} products in ${elapsed}s`);
-    
+
+    // Fetch supporting data for the full sitemap
+    const [categories, manufacturers, guides, landingPages] = await Promise.all([
+      fetchAllCategories(),
+      fetchAllManufacturers(),
+      loadGuides(),
+      loadLandingPages(),
+    ]);
+
     // Generate XML
     console.log('[Sitemap] Generating XML...');
     const xml = generateSitemapXML(products);
-    
+    const fullXml = generateFullSitemapXML(products, categories, manufacturers, guides, landingPages);
+
     // Ensure public directory exists
     const publicDir = path.dirname(OUTPUT_FILE);
     if (!fs.existsSync(publicDir)) {
@@ -201,8 +373,9 @@ async function main() {
     
     // Write to file
     fs.writeFileSync(OUTPUT_FILE, xml, 'utf-8');
+    writeXmlFile('../public/sitemap-full.xml', fullXml, 'Full sitemap');
     
-    console.log(`[Sitemap] ✅ Sitemap generated successfully!`);
+    console.log(`[Sitemap] ✅ Product sitemap generated successfully!`);
     console.log(`[Sitemap] File: ${OUTPUT_FILE}`);
     console.log(`[Sitemap] Size: ${(xml.length / 1024).toFixed(2)} KB`);
     console.log(`[Sitemap] URLs: ${products.length}`);

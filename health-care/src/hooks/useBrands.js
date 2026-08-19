@@ -17,12 +17,17 @@ import { useState, useEffect } from 'react';
  * if (error) return <ErrorMessage message={error} />;
  * return <BrandList brands={brands} />;
  */
-export function useBrands() {
-  const [brands, setBrands] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function useBrands(initialData = null) {
+  const [brands, setBrands] = useState(
+    Array.isArray(initialData) && initialData.length > 0 ? initialData : []
+  );
+  const [loading, setLoading] = useState(
+    !(Array.isArray(initialData) && initialData.length > 0)
+  );
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (Array.isArray(initialData) && initialData.length > 0) return;
     const controller = new AbortController();
 
     const fetchBrands = async () => {
@@ -52,6 +57,7 @@ export function useBrands() {
     fetchBrands();
 
     return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { brands, loading, error };
