@@ -14,6 +14,7 @@ export default function B2BUsersList() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const fetchUsers = async () => {
     try {
@@ -34,6 +35,15 @@ export default function B2BUsersList() {
       if (data.success) {
         setUsers(data.data || []);
         setPagination(data.pagination);
+      }
+
+      // Fetch pending count separately
+      const pendingRes = await fetch(`${API}/admin/b2b/users?status=pending&limit=1`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const pendingData = await pendingRes.json();
+      if (pendingData.success && pendingData.pagination) {
+        setPendingCount(pendingData.pagination.total || 0);
       }
     } catch (error) {
       console.error('Failed to fetch B2B users:', error);
@@ -148,6 +158,33 @@ export default function B2BUsersList() {
 
   return (
     <div className="space-y-4">
+      {/* Pending Applications Alert */}
+      {pendingCount > 0 && filter !== 'pending' && (
+        <div className="bg-gradient-to-r from-[var(--color-status-warning)] to-yellow-500 rounded-lg p-4 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <span className="text-2xl">🛡️</span>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg">
+                  {pendingCount} B2B Application{pendingCount > 1 ? 's' : ''} Awaiting Approval
+                </h3>
+                <p className="text-white/90 text-sm">
+                  Review and approve/reject B2B customer applications
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setFilter('pending')}
+              className="px-6 py-2 bg-white text-[var(--color-status-warning)] rounded-lg hover:bg-[var(--color-background-tertiary)] font-medium shadow-md transition-colors"
+            >
+              Review Now
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">

@@ -84,6 +84,9 @@ exports.getDashboard = async (req, res) => {
     // Active B2B clients
     const activeB2B = await User.countDocuments({ role: 'b2b_customer', isActive: true });
 
+    // Pending B2B applications
+    const pendingB2BApplications = await User.countDocuments({ b2bAccount: true, b2bApprovalStatus: 'pending' });
+
     // Pending quotes
     const pendingQuotes = await Quote.countDocuments({ status: 'pending' });
 
@@ -173,6 +176,7 @@ exports.getDashboard = async (req, res) => {
         ordersGrowthTrend: ordersGrowthMeta.trend,
         activeB2B,
         pendingQuotes,
+        pendingB2BApplications,
         abandonedCarts: totalAbandoned,
         abandonedCartValue,
         cartRecoveryRate: recoveryRate,
@@ -509,12 +513,19 @@ exports.getBadges = async (req, res) => {
       status: 'pending'
     });
 
-    // For now, set notifications to 0 (can be enhanced later with a notifications system)
-    const unreadNotifications = 0;
+    // Count pending B2B applications
+    const pendingB2B = await User.countDocuments({
+      b2bAccount: true,
+      b2bApprovalStatus: 'pending'
+    });
+
+    // Calculate total unread notifications (orders + quotes + B2B applications)
+    const unreadNotifications = pendingOrders + pendingQuotes + pendingB2B;
 
     return successResponse(res, {
       pendingOrders,
       pendingQuotes,
+      pendingB2B,
       unreadNotifications
     });
   } catch (error) {

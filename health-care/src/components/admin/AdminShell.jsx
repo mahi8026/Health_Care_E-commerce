@@ -16,7 +16,7 @@ export default function AdminShell({ children, title, action, onAction }) {
   const searchRef = useRef(null);
   const notifRef  = useRef(null);
   const userRef   = useRef(null);
-  const [badges, setBadges] = useState({ orders: 0, quotes: 0, notifications: 0 });
+  const [badges, setBadges] = useState({ orders: 0, quotes: 0, b2b: 0, notifications: 0 });
   const [notifications, setNotifications] = useState([]);
 
   const adminUser = {
@@ -54,6 +54,7 @@ export default function AdminShell({ children, title, action, onAction }) {
             setBadges({
               orders:        data.data.pendingOrders       || 0,
               quotes:        data.data.pendingQuotes       || 0,
+              b2b:           data.data.pendingB2B          || 0,
               notifications: data.data.unreadNotifications || 0,
             });
           }
@@ -109,7 +110,7 @@ export default function AdminShell({ children, title, action, onAction }) {
     { id: 'flash-deals',    path: '/admin/flash-deals',       icon: '🔥', label: 'Flash Deals' },
     { id: 'banners',        path: '/admin/banners',           icon: '🖼️', label: 'Banners' },
     { id: 'customers',      path: '/admin/customers',         icon: '👥', label: 'Customers' },
-    { id: 'b2b',            path: '/admin/b2b',               icon: '🛡️', label: 'B2B Management' },
+    { id: 'b2b',            path: '/admin/b2b',               icon: '🛡️', label: 'B2B Management', badge: badges.b2b > 0 ? String(badges.b2b) : null },
     { id: 'whatsapp',       path: '/admin/whatsapp',          icon: '💬', label: 'WhatsApp' },
     { id: 'chat',           path: '/admin/chat',              icon: '🗨️', label: 'Live Chat' },
     { id: 'coupons',        path: '/admin/coupons',           icon: '🎟️', label: 'Coupons' },
@@ -355,7 +356,14 @@ export default function AdminShell({ children, title, action, onAction }) {
                         <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Awaiting response</p>
                       </button>
                     )}
-                    {badges.orders === 0 && badges.quotes === 0 && (
+                    {badges.b2b > 0 && (
+                      <button type="button" onClick={() => { router.push('/admin/b2b'); setShowNotifications(false); }}
+                        className="w-full text-left px-4 py-3 hover:bg-[var(--color-background-secondary)] transition-colors">
+                        <p className="text-sm font-medium text-[var(--color-text-primary)]">🛡️ {badges.b2b} pending B2B application{badges.b2b > 1 ? 's' : ''}</p>
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">Awaiting approval</p>
+                      </button>
+                    )}
+                    {badges.orders === 0 && badges.quotes === 0 && badges.b2b === 0 && (
                       <div className="px-4 py-8 text-center">
                         <p className="text-3xl mb-2">🎉</p>
                         <p className="text-sm font-medium text-[var(--color-text-primary)]">All caught up!</p>

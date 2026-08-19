@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardSkeleton from './DashboardSkeleton';
 import OrderDetailModal from './OrderDetailModal';
 import KPIDetailModal from './KPIDetailModal';
+import B2BPendingAlert from './B2BPendingAlert';
 import { API } from '@/constants/api';
 import { formatBdt, formatPrice, formatGrowthBadge } from '@/utils/formatBdt';
 
@@ -142,16 +143,20 @@ export default function DashboardOverview() {
     {
       label: 'Active B2B Clients',
       value: (k.activeB2B ?? 0).toLocaleString('en-BD'),
-      subtitle: k.pendingQuotes
+      subtitle: k.pendingB2BApplications
+        ? `${k.pendingB2BApplications} application${k.pendingB2BApplications === 1 ? '' : 's'} pending`
+        : k.pendingQuotes
         ? `${k.pendingQuotes} pending quote${k.pendingQuotes === 1 ? '' : 's'}`
-        : 'No pending quotes',
-      badge: k.pendingQuotes
-        ? { text: `${k.pendingQuotes} pending`, variant: 'warning' }
+        : 'No pending actions',
+      badge: k.pendingB2BApplications
+        ? { text: `${k.pendingB2BApplications} pending`, variant: 'warning' }
+        : k.pendingQuotes
+        ? { text: `${k.pendingQuotes} quote${k.pendingQuotes === 1 ? '' : 's'}`, variant: 'neutral' }
         : { text: 'All clear', variant: 'neutral' },
       icon: '👥',
       accent: '#7C3AED',
       detail: { stats: k, type: 'b2b' },
-      navigate: 'customers',
+      navigate: 'b2b',
     },
     {
       label: 'Abandoned Carts',
@@ -199,6 +204,9 @@ export default function DashboardOverview() {
 
   return (
     <div>
+      {/* B2B Pending Applications Alert */}
+      <B2BPendingAlert />
+
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <p className="text-xs text-[var(--color-text-secondary)]">
           Live metrics
@@ -229,7 +237,13 @@ export default function DashboardOverview() {
             badge={kpi.badge}
             icon={kpi.icon}
             accent={kpi.accent}
-            onClick={() => handleKPIClick(kpi)}
+            onClick={() => {
+              if (kpi.navigate === 'b2b') {
+                router.push('/admin/b2b');
+              } else {
+                handleKPIClick(kpi);
+              }
+            }}
           />
         ))}
       </div>
