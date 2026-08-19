@@ -142,10 +142,10 @@ async function ensureManufacturer(manufacturerData) {
       logger.info(`✅ Created manufacturer: ${manufacturerData.name}`);
       return { created: true, manufacturer };
     } else if (!manufacturer.isActive) {
-      manufacturer.isActive = true;
-      await manufacturer.save();
-      logger.info(`✅ Activated manufacturer: ${manufacturerData.name}`);
-      return { activated: true, manufacturer };
+      // Respect admin soft-deletes: never re-activate a manufacturer that was
+      // deliberately deactivated/deleted from the admin panel.
+      logger.warn(`⚠️ Skipping inactive manufacturer (admin deactivated): ${manufacturerData.name}`);
+      return { skipped: true, manufacturer };
     }
 
     return { exists: true, manufacturer };
@@ -179,10 +179,10 @@ async function ensureCategory(categoryData) {
       logger.info(`✅ Created category: ${categoryData.name}`);
       return { created: true, category };
     } else if (!category.isActive) {
-      category.isActive = true;
-      await category.save();
-      logger.info(`✅ Activated category: ${categoryData.name}`);
-      return { activated: true, category };
+      // Respect admin soft-deletes: never re-activate a category that was
+      // deliberately deactivated/deleted from the admin panel.
+      logger.warn(`⚠️ Skipping inactive category (admin deactivated): ${categoryData.name}`);
+      return { skipped: true, category };
     }
 
     return { exists: true, category };
@@ -287,8 +287,8 @@ async function syncData() {
     logger.info('🔄 Starting data synchronization...');
 
     const stats = {
-      manufacturers: { created: 0, activated: 0, exists: 0 },
-      categories: { created: 0, activated: 0, exists: 0 },
+      manufacturers: { created: 0, skipped: 0, exists: 0 },
+      categories: { created: 0, skipped: 0, exists: 0 },
       productsFixed: 0
     };
 
@@ -298,8 +298,8 @@ async function syncData() {
       const result = await ensureManufacturer(mfrData);
       if (result.created) {
 stats.manufacturers.created++;
-} else if (result.activated) {
-stats.manufacturers.activated++;
+} else if (result.skipped) {
+stats.manufacturers.skipped++;
 } else {
 stats.manufacturers.exists++;
 }
@@ -311,8 +311,8 @@ stats.manufacturers.exists++;
       const result = await ensureCategory(catData);
       if (result.created) {
 stats.categories.created++;
-} else if (result.activated) {
-stats.categories.activated++;
+} else if (result.skipped) {
+stats.categories.skipped++;
 } else {
 stats.categories.exists++;
 }
@@ -325,9 +325,7 @@ stats.categories.exists++;
     // 4. Clear cache if any changes were made
     const hasChanges = 
       stats.manufacturers.created > 0 || 
-      stats.manufacturers.activated > 0 ||
       stats.categories.created > 0 ||
-      stats.categories.activated > 0 ||
       stats.productsFixed > 0;
 
     if (hasChanges) {
@@ -339,8 +337,8 @@ stats.categories.exists++;
 
     // 5. Log summary
     const summary = `✅ Data synchronization completed:
-   Manufacturers - Created: ${stats.manufacturers.created}, Activated: ${stats.manufacturers.activated}, Exists: ${stats.manufacturers.exists}
-   Categories - Created: ${stats.categories.created}, Activated: ${stats.categories.activated}, Exists: ${stats.categories.exists}
+   Manufacturers - Created: ${stats.manufacturers.created}, Skipped (admin-deactivated): ${stats.manufacturers.skipped}, Exists: ${stats.manufacturers.exists}
+   Categories - Created: ${stats.categories.created}, Skipped (admin-deactivated): ${stats.categories.skipped}, Exists: ${stats.categories.exists}
    Products Fixed: ${stats.productsFixed}`;
     
     logger.info(summary);
