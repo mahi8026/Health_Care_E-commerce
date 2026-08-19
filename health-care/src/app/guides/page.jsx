@@ -8,7 +8,7 @@ export const metadata = {
   description:
     'Expert medical equipment guides for Bangladesh: ECG machine prices, BP monitor buying guide, DGDA registration explained, laboratory reagents and hospital equipment — written by MediportBD\u2019s clinical team.',
   keywords: 'medical equipment guide Bangladesh, ECG machine price BD, BP monitor buying guide, DGDA registration, laboratory reagents guide, hospital equipment Bangladesh',
-  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}/guides` },
+  alternates: { canonical: `${SITE_CONFIG.url}/guides` },
   openGraph: {
     title: 'Medical Equipment Guides & Comparisons Bangladesh 2026',
     description: 'Expert buying guides and brand comparisons for medical equipment in Bangladesh.',

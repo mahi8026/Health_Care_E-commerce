@@ -25,6 +25,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
+import CollectionPageSchema from '@/components/seo/CollectionPageSchema';
 
 // Allow dynamic params beyond pre-generated ones
 export const dynamicParams = true;
@@ -80,6 +81,7 @@ export default async function CategoryPage({ params }) {
   const canonicalUrl = `${SITE_CONFIG.url}/products/category/${resolvedParams.slug}`;
   const quickAnswer = getCategoryQuickAnswer(resolvedParams.slug);
   const faqs = getCategoryFaqs(resolvedParams.slug);
+  const seo = CATEGORY_SEO[categoryName] || {};
 
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
@@ -105,6 +107,12 @@ export default async function CategoryPage({ params }) {
       <StructuredData schema={breadcrumbSchema} />
       <StructuredData schema={webPageSchema} />
       <FAQSchema faqs={faqs} />
+      <CollectionPageSchema
+        name={categoryName}
+        description={seo.description}
+        category={categoryName}
+        url={canonicalUrl}
+      />
 
       {/* Pass the resolved category name to ProductsPage so it pre-filters */}
       <ProductsPage initialCategory={categoryName} />

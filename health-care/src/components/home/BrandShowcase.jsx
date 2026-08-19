@@ -43,7 +43,12 @@ export default function BrandShowcase() {
   }, []);
 
   const handleBrandClick = (brand) => {
-    router.push(`/products?brand=${encodeURIComponent(brand.name)}`);
+    const slug = brand.slug;
+    if (slug) {
+      router.push(`/brands/${slug}`);
+    } else {
+      router.push(`/products?brand=${encodeURIComponent(brand.name)}`);
+    }
   };
 
   if (loading) {
@@ -98,7 +103,7 @@ export default function BrandShowcase() {
             return (
               <div
                 key={idx}
-                onClick={() => handleBrandClick({ name: brandName })}
+                onClick={() => handleBrandClick(brand)}
                 style={{
                   background: '#fff',
                   border: '2px solid var(--color-border-primary)',

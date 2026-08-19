@@ -276,11 +276,93 @@ All instruments are sterilisation-compatible and available in stainless steel. B
 
 All hospital machines are CE certified and DGDA registered. Professional installation and commissioning service available. 24/7 technical support for B2B clients. Financing options available for large orders.`,
 
-  'Lab Equipment': `Source laboratory equipment in Bangladesh from MediportBD. We supply centrifuges, microcentrifuges, microscopes, autoclaves, incubators, water baths, spectrophotometers and analytical balances from Eppendorf, Beckman Coulter and Grant Instruments.
+  'Laboratory Equipment': `Source laboratory equipment in Bangladesh from MediportBD. We supply centrifuges, microcentrifuges, microscopes, autoclaves, incubators, water baths, spectrophotometers and analytical balances from Eppendorf, Beckman Coulter and Grant Instruments.
 
 Equipment calibration, installation and service contracts available. DGDA registered. University, research institute and hospital pricing available.`,
 
   'PPE & Safety': `MediportBD supplies personal protective equipment (PPE) and infection control supplies to healthcare facilities across Bangladesh. Our range includes surgical gloves, examination gloves, N95 respirators, surgical masks, face shields, protective gowns and shoe covers from Ansell, 3M and Cardinal Health.
 
 Bulk orders welcome. DGDA registered. Fast delivery within Dhaka. B2B contracts for regular supply.`,
+
+  'Orthopedic Supports': `MediportBD is Bangladesh's trusted supplier of orthopedic supports and rehabilitation aids. Our catalog includes knee braces, lumbar belts, cervical collars, wrist and ankle supports, shoulder immobilizers, posture correctors, abdominal belts, splints, crutches and walking sticks from Tynor and other quality manufacturers.
+
+Whether you are recovering from surgery, managing a sports injury or living with chronic joint pain, our orthopedic supports provide the compression, stabilisation and pain relief you need. DGDA registered products with genuine warranty.
+
+Orthopedic support price in Bangladesh: Tynor knee brace, lumbar support belt and cervical collar prices available online with free delivery in Dhaka and nationwide courier service.`,
+
+  'Surgical & Wound Care': `Buy surgical and wound care supplies in Bangladesh from MediportBD. We supply ostomy bags, colostomy sets, urostomy pouches, wound dressings, gauze rolls, adhesive tapes, drain bags, skin closure strips and pressure sore care products from ConvaTec, B-Braun and JMS.
+
+Our wound care range is ideal for home care patients, post-operative recovery and hospital nursing stations. All products are sterile-packed, DGDA registered and supplied at competitive bulk prices for clinics and hospitals.
+
+Ostomy bag price in Bangladesh and colostomy care supplies — browse our full range and order online with doorstep delivery across the country.`,
+
+  'Consumables': `MediportBD supplies medical consumables to hospitals, clinics, diagnostics centers and home care patients across Bangladesh. Our range includes syringes, needles, IV cannulas, catheters, urinary drainage bags, stop cocks, three-way valves, HME filters, endotracheal tubes, suction catheters and adult diapers from Romsons, B-Braun and JMS.
+
+Every consumable is sterilised, CE certified and DGDA registered. Hospitals and clinics enjoy bulk B2B pricing with monthly supply contracts and scheduled delivery.
+
+Spinal needle price Bangladesh, urine bag, catheter and syringe prices — order medical consumables online with same-day dispatch in Dhaka.`,
+
+  'Diabetes Care': `Manage diabetes with genuine monitoring products from MediportBD. We supply blood glucose meters, test strips, lancets, lancing devices and control solutions from Accu-Chek, Omnitest, Yuwell, PCL Care and eBcare — all DGDA registered.
+
+Choose from the Accu-Chek Active and Instant meters for accurate, easy testing at home, or stock your pharmacy and diabetes care centre with our bulk supply options. Test strips are stored properly to protect accuracy.
+
+Glucometer price in Bangladesh and blood glucose test strip prices — compare models and buy online with free delivery in Dhaka.`,
+
+  'Ophthalmology & ENT Equipment': `MediportBD supplies ophthalmology and ENT diagnostic equipment to eye hospitals, ENT clinics and medical colleges in Bangladesh. Our range includes ophthalmoscopes, retinoscopes, slit lamps, otoscopes, nasal specula, tuning forks, laryngeal mirrors, headlights and hearing amplifiers from Heine, Beurer and other leading brands.
+
+All devices are precision-made with LED or halogen illumination for accurate examination. Genuine products with manufacturer warranty and after-sales service.
+
+Ophthalmoscope price Bangladesh and otoscope price in Bangladesh — order diagnostic instruments online with nationwide delivery.`,
+
+  'IV & Infusion Therapy': `IV and infusion therapy supplies from MediportBD keep hospitals and clinics stocked with essential fluid delivery products. We supply IV cannulas, infusion sets, scalp vein sets, burette sets, central venous catheters, extension lines, three-way stop cocks and IV stands from Vasofix (B-Braun), JMS and Romsons.
+
+Products are sterile, pyrogen-free and DGDA registered. Bulk pricing and regular replenishment contracts available for hospital pharmacies.
+
+IV cannula price Bangladesh and infusion set prices — buy online with fast delivery across Bangladesh.`,
+
+  'Physiotherapy & Rehabilitation': `MediportBD provides physiotherapy and rehabilitation equipment for clinics, sports facilities and home therapy. Our range includes TENS therapy devices, EMS muscle stimulators, ultrasound therapy units, infrared lamps, heating pads, hot and cold therapy packs, exercise bands and rehabilitation aids from Jumper, Rossmax and Beurer.
+
+Whether you treat chronic pain, muscle recovery or post-stroke rehabilitation, our equipment supports effective patient care at a fraction of import cost.
+
+TENS machine price in Bangladesh and physiotherapy equipment prices — browse our catalog and order with free delivery in Dhaka.`,
+
+  'Medical Supplies': `General medical supplies from MediportBD cover everyday needs of hospitals, clinics, diagnostic centers and home care. We supply anti-decubitus mattresses, medical tapes, bandages, antiseptic swabs, cotton rolls, safety razors, thermometer covers and patient care essentials from Rossmax, PCL Care and JMS.
+
+Quality healthcare supplies at competitive prices — bulk orders and institutional supply contracts welcome. DGDA registered.
+
+Anti-decubitus mattress price in Bangladesh and medical tape prices — order online with reliable nationwide delivery.`,
+
+  'Blood Bank Supplies': `MediportBD supplies blood bank equipment and consumables to hospitals and blood transfusion centers in Bangladesh. Our range includes blood collection bags, CPDA-1 triple and quadruple blood bags, transfusion sets, blood grouping reagents, tube sealers and related supplies from JMS.
+
+All blood bank supplies meet international safety standards and are DGDA registered. We offer B2B pricing and scheduled supply contracts for blood banks and clinical laboratories.
+
+Blood bag price in Bangladesh and transfusion set prices — contact our B2B team for bulk quotations.`,
+
+  'Respiratory Equipment': `Respiratory care equipment and supplies from MediportBD support hospitals, clinics and home patients across Bangladesh. We supply respirometers, spirometers, CPAP and BiPAP machines, oxygen concentrators, nebulizers, peak flow meters and 3-in-1 respiratory sets from Rossmax, Romsons and Yuwell.
+
+Our respiratory devices are CE certified and DGDA registered, with installation support and after-sales service. B2B clients receive bulk pricing for hospital departments.
+
+Nebulizer price in Bangladesh and CPAP machine price — compare respiratory equipment and buy online with nationwide delivery.`,
+
+  'Compression Garments': `MediportBD supplies medical compression garments for post-surgical recovery, venous disease management and travel protection. Our range includes DVT stockings, anti-embolism stockings, compression socks and post-surgical compression wear from Tynor.
+
+Gradient compression improves blood circulation and reduces the risk of deep vein thrombosis during prolonged bed rest, surgery or long-haul travel. Available in multiple sizes and compression classes.
+
+DVT stocking price in Bangladesh — order compression garments online with fast delivery across the country.`,
+
+  'Diagnostic Devices': `MediportBD offers a complete range of point-of-care diagnostic devices in Bangladesh. Our catalog includes blood glucose meters, cholesterol meters, uric acid meters, body composition analyzers, fetal dopplers and pulse oximeters from Accu-Chek, Rossmax, Beurer and Jumper.
+
+These devices give doctors, clinics and home users fast, accurate results with minimal training. All devices are DGDA registered with genuine warranty and replacement support.
+
+Pulse oximeter price in Bangladesh and fetal doppler price — buy diagnostic devices online with free delivery in Dhaka.`,
+
+  'Medical Devices': `MediportBD supplies advanced medical devices to hospitals and specialty clinics in Bangladesh. Our range includes body composition analyzers, patient monitors, ECG machines and laboratory analyzers from leading global manufacturers — all CE certified and DGDA registered.
+
+We support institutional buyers with professional installation, staff training, service contracts and B2B pricing on multi-unit orders. Contact our team for quotations on hospital-grade medical devices.`,
+
+  'Mobility Aids': `MediportBD supplies mobility aids to improve independence for patients and elderly users across Bangladesh. Our range includes manual and transport wheelchairs, walkers, rollators, crutches, walking sticks, commode chairs and transfer aids.
+
+Each mobility aid is built for durability and patient comfort, with weight capacity and size options for every user. DGDA registered products with warranty and nationwide delivery.
+
+Wheelchair price in Bangladesh and walker price — browse mobility aids online with free delivery in Dhaka and fast courier service nationwide.`,
 };

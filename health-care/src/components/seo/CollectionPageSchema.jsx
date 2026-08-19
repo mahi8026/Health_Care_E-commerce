@@ -1,4 +1,5 @@
 import { escapeJsonLd } from '@/utils/helpers';
+import { SITE_CONFIG } from '@/config/seo';
 
 export default function CollectionPageSchema({
   name,
@@ -9,7 +10,7 @@ export default function CollectionPageSchema({
 }) {
   if (!name) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
+  const baseUrl = SITE_CONFIG.url;
   const collectionUrl = url || `${baseUrl}/products?category=${category || ''}`;
 
   const schema = {
@@ -20,7 +21,7 @@ export default function CollectionPageSchema({
     url: collectionUrl,
     mainEntity: {
       '@type': 'ItemList',
-      numberOfItems: numberOfItems || 0,
+      ...(numberOfItems > 0 && { numberOfItems }),
       itemListElement: []
     },
     breadcrumb: {
@@ -59,7 +60,7 @@ export default function CollectionPageSchema({
 export function ItemListSchema({ items, listName, numberOfItems }) {
   if (!items || items.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
+  const baseUrl = SITE_CONFIG.url;
 
   const schema = {
     '@context': 'https://schema.org',
