@@ -446,10 +446,10 @@ const HOME_STYLES = `
 
         /* Stable product grid heights - reserve space so skeleton/empty-state
            swaps never collapse the section (prevents CLS) */
-        .stable-product-grid, .featured-products-panel { min-height: 340px; }
+        .stable-product-grid, .featured-products-panel { min-height: 420px; }
         @media (min-width: 768px) {
-          .stable-product-grid { min-height: 700px; }
-          .featured-products-panel { min-height: 700px; }
+          .stable-product-grid { min-height: 780px; }
+          .featured-products-panel { min-height: 780px; }
         }
 
         /* Marquee - CONVERTED to static scroll for better performance */
@@ -941,9 +941,11 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 3: FLASH DEALS (Time-sensitive, creates urgency) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={null}>
-        <FlashDealsSection />
-      </Suspense>
+      <div className="cv-slot--flash">
+        <Suspense fallback={null}>
+          <FlashDealsSection />
+        </Suspense>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 4: BEST SELLING PRODUCTS (Social proof, rankings) */}
@@ -1292,21 +1294,25 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 7: CATEGORY PRODUCT SECTIONS (Deep product discovery) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={null}>
-        <CategoryProductSections categories={categories} />
-      </Suspense>
+      <div className="cv-slot--category">
+        <Suspense fallback={null}>
+          <CategoryProductSections categories={categories} />
+        </Suspense>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 8: NEW ARRIVALS (Fresh inventory, auto slider) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {!newArrivalsLoading && newArrivals.length > 0 && (
-        <Suspense fallback={
-          <div style={{ padding: '60px 0', textAlign: 'center' }}>
-            <Spinner />
-          </div>
-        }>
-          <NewArrivalSlider products={newArrivals} />
-        </Suspense>
+        <div className="cv-slot--new-arrivals">
+          <Suspense fallback={
+            <div style={{ padding: '60px 0', textAlign: 'center' }}>
+              <Spinner />
+            </div>
+          }>
+            <NewArrivalSlider products={newArrivals} />
+          </Suspense>
+        </div>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
@@ -1466,28 +1472,32 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 14: SUPPORT & RESOURCES (Additional value, help center) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={
-        <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto', textAlign: 'center' }}>
-            <Spinner size="lg" variant="medical" />
+      <div className="cv-slot--support">
+        <Suspense fallback={
+          <div style={{ padding: '56px 24px', background: 'var(--color-background-secondary)' }}>
+            <div style={{ maxWidth: 1280, margin: '0 auto', textAlign: 'center' }}>
+              <Spinner size="lg" variant="medical" />
+            </div>
           </div>
-        </div>
-      }>
-        <SupportResources />
-      </Suspense>
+        }>
+          <SupportResources />
+        </Suspense>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 15: VIDEO SECTION (Engagement, brand storytelling) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={
-        <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
-            <Spinner size="lg" variant="medical" />
-          </div>
-        </section>
-      }>
-        <VideoSection />
-      </Suspense>
+      <div className="cv-slot--video">
+        <Suspense fallback={
+          <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
+            <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
+              <Spinner size="lg" variant="medical" />
+            </div>
+          </section>
+        }>
+          <VideoSection />
+        </Suspense>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 16: CUSTOMER TESTIMONIALS (Final social proof) */}

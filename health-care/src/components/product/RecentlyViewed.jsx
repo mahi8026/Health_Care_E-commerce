@@ -238,9 +238,9 @@ const CompactProductItem = memo(function CompactProductItem({ product }) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-medium text-[var(--color-text-primary)] dark:text-gray-100 line-clamp-2">
+        <div className="text-sm font-medium text-[var(--color-text-primary)] dark:text-gray-100 line-clamp-2">
           {product.name}
-        </h4>
+        </div>
         <p className="text-sm font-semibold text-brand-teal dark:text-brand-teal mt-1">
           ৳{product.price?.toLocaleString()}
         </p>

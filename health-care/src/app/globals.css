@@ -1936,12 +1936,45 @@ color: var(--color-brand-teal);
    Skips style/layout/paint for off-screen home content until the user scrolls
    near it. contain-intrinsic-size reserves space so the scrollbar doesn't jump;
    the `auto` keyword remembers the rendered size for subsequent loads. */
-/* Below-fold content — previously used `content-visibility: auto` with a
-   4500px intrinsic placeholder; the placeholder being replaced by real
-   height caused the page's dominant CLS (0.126). Sections now reserve
-   their own stable min-heights instead. */
+/* Below-fold content — `content-visibility: auto` skips style/layout/paint
+   for off-screen sections (huge first-render win). The intrinsic-size
+   estimate is the total height of the wrapped sections; growth beyond it
+   happens below the viewport so it never shifts visible content. Each lazy
+   section also reserves its own height (see .cv-slot) so the
+   fallback → content swap is height-neutral. */
 .cv-lazy-stack {
-  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 8200px;
+}
+
+/* Reserved heights for React.lazy sections so their Suspense fallback →
+   content swap never shifts layout (CLS). */
+.cv-slot {
+  min-height: 560px;
+}
+
+.cv-slot--flash {
+  min-height: 480px;
+}
+
+.cv-slot--promo {
+  min-height: 200px;
+}
+
+.cv-slot--category {
+  min-height: 2400px;
+}
+
+.cv-slot--new-arrivals {
+  min-height: 600px;
+}
+
+.cv-slot--support {
+  min-height: 700px;
+}
+
+.cv-slot--video {
+  min-height: 560px;
 }
 
 /* Best-selling section is React.lazy — its Suspense fallback must reserve
