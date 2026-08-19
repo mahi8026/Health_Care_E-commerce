@@ -622,7 +622,7 @@ function B2BDashboard({ data, onRefresh }) {
 // â”€â”€ Main export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function B2BDashboardPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isB2BCustomer } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
@@ -683,8 +683,15 @@ export default function B2BDashboardPage() {
   if (!authed) return <B2BLanding />;
 
   // Check if user is actually a B2B customer
-  // B2B users have a tier property or accountType === 'b2b'
-  const isB2BUser = user?.tier || user?.accountType === 'b2b' || user?.role === 'b2b';
+  // Backend sets role='b2b_customer', accountType='B2B', b2bAccount=true, b2bApprovalStatus='approved'
+  const isB2BUser = isB2BCustomer()
+    || user?.b2bAccount
+    || user?.accountType === 'B2B'
+    || user?.accountType === 'b2b'
+    || user?.role === 'b2b'
+    || user?.role === 'b2b_customer'
+    || user?.tier
+    || user?.b2bApprovalStatus === 'approved';
   
   // Regular B2C customer trying to access B2B portal → show landing page with message
   if (authed && !isB2BUser) {

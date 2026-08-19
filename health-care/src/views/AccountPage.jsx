@@ -189,7 +189,7 @@ export default function AccountPage() {
                 <p className="text-xs sm:text-xs md:text-sm text-[var(--color-text-secondary)] mt-0.5">
                   {user?.email}
                 </p>
-                {user?.role === 'b2b' && (
+                {(user?.role === 'b2b_customer' || user?.role === 'b2b' || user?.accountType === 'B2B' || user?.b2bAccount) && (
                   <span className="inline-block mt-1 text-xs sm:text-xs bg-brand-teal-tint text-brand-teal px-2 py-0.5 rounded-full font-medium">
                     B2B Customer
                   </span>
