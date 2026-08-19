@@ -21,6 +21,7 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import ReviewSchema from '@/components/seo/ReviewSchema';
+import ProductSeoContent from '@/components/seo/ProductSeoContent';
 
 // Innovation Features
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
@@ -384,29 +385,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
         </div>
 
         {/* SEO Content */}
-        <div className="mt-5 bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-5">
-          <h2 className="text-sm font-semibold text-brand-navy mb-2.5">About {product.name}</h2>
-          {product.description && (
-            <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-4">{product.description}</p>
-          )}
-          <h3 className="text-sm font-semibold text-brand-navy mb-1.5">
-            {product.name} Price in Bangladesh
-          </h3>
-          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-4">
-            The retail price of {product.name} in Bangladesh is{' '}
-            {product.price && product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Contact for Price'}.
-            {' '}B2B institutions (hospitals, clinics, diagnostic centres) receive 8–30% bulk discount depending on order volume.
-            Contact MediportBD for institutional pricing and credit terms.
-          </p>
-          <h3 className="text-sm font-semibold text-brand-navy mb-1.5">
-            Buy {product.name} in Bangladesh
-          </h3>
-          <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-            MediportBD is an authorised distributor{brandName ? ` of ${brandName}` : ''} in Bangladesh.
-            {' '}All products are DGDA registered and come with full manufacturer warranty.
-            {' '}Enjoy free delivery in Dhaka for orders over ৳50,000 and nationwide shipping to all major cities.
-          </p>
-        </div>
+        <ProductSeoContent product={product} />
       </div>
 
       {/* ── Mobile Sticky Bottom Bar ───────────────────────────────────── */}

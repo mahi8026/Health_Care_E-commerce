@@ -80,6 +80,21 @@ export default function EquipmentHub() {
             ))}
           </div>
         </section>
+
+        <section className="mt-6 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+          <h2 className="text-lg font-semibold text-brand-navy mb-2">
+            Explore by Topic
+          </h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-4">
+            In-depth topic hubs combining prices, brands, buying guides and product collections.
+          </p>
+          <Link
+            href="/topics"
+            className="text-sm font-semibold text-brand-teal hover:underline"
+          >
+            Browse all topic hubs →
+          </Link>
+        </section>
       </div>
     </div>
   );

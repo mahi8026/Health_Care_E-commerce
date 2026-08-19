@@ -216,8 +216,19 @@ async function loadLandingPages() {
   }
 }
 
+// Import the topical clusters config (ESM) for /topics hub URLs
+async function loadTopicalClusters() {
+  try {
+    const mod = await import('../src/config/topicalClusters.js');
+    return Array.isArray(mod.TOPICAL_CLUSTERS) ? mod.TOPICAL_CLUSTERS : [];
+  } catch (err) {
+    console.error('[Sitemap] Topical clusters config import failed:', err.message);
+    return [];
+  }
+}
+
 // Generate a single combined sitemap covering all page types
-function generateFullSitemapXML(products, categories, manufacturers, guides, landingPages = []) {
+function generateFullSitemapXML(products, categories, manufacturers, guides, landingPages = [], topicalClusters = []) {
   const now = new Date().toISOString();
   const urlset = [];
 
@@ -289,6 +300,19 @@ function generateFullSitemapXML(products, categories, manufacturers, guides, lan
       })),
   ];
 
+  // Topical clusters
+  const topicUrls = [
+    { url: `${SITE_URL}/topics`, lastmod: now, freq: 'weekly', pri: 0.8 },
+    ...topicalClusters
+      .filter(c => c.slug)
+      .map(c => ({
+        url: `${SITE_URL}/topics/${c.slug}`,
+        lastmod: now,
+        freq: 'weekly',
+        pri: 0.8,
+      })),
+  ];
+
   // Products
   const productUrls = products
     .filter(p => p.slug || p._id)
@@ -299,7 +323,7 @@ function generateFullSitemapXML(products, categories, manufacturers, guides, lan
       pri: 0.7,
     }));
 
-  const all = [...staticPages, ...equipmentUrls, ...categoryUrls, ...brandUrls, ...guideUrls, ...productUrls];
+  const all = [...staticPages, ...topicUrls, ...equipmentUrls, ...categoryUrls, ...brandUrls, ...guideUrls, ...productUrls];
 
   all.forEach(page => {
     urlset.push(`  <url>
@@ -353,17 +377,18 @@ async function main() {
     console.log(`\n[Sitemap] Fetched ${products.length} products in ${elapsed}s`);
 
     // Fetch supporting data for the full sitemap
-    const [categories, manufacturers, guides, landingPages] = await Promise.all([
+    const [categories, manufacturers, guides, landingPages, topicalClusters] = await Promise.all([
       fetchAllCategories(),
       fetchAllManufacturers(),
       loadGuides(),
       loadLandingPages(),
+      loadTopicalClusters(),
     ]);
 
     // Generate XML
     console.log('[Sitemap] Generating XML...');
     const xml = generateSitemapXML(products);
-    const fullXml = generateFullSitemapXML(products, categories, manufacturers, guides, landingPages);
+    const fullXml = generateFullSitemapXML(products, categories, manufacturers, guides, landingPages, topicalClusters);
 
     // Ensure public directory exists
     const publicDir = path.dirname(OUTPUT_FILE);

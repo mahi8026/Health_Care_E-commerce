@@ -45,6 +45,10 @@ export async function GET() {
     <loc>${SITE_URL}/sitemap-equipment.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-topics.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
 </sitemapindex>`;
 
   return new Response(sitemapIndex, {
