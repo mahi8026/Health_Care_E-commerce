@@ -228,11 +228,15 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 // prevent CLS while they are unmounted.
 function useInViewOnce(rootMargin) {
   const ref = useRef(null);
-  const [inView, setInView] = useState(() => typeof IntersectionObserver === 'undefined');
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
     if (inView) return;
     const el = ref.current;
+    if (typeof IntersectionObserver === 'undefined') {
+      const t = setTimeout(() => setInView(true), 1000);
+      return () => clearTimeout(t);
+    }
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
