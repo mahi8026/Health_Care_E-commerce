@@ -77,7 +77,7 @@ export default function RankingBadge({ rank, size = 'medium', className = '' }) 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: rank <= 3 ? '#fff' : '#374151',
+          color: '#fff',
           fontWeight: 700,
           fontSize: config.fontSize,
           border: rank <= 3 ? '2px solid rgba(255, 255, 255, 0.3)' : '1px solid #E5E7EB',
