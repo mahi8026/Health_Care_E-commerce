@@ -253,7 +253,7 @@ function useInViewOnce(rootMargin) {
   return [ref, inView];
 }
 
-function LazyMount({ rootMargin = '800px', fallback = null, className, style, children }) {
+function LazyMount({ rootMargin = '300px', fallback = null, className, style, children }) {
   const [ref, inView] = useInViewOnce(rootMargin);
   return (
     <div ref={ref} className={className} style={style}>
@@ -695,7 +695,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
   const [categories, setCategories] = useState(() => initialData?.categories?.length ? initialData.categories : []);
   const [categoryCounts, setCategoryCounts] = useState(() => initialData?.categoryCounts || {});
   const [featuredProducts, setFeaturedProducts] = useState(() => initialData?.featuredProducts?.length ? initialData.featuredProducts : []);
-  const [featuredLoading, setFeaturedLoading] = useState(() => !initialData);
+  const [featuredLoading, setFeaturedLoading] = useState(() => !initialData?.featuredProducts);
   const [activeTab, setActiveTab] = useState('all');
   const [newArrivals, setNewArrivals] = useState(() => initialData?.newArrivals?.length ? initialData.newArrivals : []);
   const [promo, setPromo] = useState(() => initialData?.activePromo || null);
@@ -705,7 +705,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
   const [heroSlides, setHeroSlides] = useState(() => initialSettings?.heroSlides?.length
     ? initialSettings.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order)
     : []);
-  const [newArrivalsLoading, setNewArrivalsLoading] = useState(() => !initialData);
+  const [newArrivalsLoading, setNewArrivalsLoading] = useState(() => !initialData?.newArrivals);
 
   // ── Memoized Values ────────────────────────────────────────────────────────
   const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
@@ -761,7 +761,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
   // OPTIMIZED DATA FETCHING - Single aggregated endpoint instead of 15+ calls
   // ══════════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    if (initialData) return;
+    if (initialData?.featuredProducts && initialData?.newArrivals) return;
     let isMounted = true;
 
     const fetchHomeData = async () => {
@@ -1003,7 +1003,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 5: FEATURED PRODUCTS (Curated selection with tabs) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '48px 0' }}>
+      <section className="home-section" style={{ padding: '28px 0' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
@@ -1331,9 +1331,13 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 6: PROMOTIONAL BANNER 1 (Visual break after featured products) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={null}>
-        <PromoBannerSection bannerId={0} />
-      </Suspense>
+      <div className="cv-slot--promo">
+        <LazyMount fallback={null}>
+          <Suspense fallback={null}>
+            <PromoBannerSection bannerId={0} />
+          </Suspense>
+        </LazyMount>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 7: CATEGORY PRODUCT SECTIONS (Deep product discovery) */}
@@ -1366,16 +1370,20 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 9: PROMOTIONAL BANNER 2 (Second marketing push) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <Suspense fallback={null}>
-        <PromoBannerSection bannerId={1} />
-      </Suspense>
+      <div className="cv-slot--promo">
+        <LazyMount fallback={null}>
+          <Suspense fallback={null}>
+            <PromoBannerSection bannerId={1} />
+          </Suspense>
+        </LazyMount>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 10: RECENTLY VIEWED (Personalized recommendations) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '56px 24px 32px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
+      <section className="home-section" style={{ padding: '28px 24px 20px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <LazyMount fallback={null} style={{ minHeight: 560 }}>
+          <LazyMount fallback={null}>
             <RecentlyViewed limit={8} title="Continue Where You Left Off" />
           </LazyMount>
         </div>
@@ -1384,25 +1392,25 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 11: WHY CHOOSE US (Trust building, credibility) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '56px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
+      <section className="home-section" style={{ padding: '32px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
               {t('home.whyMediport')}
             </h2>
           </div>
-          <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {whyUsItems.map(({ icon, title, desc }) => (
               <div key={title} className="trust-item"
-                style={{ padding: '24px', borderRadius: 16, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
+                style={{ padding: '18px', borderRadius: 14, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.background = 'var(--color-background-secondary)'; e.currentTarget.style.boxShadow = 'none'; }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 22, marginBottom: 16 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, marginBottom: 12 }}>
                   {icon}
                 </div>
-                <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 8 }}>{title}</h3>
-                <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>{desc}</p>
+                <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 6 }}>{title}</h3>
+                <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>{desc}</p>
               </div>
             ))}
           </div>
@@ -1412,35 +1420,35 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 12: HOW IT WORKS (Process clarity, user guidance) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '56px 24px' }}>
+      <section className="home-section" style={{ padding: '32px 24px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
               textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0 }}>
               {t('home.howItWorks')}
             </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}
             className="how-it-works-grid">
             {HOW_IT_WORKS.map((step, i) => (
               <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
                 {i < HOW_IT_WORKS.length - 1 && (
-                  <div className="how-it-works-step-line" style={{ position: 'absolute', top: 40, left: '60%', width: '80%',
+                  <div className="how-it-works-step-line" style={{ position: 'absolute', top: 32, left: '60%', width: '80%',
                     height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
                 )}
                 <div style={{ position: 'relative', zIndex: 1, background: '#fff',
-                  borderRadius: 16, padding: '28px 20px', border: '1px solid var(--color-border-primary)' }}>
-                  <div style={{ width: 60, height: 60, borderRadius: '50%',
+                  borderRadius: 14, padding: '20px 16px', border: '1px solid var(--color-border-primary)' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%',
                     background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 16px', fontSize: 28, color: '#fff' }}>
+                    margin: '0 auto 12px', fontSize: 22, color: '#fff' }}>
                     {step.icon}
                   </div>
-                  <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)',
-                    marginBottom: 8 }}>{step.step}</div>
-                  <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{step.title}</h3>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-brand-teal)',
+                    marginBottom: 6 }}>{step.step}</div>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{step.title}</h3>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -1451,10 +1459,10 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 13: B2B PROGRAM (Business customer acquisition) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '56px 24px' }}>
+      <section className="home-section" style={{ padding: '28px 24px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
-          borderRadius: 24, padding: '48px', overflow: 'hidden', position: 'relative' }}>
+          borderRadius: 20, padding: '32px 36px', overflow: 'hidden', position: 'relative' }}>
           {/* Background decoration */}
           <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
             background: 'radial-gradient(circle, var(--color-brand-teal), transparent 70%)', opacity: 0.15 }} />
@@ -1557,16 +1565,16 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* SECTION 16: CUSTOMER TESTIMONIALS (Final social proof) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {testimonials.length > 0 && (
-      <section className="bg-hero-gradient" style={{ padding: '56px 24px' }}>
+      <section className="bg-hero-gradient" style={{ padding: '32px 24px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <p style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.testimonials')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: '#fff' }}>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(22px, 3.5vw, 28px)', fontWeight: 600, margin: 0, color: '#fff' }}>
               {t('home.testimonials')}
             </h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}
           className="testimonials-grid">
           {testimonials.slice(0, 3).map((review) => {
             const userName = review.user?.name || review.userName || 'Anonymous';
@@ -1574,33 +1582,33 @@ export default function HomePage({ initialData = null, initialSettings = null })
             const rating = review.rating || 5;
 
             return (
-              <div key={review._id} style={{ background: '#fff', borderRadius: 16,
-                border: '1px solid var(--color-border-primary)', padding: '28px 24px', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
+              <div key={review._id} style={{ background: '#fff', borderRadius: 14,
+                border: '1px solid var(--color-border-primary)', padding: '20px', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 {/* Stars */}
-                <div style={{ display: 'flex', gap: 2, marginBottom: 16 }}>
+                <div style={{ display: 'flex', gap: 2, marginBottom: 10 }}>
                   {[1, 2, 3, 4, 5].map(s => (
-                    <span key={s} style={{ color: s <= rating ? 'var(--color-warning)' : '#E5E7EB', fontSize: 18 }}>★</span>
+                    <span key={s} style={{ color: s <= rating ? 'var(--color-warning)' : '#E5E7EB', fontSize: 15 }}>★</span>
                   ))}
                 </div>
                 {/* Comment */}
-                <p style={{ fontSize: 14, color: 'var(--color-text-primary)', lineHeight: 1.7, marginBottom: 20,
+                <p style={{ fontSize: 13, color: 'var(--color-text-primary)', lineHeight: 1.6, marginBottom: 14,
                   fontStyle: 'italic' }}>
                   &ldquo;{review.comment}&rdquo;
                 </p>
                 {/* User info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: '50%',
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: '50%',
                     background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#fff', fontSize: 18, fontWeight: 600 }}>
+                    color: '#fff', fontSize: 15, fontWeight: 600 }}>
                     {userName.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)' }}>{userName}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-brand-navy)' }}>{userName}</div>
                     {companyName && (
-                      <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{companyName}</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-secondary)' }}>{companyName}</div>
                     )}
                   </div>
                 </div>

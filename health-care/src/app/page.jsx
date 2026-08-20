@@ -61,6 +61,16 @@ export default async function Home() {
   const homeData = homeRes?.success ? homeRes.data : null;
   const settings = settingsRes?.data || null;
 
+  // Below-fold product payloads (featured/newArrivals/testimonials) are no
+  // longer rendered at load — they mount on scroll. Keep the ISR HTML small
+  // by shipping only the above-fold data; HomePage fetches the rest client-side.
+  const initialData = homeData ? {
+    categories: homeData.categories,
+    categoryCounts: homeData.categoryCounts,
+    stats: homeData.stats,
+    activePromo: homeData.activePromo,
+  } : null;
+
   return (
     <>
       <StructuredData schema={generateOrganizationSchema()} />

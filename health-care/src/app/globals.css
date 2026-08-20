@@ -1944,17 +1944,16 @@ color: var(--color-brand-teal);
    fallback → content swap is height-neutral. */
 .cv-lazy-stack {
   content-visibility: auto;
-  contain-intrinsic-size: auto 8200px;
+  contain-intrinsic-size: auto 4800px;
 }
 
-/* Reserved heights for React.lazy sections so their Suspense fallback →
-   content swap never shifts layout (CLS). */
+/* Reserved heights for React.lazy sections — reduced to prevent whitespace */
 .cv-slot {
-  min-height: 560px;
+  min-height: 320px;
 }
 
 .cv-slot--flash {
-  min-height: 480px;
+  min-height: 280px;
 }
 
 .cv-slot--promo {
@@ -1962,30 +1961,30 @@ color: var(--color-brand-teal);
 }
 
 .cv-slot--category {
-  min-height: 2400px;
+  min-height: 1200px;
 }
 
 .cv-slot--new-arrivals {
-  min-height: 600px;
+  min-height: 340px;
 }
 
 .cv-slot--support {
-  min-height: 700px;
+  min-height: 380px;
 }
 
 .cv-slot--video {
-  min-height: 560px;
+  min-height: 320px;
 }
 
 /* Best-selling section is React.lazy — its Suspense fallback must reserve
    the same height as the loaded section or the swap causes CLS. */
 .best-selling-slot {
-  min-height: 560px;
+  min-height: 340px;
 }
 
 @media (min-width: 641px) {
   .best-selling-slot {
-    min-height: 520px;
+    min-height: 320px;
   }
 }
 
