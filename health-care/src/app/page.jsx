@@ -75,7 +75,7 @@ export default async function Home() {
     <>
       <StructuredData schema={generateOrganizationSchema()} />
       <StructuredData schema={generateWebSiteSchema()} />
-      <HomePage initialData={homeData} initialSettings={settings} />
+      <HomePage initialData={initialData} initialSettings={settings} />
 
       {/* Server-rendered SEO content band — answer-first + internal links */}
       <section className="bg-white border-t border-[var(--color-border-primary)] py-12 px-4">
