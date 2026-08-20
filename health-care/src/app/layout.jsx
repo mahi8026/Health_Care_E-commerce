@@ -151,7 +151,7 @@ export default function RootLayout({ children }) {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         {/* Performance: preconnect to critical third-party origins */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
