@@ -101,9 +101,12 @@ export default function TopBar() {
 
       {/* Right links */}
       <div className="flex items-center gap-4 sm:gap-3 flex-shrink-0 ml-2 sm:ml-4">
-        {/* Track Order - Always visible, icon only on mobile */}
+        {/* Track Order - Always visible, icon only on mobile.
+            prefetch={false}: these utility routes don't justify pulling their
+            JS chunks during the homepage's critical load window. */}
         <Link
           href="/track"
+          prefetch={false}
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5"
           title="Track Order"
         >
@@ -117,6 +120,7 @@ export default function TopBar() {
         {/* DGDA Info - Hidden on mobile */}
         <Link
           href="/dgda-info"
+          prefetch={false}
           className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5"
           title="DGDA Info"
         >
