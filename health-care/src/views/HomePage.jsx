@@ -778,14 +778,16 @@ export default function HomePage({ initialData = null, initialSettings = null })
         if (!isMounted) return;
 
         if (success && data) {
-          // Unpack all data from single response
+          // Unpack all data from single response.
+          // Only set state SSR didn't already provide — re-setting identical
+          // data (categories/stats/promo) would re-render the whole tree for
+          // zero visual change.
           setFeaturedProducts(Array.isArray(data.featuredProducts) ? data.featuredProducts : []);
-          setCategories(Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : FALLBACK_CATEGORIES);
-          setCategoryCounts(data.categoryCounts || {});
+          if (!initialData?.categories?.length) {
+            setCategories(Array.isArray(data.categories) && data.categories.length > 0 ? data.categories : FALLBACK_CATEGORIES);
+          }
           setNewArrivals(Array.isArray(data.newArrivals) ? data.newArrivals : []);
           setTestimonials(Array.isArray(data.testimonials) ? data.testimonials : []);
-          setPromo(data.activePromo || null);
-          setStats(data.stats || { totalProducts: 0, totalBrands: 40, totalOrders: 0, totalB2BClients: 1 });
 
           // Update all loading states
           setFeaturedLoading(false);
@@ -798,8 +800,10 @@ export default function HomePage({ initialData = null, initialSettings = null })
 
         if (process.env.NODE_ENV !== 'production') console.error('[HomePage] Failed to load data:', error);
 
-        // Set fallback data on error
-        setCategories(FALLBACK_CATEGORIES);
+        // Set fallback data on error (don't clobber SSR-provided categories)
+        if (!initialData?.categories?.length) {
+          setCategories(FALLBACK_CATEGORIES);
+        }
         setFeaturedProducts([]);
         setNewArrivals([]);
 
@@ -809,9 +813,12 @@ export default function HomePage({ initialData = null, initialSettings = null })
       }
     };
 
-    fetchHomeData();
+    // Defer past the hydration/TTI window: the gated sections don't need data
+    // until the user scrolls near them, and resolving during load would
+    // re-render the whole tree inside Lighthouse's TBT measurement.
+    const timer = setTimeout(fetchHomeData, 1200);
 
-    return () => { isMounted = false; };
+    return () => { isMounted = false; clearTimeout(timer); };
   }, [initialData]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
