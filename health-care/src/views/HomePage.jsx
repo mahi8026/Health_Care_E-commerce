@@ -237,17 +237,22 @@ function useInViewOnce(rootMargin) {
       const t = setTimeout(() => setInView(true), 1000);
       return () => clearTimeout(t);
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setInView(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    // Defer observation until the main thread has settled so that below-fold
+    // sections never mount, fetch, or re-render during the initial load window.
+    let io = null;
+    const startTimer = setTimeout(() => {
+      io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            setInView(true);
+            io.disconnect();
+          }
+        },
+        { rootMargin }
+      );
+      io.observe(el);
+    }, 2000);
+    return () => { clearTimeout(startTimer); if (io) io.disconnect(); };
   }, [inView, rootMargin]);
 
   return [ref, inView];
