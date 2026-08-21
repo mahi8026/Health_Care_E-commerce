@@ -1,10 +1,13 @@
-﻿/**
+/**
  * Cart Controller Tests
  * Covers: getCart, syncCart, addItem, updateItem, removeItem, clearCart
  */
 
 jest.mock('../../models/Cart');
 jest.mock('../../models/Product');
+jest.mock('../../services/flashDealPricing', () => ({
+  getActiveDealPriceMap: jest.fn().mockResolvedValue(new Map()),
+}));
 jest.mock('../../utils/logger', () => ({ error: jest.fn(), info: jest.fn(), warn: jest.fn() }));
 
 const {
@@ -17,12 +20,18 @@ const {
 } = require('../cartController');
 const Cart = require('../../models/Cart');
 const Product = require('../../models/Product');
+const { getActiveDealPriceMap } = require('../../services/flashDealPricing');
 
 const mockRes = () => {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
   return res;
+};
+
+// Controllers call Product.findById(...).lean(), so the mock must be chainable.
+const mockProductFound = product => {
+  Product.findById.mockReturnValue({ lean: jest.fn().mockResolvedValue(product) });
 };
 
 const mockReq = (overrides = {}) => ({
@@ -32,7 +41,7 @@ const mockReq = (overrides = {}) => ({
   ...overrides,
 });
 
-// ── getCart ───────────────────────────────────────────────────────────────────
+// -- getCart -------------------------------------------------------------------
 describe('getCart', () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -82,9 +91,45 @@ describe('getCart', () => {
     await getCart(req, res);
     expect(res.status).toHaveBeenCalledWith(500);
   });
+
+  it('re-prices cart items to active flash-deal prices', async () => {
+    const fakeCart = {
+      items: [
+        { product: { _id: 'p1', isActive: true, price: 5000, variants: { sizes: [] } }, quantity: 2, price: 5000 },
+      ],
+      save: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockReturnValue({ populate: jest.fn().mockResolvedValue(fakeCart) });
+    getActiveDealPriceMap.mockResolvedValue(new Map([['p1', 4000]]));
+
+    const req = mockReq();
+    const res = mockRes();
+    await getCart(req, res);
+
+    expect(fakeCart.items[0].price).toBe(4000);
+    expect(fakeCart.save).toHaveBeenCalled();
+  });
+
+  it('reverts to regular price when flash deal expires', async () => {
+    const fakeCart = {
+      items: [
+        { product: { _id: 'p1', isActive: true, price: 5000, variants: { sizes: [] } }, quantity: 2, price: 4000 },
+      ],
+      save: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockReturnValue({ populate: jest.fn().mockResolvedValue(fakeCart) });
+    getActiveDealPriceMap.mockResolvedValue(new Map());
+
+    const req = mockReq();
+    const res = mockRes();
+    await getCart(req, res);
+
+    expect(fakeCart.items[0].price).toBe(5000);
+    expect(fakeCart.save).toHaveBeenCalled();
+  });
 });
 
-// ── syncCart ──────────────────────────────────────────────────────────────────
+// -- syncCart ------------------------------------------------------------------
 describe('syncCart', () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -110,7 +155,7 @@ describe('syncCart', () => {
     };
     Cart.findOne.mockResolvedValue(existingCart);
     const activeProduct = { _id: 'p2', isActive: true, price: 2000 };
-    Product.findById.mockResolvedValue(activeProduct);
+    mockProductFound(activeProduct);
 
     const req = mockReq({ body: { items: [{ id: 'p2', quantity: 3 }] } });
     const res = mockRes();
@@ -129,7 +174,7 @@ describe('syncCart', () => {
     };
     Cart.findOne.mockResolvedValue(existingCart);
     const activeProduct = { _id: 'p1', isActive: true, price: 1000 };
-    Product.findById.mockResolvedValue(activeProduct);
+    mockProductFound(activeProduct);
 
     const req = mockReq({ body: { items: [{ id: 'p1', quantity: 3 }] } });
     const res = mockRes();
@@ -146,7 +191,7 @@ describe('syncCart', () => {
       populate: jest.fn().mockResolvedValue(true),
     };
     Cart.findOne.mockResolvedValue(existingCart);
-    Product.findById.mockResolvedValue({ _id: 'p1', isActive: false, price: 1000 });
+    mockProductFound({ _id: 'p1', isActive: false, price: 1000 });
 
     const req = mockReq({ body: { items: [{ id: 'p1', quantity: 1 }] } });
     const res = mockRes();
@@ -154,9 +199,27 @@ describe('syncCart', () => {
 
     expect(existingCart.items).toHaveLength(0);
   });
+
+  it('applies active flash-deal price when syncing new items', async () => {
+    const existingCart = {
+      items: [],
+      save: jest.fn().mockResolvedValue(true),
+      populate: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(existingCart);
+    mockProductFound({ _id: 'p2', isActive: true, price: 2000 });
+    getActiveDealPriceMap.mockResolvedValue(new Map([['p2', 1500]]));
+
+    const req = mockReq({ body: { items: [{ id: 'p2', quantity: 1 }] } });
+    const res = mockRes();
+    await syncCart(req, res);
+
+    expect(existingCart.items).toHaveLength(1);
+    expect(existingCart.items[0].price).toBe(1500);
+  });
 });
 
-// ── addItem ───────────────────────────────────────────────────────────────────
+// -- addItem -------------------------------------------------------------------
 describe('addItem', () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -168,16 +231,16 @@ describe('addItem', () => {
   });
 
   it('returns 404 when product not found or inactive', async () => {
-    Product.findById.mockResolvedValue(null);
+    mockProductFound(null);
     const req = mockReq({ body: { productId: 'p1', quantity: 1 } });
     const res = mockRes();
     await addItem(req, res);
-    expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.status).toHaveBeenCalledWith(404);
   });
 
   it('adds new item to empty cart', async () => {
     const fakeProduct = { _id: 'p1', isActive: true, price: 5000 };
-    Product.findById.mockResolvedValue(fakeProduct);
+    mockProductFound(fakeProduct);
     const fakeCart = {
       items: [],
       save: jest.fn().mockResolvedValue(true),
@@ -197,7 +260,7 @@ describe('addItem', () => {
 
   it('increments quantity when item already in cart', async () => {
     const fakeProduct = { _id: 'p1', isActive: true, price: 5000 };
-    Product.findById.mockResolvedValue(fakeProduct);
+    mockProductFound(fakeProduct);
     const fakeCart = {
       items: [{ product: { toString: () => 'p1' }, quantity: 3, price: 5000 }],
       save: jest.fn().mockResolvedValue(true),
@@ -214,7 +277,7 @@ describe('addItem', () => {
 
   it('creates new cart when none exists', async () => {
     const fakeProduct = { _id: 'p1', isActive: true, price: 5000 };
-    Product.findById.mockResolvedValue(fakeProduct);
+    mockProductFound(fakeProduct);
     Cart.findOne.mockResolvedValue(null);
 
     const newCart = {
@@ -231,9 +294,50 @@ describe('addItem', () => {
 
     expect(newCart.save).toHaveBeenCalled();
   });
+
+  it('applies active flash-deal price instead of regular price', async () => {
+    const fakeProduct = { _id: 'p1', isActive: true, price: 5000 };
+    mockProductFound(fakeProduct);
+    const fakeCart = {
+      items: [],
+      save: jest.fn().mockResolvedValue(true),
+      populate: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(fakeCart);
+    getActiveDealPriceMap.mockResolvedValue(new Map([['p1', 4000]]));
+
+    const req = mockReq({ body: { productId: 'p1', quantity: 1 } });
+    const res = mockRes();
+    await addItem(req, res);
+
+    expect(fakeCart.items[0].price).toBe(4000);
+  });
+
+  it('uses server-side size adjustment with deal price for sized products', async () => {
+    const fakeProduct = {
+      _id: 'p1',
+      isActive: true,
+      price: 5000,
+      variants: { sizes: [{ name: 'Large', priceAdjustment: 200, stock: 10, isAvailable: true }] },
+    };
+    mockProductFound(fakeProduct);
+    const fakeCart = {
+      items: [],
+      save: jest.fn().mockResolvedValue(true),
+      populate: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(fakeCart);
+    getActiveDealPriceMap.mockResolvedValue(new Map([['p1', 4000]]));
+
+    const req = mockReq({ body: { productId: 'p1', quantity: 1, selectedSize: { name: 'Large' } } });
+    const res = mockRes();
+    await addItem(req, res);
+
+    expect(fakeCart.items[0].price).toBe(4200); // 4000 deal + 200 size
+  });
 });
 
-// ── updateItem ────────────────────────────────────────────────────────────────
+// -- updateItem ----------------------------------------------------------------
 describe('updateItem', () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -276,7 +380,7 @@ describe('updateItem', () => {
   });
 });
 
-// ── removeItem ────────────────────────────────────────────────────────────────
+// -- removeItem ----------------------------------------------------------------
 describe('removeItem', () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -307,7 +411,7 @@ describe('removeItem', () => {
   });
 });
 
-// ── clearCart ─────────────────────────────────────────────────────────────────
+// -- clearCart -----------------------------------------------------------------
 describe('clearCart', () => {
   beforeEach(() => jest.clearAllMocks());
 

@@ -2,14 +2,15 @@
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+const { getActiveDealPriceMap } = require('../services/flashDealPricing');
 
 // ─── Get Current Cart ────────────────────────────────────────────────────────
 exports.getCart = async (req, res) => {
   try {
     const userId = req.user._id;
-    
+
     let cart = await Cart.findOne({ user: userId }).populate('items.product', 'name slug price images brand stock isActive variants');
-    
+
     if (!cart) {
       // Create empty cart if doesn't exist
       cart = await Cart.create({ user: userId, items: [] });
@@ -20,6 +21,28 @@ exports.getCart = async (req, res) => {
     if (validItems.length !== cart.items.length) {
       cart.items = validItems;
       await cart.save();
+    }
+
+    // Re-price line items so flash-deal discounts appear/disappear in step
+    // with the advertised deal window (checkout re-prices server-side anyway).
+    if (cart.items.length > 0) {
+      const dealPriceMap = await getActiveDealPriceMap(cart.items.map(i => i.product));
+      let changed = false;
+      for (const item of cart.items) {
+        const dealPrice = dealPriceMap.get(String(item.product._id));
+        const base = Number.isFinite(dealPrice) ? dealPrice : (item.product.price || 0);
+        const sizeAdj = item.selectedSize?.name && item.product.variants?.sizes?.length > 0
+          ? Number(item.product.variants.sizes.find(s => s.name === item.selectedSize.name)?.priceAdjustment) || 0
+          : 0;
+        const price = Math.max(0, Math.round((base + sizeAdj) * 100) / 100);
+        if (item.price !== price) {
+          item.price = price;
+          changed = true;
+        }
+      }
+      if (changed) {
+        await cart.save();
+      }
     }
 
     return successResponse(res, cart);
@@ -46,6 +69,9 @@ exports.syncCart = async (req, res) => {
     }
 
     // Merge logic: for each localStorage item
+    const productIds = items.map(i => i.id || i._id).filter(Boolean);
+    const dealPriceMap = await getActiveDealPriceMap(productIds);
+
     for (const localItem of items) {
       const productId = localItem.id || localItem._id;
       if (!productId) {
@@ -58,6 +84,10 @@ continue;
 continue;
 }
 
+      // Active flash-deal price (falls back to the regular product price)
+      const dealPrice = dealPriceMap.get(String(productId));
+      const basePrice = Number.isFinite(dealPrice) ? dealPrice : product.price;
+
       // Check if product already in DB cart
       const existingIndex = cart.items.findIndex(
         item => item.product.toString() === productId.toString()
@@ -69,14 +99,14 @@ continue;
           cart.items[existingIndex].quantity,
           localItem.quantity || 1
         );
-        // Update price to current price
-        cart.items[existingIndex].price = product.price;
+        // Update price to current (deal-aware) price
+        cart.items[existingIndex].price = basePrice;
       } else {
         // Add new item from localStorage
         cart.items.push({
           product: productId,
           quantity: localItem.quantity || 1,
-          price: product.price
+          price: basePrice
         });
       }
     }
@@ -110,11 +140,12 @@ exports.addItem = async (req, res) => {
     }
 
     // Validate size if product has size variants
+    let serverSizeAdjustment = 0;
     if (product.variants?.sizes && product.variants.sizes.length > 0) {
       if (!selectedSize || !selectedSize.name) {
         return errorResponse(res, 'Size selection is required for this product', null, 400);
       }
-      
+
       // Verify selected size exists and is available
       const sizeVariant = product.variants.sizes.find(s => s.name === selectedSize.name);
       if (!sizeVariant) {
@@ -123,6 +154,7 @@ exports.addItem = async (req, res) => {
       if (!sizeVariant.isAvailable || sizeVariant.stock < quantity) {
         return errorResponse(res, `Size ${selectedSize.name} is not available or out of stock`, null, 400);
       }
+      serverSizeAdjustment = Number(sizeVariant.priceAdjustment) || 0;
     }
 
     // Find or create cart
@@ -137,13 +169,17 @@ exports.addItem = async (req, res) => {
       if (!selectedSize) {
 return isSameProduct;
 }
-      
+
       // Match both product and size
       return isSameProduct && item.selectedSize?.name === selectedSize.name;
     });
 
-    // Calculate final price with size adjustment
-    const finalPrice = product.price + (selectedSize?.priceAdjustment || 0);
+    // Active flash-deal price (falls back to the regular product price),
+    // plus the server-side size price adjustment — client prices are never trusted.
+    const dealPriceMap = await getActiveDealPriceMap([productId]);
+    const dealPrice = dealPriceMap.get(String(productId));
+    const basePrice = Number.isFinite(dealPrice) ? dealPrice : product.price;
+    const finalPrice = Math.max(0, Math.round((basePrice + serverSizeAdjustment) * 100) / 100);
 
     if (existingIndex >= 0) {
       // Update quantity

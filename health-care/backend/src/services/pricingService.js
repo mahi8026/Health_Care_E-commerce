@@ -1,5 +1,6 @@
 const Category = require('../models/Category');
 const Product = require('../models/Product');
+const { getActiveDealPriceMap } = require('./flashDealPricing');
 
 /**
  * Server-side pricing logic.
@@ -71,11 +72,24 @@ return defaultResult;
  * @param {Object|null} user - requester (for B2B eligibility)
  * @param {Object|null} category - product's Category document (lean ok)
  * @param {Object} item - { product, qty|quantity, selectedSize }
+ * @param {number|null} dealPrice - active flash-deal finalPrice, if any
  * @returns {{ unitPrice:number, isB2BPrice:boolean, savings:number, sizeName:string|null }}
  * @throws {Error} with a user-friendly message for invalid size/price config
  */
-function quoteProduct(product, user, category, item) {
+function quoteProduct(product, user, category, item, dealPrice = null) {
   const b2b = getB2BPrice(product, user, category);
+
+  let basePrice = b2b.price;
+  let savings = b2b.savings;
+  let isB2BPrice = b2b.isB2BPrice;
+
+  // Active flash-deal promo price. Applied when it beats the B2B/base price
+  // so every customer always pays the best currently-advertised price.
+  if (Number(dealPrice) > 0 && Number(dealPrice) < basePrice) {
+    basePrice = Number(dealPrice);
+    isB2BPrice = false;
+    savings = Math.max(0, (Number(product.price) || 0) - basePrice);
+  }
 
   let sizeName = null;
   if (product.variants?.sizes?.length > 0) {
@@ -93,7 +107,7 @@ function quoteProduct(product, user, category, item) {
     ? Number(product.variants.sizes.find(s => s.name === sizeName).priceAdjustment) || 0
     : 0;
 
-  const unitPrice = Math.max(0, Math.round((b2b.price + sizeAdjustment) * 100) / 100);
+  const unitPrice = Math.max(0, Math.round((basePrice + sizeAdjustment) * 100) / 100);
 
   if (unitPrice <= 0) {
     throw new Error(`Product ${product.name} has no valid price configured`);
@@ -101,8 +115,8 @@ function quoteProduct(product, user, category, item) {
 
   return {
     unitPrice,
-    isB2BPrice: b2b.isB2BPrice,
-    savings: b2b.savings,
+    isB2BPrice,
+    savings,
     sizeName
   };
 }
@@ -130,6 +144,8 @@ async function quoteItems(items, user, session = null) {
     : [];
   const categoryMap = new Map(categories.map(c => [String(c._id), c]));
 
+  const dealPriceMap = await getActiveDealPriceMap(productIds);
+
   const quoted = [];
   for (const item of items) {
     const product = productMap.get(String(item.product));
@@ -137,7 +153,8 @@ async function quoteItems(items, user, session = null) {
       throw new Error(`Product not found: ${item.product}`);
     }
     const category = product.category ? categoryMap.get(String(product.category)) : null;
-    const quote = quoteProduct(product, user, category, item);
+    const dealPrice = dealPriceMap.get(String(product._id)) || null;
+    const quote = quoteProduct(product, user, category, item, dealPrice);
     quoted.push({ product, category, qty: item.qty || item.quantity || 1, ...quote });
   }
 
