@@ -13,10 +13,16 @@
 // Site-wide configuration
 // ---------------------------------------------------------------------------
 
+// Canonical origin MUST match the serving host (www.mediportbd.com — the
+// apex 308-redirects here). A mismatch makes every page declare a canonical
+// that redirects elsewhere, which stalls Google indexing site-wide.
+// Guard against an empty-string env var (as seen in the Vercel dashboard).
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || '').trim().replace(/\/+$/, '') || 'https://www.mediportbd.com';
+
 export const SITE_CONFIG = {
   name:         'MediportBD',
   fullName:     'MediportBD — Medical Equipment Supplier',
-  url:          process.env.NEXT_PUBLIC_SITE_URL || 'https://mediportbd.com',
+  url:          SITE_URL,
   description:  "Bangladesh's most trusted medical equipment supplier. Premium diagnostic devices, surgical instruments, laboratory reagents and hospital machines. DGDA registered. B2B & retail. Dhaka.",
   keywords:     'medical equipment Bangladesh, diagnostic equipment Dhaka, surgical instruments BD, laboratory reagents Bangladesh, hospital equipment supplier, DGDA registered medical devices, ECG machine price Bangladesh, reagent supplier Dhaka, B2B medical supplier Bangladesh',
   ogImage:      '/og-default.png',

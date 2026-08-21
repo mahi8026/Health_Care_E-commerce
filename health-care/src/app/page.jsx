@@ -1,10 +1,6 @@
 import Link from 'next/link';
 import HomePage from '@/views/HomePage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
-import StructuredData, {
-  generateOrganizationSchema,
-  generateWebSiteSchema,
-} from '@/utils/structuredData';
 
 export const metadata = {
   title:       PAGE_SEO.home.title,
@@ -73,8 +69,8 @@ export default async function Home() {
 
   return (
     <>
-      <StructuredData schema={generateOrganizationSchema()} />
-      <StructuredData schema={generateWebSiteSchema()} />
+      {/* Organization/WebSite schema is rendered globally in layout.jsx —
+          do not duplicate it per page. */}
       <HomePage initialData={initialData} initialSettings={settings} />
 
       {/* Server-rendered SEO content band — answer-first + internal links */}

@@ -13,7 +13,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mediportbd.com';
+// Canonical origin must match the serving host (www) — see src/config/seo.js
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || '').trim().replace(/\/+$/, '') || 'https://www.mediportbd.com';
 // Local dev uses a relative API URL (/api) that only works via Next's dev
 // proxy — fall back to the production backend when it is not absolute.
 const envApi = process.env.NEXT_PUBLIC_API_URL;
