@@ -89,7 +89,7 @@ export const metadata = {
     title:       SITE_CONFIG.fullName,
     description: SITE_CONFIG.description,
     images: [{
-      url:    '/og-default.png',
+      url:    `${SITE_CONFIG.url}/og?title=Medical+Equipment+Supplier+Bangladesh&subtitle=Diagnostic+%E2%80%A2+Surgical+%E2%80%A2+Reagents+%E2%80%A2+Hospital+Equipment&page=MediportBD`,
       width:  1200,
       height: 630,
       alt:    'MediportBD — Medical Equipment Supplier Bangladesh',
@@ -101,7 +101,7 @@ export const metadata = {
     site:        SITE_CONFIG.twitterHandle,
     title:       SITE_CONFIG.fullName,
     description: SITE_CONFIG.description,
-    images:      ['/og-default.png'],
+    images:      [`${SITE_CONFIG.url}/og?title=Medical+Equipment+Supplier+Bangladesh&subtitle=Diagnostic+%E2%80%A2+Surgical+%E2%80%A2+Reagents+%E2%80%A2+Hospital+Equipment&page=MediportBD`],
   },
 
   robots: {

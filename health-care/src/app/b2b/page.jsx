@@ -16,7 +16,11 @@ export const metadata = {
     title:       PAGE_SEO.b2b.title,
     description: PAGE_SEO.b2b.description,
     url:         `${SITE_CONFIG.url}/b2b`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{
+      url: `${SITE_CONFIG.url}/og?title=B2B+Medical+Supply+Bangladesh&subtitle=Bulk+Discounts+%E2%80%A2+Credit+Terms+%E2%80%A2+Dedicated+Account+Manager&page=B2B+Portal`,
+      width: 1200, height: 630,
+      alt: 'B2B Medical Equipment Supplier Bangladesh — MediportBD',
+    }],
   },
 };
 
