@@ -2,6 +2,17 @@
 const Product = require('../models/Product');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+const { invalidateCache } = require('../middleware/cache');
+
+// Deal changes must be visible on product pages promptly; drop the cached
+// product-detail payloads (they embed activeFlashDeal enrichment).
+async function invalidateProductDetailCache() {
+  try {
+    await invalidateCache('products:detail:*');
+  } catch (err) {
+    logger.error(`[flashDealController] cache invalidation failed: ${err.message}`);
+  }
+}
 
 // ── Get all flash deals (admin) ──────────────────────────────────────────────
 exports.getAllFlashDeals = async (req, res) => {
@@ -136,7 +147,8 @@ exports.createFlashDeal = async (req, res) => {
       .lean();
     
     logger.info(`Flash deal created: ${flashDeal._id} by ${req.user.email}`);
-    
+    await invalidateProductDetailCache();
+
     return successResponse(res, { flashDeal: populatedDeal }, 'Flash deal created successfully', 201);
   } catch (error) {
     logger.error(`[createFlashDeal] ${error.message}`);
@@ -220,7 +232,8 @@ flashDeal.endTime = endTime;
       .lean();
     
     logger.info(`Flash deal updated: ${id} by ${req.user.email}`);
-    
+    await invalidateProductDetailCache();
+
     return successResponse(res, { flashDeal: updatedDeal }, 'Flash deal updated successfully');
   } catch (error) {
     logger.error(`[updateFlashDeal] ${error.message}`);
@@ -239,7 +252,8 @@ exports.deleteFlashDeal = async (req, res) => {
     }
     
     logger.info(`Flash deal deleted: ${id} by ${req.user.email}`);
-    
+    await invalidateProductDetailCache();
+
     return successResponse(res, null, 'Flash deal deleted successfully');
   } catch (error) {
     logger.error(`[deleteFlashDeal] ${error.message}`);
@@ -262,7 +276,8 @@ exports.toggleFlashDealStatus = async (req, res) => {
     await flashDeal.save();
     
     logger.info(`Flash deal ${flashDeal.isActive ? 'activated' : 'deactivated'}: ${id} by ${req.user.email}`);
-    
+    await invalidateProductDetailCache();
+
     return successResponse(res, { flashDeal }, `Flash deal ${flashDeal.isActive ? 'activated' : 'deactivated'} successfully`);
   } catch (error) {
     logger.error(`[toggleFlashDealStatus] ${error.message}`);
