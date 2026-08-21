@@ -262,6 +262,150 @@ function LazyMount({ rootMargin = '300px', fallback = null, className, style, ch
   );
 }
 
+// Static below-fold sections are memoized so that state updates elsewhere in
+// HomePage (e.g. featured products arriving) skip re-rendering them entirely.
+const WhyChooseUsSection = memo(function WhyChooseUsSection({ t, items }) {
+  return (
+    <section className="home-section" style={{ padding: '32px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
+            {t('home.whyMediport')}
+          </h2>
+        </div>
+        <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {items.map(({ icon, title, desc }) => (
+            <div key={title} className="trust-item"
+              style={{ padding: '18px', borderRadius: 14, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.background = 'var(--color-background-secondary)'; e.currentTarget.style.boxShadow = 'none'; }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, marginBottom: 12 }}>
+                {icon}
+              </div>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 6 }}>{title}</h3>
+              <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+});
+
+const HowItWorksSection = memo(function HowItWorksSection({ t }) {
+  return (
+    <section className="home-section" style={{ padding: '32px 24px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0 }}>
+            {t('home.howItWorks')}
+          </h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}
+          className="how-it-works-grid">
+          {HOW_IT_WORKS.map((step, i) => (
+            <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
+              {i < HOW_IT_WORKS.length - 1 && (
+                <div className="how-it-works-step-line" style={{ position: 'absolute', top: 32, left: '60%', width: '80%',
+                  height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
+              )}
+              <div style={{ position: 'relative', zIndex: 1, background: '#fff',
+                borderRadius: 14, padding: '20px 16px', border: '1px solid var(--color-border-primary)' }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto 12px', fontSize: 22, color: '#fff' }}>
+                  {step.icon}
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-brand-teal)',
+                  marginBottom: 6 }}>{step.step}</div>
+                <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{step.title}</h3>
+                <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+});
+
+const B2BSection = memo(function B2BSection({ t, stats }) {
+  const router = useRouter();
+  return (
+    <section className="home-section" style={{ padding: '28px 24px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+      <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
+        borderRadius: 20, padding: '32px 36px', overflow: 'hidden', position: 'relative' }}>
+        {/* Background decoration */}
+        <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
+          background: 'radial-gradient(circle, var(--color-brand-teal), transparent 70%)', opacity: 0.15 }} />
+        <div className="b2b-cols" style={{ position: 'relative', display: 'grid',
+          gridTemplateColumns: '1fr 220px', gap: 40, alignItems: 'center' }}>
+          {/* Left */}
+          <div>
+            <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)',
+              padding: '4px 14px', borderRadius: 999, fontWeight: 600,
+              textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600,
+              color: '#fff', margin: '14px 0 12px' }}>
+              {t('home.b2bTitle')}
+            </h2>
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.8 }}>
+              {t('home.b2bDesc')}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 460, marginBottom: 28 }}>
+              {B2B_FEATURES.map(f => (
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
+                  fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
+                  <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>✓</span> {f}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button className="btn-teal-hover"
+                onClick={() => router.push('/register?type=b2b')}
+                style={{ padding: '13px 28px', background: 'var(--color-brand-teal)', color: '#fff',
+                  border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                {t('home.registerB2B')}
+              </button>
+              <button onClick={() => router.push('/b2b')}
+                style={{ padding: '13px 24px', background: 'rgba(255,255,255,0.1)',
+                  border: '1.5px solid rgba(255,255,255,0.25)', color: '#fff',
+                  borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
+                {t('home.learnMore')}
+              </button>
+            </div>
+          </div>
+          {/* Right stat boxes */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {B2B_STATS.map((s, i) => ({
+              ...s,
+              val: i === 0
+                ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1+')
+                : s.val,
+            })).map(s => (
+              <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
+                padding: '14px 18px', display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{s.label}</span>
+                <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)' }}>{s.val}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+  );
+});
+
 const TYPEWRITER_WORDS = ['Diagnostic Equipment', 'Surgical Instruments', 'Laboratory Reagents', 'Hospital Machines'];
 const SEARCH_PLACEHOLDERS = ['Search ECG machine...', 'Search HbA1c reagent...', 'Search trocar set...', 'Search pulse oximeter...'];
 
@@ -1401,140 +1545,17 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 11: WHY CHOOSE US (Trust building, credibility) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '32px 24px', borderTop: '1px solid var(--color-border-primary)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.whyChooseUs')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0, color: 'var(--color-brand-navy)' }}>
-              {t('home.whyMediport')}
-            </h2>
-          </div>
-          <div className="trust-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-            {whyUsItems.map(({ icon, title, desc }) => (
-              <div key={title} className="trust-item"
-                style={{ padding: '18px', borderRadius: 14, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.background = 'var(--color-background-secondary)'; e.currentTarget.style.boxShadow = 'none'; }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, marginBottom: 12 }}>
-                  {icon}
-                </div>
-                <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-brand-navy)', marginBottom: 6 }}>{title}</h3>
-                <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <WhyChooseUsSection t={t} items={whyUsItems} />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 12: HOW IT WORKS (Process clarity, user guidance) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '32px 24px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
-              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.simpleProcess')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600, margin: 0 }}>
-              {t('home.howItWorks')}
-            </h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}
-            className="how-it-works-grid">
-            {HOW_IT_WORKS.map((step, i) => (
-              <div key={step.step} style={{ textAlign: 'center', position: 'relative' }}>
-                {i < HOW_IT_WORKS.length - 1 && (
-                  <div className="how-it-works-step-line" style={{ position: 'absolute', top: 32, left: '60%', width: '80%',
-                    height: 2, background: 'var(--color-border-primary)', zIndex: 0 }} />
-                )}
-                <div style={{ position: 'relative', zIndex: 1, background: '#fff',
-                  borderRadius: 14, padding: '20px 16px', border: '1px solid var(--color-border-primary)' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 12px', fontSize: 22, color: '#fff' }}>
-                    {step.icon}
-                  </div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-brand-teal)',
-                    marginBottom: 6 }}>{step.step}</div>
-                  <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{step.title}</h3>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>{step.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorksSection t={t} />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 13: B2B PROGRAM (Business customer acquisition) */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      <section className="home-section" style={{ padding: '28px 24px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
-          borderRadius: 20, padding: '32px 36px', overflow: 'hidden', position: 'relative' }}>
-          {/* Background decoration */}
-          <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
-            background: 'radial-gradient(circle, var(--color-brand-teal), transparent 70%)', opacity: 0.15 }} />
-          <div className="b2b-cols" style={{ position: 'relative', display: 'grid',
-            gridTemplateColumns: '1fr 220px', gap: 40, alignItems: 'center' }}>
-            {/* Left */}
-            <div>
-              <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)',
-                padding: '4px 14px', borderRadius: 999, fontWeight: 600,
-                textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
-              <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600,
-                color: '#fff', margin: '14px 0 12px' }}>
-                {t('home.b2bTitle')}
-              </h2>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.8 }}>
-                {t('home.b2bDesc')}
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 460, marginBottom: 28 }}>
-                {B2B_FEATURES.map(f => (
-                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
-                    <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>✓</span> {f}
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <button className="btn-teal-hover"
-                  onClick={() => router.push('/register?type=b2b')}
-                  style={{ padding: '13px 28px', background: 'var(--color-brand-teal)', color: '#fff',
-                    border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                  {t('home.registerB2B')}
-                </button>
-                <button onClick={() => router.push('/b2b')}
-                  style={{ padding: '13px 24px', background: 'rgba(255,255,255,0.1)',
-                    border: '1.5px solid rgba(255,255,255,0.25)', color: '#fff',
-                    borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}>
-                  {t('home.learnMore')}
-                </button>
-              </div>
-            </div>
-            {/* Right stat boxes */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {B2B_STATS.map((s, i) => ({
-                ...s,
-                val: i === 0
-                  ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1+')
-                  : s.val,
-              })).map(s => (
-                <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
-                  padding: '14px 18px', display: 'flex', alignItems: 'center',
-                  justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{s.label}</span>
-                  <span style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)' }}>{s.val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        </div>
-      </section>
+      <B2BSection t={t} stats={stats} />
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 14: SUPPORT & RESOURCES (Additional value, help center) */}
