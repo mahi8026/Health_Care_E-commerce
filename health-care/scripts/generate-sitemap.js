@@ -251,8 +251,6 @@ function generateFullSitemapXML(products, categories, manufacturers, guides, lan
     { url: `${SITE_URL}/news`, lastmod: now, freq: 'weekly', pri: 0.6 },
     { url: `${SITE_URL}/warranty`, lastmod: now, freq: 'monthly', pri: 0.6 },
     { url: `${SITE_URL}/help`, lastmod: now, freq: 'monthly', pri: 0.5 },
-    { url: `${SITE_URL}/support`, lastmod: now, freq: 'monthly', pri: 0.5 },
-    { url: `${SITE_URL}/returns`, lastmod: now, freq: 'monthly', pri: 0.5 },
     { url: `${SITE_URL}/track`, lastmod: now, freq: 'monthly', pri: 0.5 },
     { url: `${SITE_URL}/privacy`, lastmod: now, freq: 'yearly', pri: 0.3 },
     { url: `${SITE_URL}/terms`, lastmod: now, freq: 'yearly', pri: 0.3 },
