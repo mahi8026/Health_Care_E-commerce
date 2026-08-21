@@ -81,10 +81,17 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
   // Calculate visibility state
   const show = visible && !dismissed;
 
-  // Handle add to cart
+  // Handle add to cart — pass flash-deal price so the local cart matches
+  const flashDealPrice =
+    product.activeFlashDeal?.finalPrice > 0 &&
+    (!product.price || product.activeFlashDeal.finalPrice < product.price)
+      ? product.activeFlashDeal.finalPrice
+      : null;
+  const productForCart = flashDealPrice ? { ...product, price: flashDealPrice } : product;
+
   const handleAddToCart = async () => {
     setAdding(true);
-    await addToCart(product, quantity);
+    await addToCart(productForCart, quantity);
     setTimeout(() => setAdding(false), 1500);
   };
 
@@ -147,10 +154,16 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
           <div className="text-xl font-bold text-[var(--color-brand-navy)]">
             {product.price > 0 ? `৳${product.price.toLocaleString()}` : 'Contact for Price'}
           </div>
-          {product.oldPrice > 0 && product.oldPrice > product.price && (
-            <div className="text-xs text-gray-400 line-through">
-              ৳{product.oldPrice.toLocaleString()}
+          {flashDealPrice && product.price > flashDealPrice ? (
+            <div className="text-xs text-orange-600 font-semibold">
+              Flash Deal ৳{flashDealPrice.toLocaleString()}
             </div>
+          ) : (
+            product.oldPrice > 0 && product.oldPrice > product.price && (
+              <div className="text-xs text-gray-400 line-through">
+                ৳{product.oldPrice.toLocaleString()}
+              </div>
+            )
           )}
         </div>
 

@@ -13,6 +13,7 @@ const orderItemSchema = new mongoose.Schema({
   discount: { type: Number, default: 0 },
   isB2BPrice: { type: Boolean, default: false }, // Flag if B2B price was applied
   b2bSavings: { type: Number, default: 0 }, // Per-item B2B savings
+  flashDealId: { type: mongoose.Schema.Types.ObjectId, ref: 'FlashDeal' }, // Set when flash-deal pricing was applied at purchase time
   qty: { type: Number, required: true, min: 1 },
   // legacy field alias
   quantity: { type: Number },

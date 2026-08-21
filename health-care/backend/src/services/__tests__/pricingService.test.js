@@ -62,4 +62,18 @@ describe('quoteProduct — flash deal pricing', () => {
     const quote2 = quoteProduct(product, null, null, item, -100);
     expect(quote2.unitPrice).toBe(5000);
   });
+
+  it('returns the deal id when a flash-deal entry is applied', () => {
+    const quote = quoteProduct(product, null, null, item, { dealId: 'deal1', finalPrice: 4000 });
+    expect(quote.unitPrice).toBe(4000);
+    expect(quote.flashDealId).toBe('deal1');
+  });
+
+  it('omits flashDealId when the B2B price beats the deal', () => {
+    const user = { b2bApprovalStatus: 'approved', b2bDiscountEnabled: true };
+    const b2bProduct = { ...product, b2bPriceEnabled: true, b2bPrice: 3500 };
+    const quote = quoteProduct(b2bProduct, user, null, item, { dealId: 'deal1', finalPrice: 4000 });
+    expect(quote.unitPrice).toBe(3500);
+    expect(quote.flashDealId).toBeNull();
+  });
 });

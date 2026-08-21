@@ -6,7 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { CONTACT } from '@/constants/api';
 import SizeSelector from './SizeSelector';
-import { getProductPriceDisplay } from '@/utils/pricing';
+import { getProductPriceDisplay, getFlashDealDisplay } from '@/utils/pricing';
 import { 
   FaShoppingCart, 
   FaWhatsapp, 
@@ -61,25 +61,43 @@ export default function ProductInfoPanelEnhanced({
   
   // Calculate B2B pricing
   const priceDisplay = getProductPriceDisplay(product, user, category);
-  
+
+  // Active "Deal of the Day" pricing — beats everything except a better price
+  // the customer already qualifies for; server charges this same price.
+  const flashDeal = getFlashDealDisplay(product, priceDisplay);
+  const productForCart = flashDeal ? { ...product, price: flashDeal.finalPrice } : product;
+
   // Calculate final price with size adjustment
-  const basePrice = priceDisplay.price;
+  const basePrice = flashDeal ? flashDeal.finalPrice : priceDisplay.price;
   const sizeAdjustment = selectedSize?.priceAdjustment || 0;
   const finalPrice = basePrice + sizeAdjustment;
+
+  // Flash-deal strikethrough is anchored to the best non-deal price
+  const hasFlashDiscount = !!flashDeal;
   
   // For B2B users showing discount from original price
-  const hasB2BDiscount = priceDisplay.isB2BPrice && priceDisplay.savings > 0;
+  const hasB2BDiscount = !hasFlashDiscount && priceDisplay.isB2BPrice && priceDisplay.savings > 0;
   
   // For regular discount from oldPrice
-  const hasRegularDiscount = !priceDisplay.isB2BPrice && product.oldPrice > 0 && product.oldPrice > finalPrice;
+  const hasRegularDiscount = !hasFlashDiscount && !priceDisplay.isB2BPrice && product.oldPrice > 0 && product.oldPrice > finalPrice;
   
-  const displayOldPrice = hasB2BDiscount ? priceDisplay.originalPrice : (hasRegularDiscount ? product.oldPrice : null);
-  const savings = hasB2BDiscount ? priceDisplay.savings : (hasRegularDiscount ? product.oldPrice - finalPrice : 0);
-  const discountPercent = hasB2BDiscount 
-    ? priceDisplay.discountPct 
-    : (hasRegularDiscount ? Math.round((savings / product.oldPrice) * 100) : 0);
+  const displayOldPrice = hasFlashDiscount
+    ? priceDisplay.price
+    : hasB2BDiscount
+      ? priceDisplay.originalPrice
+      : (hasRegularDiscount ? product.oldPrice : null);
+  const savings = hasFlashDiscount
+    ? Math.max(0, (Number(priceDisplay.price) || 0) - flashDeal.finalPrice)
+    : hasB2BDiscount
+      ? priceDisplay.savings
+      : (hasRegularDiscount ? product.oldPrice - finalPrice : 0);
+  const discountPercent = hasFlashDiscount
+    ? (flashDeal.discountPct || (priceDisplay.price > 0 ? Math.round((savings / priceDisplay.price) * 100) : 0))
+    : hasB2BDiscount 
+      ? priceDisplay.discountPct 
+      : (hasRegularDiscount ? Math.round((savings / product.oldPrice) * 100) : 0);
   
-  const hasDiscount = hasB2BDiscount || hasRegularDiscount;
+  const hasDiscount = hasFlashDiscount || hasB2BDiscount || hasRegularDiscount;
 
   // Products without a published price get a WhatsApp price-request CTA
   const unpriced = finalPrice <= 0;
@@ -94,12 +112,12 @@ export default function ProductInfoPanelEnhanced({
 
   const handleAddToCart = async () => {
     setAddingToCart(true);
-    await addToCart(product, quantity);
+    await addToCart(productForCart, quantity, { size: selectedSize });
     setTimeout(() => setAddingToCart(false), 1500);
   };
 
   const handleBuyNow = () => {
-    addToCart(product, quantity);
+    addToCart(productForCart, quantity, { size: selectedSize });
     router.push('/cart');
   };
 
@@ -179,13 +197,13 @@ export default function ProductInfoPanelEnhanced({
 
       {/* Pricing - Compact */}
       <div className="bg-gradient-to-br from-blue-50 to-brand-teal-tint rounded-lg p-2.5 border border-blue-100">
-        {hasDiscount && (
+        {hasDiscount && displayOldPrice > 0 && (
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-sm text-[var(--color-text-secondary)] line-through">
               ৳{displayOldPrice?.toLocaleString()}
             </span>
-            <span className={`px-2 py-0.5 ${hasB2BDiscount ? 'bg-purple-500' : 'bg-[var(--color-status-danger-tint)]'} text-white rounded-full text-[10px] font-semibold`}>
-              {hasB2BDiscount ? 'B2B' : 'Save'} {discountPercent}%
+            <span className={`px-2 py-0.5 ${hasFlashDiscount ? 'bg-orange-500' : hasB2BDiscount ? 'bg-purple-500' : 'bg-[var(--color-status-danger-tint)]'} text-white rounded-full text-[10px] font-semibold`}>
+              {hasFlashDiscount ? `Flash Deal -${discountPercent}%` : hasB2BDiscount ? `B2B ${discountPercent}%` : `Save ${discountPercent}%`}
             </span>
           </div>
         )}
@@ -195,7 +213,7 @@ export default function ProductInfoPanelEnhanced({
             {finalPrice > 0 ? `৳${finalPrice?.toLocaleString()}` : 'Contact for Price'}
           </span>
           {hasDiscount && savings > 0 && (
-            <span className={`${hasB2BDiscount ? 'text-purple-600' : 'text-[var(--color-status-success)]'} text-sm font-semibold`}>
+            <span className={`${hasFlashDiscount ? 'text-orange-600' : hasB2BDiscount ? 'text-purple-600' : 'text-[var(--color-status-success)]'} text-sm font-semibold`}>
               -৳{savings.toLocaleString()}
             </span>
           )}

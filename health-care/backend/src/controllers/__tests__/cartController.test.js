@@ -7,6 +7,7 @@ jest.mock('../../models/Cart');
 jest.mock('../../models/Product');
 jest.mock('../../services/flashDealPricing', () => ({
   getActiveDealPriceMap: jest.fn().mockResolvedValue(new Map()),
+  getActiveDealEntries: jest.fn().mockResolvedValue(new Map()),
 }));
 jest.mock('../../utils/logger', () => ({ error: jest.fn(), info: jest.fn(), warn: jest.fn() }));
 

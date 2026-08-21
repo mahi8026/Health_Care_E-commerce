@@ -8,6 +8,7 @@ const logger = require('../utils/logger');
 const { logActivityAsync, ACTIONS } = require('../utils/activityLogger');
 const { PAGINATION } = require('../config/constants');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
+const { getActiveDealEntries } = require('../services/flashDealPricing');
 
 // Helper: escape special regex characters
 function escapeRegex(str) {
@@ -489,6 +490,23 @@ exports.getProduct = async (req, res) => {
     // If accessed by _id, return slug for frontend to redirect (SEO)
     if (isObjectId && product.slug) {
       return successResponse(res, product, null, 200);
+    }
+
+    // Attach the active flash-deal (if any) so the product page shows the
+    // same discounted price that cart/checkout will charge. Uses the same
+    // criteria as the public /flash-deals/active endpoint.
+    try {
+      const dealEntries = await getActiveDealEntries([product._id]);
+      const entry = dealEntries.get(String(product._id));
+      if (entry && Number(entry.finalPrice) > 0 && Number(entry.finalPrice) < (Number(product.price) || 0)) {
+        product.activeFlashDeal = {
+          finalPrice: entry.finalPrice,
+          discountPercentage: entry.discountPercentage,
+          endTime: entry.endTime
+        };
+      }
+    } catch (dealErr) {
+      logger.error(`[getProduct] flash-deal enrichment failed (non-fatal): ${dealErr.message}`);
     }
 
     return successResponse(res, product);

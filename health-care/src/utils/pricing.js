@@ -113,6 +113,31 @@ export function getProductPriceDisplay(product, user, category) {
 }
 
 /**
+ * Resolve the active flash deal ("Deal of the Day") for a product.
+ * Uses `activeFlashDeal` attached by GET /api/products/:slug.
+ * Returns null when no live deal applies or it does not beat the
+ * customer's current price (mirrors the server rule: pay min(deal, B2B)).
+ *
+ * @param {Object} product - product with optional activeFlashDeal
+ * @param {Object|null} priceDisplay - result of getProductPriceDisplay()
+ * @returns {Object|null} { finalPrice, endTime, discountPct }
+ */
+export function getFlashDealDisplay(product, priceDisplay) {
+  const deal = product?.activeFlashDeal;
+  const finalPrice = Number(deal?.finalPrice) || 0;
+  if (finalPrice <= 0) return null;
+
+  const currentPrice = Number(priceDisplay?.price ?? product?.price) || 0;
+  if (currentPrice > 0 && finalPrice >= currentPrice) return null;
+
+  return {
+    finalPrice,
+    endTime: deal.endTime,
+    discountPct: Number(deal.discountPercentage) || 0,
+  };
+}
+
+/**
  * Calculate cart item price with B2B discount
  * @param {Object} item - Cart item with product data
  * @param {Object} user - User object

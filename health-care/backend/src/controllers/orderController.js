@@ -9,6 +9,7 @@ const { DELIVERY_FEES } = require('../config/constants');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 const emailService = require('../services/emailService');
 const pricingService = require('../services/pricingService');
+const flashDealPricing = require('../services/flashDealPricing');
 const { sendToUser, notifications } = require('../utils/oneSignalService');
 
 const cacheService = new CacheService();
@@ -229,6 +230,7 @@ await session.abortTransaction();
       const isItemB2BPrice = quoted.isB2BPrice;
       const itemB2BSavings = quoted.savings;
       const sizeName = quoted.sizeName;
+      const itemFlashDealId = quoted.flashDealId || null;
       totalB2BSavings += itemB2BSavings * qty;
       
       // Check if product has size variants
@@ -249,6 +251,7 @@ await session.abortTransaction();
           price: itemPrice, 
           isB2BPrice: isItemB2BPrice,
           b2bSavings: itemB2BSavings,
+          flashDealId: itemFlashDealId,
           qty, 
           quantity: qty,
           variant: {
@@ -269,6 +272,7 @@ await session.abortTransaction();
           price: itemPrice, 
           isB2BPrice: isItemB2BPrice,
           b2bSavings: itemB2BSavings,
+          flashDealId: itemFlashDealId,
           qty, 
           quantity: qty 
         });
@@ -573,6 +577,15 @@ zone = 'dhaka_suburban';
 
         decrementedItems.push({ product: item.product, qty: item.qty, size: null, isVariant: false });
       }
+    }
+
+    // Flash deals — count units against each deal's soldCount at placement
+    // time so stock-limited deals cannot be oversold during fulfilment.
+    // Best-effort: a counter failure must not fail a placed order.
+    try {
+      await flashDealPricing.changeDealSoldCounts(orderItems, 1, session || undefined);
+    } catch (dealErr) {
+      logger.error(`[createOrder] flash-deal soldCount increment failed (non-fatal): ${dealErr.message}`);
     }
 
     if (useTransaction && session) {
@@ -1202,6 +1215,17 @@ order.statusTimestamps = {};
 
         // B9 — admin cancellation must roll back B2B credit and loyalty points
         await rollbackOrderFinances(order, req.user.id);
+
+        // Flash deals — free deal quota only while the deal is still live,
+        // so ended deals keep their historical soldCount accuracy
+        try {
+          await flashDealPricing.changeDealSoldCounts(
+            order.items.map((i) => ({ product: i.product, flashDealId: i.flashDealId, qty: i.qty || i.quantity || 1 })),
+            -1
+          );
+        } catch (dealErr) {
+          logger.error(`[updateOrderStatus] flash-deal soldCount rollback failed for ${order.orderNumber}: ${dealErr.message}`);
+        }
       }
     } else {
       order.status = status;
@@ -1362,6 +1386,17 @@ order.statusTimestamps = {};
 
     // Roll back B2B credit and loyalty points
     await rollbackOrderFinances(order, req.user.id);
+
+    // Flash deals — free deal quota only while the deal is still live,
+    // so ended deals keep their historical soldCount accuracy
+    try {
+      await flashDealPricing.changeDealSoldCounts(
+        order.items.map((i) => ({ product: i.product, flashDealId: i.flashDealId, qty: i.qty || i.quantity || 1 })),
+        -1
+      );
+    } catch (dealErr) {
+      logger.error(`[cancelOrder] flash-deal soldCount rollback failed for ${order.orderNumber}: ${dealErr.message}`);
+    }
 
     // Log order cancellation activity
     logActivityAsync({

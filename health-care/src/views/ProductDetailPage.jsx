@@ -214,6 +214,14 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
   // Get category slug for SEO-friendly URL
   const categorySlug = categoryName ? CATEGORY_NAME_TO_SLUG[categoryName] : null;
 
+  // Active "Deal of the Day" price (server-enriched) — shown in the mobile bar
+  const flashDealPrice =
+    product.activeFlashDeal?.finalPrice > 0 &&
+    (!product.price || product.activeFlashDeal.finalPrice < product.price)
+      ? product.activeFlashDeal.finalPrice
+      : null;
+  const productForCart = flashDealPrice ? { ...product, price: flashDealPrice } : product;
+
   return (
     <div className="bg-page min-h-screen pb-24 md:pb-8">
       {/* Standalone Review schema — Product/Breadcrumb/FAQ structured data
@@ -395,9 +403,20 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
       >
         <div className="flex-1">
           <div className="text-xs text-[var(--color-text-secondary)] font-medium">Price</div>
-          <div className="text-lg font-semibold text-brand-navy leading-tight">
-            {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
-          </div>
+          {flashDealPrice ? (
+            <div className="flex items-center gap-1.5 leading-tight">
+              <span className="text-sm text-[var(--color-text-secondary)] line-through">
+                ৳{product.price?.toLocaleString()}
+              </span>
+              <span className="text-lg font-semibold text-orange-600">
+                ৳{flashDealPrice.toLocaleString()}
+              </span>
+            </div>
+          ) : (
+            <div className="text-lg font-semibold text-brand-navy leading-tight">
+              {product.price > 0 ? `৳${product.price?.toLocaleString()}` : 'Contact for Price'}
+            </div>
+          )}
         </div>
         {product.price > 0 ? (
         <button
@@ -408,7 +427,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
               return;
             }
             setAddingToCart(true);
-            addToCart(product, quantity, { size: selectedSize });
+            addToCart(productForCart, quantity, { size: selectedSize });
             setTimeout(() => setAddingToCart(false), 1200);
           }}
           disabled={addingToCart}
