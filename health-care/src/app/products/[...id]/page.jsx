@@ -3,6 +3,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
+import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 // import TrustBand from '@/components/seo/TrustBand'; // Removed - not needed on product pages
@@ -12,6 +13,11 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 // ---------------------------------------------------------------------------
 // Data fetching helper
 // ---------------------------------------------------------------------------
+// Returns { status, product }:
+//   'ok'      – product found
+//   'missing' – API confirmed the slug does not exist  -> safe to serve 404
+//   'error'   – network/API failure (e.g. Render cold start) -> do NOT 404,
+//               fall back to the noindex page so real products are never lost
 async function fetchProduct(slug) {
   try {
     // If the slug contains a slash (legacy slug with / in it), pass it as a
@@ -22,11 +28,13 @@ async function fetchProduct(slug) {
     const res = await fetch(url, {
       next: { revalidate: 3600, tags: [`product-${slug}`] },
     });
-    if (!res.ok) return null;
+    if (res.status === 404) return { status: 'missing', product: null };
+    if (!res.ok) return { status: 'error', product: null };
     const data = await res.json();
-    return data.product || data.data || null;
+    const product = data.product || data.data || null;
+    return product ? { status: 'ok', product } : { status: 'missing', product: null };
   } catch {
-    return null;
+    return { status: 'error', product: null };
   }
 }
 
@@ -76,9 +84,10 @@ function resolveSlug(segments) {
 export async function generateMetadata({ params }) {
   const { id: segments } = await params;
   const slug = resolveSlug(segments);
-  const product = await fetchProduct(slug);
+  const { status, product } = await fetchProduct(slug);
 
   if (!product) {
+    if (status === 'missing') notFound();
     return { title: 'Product Not Found', robots: { index: false } };
   }
 
@@ -127,7 +136,9 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
   const { id: segments } = await params;
   const slug = resolveSlug(segments);
-  const product = await fetchProduct(slug);
+  const { status, product } = await fetchProduct(slug);
+
+  if (!product && status === 'missing') notFound();
 
   const canonicalSlug = product?.slug || slug;
   const catName = typeof product?.category === 'object'
