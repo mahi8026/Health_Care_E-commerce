@@ -1956,6 +1956,14 @@ color: var(--color-brand-teal);
   min-height: 320px;
 }
 
+.cv-slot--featured {
+  min-height: 480px;
+}
+
+.cv-slot--testimonials {
+  min-height: 300px;
+}
+
 /* Best-selling section is React.lazy — its Suspense fallback must reserve
    the same height as the loaded section or the swap causes CLS. */
 .best-selling-slot {

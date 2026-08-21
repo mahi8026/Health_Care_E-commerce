@@ -1,22 +1,41 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AutoSlider from '@/components/ui/AutoSlider';
 import { getProductCardImage } from '@/utils/cloudinary';
 import { useCart } from '@/context/CartContext';
 import { useT } from '@/hooks/useT';
+import getHomeDataOnce from '@/utils/homeDataClient';
 
 /**
  * NewArrivalSlider Component - Matches GoWell BD Design
- * 
+ *
  * Displays new arrival products in an auto-scrolling horizontal slider
  * with "New" badges and pricing information.
  */
-export default function NewArrivalSlider({ products = [] }) {
+export default function NewArrivalSlider({ products: productsProp = [] }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const t = useT();
+
+  const [products, setProducts] = useState(productsProp);
+  const needsFetchRef = useRef(productsProp.length === 0);
+
+  // Self-fetch when mounted without data: this component mounts inside a
+  // LazyMount below the fold, so the request (shared one-shot /home/data)
+  // only happens when the user actually scrolls near it.
+  useEffect(() => {
+    if (!needsFetchRef.current) return undefined;
+    let mounted = true;
+    getHomeDataOnce().then((data) => {
+      if (mounted && data && Array.isArray(data.newArrivals) && data.newArrivals.length > 0) {
+        setProducts(data.newArrivals);
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
 
   if (!products || products.length === 0) {
     return null;
