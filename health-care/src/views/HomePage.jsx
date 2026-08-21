@@ -31,7 +31,6 @@ import { useCart } from '@/context/CartContext';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import EnhancedSearchBox from '@/components/search/EnhancedSearchBox';
 import { getProductCardImage, getHeroImage } from '@/utils/cloudinary';
-import RecentlyViewed from '@/components/product/RecentlyViewed';
 
 // Lazy load heavy components for better performance
 const SupportResources = lazy(() => import('@/components/home/SupportResources'));
@@ -41,6 +40,7 @@ const BestSellingSection = lazy(() => import('@/components/home/BestSellingSecti
 const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
 const FlashDealsSection = lazy(() => import('@/components/home/FlashDealsSection'));
 const CategoryProductSections = lazy(() => import('@/components/home/CategoryProductSections'));
+const RecentlyViewed = lazy(() => import('@/components/product/RecentlyViewed'));
 
 // ══════════════════════════════════════════════════════════════════════════════
 // FALLBACK DATA & CONSTANTS
@@ -1384,7 +1384,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
       <section className="home-section" style={{ padding: '28px 24px 20px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <LazyMount fallback={null}>
-            <RecentlyViewed limit={8} title="Continue Where You Left Off" />
+            <Suspense fallback={null}>
+              <RecentlyViewed limit={8} title="Continue Where You Left Off" />
+            </Suspense>
           </LazyMount>
         </div>
       </section>

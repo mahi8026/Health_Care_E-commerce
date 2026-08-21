@@ -20,63 +20,43 @@
   --font-system-bengali: 'Noto Sans Bengali', 'Hind Siliguri', 'Mukti', sans-serif;
 }
 
-/* Ensure body ALWAYS has a readable font, even if web fonts fail to load */
-* {
-  font-family: var(--font-system-sans);
-}
+/*
+  Web fonts are self-hosted via next/font (font-display: swap, metric-adjusted
+  fallbacks), so we can reference them directly. IMPORTANT: no universal (*)
+  font-family selectors here — they invalidate style on EVERY element when the
+  web font swaps in (measured ~seconds of Style&Layout on mobile).
+*/
 
 body {
-  font-family: var(--font-system-sans);
+  font-family: var(--font-plus-jakarta, var(--font-system-sans)), var(--font-system-sans);
 }
 
-/* Progressive enhancement: Use web fonts when available, fall back to system fonts if not */
-html.fonts-loaded body,
-html.fonts-loaded * {
-  font-family: var(--font-plus-jakarta, var(--font-system-sans)), 'Plus Jakarta Sans', var(--font-system-sans);
-}
-
-/* Heading font with proper fallback chain */
+/* Heading font */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-system-serif);
+  font-family: var(--font-lora, var(--font-system-serif)), var(--font-system-serif);
 }
 
-html.fonts-loaded h1, 
-html.fonts-loaded h2, 
-html.fonts-loaded h3, 
-html.fonts-loaded h4, 
-html.fonts-loaded h5, 
-html.fonts-loaded h6 {
-  font-family: var(--font-lora, var(--font-system-serif)), Lora, var(--font-system-serif);
-}
-
-/* Bengali language support */
-html.lang-bn,
-html.lang-bn body,
-html.lang-bn * {
-  font-family: var(--font-system-bengali);
-}
-
-html.fonts-loaded.lang-bn,
-html.fonts-loaded.lang-bn body,
-html.fonts-loaded.lang-bn * {
+/* Bengali language support — set on body/headings only; font-family inherits */
+html.lang-bn body {
   font-family: var(--font-noto-bengali, var(--font-system-bengali)), var(--font-system-bengali);
+}
+
+html.lang-bn h1,
+html.lang-bn h2,
+html.lang-bn h3,
+html.lang-bn h4,
+html.lang-bn h5,
+html.lang-bn h6 {
+  font-family: var(--font-noto-bengali, var(--font-system-bengali)), var(--font-lora, var(--font-system-serif)), var(--font-system-serif);
 }
 
 /* Font-specific utility classes */
 .font-primary {
-  font-family: var(--font-system-sans);
-}
-
-html.fonts-loaded .font-primary {
-  font-family: var(--font-plus-jakarta, var(--font-system-sans)), 'Plus Jakarta Sans', var(--font-system-sans);
+  font-family: var(--font-plus-jakarta, var(--font-system-sans)), var(--font-system-sans);
 }
 
 .font-heading {
-  font-family: var(--font-system-serif);
-}
-
-html.fonts-loaded .font-heading {
-  font-family: var(--font-lora, var(--font-system-serif)), Lora, var(--font-system-serif);
+  font-family: var(--font-lora, var(--font-system-serif)), var(--font-system-serif);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════

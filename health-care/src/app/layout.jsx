@@ -25,7 +25,6 @@ import InstallPWA from "@/components/ui/InstallPWA";
 import NotificationBanner from "@/components/pwa/NotificationBanner";
 import OneSignalProvider from "@/components/pwa/OneSignalProvider";
 import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
-import FontsLoadedEnhancer from "@/components/seo/FontsLoadedEnhancer";
 
 // NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
 // static so pages can be statically rendered / ISR-cached. Pages that need
@@ -183,11 +182,6 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
-        {/* Font Loading Detection — runs after hydration so mutating
-            document.documentElement.classList never conflicts with React's
-            SSR HTML (previous inline <head> script caused hydration mismatch
-            error #418). */}
-        <FontsLoadedEnhancer />
       </head>
       <body className={`min-h-screen antialiased text-[var(--color-text-primary)]`}>
         {/* Skip to main content — keyboard/screen-reader accessibility */}
