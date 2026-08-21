@@ -26,7 +26,10 @@ async function fetchProduct(slug) {
       ? `${API_BASE}/products?slug=${encodeURIComponent(slug)}`
       : `${API_BASE}/products/${slug}`;
     const res = await fetch(url, {
-      next: { revalidate: 3600, tags: [`product-${slug}`] },
+      // 10 min — flash-deal prices must appear on the page soon after a deal
+      // starts; cart/checkout still re-prices server-side, so this only bounds
+      // display staleness. Tag suffix v2 busts pre-existing 1h cache entries.
+      next: { revalidate: 600, tags: [`product-${slug}-v2`] },
     });
     if (res.status === 404) return { status: 'missing', product: null };
     if (!res.ok) return { status: 'error', product: null };
