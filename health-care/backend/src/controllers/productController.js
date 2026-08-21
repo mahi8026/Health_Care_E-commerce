@@ -509,6 +509,10 @@ exports.getProduct = async (req, res) => {
       logger.error(`[getProduct] flash-deal enrichment failed (non-fatal): ${dealErr.message}`);
     }
 
+    // Short CDN cache so flash-deal enrichment (and price changes) surface
+    // promptly; overrides the 1h etag-middleware fallback.
+    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+
     return successResponse(res, product);
   } catch (error) {
     logger.error(`[getProduct] ${error.message}`);
