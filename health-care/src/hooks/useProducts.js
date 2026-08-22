@@ -108,7 +108,10 @@ export function useProducts(filters = {}, initialData = null, initialPagination 
       isMountedRef.current = true;
       fetchProducts();
     }
-  }, [JSON.stringify(filters), fetchProducts]); // eslint-disable-line react-hooks/exhaustive-deps
+  // FIX-013: Only depend on fetchProducts (which already captures filters via
+  // useCallback). Putting JSON.stringify(filters) in the dep array was
+  // computing a new string on every render and causing unnecessary re-runs.
+  }, [fetchProducts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { products, loading, error, pagination, refetch: fetchProducts };
 }

@@ -72,11 +72,20 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
   const handleUseSaved = () => {
     const saved = savedAddress || user?.addresses?.[0];
     if (!saved) return;
+    const savedDistrict = saved.district || saved.city || 'Dhaka';
+    // FIX-008: Derive the division from the saved district so the division
+    // dropdown stays in sync. Previously division was omitted, leaving it
+    // stuck on 'Dhaka' even when the saved district belongs to another division
+    // — causing the district dropdown to show the wrong options.
+    const savedDivision = Object.entries(DIVISION_DISTRICTS).find(
+      ([, districts]) => districts.includes(savedDistrict)
+    )?.[0] || 'Dhaka';
     onChange?.({
       fullName: saved.name || user?.name || '',
       phone: saved.phone || user?.phone || '',
       street: saved.street || saved.address || '',
-      district: saved.district || saved.city || 'Dhaka',
+      division: savedDivision,
+      district: savedDistrict,
       thana: saved.thana || saved.area || '',
       postcode: saved.postcode || saved.postalCode || '',
       instructions: saved.instructions || '',

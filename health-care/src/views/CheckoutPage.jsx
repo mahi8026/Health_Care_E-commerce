@@ -203,7 +203,7 @@ export default function CheckoutPage({ onBackToCart }) {
           quantity: item.quantity,
           price: item.price
         })),
-        user: req.user?.id || req.user?._id,
+        user: user?.id || user?._id,
         paymentMethod: selectedPayment
       });
     }
@@ -236,6 +236,9 @@ export default function CheckoutPage({ onBackToCart }) {
         // ✅ Security Fix #4: Include idempotency key to prevent duplicate orders
         idempotencyKey,
         ...(appliedCoupon && { promoCode: appliedCoupon.code }),
+        // FIX-002: Send loyalty points redemption to backend so points are
+        // actually deducted and the discount is applied server-side
+        ...(redeemedPoints > 0 && { loyaltyPointsToRedeem: redeemedPoints }),
       };
 
       const response = await api.createOrder(orderData);
@@ -269,7 +272,10 @@ export default function CheckoutPage({ onBackToCart }) {
         });
         setIsConfirmed(true);
         clearCart();
-      } else if (['bkash', 'nagad', 'b2b_credit'].includes(selectedPayment)) {
+      } else if (['bkash', 'nagad', 'b2b_credit', 'bank_transfer'].includes(selectedPayment)) {
+        // FIX-003: bank_transfer must open the payment modal so the user can
+        // submit their transaction reference number — previously it fell into
+        // the else branch and confirmed the order without any payment details.
         setShowPaymentModal(true);
       } else {
         GA4Tracker.trackPurchase({
@@ -328,6 +334,7 @@ export default function CheckoutPage({ onBackToCart }) {
     idempotencyKey,
     itemsWithB2BPricing,
     user,
+    redeemedPoints, // FIX-002: required so handlePlaceOrder sees latest redeemed points
   ]);
 
   const handlePaymentSuccess = useCallback(() => {

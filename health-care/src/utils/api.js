@@ -566,7 +566,10 @@ export const api = {
       // Only add non-empty filter values
       Object.entries(filtersWithLimit).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          params.append(key, value);
+          // FIX-005: Normalize sortBy → sort to match backend validateProductQuery.
+          // ProductsPage/SearchPage pass { sortBy: 'price-low' } but the backend
+          // validator only accepts the 'sort' query param name.
+          params.append(key === 'sortBy' ? 'sort' : key, value);
         }
       });
       
@@ -593,10 +596,13 @@ export const api = {
     return handleResponse(response);
   },
 
+  // FIX-015: No /products/search route exists on the backend.
+  // Search is handled by GET /products?search=... — use that instead.
   async searchProducts(query) {
-    const response = await fetchWithAuth(`${API_BASE_URL}/products/search?q=${encodeURIComponent(query)}`, {
-      credentials: 'include'
-    });
+    const response = await fetchWithAuth(
+      `${API_BASE_URL}/products?search=${encodeURIComponent(query)}&limit=20`,
+      { credentials: 'include' }
+    );
     return handleResponse(response);
   },
 
@@ -638,16 +644,14 @@ export const api = {
     return handleResponse(response);
   },
 
+  // FIX-016: No PATCH /orders/:id route exists on the backend.
+  // Use api.updateOrderStatus(id, status) for status changes,
+  // or api.cancelOrder(id) for cancellations.
   async updateOrder(id, updates) {
-    const response = await fetchWithAuth(`${API_BASE_URL}/orders/${id}`, {
-      method: 'PATCH',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(updates),
-      credentials: 'include'
-    });
-    // Clear orders cache after update
-    clearCache('/orders');
-    return handleResponse(response);
+    throw new Error(
+      '[api.updateOrder] No PATCH /orders/:id handler exists on the backend. ' +
+      'Use api.updateOrderStatus(id, status) or api.cancelOrder(id) instead.'
+    );
   },
 
   async cancelOrder(id) {

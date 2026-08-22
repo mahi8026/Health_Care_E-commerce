@@ -246,22 +246,30 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       {/* Bottom row: qty + actions */}
                       <div className="flex items-center justify-between gap-3 flex-wrap">
                         {/* Quantity stepper - 40px touch targets */}
-                        <div className="flex items-center border border-[var(--color-border-primary)] rounded-lg overflow-hidden">
-                          <button
-                            onClick={() => updateQuantity(id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                            aria-label="Decrease quantity"
-                            className="w-10 h-10 flex items-center justify-center text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                          >−</button>
-                          <span className="w-10 text-center text-sm font-semibold text-brand-navy border-x border-[var(--color-border-primary)]">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(id, item.quantity + 1)}
-                            disabled={item.stock !== undefined && item.quantity >= item.stock}
-                            aria-label="Increase quantity"
-                            className="w-10 h-10 flex items-center justify-center text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                          >+</button>
+                        <div>
+                          <div className="flex items-center border border-[var(--color-border-primary)] rounded-lg overflow-hidden">
+                            <button
+                              onClick={() => updateQuantity(id, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              aria-label="Decrease quantity"
+                              className="w-10 h-10 flex items-center justify-center text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            >−</button>
+                            <span className="w-10 text-center text-sm font-semibold text-brand-navy border-x border-[var(--color-border-primary)]">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(id, item.quantity + 1)}
+                              disabled={item.stock !== undefined && item.stock > 0 && item.quantity >= item.stock}
+                              aria-label="Increase quantity"
+                              className="w-10 h-10 flex items-center justify-center text-base font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            >+</button>
+                          </div>
+                          {/* FIX-012: Warn when quantity is at stock limit */}
+                          {item.stock !== undefined && item.stock > 0 && item.quantity >= item.stock && (
+                            <p className="text-xs text-[var(--color-status-warning)] mt-1">
+                              Max available: {item.stock}
+                            </p>
+                          )}
                         </div>
 
                         {/* Action links - 44px touch targets */}

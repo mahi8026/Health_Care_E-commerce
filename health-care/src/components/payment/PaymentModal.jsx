@@ -98,16 +98,20 @@ export default function PaymentModal({
           />
         );
 
-      case 'rocket':
+      // FIX-017: Rocket's method id is 'npsb' (set in PaymentMethods.jsx).
+      // The old 'rocket' case never matched — renamed to 'npsb' so it works
+      // when Rocket is re-enabled. The duplicate 'case npsb' for bank has
+      // been removed to avoid unreachable code.
+      case 'npsb':
         return (
           <div className="space-y-4">
             <div className="bg-pink-50 border border-pink-200 rounded-xl p-5 text-center">
               <div className="text-5xl mb-3">📱</div>
               <h3 className="text-base font-semibold text-pink-900 mb-2">
-                {currentMethod === 'bkash' ? 'bKash' : currentMethod === 'nagad' ? 'Nagad' : 'Rocket'} Payment
+                Rocket Payment
               </h3>
               <p className="text-sm text-pink-700 mb-4">
-                Please send <strong>৳{amount?.toLocaleString()}</strong> to our {currentMethod === 'bkash' ? 'bKash' : currentMethod === 'nagad' ? 'Nagad' : 'Rocket'} number:
+                Please send <strong>৳{amount?.toLocaleString()}</strong> to our Rocket number:
               </p>
               <div className="bg-white rounded-lg p-4 border border-pink-200 mb-4">
                 <div className="text-xs text-[var(--color-text-secondary)] mb-1">Send money to</div>
@@ -117,7 +121,7 @@ export default function PaymentModal({
               </div>
               <div className="text-left bg-white rounded-lg p-4 space-y-2 border border-pink-200 text-sm">
                 <div className="font-semibold text-[var(--color-text-primary)] mb-2">Steps:</div>
-                <div>1. Open your {currentMethod === 'bkash' ? 'bKash' : currentMethod === 'nagad' ? 'Nagad' : 'Rocket'} app</div>
+                <div>1. Open your Rocket app</div>
                 <div>2. Go to <strong>Send Money</strong></div>
                 <div>3. Send exactly <strong>৳{amount?.toLocaleString()}</strong></div>
                 <div>4. Use your Order ID as reference</div>
@@ -125,7 +129,7 @@ export default function PaymentModal({
               </div>
             </div>
             <button
-              onClick={() => handleSuccess({ method: currentMethod, orderId, manual: true })}
+              onClick={() => handleSuccess({ method: 'npsb', orderId, manual: true })}
               className="w-full py-3 rounded-xl bg-pink-600 text-white text-sm font-semibold hover:bg-pink-700 transition-colors"
             >
               I have sent the payment
@@ -137,7 +141,6 @@ export default function PaymentModal({
         );
 
       case 'bank':
-      case 'npsb':
         return (
           <BankTransferForm
             amount={amount}

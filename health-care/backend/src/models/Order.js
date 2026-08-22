@@ -157,8 +157,20 @@ const orderSchema = new mongoose.Schema({
 // Auto-generate orderNumber before saving
 orderSchema.pre('save', async function (next) {
   if (!this.orderNumber) {
-    const count = await mongoose.model('Order').countDocuments();
-    this.orderNumber = `ORD-${String(count + 1).padStart(5, '0')}`;
+    // FIX-007: Replace the racy countDocuments()+1 approach with a
+    // collision-resistant random format matching the controller's
+    // generateOrderNumber(). countDocuments is not atomic — two concurrent
+    // saves read the same count and produce duplicate ORD-XXXXX strings,
+    // hitting the unique index and returning a confusing 500 to the user.
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const datePart = `${yy}${mm}${dd}`;
+    let rand = '';
+    for (let i = 0; i < 6; i++) rand += chars[Math.floor(Math.random() * chars.length)];
+    this.orderNumber = `MC-${datePart}-${rand}`;
     this.orderId = this.orderNumber; // keep legacy alias in sync
   }
   // Sync legacy aliases

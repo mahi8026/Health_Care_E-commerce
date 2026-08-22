@@ -34,7 +34,9 @@ function schedulePersist(key, value) {
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [syncPending, setSyncPending] = useState(false);
+  // FIX-009: Use a ref instead of state so the guard is synchronously readable
+  // across all closures — prevents double-sync on rapid login events.
+  const syncPendingRef = useRef(false);
 
   // Check if user is logged in on mount
   useEffect(() => {
@@ -90,12 +92,12 @@ export function CartProvider({ children }) {
   // Sync cart to backend when user logs in
    
   const syncCartToBackend = useCallback(async (retryCount = 0) => {
-    if (!isLoggedIn || syncPending || cart.length === 0) return;
+    if (!isLoggedIn || syncPendingRef.current || cart.length === 0) return;
 
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 1000; // Start with 1 second
 
-    setSyncPending(true);
+    syncPendingRef.current = true;
     try {
       const token = localStorage.getItem('Mediport_token');
       const response = await fetch(`${API}/cart/sync`, {
@@ -128,13 +130,13 @@ export function CartProvider({ children }) {
         }));
         setCart(mergedCart);
       }
-      setSyncPending(false);
+      syncPendingRef.current = false;
     } catch (error) {
       if (process.env.NODE_ENV !== "production") console.error('Cart sync error:', error);
-      setSyncPending(false);
+      syncPendingRef.current = false;
       showToast.warning('Could not sync cart. Changes saved locally.');
     }
-  }, [isLoggedIn, cart, syncPending]);
+  }, [isLoggedIn, cart]);
 
   // Listen for login event to trigger cart sync
   // syncCartToBackendRef keeps this listener stable so it is not torn
@@ -273,13 +275,15 @@ export function CartProvider({ children }) {
   }, [cart, updateBackendCart]);
 
   const removeFromCart = useCallback((productId) => {
-    const item = cart.find(i => i.id === productId);
+    // FIX-004: Use (i.id || i._id) so items stored with only _id (e.g. from
+    // old localStorage snapshots) can also be found and removed.
+    const item = cart.find(i => (i.id || i._id) === productId);
     if (item) {
       GA4Tracker.trackRemoveFromCart(item, item.quantity);
       showToast.info(`${item.name} removed from cart`);
     }
 
-    setCart(cart.filter(i => i.id !== productId));
+    setCart(cart.filter(i => (i.id || i._id) !== productId));
     updateBackendCart('remove', productId);
   }, [cart, updateBackendCart]);
 
@@ -290,8 +294,16 @@ export function CartProvider({ children }) {
       removeFromCart(productId);
       return;
     }
-    setCart(cart.map(item =>
-      item.id === productId ? { ...item, quantity: safeQty } : item
+    // FIX-012: Soft stock guard — don't exceed known stock count.
+    // Stock may be stale (from localStorage), so this is a UX guard only;
+    // the server performs the authoritative check at order placement.
+    const item = cart.find(i => (i.id || i._id) === productId);
+    if (item?.stock > 0 && safeQty > item.stock) {
+      showToast.warning(`Only ${item.stock} units available`);
+      return;
+    }
+    setCart(cart.map(i =>
+      (i.id || i._id) === productId ? { ...i, quantity: safeQty } : i
     ));
     updateBackendCart('update', productId, safeQty);
   }, [cart, removeFromCart, updateBackendCart]);

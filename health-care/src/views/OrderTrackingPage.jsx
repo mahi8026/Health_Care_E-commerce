@@ -3,17 +3,18 @@ import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { FaWhatsapp } from 'react-icons/fa';
 import api from '@/utils/api';
 import { CONTACT } from '@/constants/api';
 import { ButtonLoader } from '@/components/ui/Spinner';
 
 const TRACKING_STEPS = [
-  { key: 'placed', icon: 'x9', label: 'Order Placed', desc: 'Your order has been received' },
-  { key: 'confirmed', icon: 'S&', label: 'Confirmed', desc: 'Payment verified, processing started' },
-  { key: 'processing', icon: 'a"', label: 'Processing', desc: 'Items being packed in our warehouse' },
-  { key: 'shipped', icon: 'x', label: 'Shipped', desc: 'Order dispatched from warehouse' },
-  { key: 'out_for_delivery', icon: 'xaa', label: 'Out for Delivery', desc: 'Your order is on the way' },
-  { key: 'delivered', icon: '<', label: 'Delivered', desc: 'Order successfully delivered' },
+  { key: 'placed', icon: '🛒', label: 'Order Placed', desc: 'Your order has been received' },
+  { key: 'confirmed', icon: '✅', label: 'Confirmed', desc: 'Payment verified, processing started' },
+  { key: 'processing', icon: '📦', label: 'Processing', desc: 'Items being packed in our warehouse' },
+  { key: 'shipped', icon: '🚚', label: 'Shipped', desc: 'Order dispatched from warehouse' },
+  { key: 'out_for_delivery', icon: '🏍️', label: 'Out for Delivery', desc: 'Your order is on the way' },
+  { key: 'delivered', icon: '🎉', label: 'Delivered', desc: 'Order successfully delivered' },
 ];
 
 const ORDER_STATUS_INDEX = {
@@ -58,7 +59,7 @@ function TrackingTimeline({ status, timeline }) {
                 filter: isPending ? 'grayscale(100%)' : 'none',
                 animation: isCurrent ? 'pulse 2s ease-in-out infinite' : 'none',
               }}>
-                {isDone ? '' : step.icon}
+                {isDone ? '✓' : step.icon}
               </div>
               {idx < TRACKING_STEPS.length - 1 && (
                 <div style={{
@@ -300,7 +301,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                     onClick={handleShare}
                     className="px-3 py-2 bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] rounded-lg text-xs font-medium hover:bg-[var(--color-background-muted)] transition-colors flex items-center gap-2"
                   >
-                    x Share
+                    🔗 Share
                   </button>
                   <div className="text-right">
                     <div className="text-sm text-[var(--color-text-secondary)] mb-1">Status</div>
@@ -319,7 +320,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
               {order.status !== 'delivered' && order.status !== 'cancelled' && (
                 <div className="bg-[var(--color-status-info-tint)] border border-[var(--color-status-info)] rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl">x</span>
+                    <span className="text-2xl">📅</span>
                     <div>
                       <div className="text-sm text-[var(--color-status-info)] font-semibold">Estimated Delivery</div>
                       <div className="text-[var(--color-status-info)]">{getEstimatedDelivery()}</div>
@@ -367,7 +368,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 </div>
                 {order.coldChain && (
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
-                    <span className="text-xl"></span>
+                    <span className="text-xl">❄️</span>
                     <span className="text-sm text-blue-700 font-semibold">Cold Chain Delivery</span>
                   </div>
                 )}
@@ -405,7 +406,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                       </div>
                       <div className="text-right">
                         <div className="text-sm text-[var(--color-text-secondary)]">Qty: {item.qty || item.quantity}</div>
-                        <div className="font-semibold">{(item.price || 0).toLocaleString()}</div>
+                        <div className="font-semibold">৳{(item.price || 0).toLocaleString()}</div>
                       </div>
                     </div>
                   ))}
@@ -415,38 +416,38 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 <div className="mt-6 pt-4 border-t space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--color-text-secondary)]">Subtotal</span>
-                    <span>{(order.subtotal || 0).toLocaleString()}</span>
+                    <span>৳{(order.subtotal || 0).toLocaleString()}</span>
                   </div>
                   {order.isB2BOrder && order.b2bDiscount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="flex items-center gap-1 text-purple-700">
-                        <span>x:</span>
+                        <span>💼</span>
                         <span>B2B Discount ({order.b2bDiscountPct || 0}%)</span>
                       </span>
-                      <span className="font-semibold text-purple-700">-{order.b2bDiscount.toLocaleString()}</span>
+                      <span className="font-semibold text-purple-700">-৳{order.b2bDiscount.toLocaleString()}</span>
                     </div>
                   )}
                   {order.deliveryFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--color-text-secondary)]">Delivery Fee</span>
-                      <span>{order.deliveryFee.toLocaleString()}</span>
+                      <span>৳{order.deliveryFee.toLocaleString()}</span>
                     </div>
                   )}
                   {order.vatAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--color-text-secondary)]">VAT (5%)</span>
-                      <span>{order.vatAmount.toLocaleString()}</span>
+                      <span>৳{order.vatAmount.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                     <span>Total</span>
-                    <span className="text-brand-teal">{(order.totalAmount || order.total || 0).toLocaleString()}</span>
+                    <span className="text-brand-teal">৳{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                   </div>
                   {order.isB2BOrder && order.b2bDiscount > 0 && (
                     <div className="flex justify-center pt-2">
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">
-                        <span>x:</span>
-                        <span>You saved {order.b2bDiscount.toLocaleString()} with B2B pricing!</span>
+                        <span>💼</span>
+                        <span>You saved ৳{order.b2bDiscount.toLocaleString()} with B2B pricing!</span>
                       </div>
                     </div>
                   )}
@@ -467,7 +468,7 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                     Downloading...
                   </>
                 ) : (
-                  'x Download Invoice'
+                  '⬇️ Download Invoice'
                 )}
               </button>
               <button
@@ -480,9 +481,9 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
                 href={`https://wa.me/${CONTACT.whatsapp}?text=I need help with order ${order.orderNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3 bg-[var(--color-status-success-tint)] text-white rounded-lg font-semibold hover:bg-success transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 bg-[var(--color-status-success)] text-white rounded-lg font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
               >
-                <span>x</span>
+                <FaWhatsapp size={16} />
                 WhatsApp Support
               </a>
             </div>
@@ -492,4 +493,3 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
     </div>
   );
 }
-

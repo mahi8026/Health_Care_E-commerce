@@ -94,7 +94,11 @@ export default function OrderSummary({
   const deliveryFee = getDeliveryFee(district);
   const couponDiscount = appliedCoupon?.discountAmount || 0;
   const pointsDiscount = redeemedPoints || 0;
-  const computedTotal = Math.round((subtotal - couponDiscount - pointsDiscount + deliveryFee) * 100) / 100;
+  // FIX-014: Convert points to taka before subtracting (100 pts = ৳10, so × 0.1).
+  // Previously subtracted raw point count (e.g. 500) instead of taka value (৳50),
+  // which would show a wildly wrong total if the `total` prop is ever undefined.
+  const pointsTakaDiscount = pointsDiscount * 0.1;
+  const computedTotal = Math.round((subtotal - couponDiscount - pointsTakaDiscount + deliveryFee) * 100) / 100;
   const displayTotal = total ?? computedTotal;
 
   // Clear coupon error when coupon code changes (intentionally direct for UX)
