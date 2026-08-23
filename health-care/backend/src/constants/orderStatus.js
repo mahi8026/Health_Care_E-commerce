@@ -26,7 +26,9 @@ const ORDER_STATUS_TRANSITIONS = {
   confirmed:        ['processing', 'shipped', 'cancelled'],
   processing:       ['shipped', 'cancelled'],
   shipped:          ['out_for_delivery', 'cancelled'],
-  out_for_delivery: ['delivered'],
+  // Option B: riders can still return-to-sender, so allow cancellation
+  // until the customer actually has the parcel in hand.
+  out_for_delivery: ['delivered', 'cancelled'],
   delivered:        [],
   cancelled:        [],
   pending:          ['placed', 'cancelled']

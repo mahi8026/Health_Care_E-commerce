@@ -18,7 +18,7 @@ const STATUS_TRANSITIONS = {
   confirmed:        ['processing', 'shipped', 'cancelled'],
   processing:       ['shipped', 'cancelled'],
   shipped:          ['out_for_delivery', 'cancelled'],
-  out_for_delivery: ['delivered'],
+  out_for_delivery: ['delivered', 'cancelled'],
   delivered:        [],
   cancelled:        [],
 };
