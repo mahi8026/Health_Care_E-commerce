@@ -25,6 +25,16 @@ const STATUS_TRANSITIONS = {
 
 const nextStatusOptions = (current) => STATUS_TRANSITIONS[current] || [];
 
+// Every status the backend knows about, shown in all dropdowns at once.
+// Illegal targets stay visible but disabled so admins can see the full
+// lifecycle without triggering 400 "Cannot transition" errors.
+const ALL_STATUSES = ['pending', 'placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+
+const isAllowedTransition = (current, next) =>
+  next === current || nextStatusOptions(current).includes(next);
+
+const statusLabel = (s) => s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ');
+
 // Mirrors getStatusColor() below so badges render identically in the list
 // rows and inside the detail modal.
 const STATUS_COLORS = {
@@ -286,12 +296,14 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
                 style={{ width: '100%', border: '0.5px solid var(--color-border-primary)', borderRadius: 7,
                   padding: '8px 12px', fontSize: 'var(--text-xs)', fontFamily: 'inherit',
                   outline: 'none', cursor: 'pointer' }}>
-                {Array.from(new Set([order.status, ...nextStatusOptions(order.status)]))
-                  .map(s => (
-                    <option key={s} value={s}>
-                      {s.replace(/_/g, ' ').charAt(0).toUpperCase() + s.replace(/_/g, ' ').slice(1)}
+                {ALL_STATUSES.map(s => {
+                  const allowed = isAllowedTransition(order.status, s);
+                  return (
+                    <option key={s} value={s} disabled={!allowed}>
+                      {statusLabel(s)}{s === order.status ? ' (current)' : allowed ? '' : ' — not allowed'}
                     </option>
-                  ))}
+                  );
+                })}
               </select>
             </div>
             <div>
@@ -884,14 +896,14 @@ export default function OrdersManagement() {
                         disabled={actionLoading[`status-${order._id}`]}
                         className={`text-xs px-2 py-1 rounded font-medium border-0 cursor-pointer ${getStatusColor(order.status)}`}
                       >
-                        {!nextStatusOptions(order.status).includes(order.status) && (
-                          <option value={order.status} disabled>
-                            {order.status.replace(/_/g, ' ')} (current)
-                          </option>
-                        )}
-                        {nextStatusOptions(order.status).map(s => (
-                          <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
-                        ))}
+                        {ALL_STATUSES.map(s => {
+                          const allowed = isAllowedTransition(order.status, s);
+                          return (
+                            <option key={s} value={s} disabled={!allowed}>
+                              {statusLabel(s)}{s === order.status ? ' (current)' : allowed ? '' : ' — not allowed'}
+                            </option>
+                          );
+                        })}
                       </select>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
@@ -1007,14 +1019,14 @@ export default function OrdersManagement() {
                       disabled={actionLoading[`status-${order._id}`]}
                       className={`w-full text-xs px-2 py-1.5 rounded-lg font-medium border cursor-pointer ${getStatusColor(order.status)}`}
                     >
-                      {!nextStatusOptions(order.status).includes(order.status) && (
-                        <option value={order.status} disabled>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/_/g, ' ')} (current)
-                        </option>
-                      )}
-                      {nextStatusOptions(order.status).map(s => (
-                        <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ')}</option>
-                      ))}
+                      {ALL_STATUSES.map(s => {
+                        const allowed = isAllowedTransition(order.status, s);
+                        return (
+                          <option key={s} value={s} disabled={!allowed}>
+                            {statusLabel(s)}{s === order.status ? ' (current)' : allowed ? '' : ' — not allowed'}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                 </div>
