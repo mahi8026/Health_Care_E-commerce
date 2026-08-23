@@ -1342,12 +1342,13 @@ order.statusTimestamps = {};
             totalAmount: order.totalAmount,
             paymentMethod: order.paymentMethod,
             tracking: order.tracking || null,
-            customer: order.user ? {
-              id: order.user._id,
-              name: order.user.name,
-              email: order.user.email,
-              phone: order.user.phone
-            } : null
+            customer: {
+              id: order.user ? order.user._id : null,
+              name: (order.user && order.user.name) || (order.deliveryAddress && order.deliveryAddress.name) || 'Customer',
+              email: order.user ? order.user.email : null,
+              // Fall back to the checkout contact number when the profile has none
+              phone: (order.user && order.user.phone) || (order.deliveryAddress && order.deliveryAddress.phone) || null
+            }
           };
           n8n.emitEvent('order-status-changed', payload);
           // Distinct lifecycle event for post-purchase flows (review requests)
