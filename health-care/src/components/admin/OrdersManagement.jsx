@@ -43,14 +43,34 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
     setSaving(true);
     try {
       const token = localStorage.getItem('Mediport_token');
-      await fetch(`${API}/orders/${order._id}/status`, {
+      const res = await fetch(`${API}/orders/${order._id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status, adminNote }),
+        body: JSON.stringify({ status }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast.error(data.message || 'Failed to update order');
+        return;
+      }
+      if ((adminNote || '') !== (order.adminNote || '')) {
+        const noteRes = await fetch(`${API}/orders/${order._id}/notes`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ note: adminNote }),
+        });
+        const noteData = await noteRes.json().catch(() => ({}));
+        if (!noteRes.ok) {
+          showToast.error(noteData.message || 'Status saved, but failed to save note');
+        }
+      }
+      showToast.success('Order updated');
       onUpdate();
       onClose();
     } catch (err) {
@@ -65,14 +85,19 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
     setSaving(true);
     try {
       const token = localStorage.getItem('Mediport_token');
-      await fetch(`${API}/orders/${order._id}/verify-payment`, {
+      const res = await fetch(`${API}/orders/${order._id}/verify-payment`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ paymentStatus: 'paid', status: 'confirmed' }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        showToast.error(data.message || 'Failed to verify payment');
+        return;
+      }
+      showToast.success('Payment verified');
       onUpdate();
       onClose();
     } catch (err) {
@@ -256,7 +281,7 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
                 style={{ width: '100%', border: '0.5px solid var(--color-border-primary)', borderRadius: 7,
                   padding: '8px 12px', fontSize: 'var(--text-xs)', fontFamily: 'inherit',
                   outline: 'none', cursor: 'pointer' }}>
-                {['placed','confirmed','processing','shipped','out_for_delivery','delivered','cancelled']
+                {Array.from(new Set([order.status, ...nextStatusOptions(order.status)]))
                   .map(s => (
                     <option key={s} value={s}>
                       {s.replace(/_/g, ' ').charAt(0).toUpperCase() + s.replace(/_/g, ' ').slice(1)}
@@ -320,6 +345,7 @@ export default function OrdersManagement() {
   const [searchInput, setSearchInput] = useState('');
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [bulkAction, setBulkAction] = useState('');
+  const [bulkUpdating, setBulkUpdating] = useState(false);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
@@ -357,6 +383,10 @@ export default function OrdersManagement() {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
+
+  // Drop stale selections whenever the visible order set changes (page/filter/refresh)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setSelectedOrders(current => current.filter(id => orders.some(o => o._id === id))); }, [orders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     setActionLoading(prev => ({ ...prev, [`status-${orderId}`]: true }));
@@ -446,25 +476,39 @@ export default function OrdersManagement() {
   };
 
   const handleBulkAction = async () => {
-    if (!bulkAction || selectedOrders.length === 0) return;
-    
+    if (!bulkAction || selectedOrders.length === 0 || bulkUpdating) return;
+    setBulkUpdating(true);
+
     try {
       const token = localStorage.getItem('Mediport_token');
-      await Promise.all(
-        selectedOrders.map(orderId =>
-          fetch(`${API}/orders/${orderId}/status`, {
+      const results = await Promise.allSettled(
+        selectedOrders.map(async orderId => {
+          const res = await fetch(`${API}/orders/${orderId}/status`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ status: bulkAction })
-          })
-        )
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.message || `Failed with status ${res.status}`);
+          }
+          return orderId;
+        })
       );
-      showMessage(`${selectedOrders.length} order(s) updated to ${bulkAction}`, 'success');
+      const okCount = results.filter(r => r.status === 'fulfilled').length;
+      const failCount = results.length - okCount;
+      if (okCount > 0) {
+        showMessage(`${okCount} order(s) updated to ${bulkAction}${failCount > 0 ? `, ${failCount} failed (invalid transition for their current status)` : ''}`, failCount > 0 ? 'error' : 'success');
+      } else {
+        showMessage('No orders were updated — check each order\'s allowed transitions', 'error');
+      }
       setSelectedOrders([]);
       setBulkAction('');
       fetchOrders();
     } catch (error) {
       showMessage('Failed to update orders', 'error');
+    } finally {
+      setBulkUpdating(false);
     }
   };
 
@@ -591,10 +635,10 @@ export default function OrdersManagement() {
             </select>
             <button
               onClick={handleBulkAction}
-              disabled={!bulkAction}
+              disabled={!bulkAction || bulkUpdating}
               className="text-sm px-4 py-1.5 bg-brand-teal text-white rounded-lg font-semibold hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-40 disabled:cursor-not-allowed min-h-[36px]"
             >
-              Apply
+              {bulkUpdating ? 'Applying…' : 'Apply'}
             </button>
             <button
               onClick={() => handleBulkShip(selectedOrders, `Ship ${selectedOrders.length} selected order(s) via SteadFast`)}
@@ -652,7 +696,7 @@ export default function OrdersManagement() {
           >
             {STATUS_OPTIONS.map(s => (
               <option key={s} value={s === 'All' ? '' : s}>
-                {s === 'All' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}
+                {s === 'All' ? 'All statuses' : s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ')}
               </option>
             ))}
           </select>
@@ -954,11 +998,11 @@ export default function OrdersManagement() {
                     >
                       {!nextStatusOptions(order.status).includes(order.status) && (
                         <option value={order.status} disabled>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('_', ' ')} (current)
+                          {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/_/g, ' ')} (current)
                         </option>
                       )}
                       {nextStatusOptions(order.status).map(s => (
-                        <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ')}</option>
+                        <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ')}</option>
                       ))}
                     </select>
                   </div>

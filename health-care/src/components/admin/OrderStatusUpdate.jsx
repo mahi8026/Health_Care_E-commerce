@@ -106,7 +106,7 @@ export default function OrderStatusUpdate({ order, onUpdate, onClose }) {
         throw new Error(data.message || data.error || `Failed to update status (${res.status})`);
       }
 
-      if (onUpdate) onUpdate(data.order || data.data || data);
+      if (onUpdate) onUpdate(data.data?.order || data.order || data);
       onClose();
     } catch (err) {
       setError(err.message || 'An unexpected error occurred. Please try again.');

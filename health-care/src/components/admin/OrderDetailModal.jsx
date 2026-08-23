@@ -138,7 +138,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
         }
         
         const data = await res.json();
-        const orderData = data.data || data.order || data;
+        const orderData = data.data?.order || data.order || data;
         setOrder(orderData);
       } catch (err) {
         console.error('Failed to load order:', err);

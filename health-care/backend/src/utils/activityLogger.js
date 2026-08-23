@@ -1,4 +1,4 @@
-﻿const ActivityLog = require('../models/ActivityLog');
+const ActivityLog = require('../models/ActivityLog');
 const logger = require('./logger');
 
 // Action constants organized by category
@@ -50,6 +50,7 @@ const ACTIONS = {
   PAYMENT: {
     RECEIVED: 'PAYMENT_RECEIVED',
     FAILED: 'PAYMENT_FAILED',
+    VERIFIED: 'PAYMENT_VERIFIED',
     REFUND_PROCESSED: 'REFUND_PROCESSED'
   },
   SYSTEM: {

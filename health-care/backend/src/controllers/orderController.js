@@ -785,6 +785,32 @@ exports.getOrders = async (req, res) => {
 
     const query = req.user.role === 'admin' ? {} : { user: req.user.id };
 
+    // Admin filters (status / paymentStatus / date range / search)
+    if (req.user.role === 'admin') {
+      const { status, paymentStatus, dateFrom, dateTo, search } = req.query;
+      if (status) {
+        query.status = status;
+      }
+      if (paymentStatus) {
+        query.paymentStatus = paymentStatus;
+      }
+      if (dateFrom || dateTo) {
+        query.createdAt = {};
+        if (dateFrom) {
+          query.createdAt.$gte = new Date(dateFrom);
+        }
+        if (dateTo) {
+          const to = new Date(dateTo);
+          to.setHours(23, 59, 59, 999);
+          query.createdAt.$lte = to;
+        }
+      }
+      if (search) {
+        const rx = new RegExp(String(search).trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        query.$or = [{ orderNumber: rx }, { 'deliveryAddress.email': rx }, { 'deliveryAddress.phone': rx }];
+      }
+    }
+
     const [orders, total] = await Promise.all([
       Order.find(query)
         .populate('user', 'name email company')
@@ -1274,7 +1300,7 @@ order.statusTimestamps = {};
     }
 
     // Send SMS notification for important status changes (non-blocking)
-    const smsStatuses = ['confirmed', 'shipped', 'delivered', 'cancelled'];
+    const smsStatuses = ['confirmed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
     if (smsStatuses.includes(status)) {
       // Populate user to get phone number
       await order.populate('user', 'phone');
@@ -1288,7 +1314,7 @@ order.statusTimestamps = {};
     }
 
     // Send WhatsApp notification for status changes (non-blocking)
-    const whatsappStatuses = ['confirmed', 'shipped', 'delivered', 'cancelled'];
+    const whatsappStatuses = ['confirmed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
     if (whatsappStatuses.includes(status)) {
       // Ensure user is populated
       if (!order.user || !order.user.phone) {
@@ -1377,6 +1403,48 @@ order.statusTimestamps = {};
     }
     
     return errorResponse(res, 'Failed to update order status. Please try again.', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
+  }
+};
+
+/**
+ * Verify payment for an order (admin marks bank-transfer/bKash as paid).
+ *
+ * @route PATCH /api/orders/:id/verify-payment
+ * @access Private/Admin
+ */
+exports.verifyOrderPayment = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate('user', 'name email phone');
+    if (!order) {
+      return errorResponse(res, 'Order not found', null, 404);
+    }
+    if (order.paymentStatus === 'paid') {
+      return errorResponse(res, 'Payment already verified', null, 400);
+    }
+
+    const previous = order.paymentStatus;
+    order.paymentStatus = 'paid';
+    await order.save();
+
+    logger.info(`[verifyOrderPayment] ${order.orderNumber} paymentStatus ${previous} -> paid by ${req.user.email}`);
+
+    logActivityAsync({
+      user: req.user,
+      action: ACTIONS.PAYMENT.VERIFIED,
+      targetModel: 'Order',
+      targetId: order._id,
+      targetName: order.orderNumber,
+      req,
+      changes: { before: { paymentStatus: previous }, after: { paymentStatus: 'paid' } }
+    });
+
+    return successResponse(res, { order }, 'Payment verified successfully');
+  } catch (error) {
+    logger.error(`[verifyOrderPayment] ${error.message}`, { stack: error.stack });
+    if (error.name === 'CastError') {
+      return errorResponse(res, 'Invalid order ID format', null, 400);
+    }
+    return errorResponse(res, 'Failed to verify payment', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
 

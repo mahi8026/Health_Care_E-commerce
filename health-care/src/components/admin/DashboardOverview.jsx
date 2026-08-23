@@ -286,7 +286,7 @@ export default function DashboardOverview() {
                 <button
                   key={order._id || order.orderNumber}
                   type="button"
-                  onClick={() => setSelectedOrder(order._id || order.orderNumber)}
+                  onClick={() => setSelectedOrder(order._id)}
                   className="w-full flex items-center gap-4 p-3.5 rounded-lg border border-[var(--color-border-tertiary)] bg-surface-subtle hover:border-brand-teal/30 hover:bg-brand-teal-tint transition-all text-left group"
                 >
                   <div className="flex-1 min-w-0">
