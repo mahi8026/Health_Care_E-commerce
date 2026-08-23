@@ -11,6 +11,7 @@ const emailService = require('../services/emailService');
 const pricingService = require('../services/pricingService');
 const flashDealPricing = require('../services/flashDealPricing');
 const { sendToUser, notifications } = require('../utils/oneSignalService');
+const { ORDER_STATUSES, ORDER_STATUS_TRANSITIONS } = require('../constants/orderStatus');
 
 const cacheService = new CacheService();
 
@@ -1157,13 +1158,12 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     const { status, trackingNumber, courier } = req.body;
 
-    // Validate status
-    const validStatuses = ['placed', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled', 'pending'];
+    // Validate status (single source of truth: constants/orderStatus)
     if (!status) {
       return errorResponse(res, 'Status is required', null, 400);
     }
-    if (!validStatuses.includes(status)) {
-      return errorResponse(res, `Invalid status. Must be one of: ${validStatuses.join(', ')}`, null, 400);
+    if (!ORDER_STATUSES.includes(status)) {
+      return errorResponse(res, `Invalid status. Must be one of: ${ORDER_STATUSES.join(', ')}`, null, 400);
     }
 
     const order = await Order.findById(req.params.id);
@@ -1173,20 +1173,8 @@ exports.updateOrderStatus = async (req, res) => {
 
     const oldStatus = order.status;
 
-    // Validate status transitions
-    const validTransitions = {
-      placed:          ['confirmed', 'cancelled'],
-      // 'confirmed -> shipped' allowed: SteadFast bulk booking happens at
-      // 'confirmed', so admins skip straight to shipping without 'processing'
-      confirmed:       ['processing', 'shipped', 'cancelled'],
-      processing:      ['shipped', 'cancelled'],
-      shipped:         ['out_for_delivery', 'cancelled'],
-      out_for_delivery: ['delivered'],
-      delivered:       [],
-      cancelled:       [],
-      pending:         ['placed', 'cancelled'],
-    };
-    const allowed = validTransitions[oldStatus];
+    // Validate status transitions (single source of truth: constants/orderStatus)
+    const allowed = ORDER_STATUS_TRANSITIONS[oldStatus];
     if (!allowed || !allowed.includes(status)) {
       return errorResponse(res, `Cannot transition order from '${oldStatus}' to '${status}'`, null, 400);
     }

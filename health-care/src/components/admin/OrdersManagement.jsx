@@ -2,7 +2,7 @@
 
 import { confirmAction } from '@/components/ui/ConfirmDialog';
 import { showToast } from '@/components/ui/Toast';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '@/utils/api';
 import { API } from '@/constants/api';
 
@@ -12,6 +12,8 @@ const STATUS_OPTIONS = ['All', 'placed', 'confirmed', 'processing', 'shipped', '
 // admins can only pick legal next statuses — prevents 400 "Cannot transition"
 // errors from the select.
 const STATUS_TRANSITIONS = {
+  // legacy alias kept in sync with backend constants/orderStatus.js
+  pending:          ['placed', 'cancelled'],
   placed:           ['confirmed', 'cancelled'],
   confirmed:        ['processing', 'shipped', 'cancelled'],
   processing:       ['shipped', 'cancelled'],
@@ -23,13 +25,16 @@ const STATUS_TRANSITIONS = {
 
 const nextStatusOptions = (current) => STATUS_TRANSITIONS[current] || [];
 
+// Mirrors getStatusColor() below so badges render identically in the list
+// rows and inside the detail modal.
 const STATUS_COLORS = {
-  placed:           { bg: 'var(--color-status-info-tint)', color: 'var(--color-status-info)' },
-  confirmed:        { bg: 'var(--color-status-warning-tint)', color: 'var(--color-status-warning)' },
-  processing:       { bg: '#FAF5FF', color: '#6D28D9' },
+  pending:          { bg: 'var(--color-status-warning-tint)', color: 'var(--color-status-warning)' },
+  placed:           { bg: 'var(--color-status-warning-tint)', color: 'var(--color-status-warning)' },
+  confirmed:        { bg: 'var(--color-status-info-tint)', color: 'var(--color-status-info)' },
+  processing:       { bg: 'var(--color-status-info-tint)', color: 'var(--color-status-info)' },
   shipped:          { bg: 'var(--color-status-info-tint)', color: 'var(--color-status-info)' },
-  out_for_delivery: { bg: 'var(--color-status-warning-tint)', color: 'var(--color-status-warning)' },
-  delivered:        { bg: 'var(--color-brand-teal-tint)', color: 'var(--color-status-success)' },
+  out_for_delivery: { bg: '#FED7AA', color: '#9A3412' },
+  delivered:        { bg: 'var(--color-status-success-tint)', color: 'var(--color-status-success)' },
   cancelled:        { bg: 'var(--color-status-danger-tint)', color: 'var(--color-status-danger)' },
 };
 
@@ -346,6 +351,7 @@ export default function OrdersManagement() {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [bulkAction, setBulkAction] = useState('');
   const [bulkUpdating, setBulkUpdating] = useState(false);
+  const fetchSeq = useRef(0);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
@@ -356,6 +362,8 @@ export default function OrdersManagement() {
   };
 
   const fetchOrders = useCallback(async () => {
+    // Ignore responses that resolve after a newer request (rapid filter/page flips)
+    const seq = ++fetchSeq.current;
     try {
       setLoading(true);
       const token = localStorage.getItem('Mediport_token');
@@ -368,16 +376,19 @@ export default function OrdersManagement() {
       const res = await fetch(`${API}/orders?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      if (seq !== fetchSeq.current) return;
       const data = await res.json();
+      if (seq !== fetchSeq.current) return;
       const ordersList = data.data?.orders || data.orders || [];
       setOrders(ordersList);
       setTotal(data.data?.total || data.total || 0);
     } catch (err) {
+      if (seq !== fetchSeq.current) return;
       console.error('Fetch orders error:', err);
       setMessage({ text: 'Failed to load orders', type: 'error' });
       setTimeout(() => setMessage({ text: '', type: '' }), 3000);
     } finally {
-      setLoading(false);
+      if (seq === fetchSeq.current) setLoading(false);
     }
   }, [page, statusFilter, search, dateFrom, dateTo, paymentFilter]);
 
@@ -885,7 +896,7 @@ export default function OrdersManagement() {
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       <div className="text-xs">
-                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                       </div>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
@@ -947,7 +958,7 @@ export default function OrdersManagement() {
                       {order.orderNumber}
                     </button>
                     <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-BD', { 
+                      {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-GB', { 
                         day: 'numeric', month: 'short', year: 'numeric', 
                         hour: '2-digit', minute: '2-digit' 
                       }) : '—'}
