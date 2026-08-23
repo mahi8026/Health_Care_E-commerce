@@ -235,7 +235,9 @@ async function processStatusUpdate(status) {
       updateData.errorMessage = status.errors?.[0]?.title;
     }
 
-    await WhatsAppMessage.findOneAndUpdate({ messageId }, updateData);
+    // Upsert so statuses for messages sent outside this API (e.g. n8n
+    // workflows) still land in the DB instead of vanishing silently.
+    await WhatsAppMessage.findOneAndUpdate({ messageId }, { $set: updateData }, { upsert: true });
   } catch (error) {
     logger.error(`[processStatusUpdate] ${error.message}`);
   }
