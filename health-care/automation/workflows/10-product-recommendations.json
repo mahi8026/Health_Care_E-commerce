@@ -1,0 +1,238 @@
+{
+  "name": "10 - Product Recommendation Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12 * * 6"
+            }
+          ]
+        }
+      },
+      "id": "sched-weekly",
+      "name": "Weekly Sat 12:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  fromEmail: 'hello@mediportbd.com',\n  storeName: 'MediportBD',\n  storeUrl: 'https://mediportbd.com',\n  segment: 'vip',       // who gets the digest\n  limit: 50,            // max customers per run\n  recLimit: 4           // products per digest\n};\n// ──────────────────────────────────────────────────────────\nreturn { json: { CONFIG } };"
+      },
+      "id": "code-config",
+      "name": "Setup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.CONFIG.BACKEND_URL }}/api/automation/customers/segment/{{ $json.CONFIG.segment }}?limit={{ $json.CONFIG.limit }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-customers",
+      "name": "Get Customers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// One item per customer with purchase history; skip those without a seed product.\nconst c = $input.item.json;\nconst seedProductId = c.orderStats?.lastProductIds?.[0];\nif (!seedProductId || !c.email) {\n  return null;\n}\nreturn { json: { customerId: String(c._id), email: c.email, name: c.name, seedProductId } };"
+      },
+      "id": "code-per-customer",
+      "name": "Per Customer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Setup').first().json.CONFIG.BACKEND_URL }}/api/automation/products/{{ $json.seedProductId }}/recommendations?limit={{ $('Setup').first().json.CONFIG.recLimit }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-recs",
+      "name": "Get Recommendations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Build the recommendation digest email.\nconst CONFIG = $('Setup').first().json.CONFIG;\nconst customer = $('Per Customer').item.json;\nconst _r = $input.item.json;\nconst recs = (((_r.data && _r.data.products) || _r.products) || []).slice(0, CONFIG.recLimit);\nif (!recs.length || !customer) {\n  return null;\n}\nconst cards = recs.map((p) => `\n  <td width=\"25%\" align=\"center\" style=\"padding:8px\">\n    ${p.image ? `<img src=\"${p.image}\" width=\"120\" alt=\"\" style=\"border-radius:6px\"/>` : ''}\n    <div style=\"font-size:13px;margin-top:6px\"><a href=\"${CONFIG.storeUrl}/product/${p.slug}\" style=\"color:#0d6efd;text-decoration:none\">${p.name}</a></div>\n    <div style=\"font-weight:bold;margin-top:4px\">৳${Number(p.price).toLocaleString()}</div>\n  </td>`).join('');\nconst html = `\n  <div style=\"font-family:Arial,sans-serif;max-width:600px;margin:auto\">\n    <h2>Picked for you, ${customer.name}</h2>\n    <p>Based on what you and similar medical professionals buy:</p>\n    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\"><tr>${cards}</tr></table>\n    <p><a href=\"${CONFIG.storeUrl}\" style=\"background:#0d6efd;color:#fff;padding:12px 28px;text-decoration:none;border-radius:6px;display:inline-block\">Shop All Products</a></p>\n    <p style=\"color:#888;font-size:12px\">Weekly digest. Reply STOP to unsubscribe.</p>\n  </div>`;\nreturn { json: { email: customer.email, subject: `${CONFIG.storeName}: 4 picks for your practice this week`, html } };"
+      },
+      "id": "code-build-email",
+      "name": "Build Digest Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Setup').first().json.CONFIG.fromEmail }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "mail-digest",
+      "name": "Send Digest",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1560,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "mediport-smtp",
+          "name": "Mediport SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Backend wraps lists as {success,data:{customers:[...]}}; emit one item per customer.\nconst r = $input.first().json;\nconst list = (r.data && Array.isArray(r.data.customers)) ? r.data.customers : [];\nif (!list.length) {\n  console.log('[Flatten] no customers in response');\n}\nreturn list.map(c => ({ json: c }));"
+      },
+      "id": "auto-flat-w10",
+      "name": "Flatten Customers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        790,
+        300
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    }
+  ],
+  "connections": {
+    "Weekly Sat 12:00": {
+      "main": [
+        [
+          {
+            "node": "Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup": {
+      "main": [
+        [
+          {
+            "node": "Get Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Customers": {
+      "main": [
+        [
+          {
+            "node": "Flatten Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Per Customer": {
+      "main": [
+        [
+          {
+            "node": "Get Recommendations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recommendations": {
+      "main": [
+        [
+          {
+            "node": "Build Digest Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Digest Email": {
+      "main": [
+        [
+          {
+            "node": "Send Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flatten Customers": {
+      "main": [
+        [
+          {
+            "node": "Per Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

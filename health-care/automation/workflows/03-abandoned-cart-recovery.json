@@ -1,0 +1,194 @@
+{
+  "name": "03 - Abandoned Cart Recovery",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "sched-1h",
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  fromEmail: 'offers@mediportbd.com',\n  storeName: 'MediportBD',\n  storeUrl: 'https://mediportbd.com',\n  couponCode: 'COMEBACK5',   // create this coupon in admin panel first\n  smsThreshold: 2000         // BDT carts above this also get SMS\n};\n// ──────────────────────────────────────────────────────────\nreturn { json: { CONFIG } };"
+      },
+      "id": "code-config",
+      "name": "Setup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.CONFIG.BACKEND_URL }}/api/automation/abandoned-carts?minutes=120&limit=25",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-carts",
+      "name": "Get Abandoned Carts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Flatten one item per cart with a personalized email body.\nconst CONFIG = $('Setup').first().json.CONFIG;\nconst carts = $input.first().json.carts || [];\nconst out = [];\nfor (const c of carts) {\n  if (!c.customer?.email) continue;\n  const rows = (c.items || []).map(i => `\n    <tr>\n      <td>${i.name || 'Product'}</td>\n      <td style=\"text-align:center\">${i.qty}</td>\n      <td style=\"text-align:right\">৳${Number(i.price).toLocaleString()}</td>\n    </tr>`).join('');\n  const html = `\n    <div style=\"font-family:Arial,sans-serif;max-width:560px;margin:auto\">\n      <h2>You left something behind, ${c.customer.name || 'there'} 👋</h2>\n      <p>Your cart at ${CONFIG.storeName} is still waiting — worth <b>৳${Number(c.subtotal).toLocaleString()}</b>.</p>\n      <table border=\"1\" cellpadding=\"8\" width=\"100%\" style=\"border-collapse:collapse\">\n        <tr><th align=\"left\">Item</th><th>Qty</th><th align=\"right\">Price</th></tr>\n        ${rows}\n      </table>\n      <p>Use code <b style=\"background:#fff3cd;padding:2px 8px\">${CONFIG.couponCode}</b> for an extra 5% off:</p>\n      <p><a href=\"${CONFIG.storeUrl}/cart\" style=\"background:#0d6efd;color:#fff;padding:12px 28px;text-decoration:none;border-radius:6px;display:inline-block\">Complete My Order</a></p>\n      <p style=\"color:#888;font-size:12px\">You receive this because you started checkout at ${CONFIG.storeName}.</p>\n    </div>`;\n  out.push({ json: { cartId: String(c.cartId), email: c.customer.email, name: c.customer.name || 'Customer', subtotal: c.subtotal, phone: c.customer.phone || null, html } });\n}\nreturn out;"
+      },
+      "id": "code-flatten",
+      "name": "One Item Per Cart",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Setup').first().json.CONFIG.fromEmail }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=🛒 {{ $('Setup').first().json.CONFIG.storeName }}: your cart misses you — extra 5% off inside",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "mail-recovery",
+      "name": "Recovery Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1120, 300],
+      "executeOnce": false,
+      "credentials": {
+        "smtp": {
+          "id": "mediport-smtp",
+          "name": "Mediport SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Collect all processed cartIds and mark them notified in the backend\nconst items = $input.all();\nconst cartIds = items.map(i => i.json.cartId).filter(Boolean);\nreturn { json: { cartIds } };"
+      },
+      "id": "code-collect",
+      "name": "Collect Cart IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup').first().json.CONFIG.BACKEND_URL }}/api/automation/carts/mark-notified",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ cartIds: $json.cartIds }) }}",
+        "options": {}
+      },
+      "id": "http-mark",
+      "name": "Mark Notified",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup": {
+      "main": [
+        [
+          {
+            "node": "Get Abandoned Carts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Abandoned Carts": {
+      "main": [
+        [
+          {
+            "node": "One Item Per Cart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One Item Per Cart": {
+      "main": [
+        [
+          {
+            "node": "Recovery Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recovery Email": {
+      "main": [
+        [
+          {
+            "node": "Collect Cart IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Cart IDs": {
+      "main": [
+        [
+          {
+            "node": "Mark Notified",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

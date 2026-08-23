@@ -1,0 +1,177 @@
+{
+  "name": "09 - Follow-up Campaigns",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 11 * * *"
+            }
+          ]
+        }
+      },
+      "id": "sched-daily",
+      "name": "Daily 11:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  fromEmail: 'offers@mediportbd.com',\n  storeName: 'MediportBD',\n  storeUrl: 'https://mediportbd.com',\n  campaignLimit: 100\n};\n// ──────────────────────────────────────────────────────────\n// Campaign calendar — one campaign per weekday (others skip)\nconst CAMPAIGNS = {\n  1: { segment: 'at_risk', subject: 'We miss you — 10% off your next order', coupon: 'WINBACK10', title: 'Win-back' },\n  3: { segment: 'active', subject: 'Complete your lab setup — picks for you', coupon: '', title: 'Cross-sell' },\n  5: { segment: 'vip', subject: 'VIP early access: new arrivals before anyone else', coupon: '', title: 'VIP teaser' }\n};\n// ──────────────────────────────────────────────────────────\nconst bdt = new Date(Date.now() + 6 * 3600 * 1000);\nconst dow = bdt.getUTCDay(); // 0=Sun … 6=Sat\nconst campaign = CAMPAIGNS[dow] || null;\nif (!campaign) {\n  return []; // no campaign today — workflow ends silently\n}\nreturn [{ json: { CONFIG, ...campaign } }];"
+      },
+      "id": "code-pick",
+      "name": "Pick Campaign",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Pick Campaign').first().json.CONFIG.BACKEND_URL }}/api/automation/customers/segment/{{ $('Pick Campaign').first().json.segment }}?limit={{ $('Pick Campaign').first().json.CONFIG.campaignLimit }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Pick Campaign').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-segment",
+      "name": "Get Audience",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Build a personalized email per customer.\nconst camp = $('Pick Campaign').first().json;\nconst CONFIG = camp.CONFIG;\nconst c = $input.item.json;\nif (!c.email) {\n  return null; // skip customers without email\n}\nconst stats = c.orderStats || {};\nconst days = stats.daysSinceLastOrder;\nlet intro;\nswitch (camp.segment) {\n  case 'at_risk':\n    intro = `It has been ${days} days since your last order. Stock moves fast in this industry — here is 10% off to welcome you back.`;\n    break;\n  case 'active':\n    intro = `Thanks for being a regular! Based on what clinics like yours reorder, these might be useful next.`;\n    break;\n  case 'vip':\n    intro = `As one of our most valued partners, you get first look at this week's new arrivals${stats.totalSpent ? ` (lifetime value ৳${Number(stats.totalSpent).toLocaleString()})` : ''}.`;\n    break;\n  default:\n    intro = 'A quick note from the MediportBD team.';\n}\nconst html = `\n  <div style=\"font-family:Arial,sans-serif;max-width:560px;margin:auto\">\n    <h2>${camp.title}: hello ${c.name}</h2>\n    <p>${intro}</p>\n    ${camp.coupon ? `<p>Use code <b style=\"background:#fff3cd;padding:2px 8px\">${camp.coupon}</b> at checkout.</p>` : ''}\n    <p><a href=\"${CONFIG.storeUrl}\" style=\"background:#0d6efd;color:#fff;padding:12px 28px;text-decoration:none;border-radius:6px;display:inline-block\">Browse Products</a></p>\n    <p style=\"color:#888;font-size:12px\">You are receiving this as part of the ${camp.title} program. Reply STOP to opt out.</p>\n  </div>`;\nreturn { json: { email: c.email, name: c.name, subject: `${CONFIG.storeName}: ${camp.subject}`, html } };"
+      },
+      "id": "code-personalize",
+      "name": "Personalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Pick Campaign').first().json.CONFIG.fromEmail }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "mail-campaign",
+      "name": "Campaign Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "mediport-smtp",
+          "name": "Mediport SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Backend wraps lists as {success,data:{customers:[...]}}; emit one item per customer.\nconst r = $input.first().json;\nconst list = (r.data && Array.isArray(r.data.customers)) ? r.data.customers : [];\nif (!list.length) {\n  console.log('[Flatten] no customers in response');\n}\nreturn list.map(c => ({ json: c }));"
+      },
+      "id": "auto-flat-w9",
+      "name": "Flatten Customers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        790,
+        300
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    }
+  ],
+  "connections": {
+    "Daily 11:00": {
+      "main": [
+        [
+          {
+            "node": "Pick Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Campaign": {
+      "main": [
+        [
+          {
+            "node": "Get Audience",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audience": {
+      "main": [
+        [
+          {
+            "node": "Flatten Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personalize": {
+      "main": [
+        [
+          {
+            "node": "Campaign Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flatten Customers": {
+      "main": [
+        [
+          {
+            "node": "Personalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

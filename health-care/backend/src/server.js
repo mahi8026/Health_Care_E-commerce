@@ -344,6 +344,7 @@ app.use('/api/flash-deals', require('./routes/flashDealRoutes')); // Flash deals
 app.use('/api/test', dbHealthCheck, require('./routes/testRoutes')); // Test and debugging endpoints (admin only)
 app.use('/api/utils', dbHealthCheck, require('./routes/adminUtilRoutes')); // Utility endpoints (fix category counts, etc.)
 app.use('/api/push', require('./routes/pushRoutes')); // Push notifications
+app.use('/api/automation', require('./routes/automationRoutes')); // n8n automation API (X-Automation-Key)
 
 // ── One-time slug migration endpoint (admin, secret-protected) ───────────────
 // Regenerates all product slugs using the clean name-only format.

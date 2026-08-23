@@ -1,0 +1,212 @@
+{
+  "name": "07 - Order Operations Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 21 * * *"
+            }
+          ]
+        }
+      },
+      "id": "sched-daily",
+      "name": "Daily 21:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 180]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  telegramChatId: '-1001234567890',\n  adminEmail: 'management@mediportbd.com',\n  fromEmail: 'reports@mediportbd.com'\n};\n// ──────────────────────────────────────────────────────────\nreturn { json: { CONFIG, period: 'today', label: 'Daily' } };"
+      },
+      "id": "setup-daily",
+      "name": "Setup Daily",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 180]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "sched-weekly",
+      "name": "Weekly Mon 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 420]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE (same values as Setup Daily) ────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  telegramChatId: '-1001234567890',\n  adminEmail: 'management@mediportbd.com',\n  fromEmail: 'reports@mediportbd.com'\n};\n// ──────────────────────────────────────────────────────────\nreturn { json: { CONFIG, period: 'week', label: 'Weekly' } };"
+      },
+      "id": "setup-weekly",
+      "name": "Setup Weekly",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 420]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.CONFIG.BACKEND_URL }}/api/automation/orders/stats?period={{ $json.period }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-stats",
+      "name": "Get Order Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const s = $input.first().json;\nconst cfg = $('Setup Daily').first().json.CONFIG;\nconst label = $('Setup Weekly').first().json.period === s.period && s.period === 'week' ? 'Weekly' : ($('Setup Daily').first().json.period === s.period ? 'Daily' : 'Weekly');\nconst bdt = (v) => `৳${Number(v || 0).toLocaleString()}`;\nconst top = (s.topProducts || []).map((p, i) => `${i + 1}. ${p.name} — ${p.unitsSold} units — ${bdt(p.revenue)}`).join('\\n');\nconst text = [\n  `<b>📊 ${label} Sales Digest</b>`,\n  ``,\n  `🧾 Orders: <b>${s.summary.orders}</b>`,\n  `💰 Revenue: <b>${bdt(s.summary.revenue)}</b>`,\n  `📈 AOV: ${bdt(s.summary.aov)}`,,\n  `🏢 B2B orders: ${s.summary.b2bOrders} • COD: ${s.summary.codOrders}`,,\n  `❌ Cancelled: ${s.cancelled}`,,\n  ``,\n  `<b>Top products:</b>\\n${top || '—'}`\n].join('\\n');\nconst html = `\n  <h2>📊 ${label} Sales Digest</h2>\n  <table cellpadding=\"8\" style=\"border-collapse:collapse\">\n    <tr><td>Orders</td><td><b>${s.summary.orders}</b></td></tr>\n    <tr><td>Revenue</td><td><b>${bdt(s.summary.revenue)}</b></td></tr>\n    <tr><td>Average order value</td><td>${bdt(s.summary.aov)}</td></tr>\n    <tr><td>B2B orders</td><td>${s.summary.b2bOrders}</td></tr>\n    <tr><td>COD orders</td><td>${s.summary.codOrders}</td></tr>\n    <tr><td>Cancelled</td><td>${s.cancelled}</td></tr>\n  </table>\n  <h3>Top products</h3>\n  <ol>${(s.topProducts || []).map((p) => `<li>${p.name} — ${p.unitsSold} units — ${bdt(p.revenue)}</li>`).join('')}</ol>`;\nreturn { json: { CONFIG: cfg, text, html, label } };"
+      },
+      "id": "code-format",
+      "name": "Format Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.CONFIG.telegramChatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "tg-digest",
+      "name": "Telegram Digest",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1120, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "mediport-tg",
+          "name": "Mediport Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.CONFIG.fromEmail }}",
+        "toEmail": "={{ $json.CONFIG.adminEmail }}",
+        "subject": "=📊 {{ $json.label }} sales digest — MediportBD",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "mail-digest",
+      "name": "Management Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1120, 400],
+      "credentials": {
+        "smtp": {
+          "id": "mediport-smtp",
+          "name": "Mediport SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 21:00": {
+      "main": [
+        [
+          {
+            "node": "Setup Daily",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Daily": {
+      "main": [
+        [
+          {
+            "node": "Get Order Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Mon 09:00": {
+      "main": [
+        [
+          {
+            "node": "Setup Weekly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Weekly": {
+      "main": [
+        [
+          {
+            "node": "Get Order Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Order Stats": {
+      "main": [
+        [
+          {
+            "node": "Format Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Digest": {
+      "main": [
+        [
+          {
+            "node": "Telegram Digest",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Management Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

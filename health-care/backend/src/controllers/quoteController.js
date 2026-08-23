@@ -87,6 +87,30 @@ exports.createQuote = async (req, res) => {
     });
 
     logger.info(`[createQuote] Quote ${quote.quoteNumber} created for user ${req.user._id} (${subtotal} BDT)`);
+
+    // Emit n8n workflow event (fire-and-forget, never blocks the response)
+    try {
+      require('../services/n8nWebhookService').emitEvent('quote-created', {
+        quoteId: quote._id,
+        quoteNumber: quote.quoteNumber,
+        subtotal,
+        finalAmount: quote.finalAmount,
+        paymentTerms: quote.paymentTerms,
+        itemCount: quoteItems.length,
+        items: quoteItems.map(i => ({ name: i.name, sku: i.sku, qty: i.qty, lineTotal: i.lineTotal })),
+        customer: {
+          id: req.user._id,
+          name: req.user.name,
+          email: req.user.email,
+          phone: req.user.phone,
+          company: req.user.companyName || req.user.company || null,
+          b2bTier: req.user.b2bTier || null
+        }
+      });
+    } catch (n8nErr) {
+      logger.error(`[createQuote] n8n event error: ${n8nErr.message}`);
+    }
+
     return successResponse(res, quote, `Quote request ${quote.quoteNumber} submitted`, 201);
   } catch (error) {
     logger.error(`[createQuote] ${error.message}`);

@@ -50,6 +50,11 @@ function startCronJobs() {
   }, { timezone: 'Asia/Dhaka' });
 
   // ── Abandoned Cart Recovery — every 2 hours ──────────────────────────────
+  // Skipped when n8n automation is enabled — WF-03 handles recovery instead
+  // (backend cron + n8n would both email customers otherwise).
+  if (process.env.N8N_EVENTS_ENABLED === 'true') {
+    logger.info('[CRON] Abandoned cart recovery handled by n8n WF-03 — backend cron disabled');
+  } else {
   cron.schedule('0 */2 * * *', async () => {
     logger.info('[CRON] Running abandoned cart check...');
     try {
@@ -101,6 +106,7 @@ function startCronJobs() {
       logger.error(`[CRON] Abandoned cart check error: ${err.message}`);
     }
   }, { timezone: 'Asia/Dhaka' });
+  } // end n8n-enabled guard for abandoned cart cron
 
   // ── Flash Deal Status Update — every 5 minutes ────────────────────────────
   cron.schedule('*/5 * * * *', async () => {

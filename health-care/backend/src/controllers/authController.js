@@ -97,6 +97,21 @@ exports.register = async (req, res) => {
       metadata: { accountType: user.accountType, role: user.role }
     });
 
+    // Emit n8n workflow event (fire-and-forget, never blocks the response)
+    try {
+      require('../services/n8nWebhookService').emitEvent('user-registered', {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || null,
+        role: user.role,
+        accountType: user.accountType,
+        company: user.companyName || user.company || null
+      });
+    } catch (n8nErr) {
+      logger.error(`[register] n8n event error: ${n8nErr.message}`);
+    }
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully',

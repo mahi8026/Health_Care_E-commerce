@@ -698,6 +698,30 @@ Promise.resolve(adminNotif).catch(err =>
       logger.error(`[createOrder] Admin push notification error: ${notifErr.message}`);
     }
 
+    // Emit n8n workflow event (fire-and-forget, never blocks the response)
+    try {
+      const n8n = require('../services/n8nWebhookService');
+      n8n.emitEvent('order-placed', {
+        orderId: order[0]._id,
+        orderNumber,
+        items: orderItems.map(i => ({ name: i.name, sku: i.sku, qty: i.qty, price: i.price })),
+        itemCount: orderItems.length,
+        subtotal,
+        totalAmount,
+        paymentMethod,
+        deliveryType: deliveryType || deliveryMethod || null,
+        isB2BOrder: !!user.b2bAccount,
+        deliveryAddress: {
+          name: deliveryAddress?.name,
+          phone: deliveryAddress?.phone,
+          district: deliveryAddress?.district || deliveryAddress?.city
+        },
+        customer: { id: user._id, name: user.name, email: user.email, phone: user.phone }
+      });
+    } catch (n8nErr) {
+      logger.error(`[createOrder] n8n event error: ${n8nErr.message}`);
+    }
+
     // Log order placement activity
     logActivityAsync({
       user: req.user,
@@ -1289,6 +1313,37 @@ order.statusTimestamps = {};
       sendToUser(order.user._id || order.user, notifications.orderDelivered(order)).catch(err =>
         logger.error(`[updateOrderStatus] Push notification failed: ${err.message}`)
       );
+    }
+
+    // Emit n8n workflow event (fire-and-forget, never blocks the response)
+    try {
+      const n8n = require('../services/n8nWebhookService');
+      Promise.resolve(order.populate('user', 'name email phone'))
+        .then(() => {
+          const payload = {
+            orderId: order._id,
+            orderNumber: order.orderNumber,
+            oldStatus,
+            newStatus: status,
+            totalAmount: order.totalAmount,
+            paymentMethod: order.paymentMethod,
+            tracking: order.tracking || null,
+            customer: order.user ? {
+              id: order.user._id,
+              name: order.user.name,
+              email: order.user.email,
+              phone: order.user.phone
+            } : null
+          };
+          n8n.emitEvent('order-status-changed', payload);
+          // Distinct lifecycle event for post-purchase flows (review requests)
+          if (status === 'delivered') {
+            n8n.emitEvent('order-delivered', payload);
+          }
+        })
+        .catch((err) => logger.error(`[updateOrderStatus] n8n event failed: ${err.message}`));
+    } catch (n8nErr) {
+      logger.error(`[updateOrderStatus] n8n event error: ${n8nErr.message}`);
     }
 
     // Log status change activity

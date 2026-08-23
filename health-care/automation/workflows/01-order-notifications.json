@@ -1,0 +1,201 @@
+{
+  "name": "01 - New Order Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "order-placed",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "wh-order-placed",
+      "name": "Order Placed",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "mediport-order-placed"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  telegramChatId: '-1001234567890',   // ops group chat id\n  adminEmail: 'ops@mediportbd.com',\n  fromEmail: 'no-reply@mediportbd.com',\n  highValueThreshold: 50000,          // BDT\n};\n// ──────────────────────────────────────────────────────────\nconst d = ($input.item.json.body && $input.item.json.body.data !== undefined ? $input.item.json.body.data : $input.item.json.data) || {};\nreturn {\n  json: {\n    CONFIG,\n    orderNumber: d.orderNumber,\n    totalAmount: d.totalAmount || 0,\n    subtotal: d.subtotal || 0,\n    paymentMethod: d.paymentMethod,\n    itemCount: d.itemCount,\n    isB2BOrder: !!d.isB2BOrder,\n    customerName: d.customer?.name || d.deliveryAddress?.name || 'Guest',\n    customerPhone: d.customer?.phone || d.deliveryAddress?.phone || '-',\n    items: d.items || [],\n    eventId: ($input.item.json.body && $input.item.json.body.eventId !== undefined ? $input.item.json.body.eventId : $input.item.json.eventId)\n  }\n};"
+      },
+      "id": "code-normalize",
+      "name": "Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const o = $input.item.json;\nconst lines = o.items.map(i => `• ${i.name} (${i.sku}) ×${i.qty} — ৳${(i.price * i.qty).toLocaleString()}`).join('\\n');\nconst telegramText = [\n  `<b>🛒 NEW ORDER #${o.orderNumber}</b>`,\n  ``,\n  `👤 ${o.customerName} (${o.customerPhone})`,\n  `💳 ${o.paymentMethod.toUpperCase()}${o.isB2BOrder ? ' • B2B' : ''}`,\n  `📦 ${o.itemCount} item(s)`,\n  `💰 <b>৳${o.totalAmount.toLocaleString()}</b>`,\n  ``,\n  lines\n].join('\\n');\nconst html = `\n  <h2>New Order #${o.orderNumber}</h2>\n  <p><b>Customer:</b> ${o.customerName} (${o.customerPhone})<br/>\n     <b>Payment:</b> ${o.paymentMethod.toUpperCase()}<br/>\n     <b>Total:</b> ৳${o.totalAmount.toLocaleString()}</p>\n  <table border=\"1\" cellpadding=\"6\" style=\"border-collapse:collapse\">\n    <tr><th>Product</th><th>SKU</th><th>Qty</th><th>Line Total</th></tr>\n    ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.sku}</td><td>${i.qty}</td><td>৳${(i.price * i.qty).toLocaleString()}</td></tr>`).join('')}\n  </table>`;\nreturn { json: { ...o, telegramText, html } };"
+      },
+      "id": "code-summary",
+      "name": "Build Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.CONFIG.telegramChatId }}",
+        "text": "={{ $json.telegramText }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "tg-ops",
+      "name": "Telegram Ops Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [900, 180],
+      "credentials": {
+        "telegramApi": {
+          "id": "mediport-tg",
+          "name": "Mediport Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.CONFIG.fromEmail }}",
+        "toEmail": "={{ $json.CONFIG.adminEmail }}",
+        "subject": "=🛒 New Order #{{ $json.orderNumber }} — ৳{{ $json.totalAmount.toLocaleString() }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "mail-admin",
+      "name": "Admin Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 380],
+      "credentials": {
+        "smtp": {
+          "id": "mediport-smtp",
+          "name": "Mediport SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c-high-value",
+              "leftValue": "={{ $json.totalAmount }}",
+              "rightValue": "={{ $json.CONFIG.highValueThreshold }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "c-cod",
+              "leftValue": "={{ $json.paymentMethod }}",
+              "rightValue": "cod",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "if-high-value",
+      "name": "High Value or COD?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [900, 560]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.CONFIG.telegramChatId }}",
+        "text": "=🚨 <b>HIGH PRIORITY</b> — Order #{{ $('Normalize').first().json.orderNumber }} is {{ $('Normalize').first().json.totalAmount >= $('Normalize').first().json.CONFIG.highValueThreshold ? 'HIGH VALUE (৳' + Number($('Normalize').first().json.totalAmount).toLocaleString() + ')' : 'CASH ON DELIVERY' }}. Verify before dispatch.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "tg-owner",
+      "name": "Owner Priority Ping",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1120, 560],
+      "credentials": {
+        "telegramApi": {
+          "id": "mediport-tg",
+          "name": "Mediport Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Order Placed": {
+      "main": [
+        [
+          {
+            "node": "Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize": {
+      "main": [
+        [
+          {
+            "node": "Build Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Summary": {
+      "main": [
+        [
+          {
+            "node": "Telegram Ops Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Admin Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "High Value or COD?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Value or COD?": {
+      "main": [
+        [
+          {
+            "node": "Owner Priority Ping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

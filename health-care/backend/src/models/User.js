@@ -132,6 +132,13 @@ return true;
   isVerified: { type: Boolean, default: false },
   phoneVerified: { type: Boolean, default: false },
   phoneVerifiedAt: { type: Date },
+  // Marketing segment (computed by n8n RFM workflow — see automation/docs)
+  marketingSegment: {
+    type: String,
+    enum: ['vip', 'at_risk', 'dormant', 'new', 'active', null],
+    default: null
+  },
+  segmentedAt: { type: Date },
   // Notification preferences
   notificationPreferences: {
     orderUpdates: { type: Boolean, default: true },

@@ -1,0 +1,53 @@
+# MediportBD — self-hosted n8n automation stack
+# Usage:
+#   cp .env.example .env   (fill in values)
+#   docker compose up -d
+#   open http://localhost:5678
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: mediport-n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      # ── Core ──────────────────────────────────────────────
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Dhaka}
+      - TZ=${TZ:-Asia/Dhaka}
+
+      # ── Security (login screen) ───────────────────────────
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_TRUST_PROXY=${N8N_TRUST_PROXY:-false}
+
+      # ── Data lifecycle ────────────────────────────────────
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-168}
+      - EXECUTIONS_TIMEOUT=300
+
+      # ── Diagnostics ───────────────────────────────────────
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_HIRING_BANNER_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+
+      # ── Optional: run webhook processors only (queue mode later) ──
+      # Requires Redis; enable when scaling past ~10k executions/day
+      # - EXECUTIONS_MODE=queue
+      # - QUEUE_BULL_REDIS_HOST=redis
+    volumes:
+      - n8n_data:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  n8n_data:

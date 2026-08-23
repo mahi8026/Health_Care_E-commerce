@@ -1,0 +1,202 @@
+{
+  "name": "02 - Low Stock Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "sched-6h",
+      "name": "Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  telegramChatId: '-1001234567890',\n  adminEmail: 'ops@mediportbd.com',\n  fromEmail: 'no-reply@mediportbd.com'\n};\n// ──────────────────────────────────────────────────────────\nreturn { json: { CONFIG } };"
+      },
+      "id": "code-config",
+      "name": "Setup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.CONFIG.BACKEND_URL }}/api/automation/low-stock",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-lowstock",
+      "name": "Get Low Stock",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c-count",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-any",
+      "name": "Any Low Stock?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const r = $input.first().json;\nconst row = (p) => `| ${p.name} | ${p.sku} | ${p.stock} | ${p.lowStockThreshold ?? p.minStock} |`;\nconst outItems = r.outOfStock || [];\nconst lowItems = r.lowStock || [];\nconst table = (items) => items.length\n  ? items.map(row).join('\\n')\n  : '—';\nconst text = [\n  `<b>📦 STOCK ALERT</b>`,\n  ``,\n  `<b>Out of stock (${outItems.length}):</b>`,\n  table(outItems),\n  ``,\n  `<b>Low stock (${lowItems.length}):</b>`,\n  table(lowItems)\n].join('\\n');\nconst html = `\n  <h2>📦 Stock Alert — ${r.count} product(s) need restocking</h2>\n  <h3>Out of stock (${outItems.length})</h3>\n  <table border=\"1\" cellpadding=\"6\" style=\"border-collapse:collapse\"><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Threshold</th></tr>${(outItems).map(p => `<tr><td>${p.name}</td><td>${p.sku}</td><td><b>${p.stock}</b></td><td>${p.lowStockThreshold ?? p.minStock}</td></tr>`).join('')}</table>\n  <h3>Low stock (${lowItems.length})</h3>\n  <table border=\"1\" cellpadding=\"6\" style=\"border-collapse:collapse\"><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Threshold</th></tr>${(lowItems).map(p => `<tr><td>${p.name}</td><td>${p.sku}</td><td>${p.stock}</td><td>${p.lowStockThreshold ?? p.minStock}</td></tr>`).join('')}</table>`;\nreturn { json: { CONFIG: $('Setup').first().json.CONFIG, text, html } };"
+      },
+      "id": "code-digest",
+      "name": "Build Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 180]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.CONFIG.telegramChatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "tg-stock",
+      "name": "Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1340, 100],
+      "credentials": {
+        "telegramApi": {
+          "id": "mediport-tg",
+          "name": "Mediport Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $json.CONFIG.fromEmail }}",
+        "toEmail": "={{ $json.CONFIG.adminEmail }}",
+        "subject": "=📦 Stock Alert — {{ $('Get Low Stock').first().json.count }} product(s) need restocking",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "mail-stock",
+      "name": "Stock Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1340, 280],
+      "credentials": {
+        "smtp": {
+          "id": "mediport-smtp",
+          "name": "Mediport SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup": {
+      "main": [
+        [
+          {
+            "node": "Get Low Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Low Stock": {
+      "main": [
+        [
+          {
+            "node": "Any Low Stock?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Any Low Stock?": {
+      "main": [
+        [
+          {
+            "node": "Build Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Digest": {
+      "main": [
+        [
+          {
+            "node": "Telegram Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Stock Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

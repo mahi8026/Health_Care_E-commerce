@@ -1,0 +1,240 @@
+{
+  "name": "08 - Customer Segmentation (RFM)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "sched-weekly",
+      "name": "Weekly Sun 02:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ── EDIT THIS CONFIG ONCE ─────────────────────────────────\nconst CONFIG = {\n  BACKEND_URL: 'http://host.docker.internal:5001',\n  AUTOMATION_API_KEY: 'paste-your-automation-api-key',\n  telegramChatId: '-1001234567890',\n  segmentLimit: 500\n};\n// ──────────────────────────────────────────────────────────\nreturn { json: { CONFIG } };"
+      },
+      "id": "code-config",
+      "name": "Setup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Fan out one item per segment so the HTTP node runs per segment\nconst CONFIG = $input.first().json.CONFIG;\nconst segments = ['vip', 'at_risk', 'dormant', 'new'];\nreturn segments.map((s) => ({ json: { CONFIG, segment: s } }));"
+      },
+      "id": "code-segments",
+      "name": "Segment List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Setup').first().json.CONFIG.BACKEND_URL }}/api/automation/customers/segment/{{ $json.segment }}?limit={{ $('Setup').first().json.CONFIG.segmentLimit }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-segment",
+      "name": "Get Segment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Merge all segments into a single updates array for the backend.\n// Priority when a customer appears in several lists: vip > active > at_risk > dormant > new\nconst priority = { vip: 5, active: 4, at_risk: 3, dormant: 2, new: 1 };\nconst map = new Map();\nfor (const item of $input.all()) {\n  const _d = (item.json && item.json.data) ? item.json.data : item.json;\n  const seg = _d.segment || item.json.segment;\n  const _list = _d.customers || item.json.customers || [];\n  for (const c of _list) {\n    const id = String(c._id);\n    const existing = map.get(id);\n    if (!existing || priority[seg] > priority[existing.segment]) {\n      map.set(id, { userId: c._id, segment: seg });\n    }\n  }\n}\nconst updates = Array.from(map.values());\nconst counts = {};\nfor (const u of updates) {\n  counts[u.segment] = (counts[u.segment] || 0) + 1;\n}\nreturn { json: { updates, counts } };"
+      },
+      "id": "code-merge",
+      "name": "Merge Segments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup').first().json.CONFIG.BACKEND_URL }}/api/automation/customers/apply-segments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Automation-Key",
+              "value": "={{ $('Setup').first().json.CONFIG.AUTOMATION_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.updates) }}",
+        "options": {}
+      },
+      "id": "http-apply",
+      "name": "Apply Segments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const applied = $input.first().json.applied || 0;\nconst counts = $('Merge Segments').first().json.counts;\nconst lines = Object.entries(counts).map(([k, v]) => `• ${k}: ${v}`).join('\\n');\nreturn { json: { text: `🧩 <b>SEGMENTATION COMPLETE</b>\\n\\n${applied} customer(s) updated:\\n${lines}` } };"
+      },
+      "id": "code-summary",
+      "name": "Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Setup').first().json.CONFIG.telegramChatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "tg-summary",
+      "name": "Telegram Summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1780,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "mediport-tg",
+          "name": "Mediport Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Weekly Sun 02:00": {
+      "main": [
+        [
+          {
+            "node": "Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup": {
+      "main": [
+        [
+          {
+            "node": "Segment List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Segment List": {
+      "main": [
+        [
+          {
+            "node": "Get Segment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Segment": {
+      "main": [
+        [
+          {
+            "node": "Merge Segments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Segments": {
+      "main": [
+        [
+          {
+            "node": "Apply Segments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Segments": {
+      "main": [
+        [
+          {
+            "node": "Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summary": {
+      "main": [
+        [
+          {
+            "node": "Telegram Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}
