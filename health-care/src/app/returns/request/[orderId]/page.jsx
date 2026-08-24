@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { showToast } from '@/components/ui/Toast';
 
 import { useState, useEffect } from 'react';
@@ -30,7 +30,7 @@ export default function ReturnRequestPage() {
 
   const fetchOrder = async () => {
     try {
-      const token = localStorage.getItem('mediport_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/orders/${params.orderId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -71,7 +71,7 @@ export default function ReturnRequestPage() {
 
     setUploadingImages(true);
     try {
-      const token = localStorage.getItem('mediport_token');
+      const token = localStorage.getItem('Mediport_token');
       const uploadedImages = [];
 
       for (const file of files) {
@@ -127,7 +127,7 @@ export default function ReturnRequestPage() {
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('mediport_token');
+      const token = localStorage.getItem('Mediport_token');
       
       // Prepare products array - handle both populated and non-populated product references
       const products = order.items.map(item => {

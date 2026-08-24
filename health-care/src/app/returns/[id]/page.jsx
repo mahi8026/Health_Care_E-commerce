@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { showToast } from '@/components/ui/Toast';
 import { confirmAction } from '@/components/ui/ConfirmDialog';
 
@@ -25,7 +25,7 @@ export default function ReturnDetailPage() {
 
   const fetchReturnDetails = async () => {
     try {
-      const token = localStorage.getItem('mediport_token');
+      const token = localStorage.getItem('Mediport_token');
       if (!token) {
         router.push('/login');
         return;
@@ -63,7 +63,7 @@ export default function ReturnDetailPage() {
 
     setCancelling(true);
     try {
-      const token = localStorage.getItem('mediport_token');
+      const token = localStorage.getItem('Mediport_token');
       const res = await fetch(`${API}/returns/${params.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
