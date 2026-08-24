@@ -1,7 +1,12 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import BrandPage from '@/views/BrandPage';
 import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
+import {
+  getBrandFaqs,
+  getBrandQuickAnswer,
+} from '@/config/brandGEO';
 
 // ---------------------------------------------------------------------------
 // Data fetching
@@ -94,6 +99,8 @@ export default async function BrandDetailPage({ params }) {
   const products = await fetchBrandProducts(brand.name);
   const brandName = brand.name || 'Medical Brand';
   const canonicalUrl = `${SITE_CONFIG.url}/brands/${slug}`;
+  const quickAnswer = getBrandQuickAnswer(slug, brandName);
+  const faqs = getBrandFaqs(slug, brandName);
 
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
@@ -143,7 +150,68 @@ export default async function BrandDetailPage({ params }) {
           }),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map((f) => ({
+              '@type': 'Question',
+              name: f.q,
+              acceptedAnswer: { '@type': 'Answer', text: f.a },
+            })),
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            '@id': canonicalUrl,
+            url: canonicalUrl,
+            name: `${brandName} Products in Bangladesh`,
+            speakable: {
+              '@type': 'Speakable',
+              cssSelector: ['#quick-answer'],
+            },
+          }),
+        }}
+      />
       <BrandPage brand={brand} initialProducts={products} />
+
+      {/* Brand GEO box — answer-first, AI-engine extractable + internal links */}
+      {quickAnswer && (
+        <section className="bg-page px-4 pb-8">
+          <div
+            id="quick-answer"
+            className="container mx-auto max-w-[1280px] rounded-2xl border border-[var(--color-border-secondary)] bg-[var(--color-background-secondary)] p-4 sm:p-5"
+          >
+            <p className="text-[var(--text-xs)] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1.5">
+              {brandName} in Bangladesh
+            </p>
+            <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {quickAnswer}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+              <Link href="/guides/medical-equipment-bangladesh-guide" className="text-brand-teal hover:underline">
+                Medical Equipment Buying Guide
+              </Link>
+              <Link href="/guides/dgda-registration-explained" className="text-brand-teal hover:underline">
+                DGDA Registration Explained
+              </Link>
+              <Link href="/b2b" className="text-brand-teal hover:underline">
+                B2B Bulk Pricing
+              </Link>
+              <Link href="/certifications" className="text-brand-teal hover:underline">
+                Our Certifications
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

@@ -90,9 +90,9 @@ export const PAGE_SEO = {
     keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh',
   },
   b2b: {
-    title:       'B2B Medical Supply Bangladesh — Hospital & Clinic Bulk Orders | MediportBD',
-    description: 'B2B medical equipment supplier for hospitals, clinics and diagnostic centers in Bangladesh. Credit terms 30–90 days. 8–30% bulk discounts. Dedicated account manager.',
-    keywords:    'B2B medical supplier Bangladesh, hospital equipment supplier Dhaka, bulk medical supplies BD',
+    title:       'MediportBD B2B — Bulk Medical Supply for Hospitals & Clinics BD',
+    description: 'MediportBD B2B portal: bulk medical equipment and supplies for hospitals, clinics and diagnostic centers in Bangladesh. Credit terms 30–90 days. 8–30% bulk discounts. Dedicated account manager.',
+    keywords:    'B2B medical supplier Bangladesh, MediportBD B2B, hospital equipment supplier Dhaka, bulk medical supplies BD',
   },
   search: {
     title:       'Search Medical Equipment — MediportBD Bangladesh',

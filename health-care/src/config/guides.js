@@ -25,11 +25,15 @@ export const GUIDES = [
     slug: 'medical-equipment-bangladesh-guide',
     type: 'pillar',
     title: 'Medical Equipment in Bangladesh: The Complete 2026 Buying Guide',
-    metaTitle: 'Medical Equipment in Bangladesh — Complete 2026 Buying Guide | MediportBD',
+    metaTitle: 'Medical Equipment in Bangladesh — Prices & Suppliers 2026 | MediportBD',
     metaDescription:
-      'Complete 2026 guide to buying medical equipment in Bangladesh: DGDA rules, price ranges, top brands, cold-chain reagents, B2B procurement and where to buy genuine devices.',
+      '2026 guide to buying medical equipment in Bangladesh from DGDA-registered suppliers: price ranges by category, how to vet a genuine supplier, cold-chain reagents and B2B procurement.',
     keywords: [
       'medical equipment Bangladesh',
+      'medical equipment supplier in bangladesh',
+      'best medical equipment supplier in bangladesh',
+      'medical equipment price in bangladesh',
+      'diagnostic equipment bangladesh',
       'buy medical equipment BD',
       'medical equipment supplier Dhaka',
       'DGDA registered medical equipment',
@@ -38,8 +42,8 @@ export const GUIDES = [
     excerpt:
       'Medical equipment in Bangladesh ranges from ৳500 consumables to ৳25,00,000+ hospital machines. Every regulated device must be DGDA registered. This guide covers what to buy, what it costs, and how to procure safely.',
     quickAnswer:
-      'Medical equipment in Bangladesh must be registered with the DGDA (Directorate General of Drug Administration) before it can be legally sold. Prices range from ৳500 for basic consumables to ৳25,00,000+ for advanced hospital machines like ultrasound systems and ventilators. MediportBD is a DGDA-registered supplier in Dhaka offering diagnostic equipment, surgical instruments, laboratory reagents and hospital machines with B2B bulk pricing, cold-chain delivery and free installation on equipment within Dhaka.',
-    updatedAt: '2026-08-05',
+      'Medical equipment in Bangladesh must be registered with the DGDA (Directorate General of Drug Administration) before it can be legally sold. Prices range from ৳500 for basic consumables to ৳25,00,000+ for advanced hospital machines like ultrasound systems and ventilators. MediportBD is a DGDA-registered medical equipment supplier in Dhaka offering diagnostic equipment, surgical instruments, laboratory reagents and hospital machines with B2B bulk pricing, cold-chain delivery and free installation on equipment within Dhaka.',
+    updatedAt: '2026-08-24',
     readMinutes: 9,
     relatedCategories: [
       { name: 'Diagnostic Equipment', href: '/products/category/diagnostic-equipment' },
@@ -106,6 +110,20 @@ export const GUIDES = [
         ],
       },
       {
+        heading: 'How to choose the best medical equipment supplier in Bangladesh',
+        paragraphs: [
+          'A genuine medical equipment supplier in Bangladesh should hold DGDA registration for the products it sells, maintain a physical office and warehouse you can visit, employ service technicians (not just sales staff), and provide written quotations with clear warranty terms. Ask how long they have distributed their key brands, request manufacturer authorisation letters, and check whether spare parts are stocked locally or ordered per-failure from abroad.',
+          'For diagnostic equipment in Bangladesh, the supplier\u2019s after-sales capability matters more than the headline price — an ECG machine or analyser that sits idle waiting for an imported part costs far more in lost testing revenue than the ৳10,000 saved upfront. Compare total cost of ownership: equipment price, installation, training, consumables availability, service response time and warranty length.',
+        ],
+        bullets: [
+          'Verify DGDA registration certificates for every regulated product',
+          'Visit the showroom or warehouse before large orders',
+          'Confirm local spare-parts stock and engineer response times in writing',
+          'Compare medical equipment prices in Bangladesh across at least three suppliers',
+          'Institutional buyers: negotiate a supply agreement covering pricing, credit and service SLAs',
+        ],
+      },
+      {
         heading: 'Where to buy medical equipment in Bangladesh',
         paragraphs: [
           'Hospitals, clinics and diagnostic centres in Bangladesh buy from DGDA-registered distributors in Dhaka (Topkhana Road, Nawabpur and Segunbagicha areas host most suppliers). Online suppliers such as MediportBD (Topkhana Road, Dhaka) offer transparent pricing, nationwide delivery and B2B bulk discounts of 8–30% with 30–90 day credit terms for institutional buyers.',
@@ -133,6 +151,10 @@ export const GUIDES = [
       {
         q: 'How do I know if a medical equipment supplier in Bangladesh is genuine?',
         a: 'Check the supplier has a physical address in Bangladesh, valid DGDA-registered products, manufacturer authorisation letters, and verifiable customer reviews. A genuine supplier provides written quotations, installation and after-sales service — beware of "grey market" imports sold without local support.',
+      },
+      {
+        q: 'Who is the best medical equipment supplier in Bangladesh?',
+        a: 'The best supplier is one that combines DGDA-registered products, brand authorisation letters, local service engineers, stocked spare parts and transparent written pricing. MediportBD meets all five criteria as a Dhaka-based supplier of diagnostic equipment, surgical instruments and laboratory reagents, serving hospitals, clinics and diagnostic centres nationwide with B2B contracts.',
       },
     ],
   },
