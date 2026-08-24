@@ -51,13 +51,33 @@ async function fetchProducts(searchTerm) {
   }
 }
 
+async function fetchBrandNames() {
+  try {
+    const res = await fetch(`${API}/manufacturers`, { next: { revalidate: 3600 } });
+    if (!res.ok) return {};
+    const data = await res.json();
+    const list = data.data?.manufacturers || data.manufacturers || [];
+    return Object.fromEntries(
+      (Array.isArray(list) ? list : []).map((b) => [b.slug, b.name])
+    );
+  } catch {
+    return {};
+  }
+}
+
 export default async function EquipmentLandingPage({ params }) {
   const { slug } = await params;
   const page = getLandingPageBySlug(slug);
   if (!page) notFound();
 
   const canonicalUrl = `${SITE_CONFIG.url}/equipment/${slug}`;
-  const products = await fetchProducts(page.search);
+  const [products, brandNames] = await Promise.all([
+    fetchProducts(page.search),
+    page.brandSlugs ? fetchBrandNames() : Promise.resolve({}),
+  ]);
+  const brands = (page.brandSlugs || [])
+    .filter((s) => brandNames[s])
+    .map((s) => ({ slug: s, name: brandNames[s] }));
 
   const categoryName = CATEGORY_SLUG_MAP[page.categorySlug];
   const breadcrumbs = [
@@ -159,6 +179,24 @@ export default async function EquipmentLandingPage({ params }) {
             </div>
           )}
         </section>
+
+        {/* Brand links — pass landing-page authority to brand pages */}
+        {brands.length > 0 && (
+          <section className="mt-8 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+            <h2 className="text-lg font-semibold text-brand-navy mb-4">Top Brands in Bangladesh</h2>
+            <div className="flex flex-wrap gap-2">
+              {brands.map((b) => (
+                <Link
+                  key={b.slug}
+                  href={`/brands/${b.slug}`}
+                  className="inline-flex items-center text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
+                >
+                  {b.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Long-form SEO content */}
         <section className="mt-10 bg-white border border-[var(--color-border-primary)] rounded-2xl p-6 md:p-8">

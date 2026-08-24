@@ -5,11 +5,26 @@ import { TOPICAL_CLUSTERS, getClusterBySlug, getClusterLandingPages } from '@/co
 import { getGuideBySlug } from '@/config/guides';
 import { fetchListing } from '@/lib/listingData';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import { API } from '@/constants/api';
 import ProductCard from '@/components/ProductCard';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
+
+async function fetchBrandNames() {
+  try {
+    const res = await fetch(`${API}/manufacturers`, { next: { revalidate: 3600 } });
+    if (!res.ok) return {};
+    const data = await res.json();
+    const list = data.data?.manufacturers || data.manufacturers || [];
+    return Object.fromEntries(
+      (Array.isArray(list) ? list : []).map((b) => [b.slug, b.name])
+    );
+  } catch {
+    return {};
+  }
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -46,8 +61,12 @@ export default async function TopicClusterPage({ params }) {
   const landingPages = getClusterLandingPages(cluster);
   const guides = (cluster.guideSlugs || []).map(getGuideBySlug).filter(Boolean);
   const categoryName = CATEGORY_SLUG_MAP[cluster.categorySlug];
+  const brandNames = await fetchBrandNames();
+  const brands = (cluster.brandSlugs || [])
+    .filter((s) => brandNames[s])
+    .map((s) => ({ slug: s, name: brandNames[s] }));
 
-  const listing = await fetchListing({ category: cluster.categorySlug, page: '1' });
+  const [listing] = await Promise.all([fetchListing({ category: cluster.categorySlug, page: '1' })]);
 
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
@@ -150,6 +169,24 @@ export default async function TopicClusterPage({ params }) {
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {listing.products.slice(0, 8).map(product => (
                 <ProductCard key={product._id || product.id} product={product} showCategory />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Brand links — pass hub authority to brand pages */}
+        {brands.length > 0 && (
+          <section className="mt-8 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+            <h2 className="text-lg font-semibold text-brand-navy mb-4">Leading Brands</h2>
+            <div className="flex flex-wrap gap-2">
+              {brands.map((b) => (
+                <Link
+                  key={b.slug}
+                  href={`/brands/${b.slug}`}
+                  className="inline-flex items-center text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
+                >
+                  {b.name}
+                </Link>
               ))}
             </div>
           </section>

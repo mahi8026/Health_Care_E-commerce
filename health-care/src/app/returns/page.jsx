@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
-// /returns redirects to /returns/my-returns
+// /returns permanently redirects to /returns/my-returns (308)
 export default function ReturnsIndex() {
-  redirect('/returns/my-returns');
+  permanentRedirect('/returns/my-returns');
 }

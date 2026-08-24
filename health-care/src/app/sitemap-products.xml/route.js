@@ -1,18 +1,37 @@
 /**
  * Product Pages Sitemap for MediportBD
  *
- * Permanently redirects to the static sitemap file generated at build time
+ * Serves the static sitemap file generated at build time
  * (scripts/generate-sitemap.js during `npm run build`).
  *
- * 308 (permanent), not 307: this URL is listed in /sitemap.xml, and search
- * engines should treat the target as the lasting location.
+ * Previously this did a 308 redirect to /sitemap-products-static.xml.
+ * Now we serve directly to eliminate the redirect hop and prevent GSC
+ * from flagging it as a "redirecting sitemap" error.
  *
- * Route: /sitemap-products.xml → /sitemap-products-static.xml
+ * Route: /sitemap-products.xml
  */
 
-import { NextResponse } from 'next/server';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
-export async function GET(request) {
-  const url = new URL('/sitemap-products-static.xml', request.url);
-  return NextResponse.redirect(url, 308);
+export async function GET() {
+  try {
+    const filePath = join(process.cwd(), 'public', 'sitemap-products-static.xml');
+    const content = await readFile(filePath, 'utf-8');
+    return new Response(content, {
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+      },
+    });
+  } catch {
+    // File not yet generated (first deploy before build script runs)
+    return new Response(
+      '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
+      {
+        headers: { 'Content-Type': 'application/xml' },
+        status: 200,
+      }
+    );
+  }
 }

@@ -123,15 +123,30 @@ const nextConfig = {
 
   // Redirect old query-param category URLs to slug-based URLs
   async redirects() {
+    // Redirect old query-param category URLs to slug-based URLs.
+    // Slugs MUST match CATEGORY_SLUG_MAP in src/constants/categories.js exactly —
+    // any mismatch sends Googlebot to a 404 and creates "Page with redirect" errors.
     const categoryRedirects = [
-      { name: 'Diagnostic Equipment',  slug: 'diagnostic-equipment' },
-      { name: 'Surgical Instruments',  slug: 'surgical-instruments' },
-      { name: 'Laboratory Reagents',   slug: 'laboratory-reagents' },
-      { name: 'Hospital Machines',     slug: 'hospital-machines' },
-      { name: 'Lab Equipment',         slug: 'lab-equipment' },
-      { name: 'PPE & Safety',          slug: 'ppe-safety' },
-      { name: 'Dental Equipment',      slug: 'dental-equipment' },
-      { name: 'Implants & Ortho',      slug: 'implants-ortho' },
+      { name: 'Diagnostic Equipment',            slug: 'diagnostic-equipment' },
+      { name: 'Surgical Instruments',            slug: 'surgical-instruments' },
+      { name: 'Laboratory Reagents',             slug: 'laboratory-reagents' },
+      { name: 'Laboratory Equipment',            slug: 'laboratory-equipment' },
+      { name: 'Hospital Machines',               slug: 'hospital-machines' },
+      { name: 'PPE & Safety',                    slug: 'ppe-and-safety' },
+      { name: 'Orthopedic Supports',             slug: 'orthopedic-supports' },
+      { name: 'Surgical & Wound Care',           slug: 'surgical-and-wound-care' },
+      { name: 'Consumables',                     slug: 'consumables' },
+      { name: 'Diabetes Care',                   slug: 'diabetes-care' },
+      { name: 'Ophthalmology & ENT Equipment',   slug: 'ophthalmology-and-ent-equipment' },
+      { name: 'IV & Infusion Therapy',           slug: 'iv-and-infusion-therapy' },
+      { name: 'Physiotherapy & Rehabilitation',  slug: 'physiotherapy-and-rehabilitation' },
+      { name: 'Medical Supplies',                slug: 'medical-supplies' },
+      { name: 'Blood Bank Supplies',             slug: 'blood-bank-supplies' },
+      { name: 'Respiratory Equipment',           slug: 'respiratory-equipment' },
+      { name: 'Medical Devices',                 slug: 'medical-devices' },
+      { name: 'Compression Garments',            slug: 'compression-garments' },
+      { name: 'Diagnostic Devices',              slug: 'diagnostic-devices' },
+      { name: 'Mobility Aids',                   slug: 'mobility-aids' },
     ];
 
     return categoryRedirects.map(({ name, slug }) => ({

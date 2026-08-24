@@ -3,7 +3,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
-import { notFound } from 'next/navigation';
+import { notFound, unstable_noStore as noStore } from 'next/navigation';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 // import TrustBand from '@/components/seo/TrustBand'; // Removed - not needed on product pages
@@ -91,7 +91,16 @@ export async function generateMetadata({ params }) {
 
   if (!product) {
     if (status === 'missing') notFound();
-    return { title: 'Product Not Found', robots: { index: false } };
+    // Backend error (cold start / timeout) — return minimal metadata without
+    // noindex so the page is NOT permanently excluded from Google's index.
+    // Next.js will revalidate in 60s and serve the real metadata on the next
+    // crawl once the backend is warm.
+    return {
+      title: 'Product Details | MediportBD',
+      description: 'Medical equipment product details. Please refresh for full information.',
+      // Do NOT set robots: { index: false } here — that would permanently
+      // noindex this URL in Google's cache until a fresh crawl succeeds.
+    };
   }
 
   const name      = product.name || 'Product';
@@ -142,6 +151,15 @@ export default async function ProductPage({ params }) {
   const { status, product } = await fetchProduct(slug);
 
   if (!product && status === 'missing') notFound();
+
+  // On backend error: render the shell (client will fetch via ProductDetailPage's
+  // own API call), and tell Next.js to revalidate in 60s so the SSR cache clears
+  // quickly once the backend recovers.
+  if (!product && status === 'error') {
+    // Opt out of ISR caching for this render so Next.js doesn't lock in a
+    // blank page — the next request will re-fetch from the backend fresh.
+    noStore();
+  }
 
   const canonicalSlug = product?.slug || slug;
   const catName = typeof product?.category === 'object'

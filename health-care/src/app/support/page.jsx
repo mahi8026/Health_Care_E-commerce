@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
-// /support redirects to /help
+// /support permanently redirects to /help (308)
 export default function SupportPage() {
-  redirect('/help');
+  permanentRedirect('/help');
 }

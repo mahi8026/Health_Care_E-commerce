@@ -3,11 +3,11 @@ import { SITE_CONFIG } from '@/config/seo';
 export const metadata = {
   title: `Terms of Service | ${SITE_CONFIG.name}`,
   description: `Terms of Service for ${SITE_CONFIG.name}. Please read these terms carefully before using our website or placing an order.`,
-  alternates: { canonical: '/terms' },
+  alternates: { canonical: `${SITE_CONFIG.url}/terms` },
   openGraph: {
     title: `Terms of Service | ${SITE_CONFIG.name}`,
     description: `Terms of Service for ${SITE_CONFIG.name}. Please read these terms carefully before using our website or placing an order.`,
-    url: '/terms',
+    url: `${SITE_CONFIG.url}/terms`,
     siteName: SITE_CONFIG.name,
     locale: 'en_BD',
   },

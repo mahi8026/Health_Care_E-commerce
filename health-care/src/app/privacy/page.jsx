@@ -3,11 +3,11 @@ import { SITE_CONFIG } from '@/config/seo';
 export const metadata = {
   title: `Privacy Policy | ${SITE_CONFIG.name}`,
   description: `Privacy Policy for ${SITE_CONFIG.name}. Learn how we collect, use, and protect your personal information.`,
-  alternates: { canonical: '/privacy' },
+  alternates: { canonical: `${SITE_CONFIG.url}/privacy` },
   openGraph: {
     title: `Privacy Policy | ${SITE_CONFIG.name}`,
     description: `Privacy Policy for ${SITE_CONFIG.name}. Learn how we collect, use, and protect your personal information.`,
-    url: '/privacy',
+    url: `${SITE_CONFIG.url}/privacy`,
     siteName: SITE_CONFIG.name,
     locale: 'en_BD',
   },

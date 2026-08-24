@@ -32,6 +32,7 @@ export const TOPICAL_CLUSTERS = [
     ],
     landingSlugs: ['ecg-machine-price-bangladesh', 'patient-monitor-price-bangladesh'],
     guideSlugs: ['ecg-machine-price-bangladesh-2026', 'siemens-vs-ge-ecg-machines'],
+    brandSlugs: ['mindray', 'edan', 'contec', 'comen'],
     categorySlug: 'diagnostic-equipment',
   },
   {
@@ -54,6 +55,7 @@ export const TOPICAL_CLUSTERS = [
     ],
     landingSlugs: ['blood-pressure-monitor-price-bangladesh', 'pulse-oximeter-price-bangladesh'],
     guideSlugs: ['bp-monitor-buying-guide-bangladesh'],
+    brandSlugs: ['omron', 'rossmax', 'microlife', 'beurer'],
     categorySlug: 'diagnostic-equipment',
   },
   {
@@ -76,6 +78,7 @@ export const TOPICAL_CLUSTERS = [
     ],
     landingSlugs: ['ultrasound-machine-price-bangladesh', 'x-ray-machine-price-bangladesh'],
     guideSlugs: ['diagnostic-equipment-guide-bangladesh'],
+    brandSlugs: ['mindray', 'edan', 'contec'],
     categorySlug: 'diagnostic-equipment',
   },
   {
@@ -129,6 +132,7 @@ export const TOPICAL_CLUSTERS = [
       'hba1c-reagent-comparison-bangladesh',
       'cold-chain-reagent-delivery-bangladesh',
     ],
+    brandSlugs: ['gpl', 'finecare', 'human', 'bio-max'],
     categorySlug: 'laboratory-equipment',
   },
   {
@@ -157,6 +161,7 @@ export const TOPICAL_CLUSTERS = [
       'x-ray-machine-price-bangladesh',
     ],
     guideSlugs: ['hospital-equipment-guide-bangladesh', 'b2b-medical-procurement-bangladesh'],
+    brandSlugs: ['mindray', 'comen', 'aeonmed', 'b-braun'],
     categorySlug: 'hospital-machines',
   },
   {
@@ -179,6 +184,7 @@ export const TOPICAL_CLUSTERS = [
     ],
     landingSlugs: ['glucose-meter-price-bangladesh'],
     guideSlugs: ['hba1c-reagent-comparison-bangladesh'],
+    brandSlugs: ['accu-chek', 'yuwell', 'pcl'],
     categorySlug: 'diabetes-care',
   },
 ];

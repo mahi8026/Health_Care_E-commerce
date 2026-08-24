@@ -12,7 +12,7 @@ export default function robots() {
 
   return {
     rules: [
-      // All crawlers — allow everything except private paths
+      // All crawlers — allow everything except private/utility paths
       {
         userAgent: '*',
         allow:     '/',
@@ -28,13 +28,38 @@ export default function robots() {
           '/api/*',
           '/oauth/*',
           '/auth/*',
+          '/offline',
+          '/demo',
+          '/demo/*',
+          '/demo-loading',
+          '/test-push',
+          '/og',
+          '/og/*',
+          '/search',
         ],
       },
-      // Googlebot — same disallows with explicit crawl delay
+      // Googlebot — same disallows (must be kept in sync with * rule)
       {
         userAgent:  'Googlebot',
         allow:      '/',
-        disallow:   ['/admin/*', '/account/*', '/checkout', '/checkout/*', '/cart', '/api/*', '/auth/*'],
+        disallow: [
+          '/admin/*',
+          '/account/*',
+          '/checkout',
+          '/checkout/*',
+          '/cart',
+          '/b2b/dashboard',
+          '/api/*',
+          '/oauth/*',
+          '/auth/*',
+          '/offline',
+          '/demo/*',
+          '/demo-loading',
+          '/test-push',
+          '/og',
+          '/og/*',
+          '/search',
+        ],
         crawlDelay: 2,
       },
     ],

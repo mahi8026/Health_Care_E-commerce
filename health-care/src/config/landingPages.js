@@ -24,6 +24,7 @@ export const LANDING_PAGES = [
     ],
     search: 'ECG machine',
     categorySlug: 'diagnostic-equipment',
+    brandSlugs: ['mindray', 'edan', 'contec'],
     icon: '🫀',
     excerpt:
       'Compare live ECG machine prices in Bangladesh — 3-lead to 12-lead models with DGDA registration, installation, training and B2B hospital pricing.',
@@ -61,6 +62,7 @@ export const LANDING_PAGES = [
     ],
     search: 'patient monitor',
     categorySlug: 'hospital-machines',
+    brandSlugs: ['mindray', 'comen'],
     icon: '📟',
     excerpt:
       'Browse live patient monitor prices in Bangladesh — bedside, multiparameter and ICU monitors with installation, training and B2B hospital pricing.',
@@ -99,6 +101,7 @@ export const LANDING_PAGES = [
     search: 'ultrasound',
     categorySlug: 'diagnostic-equipment',
     icon: '🩻',
+    brandSlugs: ['mindray', 'edan', 'contec'],
     excerpt:
       'Compare ultrasound machine prices in Bangladesh — portable, laptop and color Doppler systems with DGDA registration and after-sales support.',
     intro: [
