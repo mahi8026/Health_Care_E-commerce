@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
       publishedTime: guide.updatedAt,
       modifiedTime: guide.updatedAt,
       authors: [GUIDE_AUTHOR.name],
-      images: [{ url: '/og-default.png', width: 1200, height: 630, alt: guide.title }],
+      images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630, alt: guide.title }],
     },
     twitter: {
       card: 'summary_large_image',

@@ -1,4 +1,4 @@
-import ContactPage from '@/views/ContactPage';
+﻿import ContactPage from '@/views/ContactPage';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
     description:
       'Reach MediportBD by phone, WhatsApp, or email. Visit our Dhaka showroom or send a B2B partnership inquiry.',
     url: `${SITE_CONFIG.url}/contact`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

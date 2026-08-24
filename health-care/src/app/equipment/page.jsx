@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { LANDING_PAGES } from '@/config/landingPages';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
@@ -16,7 +16,7 @@ export const metadata = {
     title: 'Medical Equipment Prices in Bangladesh 2026 | MediportBD',
     description: 'Live prices and buying guides for medical equipment in Bangladesh.',
     url: `${SITE_CONFIG.url}/equipment`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

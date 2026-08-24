@@ -1,4 +1,4 @@
-import WarrantyPage from '@/views/WarrantyPage';
+﻿import WarrantyPage from '@/views/WarrantyPage';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
     description:
       'Understand your equipment warranty — coverage terms, claim process, and repair or replacement guarantees.',
     url: `${SITE_CONFIG.url}/warranty`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

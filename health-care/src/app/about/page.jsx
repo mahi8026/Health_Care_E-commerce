@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import StructuredData from '@/utils/structuredData';
 
@@ -23,7 +23,7 @@ export const metadata = {
     description:
       'Mediport Bangladesh Ltd. (MediportBD) — DGDA-registered medical equipment supplier in Dhaka, Bangladesh. ISO 13485 compliant. Serving hospitals and clinics nationwide.',
     url: `${SITE_CONFIG.url}/about`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',

@@ -1,4 +1,4 @@
-import NewsPage from '@/views/NewsPage';
+﻿import NewsPage from '@/views/NewsPage';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
     description:
       'Company announcements, product launches, and industry news from Bangladesh\u2019s trusted medical equipment supplier.',
     url: `${SITE_CONFIG.url}/news`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

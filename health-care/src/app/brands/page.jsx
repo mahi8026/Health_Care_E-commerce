@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
 
@@ -14,7 +14,7 @@ export const metadata = {
     title: 'Medical Equipment Brands in Bangladesh | MediportBD',
     description: 'Genuine medical equipment brands available in Bangladesh with DGDA certification and warranty.',
     url: `${SITE_CONFIG.url}/brands`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

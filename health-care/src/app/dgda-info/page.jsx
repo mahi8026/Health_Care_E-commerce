@@ -1,4 +1,4 @@
-import AboutPage from '@/views/AboutPage';
+﻿import AboutPage from '@/views/AboutPage';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
@@ -14,7 +14,7 @@ export const metadata = {
     description:
       'Every product on MediportBD meets DGDA regulatory standards for medical equipment and supplies in Bangladesh.',
     url: `${SITE_CONFIG.url}/dgda-info`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

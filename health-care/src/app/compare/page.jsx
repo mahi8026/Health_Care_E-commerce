@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { COMPARISON_GUIDES } from '@/config/guides';
 
@@ -12,7 +12,7 @@ export const metadata = {
     title: 'Medical Equipment Comparisons & Price Guides Bangladesh',
     description: 'Brand-by-brand comparisons and 2026 price guides for medical equipment in Bangladesh.',
     url: `${SITE_CONFIG.url}/compare`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

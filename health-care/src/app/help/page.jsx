@@ -1,4 +1,4 @@
-import HelpPage from '@/views/HelpPage';
+﻿import HelpPage from '@/views/HelpPage';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
@@ -11,7 +11,7 @@ export const metadata = {
     title: 'Support & Help Centre',
     description: 'Get help with orders, delivery, returns, payments, and more.',
     url: `${SITE_CONFIG.url}/help`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

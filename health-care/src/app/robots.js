@@ -43,6 +43,7 @@ export default function robots() {
         userAgent:  'Googlebot',
         allow:      '/',
         disallow: [
+          '/admin',
           '/admin/*',
           '/account/*',
           '/checkout',
@@ -53,6 +54,7 @@ export default function robots() {
           '/oauth/*',
           '/auth/*',
           '/offline',
+          '/demo',
           '/demo/*',
           '/demo-loading',
           '/test-push',

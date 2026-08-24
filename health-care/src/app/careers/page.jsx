@@ -1,4 +1,4 @@
-import CareersPage from '@/views/CareersPage';
+﻿import CareersPage from '@/views/CareersPage';
 import { SITE_CONFIG } from '@/config/seo';
 
 export const metadata = {
@@ -13,7 +13,7 @@ export const metadata = {
     description:
       'Build your career with Bangladesh\u2019s trusted medical equipment supplier. Explore open positions and apply today.',
     url: `${SITE_CONFIG.url}/careers`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

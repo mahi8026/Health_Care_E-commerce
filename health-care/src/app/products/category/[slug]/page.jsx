@@ -56,7 +56,7 @@ export async function generateMetadata({ params }) {
       title:       seo.title,
       description: seo.description,
       url:         canonicalUrl,
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+      images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],
     },
     twitter: {
       card:        'summary_large_image',

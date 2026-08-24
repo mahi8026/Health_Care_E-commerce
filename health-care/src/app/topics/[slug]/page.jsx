@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
       url: canonicalUrl,
       title: cluster.metaTitle,
       description: cluster.metaDescription,
-      images: [{ url: '/og-default.png', width: 1200, height: 630, alt: cluster.title }],
+      images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630, alt: cluster.title }],
     },
     twitter: {
       card: 'summary_large_image',

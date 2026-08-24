@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Products listing page — Server Component.
  *
  * Server-renders the first page of products (with filters from the URL)
@@ -20,7 +20,7 @@ export const metadata = {
     title:       PAGE_SEO.products.title,
     description: PAGE_SEO.products.description,
     url:         `${SITE_CONFIG.url}/products`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

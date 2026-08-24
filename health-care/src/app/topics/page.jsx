@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { TOPICAL_CLUSTERS } from '@/config/topicalClusters';
 
@@ -15,7 +15,7 @@ export const metadata = {
     title: 'Medical Equipment Topics & Buying Guides in Bangladesh | MediportBD',
     description: 'Topic hubs with prices, brands and buying guidance for medical equipment in Bangladesh.',
     url: `${SITE_CONFIG.url}/topics`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
 };
 

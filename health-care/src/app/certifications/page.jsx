@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import StructuredData from '@/utils/structuredData';
 
@@ -23,7 +23,7 @@ export const metadata = {
     description:
       'Verify MediportBD\u2019s regulatory registrations: DGDA, ISO 13485, trade license and BIN — certificates available on request for institutional buyers.',
     url: `${SITE_CONFIG.url}/certifications`,
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
