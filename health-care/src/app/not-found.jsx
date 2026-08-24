@@ -6,6 +6,14 @@ import NotFoundSearch from '@/components/search/NotFoundSearch';
 // instead of letting them bounce back to a search engine.
 // ---------------------------------------------------------------------------
 
+// Noindex: 404 pages must never be indexed.
+// Next.js already sends a 404 HTTP status for this component,
+// but the explicit robots tag ensures crawlers don't cache any content.
+export const metadata = {
+  title: 'Page Not Found | MediportBD',
+  robots: { index: false, follow: true },
+};
+
 const POPULAR_LINKS = [
   { label: 'All Products', href: '/products' },
   { label: 'Diagnostic Equipment', href: '/products/category/diagnostic-equipment' },

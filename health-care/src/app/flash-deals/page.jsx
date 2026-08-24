@@ -17,7 +17,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: '🔥 Flash Deals — Limited Time Offers',
     description: 'Grab amazing deals on medical equipment. Limited stock, limited time!',
-    images: ['/og-flash-deals.png'],
+    images: [`${SITE_CONFIG.url}/og-default.png`],
   },
 };
 

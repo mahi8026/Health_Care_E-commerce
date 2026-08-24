@@ -236,7 +236,7 @@ const CategorySection = memo(function CategorySection({ categoryName, categoryDa
               <ProductCard
                 key={product._id}
                 product={product}
-                onCardClick={() => router.push(`/products/${product._id}`)}
+                onCardClick={() => router.push(`/products/${product.slug || product._id}`)}
                 onAddToCart={(e) => {
                   e.stopPropagation();
                   addToCart(product, 1);

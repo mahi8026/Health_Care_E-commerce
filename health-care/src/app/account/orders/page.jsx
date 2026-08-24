@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
-/** Mobile nav and legacy links — orders live at /orders */
+/** Mobile nav and legacy links — orders live at /orders (308 permanent) */
 export default function AccountOrdersRedirect() {
-  redirect('/orders');
+  permanentRedirect('/orders');
 }

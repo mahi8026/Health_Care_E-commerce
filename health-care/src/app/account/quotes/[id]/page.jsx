@@ -5,6 +5,7 @@ export async function generateMetadata({ params }) {
   return {
     title: `Quotation ${id}`,
     description: 'View quotation details',
+    robots: { index: false, follow: false },
   };
 }
 

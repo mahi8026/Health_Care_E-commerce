@@ -483,8 +483,8 @@ export default function FlashDealsPageClient() {
                       key={item.product?._id || index}
                       item={item}
                       onClick={() => {
-                        if (item.product?._id) {
-                          router.push(`/products/${item.product._id}`);
+                        if (item.product?.slug || item.product?._id) {
+                          router.push(`/products/${item.product.slug || item.product._id}`);
                         }
                       }}
                     />

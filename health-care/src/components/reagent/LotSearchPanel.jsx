@@ -76,7 +76,7 @@ export default function LotSearchPanel({ onClose }) {
                 <li key={product._id}>
                   <button
                     type="button"
-                    onClick={() => router.push(`/products/${product._id}`)}
+                    onClick={() => router.push(`/products/${product.slug || product._id}`)}
                     className="w-full flex items-center gap-3 p-3 text-left hover:bg-surface-subtle transition-colors"
                   >
                     <div className="flex-1 min-w-0">

@@ -17,7 +17,7 @@ export const metadata = {
     card:        'summary_large_image',
     title:       PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
-    images:      ['/og-default.png'],
+    images:      [`${SITE_CONFIG.url}/og-default.png`],
   },
 };
 
