@@ -790,6 +790,10 @@ async function invalidateBrands() {
     // Also invalidate product lists since they include brand data
     const deletedCount = await delPattern('products:list:*');
 
+    // Also invalidate homepage aggregated cache so deleted brands
+    // do not re-appear on the homepage or admin panel
+    await del('homepage:aggregated:v1');
+
     logger.info(`[Redis] Invalidated brands cache and ${deletedCount} product list caches`);
     return true;
   } catch (error) {
