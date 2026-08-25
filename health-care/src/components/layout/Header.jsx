@@ -85,7 +85,6 @@ const CATEGORY_DESC = {
 
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
-  { label: 'equipmentPrices', href: '/equipment' },
   { label: 'trackOrder', href: '/track' },
 ];
 
@@ -258,14 +257,6 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               <span className="inline sm:hidden">Reagent</span>
               <span className="hidden sm:inline">Reagent Store</span>
             </button>
-            <button
-              onClick={() => router.push('/equipment')}
-              className={`nav-link-mobile whitespace-nowrap ${isActive('/equipment') ? 'nav-link-active' : ''}`}
-              aria-current={isActive('/equipment') ? 'page' : undefined}
-            >
-              <span className="inline sm:hidden">Prices</span>
-              <span className="hidden sm:inline">Price Guide</span>
-            </button>
           </nav>
 
           {/* Desktop Nav (lg+) - Shows all links including Track Order */}
@@ -333,6 +324,12 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                         className="flex-1 py-2 text-center text-xs font-semibold text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                       >
                         View All Products →
+                      </button>
+                      <button
+                        onClick={() => { router.push('/equipment'); setMegaMenuOpen(false); }}
+                        className="flex-1 py-2 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                      >
+                        Price Guides →
                       </button>
                       <button
                         onClick={() => { router.push('/brands'); setMegaMenuOpen(false); }}
