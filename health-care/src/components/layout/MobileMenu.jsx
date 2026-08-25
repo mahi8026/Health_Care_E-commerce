@@ -17,6 +17,9 @@ const MAIN_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'All Products', path: '/products' },
   { label: 'Reagent Store', path: '/reagent-store', icon: <FaFlask size={13} /> },
+  { label: 'Topic Guides', path: '/topics', icon: <FaMicroscope size={13} /> },
+  { label: 'Brands', path: '/brands', icon: <FaStethoscope size={13} /> },
+  { label: 'Equipment Prices', path: '/equipment', icon: <FaHospital size={13} /> },
   { label: 'B2B Portal', path: '/b2b', icon: <FaBuilding size={13} /> },
 ];
 

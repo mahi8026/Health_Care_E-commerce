@@ -79,6 +79,12 @@ export default function TopicsHub() {
               All Buying Guides
             </Link>
             <Link
+              href="/brands"
+              className="text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
+            >
+              Brand Directory
+            </Link>
+            <Link
               href="/products"
               className="text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
             >

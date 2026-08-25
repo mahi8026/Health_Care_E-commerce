@@ -27,7 +27,7 @@ export const GUIDES = [
     title: 'Medical Equipment in Bangladesh: The Complete 2026 Buying Guide',
     metaTitle: 'Medical Equipment in Bangladesh — Prices & Suppliers 2026 | MediportBD',
     metaDescription:
-      '2026 guide to buying medical equipment in Bangladesh from DGDA-registered suppliers: price ranges by category, how to vet a genuine supplier, cold-chain reagents and B2B procurement.',
+      'Complete 2026 guide to buying medical equipment in Bangladesh from DGDA-registered suppliers: price ranges by category, how to vet a genuine supplier, cold-chain reagents and B2B procurement.',
     keywords: [
       'medical equipment Bangladesh',
       'medical equipment supplier in bangladesh',

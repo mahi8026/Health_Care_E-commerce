@@ -86,6 +86,8 @@ const CATEGORY_DESC = {
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
   { label: 'equipmentPrices', href: '/equipment' },
+  { label: 'topicHubs', href: '/topics' },
+  { label: 'brandDirectory', href: '/brands' },
   { label: 'trackOrder', href: '/track' },
 ];
 
@@ -241,7 +243,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
           <div className="hidden md:block nav-divider" />
 
-          {/* Tablet/Mobile Horizontal Nav (md to lg) - Exclude Track Order */}
+          {/* Tablet/Mobile Horizontal Nav (md to lg) */}
           <nav className="flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0" aria-label="Main navigation">
             <button
               onClick={() => router.push('/products')}
@@ -250,15 +252,27 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             >
               Products
             </button>
-            {/* Only show Reagent Store on mobile/tablet, not Track Order */}
             <button
               onClick={() => router.push('/reagent-store')}
               className={`nav-link-mobile nav-link-mobile--reagent whitespace-nowrap ${isActive('/reagent-store') ? 'nav-link-active' : ''}`}
               aria-current={isActive('/reagent-store') ? 'page' : undefined}
-              title="Reagent Store"
             >
               <span className="inline sm:hidden">Reagent</span>
               <span className="hidden sm:inline">Reagent Store</span>
+            </button>
+            <button
+              onClick={() => router.push('/topics')}
+              className={`nav-link-mobile whitespace-nowrap ${isActive('/topics') ? 'nav-link-active' : ''}`}
+              aria-current={isActive('/topics') ? 'page' : undefined}
+            >
+              Topics
+            </button>
+            <button
+              onClick={() => router.push('/brands')}
+              className={`nav-link-mobile whitespace-nowrap ${isActive('/brands') ? 'nav-link-active' : ''}`}
+              aria-current={isActive('/brands') ? 'page' : undefined}
+            >
+              Brands
             </button>
           </nav>
 
@@ -321,12 +335,26 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                     )}
                   </div>
                   <div className="mt-3 pt-3 border-t border-[var(--color-border-tertiary)]">
-                    <button
-                      onClick={() => { router.push('/products'); setMegaMenuOpen(false); }}
-                      className="w-full py-2 text-center text-xs font-semibold text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
-                    >
-                      View All Products →
-                    </button>
+                    <div className="flex items-center justify-between gap-2">
+                      <button
+                        onClick={() => { router.push('/products'); setMegaMenuOpen(false); }}
+                        className="flex-1 py-2 text-center text-xs font-semibold text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                      >
+                        View All Products →
+                      </button>
+                      <button
+                        onClick={() => { router.push('/brands'); setMegaMenuOpen(false); }}
+                        className="flex-1 py-2 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                      >
+                        Browse by Brand →
+                      </button>
+                      <button
+                        onClick={() => { router.push('/topics'); setMegaMenuOpen(false); }}
+                        className="flex-1 py-2 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                      >
+                        Topic Guides →
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

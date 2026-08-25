@@ -1,6 +1,8 @@
 ﻿import Link from 'next/link';
+import Image from 'next/image';
 import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
+import StructuredData from '@/utils/structuredData';
 
 export const revalidate = 3600;
 
@@ -36,6 +38,27 @@ export default async function BrandsHub() {
 
   return (
     <div className="min-h-screen bg-page">
+      {/* ItemList schema — helps Google understand this is a brand directory */}
+      <StructuredData
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Medical Equipment Brands at MediportBD Bangladesh',
+          description: 'DGDA-registered medical equipment brands available in Bangladesh from MediportBD',
+          url: `${SITE_CONFIG.url}/brands`,
+          numberOfItems: sorted.length,
+          itemListElement: sorted.slice(0, 20).map((brand, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            item: {
+              '@type': 'Brand',
+              name: brand.name,
+              url: `${SITE_CONFIG.url}/brands/${brand.slug}`,
+              ...(brand.logo?.url && { logo: brand.logo.url }),
+            },
+          })),
+        }}
+      />
       <section className="bg-brand-navy text-white py-12 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand-teal-light mb-3">
@@ -64,12 +87,15 @@ export default async function BrandsHub() {
               >
                 <div className="flex items-center gap-3">
                   {brand.logo?.url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={brand.logo.url}
-                      alt={`${brand.name} logo`}
-                      className="w-12 h-12 object-contain rounded-lg border border-[var(--color-border-primary)] p-1 bg-white"
-                    />
+                    <div className="relative w-12 h-12 rounded-lg border border-[var(--color-border-primary)] bg-white flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
+                      <Image
+                        src={brand.logo.url}
+                        alt={`${brand.name} logo`}
+                        fill
+                        sizes="48px"
+                        className="object-contain p-1"
+                      />
+                    </div>
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-[var(--color-background-secondary)] flex items-center justify-center text-xl">
                       🏥
@@ -92,6 +118,36 @@ export default async function BrandsHub() {
             Brand directory is being updated. Please check back soon.
           </p>
         )}
+
+        {/* Internal linking section — helps Google understand brand/category hierarchy */}
+        <section className="mt-8 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+          <h2 className="text-sm font-semibold text-[var(--color-brand-navy)] mb-3">
+            Shop by Category
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/products/category/diagnostic-equipment" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Diagnostic Equipment</Link>
+            <Link href="/products/category/surgical-instruments" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Surgical Instruments</Link>
+            <Link href="/reagent-store" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Laboratory Reagents</Link>
+            <Link href="/products/category/hospital-machines" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Hospital Machines</Link>
+            <Link href="/products/category/orthopedic-supports" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Orthopedic Supports</Link>
+            <Link href="/products/category/diabetes-care" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Diabetes Care</Link>
+            <Link href="/products/category/mobility-aids" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Mobility Aids</Link>
+            <Link href="/products" className="text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors px-3 py-1.5">All Products →</Link>
+          </div>
+        </section>
+
+        <section className="mt-4 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+          <h2 className="text-sm font-semibold text-[var(--color-brand-navy)] mb-3">
+            Equipment Price Guides
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/equipment/ecg-machine-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">ECG Machine Prices</Link>
+            <Link href="/equipment/ultrasound-machine-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Ultrasound Prices</Link>
+            <Link href="/equipment/blood-pressure-monitor-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">BP Monitor Prices</Link>
+            <Link href="/equipment/patient-monitor-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Patient Monitor Prices</Link>
+            <Link href="/equipment" className="text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors px-3 py-1.5">All Price Guides →</Link>
+          </div>
+        </section>
       </div>
     </div>
   );

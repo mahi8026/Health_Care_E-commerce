@@ -1,5 +1,7 @@
-﻿import NewsPage from '@/views/NewsPage';
+﻿import Link from 'next/link';
+import NewsPage from '@/views/NewsPage';
 import { SITE_CONFIG } from '@/config/seo';
+import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export const metadata = {
   title: 'News & Updates',
@@ -18,5 +20,27 @@ export const metadata = {
 };
 
 export default function News() {
-  return <NewsPage />;
+  const breadcrumbs = [
+    { name: 'Home', url: SITE_CONFIG.url },
+    { name: 'News & Updates', url: `${SITE_CONFIG.url}/news` },
+  ];
+
+  return (
+    <>
+      <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
+      <NewsPage />
+
+      <section className="bg-page border-t border-[var(--color-border-tertiary)] py-6 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+            <Link href="/about" className="text-[var(--color-brand-teal)] hover:underline">About MediportBD</Link>
+            <Link href="/careers" className="text-[var(--color-brand-teal)] hover:underline">Careers</Link>
+            <Link href="/contact" className="text-[var(--color-brand-teal)] hover:underline">Contact</Link>
+            <Link href="/products" className="text-[var(--color-brand-teal)] hover:underline">All Products</Link>
+            <Link href="/dgda-info" className="text-[var(--color-brand-teal)] hover:underline">DGDA Compliance</Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
 }

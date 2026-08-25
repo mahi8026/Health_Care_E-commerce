@@ -3,7 +3,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
-import { notFound, unstable_noStore as noStore } from 'next/navigation';
+import { notFound, redirect, unstable_noStore as noStore } from 'next/navigation';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 // import TrustBand from '@/components/seo/TrustBand'; // Removed - not needed on product pages
@@ -110,7 +110,7 @@ export async function generateMetadata({ params }) {
   // Canonical always uses the clean slug stored on the product (no slashes)
   const canonicalSlug = product.slug || slug;
 
-  const title       = `${name} — Price in Bangladesh`;
+const title = `${name} — Price in Bangladesh | Request a Quote`;
   const description = buildDescription(name, brandName, catName, product.price);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
@@ -159,6 +159,15 @@ export default async function ProductPage({ params }) {
     // Opt out of ISR caching for this render so Next.js doesn't lock in a
     // blank page — the next request will re-fetch from the backend fresh.
     noStore();
+  }
+
+  // ── Canonical redirect ────────────────────────────────────────────────────
+  // If the URL was accessed via a MongoDB ObjectId (24-char hex) but the
+  // product has a proper slug, redirect to the canonical slug URL.
+  // This prevents Google from seeing two URLs for the same product.
+  const isIdBasedUrl = /^[a-f0-9]{24}$/i.test(slug);
+  if (product && isIdBasedUrl && product.slug && product.slug !== slug) {
+    redirect(`/products/${product.slug}`);
   }
 
   const canonicalSlug = product?.slug || slug;

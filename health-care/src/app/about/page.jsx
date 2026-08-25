@@ -295,6 +295,37 @@ export default function AboutPage() {
             </Link>
           </div>
         </div>
+
+        {/* Internal link grid — helps Google connect about page to content hierarchy */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="rounded-xl border border-[var(--color-border-primary)] bg-white p-4">
+            <h3 className="text-xs font-semibold text-[var(--color-brand-navy)] uppercase tracking-wider mb-2">Our Products</h3>
+            <ul className="space-y-1.5">
+              <li><Link href="/products" className="text-xs text-[var(--color-brand-teal)] hover:underline">All Medical Equipment</Link></li>
+              <li><Link href="/products/category/diagnostic-equipment" className="text-xs text-[var(--color-brand-teal)] hover:underline">Diagnostic Equipment</Link></li>
+              <li><Link href="/reagent-store" className="text-xs text-[var(--color-brand-teal)] hover:underline">Laboratory Reagents</Link></li>
+              <li><Link href="/products/category/surgical-instruments" className="text-xs text-[var(--color-brand-teal)] hover:underline">Surgical Instruments</Link></li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-[var(--color-border-primary)] bg-white p-4">
+            <h3 className="text-xs font-semibold text-[var(--color-brand-navy)] uppercase tracking-wider mb-2">Price Guides</h3>
+            <ul className="space-y-1.5">
+              <li><Link href="/equipment/ecg-machine-price-bangladesh" className="text-xs text-[var(--color-brand-teal)] hover:underline">ECG Machine Prices</Link></li>
+              <li><Link href="/equipment/ultrasound-machine-price-bangladesh" className="text-xs text-[var(--color-brand-teal)] hover:underline">Ultrasound Prices</Link></li>
+              <li><Link href="/equipment" className="text-xs text-[var(--color-brand-teal)] hover:underline">All Equipment Prices</Link></li>
+              <li><Link href="/guides" className="text-xs text-[var(--color-brand-teal)] hover:underline">Buying Guides</Link></li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-[var(--color-border-primary)] bg-white p-4">
+            <h3 className="text-xs font-semibold text-[var(--color-brand-navy)] uppercase tracking-wider mb-2">Compliance</h3>
+            <ul className="space-y-1.5">
+              <li><Link href="/dgda-info" className="text-xs text-[var(--color-brand-teal)] hover:underline">DGDA Compliance</Link></li>
+              <li><Link href="/certifications" className="text-xs text-[var(--color-brand-teal)] hover:underline">Certifications</Link></li>
+              <li><Link href="/brands" className="text-xs text-[var(--color-brand-teal)] hover:underline">Our Brands</Link></li>
+              <li><Link href="/topics" className="text-xs text-[var(--color-brand-teal)] hover:underline">Topic Hubs</Link></li>
+            </ul>
+          </div>
+        </div>
       </section>
     </div>
   );

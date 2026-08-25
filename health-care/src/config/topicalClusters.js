@@ -196,3 +196,11 @@ export function getClusterBySlug(slug) {
 export function getClusterLandingPages(cluster) {
   return (cluster.landingSlugs || []).map(getLandingPageBySlug).filter(Boolean);
 }
+
+/**
+ * Given an equipment landing page slug, return the topic cluster(s) it belongs to.
+ * Used by equipment pages to link back up to their parent topic hub.
+ */
+export function getClustersForLandingPage(landingSlug) {
+  return TOPICAL_CLUSTERS.filter(c => (c.landingSlugs || []).includes(landingSlug));
+}

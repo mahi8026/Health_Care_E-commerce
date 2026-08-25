@@ -18,12 +18,13 @@ export default function FAQSchema({ faqs }) {
     '@type': 'FAQPage',
     mainEntity: faqs.map(faq => ({
       '@type': 'Question',
-      name: escapeJsonLd(faq.question),
+      // Support both { question, answer } (legacy) and { q, a } (categoryGEO) formats
+      name: escapeJsonLd(faq.question || faq.q || ''),
       acceptedAnswer: {
         '@type': 'Answer',
-        text: escapeJsonLd(faq.answer)
+        text: escapeJsonLd(faq.answer || faq.a || '')
       }
-    }))
+    })).filter(item => item.name && item.acceptedAnswer.text)
   };
 
   return (

@@ -55,11 +55,12 @@ export async function generateMetadata({ params }) {
   }
 
   const brandName = brand.name || 'Medical Brand';
-  const title = `${brandName} — Products & Price in Bangladesh | MediportBD`;
+  // CTR-optimized title: include brand + key benefit phrase
+  const title = `${brandName} Medical Equipment & Prices | DGDA-Registered | MediportBD`;
   const description =
     brand.seo?.metaDescription ||
     brand.description ||
-    `Buy authentic ${brandName} products in Bangladesh. Browse prices, specifications and genuine ${brandName} medical equipment with DGDA certification, warranty and B2B pricing from MediportBD.`;
+    `Buy ${brandName} medical equipment and supplies in Bangladesh. DGDA-registered products, warranty and B2B pricing from MediportBD.`;
 
   const canonicalUrl = `${SITE_CONFIG.url}/brands/${slug}`;
   const logoUrl = brand.logo?.url ? brand.logo.url : `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`;

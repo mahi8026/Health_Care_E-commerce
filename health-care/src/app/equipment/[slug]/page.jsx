@@ -4,6 +4,7 @@ import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
 import { LANDING_PAGES, getLandingPageBySlug } from '@/config/landingPages';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import { getClustersForLandingPage } from '@/config/topicalClusters';
 import ProductCard from '@/components/ProductCard';
 import EmptyState from '@/components/ui/EmptyState';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
@@ -80,6 +81,7 @@ export default async function EquipmentLandingPage({ params }) {
     .map((s) => ({ slug: s, name: brandNames[s] }));
 
   const categoryName = CATEGORY_SLUG_MAP[page.categorySlug];
+  const parentClusters = getClustersForLandingPage(slug);
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
     { name: 'Equipment', url: `${SITE_CONFIG.url}/equipment` },
@@ -126,6 +128,31 @@ export default async function EquipmentLandingPage({ params }) {
           <span aria-hidden="true">/</span>
           <span className="text-[var(--color-text-primary)]">{page.title}</span>
         </nav>
+
+        {/* Topic cluster cross-links — passes authority upward to hub pages */}
+        {parentClusters.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-[var(--color-text-tertiary)] font-medium">Topic guide:</span>
+            {parentClusters.map(cluster => (
+              <Link
+                key={cluster.slug}
+                href={`/topics/${cluster.slug}`}
+                className="inline-flex items-center gap-1 text-brand-teal border border-brand-teal/30 rounded-lg px-3 py-1 hover:bg-brand-teal hover:text-white transition-colors"
+              >
+                <span aria-hidden="true">{cluster.icon}</span>
+                {cluster.title}
+              </Link>
+            ))}
+            {categoryName && (
+              <Link
+                href={`/products/category/${page.categorySlug}`}
+                className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors"
+              >
+                All {categoryName} →
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Hero */}
         <header className="bg-white rounded-2xl border border-[var(--color-border-primary)] overflow-hidden">

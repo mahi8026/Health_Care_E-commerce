@@ -1,6 +1,7 @@
 ﻿import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { COMPARISON_GUIDES } from '@/config/guides';
+import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export const metadata = {
   title: 'Medical Equipment Comparisons & Price Guides Bangladesh',
@@ -17,8 +18,37 @@ export const metadata = {
 };
 
 export default function CompareHub() {
+  const breadcrumbs = [
+    { name: 'Home', url: SITE_CONFIG.url },
+    { name: 'Comparisons', url: `${SITE_CONFIG.url}/compare` },
+  ];
+
+  const collectionSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Medical Equipment Comparisons in Bangladesh',
+    description: 'Side-by-side medical equipment brand comparisons with 2026 price ranges for the Bangladesh market.',
+    url: `${SITE_CONFIG.url}/compare`,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: COMPARISON_GUIDES.length,
+      itemListElement: COMPARISON_GUIDES.map((g, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Article',
+          name: g.title,
+          url: `${SITE_CONFIG.url}/guides/${g.slug}`,
+          description: g.excerpt,
+        },
+      })),
+    },
+  };
+
   return (
     <div className="min-h-screen bg-page">
+      <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
+      <StructuredData schema={collectionSchema} />
       <section className="bg-brand-navy text-white py-12 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <p className="text-[var(--text-xs)] font-semibold uppercase tracking-widest text-brand-teal-light mb-3">
@@ -46,14 +76,14 @@ export default function CompareHub() {
               <h2 className="text-base font-semibold text-[var(--color-text-primary)]">
                 {guide.title}
               </h2>
-              <span className="text-[var(--text-xs)] text-[var(--color-text-tertiary)] whitespace-nowrap">Updated {guide.updatedAt}</span>
+              <span className="text-xs text-[var(--color-text-tertiary)] whitespace-nowrap">Updated {guide.updatedAt}</span>
             </div>
             <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] mb-3">
               {guide.excerpt}
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-[var(--color-brand-teal)]">View comparison →</span>
-              <span className="text-[var(--text-xs)] text-[var(--color-text-tertiary)]">{guide.readMinutes} min read</span>
+              <span className="text-xs text-[var(--color-text-tertiary)]">{guide.readMinutes} min read</span>
             </div>
           </Link>
         ))}
@@ -62,6 +92,26 @@ export default function CompareHub() {
           Prices shown are indicative 2026 Bangladesh market ranges and change with import duties and
           currency movement. Request a written quotation for current pricing and B2B discounts.
         </p>
+
+        {/* Internal links — equipment price pages + category pages */}
+        <section className="mt-8 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+          <h2 className="text-base font-semibold text-[var(--color-brand-navy)] mb-3">
+            Live Price Guides
+          </h2>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Link href="/equipment/ecg-machine-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">ECG Machine Prices</Link>
+            <Link href="/equipment/blood-pressure-monitor-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">BP Monitor Prices</Link>
+            <Link href="/equipment/ultrasound-machine-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Ultrasound Prices</Link>
+            <Link href="/equipment/glucose-meter-price-bangladesh" className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">Glucose Meter Prices</Link>
+            <Link href="/equipment" className="text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline px-3 py-1.5">All Price Guides →</Link>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+            <Link href="/guides" className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline">All Buying Guides</Link>
+            <Link href="/topics" className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline">Topic Hubs</Link>
+            <Link href="/brands" className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline">Brand Directory</Link>
+            <Link href="/products" className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline">All Products</Link>
+          </div>
+        </section>
       </div>
     </div>
   );

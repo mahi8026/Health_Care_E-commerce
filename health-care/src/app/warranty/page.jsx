@@ -1,5 +1,7 @@
-﻿import WarrantyPage from '@/views/WarrantyPage';
+﻿import Link from 'next/link';
+import WarrantyPage from '@/views/WarrantyPage';
 import { SITE_CONFIG } from '@/config/seo';
+import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export const metadata = {
   title: 'Warranty & Claims',
@@ -18,5 +20,27 @@ export const metadata = {
 };
 
 export default function Warranty() {
-  return <WarrantyPage />;
+  const breadcrumbs = [
+    { name: 'Home', url: SITE_CONFIG.url },
+    { name: 'Warranty', url: `${SITE_CONFIG.url}/warranty` },
+  ];
+
+  return (
+    <>
+      <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
+      <WarrantyPage />
+
+      <section className="bg-page border-t border-[var(--color-border-tertiary)] py-6 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+            <Link href="/products/category/diagnostic-equipment" className="text-[var(--color-brand-teal)] hover:underline">Diagnostic Equipment</Link>
+            <Link href="/products/category/hospital-machines" className="text-[var(--color-brand-teal)] hover:underline">Hospital Machines</Link>
+            <Link href="/faq" className="text-[var(--color-brand-teal)] hover:underline">FAQ</Link>
+            <Link href="/contact" className="text-[var(--color-brand-teal)] hover:underline">Contact Support</Link>
+            <Link href="/help" className="text-[var(--color-brand-teal)] hover:underline">Help Center</Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
 }

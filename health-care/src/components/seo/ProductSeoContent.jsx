@@ -162,12 +162,38 @@ export default function ProductSeoContent({ product }) {
       </div>
 
       {categorySlug && (
-        <Link
-          href={`/products/category/${categorySlug}`}
-          className="inline-block mt-4 text-sm font-semibold text-brand-teal hover:underline"
-        >
-          View more {categoryName} products →
-        </Link>
+        <div className="mt-4 flex flex-wrap gap-3 text-sm">
+          <Link
+            href={`/products/category/${categorySlug}`}
+            className="font-semibold text-brand-teal hover:underline"
+          >
+            View more {categoryName} →
+          </Link>
+          <Link
+            href="/brands"
+            className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors"
+          >
+            Browse by Brand
+          </Link>
+          <Link
+            href="/topics"
+            className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors"
+          >
+            Topic Guides
+          </Link>
+          <Link
+            href="/equipment"
+            className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors"
+          >
+            Price Guides
+          </Link>
+          <Link
+            href="/b2b"
+            className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors"
+          >
+            B2B Pricing
+          </Link>
+        </div>
       )}
     </div>
   );

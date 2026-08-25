@@ -145,9 +145,15 @@ function generateSitemapXML(products) {
   const now = new Date().toISOString();
   
   const urls = products
-    .filter(product => product.slug || product._id)
+    .filter(product => {
+      // Only include products with a proper slug — skip bare MongoDB ObjectIds
+      // so the sitemap never contains ID-based URLs that conflict with canonical
+      // slug URLs set by generateMetadata()
+      const slug = product.slug;
+      return slug && !/^[a-f0-9]{24}$/i.test(slug);
+    })
     .map(product => {
-      const url = `${SITE_URL}/products/${product.slug || product._id}`;
+      const url = `${SITE_URL}/products/${product.slug}`;
       const lastmod = product.updatedAt ? new Date(product.updatedAt).toISOString() : now;
       
       return `  <url>
@@ -312,11 +318,11 @@ function generateFullSitemapXML(products, categories, manufacturers, guides, lan
       })),
   ];
 
-  // Products
+  // Products — slug-only, never ObjectId fallback
   const productUrls = products
-    .filter(p => p.slug || p._id)
+    .filter(p => p.slug && !/^[a-f0-9]{24}$/i.test(p.slug))
     .map(p => ({
-      url: `${SITE_URL}/products/${p.slug || p._id}`,
+      url: `${SITE_URL}/products/${p.slug}`,
       lastmod: p.updatedAt ? new Date(p.updatedAt).toISOString() : now,
       freq: 'weekly',
       pri: 0.7,
