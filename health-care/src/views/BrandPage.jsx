@@ -10,12 +10,11 @@ import EmptyState from '@/components/ui/EmptyState';
 import Spinner from '@/components/ui/Spinner';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import { CONTACT } from '@/constants/api';
-import { FaGlobe, FaMapMarkerAlt, FaShieldAlt, FaFileInvoiceDollar, FaWhatsapp } from 'react-icons/fa';
+import { FaGlobe, FaMapMarkerAlt, FaShieldAlt, FaFileInvoiceDollar, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 
 export default function BrandPage({ brand, initialProducts = [] }) {
   const router = useRouter();
-  const [products, setProducts] = useState(initialProducts);
-  const [loading, setLoading] = useState(false);
+  const [products] = useState(initialProducts);
 
   const brandName = brand?.name || 'Medical Brand';
   const productCount = brand?.productCount ?? products.length;
@@ -34,131 +33,179 @@ export default function BrandPage({ brand, initialProducts = [] }) {
   const website = brand?.website;
 
   return (
-    <div className="min-h-screen bg-page">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
-        <Breadcrumb
-          items={[
-            { label: 'Home', href: '/' },
-            { label: 'Brands', href: '/brands' },
-            { label: brandName },
-          ]}
-        />
+    <div className="min-h-screen bg-[#f8fafc]">
+      {/* ── Hero banner ──────────────────────────────────────────────── */}
+      <section
+        className="relative overflow-hidden text-white"
+        style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 55%, #0b7a60 100%)' }}
+      >
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl" />
+          <div className="absolute bottom-0 -left-24 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
+        </div>
 
-        {/* Hero */}
-        <section className="mt-4 bg-white rounded-2xl border border-[var(--color-border-primary)] overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-brand-navy via-brand-teal to-brand-teal-light" />
-          <div className="p-5 sm:p-8">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14">
+          <Breadcrumb
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Brands', href: '/brands' },
+              { label: brandName },
+            ]}
+            className="mb-6 text-white/60 [&_a]:text-white/60 [&_a:hover]:text-teal-300 [&_span]:text-white/40"
+          />
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 md:gap-8">
+            {/* Logo */}
+            <div className="flex-shrink-0">
               {brandLogo ? (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border border-[var(--color-border-primary)] bg-white p-2 flex items-center justify-center flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white border border-white/20 shadow-xl flex items-center justify-center p-2.5">
+                  <Image
                     src={brandLogo}
                     alt={`${brandName} logo`}
+                    width={80}
+                    height={80}
                     className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[var(--color-background-secondary)] flex items-center justify-center text-3xl flex-shrink-0">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-4xl">
                   🏥
                 </div>
               )}
-              <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl font-semibold text-brand-navy font-[family-name:var(--font-lora)]">
-                  {brandName} Products in Bangladesh
-                </h1>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-[var(--color-text-secondary)]">
-                  {brand?.country && (
-                    <span className="inline-flex items-center gap-1.5">
-                      <FaMapMarkerAlt className="text-brand-teal" /> {brand.country}
-                    </span>
-                  )}
-                  {website && (
-                    <a
-                      href={website.startsWith('http') ? website : `https://${website}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-brand-teal"
-                    >
-                      <FaGlobe className="text-brand-teal" /> {website.replace(/^https?:\/\//, '')}
-                    </a>
-                  )}
-                  <span className="inline-flex items-center gap-1.5">
-                    <FaShieldAlt className="text-[var(--color-status-success)]" /> {productCount} products
+            </div>
+
+            {/* Brand info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-teal-400/15 border border-teal-400/25 px-2.5 py-0.5 text-[10px] font-semibold text-teal-300 uppercase tracking-wider">
+                  <FaCheckCircle size={8} /> DGDA Registered
+                </span>
+                {brand?.country && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 text-[10px] font-semibold text-white/70">
+                    <FaMapMarkerAlt size={8} className="text-teal-400" /> {brand.country}
                   </span>
-                </div>
+                )}
+              </div>
+
+              <h1 className="text-2xl md:text-3xl font-bold text-white mb-1 leading-tight">
+                {brandName} Products in Bangladesh
+              </h1>
+              <p className="text-sm text-white/60 mb-4 flex flex-wrap items-center gap-3">
+                <span className="flex items-center gap-1.5">
+                  <FaShieldAlt className="text-teal-400" />
+                  {productCount} DGDA-registered products
+                </span>
+                {website && (
+                  <a
+                    href={website.startsWith('http') ? website : `https://${website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 hover:text-teal-300 transition-colors"
+                  >
+                    <FaGlobe className="text-teal-400" />
+                    {website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                  </a>
+                )}
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => router.push('/quotes/request')}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#0b2545] text-sm font-bold hover:bg-[#f8fafc] transition-colors shadow-md"
+                >
+                  <FaFileInvoiceDollar size={14} className="text-[#0b7a60]" />
+                  Request Bulk Quote
+                </button>
+                <a
+                  href={`https://wa.me/${CONTACT.whatsapp}?text=${waMsg}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366]/20 border border-[#25D366]/30 text-white text-sm font-semibold hover:bg-[#25D366]/30 transition-colors"
+                >
+                  <FaWhatsapp size={14} className="text-[#4ade80]" />
+                  Ask on WhatsApp
+                </a>
               </div>
             </div>
-
-            {brand?.description && (
-              <p className="mt-4 text-sm text-[var(--color-text-secondary)] leading-relaxed max-w-3xl">
-                {brand.description}
-              </p>
-            )}
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <button
-                onClick={() => router.push(`/quotes/request`)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold transition-colors"
-              >
-                <FaFileInvoiceDollar /> Request Bulk Quote
-              </button>
-              <a
-                href={`https://wa.me/${CONTACT.whatsapp}?text=${waMsg}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-status-success-tint)] hover:bg-[var(--color-status-success)] hover:text-white text-[var(--color-status-success)] border border-[var(--color-status-success-tint)] rounded-xl text-sm font-semibold transition-colors"
-              >
-                <FaWhatsapp /> Ask on WhatsApp
-              </a>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Category chips — internal linking */}
+      {/* ── Body ─────────────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+
+        {/* Brand description */}
+        {brand?.description && (
+          <div className="mb-6 rounded-2xl bg-white border border-[#cfe0ec] p-5">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-2">About {brandName}</h2>
+            <p className="text-sm text-[#475569] leading-relaxed">{brand.description}</p>
+          </div>
+        )}
+
+        {/* Trust badges */}
+        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { icon: '✅', label: 'DGDA Registered', sub: 'All products certified' },
+            { icon: '🛡️', label: 'Genuine Products', sub: 'Manufacturer warranty' },
+            { icon: '🚚', label: 'Fast Delivery', sub: 'Nationwide shipping' },
+            { icon: '🔧', label: 'Free Installation', sub: 'Dhaka metro area' },
+          ].map(({ icon, label, sub }) => (
+            <div key={label} className="rounded-xl bg-white border border-[#cfe0ec] p-3 flex items-start gap-2.5">
+              <span className="text-xl flex-shrink-0">{icon}</span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-[#0b2545] leading-snug">{label}</p>
+                <p className="text-[10px] text-[#94a3b8] mt-0.5">{sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Category chips */}
         {categories.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {categories.map(cat => {
-              const slug = CATEGORY_NAME_TO_SLUG[cat];
-              return slug ? (
-                <Link
-                  key={cat}
-                  href={`/products/category/${slug}`}
-                  className="text-xs font-medium text-brand-teal border border-brand-teal/40 rounded-full px-3.5 py-1.5 hover:bg-brand-teal hover:text-white transition-colors"
-                >
-                  {cat}
-                </Link>
-              ) : null;
-            })}
+          <div className="mb-6">
+            <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">Available in</p>
+            <div className="flex flex-wrap gap-2">
+              {categories.map(cat => {
+                const slug = CATEGORY_NAME_TO_SLUG[cat];
+                return slug ? (
+                  <Link
+                    key={cat}
+                    href={`/products/category/${slug}`}
+                    className="text-xs font-medium text-[#0b7a60] border border-[#0b7a60]/30 rounded-full px-3.5 py-1.5 hover:bg-[#0b7a60] hover:text-white transition-colors"
+                  >
+                    {cat}
+                  </Link>
+                ) : null;
+              })}
+            </div>
           </div>
         )}
 
         {/* Product grid */}
-        <section className="mt-8">
+        <section>
           <div className="flex items-end justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold text-brand-navy">
+              <h2 className="text-lg font-bold text-[#0b2545]">
                 {brandName} Products
               </h2>
-              <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
-                Genuine {brandName} equipment with DGDA registration, warranty and nationwide delivery
+              <p className="text-xs text-[#94a3b8] mt-0.5">
+                Genuine {brandName} equipment — DGDA registered, warranty included
               </p>
             </div>
+            {products.length > 0 && (
+              <span className="text-xs text-[#94a3b8] bg-[#f1f5f9] px-2.5 py-1 rounded-full">
+                {products.length} items
+              </span>
+            )}
           </div>
 
-          {loading ? (
-            <div className="py-12 flex justify-center">
-              <Spinner size="lg" />
-            </div>
-          ) : products.length === 0 ? (
+          {products.length === 0 ? (
             <EmptyState
               icon="📦"
               title={`No ${brandName} products listed yet`}
               description="Please check back soon or contact us for availability and pricing."
-              action={{
-                label: 'Request a Quote',
-                onClick: () => router.push('/quotes/request'),
-              }}
+              action={{ label: 'Request a Quote', onClick: () => router.push('/quotes/request') }}
             />
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
@@ -168,6 +215,33 @@ export default function BrandPage({ brand, initialProducts = [] }) {
             </div>
           )}
         </section>
+
+        {/* Bottom CTA */}
+        <div className="mt-10 rounded-2xl text-white p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-8"
+          style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%)' }}>
+          <div className="flex-1">
+            <h2 className="text-base md:text-lg font-bold mb-1">
+              Need {brandName} products for your facility?
+            </h2>
+            <p className="text-sm text-white/60">
+              Our B2B team provides institutional pricing, credit terms, and tender support across Bangladesh.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 flex-shrink-0">
+            <button
+              onClick={() => router.push('/quotes/request')}
+              className="px-5 py-2.5 rounded-xl bg-[#0b7a60] text-white text-sm font-bold hover:bg-[#096450] transition-colors"
+            >
+              Request a Quote
+            </button>
+            <Link
+              href="/b2b"
+              className="px-5 py-2.5 rounded-xl border border-white/30 text-sm font-semibold hover:bg-white/10 transition-colors"
+            >
+              B2B Pricing
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
