@@ -86,8 +86,6 @@ const CATEGORY_DESC = {
 const NAV_LINKS = [
   { label: 'reagentStore', href: '/reagent-store' },
   { label: 'equipmentPrices', href: '/equipment' },
-  { label: 'topicHubs', href: '/topics' },
-  { label: 'brandDirectory', href: '/brands' },
   { label: 'trackOrder', href: '/track' },
 ];
 
@@ -261,18 +259,12 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               <span className="hidden sm:inline">Reagent Store</span>
             </button>
             <button
-              onClick={() => router.push('/topics')}
-              className={`nav-link-mobile whitespace-nowrap ${isActive('/topics') ? 'nav-link-active' : ''}`}
-              aria-current={isActive('/topics') ? 'page' : undefined}
+              onClick={() => router.push('/equipment')}
+              className={`nav-link-mobile whitespace-nowrap ${isActive('/equipment') ? 'nav-link-active' : ''}`}
+              aria-current={isActive('/equipment') ? 'page' : undefined}
             >
-              Topics
-            </button>
-            <button
-              onClick={() => router.push('/brands')}
-              className={`nav-link-mobile whitespace-nowrap ${isActive('/brands') ? 'nav-link-active' : ''}`}
-              aria-current={isActive('/brands') ? 'page' : undefined}
-            >
-              Brands
+              <span className="inline sm:hidden">Prices</span>
+              <span className="hidden sm:inline">Price Guide</span>
             </button>
           </nav>
 
