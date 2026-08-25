@@ -95,12 +95,8 @@ export default async function TopicClusterPage({ params }) {
             itemListElement: listing.products.slice(0, 20).map((p, i) => ({
               '@type': 'ListItem',
               position: i + 1,
-              item: {
-                '@type': 'Product',
-                name: p.name,
-                image: (Array.isArray(p.images) && p.images[0]?.url) || p.image,
-                url: `${SITE_CONFIG.url}/products/${p.slug || p._id}`,
-              },
+              name: p.name,
+              url: `${SITE_CONFIG.url}/products/${p.slug || p._id}`,
             })),
           },
         }}
