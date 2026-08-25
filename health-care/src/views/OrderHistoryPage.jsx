@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useT } from '@/hooks/useT';
@@ -321,9 +321,8 @@ export default function OrderHistoryPage() {
               </thead>
               <tbody>
                 {orders.map(order => (
-                  <>
+                  <React.Fragment key={order._id}>
                     <tr
-                      key={order._id}
                       className="border-b border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-secondary)] transition-colors"
                     >
                       {/* Order ID */}
@@ -439,7 +438,7 @@ export default function OrderHistoryPage() {
                         onDismiss={() => setConfirmCancelId(null)}
                       />
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
