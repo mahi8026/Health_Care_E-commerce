@@ -123,6 +123,16 @@ const nextConfig = {
 
   // Redirect old query-param category URLs to slug-based URLs
   async redirects() {
+    // Force canonical www — redirect bare domain to www to prevent duplicate content
+    const wwwRedirect = [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'mediportbd.com' }],
+        destination: 'https://www.mediportbd.com/:path*',
+        permanent: true, // 308 permanent redirect
+      },
+    ];
+
     // Redirect old query-param category URLs to slug-based URLs.
     // Slugs MUST match CATEGORY_SLUG_MAP in src/constants/categories.js exactly —
     // any mismatch sends Googlebot to a 404 and creates "Page with redirect" errors.
@@ -149,12 +159,15 @@ const nextConfig = {
       { name: 'Mobility Aids',                   slug: 'mobility-aids' },
     ];
 
-    return categoryRedirects.map(({ name, slug }) => ({
-      source: '/products',
-      has: [{ type: 'query', key: 'category', value: name }],
-      destination: `/products/category/${slug}`,
-      permanent: true, // 301 redirect — passes SEO link equity
-    }));
+    return [
+      ...wwwRedirect,
+      ...categoryRedirects.map(({ name, slug }) => ({
+        source: '/products',
+        has: [{ type: 'query', key: 'category', value: name }],
+        destination: `/products/category/${slug}`,
+        permanent: true,
+      })),
+    ];
   },
 
   // Security + caching headers
