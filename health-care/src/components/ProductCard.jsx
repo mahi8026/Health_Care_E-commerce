@@ -10,6 +10,7 @@ import { useT } from '@/hooks/useT';
 import WishlistButton from './wishlist/WishlistButton';
 import RatingStars from '@/components/ui/RatingStars';
 import { getProductPriceDisplay } from '@/utils/pricing';
+import { getProductCardImage } from '@/utils/cloudinary';
 
 const ProductCard = React.memo(function ProductCard({ product, onProductClick, showStockBadge = false, showFeaturedBadge = false, showCategory = false }) {
   const router = useRouter();
@@ -45,9 +46,10 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
   }, []);
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
-  const primaryImage = imageData ? {
-    url: typeof imageData === 'string' ? imageData : imageData.url,
-    alt: typeof imageData === 'object' ? imageData.alt : product.name
+  const rawImageUrl = imageData ? (typeof imageData === 'string' ? imageData : imageData?.url) : null;
+  const primaryImage = rawImageUrl ? {
+    url: getProductCardImage(rawImageUrl), // Apply Cloudinary transforms — bypasses Next.js proxy
+    alt: typeof imageData === 'object' ? (imageData.alt || product.name) : product.name
   } : null;
 
   // Calculate B2B pricing if user is eligible
@@ -147,7 +149,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
               className="object-cover p-3 group-hover:scale-105 transition-transform duration-200 ease-out"
               loading="lazy"
               decoding="async"
-              unoptimized={!primaryImage.url.includes('res.cloudinary.com')}
+              unoptimized
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.parentElement?.querySelector('.image-fallback');

@@ -6,6 +6,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FaHeart, FaExpand, FaSearchPlus, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { getProductDetailImage, getProductCardImage } from '@/utils/cloudinary';
 
 /**
  * World-Class Enhanced Product Image Gallery
@@ -107,7 +108,7 @@ export default function ProductImageGalleryEnhanced({
         {activeImage && failedIndex !== activeIndex ? (
           <div className="relative w-full h-full">
             <Image
-              src={activeImage.url}
+              src={getProductDetailImage(activeImage.url)}
               alt={product.name || 'Product'}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -118,6 +119,7 @@ export default function ProductImageGalleryEnhanced({
                 transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
               } : {}}
               priority={heroPriority}
+              unoptimized
               onError={() => setFailedIndex(activeIndex)}
             />
           </div>
@@ -218,11 +220,12 @@ export default function ProductImageGalleryEnhanced({
               >
                 {!failedThumbs.has(idx) ? (
                   <Image
-                    src={img.url}
+                    src={getProductCardImage(img.url)}
                     alt={`${product.name} view ${idx + 1}`}
                     fill
                     sizes="80px"
                     className="object-cover"
+                    unoptimized
                     onError={() => setFailedThumbs(prev => new Set(prev).add(idx))}
                   />
                 ) : (
@@ -284,11 +287,12 @@ export default function ProductImageGalleryEnhanced({
           >
             {failedIndex !== activeIndex ? (
               <Image
-                src={activeImage.url}
+                src={getProductDetailImage(activeImage.url)}
                 alt={product.name || 'Product'}
                 fill
                 sizes="100vw"
                 className="object-contain"
+                unoptimized
                 onError={() => setFailedIndex(activeIndex)}
               />
             ) : (
@@ -333,11 +337,12 @@ export default function ProductImageGalleryEnhanced({
                 }`}
               >
                 <Image
-                  src={img.url}
+                  src={getProductCardImage(img.url)}
                   alt={`Thumbnail ${idx + 1}`}
                   fill
                   sizes="64px"
                   className="object-cover"
+                  unoptimized
                 />
               </button>
             ))}
