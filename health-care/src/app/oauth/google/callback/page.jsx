@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { setToken, setRefreshToken } from '@/utils/api';
+import api, { setToken, setRefreshToken } from '@/utils/api';
 import Spinner from '@/components/ui/Spinner';
 
 function GoogleCallbackContent() {
@@ -13,8 +13,7 @@ function GoogleCallbackContent() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        const token = searchParams.get('token');
-        const refreshToken = searchParams.get('refreshToken');
+        const authMode = searchParams.get('auth');
         const error = searchParams.get('error');
 
         if (error) {
@@ -25,6 +24,32 @@ function GoogleCallbackContent() {
           }, 1500);
           return;
         }
+
+        // S-12 cookie-auth mode: the backend sets the httpOnly refresh cookie
+        // and redirects with NO tokens in the URL (nothing lands in history or
+        // logs). Exchange the cookie for an access token via the cookie-only
+        // refresh endpoint.
+        if (authMode === 'cookie') {
+          const data = await api.refreshToken();
+          if (!data || !data.token) {
+            throw new Error('No access token returned from cookie refresh');
+          }
+          setToken(data.token);
+
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('user-logged-in'));
+          }
+
+          setStatus('success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+          return;
+        }
+
+        // Legacy URL-token mode (AUTH_COOKIES_ENABLED unset) — unchanged.
+        const token = searchParams.get('token');
+        const refreshToken = searchParams.get('refreshToken');
 
         if (token && refreshToken) {
           setToken(token);

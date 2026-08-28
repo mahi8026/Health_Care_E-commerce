@@ -2,6 +2,7 @@
 
 import { useReportWebVitals } from 'next/web-vitals'
 import { API } from '@/constants/api';
+import GA4Tracker from '@/services/GA4Tracker';
 
 /**
  * WebVitalsReporter - Reports Core Web Vitals metrics to analytics services.
@@ -22,6 +23,13 @@ const THRESHOLDS = {
 }
 
 export function WebVitalsReporter() {
+  // F10 — boot the tracker client-side. It was previously initialized only in
+  // tests, so every trackAddToCart/trackPurchase call in the app no-op'd.
+  GA4Tracker.initialize(
+    process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ||
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+  );
+
   useReportWebVitals((metric) => {
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {

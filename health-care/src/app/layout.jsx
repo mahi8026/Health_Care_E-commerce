@@ -147,7 +147,9 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+    // F10 — accept BOTH env spellings; .env.production defines the GA4 variant
+  // and the old name is kept for local/legacy overrides.
+  const gaId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>

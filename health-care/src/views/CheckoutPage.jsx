@@ -217,6 +217,11 @@ export default function CheckoutPage({ onBackToCart }) {
           price: item.finalPrice || item.price || 0, // Use B2B price if available
           isB2BPrice: item.isB2BPrice || false,
           b2bSavings: item.b2bSavings || 0,
+          // F1 — required by pricingService.quoteProduct() for sized products;
+          // omitting it made every sized SKU un-orderable ("Size selection required").
+          selectedSize: item.selectedSize?.name
+            ? { name: item.selectedSize.name }
+            : null,
         })),
         deliveryType: selectedDelivery,
         deliveryMethod: selectedDelivery,

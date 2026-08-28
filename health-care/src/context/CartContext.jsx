@@ -64,7 +64,9 @@ export function CartProvider({ children }) {
         method = 'PUT';
         body = { quantity, selectedSize: size };
       } else if (action === 'remove') {
-        url = `${API}/cart/items/${productId}`;
+        // F6 — backend targets product+size rows; without ?size it would
+        // delete every variant of the product.
+        url = `${API}/cart/items/${productId}${size?.name ? `?size=${encodeURIComponent(size.name)}` : ''}`;
         method = 'DELETE';
       } else if (action === 'clear') {
         url = `${API}/cart`;
@@ -126,7 +128,9 @@ export function CartProvider({ children }) {
           brand: typeof item.product.brand === 'object' ? (item.product.brand?.name || '') : (item.product.brand || ''),
           category: typeof item.product.category === 'object' ? (item.product.category?.name || '') : (item.product.category || ''),
           stock: item.product.stock,
-          quantity: item.quantity
+          quantity: item.quantity,
+          // F3 — survive login-sync so sized items stay orderable and distinct
+          selectedSize: item.selectedSize || null,
         }));
         setCart(mergedCart);
       }
@@ -280,32 +284,43 @@ export function CartProvider({ children }) {
     const item = cart.find(i => (i.id || i._id) === productId);
     if (item) {
       GA4Tracker.trackRemoveFromCart(item, item.quantity);
-      showToast.info(`${item.name} removed from cart`);
+      showToast.info(`${item.name}${item.selectedSize ? ` (${item.selectedSize.name})` : ''} removed from cart`);
     }
 
-    setCart(cart.filter(i => (i.id || i._id) !== productId));
-    updateBackendCart('remove', productId);
+    setCart(cart.filter(i =>
+      !((i.id || i._id) === productId &&
+        (!i.selectedSize || !item?.selectedSize || i.selectedSize.name === item.selectedSize.name))
+    ));
+    // F6 — pass the variant's size so the server removes only that row.
+    updateBackendCart('remove', productId, null, item?.selectedSize || null);
   }, [cart, updateBackendCart]);
 
-  const updateQuantity = useCallback((productId, quantity) => {
+  const updateQuantity = useCallback((productId, quantity, options = {}) => {
     // Enforce minimum quantity of 1
     const safeQty = Math.max(1, quantity);
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }
+    const item = cart.find(i =>
+      (i.id || i._id) === productId &&
+      (!options.size || !i.selectedSize || i.selectedSize.name === options.size.name)
+    );
     // FIX-012: Soft stock guard — don't exceed known stock count.
     // Stock may be stale (from localStorage), so this is a UX guard only;
     // the server performs the authoritative check at order placement.
-    const item = cart.find(i => (i.id || i._id) === productId);
     if (item?.stock > 0 && safeQty > item.stock) {
       showToast.warning(`Only ${item.stock} units available`);
       return;
     }
     setCart(cart.map(i =>
-      (i.id || i._id) === productId ? { ...i, quantity: safeQty } : i
+      ((i.id || i._id) === productId &&
+        (!options.size || !i.selectedSize || i.selectedSize.name === options.size.name))
+        ? { ...i, quantity: safeQty }
+        : i
     ));
-    updateBackendCart('update', productId, safeQty);
+    // F6 — forward the variant's size so the correct server row is updated.
+    updateBackendCart('update', productId, safeQty, options.size || item?.selectedSize || null);
   }, [cart, removeFromCart, updateBackendCart]);
 
   const clearCart = useCallback(() => {

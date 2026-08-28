@@ -78,6 +78,11 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
     }
   }, [product?._id]);
 
+  // F2 — sized SKUs need an explicit SizeSelector choice; calling addToCart
+  // here previously created a DUPLICATE sizeless cart row that checkout then
+  // rejected. Hide the bar until selected-size state is lifted page-wide.
+  if (product?.variants?.sizes?.length > 0) return null;
+
   // Calculate visibility state
   const show = visible && !dismissed;
 

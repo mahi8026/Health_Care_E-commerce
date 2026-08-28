@@ -106,17 +106,32 @@ const getRefreshToken = () => {
   return null;
 };
 
+// S-12 — cookie auth mode. When NEXT_PUBLIC_AUTH_COOKIES=true the backend
+// issues the refresh credential as an httpOnly cookie (/api/auth scope). This
+// client must then NEVER persist it to localStore (XS readable). Gated so the
+// default deploy behaves exactly as before until the flag is flipped. While in
+// cookie-mode, getRefreshToken() still reads a legacy local copy ONLY as a
+// one-time transitional fallback (pre-rollout sessions who have no cookie yet);
+// the first successful refresh purges it because the backend rotates the cookie.
+const cookiesEnabled = () => process.env.NEXT_PUBLIC_AUTH_COOKIES === 'true';
+
+// Set refresh token in localStorage
+const setRefreshToken = (refreshToken) => {
+  if (typeof window === 'undefined') return;
+  if (cookiesEnabled()) {
+    // S-12 — the httpOnly cookie owns the refresh credential now. Never write
+    // it to localStore; drop any pre-rollout copy on the first write path
+    // (login/refresh/OAuth now rotate the cookie and make the stale value moot).
+    localStorage.removeItem('Mediport_refresh_token');
+    return;
+  }
+  localStorage.setItem('Mediport_refresh_token', refreshToken);
+};
+
 // Set token in localStorage
 const setToken = (token) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('Mediport_token', token);
-  }
-};
-
-// Set refresh token in localStorage
-const setRefreshToken = (refreshToken) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('Mediport_refresh_token', refreshToken);
   }
 };
 
@@ -149,6 +164,25 @@ function subscribeTokenRefresh(callback) {
 function onTokenRefreshed(token) {
   refreshSubscribers.forEach(callback => callback(token));
   refreshSubscribers = [];
+}
+
+// ── CSRF token shim (plan §2.8, pairs with backend CSRF_ENFORCED gate) ──────
+// Fetched once per session and attached to every state-changing request.
+// While the backend gate is off this header is simply ignored; flipping
+// CSRF_ENFORCED=true then activates protection with no frontend deploy.
+let csrfToken = null;
+async function ensureCsrfToken() {
+  if (csrfToken) return csrfToken;
+  try {
+    const res = await fetch(`${API_BASE_URL}/csrf-token`, { credentials: 'include' });
+    if (res.ok) {
+      const data = await res.json();
+      csrfToken = data.csrfToken || null;
+    }
+  } catch {
+    // Non-fatal: backend may not be enforcing yet, or endpoint unreachable.
+  }
+  return csrfToken;
 }
 
 async function handleResponse(response) {
@@ -340,6 +374,15 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
   const COLD_START_DELAY = 5000; // Render free tier needs 30-60s to boot
   const method = options.method || 'GET';
   const externalSignal = options.signal;
+
+  // 2.8 — attach the CSRF token to state-changing requests (no-op header
+  // until the backend gate flips on; see ensureCsrfToken above).
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const token = await ensureCsrfToken();
+    if (token) {
+      options.headers = { ...(options.headers || {}), 'X-CSRF-Token': token };
+    }
+  }
   
   // ── Request Deduplication ──────────────────────────────────────────────────
   // For GET requests, check cache first
@@ -450,18 +493,20 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
       setCachedResponse(cacheKey, data, ttl);
     }
     
-    // If 401 and we have a refresh token, try to refresh
-    if (response.status === 401 && getRefreshToken()) {
+    // If 401 and we have a refresh token (or cookie-auth mode may hold one in
+    // the httpOnly cookie), try to refresh.
+    if (response.status === 401 && (getRefreshToken() || cookiesEnabled())) {
     if (!isRefreshing) {
       isRefreshing = true;
       
       try {
-        // Attempt to refresh the token
+        // Attempt to refresh the token (body token optional: with cookie auth
+        // enabled the backend prefers the httpOnly cookie when present).
         const refreshToken = getRefreshToken();
         const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refreshToken }),
+          body: JSON.stringify(refreshToken ? { refreshToken } : {}),
           credentials: 'include'
         });
         
@@ -489,6 +534,9 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         
         // Refresh failed, clear tokens and redirect to login (only in browser)
         isRefreshing = false;
+        // F7 — flush queued waiters with null so their promises settle;
+        // previously they hung forever, leaving account pages stuck loading.
+        onTokenRefreshed(null);
         removeToken();
         if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
           window.location.href = '/login';
@@ -496,6 +544,8 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         return response;
       } catch (error) {
         isRefreshing = false;
+        // F7 — same flush guarantee on the exception path
+        onTokenRefreshed(null);
         removeToken();
         if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
           window.location.href = '/login';
@@ -506,6 +556,12 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
       // Wait for the refresh to complete
       return new Promise((resolve) => {
         subscribeTokenRefresh((token) => {
+          // F7 — null token = refresh failed and we were logged out.
+          // Settle with the original 401 response instead of re-fetching.
+          if (!token) {
+            resolve(response);
+            return;
+          }
           const newOptions = {
             ...options,
             headers: {
@@ -756,13 +812,11 @@ export const api = {
 
   async refreshToken() {
     const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      throw new ApiError('No refresh token available', 401);
-    }
+    const body = refreshToken ? { refreshToken } : {};
     const response = await fetchWithAuth(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
+      body: JSON.stringify(body),
       credentials: 'include'
     });
     const data = await handleResponse(response);
