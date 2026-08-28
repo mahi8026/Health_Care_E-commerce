@@ -290,7 +290,7 @@ const B2BSection = memo(function B2BSection({ t, stats }) {
             {B2B_STATS.map((s, i) => ({
               ...s,
               val: i === 0
-                ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '1+')
+                ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '0+')
                 : s.val,
             })).map(s => (
               <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
@@ -716,7 +716,7 @@ const HOME_STYLES = `
         @media (max-width: 640px) {
           .hero-right-panel { height: 220px !important; border-radius: 12px !important; }
           .hero-slider-arrows { display: none !important; }
-          .prod-grid-4 { grid-template-columns: 1fr !important; }
+          .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .trust-grid { grid-template-columns: 1fr !important; }
           .b2b-cols { grid-template-columns: 1fr !important; }
@@ -742,7 +742,10 @@ export default function HomePage({ initialData = null, initialSettings = null })
   const [categories, setCategories] = useState(() => initialData?.categories?.length ? initialData.categories : []);
   const [categoryCounts, setCategoryCounts] = useState(() => initialData?.categoryCounts || {});
   const [promo, setPromo] = useState(() => initialData?.activePromo || null);
-  const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 40, totalOrders: 0, totalB2BClients: 1 });
+  // Zeroes, not fabricated defaults: a medical-supplier site must never
+  // display invented trust numbers ("40 brands", "1200+ B2B clients") when
+  // the stats API fails — the previous fallback rendered fiction as fact.
+  const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 });
   const [siteSettings, setSiteSettings] = useState(() => initialSettings);
   const [heroSlides, setHeroSlides] = useState(() => initialSettings?.heroSlides?.length
     ? initialSettings.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order)

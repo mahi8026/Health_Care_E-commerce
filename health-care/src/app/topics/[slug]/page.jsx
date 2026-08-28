@@ -179,7 +179,7 @@ export default async function TopicClusterPage({ params }) {
         {/* Extended intro paragraph(s) */}
         {cluster.intro.length > 1 && (
           <div className="rounded-2xl bg-white border border-[#cfe0ec] p-5 md:p-7">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-3">Overview</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-tertiary mb-3">Overview</h2>
             {cluster.intro.slice(1).map((para, i) => (
               <p key={i} className="text-sm text-[#475569] leading-relaxed mb-3 last:mb-0">{para}</p>
             ))}
@@ -207,7 +207,7 @@ export default async function TopicClusterPage({ params }) {
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="text-sm font-semibold text-[#0b2545] mb-1 leading-snug group-hover:text-[#0b7a60] transition-colors">{page.title}</h3>
-                    <p className="text-xs text-[#94a3b8] leading-relaxed line-clamp-2">{page.excerpt}</p>
+                    <p className="text-xs text-tertiary leading-relaxed line-clamp-2">{page.excerpt}</p>
                     <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0b7a60]">
                       View prices
                       <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -227,7 +227,7 @@ export default async function TopicClusterPage({ params }) {
             <div className="flex items-end justify-between mb-4">
               <div>
                 <h2 className="text-base font-bold text-[#0b2545]">Featured Products</h2>
-                <p className="text-xs text-[#94a3b8] mt-0.5">Genuine, DGDA-registered stock ready to ship</p>
+                <p className="text-xs text-tertiary mt-0.5">Genuine, DGDA-registered stock ready to ship</p>
               </div>
               {categoryName && (
                 <Link
@@ -266,7 +266,7 @@ export default async function TopicClusterPage({ params }) {
                       {b.name}
                     </Link>
                   ))}
-                  <Link href="/brands" className="inline-flex items-center text-xs text-[#94a3b8] hover:text-[#0b7a60] px-2 py-1.5 transition-colors">
+                  <Link href="/brands" className="inline-flex items-center text-xs text-tertiary hover:text-[#0b7a60] px-2 py-1.5 transition-colors">
                     All brands →
                   </Link>
                 </div>
@@ -287,12 +287,12 @@ export default async function TopicClusterPage({ params }) {
                       href={`/guides/${guide.slug}`}
                       className="group flex items-start gap-2.5 rounded-xl border border-[#e2e8f0] p-3 hover:border-[#0b7a60]/40 hover:bg-[#f8fffe] transition-all"
                     >
-                      <span className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[#94a3b8] w-16 flex-shrink-0">
+                      <span className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-tertiary w-16 flex-shrink-0">
                         {guide.type === 'compare' ? 'Compare' : 'Guide'}
                       </span>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold text-[#0b2545] leading-snug group-hover:text-[#0b7a60] transition-colors">{guide.title}</p>
-                        <p className="text-[10px] text-[#94a3b8] mt-0.5 line-clamp-1">{guide.excerpt}</p>
+                        <p className="text-[10px] text-tertiary mt-0.5 line-clamp-1">{guide.excerpt}</p>
                       </div>
                     </Link>
                   ))}

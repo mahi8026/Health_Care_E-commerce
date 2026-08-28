@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { TOPICAL_CLUSTERS } from '@/config/topicalClusters';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
@@ -95,7 +95,7 @@ export default function TopicsHub() {
 
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
       <nav aria-label="Breadcrumb" className="bg-white border-b border-[#cfe0ec]">
-        <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-[#94a3b8]">
+        <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
           <Link href="/" className="hover:text-[#0b7a60] transition-colors">Home</Link>
           <span>/</span>
           <span className="text-[#0f172a] font-medium">Topics</span>
@@ -107,7 +107,7 @@ export default function TopicsHub() {
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-[#0b2545]">Browse All Topics</h2>
-            <p className="text-xs text-[#94a3b8] mt-0.5">{TOPICAL_CLUSTERS.length} categories · Updated regularly</p>
+            <p className="text-xs text-tertiary mt-0.5">{TOPICAL_CLUSTERS.length} categories · Updated regularly</p>
           </div>
         </div>
 
@@ -143,7 +143,7 @@ export default function TopicsHub() {
 
                 {/* Footer meta */}
                 <div className="mt-4 pt-3 border-t border-black/5 flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-[10px] text-[#94a3b8]">
+                  <div className="flex items-center gap-3 text-[10px] text-tertiary">
                     <span className="flex items-center gap-1">
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

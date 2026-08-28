@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Image from 'next/image';
 import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
@@ -129,7 +129,7 @@ export default async function BrandsHub() {
 
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
       <nav aria-label="Breadcrumb" className="bg-white border-b border-[#cfe0ec]">
-        <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-[#94a3b8]">
+        <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
           <Link href="/" className="hover:text-[#0b7a60] transition-colors">Home</Link>
           <span>/</span>
           <span className="text-[#0f172a] font-medium">Brands</span>
@@ -143,7 +143,7 @@ export default async function BrandsHub() {
           <section className="mb-10">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-[#0b2545]">Featured Brands</h2>
-              <span className="text-xs text-[#94a3b8]">Most products</span>
+              <span className="text-xs text-tertiary">Most products</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {topBrands.map(brand => {
@@ -169,7 +169,7 @@ export default async function BrandsHub() {
                     )}
                     <div className="text-center min-w-0 w-full">
                       <p className="text-xs font-semibold text-[#0b2545] truncate group-hover:text-[#0b7a60] transition-colors">{brand.name}</p>
-                      <p className="text-[10px] text-[#94a3b8] mt-0.5">{brand.productCount || 0} products</p>
+                      <p className="text-[10px] text-tertiary mt-0.5">{brand.productCount || 0} products</p>
                     </div>
                   </Link>
                 );
@@ -203,7 +203,7 @@ export default async function BrandsHub() {
                     {letter}
                   </div>
                   <div className="h-px flex-1 bg-[#e2e8f0]" />
-                  <span className="text-[10px] text-[#94a3b8] flex-shrink-0">{byLetter[letter].length} brand{byLetter[letter].length !== 1 ? 's' : ''}</span>
+                  <span className="text-[10px] text-tertiary flex-shrink-0">{byLetter[letter].length} brand{byLetter[letter].length !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {byLetter[letter].map(brand => {
@@ -229,7 +229,7 @@ export default async function BrandsHub() {
                         )}
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-[#0b2545] truncate group-hover:text-[#0b7a60] transition-colors">{brand.name}</p>
-                          <p className="text-xs text-[#94a3b8] mt-0.5">
+                          <p className="text-xs text-tertiary mt-0.5">
                             {brand.productCount || 0} products{brand.country ? ` · ${brand.country}` : ''}
                           </p>
                         </div>
@@ -247,7 +247,7 @@ export default async function BrandsHub() {
           <div className="rounded-2xl bg-white border border-[#cfe0ec] p-12 text-center">
             <div className="text-4xl mb-3">🏥</div>
             <p className="text-sm font-semibold text-[#0b2545] mb-1">Brand directory is being updated</p>
-            <p className="text-xs text-[#94a3b8]">Please check back soon.</p>
+            <p className="text-xs text-tertiary">Please check back soon.</p>
           </div>
         )}
 

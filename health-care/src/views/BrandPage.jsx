@@ -138,7 +138,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
         {/* Brand description */}
         {brand?.description && (
           <div className="mb-6 rounded-2xl bg-white border border-[#cfe0ec] p-5">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-2">About {brandName}</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-tertiary mb-2">About {brandName}</h2>
             <p className="text-sm text-[#475569] leading-relaxed">{brand.description}</p>
           </div>
         )}
@@ -155,7 +155,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               <span className="text-xl flex-shrink-0">{icon}</span>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-[#0b2545] leading-snug">{label}</p>
-                <p className="text-[10px] text-[#94a3b8] mt-0.5">{sub}</p>
+                <p className="text-[10px] text-tertiary mt-0.5">{sub}</p>
               </div>
             </div>
           ))}
@@ -164,7 +164,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
         {/* Category chips */}
         {categories.length > 0 && (
           <div className="mb-6">
-            <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">Available in</p>
+            <p className="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Available in</p>
             <div className="flex flex-wrap gap-2">
               {categories.map(cat => {
                 const slug = CATEGORY_NAME_TO_SLUG[cat];
@@ -189,12 +189,12 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               <h2 className="text-lg font-bold text-[#0b2545]">
                 {brandName} Products
               </h2>
-              <p className="text-xs text-[#94a3b8] mt-0.5">
+              <p className="text-xs text-tertiary mt-0.5">
                 Genuine {brandName} equipment — DGDA registered, warranty included
               </p>
             </div>
             {products.length > 0 && (
-              <span className="text-xs text-[#94a3b8] bg-[#f1f5f9] px-2.5 py-1 rounded-full">
+              <span className="text-xs text-tertiary bg-[#f1f5f9] px-2.5 py-1 rounded-full">
                 {products.length} items
               </span>
             )}

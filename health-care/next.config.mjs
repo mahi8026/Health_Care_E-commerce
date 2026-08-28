@@ -13,6 +13,15 @@ try {
 
 // PWA configuration
 import withPWA from 'next-pwa';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Workspace root = the directory ABOVE this app dir (monorepo layout).
+// Derived from this file's location so it resolves correctly on Windows
+// dev machines, GitHub Actions (ubuntu) AND Vercel — previously it was
+// hardcoded to one developer's 'C:/Projects/Health Care' path, which is
+// invalid on every non-Windows build environment.
+const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const pwaConfig = withPWA({
   dest: 'public',
@@ -300,8 +309,7 @@ const nextConfig = {
 
   // Turbopack config — required in Next.js 16 to silence warning
   turbopack: {
-    // Set explicit root to workspace root (c:\Projects\Health Care) for monorepo
-    root: process.env.VERCEL ? '/vercel/path0' : 'C:/Projects/Health Care',
+    root: workspaceRoot,
   },
 
   // TypeScript is installed only for ESLint (eslint-config-next dependency)

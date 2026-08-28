@@ -293,7 +293,9 @@ export default function BestSellingSection() {
       {/* Responsive Styles */}
       <style jsx>{`
         .best-selling-section {
-          min-height: 560px;
+          /* No forced min-height: the skeleton already reserves space while
+             loading, and a fixed 560px left a dead whitespace band whenever
+             the rail returned fewer/taller cards than assumed. */
         }
 
         @media (max-width: 640px) {
@@ -318,7 +320,6 @@ export default function BestSellingSection() {
         @media (min-width: 641px) and (max-width: 1023px) {
           .best-selling-section {
             padding: 32px 0 !important;
-            min-height: 520px;
           }
 
           .section-header h2 {
@@ -328,7 +329,7 @@ export default function BestSellingSection() {
 
         @media (min-width: 1024px) {
           .best-selling-section {
-            min-height: 520px;
+            padding: 40px 0;
           }
         }
       `}</style>
