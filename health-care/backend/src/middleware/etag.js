@@ -37,17 +37,17 @@ function etagMiddleware(req, res, next) {
 
       res.setHeader('ETag', etag);
 
-      // Preserve any existing Cache-Control; fall back to a public default
-      if (!res.getHeader('Cache-Control')) {
-        res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=60');
-      }
-
       // Check client cache
       const clientEtag = req.headers['if-none-match'];
       if (clientEtag && clientEtag === etag) {
         logger.debug(`[ETag] 304 Not Modified: ${req.path}`);
         return res.status(304).end();
       }
+      // P6 — no implicit Cache-Control default here. Previously this silently
+      // stamped `public, max-age=3600` on ANY wrapped GET, which would let
+      // shared caches store authenticated responses if the middleware were
+      // ever mounted near private routes. Routes that want public caching
+      // must set their own Cache-Control (or use cacheMiddleware).
     } catch (err) {
       logger.debug(`[ETag] Could not generate ETag: ${err.message}`);
     }

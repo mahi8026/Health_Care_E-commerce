@@ -12,6 +12,9 @@ const pricingService = require('../services/pricingService');
 const flashDealPricing = require('../services/flashDealPricing');
 const { sendToUser, notifications } = require('../utils/oneSignalService');
 const { ORDER_STATUSES, ORDER_STATUS_TRANSITIONS } = require('../constants/orderStatus');
+// P4-1 — single source of truth for order-number generation now lives in
+// orderService; the local copy below was deleted to prevent format drift.
+const { generateOrderNumber } = require('../services/orderService');
 
 const cacheService = new CacheService();
 
@@ -112,30 +115,10 @@ adjustmentDescription += ' | ';
   }
 }
 
-// Generate a human-friendly branded order number: MC-YYMMDD-XXXXXX
-// Example: MC-260623-48K7Q9 (16 chars, readable, hard to enumerate — S4)
-async function generateOrderNumber() {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const dd = String(now.getDate()).padStart(2, '0');
-  const datePart = `${yy}${mm}${dd}`;
-
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I — unambiguous
-  const maxAttempts = 10;
-  for (let i = 0; i < maxAttempts; i++) {
-    let rand = '';
-    for (let c = 0; c < 6; c++) {
-rand += chars[Math.floor(Math.random() * chars.length)];
-}
-    const orderNumber = `MC-${datePart}-${rand}`;
-    const exists = await Order.findOne({ orderNumber }).lean();
-    if (!exists) {
-return orderNumber;
-}
-  }
-  throw new Error('Failed to generate unique order number');
-}
+// Order-number generation is consolidated in orderService.generateOrderNumber
+// (MC-YYMMDD-XXXXXX, S4-hardened charset). The Order.js pre('save') hook remains
+// the safety net for direct model saves outside the controller.
+// The injected repository check keeps the service free of model dependencies.
 
 /**
  * Create new order with transaction support.
@@ -429,9 +412,16 @@ zone = 'dhaka_suburban';
     }
 
     // Total calculation without VAT
-    const totalAmount = Math.round((subtotal - b2bDiscount - couponDiscount - loyaltyDiscount + deliveryFee) * 100) / 100;
+    // D2 — floor at zero so stacked discounts (buy_x_get_y / coupon / loyalty /
+    // B2B) can never produce a negative chargeable amount.
+    const totalAmount = Math.max(
+      0,
+      Math.round((subtotal - b2bDiscount - couponDiscount - loyaltyDiscount + deliveryFee) * 100) / 100
+    );
 
-    const orderNumber = await generateOrderNumber();
+    // P4-1 — generateOrderNumber now comes from orderService; the injected
+    // checker queries the Order collection for uniqueness.
+    const orderNumber = await generateOrderNumber(async (candidate) => !!(await Order.findOne({ orderNumber: candidate }).lean()));
 
     // D1 — pre-compute loyalty earnings so they persist on the order itself
     // (cancelOrder later rolls back these exact values instead of guessing 0)

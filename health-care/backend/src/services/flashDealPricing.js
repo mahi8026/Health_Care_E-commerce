@@ -20,7 +20,11 @@ const FlashDeal = require('../models/FlashDeal');
  */
 async function getActiveDealEntries(productIds) {
   const entries = new Map();
-  const ids = [...new Set((productIds || []).filter(Boolean).map(String))];
+  // F5 — accept ids, ObjectIds, or populated docs defensively; drop junk values.
+  const ids = [...new Set((productIds || [])
+    .filter(Boolean)
+    .map(v => (v && v._id) ? String(v._id) : String(v))
+  )];
   if (ids.length === 0) {
 return entries;
 }

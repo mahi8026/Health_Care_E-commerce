@@ -42,13 +42,23 @@ subscriber.source = source;
       }
     }
 
-    // Create new subscriber
-    subscriber = await Newsletter.create({
-      email: email.toLowerCase(),
-      name,
-      source,
-      isSubscribed: true
-    });
+    // D6 — a concurrent duplicate subscribe used to hit the unique-email
+    // index as E11000 and surface a generic 500; treat it as the idempotent
+    // "already subscribed" outcome it is. (Reuses the `subscriber` declared
+    // at the top of this function — no redeclaration.)
+    try {
+      subscriber = await Newsletter.create({
+        email: email.toLowerCase(),
+        name,
+        source,
+        isSubscribed: true
+      });
+    } catch (err) {
+      if (err && err.code === 11000) {
+        return successResponse(res, { alreadySubscribed: true }, 'You are already subscribed to our newsletter');
+      }
+      throw err;
+    }
 
     // Send welcome email
     try {

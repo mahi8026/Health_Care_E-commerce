@@ -168,35 +168,24 @@ exports.deleteProductImage = async (req, res) => {
       
       logger.info(`[deleteProductImage] Removed from product: ${productId}`);
       
-      // Step 3: Clear Redis cache for this product and related caches
+      // Step 3: Clear Redis cache for this product and related caches.
+      // NOTE: the old code called `require('../services/redisCache').client`,
+      // which does NOT exist in that module's exports — `redisClient` was
+      // always `undefined`, so this invalidation silently NEVER ran and stale
+      // image URLs persisted until TTL expiry. All helpers below go through
+      // the shared client (SCAN-based) and are safe no-ops when Redis is down.
       try {
-        const redisClient = require('../services/redisCache').client;
-        if (redisClient && redisClient.status === 'ready') {
-          // Clear individual product cache
-          await redisClient.del(`product:${productId}`);
-          await redisClient.del(`product:slug:${product.slug}`);
-          
-          // Clear products list caches (all variations)
-          const cacheKeys = await redisClient.keys('products:*');
-          if (cacheKeys && cacheKeys.length > 0) {
-            await redisClient.del(...cacheKeys);
-          }
-          
-          // Clear featured products cache
-          await redisClient.del('products:featured');
-          
-          // Clear category cache if product belongs to a category
-          if (product.category) {
-            await redisClient.del(`products:category:${product.category}`);
-          }
-          
-          // Clear brand cache if product belongs to a brand
-          if (product.brand) {
-            await redisClient.del(`products:brand:${product.brand}`);
-          }
-          
-          logger.info(`[deleteProductImage] Cleared Redis cache for product: ${productId}`);
-        }
+        const redisCache = require('../services/redisCache');
+
+        await Promise.all([
+          redisCache.delPattern('products:*'),       // list/detail/featured (service + middleware key conventions)
+          redisCache.delPattern('categories:*'),     // category list/tree/slug pages embed product thumbnails
+          redisCache.delPattern('manufacturers:*'),  // brand pages embed product thumbnails
+          redisCache.delPattern('brands:*'),         // legacy brands:* namespace
+          redisCache.delPattern('homepage:*')        // homepage:featured + homepage:aggregated:v1
+        ]);
+
+        logger.info(`[deleteProductImage] Cleared Redis cache for product: ${productId}`);
       } catch (cacheErr) {
         logger.warn(`[deleteProductImage] Cache clear warning: ${cacheErr.message}`);
         // Don't fail the request if cache clear fails

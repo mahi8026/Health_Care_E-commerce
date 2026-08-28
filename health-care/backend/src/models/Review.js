@@ -16,7 +16,9 @@ const reviewSchema = new mongoose.Schema({
   order: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Order',
-    required: [true, 'Order is required']
+    // F8 — nullable so unverified ("pending" moderation) reviews can be
+    // submitted without a delivered order; verified reviews always set it.
+    default: null
   },
   rating: {
     type: Number,
@@ -247,7 +249,10 @@ async function updateProductRating(productId) {
     'rating.average': stats.averageRating,
     'rating.count': stats.totalReviews,
     'rating.distribution': stats.distribution,
-    reviewsCount: stats.totalReviews
+    reviewsCount: stats.totalReviews,
+    // P9 — keep the legacy alias in sync so UI paths reading either field
+    // never disagree.
+    reviewCount: stats.totalReviews
   });
 }
 

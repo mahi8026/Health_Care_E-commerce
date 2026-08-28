@@ -18,7 +18,11 @@ function startCronJobs() {
       const lowStockProducts = await Product.find({
         isActive: true,
         $expr: { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', '$minStock', 10] }] }
-      }).lean();
+      })
+        // P2 — bound the scan: project only what the email needs and cap rows
+        .select('name sku stock lowStockThreshold minStock category')
+        .limit(500)
+        .lean();
 
       if (lowStockProducts.length > 0) {
         await sendLowStockAlert(lowStockProducts);
@@ -72,7 +76,8 @@ function startCronJobs() {
         recoveryEmailSent: false,
         user: { $exists: true, $ne: null },
         'items.0': { $exists: true } // Has at least one item
-      }).populate('user', 'name email')
+      }).limit(200) // P2 — bound batch size per 2h run; stragglers picked up next run
+        .populate('user', 'name email')
         .populate('items.product', 'name images price');
 
       logger.info(`[CRON] Found ${abandonedCarts.length} abandoned cart(s)`);

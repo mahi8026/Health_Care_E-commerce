@@ -381,7 +381,9 @@ async function verifyDataIntegrity() {
     }
 
     // Check for products with invalid brand references
-    const products = await Product.find({}).populate('brand').lean();
+    // P2 — project only the field under test instead of loading every document
+    // (previously a full-collection find + brand populate on every run).
+    const products = await Product.find({}).select('brand').populate('brand').lean();
     const productsWithInvalidBrand = products.filter(p => p.brand && !p.brand._id).length;
     if (productsWithInvalidBrand > 0) {
       issues.push({

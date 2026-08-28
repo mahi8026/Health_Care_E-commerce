@@ -41,13 +41,9 @@ function createLimiter({
     message: { success: false, message },
     skip: skipInDev ? () => process.env.NODE_ENV === 'development' : undefined,
     keyGenerator: keyGenerator || ((req) => {
-      // Respect reverse-proxy forwarded IP, fall back to socket address
-      return (
-        req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-        req.headers['x-real-ip'] ||
-        req.ip ||
-        req.socket?.remoteAddress
-      );
+      // S2 — req.ip honours app.set('trust proxy'); spoofable XFF/x-real-ip
+      // headers must not be used to key limiters.
+      return req.ip || req.socket?.remoteAddress;
     }),
     // Custom handler to set X-RateLimit-* headers as required by task 1.2
     handler: (req, res, next, options) => {

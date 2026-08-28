@@ -105,12 +105,15 @@ async function redeemPoints(userId, pointsToRedeem, orderId, orderTotal, session
       throw new Error(`Minimum ${config.MIN_REDEEM_POINTS} points required to redeem`);
     }
 
-    const user = await User.findById(userId).session(session);
-    if (!user) {
-throw new Error('User not found');
-}
-
-    if ((user.loyaltyPoints || 0) < pointsToRedeem) {
+    // D3 — atomic, balance-guarded deduction. The previous read-then-`$inc`
+    // raced when called without a session: two concurrent redemptions could
+    // both pass the balance check and drive the balance negative.
+    const guardedUser = await User.findOneAndUpdate(
+      { _id: userId, loyaltyPoints: { $gte: pointsToRedeem } },
+      { $inc: { loyaltyPoints: -pointsToRedeem } },
+      { session, new: true }
+    );
+    if (!guardedUser) {
       throw new Error('Insufficient loyalty points');
     }
 
@@ -120,14 +123,7 @@ throw new Error('User not found');
     }
 
     const discountAmount = pointsToTaka(pointsToRedeem);
-    const newBalance = (user.loyaltyPoints || 0) - pointsToRedeem;
-
-    // Deduct points
-    await User.findByIdAndUpdate(
-      userId,
-      { $inc: { loyaltyPoints: -pointsToRedeem } },
-      { session }
-    );
+    const newBalance = guardedUser.loyaltyPoints;
 
     // Record transaction
     const txData = {

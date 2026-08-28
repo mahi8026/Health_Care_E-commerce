@@ -183,7 +183,11 @@ couponSchema.methods.hasBeenUsedBy = function(userId) {
   return this.usedBy.some(id => id.toString() === userId.toString());
 };
 
-// Method to increment usage
+// D1 — incrementUsage is intentionally NOT used by the checkout path.
+// Order creation reserves usage atomically via a guarded updateOne inside
+// the order transaction (see orderController.createOrder, "D2" comment),
+// because this read-modify-write version loses updates under concurrency.
+// Kept for admin tooling only; do not call from money paths.
 couponSchema.methods.incrementUsage = async function(userId) {
   this.usageCount += 1;
   if (userId && !this.hasBeenUsedBy(userId)) {

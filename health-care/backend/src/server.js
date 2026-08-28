@@ -3,6 +3,7 @@
  * Production-ready Express.js server with MongoDB, Redis, and comprehensive security
  */
 require('dotenv').config();
+const crypto = require('crypto');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -40,11 +41,16 @@ process.on('unhandledRejection', (reason, promise) => {
 // Initialize express app
 const app = express();
 
+// S2 — trust exactly N reverse-proxy hops (Render/Vercel/Nginx) so req.ip is
+// the real client address and rate-limit keys cannot be forged by spoofing
+// x-forwarded-for/x-real-ip. Override hops count with TRUST_PROXY_HOPS=0..N.
+app.set('trust proxy', Number(process.env.TRUST_PROXY_HOPS ?? 1));
+
 // Create HTTP server (needed for Socket.IO)
 const httpServer = http.createServer(app);
 
-// ── EARLY HEALTH CHECK (Railway) ─────────────────────────────────────────────
-// This MUST be before all middleware to ensure Railway healthcheck passes
+// ── EARLY HEALTH CHECK (Render) ─────────────────────────────────────────────
+// This MUST be before all middleware to ensure Render's healthcheck passes
 // Returns 200 immediately if server is running, regardless of DB/Redis status
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -240,8 +246,30 @@ app.use(hpp());           // Req 10.8 — collapse duplicate query-string params
 app.use(compression({ threshold: 1024, level: 6 })); // Compress responses >1KB (Req 6.1)
 
 // ── Logging ──────────────────────────────────────────────────────────────────
+// Dev-style log line, but sensitive query params (secrets, tokens, OAuth codes)
+// are redacted so they never reach stdout, Vercel/nginx access logs, or any
+// log aggregator. The admin secret and OAuth codes must never be logged.
+const SENSITIVE_QUERY_PARAMS = new Set([
+  'secret', 'token', 'code', 'refreshToken', 'access_token',
+  'api_key', 'apikey', 'key', 'password', 'auth'
+]);
+function redactSensitiveQuery(url) {
+  if (!url || !url.includes('?')) return url;
+  const [pathPart, queryPart] = url.split('?');
+  const redacted = queryPart.split('&').map((pair) => {
+    const eq = pair.indexOf('=');
+    const key = eq === -1 ? pair : pair.slice(0, eq);
+    return SENSITIVE_QUERY_PARAMS.has(key) ? `${key}=[REDACTED]` : pair;
+  });
+  return `${pathPart}?${redacted.join('&')}`;
+}
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('dev'));
+  app.use(morgan((tokens, req, res) => [
+    tokens.method(req, res),
+    redactSensitiveQuery(tokens.url(req, res) || req.originalUrl || ''),
+    tokens.status(req, res),
+    `${tokens['response-time'](req, res)}ms`
+  ].join(' ')));
 }
 
 // ── Request ID Middleware ─────────────────────────────────────────────────────
@@ -295,6 +323,34 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 const { apiLimiter } = require('./middleware/rateLimiter');
 app.use('/api/', apiLimiter);
 
+// ── S1 — CSRF protection (double-submit cookie) ──────────────────────────────
+// CRITICAL placement fix: this previously sat AFTER every router mount, the
+// 404 handler and errorHandler, which meant it never executed for any request.
+// It must run before the routers below. Enforcement is env-gated until the
+// frontend ships its X-CSRF-Token interceptor, so enabling is non-breaking by
+// default; flip CSRF_ENFORCED=true once the shim lands (see FIX_PLAN §2.8).
+// Exempt paths carry their own strong auth (shared-secret webhooks, API keys).
+const CSRF_EXEMPT_PATHS = [
+  /^\/orders\/webhooks\//i,   // SteadFast secret-verified webhook
+  /^\/payments\/callbacks?\//i,
+  /^\/payments\/bkash/i,      // bKash/Nagad gateway callbacks (server-to-server)
+  /^\/payments\/nagad/i,
+  /^\/whatsapp/i,             // Meta/Twilio signature verification
+  /^\/automation/i,           // X-Automation-Key protected
+  /^\/health$/                // liveness probe
+];
+app.use('/api', function conditionalCsrf(req, res, next) {
+  if (process.env.CSRF_ENFORCED !== 'true') return next();
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
+  const p = req.path.replace(/^\/api/, '');
+  if (CSRF_EXEMPT_PATHS.some((re) => re.test(p))) return next();
+  return doubleCsrfProtection(req, res, next);
+});
+
+// Token issuance must also be reachable (previously registered after the 404
+// catch-all, so GET /api/csrf-token returned 404 in production).
+app.get('/api/csrf-token', csrfTokenMiddleware, getCsrfToken);
+
 // ── Static files (local upload fallback — dev only) ──────────────────────────
 const path = require('path');
 const fs = require('fs');
@@ -346,16 +402,27 @@ app.use('/api/utils', dbHealthCheck, require('./routes/adminUtilRoutes')); // Ut
 app.use('/api/push', require('./routes/pushRoutes')); // Push notifications
 app.use('/api/automation', require('./routes/automationRoutes')); // n8n automation API (X-Automation-Key)
 
-// ── One-time slug migration endpoint (admin, secret-protected) ───────────────
+// ── One-time slug migration endpoint (admin, header-secret-protected) ────────
 // Regenerates all product slugs using the clean name-only format.
-// Hit once after deploy: GET /api/fix-slugs?secret=<ADMIN_SECRET>
+// Hit once after deploy by an ADMIN (requires Bearer JWT + x-admin-secret header):
+//   curl -H "Authorization: Bearer <admin-jwt>" -H "x-admin-secret: <ADMIN_SECRET>" <API>/api/fix-slugs
+// The secret is NEVER accepted from the URL — query-string secrets leak into
+// morgan output, Vercel/nginx access logs, and browser history.
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
+function adminSecretMatches(req) {
+  const provided = req.headers['x-admin-secret'];
+  if (!ADMIN_SECRET || typeof provided !== 'string' || !provided) return false;
+  // Constant-time compare over SHA-256 digests (equalizes length differences).
+  const a = crypto.createHash('sha256').update(provided).digest();
+  const b = crypto.createHash('sha256').update(ADMIN_SECRET).digest();
+  return crypto.timingSafeEqual(a, b);
+}
 if (!ADMIN_SECRET) {
-  console.warn('⚠️  ADMIN_SECRET not set - admin utility routes will not work');
+  console.warn('⚠️  ADMIN_SECRET not set - admin utility routes will reject the x-admin-secret header');
 }
 app.get('/api/fix-slugs', protect, authorize('admin'), async (req, res) => {
-  if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
-    return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
+  if (!adminSecretMatches(req)) {
+    return res.status(401).json({ success: false, message: 'Missing/invalid x-admin-secret header or ADMIN_SECRET not configured' });
   }
   try {
     const Product = require('./models/Product');
@@ -469,8 +536,8 @@ app.get('/api/seed-products', protect, authorize('admin'), async (req, res) => {
 
 // ── Admin Email Test ──────────────────────────────────────────────────────────
 app.get('/api/test-email', protect, authorize('admin'), async (req, res) => {
-  if (req.query.secret !== ADMIN_SECRET) {
-    return res.status(401).json({ success: false, message: 'Invalid secret' });
+  if (!adminSecretMatches(req)) {
+    return res.status(401).json({ success: false, message: 'Missing/invalid x-admin-secret header or ADMIN_SECRET not configured' });
   }
   const emailService = require('./services/emailService');
   const to = req.query.to || 'test@example.com';
@@ -487,8 +554,8 @@ app.get('/api/test-email', protect, authorize('admin'), async (req, res) => {
 
 // ── Email Status Debug (admin only) ──────────────────────────────────────────
 app.get('/api/email-debug', protect, authorize('admin'), async (req, res) => {
-  if (!ADMIN_SECRET || req.query.secret !== ADMIN_SECRET) {
-    return res.status(401).json({ success: false, message: 'Invalid secret or ADMIN_SECRET not configured' });
+  if (!adminSecretMatches(req)) {
+    return res.status(401).json({ success: false, message: 'Missing/invalid x-admin-secret header or ADMIN_SECRET not configured' });
   }
   res.json({
     success: true,
@@ -507,7 +574,7 @@ app.get('/api/email-debug', protect, authorize('admin'), async (req, res) => {
 });
 
 // ── Detailed Health Check (with DB status) ───────────────────────────────────
-// This provides detailed status info but is not used by Railway healthcheck
+// This provides detailed status info but is not used by Render healthcheck
 app.get('/api/health/detailed', (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = {
@@ -518,7 +585,7 @@ app.get('/api/health/detailed', (req, res) => {
   }[dbState] || 'unknown';
 
   // Health check passes if API is running, even if DB is still connecting
-  // This prevents Railway deployment failures during startup
+  // This prevents Render deployment failures during startup
   const isHealthy = dbState === 1 || dbState === 2;
 
   res.status(isHealthy ? 200 : 503).json({
@@ -637,18 +704,17 @@ async function warmCache() {
   }
 }
 
-// ── CSRF Protection ──────────────────────────────────────────────────────────
-// Apply double-submit cookie CSRF protection to all state-changing API routes.
-// CSRF token endpoint for frontend to fetch tokens.
-app.get('/api/csrf-token', csrfTokenMiddleware, getCsrfToken);
-// CSRF protection applies to POST, PUT, PATCH, DELETE routes
-app.use('/api/', doubleCsrfProtection);
+// ── CSRF token issuance endpoint (GET — never needs a token itself).
+// NOTE: the blanket `app.use('/api/', doubleCsrfProtection)` that used to live
+// here was removed; it sat after all routers + 404/error handlers and therefore
+// NEVER executed (dead code — finding S-01). The real middleware now runs
+// pre-route above (see conditionalCsrf), env-gated by CSRF_ENFORCED.
 
 // ── Start Server ──────────────────────────────────────────────────────────────
 // Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
-  const HOST = process.env.HOST || '0.0.0.0'; // Railway requires 0.0.0.0
+  const HOST = process.env.HOST || '0.0.0.0'; // Render requires binding to 0.0.0.0
   
   httpServer.listen(PORT, HOST, () => {
     logger.info(`MediportBD API v2.0 running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);

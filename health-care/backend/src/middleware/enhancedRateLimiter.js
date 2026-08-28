@@ -26,11 +26,9 @@ function createRateLimiter(options = {}) {
     skipSuccessfulRequests,
     skipFailedRequests,
     keyGenerator: keyGenerator || ((req) => {
-      // Use IP address, but check for proxy headers
-      return req.headers['x-forwarded-for']?.split(',')[0].trim() || 
-             req.headers['x-real-ip'] || 
-             req.ip || 
-             req.connection.remoteAddress;
+      // S2 — req.ip honours app.set('trust proxy'); raw forwarding headers are
+      // client-spoofable and must never seed rate-limit buckets.
+      return req.ip || req.socket?.remoteAddress;
     }),
     handler: handler || ((req, res) => {
       logger.warn(`[RateLimit] Limit exceeded for ${req.ip} on ${req.path}`);

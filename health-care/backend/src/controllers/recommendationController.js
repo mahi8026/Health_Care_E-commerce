@@ -2,6 +2,16 @@
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
+// P1 — clamp client-supplied limits. getTrendingProducts feeds this straight
+// into an unwound 30-day Orders aggregation; an unclamped (and cache-busting)
+// ?limit=100000 previously allowed cheap aggregation-DoS.
+const MAX_LIMIT = 48;
+function parseLimit(query, fallback) {
+  const n = parseInt(query?.limit, 10);
+  if (!Number.isFinite(n) || n < 1) return fallback;
+  return Math.min(n, MAX_LIMIT);
+}
+
 /**
  * @desc    Get similar products based on content filtering
  * @route   GET /api/recommendations/similar/:productId
@@ -10,7 +20,7 @@ const { successResponse, errorResponse } = require('../utils/responseHelper');
 exports.getSimilarProducts = async (req, res) => {
   try {
     const { productId } = req.params;
-    const limit = parseInt(req.query.limit) || 8;
+    const limit = parseLimit(req.query, 8);
     
     if (!productId || !productId.match(/^[0-9a-fA-F]{24}$/)) {
       return errorResponse(res, 'Invalid product ID', null, 400);
@@ -38,7 +48,7 @@ exports.getSimilarProducts = async (req, res) => {
 exports.getAlsoViewed = async (req, res) => {
   try {
     const { productId } = req.params;
-    const limit = parseInt(req.query.limit) || 8;
+    const limit = parseLimit(req.query, 8);
     
     if (!productId || !productId.match(/^[0-9a-fA-F]{24}$/)) {
       return errorResponse(res, 'Invalid product ID', null, 400);
@@ -66,7 +76,7 @@ exports.getAlsoViewed = async (req, res) => {
 exports.getBoughtTogether = async (req, res) => {
   try {
     const { productId } = req.params;
-    const limit = parseInt(req.query.limit) || 4;
+    const limit = parseLimit(req.query, 4);
     
     if (!productId || !productId.match(/^[0-9a-fA-F]{24}$/)) {
       return errorResponse(res, 'Invalid product ID', null, 400);
@@ -94,7 +104,7 @@ exports.getBoughtTogether = async (req, res) => {
 exports.getPersonalized = async (req, res) => {
   try {
     const userId = req.user.id;
-    const limit = parseInt(req.query.limit) || 12;
+    const limit = parseLimit(req.query, 12);
     
     const recommendations = await recommendationService.getPersonalizedRecommendations(userId, limit);
     
@@ -117,7 +127,7 @@ exports.getPersonalized = async (req, res) => {
  */
 exports.getTrending = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 12;
+    const limit = parseLimit(req.query, 12);
     
     const recommendations = await recommendationService.getTrendingProducts(limit);
     
@@ -141,7 +151,7 @@ exports.getTrending = async (req, res) => {
 exports.getHybridRecommendations = async (req, res) => {
   try {
     const { productId } = req.params;
-    const limit = parseInt(req.query.limit) || 8;
+    const limit = parseLimit(req.query, 8);
     
     if (!productId || !productId.match(/^[0-9a-fA-F]{24}$/)) {
       return errorResponse(res, 'Invalid product ID', null, 400);

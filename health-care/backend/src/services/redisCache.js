@@ -111,7 +111,7 @@ function initRedis() {
     const redisPort = parseInt(process.env.REDIS_PORT) || 6379;
     
     // Check if TLS should be explicitly enabled via environment variable
-    // Set REDIS_TLS=false in Railway to disable TLS (Redis Cloud with non-standard port may not need TLS)
+    // Set REDIS_TLS=false on Render to disable TLS (Redis Cloud with non-standard port may not need TLS)
     const tlsEnabled = process.env.REDIS_TLS === 'true';
     
     const redisConfig = {
@@ -291,14 +291,28 @@ async function delPattern(pattern) {
       return false;
     }
 
-    const keys = await redisClient.keys(pattern);
-    
-    if (keys.length > 0) {
-      await redisClient.del(...keys);
-      logger.debug(`[Redis] Deleted ${keys.length} keys matching pattern: ${pattern}`);
+    // SCAN (incremental, non-blocking) instead of KEYS — KEYS blocks the entire
+    // Redis event loop on production-sized keyspaces. Matches the fix applied
+    // in middleware/cache.js. Returns the number of deleted keys (previous
+    // callers logged this value, so a count is strictly more accurate).
+    let deleted = 0;
+    let cursor = '0';
+    const BATCH = 100;
+
+    do {
+      const [next, batch] = await redisClient.scan(cursor, 'MATCH', pattern, 'COUNT', BATCH);
+      cursor = next;
+      if (batch && batch.length) {
+        await redisClient.del(...batch);
+        deleted += batch.length;
+      }
+    } while (cursor !== '0');
+
+    if (deleted > 0) {
+      logger.debug(`[Redis] Deleted ${deleted} keys matching pattern: ${pattern}`);
     }
 
-    return true;
+    return deleted;
   } catch (error) {
     logger.error(`[Redis] Delete pattern error for ${pattern}: ${error.message}`);
     return false;
@@ -752,11 +766,12 @@ async function invalidateCategories() {
 
     logger.info('[Redis] Invalidating categories cache...');
 
-    // Delete categories list cache with wildcard to catch all query variations
-    // This will delete: categories:list:/api/categories?includeInactive=true
-    //                   categories:list:/api/categories?includeInactive=false
-    //                   categories:list:/api/categories, etc.
-    const categoryDeleted = await delPattern(`${CACHE_KEYS.CATEGORIES_LIST}*`);
+    // Delete categories list cache with wildcard to catch all query variations.
+    // NOTE: must use `categories:*` (not `categories:list*`) because the
+    // redisCacheMiddleware keys are URL-derived: `categories:`, `categories:tree:`,
+    // `categories:slug:` — `categories:list*` matched NONE of them, leaving
+    // category pages (with embedded product thumbnails) stale after edits.
+    const categoryDeleted = await delPattern('categories:*');
 
     // Also invalidate product lists since they include category data
     const productListDeleted = await delPattern('products:list:*');
@@ -786,6 +801,13 @@ async function invalidateBrands() {
 
     // Delete brands list cache if it exists
     await del('brands:list');
+
+    // Sweep middleware-keyed manufacturer/brand pages too (manufacturerRoutes
+    // caches under `manufacturers:` URL-derived keys). Previously these were
+    // never invalidated, so brand pages kept showing deleted brands/products
+    // until TTL expiry.
+    await delPattern('manufacturers:*');
+    await delPattern('brands:*');
 
     // Also invalidate product lists since they include brand data
     const deletedCount = await delPattern('products:list:*');

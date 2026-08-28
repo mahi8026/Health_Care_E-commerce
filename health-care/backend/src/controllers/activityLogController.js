@@ -24,13 +24,15 @@ exports.getActivityLogs = async (req, res) => {
     // Build query
     const query = {};
 
-    // Filter by action
-    if (action) {
+    // P7 — merge (never overwrite) the action filters and clamp page size.
+    if (action && category) {
+      query.$and = [
+        { action },
+        { action: { $regex: `^${category}`, $options: 'i' } }
+      ];
+    } else if (action) {
       query.action = action;
-    }
-
-    // Filter by category (action prefix)
-    if (category) {
+    } else if (category) {
       query.action = { $regex: `^${category}`, $options: 'i' };
     }
 
@@ -66,8 +68,11 @@ exports.getActivityLogs = async (req, res) => {
       ];
     }
 
-    // Pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    // Pagination — P7: clamped so an admin UI bug can't request an
+    // unpaginated dump of the whole audit trail.
+    const pageN = Math.max(1, parseInt(page) || 1);
+    const limitN = Math.min(Math.max(1, parseInt(limit) || 50), 200);
+    const skip = (pageN - 1) * limitN;
 
     // Get logs
     const [logs, total] = await Promise.all([
@@ -75,18 +80,18 @@ exports.getActivityLogs = async (req, res) => {
         .populate('user', 'name email role')
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(parseInt(limit))
+        .limit(limitN)
         .lean(),
       ActivityLog.countDocuments(query)
     ]);
 
     return paginatedResponse(res, logs, {
-      page: parseInt(page),
-      limit: parseInt(limit),
+      page: pageN,
+      limit: limitN,
       total,
-      totalPages: Math.ceil(total / parseInt(limit)),
-      hasNext: parseInt(page) < Math.ceil(total / parseInt(limit)),
-      hasPrev: parseInt(page) > 1
+      totalPages: Math.ceil(total / limitN),
+      hasNext: pageN < Math.ceil(total / limitN),
+      hasPrev: pageN > 1
     });
   } catch (error) {
     logger.error(`[getActivityLogs] ${error.message}`);

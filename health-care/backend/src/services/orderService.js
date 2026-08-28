@@ -10,8 +10,14 @@ const { DELIVERY_FEES } = require('../config/constants');
 
 /**
  * Generate a collision-resistant order number
- * Format: MC-YYMMDD-XXXX (e.g., MC-260623-0042)
- * 
+ * Format: MC-YYMMDD-XXXXXX — kept IDENTICAL to the canonical generator in
+ * orderController.generateOrderNumber (6 unambiguous chars, S4-hardened).
+ * P11 — the two implementations previously drifted (4-digit vs 6-char),
+ * which confused support/tracking tooling.
+ *
+ * NOTE: currently unused — orderController has its own copy. Kept exported as
+ * the shared helper for future callers; do NOT reintroduce a different format.
+ *
  * @param {Function} checkOrderNumberExists - Repository function to check if order number exists
  * @returns {Promise<string>} Unique order number
  * @throws {Error} If unable to generate unique order number after max attempts
@@ -26,9 +32,12 @@ async function generateOrderNumber(checkOrderNumberExists) {
   const dd = String(now.getDate()).padStart(2, '0');
   const datePart = `${yy}${mm}${dd}`;
 
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I — unambiguous
   for (let i = 0; i < maxAttempts; i++) {
-    // 4-digit random number (1000–9999)
-    const rand = Math.floor(Math.random() * 9000) + 1000;
+    let rand = '';
+    for (let c = 0; c < 6; c++) {
+      rand += chars[Math.floor(Math.random() * chars.length)];
+    }
     const orderNumber = `MC-${datePart}-${rand}`;
     const exists = await checkOrderNumberExists(orderNumber);
     if (!exists) {

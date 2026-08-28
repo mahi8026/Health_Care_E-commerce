@@ -14,6 +14,51 @@ class ChatSocketService {
   }
 
   /**
+   * S3/S4 — membership check for HTTP + socket chat access.
+   * Staff: admins unrestricted; agents only when assigned.
+   * Customers: only their own conversation. Guest-created rooms (no linked
+   * customer.userId) remain accessible anonymously by design — conversationId
+   * is an unguessable UUID v4, which is the shared secret in that flow.
+   */
+  canAccessConversation(conversation, reqOrSocket) {
+    const userId = reqOrSocket.userId;
+    const role = reqOrSocket.userRole || reqOrSocket.role || null;
+
+    if (role === 'admin') return true;
+    if (role === 'agent') {
+      const assigned = conversation.assignedTo;
+      const assignedId = assigned?._id ? String(assigned._id) : (assigned ? String(assigned) : null);
+      return !!assignedId && assignedId === String(userId);
+    }
+    if (userId) {
+      const owner = conversation.customer?.userId;
+      const ownerId = owner?._id ? String(owner._id) : (owner ? String(owner) : null);
+      return !!ownerId && ownerId === String(userId);
+    }
+    // anonymous (guest widget) — only rooms without a registered owner
+    return !conversation.customer?.userId;
+  }
+
+  isStaffSocket(socket) {
+    return socket.userType === 'agent';
+  }
+
+  /**
+   * S3 — strip internal-only fields before returning a conversation to a
+   * customer (works on both Mongoose docs and lean objects).
+   */
+  sanitizeForCustomer(conversation) {
+    const doc = typeof conversation.toObject === 'function' ? conversation.toObject() : { ...conversation };
+    delete doc.internalNotes;
+    delete doc.internalNotesHistory;
+    if (doc.metadata) {
+      delete doc.metadata.ip;
+      delete doc.metadata.userAgent;
+    }
+    return doc;
+  }
+
+  /**
    * Initialize Socket.IO server
    * @param {Object} httpServer - HTTP server instance
    */
@@ -55,10 +100,12 @@ class ChatSocketService {
           // Verify JWT token for authenticated users
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
           socket.userId = decoded.id;
+          socket.userRole = decoded.role || 'customer';
           socket.userType = decoded.role === 'admin' || decoded.role === 'agent' ? 'agent' : 'customer';
         } else {
           // Allow anonymous connections for customers
           socket.userId = null;
+          socket.userRole = null;
           socket.userType = 'customer';
         }
         
@@ -125,6 +172,13 @@ class ChatSocketService {
         return;
       }
 
+      // S3/S4 — membership check before joining the room
+      if (!this.canAccessConversation(conversation, socket)) {
+        logger.warn(`[chat] join denied: socket=${socket.id} conv=${conversationId}`);
+        socket.emit('chat:error', { message: 'Access denied' });
+        return;
+      }
+
       // Join conversation room
       socket.join(conversationId);
       
@@ -139,7 +193,8 @@ class ChatSocketService {
 
       socket.emit('chat:joined', {
         conversationId,
-        conversation,
+        // S3 — never leak internal notes / IP metadata to customers
+        conversation: this.isStaffSocket(socket) ? conversation : this.sanitizeForCustomer(conversation),
         messages
       });
 
@@ -169,6 +224,12 @@ class ChatSocketService {
       const conversation = await Conversation.findOne({ conversationId });
       if (!conversation) {
         socket.emit('chat:error', { message: 'Conversation not found' });
+        return;
+      }
+
+      // S4 — same membership rule as join: no cross-room writes
+      if (!this.canAccessConversation(conversation, socket)) {
+        socket.emit('chat:error', { message: 'Access denied' });
         return;
       }
 
@@ -311,6 +372,12 @@ class ChatSocketService {
       const conversation = await Conversation.findOne({ conversationId });
       if (!conversation) {
         socket.emit('chat:error', { message: 'Conversation not found' });
+        return;
+      }
+
+      // S6 — only participants (staff assigned/admin or the owner) may close
+      if (!this.canAccessConversation(conversation, socket)) {
+        socket.emit('chat:error', { message: 'Access denied' });
         return;
       }
 

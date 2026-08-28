@@ -26,7 +26,10 @@ exports.getCart = async (req, res) => {
     // Re-price line items so flash-deal discounts appear/disappear in step
     // with the advertised deal window (checkout re-prices server-side anyway).
     if (cart.items.length > 0) {
-      const dealPriceMap = await getActiveDealPriceMap(cart.items.map(i => i.product));
+      // F5 — items.product here is a POPULATED document; deal lookup expects ids.
+      const dealPriceMap = await getActiveDealPriceMap(
+        cart.items.map(i => (i.product && i.product._id ? i.product._id : i.product))
+      );
       let changed = false;
       for (const item of cart.items) {
         const dealPrice = dealPriceMap.get(String(item.product._id));
@@ -78,36 +81,65 @@ exports.syncCart = async (req, res) => {
 continue;
 }
 
+      // F3 — carry the chosen size through the sync, same keying as addItem.
+      const localSize = localItem.selectedSize?.name
+        ? { name: String(localItem.selectedSize.name), priceAdjustment: Number(localItem.selectedSize.priceAdjustment) || 0 }
+        : (localItem.size ? { name: String(localItem.size), priceAdjustment: 0 } : null);
+
       // Verify product exists and is active
       const product = await Product.findById(productId).lean();
       if (!product || !product.isActive) {
 continue;
 }
 
+      // Validate the size against server data instead of trusting localStorage.
+      let serverSizeAdjustment = 0;
+      if (localSize) {
+        const sizeVariant = product.variants?.sizes?.find(s => s.name === localSize.name);
+        if (!sizeVariant) {
+          continue; // stale/invalid size from old snapshot — skip the row
+        }
+        serverSizeAdjustment = Number(sizeVariant.priceAdjustment) || 0;
+      } else if (product.variants?.sizes?.length > 0) {
+        // Sized product synced without a size choice cannot be ordered later — drop it.
+        continue;
+      }
+
       // Active flash-deal price (falls back to the regular product price)
       const dealPrice = dealPriceMap.get(String(productId));
       const basePrice = Number.isFinite(dealPrice) ? dealPrice : product.price;
+      const syncPrice = Math.max(0, Math.round((basePrice + serverSizeAdjustment) * 100) / 100);
 
-      // Check if product already in DB cart
-      const existingIndex = cart.items.findIndex(
-        item => item.product.toString() === productId.toString()
-      );
+      const safeQty = Math.max(1, Math.floor(Number(localItem.quantity) || 1));
+
+      // Check if product already in DB cart — matched on product+size like addItem
+      const existingIndex = cart.items.findIndex(item => {
+        if (item.product.toString() !== productId.toString()) {
+          return false;
+        }
+        return localSize
+          ? item.selectedSize?.name === localSize.name
+          : !item.selectedSize?.name;
+      });
 
       if (existingIndex >= 0) {
         // Use higher quantity
         cart.items[existingIndex].quantity = Math.max(
           cart.items[existingIndex].quantity,
-          localItem.quantity || 1
+          safeQty
         );
         // Update price to current (deal-aware) price
-        cart.items[existingIndex].price = basePrice;
+        cart.items[existingIndex].price = syncPrice;
+        if (localSize) {
+          cart.items[existingIndex].selectedSize = localSize;
+        }
       } else {
         // Add new item from localStorage
-        cart.items.push({
-          product: productId,
-          quantity: localItem.quantity || 1,
-          price: basePrice
-        });
+        const syncItem = { product: productId, quantity: safeQty, price: syncPrice };
+        if (localSize) {
+          syncItem.selectedSize = localSize;
+        }
+        cart.items.push(syncItem);
       }
     }
 
@@ -262,19 +294,29 @@ return isSameProduct;
 };
 
 // ─── Remove Item from Cart ───────────────────────────────────────────────────
+// F6 — for sized products a cart row is identified by product+size; callers
+// pass ?size=M (or body.selectedSize). Without size, ALL variants of the
+// product are removed (legacy behaviour).
 exports.removeItem = async (req, res) => {
   try {
     const userId = req.user._id;
     const { productId } = req.params;
+    const sizeName = req.query.size || req.body?.selectedSize?.name || null;
 
     const cart = await Cart.findOne({ user: userId });
     if (!cart) {
       return errorResponse(res, 'Cart not found', null, 404);
     }
 
-    cart.items = cart.items.filter(
-      item => item.product.toString() !== productId.toString()
-    );
+    cart.items = cart.items.filter(item => {
+      if (item.product.toString() !== productId.toString()) {
+        return true; // keep — different product
+      }
+      if (sizeName) {
+        return item.selectedSize?.name !== String(sizeName); // keep other sizes
+      }
+      return false; // no size given → remove every variant of this product
+    });
 
     await cart.save();
     await cart.populate('items.product', 'name slug price images brand stock isActive');

@@ -1,4 +1,5 @@
-﻿const Order = require('../models/Order');
+﻿const crypto = require('crypto');
+const Order = require('../models/Order');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
@@ -28,11 +29,28 @@ function extractWebhookPayload(body) {
 // lookup by consignment id still prevents arbitrary order tampering.
 exports.steadfastWebhook = async (req, res) => {
   try {
+    // S9 — fail CLOSED: in production an unset secret disables the endpoint
+    // entirely (previously an unconfigured secret silently allowed unsigned
+    // callers to mutate order tracking). Dev keeps the permissive bypass.
     const secret = process.env.STEADFAST_WEBHOOK_SECRET;
     const provided = req.headers['x-steadfast-secret'] || (req.body && req.body.secret);
-    if (secret && provided !== secret) {
-      logger.warn('[steadfastWebhook] Rejected webhook with missing/invalid secret');
-      return errorResponse(res, 'Unauthorized', null, 401);
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (!secret) {
+      if (isProduction) {
+        logger.error('[steadfastWebhook] STEADFAST_WEBHOOK_SECRET unset in production — rejecting webhook');
+        return errorResponse(res, 'Webhook not configured', null, 503);
+      }
+      logger.warn('[steadfastWebhook] Secret unset — permissive mode allowed only outside production');
+    } else {
+      // timing-safe comparison (mirrors automationAuth)
+      const a = Buffer.from(String(provided || ''));
+      const b = Buffer.from(String(secret));
+      const valid = a.length === b.length && crypto.timingSafeEqual(a, b);
+      if (!valid) {
+        logger.warn('[steadfastWebhook] Rejected webhook with missing/invalid secret');
+        return errorResponse(res, 'Unauthorized', null, 401);
+      }
     }
 
     const { consignmentId, trackingCode, invoice, status } = extractWebhookPayload(req.body);

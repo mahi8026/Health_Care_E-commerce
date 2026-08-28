@@ -12,13 +12,9 @@ const dbHealthCheck = (req, res, next) => {
   // Allow state 1 (connected) and 2 (connecting) — connecting means DB is coming up
   const state = mongoose.connection.readyState;
   if (state !== 1 && state !== 2) {
-    const origin = req.headers.origin;
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    }
+    // S13 — origin/CORS decisions belong to the whitelisting cors() middleware
+    // alone. The previous hand-rolled header echo reflected ANY Origin with
+    // `Allow-Credentials: true`, bypassing the CORS allowlist during outages.
 
     logger.warn(`[dbHealthCheck] Database unavailable (state: ${state})`);
     

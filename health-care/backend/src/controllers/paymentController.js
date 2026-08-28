@@ -70,6 +70,23 @@ function assertPaymentAmountMatches(order, paidAmount, res) {
   return true;
 }
 
+/**
+ * S8 — A confirm-COD/cheque/bank-transfer call may only (re)confirm an order
+ * that has not already been paid and is still pre-fulfilment. Blocks the
+ * "un-pay an already-paid order" / regress-shipment vector.
+ * Returns false and sends 409 when the transition is not allowed.
+ */
+function assertConfirmable(order, res) {
+  const paid = order.paymentStatus === 'paid';
+  const liveStages = ['placed', 'pending', 'confirmed'];
+  if (paid || !liveStages.includes(order.status)) {
+    logger.warn(`[payment] Confirm blocked: order ${order.orderNumber} status=${order.status} paymentStatus=${order.paymentStatus}`);
+    errorResponse(res, `This order cannot be re-confirmed because it is ${order.paymentStatus === 'paid' ? 'already paid' : `in '${order.status}' status`}.`, { code: 'ORDER_NOT_CONFIRMABLE' }, 409);
+    return false;
+  }
+  return true;
+}
+
 // Stripe has been removed as it doesn't work in Bangladesh
 // Available payment methods: bKash, Nagad, Bank Transfer, B2B Credit, Cheque
 
@@ -322,6 +339,10 @@ return errorResponse(res, 'Order not found', null, 404);
 }
     // C3 — only the order owner (or staff) may submit bank transfer details
     if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
+    // S8 — never clobber a paid/fulfilled order's state
+    if (!assertConfirmable(order, res)) {
 return;
 }
     order.paymentStatus = 'pending';
@@ -806,6 +827,11 @@ return errorResponse(res, 'Order not found', null, 404);
 return;
 }
 
+    // S8 — never clobber a paid/fulfilled order's state
+    if (!assertConfirmable(order, res)) {
+return;
+}
+
     // Mark as pending payment - will be paid on delivery
     order.paymentMethod = 'cod';
     order.paymentStatus = 'pending';
@@ -846,6 +872,10 @@ return errorResponse(res, 'Order not found', null, 404);
 }
     // C3 — only the order owner (or staff) may submit cheque details
     if (!assertOrderOwnership(order, req.user, res)) {
+return;
+}
+    // S8 — never clobber a paid/fulfilled order's state
+    if (!assertConfirmable(order, res)) {
 return;
 }
     order.paymentMethod = 'cheque';

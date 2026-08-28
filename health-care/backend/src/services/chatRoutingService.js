@@ -198,7 +198,10 @@ class ChatRoutingService {
       const recentConversations = await Conversation.find({
         firstResponseAt: { $ne: null },
         createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } // Last 24 hours
-      }).select('createdAt firstResponseAt');
+      })
+        .select('createdAt firstResponseAt')
+        .limit(1000) // P2 — bound the scan feeding the wait-time metric
+        .lean();
 
       if (recentConversations.length === 0) {
         return 0;

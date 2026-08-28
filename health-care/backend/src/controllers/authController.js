@@ -15,6 +15,53 @@ const generateRefreshToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
 };
 
+// ── httpOnly refresh-token cookie (S-12 — opt-in behind AUTH_COOKIES_ENABLED) ─
+// When enabled, the long-lived refresh token is ALSO stored in an httpOnly,
+// SameSite=Lax cookie scoped to /api/auth. This removes the XSS readability of
+// the refresh credential (localStorage) and makes refresh/logout cookie-native.
+// Backward compatible: tokens are still returned in the JSON body until the
+// frontend is migrated, so enabling the flag alone never breaks the current UI.
+const REFRESH_COOKIE_NAME = 'mediport_refresh';
+const REFRESH_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30d — matches refresh-token TTL
+const authCookiesEnabled = () => process.env.AUTH_COOKIES_ENABLED === 'true';
+// SameSite is configurable for deployment topology: 'lax' is the safe default
+// for same-site frontend+API (e.g. Vercel rewrites /api/* to the backend).
+// Set REFRESH_COOKIE_SAMESITE=none ONLY for a cross-site API origin, when the
+// cookie must ride along on fetch() — requires Secure (true in production) and
+// the CSRF layer must stay enforced for state changes.
+const refreshCookieSameSite = () => process.env.REFRESH_COOKIE_SAMESITE || 'lax';
+
+const setRefreshCookie = (res, refreshToken) => {
+  if (!authCookiesEnabled() || !refreshToken) {
+    return;
+  }
+  res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: refreshCookieSameSite(),
+    path: '/api/auth',
+    maxAge: REFRESH_COOKIE_MAX_AGE
+  });
+};
+
+const clearRefreshCookie = (res) => {
+  if (!authCookiesEnabled()) {
+    return;
+  }
+  res.clearCookie(REFRESH_COOKIE_NAME, {
+    httpOnly: true,
+    sameSite: refreshCookieSameSite(),
+    path: '/api/auth'
+  });
+};
+
+const readRefreshToken = (req) => {
+  if (authCookiesEnabled() && req.cookies && req.cookies[REFRESH_COOKIE_NAME]) {
+    return req.cookies[REFRESH_COOKIE_NAME];
+  }
+  return req.body?.refreshToken;
+};
+
 // ── 2FA brute-force protection (S6) ─────────────────────────────────────────
 const TWO_FA_MAX_ATTEMPTS = 5;
 const TWO_FA_LOCK_WINDOW_MS = 15 * 60 * 1000;
@@ -112,6 +159,7 @@ exports.register = async (req, res) => {
       logger.error(`[register] n8n event error: ${n8nErr.message}`);
     }
 
+    setRefreshCookie(res, refreshToken); // S-12 — mirror refresh token into httpOnly cookie
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -196,6 +244,7 @@ exports.login = async (req, res) => {
       metadata: { role: user.role, accountType: user.accountType }
     });
 
+    setRefreshCookie(res, refreshToken); // S-12 — mirror refresh token into httpOnly cookie
     res.status(200).json({
       success: true,
       message: 'Login successful',
@@ -234,7 +283,8 @@ exports.login = async (req, res) => {
  */
 exports.refreshToken = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    // S-12 — refresh token may be presented in an httpOnly cookie (when enabled) or the body
+    const refreshToken = readRefreshToken(req);
     if (!refreshToken) {
       return res.status(401).json({ success: false, message: 'Refresh token required' });
     }
@@ -249,16 +299,22 @@ exports.refreshToken = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid or expired refresh token' });
     }
 
-    const user = await User.findById(decoded.id).select('+refreshToken');
-    if (!user || user.refreshToken !== refreshToken) {
-      return res.status(401).json({ success: false, message: 'Refresh token mismatch' });
+    // P8 — one atomic guarded rotation: matches on the exact presented token
+    // AND requires an active account. Fixes both gaps — deactivated accounts
+    // minting fresh tokens, and concurrent refreshes racing to last-save-wins
+    // (leaving one client holding a token the DB no longer recognises).
+    const newRefreshToken = generateRefreshToken(decoded.id);
+    const user = await User.findOneAndUpdate(
+      { _id: decoded.id, refreshToken, isActive: true },
+      { $set: { refreshToken: newRefreshToken } },
+      { new: true }
+    );
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Session expired or account deactivated. Please log in again.' });
     }
 
     const newToken = generateAccessToken(user._id);
-    const newRefreshToken = generateRefreshToken(user._id);
-    user.refreshToken = newRefreshToken;
-    await user.save({ validateBeforeSave: false });
-
+    setRefreshCookie(res, newRefreshToken); // S-12 — rotate the httpOnly cookie too
     res.status(200).json({ success: true, token: newToken, refreshToken: newRefreshToken });
   } catch (error) {
     logger.error(`[refreshToken] ${error.message}`);
@@ -332,7 +388,12 @@ exports.updateProfile = async (req, res) => {
 updates.name = name.trim();
 }
     if (phone) {
-updates.phone = phone.trim();
+        updates.phone = phone.trim();
+        // S11 — a swapped number is unverified until the new one passes OTP.
+        if (!req.user || req.user.phone !== updates.phone) {
+          updates.phoneVerified = false;
+          updates.phoneVerifiedAt = null;
+        }
 }
     if (address) {
 updates.address = address;
@@ -468,6 +529,7 @@ exports.logout = async (req, res) => {
       req
     });
 
+    clearRefreshCookie(res); // S-12 — drop the httpOnly refresh cookie on logout
     res.status(200).json({ success: true, message: 'Logout successful' });
   } catch (error) {
     logger.error(`[logout] ${error.message}`);
@@ -577,6 +639,16 @@ exports.resetPassword = async (req, res) => {
     user.password = password;
     user.refreshToken = null; // Invalidate all sessions
     await user.save();
+
+    // S10 — kill every outstanding ACCESS token for this account as well;
+    // nulling refreshToken alone let a hijacked session survive up to its
+    // full JWT_EXPIRE lifetime after a takeover-style reset.
+    try {
+      const tokenBlacklist = require('../services/tokenBlacklist');
+      await tokenBlacklist.blacklistAllUserTokens(user._id.toString());
+    } catch (blErr) {
+      logger.warn(`[resetPassword] access-token blacklist failed: ${blErr.message}`);
+    }
 
     // Log password reset activity
     logActivityAsync({
@@ -947,6 +1019,7 @@ exports.verify2FA = async (req, res) => {
       metadata: { twoFactorUsed: true }
     });
 
+    setRefreshCookie(res, refreshToken); // S-12 — mirror refresh token into httpOnly cookie
     res.status(200).json({
       success: true,
       message: '2FA verification successful',
@@ -1026,9 +1099,20 @@ exports.googleAuthSuccess = async (req, res) => {
       metadata: { authProvider: 'google', role: req.user.role }
     });
 
-    // Redirect to frontend with tokens - use /oauth/ path to avoid Vercel SSO interception
-    const redirectUrl = `${process.env.FRONTEND_URL}/oauth/google/callback?token=${token}&refreshToken=${refreshToken}`;
-    res.redirect(redirectUrl);
+    // S-12 — set the httpOnly refresh cookie when cookie auth is enabled
+    setRefreshCookie(res, refreshToken);
+
+    // Redirect to frontend. When cookie auth is enabled the refresh credential
+    // is ALREADY in the httpOnly cookie, so NO tokens are placed in the URL —
+    // this keeps JWTs out of browser history, Vercel/nginx access logs, and any
+    // intermediary. The frontend then calls POST /api/auth/refresh with the
+    // cookie (cookie-only) to obtain the access token and complete the session
+    // (same flow as token-refresh). Legacy mode (flag off) keeps the query
+    // params so existing deployments are unaffected.
+    const oauthRedirect = authCookiesEnabled()
+      ? `${process.env.FRONTEND_URL}/oauth/google/callback?auth=cookie`
+      : `${process.env.FRONTEND_URL}/oauth/google/callback?token=${token}&refreshToken=${refreshToken}`;
+    res.redirect(oauthRedirect);
   } catch (error) {
     logger.error(`[googleAuthSuccess] ${error.message}`);
     res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);

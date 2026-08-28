@@ -5,32 +5,14 @@
  * Requirements: 8.1, 8.2, 8.3, 8.4
  */
 
-const Redis = require('ioredis');
+const { getRedisClient, isRedisConnected } = require('../services/redisCache');
 
-// Initialize Redis client
-let redisClient = null;
-try {
-  redisClient = new Redis({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379,
-    password: process.env.REDIS_PASSWORD || undefined,
-    retryStrategy: (times) => {
-      const delay = Math.min(times * 50, 2000);
-      return delay;
-    },
-    maxRetriesPerRequest: 3,
-  });
-
-  redisClient.on('error', () => {
-    // Errors are logged by ioredis itself; keep the process resilient
-  });
-
-  redisClient.on('connect', () => {
-    // No-op: connection state is observed via redisClient.status
-  });
-} catch (error) {
-  // Redis unavailable — fall through to the in-memory/no-cache path
-}
+// P4 — single canonical Redis client. This module previously created its OWN
+// ioredis instance alongside services/redisCache.js (connection sprawl and
+// divergent readiness between the two). Every helper below now goes through
+// the shared client, which owns reconnection/retry policy centrally.
+// NOTE: the previous `redisClient` export was removed — nothing imported it
+// (verified by grep across controllers/routes/services).
 /**
  * Creates an Express middleware that sets Cache-Control headers.
  *
@@ -79,17 +61,24 @@ const redisCacheMiddleware = (options = {}) => {
   const { ttl = 300, keyPrefix = '' } = options;
 
   return async (req, res, next) => {
-    // Only cache GET requests
-    if (req.method !== 'GET' || !redisClient) {
+    // Only cache GET requests, and only when the shared client is ready
+    const client = isRedisConnected() ? getRedisClient() : null;
+    if (req.method !== 'GET' || !client) {
       return next();
     }
 
-    // Generate cache key from URL and query params
+    // P5 — cache-layer contract: the key is derived from the URL+query ONLY,
+    // with no auth/role partition. This middleware may therefore ONLY be
+    // mounted on fully anonymous catalog GETs (categoryRoutes,
+    // manufacturerRoutes, productRoutes listings). Never attach it to
+    // optionalAuth/user-scoped endpoints — one user's response would be
+    // served to another. If that is ever needed, hash req.user._id into the
+    // key first.
     const cacheKey = `${keyPrefix}${req.originalUrl || req.url}`;
 
     try {
       // Try to get cached response
-      const cachedData = await redisClient.get(cacheKey);
+      const cachedData = await client.get(cacheKey);
       
       if (cachedData) {
         const parsed = JSON.parse(cachedData);
@@ -104,7 +93,7 @@ const redisCacheMiddleware = (options = {}) => {
       res.json = function(data) {
         // Only cache successful responses
         if (res.statusCode === 200) {
-          redisClient.setex(cacheKey, ttl, JSON.stringify(data)).catch(() => {
+          client.setex(cacheKey, ttl, JSON.stringify(data)).catch(() => {
             // Cache write failure must never break the response path
           });
         }
@@ -124,14 +113,27 @@ const redisCacheMiddleware = (options = {}) => {
  * @param {string} pattern - Redis key pattern (e.g., 'products:*')
  */
 const invalidateCache = async (pattern) => {
-  if (!redisClient) {
+  const client = isRedisConnected() ? getRedisClient() : null;
+  if (!client) {
     return;
   }
   
   try {
-    const keys = await redisClient.keys(pattern);
-    if (keys.length > 0) {
-      await redisClient.del(...keys);
+    // P3 — SCAN (incremental, non-blocking) instead of KEYS, which stalls the
+    // entire Redis event loop on production-sized keyspaces.
+    const keys = [];
+    let cursor = '0';
+    do {
+      const [next, batch] = await client.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      cursor = next;
+      if (batch && batch.length) {
+        keys.push(...batch);
+      }
+    } while (cursor !== '0');
+
+    // Delete in bounded batches to keep round-trip payloads small
+    for (let i = 0; i < keys.length; i += 100) {
+      await client.del(...keys.slice(i, i + 100));
     }
   } catch (error) {
     // Best-effort invalidation; stale entries expire via TTL anyway
@@ -165,7 +167,6 @@ module.exports = {
   redisCacheMiddleware,
   invalidateCache,
   noStore, 
-  staticAssets,
-  redisClient 
+  staticAssets
 };
 

@@ -40,9 +40,9 @@ const ALL_PRODUCTS = [
   { code: 'HN2503', name: 'Alkaline Phosphatase liquicolor (IFCC)', pack: '8 x 50ML/ 400T', price: 20000, group: 'Alk. Phos', storage: 'cold' },
   { code: 'HN2504', name: 'Alkaline Phosphatase liquicolor (IFCC)', pack: '4 x 250ML/ 1000T', price: 37800, group: 'Alk. Phos', storage: 'cold' },
   { code: 'HN3501', name: 'alpha-Amylase liquicolor', pack: '12 x 10ML/ 120T', price: 20820, group: 'alpha-Amylase', storage: 'cold' },
-  { code: 'HN1501', name: 'Bilirubin liquicolor (T)', pack: '2 x 100ML/ 200T', price: 8590, group: 'Bilirubin', storage: 'cold' },
+  { code: 'HN1501', name: 'Bilirubin liquicolor (T)', pack: '2 x 100ML/ 200T', price: 6590, group: 'Bilirubin', storage: 'cold' },
   { code: 'HN1503', name: 'auto-Bilirubin-T liquicolor (w/o Calibrator)', pack: '375ML/ 300T', price: 6720, group: 'Bilirubin', storage: 'cold' },
-  { code: 'HN1502', name: 'Bilirubin D+T liquicolor', pack: '2 x 100ML/ 200T', price: 8590, group: 'Bilirubin', storage: 'cold' },
+  { code: 'HN1502', name: 'Bilirubin D+T liquicolor', pack: '2 x 100ML/ 200T', price: 6590, group: 'Bilirubin', storage: 'cold' },
   { code: 'HN1801', name: 'Calcium liquicolor Complete Kit', pack: '2 x 100ML/ 200T', price: 14825, group: 'Calcium', storage: 'room' },
   { code: 'HN1301', name: 'Cholesterol liquicolor Complete Kit', pack: '4 x 30ML/ 120T', price: 6600, group: 'Cholesterol', storage: 'cold' },
   { code: 'HN1302', name: 'Cholesterol liquicolor Complete Kit', pack: '4 x 100ML/ 400T', price: 15620, group: 'Cholesterol', storage: 'cold' },
@@ -54,7 +54,7 @@ const ALL_PRODUCTS = [
   { code: 'HN3602', name: 'gamma-GT liquicolor', pack: '10 x 10ML/ 100T', price: 13840, group: 'Creatinine', storage: 'cold' },
   { code: 'HN1101', name: 'Glucose liquicolor Complete Kit', pack: '4 x 100ML/ 400T', price: 5235, group: 'Glucose', storage: 'cold' },
   { code: 'HN1105', name: 'Glucose liquicolor Reagent Btl.', pack: '1000ML/ 1000T', price: 7500, group: 'Glucose', storage: 'cold' },
-  { code: 'HN1107', name: 'Glucose Standard', pack: '1 BTL (3ML)', price: 850, group: 'Glucose', storage: 'room' },
+  { code: 'HN1107', name: 'Glucose Standard', pack: '1 BTL (3ML)', price: 650, group: 'Glucose', storage: 'room' },
   { code: 'HN2202', name: 'GOT(ASAT) IFCC mod. liquiUV', pack: '10 x 10ML/ 100T', price: 5300, group: 'GOT', storage: 'cold' },
   { code: 'HN2203', name: 'GOT(ASAT) IFCC mod. liquiUV', pack: '8 x 50ML/ 400T', price: 17240, group: 'GOT', storage: 'cold' },
   { code: 'HN2302', name: 'GPT(ALAT) IFCC mod. liquiUV', pack: '10 x 10ML/ 100T', price: 5300, group: 'GPT', storage: 'cold' },
@@ -64,22 +64,22 @@ const ALL_PRODUCTS = [
   { code: 'HN1307', name: 'HDL Cholesterol Complete Kit (Direct)', pack: '80ML/ 80T', price: 44700, group: 'HDL', storage: 'cold' },
   { code: 'HN3001', name: 'Hemoglobin liquicolor', pack: '10 x 500ML/ 1000T', price: 12250, group: 'Hemoglobin', storage: 'room' },
   { code: 'HN2801', name: 'Iron liquicolor Complete Kit', pack: '2 x 30ML/ 60T', price: 10850, group: 'Hemoglobin', storage: 'room' },
-  { code: 'HN2802', name: 'Iron liquicolor Complete Kit', pack: '2 x 100ML/ 200T', price: 22290, group: 'Hemoglobin', storage: 'room' },
+  { code: 'HN2802', name: 'Iron liquicolor Complete Kit', pack: '2 x 100ML/ 200T', price: 22220, group: 'Hemoglobin', storage: 'room' },
   { code: 'HN3202', name: 'LDH SCE mod. liquiUV', pack: '10 x 10ML/ 100T', price: 7530, group: 'LDH', storage: 'cold' },
   { code: 'HN1308', name: 'LDL Cholesterol Complete Kit (Direct)', pack: '80ML/ 80T', price: 45500, group: 'LDL', storage: 'cold' },
 
   // PAGE 2 - Continued Clinical Chemistry
   { code: 'HN3508', name: 'Lipase liquicolor', pack: '50ML/ 50T', price: 25275, group: 'Lipase', storage: 'cold' },
   { code: 'HN1904', name: 'Magnesium liquicolor Complete Kit', pack: '2 x 100ML/ 200T', price: 12500, group: 'Lipase', storage: 'room' },
-  { code: 'HN1901', name: 'Phosphorus liquirapid (UV)', pack: '2 x 100ML/ 200T', price: 13985, group: 'Lipase', storage: 'room' },
+  { code: 'HN1901', name: 'Phosphorus liquirapid (UV)', pack: '2 x 100ML/ 200T', price: 13885, group: 'Lipase', storage: 'room' },
   { code: 'HN2901', name: 'TIBC', pack: '100 Test', price: 12250, group: 'Lipase', storage: 'room' },
-  { code: 'HN2102', name: 'Total Protein liquicolor Complete Kit', pack: '4 x 100ML/ 400T', price: 9630, group: 'Total Protein', storage: 'room' },
-  { code: 'HN1709', name: 'Triglyceride liquicolor mono', pack: '4 x 100ML/ 400T', price: 24000, group: 'TG', storage: 'cold' },
-  { code: 'HN1706', name: 'Triglyceride liquicolor mono', pack: '3 x 250ML/ 750T', price: 37545, group: 'TG', storage: 'cold' },
-  { code: 'HN1704', name: 'Triglyceride liquicolor mono Btl', pack: '250ML/ 250T', price: 12515, group: 'TG', storage: 'cold' },
-  { code: 'HN1710', name: 'Triglyceride liquicolor mono Btl', pack: '2 x 100 ML/ 200T', price: 5240, group: 'TG', storage: 'cold' },
-  { code: 'HN1201', name: 'Urea liquicolor Complete Kit', pack: '4 x 30ML/ 120T', price: 6590, group: 'Urea', storage: 'cold' },
-  { code: 'HN1602', name: 'Uric Acid liquicolor Complete Kit', pack: '4 x 100ML/ 400T', price: 14700, group: 'Uric Acid', storage: 'cold' },
+  { code: 'HN2102', name: 'Total Protein liquicolor Complete Kit', pack: '4 x 100ML/ 400T', price: 6260, group: 'Total Protein', storage: 'room' },
+  { code: 'HN1709', name: 'Triglyceride liquicolor mono', pack: '9 x 15ML/ 135T', price: 9630, group: 'TG', storage: 'cold' },
+  { code: 'HN1706', name: 'Triglyceride liquicolor mono', pack: '4 x 100ML/ 400T', price: 24000, group: 'TG', storage: 'cold' },
+  { code: 'HN1704', name: 'Triglyceride liquicolor mono', pack: '3 x 250ML/ 750T', price: 37545, group: 'TG', storage: 'cold' },
+  { code: 'HN1710', name: 'Triglyceride liquicolor mono Btl', pack: '250ML/ 250T', price: 12515, group: 'TG', storage: 'cold' },
+  { code: 'HN1201', name: 'Urea liquicolor Complete Kit', pack: '2 x 100ML/ 200T', price: 5240, group: 'Urea', storage: 'cold' },
+  { code: 'HN1602', name: 'Uric Acid liquicolor Complete Kit', pack: '4 x 30ML/ 120T', price: 6500, group: 'Uric Acid', storage: 'cold' },
   { code: 'HN1603', name: 'Uric Acid liquicolor Complete Kit', pack: '4 x 100ML/ 400T', price: 14700, group: 'Uric Acid', storage: 'cold' },
 
   // PAGE 2 - Calibrators & QC
@@ -94,7 +94,7 @@ const ALL_PRODUCTS = [
   { code: 'HN7701', name: 'Washing Soln for Humalyzer', pack: '100 ML', price: 2500, group: 'Inst. Consumables', storage: 'room' },
 
   // PAGE 2 - Auto-Immune Diagnostics (ELISA)
-  { code: 'HN1004', name: 'Imtec-bz-Glycoprotein IgG', pack: '96 Test', price: 67800, group: 'LIA', storage: 'cold' },
+  { code: 'HN1004', name: 'Imtec-B2-Glycoprotein IgG', pack: '96 Test', price: 67800, group: 'LIA', storage: 'cold' },
   { code: 'HN1021', name: 'Imtec ANA-LIA XL', pack: '24 Test', price: 38600, group: 'LIA', storage: 'cold' },
   { code: 'HN1027', name: 'Imtec Arthritis-LIA', pack: '24 Test', price: 43150, group: 'LIA', storage: 'cold' },
   { code: 'HN1022', name: 'Imtec Gastro-LIA', pack: '24 Test', price: 43150, group: 'LIA', storage: 'cold' },
@@ -133,7 +133,7 @@ const ALL_PRODUCTS = [
   { code: 'HN8002', name: 'Progesterone ELISA', pack: '96 Test', price: 38340, group: 'Fertility', storage: 'cold' },
   { code: 'HN7804', name: 'Prolactin (PRL) ELISA', pack: '96 Test', price: 25900, group: 'Fertility', storage: 'cold' },
   { code: 'HN8001', name: 'Testosterone ELISA', pack: '96 Test', price: 41000, group: 'Fertility', storage: 'cold' },
-  { code: 'HN7805', name: 'CA 125 Ag ELISA', pack: '96 Test', price: 32700, group: 'Tumor Marker', storage: 'cold' },
+  { code: 'HN7905', name: 'CA 125 Ag ELISA', pack: '96 Test', price: 32700, group: 'Tumor Marker', storage: 'cold' },
   { code: 'HN7903', name: 'PSA ELISA', pack: '96 Test', price: 27800, group: 'Tumor Marker', storage: 'cold' },
   { code: 'HN7103', name: 'Total IgE ELISA', pack: '96 Test', price: 45000, group: 'Allergy', storage: 'cold' },
   { code: 'HN7001', name: 'HBsAg Ultra Sens ELISA', pack: '96 Test', price: 36000, group: 'Infectious Disease', storage: 'cold' },
@@ -141,9 +141,9 @@ const ALL_PRODUCTS = [
 
   // PAGE 1 - Coagulation
   { code: 'HN6001', name: 'Hemostat Thromboplastin-SI', pack: '6 x 2ML/ 60T', price: 10260, group: 'PT', storage: 'cold' },
-  { code: 'HN6002', name: 'Hemostat Thromboplastin-SI', pack: '6 x 10ML/ 300T', price: 11000, group: 'PT', storage: 'cold' },
+  { code: 'HN6002', name: 'Hemostat Thromboplastin-SI', pack: '6 x 10ML/ 300T', price: 31000, group: 'PT', storage: 'cold' },
   { code: 'HN6101', name: 'Hemostat aPTT EL', pack: '6 x 4ML/ 480T', price: 18350, group: 'aPTT', storage: 'cold' },
-  { code: 'HN6105', name: 'Hemostat Fibrinogen Complete Kit', pack: '5 x 2ML/ 200T', price: 15980, group: 'FIB', storage: 'cold' },
+  { code: 'HN6201', name: 'Hemostat Fibrinogen Complete Kit', pack: '5 x 2ML/ 200T', price: 15980, group: 'FIB', storage: 'cold' },
   { code: 'HN6301', name: 'Hemostat Thrombin Time (TT)', pack: '3 x 3ML/ 180T', price: 9235, group: 'TT', storage: 'cold' },
   { code: 'HN6202', name: 'Hemostat Calibrator', pack: '4 x 1 ML', price: 8350, group: 'Calibrator / QC', storage: 'cold' },
   { code: 'HN6404', name: 'Hemostat Control Plasma, Abnormal', pack: '1 ML', price: 2450, group: 'Calibrator / QC', storage: 'cold' },
@@ -157,13 +157,13 @@ const ALL_PRODUCTS = [
   { code: 'HN9010', name: 'HC-Diluent (3P)', pack: '20 L', price: 21000, group: '3-part', storage: 'room' },
   { code: 'HN9020', name: 'HC-Lyse CF (3P)', pack: '1 L', price: 15700, group: '3-part', storage: 'room' },
   { code: 'HN9030', name: 'HC-Cleaner (3P)', pack: '1 L', price: 9565, group: '3-part', storage: 'room' },
-  { code: 'HN9050', name: 'HC-5D Diluent', pack: '20 L', price: 25600, group: '5-part', storage: 'room' },
+  { code: 'HN9050', name: 'HC-5D Diluent', pack: '20 L', price: 25500, group: '5-part', storage: 'room' },
   { code: 'HN9052', name: 'HC-5D CBC Lyse', pack: '200 ML', price: 12550, group: 'Hematology', storage: 'room' },
   { code: 'HN9051', name: 'HC-5D DIFF Lyse', pack: '500 ML', price: 28350, group: '5-part', storage: 'room' },
   { code: 'HN9053', name: 'HC-5D Clean', pack: '50 ML', price: 4970, group: '5-part', storage: 'room' },
 
   // PAGE 1 - Syphilis
-  { code: 'HN0903', name: 'Syphilis RPR Reagent Only', pack: '1000 Test', price: 2500, group: 'Syphilis', storage: 'room' },
+  { code: 'HN0903', name: 'Syphilis RPR Reagent Only', pack: '100 Test', price: 2500, group: 'Syphilis', storage: 'room' },
   { code: 'HN1001', name: 'Syphilis TPHA (Hemagglutination) Kit', pack: '100 Test', price: 20000, group: 'Syphilis', storage: 'cold' },
 
   // PAGE 3 - Inoculation Aids

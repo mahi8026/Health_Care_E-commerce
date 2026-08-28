@@ -144,13 +144,19 @@ exports.getConversation = async (req, res) => {
       return errorResponse(res, 'Conversation not found', null, 404);
     }
 
-    // Check access permissions
-    if (req.user.role === 'agent' && 
-        conversation.assignedTo?._id.toString() !== req.user._id.toString()) {
+    // S3 — shared membership rule: admins unrestricted, agents only when
+    // assigned, customers only their own conversation. Guest rooms (no
+    // customer.userId) stay reachable by their unguessable conversationId.
+    const accessor = { userId: req.user._id, userRole: req.user.role };
+    if (!chatSocketService.canAccessConversation(conversation, accessor)) {
       return errorResponse(res, 'Access denied', null, 403);
     }
 
-    return successResponse(res, conversation);
+    // S3 — never leak internal notes / IP metadata to non-staff
+    const isStaff = req.user.role === 'admin' || req.user.role === 'agent';
+    const payload = isStaff ? conversation : chatSocketService.sanitizeForCustomer(conversation);
+
+    return successResponse(res, payload);
   } catch (error) {
     logger.error(`Error fetching conversation: ${error.message}`);
     return errorResponse(res, 'Failed to fetch conversation', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
@@ -205,6 +211,12 @@ exports.closeConversation = async (req, res) => {
 
     if (!conversation) {
       return errorResponse(res, 'Conversation not found', null, 404);
+    }
+
+    // S6 — customers may only close their own conversation; staff as before.
+    const accessor = { userId: req.user._id, userRole: req.user.role };
+    if (!chatSocketService.canAccessConversation(conversation, accessor)) {
+      return errorResponse(res, 'Access denied', null, 403);
     }
 
     conversation.status = 'closed';
@@ -317,9 +329,23 @@ exports.getConversationMessages = async (req, res) => {
     const { limit = 50 } = req.query;
     const conversationId = req.params.id || req.params.conversationId;
 
+    const conversation = await Conversation.findOne({ conversationId }).lean();
+    if (!conversation) {
+      return errorResponse(res, 'Conversation not found', null, 404);
+    }
+
+    // S3 — same membership rule as getConversation. Anonymous reads are only
+    // permitted for guest-owned rooms (conversationId = unguessable UUID).
+    const accessor = req.user
+      ? { userId: req.user._id, userRole: req.user.role }
+      : { userId: null, userRole: null };
+    if (!chatSocketService.canAccessConversation(conversation, accessor)) {
+      return errorResponse(res, 'Access denied', null, 403);
+    }
+
     const messages = await Message.find({ conversationId })
       .sort({ createdAt: 1 })
-      .limit(parseInt(limit))
+      .limit(Math.min(parseInt(limit) || 50, 100))
       .lean();
 
     return successResponse(res, messages);
@@ -336,17 +362,26 @@ exports.getConversationMessages = async (req, res) => {
  */
 exports.sendPublicMessage = async (req, res) => {
   try {
-    const { conversationId, content, messageType = 'text', sender } = req.body;
+    const { conversationId, content, messageType = 'text' } = req.body;
 
     if (!conversationId || !content) {
       return errorResponse(res, 'conversationId and content are required', null, 400);
     }
 
-    const conversation = await Conversation.findOne({ conversationId });
-
-    if (!conversation) {
+    // S5 — reject cross-room writes unless the caller owns/guests the room
+    // (same rule as the socket path). `sender` from the body is ignored below.
+    const targetConversation = await Conversation.findOne({ conversationId });
+    if (!targetConversation) {
       return errorResponse(res, 'Conversation not found', null, 404);
     }
+    const accessCheck = req.user
+      ? { userId: req.user._id, userRole: req.user.role }
+      : { userId: null, userRole: null };
+    if (!chatSocketService.canAccessConversation(targetConversation, accessCheck)) {
+      return errorResponse(res, 'Access denied', null, 403);
+    }
+
+    const conversation = targetConversation;
 
     // Build content object based on message type
     const contentObj = messageType === 'text'
@@ -358,9 +393,11 @@ exports.sendPublicMessage = async (req, res) => {
       conversationId,
       conversation: conversation._id,
       sender: {
-        userId: sender?.userId || null,
-        name: sender?.name || conversation.customer.name || 'Guest',
-        type: sender?.type || 'customer'
+        // S5 — identity is derived server-side ONLY. The request body can no
+        // longer claim agent/admin type or someone else's name/userId.
+        userId: req.user?._id || null,
+        name: (req.user?.name || conversation.customer?.name || 'Guest'),
+        type: 'customer'
       },
       messageType,
       content: contentObj,
@@ -406,6 +443,12 @@ exports.sendMessage = async (req, res) => {
 
     if (!conversation) {
       return errorResponse(res, 'Conversation not found', null, 404);
+    }
+
+    // S3/S6 — authenticated fallback must respect the same membership rule
+    const accessor = { userId: req.user._id, userRole: req.user.role };
+    if (!chatSocketService.canAccessConversation(conversation, accessor)) {
+      return errorResponse(res, 'Access denied', null, 403);
     }
 
     const message = await Message.create({

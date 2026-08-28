@@ -161,13 +161,19 @@ return errorResponse(res, 'Product not found', null, 404);
     // ── Match stage: Build query conditions ──────────────────────────────────
     const matchConditions = {};
 
-    // For admin, allow filtering by isActive status
-    // For public, default to only active products
-    if (isActive === 'true') {
-      matchConditions.isActive = true;
-    } else if (isActive === 'false') {
-      matchConditions.isActive = false;
-    } else if (!req.user || req.user.role !== 'admin') {
+    // S7 — visibility: only an ADMIN request may drive the isActive filter.
+    // The previous ordering evaluated the public branch AFTER parsing
+    // ?isActive=false, so any anonymous caller could list every hidden /
+    // unpublished product (full catalog disclosure).
+    const isAdmin = !!req.user && req.user.role === 'admin';
+    if (isAdmin) {
+      if (isActive === 'true') {
+        matchConditions.isActive = true;
+      } else if (isActive === 'false') {
+        matchConditions.isActive = false;
+      }
+      // admin without the param → unfiltered (both active + inactive), unchanged
+    } else {
       // Public users only see active products
       matchConditions.isActive = true;
     }
@@ -473,10 +479,18 @@ exports.getProduct = async (req, res) => {
     // Check if it's a MongoDB ObjectId
     const isObjectId = mongoose.isValidObjectId(idOrSlug) && /^[0-9a-fA-F]{24}$/.test(idOrSlug);
     
+    // S7b — public detail view must honor the same visibility rule as the
+    // listing: inactive/hidden products are 404 unless an ADMIN asks.
+    const isAdmin = !!req.user && req.user.role === 'admin';
+    const visibility = isAdmin ? {} : { isActive: true };
+
     const product = await Product.findOne({
-      $or: [
-        ...(isObjectId ? [{ _id: idOrSlug }] : []),
-        { slug: idOrSlug }
+      $and: [
+        { $or: [
+          ...(isObjectId ? [{ _id: idOrSlug }] : []),
+          { slug: idOrSlug }
+        ]},
+        visibility
       ]
     })
     .populate('category', 'name slug description')

@@ -107,6 +107,10 @@ exports.sendShipping = async (req, res) => {
 exports.sendDelivered = async (req, res) => {
   try {
     const { orderId } = req.body;
+    // P10 — validate before findById: undefined id would CastError → 500
+    if (!orderId) {
+      return errorResponse(res, 'orderId is required', null, 400);
+    }
     const order = await Order.findById(orderId).lean();
     if (!order) {
 return errorResponse(res, 'Order not found', null, 404);
@@ -128,6 +132,10 @@ return errorResponse(res, 'User not found', null, 404);
 exports.sendQuotationReady = async (req, res) => {
   try {
     const { quoteId } = req.body;
+    // P10 — validate before findById: undefined id would CastError → 500
+    if (!quoteId) {
+      return errorResponse(res, 'quoteId is required', null, 400);
+    }
     const Quote = require('../models/Quote');
     const quote = await Quote.findById(quoteId).populate('user', 'name email');
     if (!quote) {
