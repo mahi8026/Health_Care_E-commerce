@@ -43,20 +43,26 @@ export function useProductList(filters, page) {
     count: 0
   });
 
+  // Serialize the filters object for the dependency array: parents routinely
+  // pass inline object literals whose identity changes every render, which
+  // previously retriggered the fetch effect (and wiped accumulated pages).
+  const filtersKey = JSON.stringify(filters);
+
   const fetchProducts = useCallback(async (signal) => {
+    const activeFilters = JSON.parse(filtersKey);
     try {
       setLoading(true);
       setError(null);
 
       // Build query params
       const params = new URLSearchParams();
-      if (filters.search) params.set('search', filters.search);
-      if (filters.category) params.set('category', filters.category);
-      if (filters.brand) params.set('brand', filters.brand);
-      if (filters.minPrice) params.set('minPrice', filters.minPrice);
-      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
-      if (filters.inStock) params.set('inStock', 'true');
-      if (filters.sortBy) params.set('sort', filters.sortBy);
+      if (activeFilters.search) params.set('search', activeFilters.search);
+      if (activeFilters.category) params.set('category', activeFilters.category);
+      if (activeFilters.brand) params.set('brand', activeFilters.brand);
+      if (activeFilters.minPrice) params.set('minPrice', activeFilters.minPrice);
+      if (activeFilters.maxPrice) params.set('maxPrice', activeFilters.maxPrice);
+      if (activeFilters.inStock) params.set('inStock', 'true');
+      if (activeFilters.sortBy) params.set('sort', activeFilters.sortBy);
       params.set('page', page);
       params.set('limit', 20);
 
@@ -70,7 +76,12 @@ export function useProductList(filters, page) {
       const data = await res.json();
       const productsData = data.products || data.data?.products || data.data || [];
       
-      setProducts(Array.isArray(productsData) ? productsData : []);
+      // Infinite scroll: ACCUMULATE pages (the docblock always promised this,
+      // but the old code replaced the array, so page 2 wiped page 1).
+      setProducts(prev => {
+        const fresh = Array.isArray(productsData) ? productsData : [];
+        return page > 1 ? [...prev, ...fresh] : fresh;
+      });
       
       // Store pagination metadata
       const paginationData = data.pagination || {};
@@ -83,12 +94,15 @@ export function useProductList(filters, page) {
     } catch (err) {
       if (err.name === 'AbortError') return;
       setError(err.message || 'Failed to load products');
-      setProducts([]);
-      setPagination({ total: 0, page: 1, pages: 0, count: 0 });
+      // Keep already-loaded pages on a page>1 failure; only reset on page 1.
+      if (page <= 1) {
+        setProducts([]);
+        setPagination({ total: 0, page: 1, pages: 0, count: 0 });
+      }
     } finally {
       setLoading(false);
     }
-  }, [filters, page]);
+  }, [filtersKey, page]);
 
   useEffect(() => {
     const controller = new AbortController();

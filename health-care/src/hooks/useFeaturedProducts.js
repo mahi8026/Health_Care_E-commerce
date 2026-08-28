@@ -35,20 +35,23 @@ export function useFeaturedProducts({ category = null, limit = 24 } = {}) {
       const featuredUrl = `${process.env.NEXT_PUBLIC_API_URL}/products?isFeatured=true${categoryParam}&${baseParams}`;
       const fallbackUrl = `${process.env.NEXT_PUBLIC_API_URL}/products?${categoryParam}&${baseParams}`;
 
-      // Try featured first, fallback to all products if not enough
-      const [featuredRes, fallbackRes] = await Promise.all([
-        fetch(featuredUrl, { signal }),
-        fetch(fallbackUrl, { signal })
-      ]);
-
+      // Try featured first, fall back to all products only if the featured
+      // result is too thin. Previously BOTH requests fired on every load via
+      // Promise.all, doubling the hottest product-list request on the homepage
+      // even when featured returned a full page.
+      const featuredRes = await fetch(featuredUrl, { signal });
+      if (!featuredRes.ok) throw new Error('Failed to load featured products');
       const featuredData = await featuredRes.json();
-      const fallbackData = await fallbackRes.json();
-
       const featured = featuredData.data?.products || featuredData.products || [];
-      const fallback = fallbackData.data?.products || fallbackData.products || [];
 
-      // Use featured if we have enough, otherwise use fallback
-      const productsToShow = featured.length >= 12 ? featured : fallback;
+      let productsToShow = featured;
+      if (featured.length < 12) {
+        const fallbackRes = await fetch(fallbackUrl, { signal });
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          productsToShow = fallbackData.data?.products || fallbackData.products || [];
+        }
+      }
       
       setProducts(Array.isArray(productsToShow) ? productsToShow : []);
     } catch (err) {

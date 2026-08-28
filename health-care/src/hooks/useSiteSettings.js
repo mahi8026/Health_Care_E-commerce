@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { fetchCached } from '@/utils/api';
 
 /**
  * Fetches site settings including hero slides, promo banners, and configuration.
@@ -33,13 +34,13 @@ export function useSiteSettings() {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+        // fetchCached dedupes + caches this endpoint so the many components
+        // that read site settings hit the network once per TTL window
+        // (previously every mount fired its own raw fetch).
+        const data = await fetchCached(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
           signal: controller.signal,
         });
         
-        if (!res.ok) throw new Error('Failed to fetch settings');
-        
-        const data = await res.json();
         const settingsData = data.data || data;
         
         setSettings(settingsData);

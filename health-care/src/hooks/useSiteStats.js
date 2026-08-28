@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { fetchCached } from '@/utils/api';
 
 /**
  * Fetches site statistics (total products, brands, orders, clients).
@@ -33,13 +34,12 @@ export function useSiteStats() {
         setLoading(true);
         setError(null);
         
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/stats`, {
+        // fetchCached dedupes + caches /stats (5-min TTL) — previously every
+        // mounting component fired its own raw fetch.
+        const data = await fetchCached(`${process.env.NEXT_PUBLIC_API_URL}/stats`, {
           signal: controller.signal,
         });
         
-        if (!res.ok) throw new Error('Failed to fetch stats');
-        
-        const data = await res.json();
         const statsData = data.data || data;
         
         if (statsData) {

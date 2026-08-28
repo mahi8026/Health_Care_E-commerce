@@ -18,7 +18,12 @@ export function useApi(endpoint, options = {}) {
   const optionsStr = JSON.stringify(options);
 
   const fetchData = useCallback(async () => {
-    abortRef.current = new AbortController();
+    // Cancel any in-flight request first: a slow stale response must never
+    // overwrite fresher data from a rapid refetch (previously the old
+    // controller was simply overwritten and kept running).
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setLoading(true);
     setError(null);
 
@@ -27,7 +32,7 @@ export function useApi(endpoint, options = {}) {
       const opts = JSON.parse(optionsStr);
       const response = await fetch(`${API}${endpoint}`, {
         ...opts,
-        signal: abortRef.current.signal,
+        signal: controller.signal,
       });
 
       if (!response.ok) {

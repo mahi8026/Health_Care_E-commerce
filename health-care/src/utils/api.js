@@ -40,10 +40,52 @@ const CACHE_TTL = {
   default: 2 * 60 * 1000,       // 2 minutes
 };
 
+// Abort-aware sleep: resolves after ms but rejects immediately (AbortError)
+// when the caller's signal fires — prevents "zombie" retry loops that keep
+// running for up to ~30s after a component unmounts or cancels.
+function abortableSleep(ms, signal) {
+  return new Promise((resolve, reject) => {
+    const fail = () => {
+      clearTimeout(timer);
+      const err = new Error('Aborted');
+      err.name = 'AbortError';
+      reject(err);
+    };
+    const timer = setTimeout(() => {
+      if (signal) signal.removeEventListener('abort', fail);
+      resolve();
+    }, ms);
+    if (signal) {
+      if (signal.aborted) return fail();
+      signal.addEventListener('abort', fail, { once: true });
+    }
+  });
+}
+
 function getCacheKey(url, options = {}) {
   const method = options.method || 'GET';
   const body = options.body || '';
-  return `${method}:${url}:${body}`;
+  // Scope the key by caller identity. Without this, a cached authenticated
+  // GET (orders, account, quotes...) could be served to a different logged-in
+  // user — or a logged-out tab — after a login/logout switch. The credential
+  // is hashed so the raw token never appears in the key.
+  const auth = options.headers
+    ? (options.headers.Authorization ?? options.headers.authorization ?? '')
+    : '';
+  let authScope = 'anon';
+  if (auth) {
+    if (typeof auth === 'string') {
+      let hash = 0;
+      for (let i = 0; i < auth.length; i++) {
+        hash = (Math.imul(hash, 31) + auth.charCodeAt(i)) | 0;
+      }
+      authScope = `u${hash >>> 0}`;
+    } else {
+      // Headers instance or non-string — still isolate it from anon traffic.
+      authScope = 'auth';
+    }
+  }
+  return `${method}:${authScope}:${url}:${body}`;
 }
 
 function getCacheTTL(url) {
@@ -270,7 +312,9 @@ export async function fetchWithRetry(
     if (pendingRequests.has(cacheKey)) {
       try {
         const value = await pendingRequests.get(cacheKey);
-        if (value instanceof Response) return value;
+        // Clone per caller: handing the SAME Response instance to a second
+        // awaiter makes its .json() throw "body stream already read".
+        if (value instanceof Response) return value.clone();
         return new Response(JSON.stringify(value), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
@@ -404,7 +448,9 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
     if (pendingRequests.has(cacheKey)) {
       try {
         const value = await pendingRequests.get(cacheKey);
-        if (value instanceof Response) return value;
+        // Clone per caller — see the identical fix in fetchWithRetry: a
+        // shared Response instance breaks the second caller's .json().
+        if (value instanceof Response) return value.clone();
         return new Response(JSON.stringify(value), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
@@ -459,7 +505,8 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
               ? COLD_START_DELAY * (attempts + 1)
               : RETRY_DELAY * Math.pow(2, attempts);
           devLog.error(`[API] ${response.status} for ${url}. Retrying after ${delay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
+          // Abort-aware: a caller cancel during the wait stops the loop.
+          await abortableSleep(delay, externalSignal);
           attempts += 1;
           continue;
         }
@@ -467,14 +514,27 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
       } catch (error) {
         clearTimeout(timeoutId);
         if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
-        // Network error or timeout - retry if not max retries
-        if (error.name === 'AbortError' || error.message.includes('fetch')) {
-          if (attempts < MAX_RETRIES) {
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-            attempts += 1;
-            continue;
+        // Caller unmounted/cancelled — stop immediately, never retry.
+        if (externalSignal?.aborted) throw error;
+        const transient = error.name === 'AbortError' || error.message.includes('fetch');
+        // Retry ONLY idempotent methods on network errors/timeouts. A timed-out
+        // POST (order placement, payment execute) may have reached the server;
+        // blindly re-sending it can create duplicate orders/charges, so those
+        // failures surface to the caller instead of being auto-retried.
+        // (429/503 above are safe for any method — the server rejected them
+        // without processing the request.)
+        if (transient) {
+          if (method === 'GET' || method === 'HEAD') {
+            if (attempts < MAX_RETRIES) {
+              // Abort-aware: stops instantly if the caller cancels mid-wait.
+              await abortableSleep(RETRY_DELAY, externalSignal);
+              attempts += 1;
+              continue;
+            }
+            devLog.error('[API] Request failed after retries:', url);
+          } else {
+            devLog.error('[API] Non-idempotent request failed (no auto-retry):', url);
           }
-          devLog.error('[API] Request failed after retries:', url);
           throw new ApiError(
             'Unable to connect to server. Please check your connection.',
             0,
@@ -483,6 +543,14 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         }
         throw error;
       }
+    }
+
+    // 2.8b — a 403 on a request that CARRIED our CSRF token means the token
+    // was rotated/expired server-side. Drop it so the next mutation fetches
+    // a fresh one instead of failing forever (it was cached for the session).
+    if (response.status === 403 && method !== 'GET' && csrfToken &&
+        options.headers && options.headers['X-CSRF-Token']) {
+      csrfToken = null;
     }
 
     // Cache successful GET responses
@@ -507,7 +575,12 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(refreshToken ? { refreshToken } : {}),
-          credentials: 'include'
+          credentials: 'include',
+          // Deadline: previously the refresh call had NO timeout — a dead
+          // socket wedged isRefreshing=true for every queued request forever.
+          signal: typeof AbortSignal?.timeout === 'function'
+            ? AbortSignal.timeout(TIMEOUTS.API_REQUEST)
+            : undefined
         });
         
         if (refreshResponse.ok) {
@@ -520,7 +593,8 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
             isRefreshing = false;
             onTokenRefreshed(data.token);
             
-            // Retry original request with new token
+            // Retry original request with new token (with a timeout — the
+            // retry previously bypassed ALL timeout handling).
             const newOptions = {
               ...options,
               headers: {
@@ -528,28 +602,36 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
                 'Authorization': `Bearer ${data.token}`
               }
             };
-            return fetch(url, newOptions);
+            const retrySignal = newOptions.signal ||
+              (typeof AbortSignal?.timeout === 'function'
+                ? AbortSignal.timeout(TIMEOUTS.API_REQUEST)
+                : undefined);
+            return fetch(url, { ...newOptions, signal: retrySignal });
           }
         }
         
-        // Refresh failed, clear tokens and redirect to login (only in browser)
+        // Refresh failed. Only a 401/403 from the refresh endpoint means the
+        // credential is DEFINITIVELY invalid — log out for those. Any other
+        // failure (network blip, 503 while the backend cold-starts) previously
+        // nuked the session and hard-redirected to /login mid-browse; now we
+        // keep the session and let the caller surface the original response.
         isRefreshing = false;
         // F7 — flush queued waiters with null so their promises settle;
         // previously they hung forever, leaving account pages stuck loading.
         onTokenRefreshed(null);
-        removeToken();
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-          window.location.href = '/login';
+        if (refreshResponse.status === 401 || refreshResponse.status === 403) {
+          removeToken();
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
         }
         return response;
       } catch (error) {
         isRefreshing = false;
-        // F7 — same flush guarantee on the exception path
+        // F7 — same flush guarantee on the exception path. An exception here
+        // is a NETWORK failure (fetch rejection / abort timeout), not an auth
+        // rejection — keep the session; only definitive 401/403 log out.
         onTokenRefreshed(null);
-        removeToken();
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-          window.location.href = '/login';
-        }
         return response;
       }
     } else {
@@ -569,7 +651,11 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
               'Authorization': `Bearer ${token}`
             }
           };
-          resolve(fetch(url, newOptions));
+          const retrySignal = newOptions.signal ||
+            (typeof AbortSignal?.timeout === 'function'
+              ? AbortSignal.timeout(TIMEOUTS.API_REQUEST)
+              : undefined);
+          resolve(fetch(url, { ...newOptions, signal: retrySignal }));
         });
       });
     }
@@ -1184,7 +1270,9 @@ export async function fetchCached(url, options = {}) {
     if (pendingRequests.has(cacheKey)) {
       try {
         const value = await pendingRequests.get(cacheKey);
-        return value instanceof Response ? await value.json() : value;
+        // Clone per caller — a shared Response instance breaks .json() on the
+        // second awaiter ("body stream already read").
+        return value instanceof Response ? await value.clone().json() : value;
       } catch {
         // Pending request failed — fall through and make our own request.
       }
@@ -1192,18 +1280,26 @@ export async function fetchCached(url, options = {}) {
   }
 
   const promise = (async () => {
-    const res = await fetch(url, options);
-    if (method === 'GET' && res.ok) {
-      try {
-        const clone = res.clone();
-        const data = await clone.json();
+    // Timeout guard: raw fetch previously had no deadline, so a hung socket
+    // pinned callers forever. Caller-supplied signals win when present.
+    const signal = options.signal ||
+      (typeof AbortSignal?.timeout === 'function'
+        ? AbortSignal.timeout(TIMEOUTS.API_REQUEST)
+        : undefined);
+    const res = await fetch(url, { ...options, signal });
+    try {
+      const data = await res.json();
+      if (method === 'GET' && res.ok) {
         setCachedResponse(cacheKey, data, getCacheTTL(url));
-        return data;
-      } catch {
-        // Non-JSON response — fall through to normal handling
       }
+      return data;
+    } catch {
+      // Non-JSON body (HTML error page, empty 204, ...) — previously an
+      // unguarded res.json() here threw a raw SyntaxError at callers.
+      const text = await res.text().catch(() => '');
+      if (!res.ok) throw new Error(text || `HTTP ${res.status}`);
+      return { message: text };
     }
-    return res.json();
   })();
 
   if (method === 'GET') {
