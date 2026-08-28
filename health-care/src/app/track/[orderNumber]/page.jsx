@@ -1,8 +1,9 @@
 import OrderTrackingPage from '@/views/OrderTrackingPage';
 
 export const metadata = {
-  title: 'Track Order',
-  description: 'Track your order status and delivery progress in real-time'
+  title: 'Track Order | MediportBD',
+  description: 'Track your MediportBD order status and delivery progress.',
+  robots: { index: false, follow: false },
 };
 
 export default async function TrackOrderPage({ params }) {

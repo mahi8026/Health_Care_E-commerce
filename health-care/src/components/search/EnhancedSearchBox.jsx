@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { FaSearch, FaClock, FaFire, FaShoppingCart, FaHeart, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { API } from '@/constants/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { getProductCardImage } from '@/utils/cloudinary';
 
 const POPULAR_SEARCHES = [
   'ECG Machine',
@@ -291,7 +293,8 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
               </div>
               <div className="space-y-1.5">
                 {suggestions.map((product, idx) => {
-                  const img = typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url;
+                  const rawImg = typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url;
+                  const img = getProductCardImage(rawImg);
                   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
                   const inStock = product.stock > 0;
                   const isHovered = hoveredProduct === product._id;
@@ -317,8 +320,14 @@ export default function EnhancedSearchBox({ placeholder = 'Search medical equipm
                         {/* Product Image */}
                         <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-[var(--color-background-secondary)] to-[var(--color-background-tertiary)] rounded-xl overflow-hidden border border-[var(--color-border-primary)] group-hover:border-brand-teal/30 transition-all duration-200 group-hover:shadow-md relative">
                           {img ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={img} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                            <Image
+                              src={img}
+                              alt={product.name}
+                              fill
+                              sizes="56px"
+                              className="object-cover group-hover:scale-110 transition-transform duration-300"
+                              unoptimized
+                            />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-2xl">
                               🏥
