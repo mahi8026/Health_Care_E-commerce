@@ -1,0 +1,56 @@
+name: Security
+
+# Phase-4 CI hardening: secret scanning (gitleaks) + dependency audits.
+# Runs on every push/PR to the protected branches. The audit jobs fail on
+# `high`+ severity by design (locked package-lock files should be clean); if a
+# high/critical advisory appears that has no fix yet, acknowledge it in a PR
+# rather than silently carrying it in main.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  secrets:
+    name: Secret scanning (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+
+  audit-backend:
+    name: npm audit (backend)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      - name: Audit production + dev dependencies
+        run: npm audit --audit-level=high
+
+  audit-frontend:
+    name: npm audit (frontend)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Audit production + dev dependencies
+        run: npm audit --audit-level=high
