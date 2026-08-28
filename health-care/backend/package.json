@@ -12,6 +12,7 @@
     "seed:whatsapp": "node scripts/seedWhatsApp.js",
     "fix:categories": "node src/scripts/fixProductCategories.js",
     "fix:brands": "node src/scripts/fixProductBrands.js",
+    "fix:human-prices": "node src/scripts/fixHumanProductData.js",
     "generate-slugs": "node src/scripts/generateSlugs.js",
     "fix:slash-slugs": "node src/scripts/fixSlashSlugs.js",
     "verify-indexes": "node src/scripts/verifyIndexes.js",
