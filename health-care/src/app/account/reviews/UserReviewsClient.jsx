@@ -3,9 +3,11 @@
 import { confirmAction } from '@/components/ui/ConfirmDialog';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import WriteReviewModal from '@/components/product/WriteReviewModal';
 import { API } from '@/constants/api';
+import { getProductCardImage } from '@/utils/cloudinary';
 
 // Helper — prefer slug for SEO-clean URLs, fall back to _id
 const productUrl = (product) => `/products/${product?.slug || product?._id}`;
@@ -133,11 +135,16 @@ export default function UserReviewsClient() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {eligibleProducts.slice(0, 4).map(product => (
                 <div key={product._id} className="flex gap-4 p-4 bg-[var(--color-background-tertiary)] rounded-lg">
-                  <img
-                    src={product.images?.[0]?.url || '/placeholder.png'}
-                    alt={product.name}
-                    className="w-20 h-20 object-cover rounded-lg border border-[var(--color-border-secondary)]"
-                  />
+                  <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border border-[var(--color-border-secondary)]">
+                    <Image
+                      src={getProductCardImage(product.images?.[0]?.url || null) || '/placeholder.png'}
+                      alt={product.name}
+                      fill
+                      sizes="80px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-semibold mb-1 line-clamp-2 font-[family-name:var(--font-plus-jakarta)]">
                       {product.name}
@@ -183,12 +190,19 @@ export default function UserReviewsClient() {
               {reviews.map(review => (
                 <div key={review._id} className="p-6">
                   <div className="flex gap-4 mb-4">
-                    <img
-                      src={review.product?.images?.[0]?.url || '/placeholder.png'}
-                      alt={review.product?.name}
-                      className="w-16 h-16 object-cover rounded-lg border border-[var(--color-border-secondary)] cursor-pointer"
+                    <div
+                      className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border border-[var(--color-border-secondary)] cursor-pointer"
                       onClick={() => router.push(productUrl(review.product))}
-                    />
+                    >
+                      <Image
+                        src={getProductCardImage(review.product?.images?.[0]?.url || null) || '/placeholder.png'}
+                        alt={review.product?.name || 'Product'}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
                     <div className="flex-1">
                       <h3
                         className="text-sm font-semibold mb-1 cursor-pointer hover:text-brand-teal transition-colors font-[family-name:var(--font-plus-jakarta)]"
@@ -212,9 +226,20 @@ export default function UserReviewsClient() {
                   {review.images?.length > 0 && (
                     <div className="flex gap-2 mb-3">
                       {review.images.map((img, idx) => (
-                        <img key={idx} src={img.url} alt={img.alt}
-                          className="w-16 h-16 object-cover rounded-lg border border-[var(--color-border-secondary)] cursor-pointer hover:opacity-75 transition-opacity"
-                          onClick={() => window.open(img.url, '_blank')} />
+                        <div
+                          key={idx}
+                          className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border border-[var(--color-border-secondary)] cursor-pointer hover:opacity-75 transition-opacity"
+                          onClick={() => window.open(img.url, '_blank')}
+                        >
+                          <Image
+                            src={img.url}
+                            alt={img.alt || `Review photo ${idx + 1}`}
+                            fill
+                            sizes="64px"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
                       ))}
                     </div>
                   )}
