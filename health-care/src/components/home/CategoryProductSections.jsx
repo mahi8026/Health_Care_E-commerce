@@ -68,6 +68,8 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
   const oldPrice = product.oldPrice || 0;
   const hasDiscount = oldPrice > 0 && oldPrice > price;
   const discount = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  // unoptimized + error fallback — see FeaturedProductsSection rationale.
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div
@@ -75,7 +77,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
       onClick={onCardClick}
     >
       <div className="relative aspect-square w-full bg-[var(--color-background-secondary)] overflow-hidden">
-        {optimizedImg ? (
+        {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''}`}
@@ -83,6 +85,8 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
             sizes="180px"
             style={{ objectFit: 'contain', padding: '8px' }}
             className="group-hover:scale-105 transition-transform duration-200"
+            unoptimized
+            onError={() => setImgError(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl text-[var(--color-text-tertiary)]">

@@ -139,6 +139,8 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
     ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0);
   const hasDiscount = discount > 0 && oldPrice > price;
   const inStock = product.stock === undefined || product.stock > 0;
+  // unoptimized + error fallback — see FeaturedProductsSection rationale.
+  const [imgError, setImgError] = useState(false);
   
   // Check if product is new (within last 30 days)
   const isNew = product.createdAt 
@@ -187,7 +189,7 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
         overflow: 'hidden',
         flexShrink: 0,
       }}>
-        {optimizedImg ? (
+        {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
@@ -195,6 +197,8 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
             style={{ objectFit: 'cover' }}
             className="group-hover:scale-110 transition-transform duration-500"
+            unoptimized
+            onError={() => setImgError(true)}
           />
         ) : (
           <div style={{

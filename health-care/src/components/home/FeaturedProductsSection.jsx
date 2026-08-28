@@ -26,6 +26,11 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
     ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0);
   const hasDiscount = discount > 0 && oldPrice > price;
   const inStock = product.stock === undefined || product.stock > 0;
+  // Featured-section images previously went through the /_next/image
+  // optimizer, which 400s for any product image hosted outside the
+  // remotePatterns allowlist → blank cards. `unoptimized` (matching the
+  // main ProductCard) + this error state render the 🏥 fallback instead.
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div onClick={onClick} className="group"
@@ -39,7 +44,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
 
       {/* Image */}
       <div style={{ position: 'relative', aspectRatio: '1 / 1', background: 'var(--color-background-secondary)', overflow: 'hidden', flexShrink: 0 }}>
-        {optimizedImg ? (
+        {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
             alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
@@ -47,6 +52,8 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             style={{ objectFit: 'cover' }}
             className="group-hover:scale-105 transition-transform duration-300"
+            unoptimized
+            onError={() => setImgError(true)}
           />
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>

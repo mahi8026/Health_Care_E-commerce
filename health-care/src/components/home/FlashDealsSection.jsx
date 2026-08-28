@@ -46,6 +46,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
             sizes="(max-width: 640px) 50vw, 25vw"
             style={{ objectFit: 'cover', transition: 'transform 0.3s' }}
             className="flash-deal-img"
+            unoptimized
             onError={() => setImgError(true)}
           />
         ) : (
