@@ -468,7 +468,7 @@ export default function ProductInfoPanelEnhanced({
       {product.warranty && (
         <div className="flex items-center gap-3 p-4 bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-xl">
           <div className="w-12 h-12 rounded-full bg-[var(--color-status-warning-tint)] flex items-center justify-center flex-shrink-0">
-            <FaShieldAlt className="text-[var(--color-status-warning)]" size={20} />
+            <FaShieldAlt className="text-warning-ink" size={20} />
           </div>
           <div>
             <div className="text-sm font-semibold text-[var(--color-text-primary)]">Warranty Included</div>

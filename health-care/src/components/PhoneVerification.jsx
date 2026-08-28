@@ -152,10 +152,10 @@ export default function PhoneVerification({ onVerified }) {
     return (
       <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-4">
         <div className="flex items-start">
-          <span className="text-[var(--color-status-warning)] text-xl mr-3">⚠️</span>
+          <span className="text-warning-ink text-xl mr-3">⚠️</span>
           <div>
-            <h3 className="font-semibold text-[var(--color-status-warning)]">Phone Number Required</h3>
-            <p className="text-sm text-[var(--color-status-warning)] mt-1">
+            <h3 className="font-semibold text-warning-ink">Phone Number Required</h3>
+            <p className="text-sm text-warning-ink mt-1">
               Please add a phone number to your profile to enable phone verification.
             </p>
           </div>

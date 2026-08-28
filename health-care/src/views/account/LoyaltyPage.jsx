@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import AccountPageShell from '@/components/account/AccountPageShell';
@@ -181,7 +181,7 @@ export default function LoyaltyPage() {
           {/* Tier benefits */}
           <div className="bg-white rounded-xl border border-[var(--color-border-primary)] p-5">
             <h3 className="font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
-              <FaStar className="text-[var(--color-status-warning)] w-4 h-4" /> Tier Benefits
+              <FaStar className="text-warning-ink w-4 h-4" /> Tier Benefits
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
@@ -209,8 +209,8 @@ export default function LoyaltyPage() {
 
           {/* Redemption info */}
           <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-xl p-4 flex gap-3">
-            <FaInfoCircle className="text-[var(--color-status-warning)] w-4 h-4 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-[var(--color-status-warning)]">
+            <FaInfoCircle className="text-warning-ink w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-warning-ink">
               <p className="font-semibold mb-1">How to Redeem</p>
               <p>1000 points = ৳10 discount · Minimum 500 points to redeem · Max 20% of order total · Redeem at checkout</p>
             </div>

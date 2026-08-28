@@ -62,7 +62,7 @@ export default function PaymentModal({
                   </div>
                 </div>
               </div>
-              <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-3 text-xs text-[var(--color-status-warning)]">
+              <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-3 text-xs text-warning-ink">
                 ⚠️ Please keep the exact amount ready. Our agents may not carry change.
               </div>
             </div>

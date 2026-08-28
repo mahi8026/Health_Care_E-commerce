@@ -171,7 +171,7 @@ export default function ProductReviewsEnhanced({ productId }) {
         {[1, 2, 3, 4, 5].map(star => (
           <span key={star} className={interactive ? 'cursor-pointer' : ''}>
             {star <= rating ? (
-              <FaStar size={size} className="text-[var(--color-status-warning)]" />
+              <FaStar size={size} className="text-warning-ink" />
             ) : (
               <FaRegStar size={size} className="text-[var(--color-text-tertiary)]" />
             )}
@@ -200,7 +200,7 @@ export default function ProductReviewsEnhanced({ productId }) {
             >
               <span className="flex items-center gap-1 w-16">
                 <span className="font-medium">{rating}</span>
-                <FaStar size={14} className="text-[var(--color-status-warning)]" />
+                <FaStar size={14} className="text-warning-ink" />
               </span>
               <div className="flex-1 h-3 bg-[var(--color-background-muted)] rounded-full overflow-hidden">
                 <div 

@@ -25,7 +25,7 @@ export default function ProductFilters({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] overflow-hidden sticky top-4">
+    <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] overflow-hidden sticky top-24">
       {/* Sidebar header */}
       <div className="px-4 py-3 bg-gradient-to-r from-brand-navy to-[var(--color-brand-navy-hover)] flex items-center justify-between">
         <div className="flex items-center gap-2">

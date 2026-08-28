@@ -98,7 +98,7 @@ export default function UserReviewsClient() {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending:  'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+      pending:  'bg-[var(--color-status-warning-tint)] text-warning-ink',
       approved: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
       rejected: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
     };

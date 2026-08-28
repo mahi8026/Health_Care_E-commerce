@@ -96,7 +96,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-brand-navy text-white">
+    <footer className="bg-brand-navy text-white pb-[calc(60px+env(safe-area-inset-bottom))] lg:pb-0">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
 
         {/* ── Desktop: Single horizontal row with all columns ── */}

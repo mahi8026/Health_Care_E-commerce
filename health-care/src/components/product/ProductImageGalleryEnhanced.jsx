@@ -48,7 +48,7 @@ export default function ProductImageGalleryEnhanced({
     'FDA': { icon: '🇺🇸', label: 'FDA Approved', color: 'bg-success text-success-ink' },
     'DGDA': { icon: '🇧🇩', label: 'DGDA Registered', color: 'bg-brand-teal text-white' },
     'ISO': { icon: '✓', label: 'ISO 13485', color: 'bg-orange-500 text-white' },
-    'Bestseller': { icon: '⭐', label: 'Bestseller', color: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]' },
+    'Bestseller': { icon: '⭐', label: 'Bestseller', color: 'bg-[var(--color-status-warning-tint)] text-warning-ink' },
     'New arrival': { icon: '🆕', label: 'New Arrival', color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
     'Sale': { icon: '🔥', label: 'On Sale', color: 'bg-[var(--color-status-danger-tint)] text-white' },
   };

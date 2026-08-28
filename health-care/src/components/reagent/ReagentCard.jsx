@@ -29,7 +29,7 @@ const TEMP_STYLES = {
 
 const HAZARD_STYLES = {
   bio: 'bg-[#FCEBEB] text-[var(--color-status-danger)]',
-  chem: 'bg-[#FAEEDA] text-[var(--color-status-warning)]',
+  chem: 'bg-[#FAEEDA] text-warning-ink',
   safe: 'bg-brand-teal-tint text-[var(--color-status-success)]',
 };
 

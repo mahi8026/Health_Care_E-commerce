@@ -141,7 +141,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
           {mode === 'login' && (
             <form onSubmit={handleLogin} noValidate>
               {loginError && (
-                <div className="mb-4 px-3 py-2.5 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs">
+                <div className="mb-4 px-3 py-2.5 bg-[var(--color-status-danger-tint)] border border-danger/30 text-danger-ink rounded-lg text-xs">
                   {loginError}
                 </div>
               )}
@@ -183,7 +183,7 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
           {mode === 'register' && (
             <form onSubmit={handleRegister} noValidate>
               {registerErrors.submit && (
-                <div className="mb-4 px-3 py-2.5 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded-lg text-xs">
+                <div className="mb-4 px-3 py-2.5 bg-[var(--color-status-danger-tint)] border border-danger/30 text-danger-ink rounded-lg text-xs">
                   {registerErrors.submit}
                 </div>
               )}

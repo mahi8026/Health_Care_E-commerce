@@ -83,13 +83,13 @@ export default function BankTransferForm({ orderNumber }) {
       <div className="mx-4 mb-3 rounded-lg bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] px-3 py-2.5">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">
+            <p className="text-xs text-warning-ink font-semibold uppercase tracking-wide m-0">
               ⚠️ Payment Reference (Required)
             </p>
             <p className="text-sm font-semibold text-[#78350F] font-mono m-0 mt-0.5">
               {referenceText}
             </p>
-            <p className="text-xs text-[var(--color-status-warning)] m-0 mt-0.5">
+            <p className="text-xs text-warning-ink m-0 mt-0.5">
               You MUST include this as the transfer reference
             </p>
           </div>

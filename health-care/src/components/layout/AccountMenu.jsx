@@ -126,7 +126,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
                     user.b2bTier === 'Platinum'
                       ? 'bg-[#EEEDFE] text-[#3C3489]'
                       : user.b2bTier === 'Gold'
-                      ? 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]'
+                      ? 'bg-[var(--color-status-warning-tint)] text-warning-ink'
                       : 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]'
                   }`}
                 >

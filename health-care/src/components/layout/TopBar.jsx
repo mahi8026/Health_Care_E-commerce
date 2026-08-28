@@ -95,8 +95,8 @@ export default function TopBar() {
         aria-atomic="true"
       >
         <span className="text-brand-teal flex-shrink-0">{icon}</span>
-        <span className="text-white/75 truncate leading-tight hidden sm:inline">{text}</span>
-        <span className="text-white/75 truncate leading-tight sm:hidden">{shortText || text}</span>
+        <span className="text-white/90 truncate leading-tight hidden sm:inline">{text}</span>
+        <span className="text-white/90 truncate leading-tight sm:hidden">{shortText || text}</span>
       </div>
 
       {/* Right links */}
@@ -107,7 +107,7 @@ export default function TopBar() {
         <Link
           href="/track"
           prefetch={false}
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5 py-2 -my-2"
+          className="text-white/80 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1.5 py-2 -my-2"
           title="Track Order"
         >
           <FaTruck size={18} className="sm:hidden flex-shrink-0" />
@@ -121,7 +121,7 @@ export default function TopBar() {
         <Link
           href="/dgda-info"
           prefetch={false}
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5"
+          className="text-white/80 hover:text-white transition-colors whitespace-nowrap hidden md:flex items-center gap-1.5"
           title="DGDA Info"
         >
           <FaShieldAlt size={10} />
@@ -133,7 +133,7 @@ export default function TopBar() {
         {/* Phone Number - Always visible, icon only on mobile */}
         <a
           href={`tel:${contactPhone.replace(/[\s\-]/g, '')}`}
-          className="text-white/60 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5 font-medium py-2 -my-2"
+          className="text-white/80 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1 sm:gap-1.5 font-medium py-2 -my-2"
           title={`Call ${contactPhone}`}
         >
           <FaPhone size={18} className="sm:hidden flex-shrink-0" />

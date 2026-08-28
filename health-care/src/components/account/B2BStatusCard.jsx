@@ -19,12 +19,12 @@ export default function B2BStatusCard({ user }) {
     pending: {
       icon: FaClock,
       color: 'orange',
-      bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-200',
-      textColor: 'text-orange-700',
-      iconColor: 'text-orange-500',
+      bgColor: 'bg-[var(--color-status-warning-tint)]',
+      borderColor: 'border-warning/40',
+      textColor: 'text-warning-ink',
+      iconColor: 'text-[var(--color-status-warning)]',
       title: 'B2B Application Pending',
-      message: 'Your B2B application is under review. We&apos;ll notify you once it&apos;s approved.',
+      message: 'Your B2B application is under review. We’ll notify you once it’s approved.',
     },
     approved: {
       icon: FaCheckCircle,

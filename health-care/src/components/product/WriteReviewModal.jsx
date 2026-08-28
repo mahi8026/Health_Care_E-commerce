@@ -182,12 +182,12 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
 
           {/* Verified purchase notice */}
           {!eligibleLoading && !orderId && (
-            <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] text-[var(--color-status-warning)] px-4 py-3 rounded-lg text-xs">
+            <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] text-warning-ink px-4 py-3 rounded-lg text-xs">
               ℹ️ No delivered order found for this product. You can still submit a review — it will be marked as unverified and pending approval.
             </div>
           )}
           {!eligibleLoading && orderId && (
-            <div className="bg-[var(--color-status-success-tint)] border border-[var(--color-status-success-tint)] text-[var(--color-status-success)] px-4 py-3 rounded-lg text-xs">
+            <div className="bg-[var(--color-status-success-tint)] border border-success/30 text-success-ink px-4 py-3 rounded-lg text-xs">
               ✓ Verified purchase — your review will be published immediately.
             </div>
           )}

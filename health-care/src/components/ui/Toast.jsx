@@ -37,14 +37,14 @@ const toastIcons = {
 const toastStyles = {
   success: 'bg-[var(--color-status-success-tint)] border-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
   error: 'bg-[var(--color-status-danger-tint)] border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
-  warning: 'bg-[var(--color-status-warning-tint)] border-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+  warning: 'bg-[var(--color-status-warning-tint)] border-[var(--color-status-warning-tint)] text-warning-ink',
   info: 'bg-blue-50 border-blue-200 text-blue-800',
 };
 
 const iconStyles = {
   success: 'text-[var(--color-status-success)]',
   error: 'text-[var(--color-status-danger)]',
-  warning: 'text-[var(--color-status-warning)]',
+  warning: 'text-warning-ink',
   info: 'text-blue-500',
 };
 

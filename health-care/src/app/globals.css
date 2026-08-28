@@ -329,7 +329,7 @@ html.lang-bn h6 {
   flex-shrink: 0;
   min-height: var(--site-topbar-height);
   overflow: hidden;
-  background: rgba(var(--glass-navy), 0.25) !important;
+  background: rgba(var(--glass-navy), 0.88) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.08);
   backdrop-filter: blur(20px) saturate(180%) brightness(1.08);
   color: #fff;

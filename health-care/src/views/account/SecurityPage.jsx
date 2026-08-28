@@ -408,7 +408,7 @@ export default function SecurityPage() {
                 </div>
               </div>
               <div className="bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg p-3 mb-4">
-                <p className="text-xs text-[var(--color-status-warning)]">
+                <p className="text-xs text-warning-ink">
                   ⚠️ If you lose access to your authenticator app, contact{' '}
                   <a href="mailto:mahimrahman07@gmail.com" className="font-semibold underline">mahimrahman07@gmail.com</a>.
                 </p>

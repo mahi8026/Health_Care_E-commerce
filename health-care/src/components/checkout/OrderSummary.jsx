@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { showToast } from '@/components/ui/Toast';
 
@@ -277,8 +277,8 @@ export default function OrderSummary({
               {pointsDiscount > 0 ? (
                 <div className="flex justify-between items-center p-2.5 rounded-lg bg-[var(--color-status-warning-tint)] border border-warning/30">
                   <div>
-                    <span className="text-xs font-semibold text-[var(--color-status-warning)]">⭐ {pointsDiscount} pts redeemed</span>
-                    <p className="text-xs text-[var(--color-status-warning)] mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
+                    <span className="text-xs font-semibold text-warning-ink">⭐ {pointsDiscount} pts redeemed</span>
+                    <p className="text-xs text-warning-ink mt-0.5">−৳{(pointsDiscount * 0.1).toFixed(2)} discount</p>
                   </div>
                   <button
                     type="button"

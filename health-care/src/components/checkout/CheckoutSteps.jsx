@@ -39,7 +39,7 @@ export default function CheckoutSteps({ currentStep = 2, itemCount = 0 }) {
                   {done ? <FaCheck size={12} /> : step.num}
                 </span>
                 <span
-                  className={`text-xs font-semibold whitespace-nowrap ${
+                  className={`hidden xs:inline text-xs font-semibold whitespace-nowrap ${
                     active ? 'text-brand-navy' : done ? 'text-brand-teal' : 'text-[var(--color-text-tertiary)]'
                   }`}
                 >

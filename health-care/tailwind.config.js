@@ -82,7 +82,10 @@ module.exports = {
       zIndex: {
         'sticky': '500',
         'dropdown': '700',
-        'modal': '800',
+        // Aligned with --z-modal (globals.css) = 1200: modals, dialogs and
+        // filter drawers must layer ABOVE the fixed header (900) and
+        // bottom-nav (1000) — at 800 they rendered underneath both.
+        'modal': '1200',
         'header': '900',
         'bottom-nav': '1000',
         'drawer': '1100',

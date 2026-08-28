@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,8 +12,8 @@ import { API } from '@/constants/api';
 const PAGE_SIZE = 10;
 
 const STATUS_COLORS = {
-  placed:           'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
-  pending:          'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+  placed:           'bg-[var(--color-status-warning-tint)] text-warning-ink',
+  pending:          'bg-[var(--color-status-warning-tint)] text-warning-ink',
   confirmed:        'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
   processing:       'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
   shipped:          'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
@@ -51,7 +51,7 @@ function ActionBtn({ onClick, disabled, variant = 'teal', children }) {
     teal:    'text-brand-teal hover:text-[var(--color-brand-teal-hover)]',
     navy:    'text-brand-navy hover:text-[var(--color-brand-navy-hover)]',
     danger:  'text-[var(--color-status-danger)] hover:text-red-700',
-    warning: 'text-[var(--color-status-warning)] hover:text-amber-600',
+    warning: 'text-warning-ink hover:text-amber-600',
   };
   return (
     <button
@@ -71,7 +71,7 @@ function MobileBtn({ onClick, disabled, variant = 'teal', children }) {
     teal:    'text-brand-teal border-brand-teal hover:bg-[var(--color-brand-teal-tint)]',
     navy:    'text-brand-navy border-brand-navy hover:bg-[var(--color-status-info-tint)]',
     danger:  'text-[var(--color-status-danger)] border-[var(--color-status-danger)] hover:bg-[var(--color-status-danger-tint)]',
-    warning: 'text-[var(--color-status-warning)] border-[var(--color-status-warning)] hover:bg-[var(--color-status-warning-tint)]',
+    warning: 'text-warning-ink border-[var(--color-status-warning)] hover:bg-[var(--color-status-warning-tint)]',
   };
   return (
     <button

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -300,7 +300,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   <div className="w-full border-t border-[var(--color-border-primary)]" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-[var(--color-background-secondary)] text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wider">
+                  <span className="px-4 bg-[var(--color-background-secondary)] text-xs text-warning-ink font-semibold uppercase tracking-wider">
                     Dev Quick Login
                   </span>
                 </div>

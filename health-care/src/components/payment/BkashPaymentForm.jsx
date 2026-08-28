@@ -77,10 +77,10 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
           <div className="flex items-start gap-2 md:gap-3">
             <span className="text-xl md:text-2xl">⚠️</span>
             <div>
-              <h3 className="text-xs md:text-sm font-semibold text-[var(--color-status-warning)] mb-1">
+              <h3 className="text-xs md:text-sm font-semibold text-warning-ink mb-1">
                 bKash Not Available Yet
               </h3>
-              <p className="text-xs md:text-xs text-[var(--color-status-warning)]">
+              <p className="text-xs md:text-xs text-warning-ink">
                 bKash payment integration is pending configuration. Please use Bank Transfer or B2B Credit instead.
               </p>
             </div>

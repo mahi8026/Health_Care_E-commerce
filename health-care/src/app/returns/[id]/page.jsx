@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { showToast } from '@/components/ui/Toast';
 import { confirmAction } from '@/components/ui/ConfirmDialog';
 
@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { API } from '@/constants/api';
 
 const STATUS_COLORS = {
-  pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)] border-[var(--color-status-warning-tint)]',
+  pending: 'bg-[var(--color-status-warning-tint)] text-warning-ink border-[var(--color-status-warning-tint)]',
   approved: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] border-[var(--color-status-success-tint)]',
   rejected: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] border-[var(--color-status-danger-tint)]',
   refunded: 'bg-blue-100 text-blue-800 border-blue-200',

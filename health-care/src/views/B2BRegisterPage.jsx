@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -338,7 +338,7 @@ export default function B2BRegisterPage() {
         {/* Form */}
         <div className="bg-white rounded-xl shadow-lg p-5 md:p-6">
           {error && (
-            <div className="bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] px-4 py-3 rounded-lg mb-6">
+            <div className="bg-[var(--color-status-danger-tint)] border border-danger/30 text-danger-ink px-4 py-3 rounded-lg mb-6">
               {error}
             </div>
           )}

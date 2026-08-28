@@ -419,7 +419,7 @@ export default function CheckoutPage({ onBackToCart }) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-tertiary)] pb-24 lg:pb-10">
+    <div className="min-h-screen bg-[var(--color-background-tertiary)] pb-40 lg:pb-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="flex items-center justify-between gap-4 mb-4">
           <div>
@@ -444,7 +444,7 @@ export default function CheckoutPage({ onBackToCart }) {
               {error && (
                 <div
                   role="alert"
-                  className="px-4 py-3 rounded-xl bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] text-sm space-y-1"
+                  className="px-4 py-3 rounded-xl bg-[var(--color-status-danger-tint)] border border-danger/30 text-danger-ink text-sm space-y-1"
                 >
                   {Array.isArray(error) ? (
                     error.map((e) => (

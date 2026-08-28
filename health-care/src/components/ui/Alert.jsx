@@ -9,7 +9,7 @@ export default function Alert({ variant = 'danger', title, children, className =
   const styles = {
     danger: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]',
     success: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
-    warning: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
+    warning: 'bg-[var(--color-status-warning-tint)] text-warning-ink',
     info: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
   };
 

@@ -10,7 +10,7 @@ import { API } from '@/constants/api';
 import { FaFileInvoiceDollar, FaCheckCircle, FaTimesCircle, FaPrint } from 'react-icons/fa';
 
 const STATUS_META = {
-  pending:   { label: 'Pending',   cls: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]' },
+  pending:   { label: 'Pending',   cls: 'bg-[var(--color-status-warning-tint)] text-warning-ink' },
   sent:      { label: 'Sent',      cls: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]' },
   approved:  { label: 'Approved',  cls: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
   converted: { label: 'Converted', cls: 'bg-[#EDE9FE] text-[#5B21B6]' },

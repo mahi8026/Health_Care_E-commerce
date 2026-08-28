@@ -48,7 +48,7 @@ export default function PointsRedeemWidget({ availablePoints = 0, orderTotal = 0
   return (
     <div className="border border-blue-100 rounded-xl p-4 bg-blue-50/50">
       <div className="flex items-center gap-2 mb-3">
-        <FaStar className="text-[var(--color-status-warning)] w-4 h-4" />
+        <FaStar className="text-warning-ink w-4 h-4" />
         <span className="font-semibold text-[var(--color-text-primary)] text-sm">Use Loyalty Points</span>
         <span className="ml-auto text-xs text-[var(--color-text-secondary)]">
           {availablePoints.toLocaleString()} pts available

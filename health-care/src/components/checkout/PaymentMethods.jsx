@@ -99,13 +99,13 @@ export default function PaymentMethods({ selected, onSelect, orderNumber, orderT
         <div className="mb-4 p-3 rounded-xl bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] flex items-start gap-3">
           <span className="text-xl flex-shrink-0">⚠️</span>
           <div className="flex-1">
-            <p className="text-xs text-[var(--color-status-warning)] font-medium mb-1">Payment Method Unavailable</p>
-            <p className="text-xs text-[var(--color-status-warning)]">{showDisabledMessage}</p>
+            <p className="text-xs text-warning-ink font-medium mb-1">Payment Method Unavailable</p>
+            <p className="text-xs text-warning-ink">{showDisabledMessage}</p>
           </div>
           <button
             type="button"
             onClick={() => setShowDisabledMessage(null)}
-            className="flex-shrink-0 text-[var(--color-status-warning)] hover:text-[var(--color-status-warning)]"
+            className="flex-shrink-0 text-warning-ink hover:text-warning-ink"
             aria-label="Close message"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

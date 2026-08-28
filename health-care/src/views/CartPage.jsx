@@ -218,7 +218,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                               item.stock === 0
                                 ? 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
                                 : item.stock <= 10
-                                ? 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]'
+                                ? 'bg-[var(--color-status-warning-tint)] text-warning-ink'
                                 : 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]'
                             }`}>
                               {item.stock === 0 ? '✕ Out of stock' : item.stock <= 10 ? `⚠ Only ${item.stock} left` : '✓ In stock'}
@@ -266,7 +266,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                           </div>
                           {/* FIX-012: Warn when quantity is at stock limit */}
                           {item.stock !== undefined && item.stock > 0 && item.quantity >= item.stock && (
-                            <p className="text-xs text-[var(--color-status-warning)] mt-1">
+                            <p className="text-xs text-warning-ink mt-1">
                               Max available: {item.stock}
                             </p>
                           )}
@@ -423,7 +423,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
             {!isB2BCustomer() && (
               <div className="mt-3 p-3 bg-brand-navy rounded-2xl text-white">
                 <div className="text-xs font-semibold mb-1">🏢 {t('cart.b2bUpsell')}</div>
-                <div className="text-xs text-[var(--color-text-tertiary)] mb-3">
+                <div className="text-xs text-white/75 mb-3">
                   {t('cart.b2bUpsellDesc')}
                 </div>
                 <button

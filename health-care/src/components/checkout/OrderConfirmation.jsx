@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { showToast } from '@/components/ui/Toast';
 
@@ -41,7 +41,7 @@ function BankTransferConfirmation({ orderId }) {
       <div className="px-4 py-3 bg-[var(--color-status-warning-tint)] border-b border-[var(--color-status-warning-tint)] flex items-center gap-2">
         <span className="text-lg">🏦</span>
         <div>
-          <p className="text-sm font-semibold text-[var(--color-status-warning)] m-0">Complete Your Bank Transfer</p>
+          <p className="text-sm font-semibold text-warning-ink m-0">Complete Your Bank Transfer</p>
           <p className="text-xs text-[#B45309] m-0">Transfer within 24 hours to confirm your order</p>
         </div>
       </div>
@@ -50,7 +50,7 @@ function BankTransferConfirmation({ orderId }) {
         {BANK_ROWS.map(({ label, value, mono }) => (
           <div key={label} className="flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">{label}</p>
+              <p className="text-xs text-warning-ink font-semibold uppercase tracking-wide m-0">{label}</p>
               <p className={`text-xs text-[#78350F] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>{value}</p>
             </div>
             <CopyBtn text={value} />
@@ -61,7 +61,7 @@ function BankTransferConfirmation({ orderId }) {
         <div className="mt-2 pt-2 border-t border-[var(--color-status-warning-tint)]">
           <div className="flex items-center justify-between gap-2 bg-[var(--color-status-warning-tint)] rounded-lg px-3 py-2">
             <div>
-              <p className="text-xs text-[var(--color-status-warning)] font-semibold uppercase tracking-wide m-0">⚠️ Transfer Reference (Required)</p>
+              <p className="text-xs text-warning-ink font-semibold uppercase tracking-wide m-0">⚠️ Transfer Reference (Required)</p>
               <p className="text-sm font-semibold text-[#78350F] font-mono m-0">{orderId}</p>
             </div>
             <CopyBtn text={orderId} />
@@ -70,7 +70,7 @@ function BankTransferConfirmation({ orderId }) {
       </div>
 
       <div className="px-4 pb-3">
-        <p className="text-xs text-[var(--color-status-warning)] m-0">
+        <p className="text-xs text-warning-ink m-0">
           Your order will be confirmed within <strong>1–2 business hours</strong> after payment is received.
           Email us at <strong>mahimrahman07@gmail.com</strong> with your transaction screenshot if needed.
         </p>
