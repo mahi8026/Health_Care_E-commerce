@@ -129,7 +129,8 @@ const nextConfig = {
         source: '/:path*',
         has: [{ type: 'host', value: 'mediportbd.com' }],
         destination: 'https://www.mediportbd.com/:path*',
-        permanent: true, // 308 permanent redirect
+        permanent: true,
+        statusCode: 301, // Explicit 301 — Google handles 308 inconsistently
       },
     ];
 
