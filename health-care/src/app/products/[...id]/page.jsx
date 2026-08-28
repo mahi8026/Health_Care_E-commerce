@@ -57,8 +57,20 @@ function formatPrice(price) {
   return `৳${Number(price).toLocaleString('en-BD')}`;
 }
 
-function buildDescription(name, brandName, catName, price) {
+function buildDescription(name, brandName, catName, price, description) {
   const priceStr = formatPrice(price);
+  // Try to use the actual product description for a richer snippet
+  if (description && description.length > 40) {
+    // Trim to a clean sentence boundary within 155 chars
+    const clean = description.replace(/\s+/g, ' ').trim();
+    const suffix = ` Price: ${priceStr}. Buy in Bangladesh.`;
+    const maxBody = 155 - suffix.length;
+    const body = clean.length <= maxBody
+      ? clean
+      : clean.slice(0, maxBody - 1).replace(/\s+\S*$/, '') + '…';
+    return body + suffix;
+  }
+  // Fallback: assemble from structured fields
   const parts = [`Buy ${name} online in Bangladesh.`];
   if (brandName) parts.push(`Brand: ${brandName}.`);
   if (catName)   parts.push(`Category: ${catName}.`);
@@ -68,7 +80,16 @@ function buildDescription(name, brandName, catName, price) {
 }
 
 function buildKeywords(name, brandName, catName, sku) {
-  const tokens = [name, brandName, catName, sku, 'Bangladesh', 'buy online BD', 'price'].filter(Boolean);
+  const tokens = [
+    name,
+    brandName && `${brandName} ${name}`,
+    catName,
+    sku,
+    `${name} price Bangladesh`,
+    brandName && `${brandName} Bangladesh`,
+    `buy ${name} online BD`,
+    'Bangladesh',
+  ].filter(Boolean);
   return [...new Set(tokens)].join(', ');
 }
 
@@ -110,8 +131,11 @@ export async function generateMetadata({ params }) {
   // Canonical always uses the clean slug stored on the product (no slashes)
   const canonicalSlug = product.slug || slug;
 
-const title = `${name} — Price in Bangladesh | Request a Quote`;
-  const description = buildDescription(name, brandName, catName, product.price);
+  // Include brand in title when available — adds ~15% CTR in search results
+  const title = brandName
+    ? `${name} — ${brandName} | Price in Bangladesh`
+    : `${name} | Price in Bangladesh`;
+  const description = buildDescription(name, brandName, catName, product.price, product.description);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
   const primaryImg = product.images?.find(i => i?.isPrimary) || product.images?.[0];

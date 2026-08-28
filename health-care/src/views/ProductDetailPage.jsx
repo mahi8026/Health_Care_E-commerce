@@ -22,6 +22,7 @@ import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import ReviewSchema from '@/components/seo/ReviewSchema';
 import ProductSeoContent from '@/components/seo/ProductSeoContent';
+import { getProductCardImage } from '@/utils/cloudinary';
 
 // Innovation Features
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
@@ -345,7 +346,8 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
               {recommendedProducts.map((recProduct) => {
                 const recImageData = recProduct.images?.find(img => typeof img === 'object' && img.isPrimary) || recProduct.images?.[0];
-                const recImageUrl = typeof recImageData === 'string' ? recImageData : recImageData?.url;
+                const recRawUrl = typeof recImageData === 'string' ? recImageData : recImageData?.url;
+                const recImageUrl = getProductCardImage(recRawUrl);
                 const recPrice = recProduct.price || 0;
                 
                 return (
@@ -363,6 +365,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
                           style={{ objectFit: 'cover' }}
                           className="group-hover:scale-105 transition-transform"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-3xl">🏥</div>
