@@ -139,11 +139,24 @@ export async function generateMetadata({ params }) {
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
   const primaryImg = product.images?.find(i => i?.isPrimary) || product.images?.[0];
-  const imageUrl   =
-    (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) ||
-    `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`;
+  const rawImageUrl =
+    (typeof primaryImg === 'string' ? primaryImg : primaryImg?.url) || '';
 
   const canonicalUrl = `${SITE_CONFIG.url}/products/${canonicalSlug}`;
+
+  // Build branded OG image URL via the /og edge route.
+  // - If the product has a photo, use the split layout (photo left, info right).
+  // - Otherwise fall back to the full-width branded card.
+  // The price is formatted without the ৳ symbol so it renders cleanly in the card.
+  const priceParam = product.price ? `৳${Number(product.price).toLocaleString('en-BD')}` : '';
+  const ogParams = new URLSearchParams({
+    title:    name,
+    ...(brandName  && { brand:    brandName }),
+    ...(catName    && { category: catName }),
+    ...(priceParam && { price:    priceParam }),
+    ...(rawImageUrl && { productImage: rawImageUrl }),
+  });
+  const ogImageUrl = `${SITE_CONFIG.url}/og?${ogParams.toString()}`;
 
   return {
     title,
@@ -155,13 +168,13 @@ export async function generateMetadata({ params }) {
       description,
       url:    canonicalUrl,
       type:   'website',
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: `${name} — MediportBD Bangladesh` }],
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: `${name} — MediportBD Bangladesh` }],
     },
     twitter: {
       card:        'summary_large_image',
       title,
       description,
-      images:      [imageUrl],
+      images:      [ogImageUrl],
     },
   };
 }
