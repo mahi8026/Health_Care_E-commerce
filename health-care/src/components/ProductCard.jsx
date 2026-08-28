@@ -189,7 +189,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
             </span>
           ))}
           {showFeaturedBadge && product.isFeatured && !hasDiscount && (
-            <span className="bg-warning text-white text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-sm">
+            <span className="bg-warning text-warning-ink text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-sm">
               ⭐
             </span>
           )}
@@ -200,9 +200,9 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           <div className={`absolute top-1 right-7 px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm ${
             product.stock > 0
               ? product.stock <= (product.lowStockThreshold || 10)
-                ? 'bg-warning text-white'
-                : 'bg-[var(--color-status-success-tint)] text-white'
-              : 'bg-[var(--color-status-danger-tint)] text-white'
+                ? 'bg-warning text-warning-ink'
+                : 'bg-success text-success-ink'
+              : 'bg-danger text-white'
           }`}>
             {product.stock <= 0 ? 'Out'
               : product.stock <= (product.lowStockThreshold || 10)
@@ -218,7 +218,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           <button
             onClick={handleCompareToggle}
             disabled={isComparing}
-            className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shadow-sm ${
+            className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-sm ${
               inCompareList
                 ? 'bg-[#7C3AED] text-white'
                 : 'bg-white/90 text-[var(--color-text-secondary)] hover:bg-white'
@@ -246,7 +246,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           </div>
         )}
         {/* Brand - Extra Compact */}
-        <div className="text-[9px] sm:text-[10px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
+        <div className="text-[10px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
           {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </div>
         
@@ -279,7 +279,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           </div>
           {/* B2B Price Badge - Compact */}
           {priceDisplay.isB2BPrice && (
-            <span className="inline-flex items-center gap-0.5 text-[9px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
+            <span className="inline-flex items-center gap-0.5 text-[10px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
               <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
@@ -291,7 +291,12 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         {/* Stock Status - Extra Compact */}
         <div className="flex items-center gap-0.5 sm:gap-1 mb-1 sm:mb-1.5">
           <div className="w-1 h-1 sm:w-1 sm:h-1 rounded-full bg-[#639922] flex-shrink-0"></div>
-          <span className="text-[10px] sm:text-xs text-[var(--color-text-secondary)]">{product.stock}</span>
+          <span className="text-[10px] sm:text-xs text-[var(--color-text-secondary)]">
+            {product.stock <= 0 ? 'Out of stock'
+              : product.stock <= (product.lowStockThreshold || 10)
+                ? `Only ${product.stock} left`
+                : 'In stock'}
+          </span>
         </div>
         
         {/* Action Buttons - Extra Compact on mobile */}
@@ -299,7 +304,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           <button 
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="relative overflow-hidden bg-brand-navy text-white border-none px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-[11px] font-medium cursor-pointer hover:bg-[var(--color-brand-navy-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-0.5 sm:gap-1"
+            className="relative overflow-hidden bg-brand-teal text-white border-none px-1.5 sm:px-2 min-h-[40px] rounded text-xs font-medium cursor-pointer hover:bg-[var(--color-brand-teal-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-0.5 sm:gap-1"
           >
             {addingToCart ? (
               <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
@@ -320,7 +325,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           </button>
           <button 
             onClick={handleViewDetails}
-            className="bg-transparent text-brand-navy border border-brand-navy px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-[11px] font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
+            className="bg-transparent text-brand-navy border border-brand-navy px-1.5 sm:px-2 min-h-[40px] rounded text-xs font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
           >
             <span className="hidden sm:inline">{t('products.viewDetails')}</span>
             <span className="sm:hidden">View</span>

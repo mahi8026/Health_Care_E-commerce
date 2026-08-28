@@ -87,7 +87,10 @@ html.lang-bn h6 {
 
   --color-text-primary: #0f172a;
   --color-text-secondary: #475569;
-  --color-text-tertiary: #94a3b8;
+  /* WCAG AA: #94a3b8 measured 2.56:1 on white — fails badly for the 130+
+     places it renders body-size text. #64748b is 4.76:1 and still reads as
+     muted/tertiary next to text-secondary (#475569, 7.58:1). */
+  --color-text-tertiary: #64748b;
   --color-border-primary: #cfe0ec;
   --color-border-secondary: #b8cfdf;
   --color-border-tertiary: #ddeef7;
@@ -108,6 +111,11 @@ html.lang-bn h6 {
   /* Semantic status info */
   --color-status-info: #1e40af;
   --color-status-info-tint: #dbeafe;
+
+  /* Dark "ink" text for use ON status-colored surfaces. White on warning
+     #f59e0b measures 1.97:1 (unreadable); these ink values pass WCAG AA. */
+  --color-status-warning-ink: #451a03;  /* 6.97:1 on warning */
+  --color-status-success-ink: #052e16;  /* 4.52:1 on success */
 
   /* Brand interactive states */
   --color-brand-navy-hover: #0d2d52;
@@ -1409,15 +1417,6 @@ input, textarea, select {
 
 .animate-scale-in {
   animation: scale-in 0.1s ease-out;
-}
-
-/* Reduce animations on mobile for performance */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
 }
 
 /* ── Bottom Navigation (Mobile Only) ────────────────────────────────────────── */

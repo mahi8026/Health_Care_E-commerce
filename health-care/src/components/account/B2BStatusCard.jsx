@@ -127,7 +127,7 @@ export default function B2BStatusCard({ user }) {
                 href={`https://wa.me/+8801800000000?text=${encodeURIComponent('Hi, I need help with my B2B application rejection.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-[var(--color-status-success-tint)] hover:bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                className="inline-flex items-center gap-2 bg-[var(--color-status-success-tint)] hover:bg-success text-success-ink px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
               >
                 <FaShieldAlt />
                 <span>Contact Support on WhatsApp</span>

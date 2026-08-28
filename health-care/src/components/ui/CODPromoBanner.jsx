@@ -52,7 +52,7 @@ export default function CODPromoBanner({ variant = 'default', className = '' }) 
 
       {/* Popular Badge */}
       <div className="absolute top-2 right-2">
-        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-success text-white text-xs font-semibold shadow-sm">
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-success text-success-ink text-xs font-semibold shadow-sm">
           ⭐ MOST POPULAR
         </span>
       </div>

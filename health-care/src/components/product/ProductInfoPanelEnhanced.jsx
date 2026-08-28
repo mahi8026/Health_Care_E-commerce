@@ -396,7 +396,7 @@ export default function ProductInfoPanelEnhanced({
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleShare('whatsapp')}
-            className="w-10 h-10 rounded-full bg-[var(--color-status-success-tint)] hover:bg-success text-white flex items-center justify-center transition-all hover:scale-110"
+            className="w-10 h-10 rounded-full bg-[var(--color-status-success-tint)] hover:bg-success text-success-ink flex items-center justify-center transition-all hover:scale-110"
             aria-label="Share on WhatsApp"
           >
             <FaWhatsapp size={18} />

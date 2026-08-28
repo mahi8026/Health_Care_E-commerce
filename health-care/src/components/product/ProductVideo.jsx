@@ -53,6 +53,8 @@ export default function ProductVideo({
             <img
               src={thumbnail}
               alt={title}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
@@ -189,7 +191,7 @@ export function ProductVideoGallery({ videos = [], className = '' }) {
 
   return (
     <div className={className}>
-      <h3 className="text-lg font-semibold text-[var(--color-text-primary)] dark:text-gray-100 mb-4">
+      <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
         Product Videos
       </h3>
 
@@ -213,6 +215,8 @@ export function ProductVideoGallery({ videos = [], className = '' }) {
                   <img
                     src={video.thumbnail}
                     alt={video.title || `Video ${index + 1}`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 ) : (

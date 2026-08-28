@@ -204,9 +204,9 @@ const CompactProductItem = memo(function CompactProductItem({ product }) {
     <Link
       key={product._id}
       href={`/products/${product.slug || product._id}`}
-      className="flex gap-3 p-2 rounded-lg hover:bg-[var(--color-background-secondary)] dark:hover:bg-gray-800 transition-colors"
+      className="flex gap-3 p-2 rounded-lg hover:bg-[var(--color-background-secondary)] transition-colors"
     >
-      <div className="relative w-16 h-16 flex-shrink-0 bg-[var(--color-background-tertiary)] dark:bg-gray-900 rounded">
+      <div className="relative w-16 h-16 flex-shrink-0 bg-[var(--color-background-tertiary)] rounded">
         {product.images?.[0] ? (
           <>
             <Image
@@ -238,10 +238,10 @@ const CompactProductItem = memo(function CompactProductItem({ product }) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-[var(--color-text-primary)] dark:text-gray-100 line-clamp-2">
+        <div className="text-sm font-medium text-[var(--color-text-primary)] line-clamp-2">
           {product.name}
         </div>
-        <p className="text-sm font-semibold text-brand-teal dark:text-brand-teal mt-1">
+        <p className="text-sm font-semibold text-brand-teal mt-1">
           ৳{product.price?.toLocaleString()}
         </p>
       </div>
@@ -298,7 +298,7 @@ export default function RecentlyViewed({
         </div>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300">
         {products.map((product) => (
           <ProductItem key={product._id} product={product} onRemove={removeFromRecentlyViewed} />
         ))}
@@ -329,7 +329,7 @@ export function RecentlyViewedCompact({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-[var(--color-text-primary)] dark:text-[var(--color-text-tertiary)] flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
         <FiClock className="w-4 h-4" />
         Recently Viewed
       </h3>

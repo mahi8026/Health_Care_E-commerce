@@ -68,7 +68,7 @@ export default function PaymentModal({
             </div>
             <button
               onClick={() => handleSuccess({ method: 'cod', orderId })}
-              className="w-full py-3 rounded-xl bg-success text-white text-sm font-semibold hover:bg-success transition-colors"
+              className="w-full py-3 rounded-xl bg-success text-success-ink text-sm font-semibold hover:bg-success transition-colors"
             >
               Confirm Cash on Delivery
             </button>

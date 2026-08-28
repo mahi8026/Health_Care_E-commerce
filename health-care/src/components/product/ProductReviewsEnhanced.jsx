@@ -225,7 +225,7 @@ export default function ProductReviewsEnhanced({ productId }) {
         {/* Message Toast */}
         {message.text && (
           <div className={`fixed top-4 right-4 px-6 py-4 rounded-xl shadow-lg z-toast animate-fadeSlideUp ${
-            message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-white' : 'bg-[var(--color-status-danger-tint)] text-white'
+            message.type === 'success' ? 'bg-success text-success-ink' : 'bg-danger text-white'
           }`}>
             {message.text}
           </div>
@@ -313,7 +313,7 @@ export default function ProductReviewsEnhanced({ productId }) {
       {/* Message Toast */}
       {message.text && (
         <div className={`fixed top-4 right-4 px-6 py-4 rounded-xl shadow-lg z-toast animate-fadeSlideUp ${
-          message.type === 'success' ? 'bg-[var(--color-status-success-tint)] text-white' : 'bg-[var(--color-status-danger-tint)] text-white'
+          message.type === 'success' ? 'bg-success text-success-ink' : 'bg-danger text-white'
         }`}>
           {message.text}
         </div>

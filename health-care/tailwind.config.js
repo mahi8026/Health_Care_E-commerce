@@ -46,6 +46,12 @@ module.exports = {
         'danger': '#e24b4a',
         'warning': '#f59e0b',
 
+        // AA-safe "ink" colors for text/icons placed ON the status colors
+        // (white on warning #f59e0b measures 1.97:1 — unreadable).
+        'warning-ink': '#451a03',
+        'success-ink': '#052e16',
+        'danger-ink': '#7f1d1d',
+
         // Semantic status tint surfaces
         'success-tint': 'var(--color-status-success-tint)',
         'danger-tint': 'var(--color-status-danger-tint)',

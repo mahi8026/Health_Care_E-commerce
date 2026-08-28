@@ -329,7 +329,7 @@ export default function OrderSummary({
                         }
                         if (pts > 0) { onRedeemPoints(pts); setShowPointsInput(false); }
                       }}
-                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-warning text-white rounded-lg hover:bg-[#D97706]"
+                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-warning text-warning-ink rounded-lg hover:bg-[#D97706]"
                     >
                       Apply
                     </button>

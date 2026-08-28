@@ -113,7 +113,7 @@ export default function FloatingWhatsAppButton() {
           
           <button
             onClick={handleClick}
-            className="w-full py-2 px-4 bg-[var(--color-status-success-tint)] hover:bg-success text-white rounded-xl font-semibold text-sm transition-all hover:shadow-lg"
+            className="w-full py-2 px-4 bg-[var(--color-status-success-tint)] hover:bg-success text-success-ink rounded-xl font-semibold text-sm transition-all hover:shadow-lg"
           >
             Start Chat
           </button>

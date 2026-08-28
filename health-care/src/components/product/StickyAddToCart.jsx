@@ -178,18 +178,18 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
             <button
               onClick={() => setQuantity(q => Math.max(1, q - 1))}
               disabled={quantity <= 1}
-              className="w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+              className="w-11 h-11 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-30 transition-colors"
               aria-label="Decrease quantity"
             >
               <FaMinus size={11} />
             </button>
-            <span className="w-10 h-9 flex items-center justify-center text-sm font-semibold">
+            <span className="w-10 h-11 flex items-center justify-center text-sm font-semibold">
               {quantity}
             </span>
             <button
               onClick={() => setQuantity(q => Math.min(product.stock || 999, q + 1))}
               disabled={quantity >= (product.stock || 999)}
-              className="w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+              className="w-11 h-11 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-30 transition-colors"
               aria-label="Increase quantity"
             >
               <FaPlus size={11} />

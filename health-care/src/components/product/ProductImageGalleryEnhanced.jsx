@@ -45,7 +45,7 @@ export default function ProductImageGalleryEnhanced({
   const badgeConfig = {
     'CE': { icon: '🇪🇺', label: 'CE Certified', color: 'bg-blue-500 text-white' },
     'CE Certified': { icon: '🇪🇺', label: 'CE Certified', color: 'bg-blue-500 text-white' },
-    'FDA': { icon: '🇺🇸', label: 'FDA Approved', color: 'bg-[var(--color-status-success-tint)] text-white' },
+    'FDA': { icon: '🇺🇸', label: 'FDA Approved', color: 'bg-success text-success-ink' },
     'DGDA': { icon: '🇧🇩', label: 'DGDA Registered', color: 'bg-brand-teal text-white' },
     'ISO': { icon: '✓', label: 'ISO 13485', color: 'bg-orange-500 text-white' },
     'Bestseller': { icon: '⭐', label: 'Bestseller', color: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]' },

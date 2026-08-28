@@ -37,7 +37,7 @@ const Button = forwardRef(function Button(
     secondary: 'bg-white text-brand-navy border border-brand-navy hover:bg-[var(--color-background-secondary)] hover:border-[var(--color-brand-navy-hover)]',
     success: 'bg-brand-teal text-white hover:bg-[var(--color-brand-teal-hover)] hover:shadow-lg hover:shadow-brand-teal/20',
     danger: 'bg-danger text-white hover:bg-danger hover:shadow-lg hover:shadow-red-600/20',
-    warning: 'bg-warning text-white hover:opacity-90 hover:shadow-lg hover:shadow-yellow-500/20',
+    warning: 'bg-warning text-warning-ink hover:opacity-90 hover:shadow-lg hover:shadow-yellow-500/20',
     ghost: 'bg-transparent text-brand-navy hover:bg-[var(--color-background-tertiary)]',
     link: 'bg-transparent text-brand-teal hover:underline p-0 touch-compact',
   };
