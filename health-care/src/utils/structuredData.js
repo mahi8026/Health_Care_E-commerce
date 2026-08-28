@@ -303,10 +303,12 @@ export function generateWebSiteSchema() {
     description: siteConfig.description,
     potentialAction: {
       '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${siteConfig.url}/products?q={search_term_string}`,
-      },
+      // Use string shorthand — NOT an EntryPoint object.
+      // The EntryPoint object format causes Google to crawl the template URL
+      // literally as /products?q={search_term_string} (Soft 404).
+      // The string shorthand is the correct format per Google's Sitelinks
+      // Search Box documentation and prevents the literal crawl.
+      target: `${siteConfig.url}/products?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   };

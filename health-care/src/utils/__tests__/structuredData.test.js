@@ -583,7 +583,11 @@ describe('generateWebSiteSchema', () => {
 
   it('includes a urlTemplate in the SearchAction target', () => {
     const schema = generateWebSiteSchema()
-    expect(schema.potentialAction.target.urlTemplate).toContain('{search_term_string}')
+    // target is a string (shorthand format) — not an EntryPoint object.
+    // The string format is required to prevent Google from crawling the
+    // template URL literally as a Soft 404.
+    expect(typeof schema.potentialAction.target).toBe('string')
+    expect(schema.potentialAction.target).toContain('{search_term_string}')
   })
 
   it('includes query-input in the SearchAction', () => {
