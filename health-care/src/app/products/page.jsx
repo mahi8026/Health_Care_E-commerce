@@ -7,6 +7,7 @@
  * client-side on subsequent filter/page changes.
  */
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import ProductsPage from '@/views/ProductsPage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
@@ -31,10 +32,20 @@ export default async function ProductsRoute({ searchParams }) {
     const v = resolvedParams[key];
     return Array.isArray(v) ? v[0] || '' : v || '';
   };
+
+  // Guard: the SearchAction schema uses {search_term_string} as a URL template
+  // variable. If Google crawls the literal placeholder URL
+  // /products?q={search_term_string} it gets a 200 with no results = Soft 404.
+  // Return a real 404 instead so Google stops flagging it.
+  const rawQuery = val('q');
+  if (rawQuery === '{search_term_string}') {
+    notFound();
+  }
+
   const categoryName = val('category');
   const category = CATEGORY_NAME_TO_SLUG[categoryName] || categoryName || '';
   const listing = await fetchListing({
-    search: val('q'),
+    search: rawQuery,
     category,
     brand: val('brand'),
     minPrice: val('minPrice'),
