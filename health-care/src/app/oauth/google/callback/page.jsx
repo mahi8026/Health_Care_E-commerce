@@ -30,6 +30,7 @@ function GoogleCallbackContent() {
         // logs). Exchange the cookie for an access token via the cookie-only
         // refresh endpoint.
         if (authMode === 'cookie') {
+          console.log('[OAuth Callback] Cookie auth mode - calling refreshToken...');
           const data = await api.refreshToken();
           if (!data || !data.token) {
             throw new Error('No access token returned from cookie refresh');
@@ -51,9 +52,13 @@ function GoogleCallbackContent() {
         const token = searchParams.get('token');
         const refreshToken = searchParams.get('refreshToken');
 
+        console.log('[OAuth Callback] token present:', !!token, 'refreshToken present:', !!refreshToken, 'authMode:', authMode);
+
         if (token && refreshToken) {
+          console.log('[OAuth Callback] Setting tokens...');
           setToken(token);
           setRefreshToken(refreshToken);
+          console.log('[OAuth Callback] Tokens set, dispatching event...');
 
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('user-logged-in'));
@@ -72,7 +77,8 @@ function GoogleCallbackContent() {
           }, 1500);
         }
       } catch (error) {
-        process.env.NODE_ENV !== "production" && console.error('Callback error:', error);
+        // Log the actual error so we can diagnose it in the browser console
+        console.error('[OAuth Callback] Error details:', error?.message, error?.stack, error);
         setStatus('error');
         setTimeout(() => {
           router.push('/login?error=callback_failed');

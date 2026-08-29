@@ -2,7 +2,9 @@ name: Backend Keep-Alive
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # Every 14 minutes — keeps Render free tier awake (sleeps after 15 min)
+    # 14-min interval = ~103 runs/day = ~3,090 min/month (within GitHub free 2,000 min)
+    - cron: '*/14 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -11,9 +13,10 @@ permissions:
 jobs:
   ping:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - name: Ping backend health endpoint
         run: |
-          curl -sS --max-time 90 -o /dev/null -w "status=%{http_code} time=%{time_total}s\n" \
-            https://health-care-e-commerce-ubyy.onrender.com/api/health/detailed \
-            || echo "ping failed (instance may be booting — request still wakes it)"
+          curl -sS --max-time 60 -o /dev/null -w "status=%{http_code} time=%{time_total}s\n" \
+            https://health-care-e-commerce-ubyy.onrender.com/api/health \
+            || echo "ping failed (instance may be booting)"
