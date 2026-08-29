@@ -279,9 +279,9 @@ html.lang-bn h6 {
 .skeleton {
   background: linear-gradient(
     90deg,
-    #e8eff5 25%,
-    #d8e8f0 50%,
-    #e8eff5 75%
+    #E4EBF3 25%,
+    #D9E4EC 50%,
+    #E4EBF3 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -291,9 +291,9 @@ html.lang-bn h6 {
 .skeleton-card {
   background: linear-gradient(
     90deg,
-    #f0f7fb 25%,
-    #e2f0f8 50%,
-    #f0f7fb 75%
+    #EDF3F8 25%,
+    #E0E9F1 50%,
+    #EDF3F8 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -317,11 +317,11 @@ html.lang-bn h6 {
   }
   
   .skeleton {
-    background: #e8eff5;
+    background: #E4EBF3;
   }
   
   .skeleton-card {
-    background: #f0f7fb;
+    background: #EDF3F8;
   }
 }
 
@@ -1698,7 +1698,7 @@ color: var(--color-brand-teal);
   border-radius: 0.625rem;
   font-size: 0.875rem;
   font-family: var(--font-plus-jakarta), system-ui, sans-serif;
-  background: #fafbfc;
+  background: #F5F8FB;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
@@ -2382,11 +2382,11 @@ color: var(--color-brand-teal);
 .skeleton-enhanced {
   background: linear-gradient(
     90deg,
-    #e8eff5 0%,
-    #f0f7fb 20%,
+    #E4EBF3 0%,
+    #EDF3F8 20%,
     #fff 50%,
-    #f0f7fb 80%,
-    #e8eff5 100%
+    #EDF3F8 80%,
+    #E4EBF3 100%
   );
   background-size: 1000px 100%;
   animation: shimmer-enhanced 2s infinite;

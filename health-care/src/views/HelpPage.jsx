@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -170,7 +170,7 @@ export default function HelpPage() {
       <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
-            <FaHeadset className="text-[#1DB954]" />
+            <FaHeadset className="text-[var(--color-status-success)]" />
             Customer Support
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">How can we help you?</h1>
@@ -237,7 +237,7 @@ export default function HelpPage() {
 
           {/* Still need help */}
           <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
-            <FaHeadset className="text-2xl text-[#1DB954] mx-auto mb-2" />
+            <FaHeadset className="text-2xl text-[var(--color-status-success)] mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Still need help?</h3>
             <p className="text-white/70 text-sm mb-5">
               Our support team is ready to assist with any question not covered above.

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { showToast } from '@/components/ui/Toast';
 import { FaMoneyBillWave, FaCreditCard, FaUserTie, FaTruck, FaTools, FaFileInvoiceDollar } from 'react-icons/fa';
@@ -213,7 +213,7 @@ function B2BLanding() {
                 { n: `${maxDiscount}%`, l: 'Max Discount' },
                 { n: supportHours,    l: 'Support' },
               ].map(({ n, l }) => (
-                <div key={l} className="bg-[#0E1E35] rounded-2xl p-6 text-center border border-[#1E3A5F]">
+                <div key={l} className="bg-[#001D5D] rounded-2xl p-6 text-center border border-[#002B78]">
                   <div className="text-2xl font-semibold text-brand-teal mb-1">{n}</div>
                   <div className="text-xs text-[var(--color-text-secondary)]">{l}</div>
                 </div>
@@ -615,7 +615,7 @@ function B2BDashboard({ data, onRefresh }) {
 
             {/* Loyalty points */}
             {data.loyaltyPoints > 0 && (
-              <div className="bg-gradient-to-br from-brand-navy to-[#1E3A5F] rounded-2xl p-5 text-white">
+              <div className="bg-gradient-to-br from-brand-navy to-[#002B78] rounded-2xl p-5 text-white">
                 <div className="text-xs text-[var(--color-text-secondary)] mb-1">Loyalty Points</div>
                 <div className="text-2xl font-semibold text-brand-teal">{data.loyaltyPoints.toLocaleString()}</div>
                 <div className="text-xs text-[var(--color-text-tertiary)] mt-1">Redeem on your next order</div>

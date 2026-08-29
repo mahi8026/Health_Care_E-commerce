@@ -69,7 +69,7 @@ export default function BankTransferForm({ orderNumber }) {
               <span className="text-sm flex-shrink-0">{icon}</span>
               <div className="min-w-0">
                 <p className="text-xs text-[var(--color-text-secondary)] m-0 uppercase tracking-wide font-semibold">{label}</p>
-                <p className={`text-xs text-[#1E3A5F] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>
+                <p className={`text-xs text-[#002B78] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>
                   {value}
                 </p>
               </div>

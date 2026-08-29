@@ -867,7 +867,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
               };
 
               const emoji = cat.emoji || iconMap[categoryName] || '🏥';
-              const colors = ['#FAF5FF', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', '#FFF1F2', '#F8FAFC', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
+              const colors = ['#FAF5FF', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', '#FFF1F2', '#F5F8FB', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
               const color = cat.color || colors[index % colors.length];
 
               return (

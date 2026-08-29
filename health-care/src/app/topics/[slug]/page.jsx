@@ -81,7 +81,7 @@ export default async function TopicClusterPage({ params }) {
   const otherClusters = TOPICAL_CLUSTERS.filter(c => c.slug !== cluster.slug);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#F5F8FB]">
       <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
       <StructuredData
         schema={{
@@ -178,7 +178,7 @@ export default async function TopicClusterPage({ params }) {
 
         {/* Extended intro paragraph(s) */}
         {cluster.intro.length > 1 && (
-          <div className="rounded-2xl bg-white border border-[#cfe0ec] p-5 md:p-7">
+          <div className="rounded-2xl bg-white border border-[#D9E4EC] p-5 md:p-7">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-tertiary mb-3">Overview</h2>
             {cluster.intro.slice(1).map((para, i) => (
               <p key={i} className="text-sm text-[#475569] leading-relaxed mb-3 last:mb-0">{para}</p>
@@ -200,7 +200,7 @@ export default async function TopicClusterPage({ params }) {
                 <Link
                   key={page.slug}
                   href={`/equipment/${page.slug}`}
-                  className="group flex items-start gap-4 rounded-2xl bg-white border border-[#cfe0ec] p-5 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
+                  className="group flex items-start gap-4 rounded-2xl bg-white border border-[#D9E4EC] p-5 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
                 >
                   <div className="w-11 h-11 rounded-xl bg-[#f1f5f9] flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
                     {page.icon}
@@ -251,7 +251,7 @@ export default async function TopicClusterPage({ params }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Leading brands */}
             {brands.length > 0 && (
-              <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
+              <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
                 <h2 className="text-sm font-bold text-[#001D5D] mb-3 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-md bg-[#001D5D]/8 flex items-center justify-center text-base">🏷️</span>
                   Leading Brands
@@ -275,7 +275,7 @@ export default async function TopicClusterPage({ params }) {
 
             {/* Guides */}
             {guides.length > 0 && (
-              <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
+              <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
                 <h2 className="text-sm font-bold text-[#001D5D] mb-3 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-md bg-[#001D5D]/8 flex items-center justify-center text-base">📖</span>
                   Buying Guides
@@ -303,7 +303,7 @@ export default async function TopicClusterPage({ params }) {
         )}
 
         {/* Related topics */}
-        <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
+        <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
           <h2 className="text-sm font-bold text-[#001D5D] mb-3">Related Topics</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             {otherClusters.map(c => (

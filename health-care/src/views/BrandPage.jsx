@@ -33,7 +33,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
   const website = brand?.website;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#F5F8FB]">
       {/* ── Hero banner ──────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden text-white"
@@ -112,7 +112,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => router.push('/quotes/request')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#001D5D] text-sm font-bold hover:bg-[#f8fafc] transition-colors shadow-md"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#001D5D] text-sm font-bold hover:bg-[#F5F8FB] transition-colors shadow-md"
                 >
                   <FaFileInvoiceDollar size={14} className="text-[#18AFA9]" />
                   Request Bulk Quote
@@ -137,7 +137,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
 
         {/* Brand description */}
         {brand?.description && (
-          <div className="mb-6 rounded-2xl bg-white border border-[#cfe0ec] p-5">
+          <div className="mb-6 rounded-2xl bg-white border border-[#D9E4EC] p-5">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-tertiary mb-2">About {brandName}</h2>
             <p className="text-sm text-[#475569] leading-relaxed">{brand.description}</p>
           </div>
@@ -151,7 +151,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
             { icon: '🚚', label: 'Fast Delivery', sub: 'Nationwide shipping' },
             { icon: '🔧', label: 'Free Installation', sub: 'Dhaka metro area' },
           ].map(({ icon, label, sub }) => (
-            <div key={label} className="rounded-xl bg-white border border-[#cfe0ec] p-3 flex items-start gap-2.5">
+            <div key={label} className="rounded-xl bg-white border border-[#D9E4EC] p-3 flex items-start gap-2.5">
               <span className="text-xl flex-shrink-0">{icon}</span>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-[#001D5D] leading-snug">{label}</p>

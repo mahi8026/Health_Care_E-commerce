@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Products listing page — Server Component.
  *
  * Server-renders the first page of products (with filters from the URL)
@@ -67,21 +67,21 @@ export default async function ProductsRoute({ searchParams }) {
           <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mr-1 whitespace-nowrap">
             Topic Guides:
           </span>
-          <Link href="/topics/ecg-machines" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">ECG Machines</Link>
+          <Link href="/topics/ecg-machines" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">ECG Machines</Link>
           <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/blood-pressure-monitors" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">BP Monitors</Link>
+          <Link href="/topics/blood-pressure-monitors" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">BP Monitors</Link>
           <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/ultrasound-machines" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">Ultrasound</Link>
+          <Link href="/topics/ultrasound-machines" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Ultrasound</Link>
           <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/surgical-instruments" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">Surgical Instruments</Link>
+          <Link href="/topics/surgical-instruments" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Surgical Instruments</Link>
           <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/laboratory-equipment-reagents" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">Lab Reagents</Link>
+          <Link href="/topics/laboratory-equipment-reagents" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Lab Reagents</Link>
           <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/hospital-icu-equipment" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">Hospital & ICU</Link>
+          <Link href="/topics/hospital-icu-equipment" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Hospital & ICU</Link>
           <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/diabetes-care" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap">Diabetes Care</Link>
+          <Link href="/topics/diabetes-care" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Diabetes Care</Link>
           <span className="text-[var(--color-border-primary)] text-xs hidden sm:block">·</span>
-          <Link href="/topics" className="text-xs font-semibold text-[var(--color-brand-teal,#00a896)] hover:underline whitespace-nowrap hidden sm:block">All Topics →</Link>
+          <Link href="/topics" className="text-xs font-semibold text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap hidden sm:block">All Topics →</Link>
         </div>
       </nav>
 
@@ -103,12 +103,12 @@ export default async function ProductsRoute({ searchParams }) {
                 Equipment Price Guides
               </h2>
               <ul className="space-y-1.5">
-                <li><Link href="/equipment/ecg-machine-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">ECG Machine Prices Bangladesh 2026</Link></li>
-                <li><Link href="/equipment/blood-pressure-monitor-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Blood Pressure Monitor Prices</Link></li>
-                <li><Link href="/equipment/ultrasound-machine-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Ultrasound Machine Prices</Link></li>
-                <li><Link href="/equipment/patient-monitor-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Patient Monitor Prices</Link></li>
-                <li><Link href="/equipment/ventilator-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Ventilator Prices Bangladesh</Link></li>
-                <li><Link href="/equipment" className="text-xs font-semibold text-[var(--color-brand-teal,#00a896)] hover:underline">View All Price Guides →</Link></li>
+                <li><Link href="/equipment/ecg-machine-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">ECG Machine Prices Bangladesh 2026</Link></li>
+                <li><Link href="/equipment/blood-pressure-monitor-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Blood Pressure Monitor Prices</Link></li>
+                <li><Link href="/equipment/ultrasound-machine-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Ultrasound Machine Prices</Link></li>
+                <li><Link href="/equipment/patient-monitor-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Patient Monitor Prices</Link></li>
+                <li><Link href="/equipment/ventilator-price-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Ventilator Prices Bangladesh</Link></li>
+                <li><Link href="/equipment" className="text-xs font-semibold text-[var(--color-brand-teal,#18AFA9)] hover:underline">View All Price Guides →</Link></li>
               </ul>
             </div>
             <div>
@@ -116,12 +116,12 @@ export default async function ProductsRoute({ searchParams }) {
                 Top Categories
               </h2>
               <ul className="space-y-1.5">
-                <li><Link href="/products/category/diagnostic-equipment" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Diagnostic Equipment</Link></li>
-                <li><Link href="/products/category/orthopedic-supports" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Orthopedic Supports</Link></li>
-                <li><Link href="/products/category/surgical-and-wound-care" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Surgical & Wound Care</Link></li>
-                <li><Link href="/products/category/consumables" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Consumables</Link></li>
-                <li><Link href="/products/category/diabetes-care" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Diabetes Care</Link></li>
-                <li><Link href="/products/category/mobility-aids" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Mobility Aids</Link></li>
+                <li><Link href="/products/category/diagnostic-equipment" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Diagnostic Equipment</Link></li>
+                <li><Link href="/products/category/orthopedic-supports" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Orthopedic Supports</Link></li>
+                <li><Link href="/products/category/surgical-and-wound-care" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Surgical & Wound Care</Link></li>
+                <li><Link href="/products/category/consumables" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Consumables</Link></li>
+                <li><Link href="/products/category/diabetes-care" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Diabetes Care</Link></li>
+                <li><Link href="/products/category/mobility-aids" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Mobility Aids</Link></li>
               </ul>
             </div>
             <div>
@@ -129,12 +129,12 @@ export default async function ProductsRoute({ searchParams }) {
                 Brands & Guides
               </h2>
               <ul className="space-y-1.5">
-                <li><Link href="/brands" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">All Medical Equipment Brands</Link></li>
-                <li><Link href="/guides/medical-equipment-bangladesh-guide" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Medical Equipment Guide 2026</Link></li>
-                <li><Link href="/guides/diagnostic-equipment-guide-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Diagnostic Equipment Guide</Link></li>
-                <li><Link href="/guides/laboratory-reagents-guide-bangladesh" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">Laboratory Reagents Guide</Link></li>
-                <li><Link href="/b2b" className="text-xs text-[var(--color-brand-teal,#00a896)] hover:underline">B2B Bulk Pricing</Link></li>
-                <li><Link href="/guides" className="text-xs font-semibold text-[var(--color-brand-teal,#00a896)] hover:underline">All Buying Guides →</Link></li>
+                <li><Link href="/brands" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">All Medical Equipment Brands</Link></li>
+                <li><Link href="/guides/medical-equipment-bangladesh-guide" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Medical Equipment Guide 2026</Link></li>
+                <li><Link href="/guides/diagnostic-equipment-guide-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Diagnostic Equipment Guide</Link></li>
+                <li><Link href="/guides/laboratory-reagents-guide-bangladesh" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">Laboratory Reagents Guide</Link></li>
+                <li><Link href="/b2b" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline">B2B Bulk Pricing</Link></li>
+                <li><Link href="/guides" className="text-xs font-semibold text-[var(--color-brand-teal,#18AFA9)] hover:underline">All Buying Guides →</Link></li>
               </ul>
             </div>
           </div>

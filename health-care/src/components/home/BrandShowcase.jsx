@@ -53,7 +53,7 @@ export default function BrandShowcase() {
 
   if (loading) {
     return (
-      <section style={{ padding: '80px 24px 60px', background: '#FAFBFC' }}>
+      <section style={{ padding: '80px 24px 60px', background: 'var(--color-background-page)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div className="text-center mb-12">
             <div style={{ width: 200, height: 32, background: 'var(--color-background-muted)', margin: '0 auto 12px', borderRadius: 8 }} className="skeleton" />
@@ -70,7 +70,7 @@ export default function BrandShowcase() {
   }
 
   return (
-    <section style={{ padding: '50px 24px 40px', background: '#FAFBFC' }}>
+    <section style={{ padding: '50px 24px 40px', background: 'var(--color-background-page)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header - More Compact */}
         <div className="text-center" style={{ marginBottom: 32 }}>

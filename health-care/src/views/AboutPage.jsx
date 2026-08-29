@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import {
@@ -60,7 +60,7 @@ export default function AboutPage() {
       <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
-            <FaShieldAlt className="text-[#1DB954]" />
+            <FaShieldAlt className="text-[var(--color-status-success)]" />
             Regulatory Compliance
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">
@@ -126,7 +126,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {COMPLIANCE_POINTS.map((point) => (
                 <div key={point} className="flex items-start gap-3">
-                  <FaCheckCircle className="text-[#1DB954] mt-0.5 flex-shrink-0" />
+                  <FaCheckCircle className="text-[var(--color-status-success)] mt-0.5 flex-shrink-0" />
                   <span className="text-white/80 text-sm">{point}</span>
                 </div>
               ))}

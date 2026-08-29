@@ -40,7 +40,7 @@ export default function TopicsHub() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#F5F8FB]">
       <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
@@ -94,7 +94,7 @@ export default function TopicsHub() {
       </section>
 
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
-      <nav aria-label="Breadcrumb" className="bg-white border-b border-[#cfe0ec]">
+      <nav aria-label="Breadcrumb" className="bg-white border-b border-[#D9E4EC]">
         <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
           <Link href="/" className="hover:text-[#18AFA9] transition-colors">Home</Link>
           <span>/</span>
@@ -191,7 +191,7 @@ export default function TopicsHub() {
               icon: '🏷️',
               label: 'Brand Directory',
               sub: '35+ global brands',
-              color: 'from-[#1e3a5f] to-[#001D5D]',
+              color: 'from-[#002B78] to-[#001D5D]',
             },
           ].map(({ href, icon, label, sub, color }) => (
             <Link
@@ -212,7 +212,7 @@ export default function TopicsHub() {
         </div>
 
         {/* ── Quick links ─────────────────────────────────────────────── */}
-        <section className="mt-8 rounded-2xl bg-white border border-[#cfe0ec] p-6">
+        <section className="mt-8 rounded-2xl bg-white border border-[#D9E4EC] p-6">
           <h2 className="text-sm font-bold text-[#001D5D] mb-3">Quick Links</h2>
           <div className="flex flex-wrap gap-2">
             {[

@@ -59,7 +59,7 @@ export default async function BrandsHub() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#F5F8FB]">
       {/* Schemas */}
       <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
       <StructuredData
@@ -128,7 +128,7 @@ export default async function BrandsHub() {
       </section>
 
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
-      <nav aria-label="Breadcrumb" className="bg-white border-b border-[#cfe0ec]">
+      <nav aria-label="Breadcrumb" className="bg-white border-b border-[#D9E4EC]">
         <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
           <Link href="/" className="hover:text-[#18AFA9] transition-colors">Home</Link>
           <span>/</span>
@@ -152,7 +152,7 @@ export default async function BrandsHub() {
                   <Link
                     key={brand._id}
                     href={`/brands/${brand.slug}`}
-                    className="group flex flex-col items-center gap-2.5 rounded-2xl bg-white border border-[#cfe0ec] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
+                    className="group flex flex-col items-center gap-2.5 rounded-2xl bg-white border border-[#D9E4EC] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
                   >
                     {brand.logo?.url ? (
                       <div className="relative w-16 h-16 rounded-xl border border-[#e2e8f0] bg-white flex items-center justify-center p-2 overflow-hidden">
@@ -212,7 +212,7 @@ export default async function BrandsHub() {
                       <Link
                         key={brand._id}
                         href={`/brands/${brand.slug}`}
-                        className="group flex items-center gap-3 rounded-xl bg-white border border-[#cfe0ec] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
+                        className="group flex items-center gap-3 rounded-xl bg-white border border-[#D9E4EC] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
                       >
                         {brand.logo?.url ? (
                           <div className="relative w-11 h-11 rounded-lg border border-[#e2e8f0] bg-white flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
@@ -233,7 +233,7 @@ export default async function BrandsHub() {
                             {brand.productCount || 0} products{brand.country ? ` · ${brand.country}` : ''}
                           </p>
                         </div>
-                        <svg className="w-4 h-4 text-[#cfe0ec] group-hover:text-[#18AFA9] group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg className="w-4 h-4 text-[#D9E4EC] group-hover:text-[#18AFA9] group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                       </Link>
@@ -244,7 +244,7 @@ export default async function BrandsHub() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl bg-white border border-[#cfe0ec] p-12 text-center">
+          <div className="rounded-2xl bg-white border border-[#D9E4EC] p-12 text-center">
             <div className="text-4xl mb-3">🏥</div>
             <p className="text-sm font-semibold text-[#001D5D] mb-1">Brand directory is being updated</p>
             <p className="text-xs text-tertiary">Please check back soon.</p>
@@ -253,7 +253,7 @@ export default async function BrandsHub() {
 
         {/* ── Internal links ──────────────────────────────────────────── */}
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
+          <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
             <h2 className="text-sm font-bold text-[#001D5D] mb-3">Shop by Category</h2>
             <div className="flex flex-wrap gap-2">
               {[
@@ -271,7 +271,7 @@ export default async function BrandsHub() {
             </div>
           </section>
 
-          <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
+          <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
             <h2 className="text-sm font-bold text-[#001D5D] mb-3">Equipment Price Guides</h2>
             <div className="flex flex-wrap gap-2">
               {[
