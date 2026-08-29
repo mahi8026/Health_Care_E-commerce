@@ -125,13 +125,13 @@ export default function Footer() {
           {/* MediportBD column — logo + description + newsletter */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1 flex-shrink-0">
+              <div className="relative w-36 h-10 flex-shrink-0">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
                   fill
-                  sizes="44px"
-                  className="object-contain"
+                  sizes="144px"
+                  className="object-contain object-left"
                 />
               </div>
             </div>
@@ -221,13 +221,13 @@ export default function Footer() {
           {/* Newsletter on tablet */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
+              <div className="relative w-36 h-10">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
                   fill
-                  sizes="44px"
-                  className="object-contain"
+                  sizes="144px"
+                  className="object-contain object-left"
                 />
               </div>
             </div>
@@ -270,13 +270,13 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-brand-teal/30 bg-white p-1">
+              <div className="relative w-36 h-10">
                 <Image
                   src="/Mediport_Logo.png"
                   alt="MediportBD"
                   fill
-                  sizes="56px"
-                  className="object-contain"
+                  sizes="144px"
+                  className="object-contain object-left"
                 />
               </div>
             </div>

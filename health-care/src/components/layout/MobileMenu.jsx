@@ -132,20 +132,15 @@ export default function MobileMenu({ isOpen, onClose }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               position: 'relative',
-              width: '40px',
+              width: '140px',
               height: '40px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              border: '2px solid rgba(14,138,110,0.3)',
-              background: 'white',
-              padding: '2px',
             }}>
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
                 fill
-                sizes="40px"
-                style={{ objectFit: 'contain' }}
+                sizes="140px"
+                style={{ objectFit: 'contain', objectPosition: 'left' }}
               />
             </div>
           </div>
