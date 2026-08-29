@@ -172,6 +172,25 @@ html.lang-bn h6 {
   --glass-teal: #00D0CA;
   --glass-teal-dim: rgba(0, 208, 202, 0.35);
 
+  /* =========================================
+     MEDIPORT BD — SECTION COLORS
+     Light bands are the default (60/30/10); dark
+     anchors only at top (hero) and bottom (footer).
+     Orange = attention zones, mint = B2B, cool white = trust.
+     ========================================= */
+  --section-hero: var(--gradient-hero);
+  --section-flash: var(--color-background-primary);
+  --section-flash-accent: var(--color-brand-orange);
+  --section-flash-soft: #FFF7ED;
+  --section-coupon: #FFF7ED;
+  --section-coupon-accent: var(--color-brand-orange);
+  --section-b2b: var(--color-brand-teal-tint);
+  --section-b2b-accent: var(--color-brand-teal-icon);
+  --section-trust: var(--color-background-secondary);
+  --section-trust-card: #FFFFFF;
+  --section-trust-accent: var(--color-brand-teal);
+  --section-footer: linear-gradient(180deg, var(--color-brand-navy-deep) 0%, var(--color-brand-navy) 100%);
+
   /* Radius scale (canonical) */
   --radius-sm: 4px;
   --radius-md: 8px;

@@ -239,7 +239,7 @@ const HowItWorksSection = memo(function HowItWorksSection({ t }) {
 const B2BSection = memo(function B2BSection({ t, stats }) {
   const router = useRouter();
   return (
-    <section className="home-section" style={{ padding: '28px 24px' }}>
+    <section className="home-section" style={{ padding: '28px 24px', background: 'var(--section-b2b)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
       <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)',
         borderRadius: 20, padding: '32px 36px', overflow: 'hidden', position: 'relative' }}>
@@ -965,10 +965,12 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {/* COUPON BANNER: Show active promo code when available */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {promo && (
-        <section style={{ padding: '0 0 0', maxWidth: 1280, margin: '0 auto' }} className="coupon-banner-section">
+        <section className="coupon-banner-section" style={{ padding: '14px 16px', background: 'var(--section-coupon)' }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{
-            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)',
-            borderRadius: 0,
+            background: 'var(--color-background-primary)',
+            border: '1px solid rgba(255,107,0,0.25)',
+            borderRadius: 12,
             padding: '18px 28px',
             display: 'flex',
             alignItems: 'center',
@@ -979,21 +981,21 @@ export default function HomePage({ initialData = null, initialSettings = null })
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <span style={{ fontSize: 28 }}>🎟️</span>
               <div>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
+                <div style={{ color: 'var(--color-brand-navy)', fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
                   {promo.type === 'percentage'
                     ? `${promo.value}% OFF your order`
                     : `৳${promo.value?.toLocaleString()} OFF your order`}
                   {promo.minPurchase > 0 && (
-                    <span style={{ fontWeight: 400, fontSize: 13, opacity: 0.8 }}>
+                    <span style={{ fontWeight: 400, fontSize: 13, color: 'var(--color-text-secondary)' }}>
                       {' '}on orders over ৳{promo.minPurchase?.toLocaleString()}
                     </span>
                   )}
                 </div>
                 {promo.description && (
-                  <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12 }}>{promo.description}</div>
+                  <div style={{ color: 'var(--color-text-secondary)', fontSize: 12 }}>{promo.description}</div>
                 )}
                 {promo.endDate && (
-                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, marginTop: 2 }}>
+                  <div style={{ color: 'var(--color-text-secondary)', fontSize: 11, marginTop: 2 }}>
                     Expires: {new Date(promo.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </div>
                 )}
@@ -1001,12 +1003,12 @@ export default function HomePage({ initialData = null, initialSettings = null })
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
-                background: 'rgba(255,255,255,0.12)',
-                border: '2px dashed rgba(255,255,255,0.5)',
+                background: 'var(--section-coupon)',
+                border: '2px dashed var(--section-coupon-accent)',
                 borderRadius: 8,
                 padding: '8px 18px',
               }}>
-                <span style={{ color: '#fff', fontWeight: 800, fontSize: 18, letterSpacing: '0.1em' }}>
+                <span style={{ color: 'var(--section-coupon-accent)', fontWeight: 800, fontSize: 18, letterSpacing: '0.1em' }}>
                   {promo.code}
                 </span>
               </div>
@@ -1037,6 +1039,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
                 Copy
               </button>
             </div>
+          </div>
           </div>
         </section>
       )}

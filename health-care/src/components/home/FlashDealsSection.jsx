@@ -54,7 +54,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         )}
         {/* Discount badge */}
         {discountPct > 0 && (
-          <div style={{ position: 'absolute', top: 10, left: 10, background: '#DC2626', color: '#fff', fontSize: 10, fontWeight: 600,
+          <div style={{ position: 'absolute', top: 10, left: 10, background: 'var(--section-flash-accent)', color: '#fff', fontSize: 10, fontWeight: 600,
             padding: '3px 8px', borderRadius: 6 }}>-{discountPct}%</div>
         )}
         {/* Quick add button on hover */}
@@ -130,22 +130,23 @@ const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginRight: 2 }}>Ends in</span>
+      <span style={{ fontSize: 12, color: 'var(--color-text-secondary)', marginRight: 2 }}>Ends in</span>
       {[
         { val: timeLeft.h, label: 'hrs' },
         { val: timeLeft.m, label: 'min' },
         { val: timeLeft.s, label: 'sec' },
       ].map((t, i) => (
         <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
-          {i > 0 && <span style={{ color: 'var(--color-brand-teal)', fontWeight: 600, fontSize: 16 }}>:</span>}
+          {i > 0 && <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600, fontSize: 16 }}>:</span>}
           <div style={{
-            background: 'rgba(255,255,255,0.1)', borderRadius: 8,
+            background: 'var(--section-flash-soft)', borderRadius: 8,
+            border: '1px solid rgba(255,107,0,0.25)',
             padding: '6px 10px', textAlign: 'center', minWidth: 46,
           }}>
-            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)', lineHeight: 1 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--section-flash-accent)', lineHeight: 1 }}>
               {String(t.val).padStart(2, '0')}
             </div>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>{t.label}</div>
+            <div style={{ fontSize: 10, color: 'var(--color-text-secondary)', marginTop: 2 }}>{t.label}</div>
           </div>
         </div>
       ))}
@@ -201,8 +202,8 @@ export default function FlashDealsSection() {
 
   if (loading) {
     return (
-      <section style={{ background: 'var(--color-brand-navy)', padding: '24px 16px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', color: '#fff' }}>
+      <section style={{ background: 'var(--section-flash)', padding: '24px 16px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', color: 'var(--color-text-primary)' }}>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Loading Flash Deals...</div>
         </div>
       </section>
@@ -216,24 +217,24 @@ export default function FlashDealsSection() {
   const currentDeal = flashDeals[0];
 
   return (
-    <section style={{ background: 'var(--color-brand-navy)', padding: '24px 16px' }}>
+    <section style={{ background: 'var(--section-flash)', padding: '24px 16px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header row */}
         <div style={{ marginBottom: 20 }}>
           {/* Title + countdown stacked on mobile */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
+              <div style={{ fontSize: 11, color: 'var(--section-flash-accent)', fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
                 FLASH DEALS
               </div>
               <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 600,
-                color: '#fff', margin: 0 }}>Deal of the Day</h2>
+                color: 'var(--color-brand-navy)', margin: 0 }}>Deal of the Day</h2>
             </div>
             <button onClick={() => router.push('/flash-deals')}
-              style={{ background: 'rgba(255,255,255,0.1)', color: '#fff',
-                border: '1px solid rgba(255,255,255,0.2)', padding: '7px 16px', borderRadius: 8,
-                fontSize: 12, cursor: 'pointer', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              style={{ background: 'var(--section-flash-soft)', color: 'var(--section-flash-accent)',
+                border: '1px solid rgba(255,107,0,0.3)', padding: '7px 16px', borderRadius: 8,
+                fontSize: 12, cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
               See all deals →
             </button>
           </div>
