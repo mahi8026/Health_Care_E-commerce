@@ -1102,20 +1102,23 @@ exports.googleAuthSuccess = async (req, res) => {
     // S-12 — set the httpOnly refresh cookie when cookie auth is enabled
     setRefreshCookie(res, refreshToken);
 
-    // Redirect to frontend. When cookie auth is enabled the refresh credential
-    // is ALREADY in the httpOnly cookie, so NO tokens are placed in the URL —
-    // this keeps JWTs out of browser history, Vercel/nginx access logs, and any
-    // intermediary. The frontend then calls POST /api/auth/refresh with the
-    // cookie (cookie-only) to obtain the access token and complete the session
-    // (same flow as token-refresh). Legacy mode (flag off) keeps the query
-    // params so existing deployments are unaffected.
-    const oauthRedirect = authCookiesEnabled()
-      ? `${process.env.FRONTEND_URL}/oauth/google/callback?auth=cookie`
-      : `${process.env.FRONTEND_URL}/oauth/google/callback?token=${token}&refreshToken=${refreshToken}`;
-    res.redirect(oauthRedirect);
+    // Store tokens in a short-lived httpOnly cookie scoped to the OAuth callback
+    // path. This avoids tokens in the URL (which get stripped by www-redirects
+    // and leak into browser history / server logs).
+    // The frontend callback page reads this cookie via GET /api/auth/google/tokens
+    // and immediately clears it server-side (one-time use, 2-minute TTL).
+    const oauthState = crypto.randomBytes(32).toString('hex');
+    
+    // Cache the token pair against the state code (2-minute TTL)
+    const oauthTokenCache = require('../services/oauthTokenCache');
+    oauthTokenCache.set(oauthState, { token, refreshToken });
+
+    const frontendUrl = (process.env.FRONTEND_URL || 'https://www.mediportbd.com').replace(/\/+$/, '');
+    res.redirect(`${frontendUrl}/oauth/google/callback?state=${oauthState}`);
   } catch (error) {
     logger.error(`[googleAuthSuccess] ${error.message}`);
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
+    const frontendUrl = (process.env.FRONTEND_URL || 'https://www.mediportbd.com').replace(/\/+$/, '');
+    res.redirect(`${frontendUrl}/login?error=server_error`);
   }
 };
 

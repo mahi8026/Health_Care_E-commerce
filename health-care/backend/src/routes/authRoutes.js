@@ -260,6 +260,21 @@ router.get('/google/callback',
 router.get('/google/success', googleAuthSuccess);
 router.get('/google/failure', googleAuthFailure);
 
+// OAuth state-code token exchange — frontend calls this after redirect
+// to safely retrieve the token pair without exposing them in the URL
+router.get('/google/tokens', async (req, res) => {
+  const { state } = req.query;
+  if (!state || typeof state !== 'string') {
+    return res.status(400).json({ success: false, message: 'Missing state code' });
+  }
+  const oauthTokenCache = require('../services/oauthTokenCache');
+  const tokens = oauthTokenCache.consume(state);
+  if (!tokens) {
+    return res.status(401).json({ success: false, message: 'Invalid or expired state code' });
+  }
+  return res.json({ success: true, token: tokens.token, refreshToken: tokens.refreshToken });
+});
+
 // Protected routes
 router.post('/logout', protect, noStore, logout);
 router.get('/me', protect, noStore, getMe);

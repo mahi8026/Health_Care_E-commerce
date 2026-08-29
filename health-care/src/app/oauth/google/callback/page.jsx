@@ -2,9 +2,20 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import api, { setToken, setRefreshToken } from '@/utils/api';
+import { setToken, setRefreshToken } from '@/utils/api';
+import { API } from '@/constants/api';
 import Spinner from '@/components/ui/Spinner';
 
+/**
+ * Google OAuth Callback Page
+ *
+ * The backend redirects here with ?state=<32-byte-hex-code> after OAuth succeeds.
+ * We exchange that state code for the real token pair via GET /api/auth/google/tokens,
+ * which consumes the code (one-time use, 2-min TTL) and returns the JWT pair.
+ *
+ * This avoids putting tokens in the URL — they were previously getting stripped
+ * by the www-redirect (mediportbd.com → www.mediportbd.com) or leaking into logs.
+ */
 function GoogleCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -13,76 +24,64 @@ function GoogleCallbackContent() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        const authMode = searchParams.get('auth');
+        // Backend may pass an error param directly
         const error = searchParams.get('error');
-
         if (error) {
-          process.env.NODE_ENV !== "production" && console.error('Google OAuth error:', error);
           setStatus('error');
-          setTimeout(() => {
-            router.push(`/login?error=${error}`);
-          }, 1500);
+          setTimeout(() => router.push(`/login?error=${error}`), 1500);
           return;
         }
 
-        // S-12 cookie-auth mode: the backend sets the httpOnly refresh cookie
-        // and redirects with NO tokens in the URL (nothing lands in history or
-        // logs). Exchange the cookie for an access token via the cookie-only
-        // refresh endpoint.
-        if (authMode === 'cookie') {
-          console.log('[OAuth Callback] Cookie auth mode - calling refreshToken...');
-          const data = await api.refreshToken();
-          if (!data || !data.token) {
-            throw new Error('No access token returned from cookie refresh');
+        // New state-code flow — exchange the code for tokens server-side
+        const state = searchParams.get('state');
+        if (state) {
+          const res = await fetch(`${API}/auth/google/tokens?state=${encodeURIComponent(state)}`, {
+            credentials: 'include',
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.token || !data.refreshToken) {
+            throw new Error(data.message || 'Token exchange failed');
           }
+
           setToken(data.token);
+          setRefreshToken(data.refreshToken);
 
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('user-logged-in'));
           }
 
           setStatus('success');
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 1000);
+          setTimeout(() => { window.location.href = '/'; }, 800);
           return;
         }
 
-        // Legacy URL-token mode (AUTH_COOKIES_ENABLED unset) — unchanged.
+        // Fallback: legacy URL-token mode (token/refreshToken in query params)
+        // Kept for backward compatibility — can be removed once state-code is stable
         const token = searchParams.get('token');
         const refreshToken = searchParams.get('refreshToken');
 
-        console.log('[OAuth Callback] token present:', !!token, 'refreshToken present:', !!refreshToken, 'authMode:', authMode);
-
         if (token && refreshToken) {
-          console.log('[OAuth Callback] Setting tokens...');
           setToken(token);
           setRefreshToken(refreshToken);
-          console.log('[OAuth Callback] Tokens set, dispatching event...');
 
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('user-logged-in'));
           }
 
           setStatus('success');
-          
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 1000);
-        } else {
-          process.env.NODE_ENV !== "production" && console.error('Missing tokens in callback');
-          setStatus('error');
-          setTimeout(() => {
-            router.push('/login?error=missing_tokens');
-          }, 1500);
+          setTimeout(() => { window.location.href = '/'; }, 800);
+          return;
         }
-      } catch (error) {
-        // Log the actual error so we can diagnose it in the browser console
-        console.error('[OAuth Callback] Error details:', error?.message, error?.stack, error);
+
+        // Nothing usable in the URL
         setStatus('error');
-        setTimeout(() => {
-          router.push('/login?error=callback_failed');
-        }, 1500);
+        setTimeout(() => router.push('/login?error=missing_tokens'), 1500);
+
+      } catch (err) {
+        console.error('[OAuth Callback] Error:', err?.message, err);
+        setStatus('error');
+        setTimeout(() => router.push('/login?error=callback_failed'), 1500);
       }
     };
 
