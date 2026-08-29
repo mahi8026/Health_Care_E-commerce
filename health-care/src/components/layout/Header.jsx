@@ -223,16 +223,14 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             className="flex-shrink-0 cursor-pointer group flex items-center"
             aria-label="MediportBD home"
           >
-            <div className="relative h-10 w-auto" style={{ width: '140px' }}>
-              <Image
-                src="/Mediport_Logo.png"
-                alt="MediportBD"
-                fill
-                sizes="140px"
-                priority
-                className="object-contain object-left"
-              />
-            </div>
+            <Image
+              src="/Mediport_Logo.png"
+              alt="MediportBD"
+              width={140}
+              height={40}
+              priority
+              className="object-contain"
+            />
           </button>
 
           <div className="hidden md:block nav-divider" />

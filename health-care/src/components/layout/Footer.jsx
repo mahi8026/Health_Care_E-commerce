@@ -125,15 +125,13 @@ export default function Footer() {
           {/* MediportBD column — logo + description + newsletter */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-36 h-10 flex-shrink-0">
-                <Image
-                  src="/Mediport_Logo.png"
-                  alt="MediportBD"
-                  fill
-                  sizes="144px"
-                  className="object-contain object-left"
-                />
-              </div>
+              <Image
+                src="/Mediport_Logo.png"
+                alt="MediportBD"
+                width={144}
+                height={40}
+                className="object-contain"
+              />
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
@@ -221,15 +219,13 @@ export default function Footer() {
           {/* Newsletter on tablet */}
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative w-36 h-10">
-                <Image
-                  src="/Mediport_Logo.png"
-                  alt="MediportBD"
-                  fill
-                  sizes="144px"
-                  className="object-contain object-left"
-                />
-              </div>
+              <Image
+                src="/Mediport_Logo.png"
+                alt="MediportBD"
+                width={144}
+                height={40}
+                className="object-contain"
+              />
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment.
@@ -270,15 +266,13 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="relative w-36 h-10">
-                <Image
-                  src="/Mediport_Logo.png"
-                  alt="MediportBD"
-                  fill
-                  sizes="144px"
-                  className="object-contain object-left"
-                />
-              </div>
+              <Image
+                src="/Mediport_Logo.png"
+                alt="MediportBD"
+                width={144}
+                height={40}
+                className="object-contain"
+              />
             </div>
             <p className="text-xs text-white/70 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.

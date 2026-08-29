@@ -130,19 +130,13 @@ export default function MobileMenu({ isOpen, onClose }) {
           boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.06)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              position: 'relative',
-              width: '140px',
-              height: '40px',
-            }}>
-              <Image
-                src="/Mediport_Logo.png"
-                alt="MediportBD"
-                fill
-                sizes="140px"
-                style={{ objectFit: 'contain', objectPosition: 'left' }}
-              />
-            </div>
+            <Image
+              src="/Mediport_Logo.png"
+              alt="MediportBD"
+              width={140}
+              height={40}
+              style={{ objectFit: 'contain' }}
+            />
           </div>
           <button
             onClick={onClose}
