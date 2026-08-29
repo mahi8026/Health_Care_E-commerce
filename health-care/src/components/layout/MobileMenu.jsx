@@ -133,9 +133,10 @@ export default function MobileMenu({ isOpen, onClose }) {
             <Image
               src="/Mediport_Logo.png"
               alt="MediportBD"
-              width={140}
+              width={120}
               height={40}
-              style={{ objectFit: 'contain' }}
+              unoptimized
+              style={{ width: '120px', height: '40px', objectFit: 'contain' }}
             />
           </div>
           <button

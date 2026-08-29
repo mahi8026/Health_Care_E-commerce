@@ -226,10 +226,11 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             <Image
               src="/Mediport_Logo.png"
               alt="MediportBD"
-              width={140}
+              width={120}
               height={40}
               priority
-              className="object-contain"
+              unoptimized
+              style={{ width: '120px', height: '40px', objectFit: 'contain' }}
             />
           </button>
 

@@ -128,9 +128,10 @@ export default function Footer() {
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
-                width={144}
+                width={120}
                 height={40}
-                className="object-contain"
+                unoptimized
+                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
               />
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
@@ -222,9 +223,10 @@ export default function Footer() {
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
-                width={144}
+                width={120}
                 height={40}
-                className="object-contain"
+                unoptimized
+                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
               />
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
@@ -269,9 +271,10 @@ export default function Footer() {
               <Image
                 src="/Mediport_Logo.png"
                 alt="MediportBD"
-                width={144}
+                width={120}
                 height={40}
-                className="object-contain"
+                unoptimized
+                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
               />
             </div>
             <p className="text-xs text-white/70 leading-relaxed">
