@@ -210,17 +210,17 @@ export default function BrandShowcase() {
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 2px 8px rgba(14, 138, 110, 0.2)',
+              boxShadow: '0 2px 8px rgba(24, 175, 169, 0.2)',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'var(--color-brand-teal-hover)';
               e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(14, 138, 110, 0.3)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(24, 175, 169, 0.3)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'var(--color-brand-teal)';
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(14, 138, 110, 0.2)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(24, 175, 169, 0.2)';
             }}
           >
             View All Products →

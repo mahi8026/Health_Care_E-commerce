@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { FaShieldAlt, FaTools, FaFileAlt, FaExclamationTriangle, FaEnvelope } from 'react-icons/fa';
 import { CONTACT } from '@/constants/api';
@@ -52,7 +52,7 @@ export default function WarrantyPage() {
       <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
-            <FaShieldAlt className="text-brand-teal-light" />
+            <FaShieldAlt className="text-brand-teal" />
             Warranty &amp; Claims
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">Every device, backed by a warranty</h1>
@@ -125,7 +125,7 @@ export default function WarrantyPage() {
 
           {/* CTA */}
           <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
-            <FaEnvelope className="text-2xl text-brand-teal-light mx-auto mb-2" />
+            <FaEnvelope className="text-2xl text-brand-teal mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Need to start a warranty claim?</h3>
             <p className="text-white/70 text-sm mb-5">
               Email our support team with your order number and serial number — we respond within one business day.

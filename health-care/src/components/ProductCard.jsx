@@ -176,7 +176,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         
         {/* Save Badge - Top Left - Compact version */}
         {hasDiscount && (
-          <div className="absolute top-1 left-1 bg-[#7C3AED] text-white px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm">
+          <div className="absolute top-1 left-1 bg-[var(--color-brand-orange)] text-white px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm">
             -{discountPercent}%
           </div>
         )}
@@ -290,7 +290,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         
         {/* Stock Status - Extra Compact */}
         <div className="flex items-center gap-0.5 sm:gap-1 mb-1 sm:mb-1.5">
-          <div className="w-1 h-1 sm:w-1 sm:h-1 rounded-full bg-[#639922] flex-shrink-0"></div>
+          <div className="w-1 h-1 sm:w-1 sm:h-1 rounded-full bg-[var(--color-status-success)] flex-shrink-0"></div>
           <span className="text-[10px] sm:text-xs text-[var(--color-text-secondary)]">
             {product.stock <= 0 ? 'Out of stock'
               : product.stock <= (product.lowStockThreshold || 10)

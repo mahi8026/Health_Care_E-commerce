@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { FaNewspaper, FaCalendarAlt, FaTag, FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
@@ -48,7 +48,7 @@ export default function NewsPage() {
       <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
-            <FaNewspaper className="text-brand-teal-light" />
+            <FaNewspaper className="text-brand-teal" />
             News &amp; Updates
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">Latest from MediportBD</h1>
@@ -86,7 +86,7 @@ export default function NewsPage() {
 
           {/* CTA */}
           <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
-            <FaArrowRight className="text-2xl text-brand-teal-light mx-auto mb-2" />
+            <FaArrowRight className="text-2xl text-brand-teal mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Want to stay in the loop?</h3>
             <p className="text-white/70 text-sm mb-5">
               Subscribe to our newsletter in the footer to receive product launches and company updates in your inbox.

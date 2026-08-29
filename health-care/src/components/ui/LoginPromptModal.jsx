@@ -34,7 +34,7 @@ export default function LoginPromptModal() {
     <Modal isOpen={visible} onClose={close} size="sm">
       {/* Illustration area */}
       <div style={{
-        background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #1a3a6b 100%)',
+        background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)',
         padding: '32px 32px 28px',
         textAlign: 'center',
         position: 'relative',

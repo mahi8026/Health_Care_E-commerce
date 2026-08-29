@@ -99,7 +99,7 @@ export default function NotificationBanner() {
         {['📦 Order updates', '🔥 Flash deals', '📋 Stock alerts'].map(feat => (
           <span key={feat} style={{
             fontSize: 'var(--text-xs)', padding: '3px 8px', borderRadius: 20,
-            background: 'rgba(14,138,110,0.2)', border: '1px solid rgba(77,219,184,0.2)',
+            background: 'rgba(24,175,169,0.2)', border: '1px solid rgba(0,208,202,0.2)',
             color: 'var(--color-brand-teal-light)',
           }}>{feat}</span>
         ))}
@@ -108,7 +108,7 @@ export default function NotificationBanner() {
       {error && (
         <div style={{
           marginBottom: 10, padding: '8px 12px', borderRadius: 8,
-          background: 'rgba(226,75,74,0.15)', border: '1px solid rgba(226,75,74,0.3)',
+          background: 'rgba(220,53,69,0.15)', border: '1px solid rgba(220,53,69,0.3)',
           color: '#FCA5A5', fontSize: 'var(--text-xs)', display: 'flex', alignItems: 'center', gap: 6,
         }}>
           <span>⚠️</span><span>{error}</span>
@@ -125,7 +125,7 @@ export default function NotificationBanner() {
           Not now
         </button>
         <button onClick={handleEnable} disabled={isLoading} style={{
-          flex: 2, padding: '10px', background: isLoading ? 'rgba(14,138,110,0.6)' : 'var(--color-brand-teal)',
+          flex: 2, padding: '10px', background: isLoading ? 'rgba(24,175,169,0.6)' : 'var(--color-brand-teal)',
           border: 'none', borderRadius: 10, color: '#fff', fontSize: 'var(--text-sm)', fontWeight: 600,
           cursor: isLoading ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'background 0.2s',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,

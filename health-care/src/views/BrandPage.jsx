@@ -37,7 +37,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
       {/* ── Hero banner ──────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden text-white"
-        style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 55%, #0b7a60 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #001D5D 0%, #002B78 55%, #18AFA9 100%)' }}
       >
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl" />
@@ -112,9 +112,9 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => router.push('/quotes/request')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#0b2545] text-sm font-bold hover:bg-[#f8fafc] transition-colors shadow-md"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#001D5D] text-sm font-bold hover:bg-[#f8fafc] transition-colors shadow-md"
                 >
-                  <FaFileInvoiceDollar size={14} className="text-[#0b7a60]" />
+                  <FaFileInvoiceDollar size={14} className="text-[#18AFA9]" />
                   Request Bulk Quote
                 </button>
                 <a
@@ -154,7 +154,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
             <div key={label} className="rounded-xl bg-white border border-[#cfe0ec] p-3 flex items-start gap-2.5">
               <span className="text-xl flex-shrink-0">{icon}</span>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-[#0b2545] leading-snug">{label}</p>
+                <p className="text-xs font-semibold text-[#001D5D] leading-snug">{label}</p>
                 <p className="text-[10px] text-tertiary mt-0.5">{sub}</p>
               </div>
             </div>
@@ -172,7 +172,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
                   <Link
                     key={cat}
                     href={`/products/category/${slug}`}
-                    className="text-xs font-medium text-[#0b7a60] border border-[#0b7a60]/30 rounded-full px-3.5 py-1.5 hover:bg-[#0b7a60] hover:text-white transition-colors"
+                    className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-full px-3.5 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors"
                   >
                     {cat}
                   </Link>
@@ -186,7 +186,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
         <section>
           <div className="flex items-end justify-between mb-4">
             <div>
-              <h2 className="text-lg font-bold text-[#0b2545]">
+              <h2 className="text-lg font-bold text-[#001D5D]">
                 {brandName} Products
               </h2>
               <p className="text-xs text-tertiary mt-0.5">
@@ -218,7 +218,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
 
         {/* Bottom CTA */}
         <div className="mt-10 rounded-2xl text-white p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-8"
-          style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, #001D5D 0%, #002B78 60%, #18AFA9 100%)' }}>
           <div className="flex-1">
             <h2 className="text-base md:text-lg font-bold mb-1">
               Need {brandName} products for your facility?
@@ -230,7 +230,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
           <div className="flex flex-wrap gap-3 flex-shrink-0">
             <button
               onClick={() => router.push('/quotes/request')}
-              className="px-5 py-2.5 rounded-xl bg-[#0b7a60] text-white text-sm font-bold hover:bg-[#096450] transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-[#18AFA9] text-white text-sm font-bold hover:bg-[#007F7B] transition-colors"
             >
               Request a Quote
             </button>

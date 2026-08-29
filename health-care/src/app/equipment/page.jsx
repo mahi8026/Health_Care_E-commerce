@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { LANDING_PAGES } from '@/config/landingPages';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
@@ -25,7 +25,7 @@ export default function EquipmentHub() {
     <div className="min-h-screen bg-page">
       <section className="bg-brand-navy text-white py-12 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-teal-light mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-brand-teal mb-3">
             MediportBD Price Directory
           </p>
           <h1 className="text-2xl md:text-4xl font-semibold mb-4">

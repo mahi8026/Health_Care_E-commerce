@@ -31,7 +31,7 @@ export async function GET(request) {
             width: '1200px',
             height: '630px',
             display: 'flex',
-            background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 55%, #0e8a6e 100%)',
+            background: 'linear-gradient(135deg, #001D5D 0%, #002B78 55%, #18AFA9 100%)',
             fontFamily: 'system-ui, -apple-system, sans-serif',
             position: 'relative',
             overflow: 'hidden',
@@ -48,7 +48,7 @@ export async function GET(request) {
           {/* Left accent bar */}
           <div style={{
             position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px',
-            background: 'linear-gradient(180deg, #4ddbb8 0%, #0e8a6e 100%)',
+            background: 'linear-gradient(180deg, #00D0CA 0%, #18AFA9 100%)',
             display: 'flex',
           }} />
 
@@ -96,13 +96,13 @@ export async function GET(request) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <div style={{
-                  width: '26px', height: '26px', background: '#4ddbb8',
+                  width: '26px', height: '26px', background: '#00D0CA',
                   borderRadius: '50%', display: 'flex',
                 }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '22px', fontWeight: '700', color: '#ffffff', lineHeight: 1 }}>
-                  Mediport<span style={{ color: '#4ddbb8' }}>BD</span>
+                  Mediport<span style={{ color: '#00D0CA' }}>BD</span>
                 </span>
                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '2px' }}>
                   www.mediportbd.com
@@ -112,10 +112,10 @@ export async function GET(request) {
               <div style={{
                 marginLeft: 'auto',
                 padding: '4px 10px', borderRadius: '16px',
-                background: 'rgba(77,219,184,0.15)',
-                border: '1px solid rgba(77,219,184,0.3)',
+                background: 'rgba(0,208,202,0.15)',
+                border: '1px solid rgba(0,208,202,0.3)',
                 fontSize: '10px', fontWeight: '600',
-                color: '#4ddbb8', letterSpacing: '0.07em',
+                color: '#00D0CA', letterSpacing: '0.07em',
                 display: 'flex',
               }}>
                 DGDA REGISTERED
@@ -128,7 +128,7 @@ export async function GET(request) {
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {brand && (
                     <span style={{
-                      fontSize: '12px', fontWeight: '600', color: '#4ddbb8',
+                      fontSize: '12px', fontWeight: '600', color: '#00D0CA',
                       textTransform: 'uppercase', letterSpacing: '0.1em',
                     }}>
                       {brand}
@@ -163,7 +163,7 @@ export async function GET(request) {
               {price && (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
                   <span style={{
-                    fontSize: '36px', fontWeight: '700', color: '#4ddbb8',
+                    fontSize: '36px', fontWeight: '700', color: '#00D0CA',
                     letterSpacing: '-0.5px', display: 'flex',
                   }}>
                     {price}
@@ -207,7 +207,7 @@ export async function GET(request) {
           width: '1200px',
           height: '630px',
           display: 'flex',
-          background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 55%, #0e8a6e 100%)',
+          background: 'linear-gradient(135deg, #001D5D 0%, #002B78 55%, #18AFA9 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -217,13 +217,13 @@ export async function GET(request) {
         <div style={{
           position: 'absolute', top: '-120px', right: '-80px',
           width: '500px', height: '500px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(77,219,184,0.18) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(0,208,202,0.18) 0%, transparent 70%)',
           display: 'flex',
         }} />
         <div style={{
           position: 'absolute', bottom: '-160px', left: '-80px',
           width: '440px', height: '440px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(14,138,110,0.22) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(24,175,169,0.22) 0%, transparent 70%)',
           display: 'flex',
         }} />
         {/* Grid dots pattern */}
@@ -238,7 +238,7 @@ export async function GET(request) {
         <div style={{
           position: 'absolute', left: 0, top: 0, bottom: 0,
           width: '6px',
-          background: 'linear-gradient(180deg, #4ddbb8 0%, #0e8a6e 100%)',
+          background: 'linear-gradient(180deg, #00D0CA 0%, #18AFA9 100%)',
           display: 'flex',
         }} />
 
@@ -264,13 +264,13 @@ export async function GET(request) {
             }}>
               <div style={{
                 width: '36px', height: '36px',
-                background: '#4ddbb8',
+                background: '#00D0CA',
                 borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <div style={{
                   width: '18px', height: '4px',
-                  background: '#0b2545',
+                  background: '#001D5D',
                   borderRadius: '2px',
                   display: 'flex',
                 }} />
@@ -281,7 +281,7 @@ export async function GET(request) {
                 fontSize: '32px', fontWeight: '700', color: '#ffffff',
                 letterSpacing: '-0.5px', lineHeight: 1,
               }}>
-                Mediport<span style={{ color: '#4ddbb8' }}>BD</span>
+                Mediport<span style={{ color: '#00D0CA' }}>BD</span>
               </span>
               <span style={{
                 fontSize: '13px', color: 'rgba(255,255,255,0.55)',
@@ -298,10 +298,10 @@ export async function GET(request) {
             }}>
               <div style={{
                 padding: '6px 14px', borderRadius: '20px',
-                background: 'rgba(77,219,184,0.15)',
-                border: '1px solid rgba(77,219,184,0.35)',
+                background: 'rgba(0,208,202,0.15)',
+                border: '1px solid rgba(0,208,202,0.35)',
                 fontSize: '12px', fontWeight: '600',
-                color: '#4ddbb8', letterSpacing: '0.06em',
+                color: '#00D0CA', letterSpacing: '0.06em',
                 display: 'flex',
               }}>
                 DGDA REGISTERED
@@ -323,7 +323,7 @@ export async function GET(request) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {page && (
               <span style={{
-                fontSize: '13px', color: '#4ddbb8', fontWeight: '600',
+                fontSize: '13px', color: '#00D0CA', fontWeight: '600',
                 textTransform: 'uppercase', letterSpacing: '0.12em',
               }}>
                 {page}

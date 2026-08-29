@@ -53,7 +53,7 @@ function TrackingTimeline({ status, timeline }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: isPending ? 16 : 20,
-                boxShadow: isCurrent ? '0 0 0 4px rgba(14,138,110,0.15)' : 'none',
+                boxShadow: isCurrent ? '0 0 0 4px rgba(24,175,169,0.15)' : 'none',
                 transition: 'all 0.3s',
                 color: isPending ? 'var(--color-text-tertiary)' : '#fff',
                 filter: isPending ? 'grayscale(100%)' : 'none',

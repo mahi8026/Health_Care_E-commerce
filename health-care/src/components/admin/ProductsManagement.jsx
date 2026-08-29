@@ -818,7 +818,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         
                         {/* Primary badge */}
                         {img.isPrimary && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-brand-teal text-white text-xs text-center py-[2px] font-semibold" style={{ background: 'rgba(14,138,110,0.9)' }}>
+                          <div className="absolute bottom-0 left-0 right-0 bg-brand-teal text-white text-xs text-center py-[2px] font-semibold" style={{ background: 'rgba(24,175,169,0.9)' }}>
                             PRIMARY
                           </div>
                         )}
@@ -832,7 +832,7 @@ export default function ProductsManagement({ openCreateRef }) {
                           }}
                           disabled={deletingImageIndex === idx}
                           className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-100"
-                          style={{ background: deletingImageIndex === idx ? 'rgba(156,163,175,0.9)' : 'rgba(226,75,74,0.9)' }}
+                          style={{ background: deletingImageIndex === idx ? 'rgba(156,163,175,0.9)' : 'rgba(220,53,69,0.9)' }}
                           aria-label="Remove image"
                         >
                           {deletingImageIndex === idx ? (

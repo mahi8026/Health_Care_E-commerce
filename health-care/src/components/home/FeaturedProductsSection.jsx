@@ -39,7 +39,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
         border: '1px solid var(--color-border-primary)', cursor: 'pointer',
         transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,29,93,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
 
       {/* Image */}
@@ -222,7 +222,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-              boxShadow: activeTab === 'all' ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
+              boxShadow: activeTab === 'all' ? '0 2px 8px rgba(0, 29, 93, 0.15)' : 'none',
               transform: activeTab === 'all' ? 'translateY(-1px)' : 'none',
               listStyle: 'none',
               display: 'inline-flex',
@@ -270,7 +270,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
                     fontWeight: 600,
                     cursor: 'pointer',
                     transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-                    boxShadow: activeTab === categoryName ? '0 2px 8px rgba(11, 37, 69, 0.15)' : 'none',
+                    boxShadow: activeTab === categoryName ? '0 2px 8px rgba(0, 29, 93, 0.15)' : 'none',
                     transform: activeTab === categoryName ? 'translateY(-1px)' : 'none',
                     listStyle: 'none',
                     display: 'inline-flex',

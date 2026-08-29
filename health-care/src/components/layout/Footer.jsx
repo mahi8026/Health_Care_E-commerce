@@ -96,7 +96,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-brand-navy text-white pb-[calc(60px+env(safe-area-inset-bottom))] lg:pb-0">
+    <footer className="bg-gradient-to-br from-brand-navy to-brand-navy-deep text-white pb-[calc(60px+env(safe-area-inset-bottom))] lg:pb-0">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
 
         {/* ── Desktop: Single horizontal row with all columns ── */}
@@ -106,7 +106,7 @@ export default function Footer() {
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-4 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
                 <ul className="space-y-3">
@@ -137,7 +137,7 @@ export default function Footer() {
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
             </h3>
             <form onSubmit={handleSubscribe} className="space-y-2">
@@ -172,7 +172,7 @@ export default function Footer() {
                   className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50" />
               )}
               {message && (
-                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
+                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal' : 'bg-danger/20 text-[#FCA5A5]'}`}>
                   {messageType === 'success' ? '✓' : '✗'} {message}
                 </div>
               )}
@@ -184,7 +184,7 @@ export default function Footer() {
         <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6">
           {links.slice(0, 3).map((col) => (
             <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-4 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
               </h3>
               <ul className="space-y-3">
@@ -203,7 +203,7 @@ export default function Footer() {
         <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6 mt-6">
           {links.slice(3).map((col) => (
             <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-4 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-4 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
               </h3>
               <ul className="space-y-3">
@@ -232,7 +232,7 @@ export default function Footer() {
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment.
             </p>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
             </h3>
             <form onSubmit={handleSubscribe} className="space-y-2">
@@ -255,7 +255,7 @@ export default function Footer() {
                 </button>
               </div>
               {message && (
-                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
+                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal' : 'bg-danger/20 text-[#FCA5A5]'}`}>
                   {messageType === 'success' ? '✓' : '✗'} {message}
                 </div>
               )}
@@ -285,7 +285,7 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-4">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
                 <ul className="space-y-2">
@@ -302,7 +302,7 @@ export default function Footer() {
           </div>
           {/* Newsletter */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal-light mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h3>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email" disabled={loading}
@@ -313,7 +313,7 @@ export default function Footer() {
                 {loading ? 'Subscribing...' : 'Subscribe'}
               </button>
               {message && (
-                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal-light' : 'bg-danger/20 text-[#FCA5A5]'}`}>
+                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal' : 'bg-danger/20 text-[#FCA5A5]'}`}>
                   {messageType === 'success' ? '✓' : '✗'} {message}
                 </div>
               )}
@@ -343,8 +343,8 @@ export default function Footer() {
             <div className="flex items-center gap-3">
               <a href="/privacy" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Privacy Policy</a>
               <a href="/terms" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Terms of Service</a>
-              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">DGDA Registered</span>
-              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">ISO 13485</span>
+              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">DGDA Registered</span>
+              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">ISO 13485</span>
             </div>
           </div>
 
@@ -355,8 +355,8 @@ export default function Footer() {
                 © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA Registered</span>
-                <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
+                <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA Registered</span>
+                <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
               </div>
             </div>
             <div className="flex items-center justify-between text-xs text-white/50">
@@ -398,8 +398,8 @@ export default function Footer() {
               <a href="/terms" className="text-xs text-white/50 hover:text-white/80 transition-colors">Terms</a>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA</span>
-              <span className="text-xs text-brand-teal-light font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
+              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA</span>
+              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
             </div>
           </div>
         </div>

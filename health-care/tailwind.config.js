@@ -10,10 +10,14 @@ module.exports = {
     extend: {
       colors: {
         // Brand colors
-        'brand-navy': '#0b2545',
-        'brand-teal': '#0b7a60',
-        'brand-teal-light': '#4ddbb8',
-        'brand-teal-tint': '#e1f5ee',
+        'brand-navy': '#001D5D',
+        'brand-navy-deep': '#002B78',
+        'brand-teal': '#18AFA9',
+        'brand-teal-light': '#00D0CA',
+        'brand-teal-dark': '#007F7B',
+        'brand-orange': '#FF6B00',
+        'brand-teal-tint': '#E4F8F7',
+        'brand-teal-icon': '#008F8A',
         
         // Page backgrounds
         'page': 'var(--color-background-page)',
@@ -42,8 +46,8 @@ module.exports = {
         'border-tertiary': 'var(--color-border-tertiary)',
 
         // Semantic status colors
-        'success': '#16a34a',
-        'danger': '#e24b4a',
+        'success': '#16A085',
+        'danger': '#DC3545',
         'warning': '#f59e0b',
 
         // AA-safe "ink" colors for text/icons placed ON the status colors

@@ -195,7 +195,7 @@ export default function ChatWidget({ onClose }) {
       }}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-brand-navy to-[#0d3060] px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-gradient-to-r from-brand-navy to-[#002B78] px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-brand-navy font-semibold text-sm shadow">

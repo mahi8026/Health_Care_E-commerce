@@ -304,7 +304,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
                       className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ background: 'rgba(226,75,74,0.9)' }}
+                      style={{ background: 'rgba(220,53,69,0.9)' }}
                     >
                       ×
                     </button>

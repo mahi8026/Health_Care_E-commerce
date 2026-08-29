@@ -24,7 +24,7 @@ export default function VideoSection() {
   };
 
   return (
-    <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134B70 100%)', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)', position: 'relative', overflow: 'hidden' }}>
       {/* Background Pattern */}
       <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
@@ -227,7 +227,7 @@ export default function VideoSection() {
         div:hover .play-button {
           transform: translate(-50%, -50%) scale(1.15);
           background: rgba(255, 255, 255, 1);
-          box-shadow: 0 8px 32px rgba(14, 138, 110, 0.4);
+          box-shadow: 0 8px 32px rgba(24, 175, 169, 0.4);
         }
         @media (max-width: 1024px) {
           section > div > div {

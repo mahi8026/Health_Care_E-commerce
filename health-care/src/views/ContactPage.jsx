@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { FaPhone, FaEnvelope, FaWhatsapp, FaMapMarkerAlt, FaClock, FaIndustry, FaPaperPlane } from 'react-icons/fa';
 import { CONTACT } from '@/constants/api';
@@ -41,7 +41,7 @@ export default function ContactPage() {
       <section className="bg-brand-navy text-white py-8 md:py-10 px-4">
         <div className="container mx-auto max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1 rounded-full mb-4">
-            <FaPaperPlane className="text-brand-teal-light" />
+            <FaPaperPlane className="text-brand-teal" />
             Contact Us
           </div>
           <h1 className="text-xl md:text-2xl font-semibold mb-2">We are here to help</h1>
@@ -117,7 +117,7 @@ export default function ContactPage() {
 
           {/* B2B CTA */}
           <div className="mt-6 bg-brand-navy rounded-2xl p-5 text-white text-center">
-            <FaIndustry className="text-2xl text-brand-teal-light mx-auto mb-2" />
+            <FaIndustry className="text-2xl text-brand-teal mx-auto mb-2" />
             <h3 className="font-semibold text-lg mb-2">Looking for institutional pricing?</h3>
             <p className="text-white/70 text-sm mb-5">
               Hospitals, clinics, and diagnostic centres — request bulk pricing and credit terms through the B2B portal.

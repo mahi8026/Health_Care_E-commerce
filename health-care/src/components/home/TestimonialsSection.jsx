@@ -27,7 +27,7 @@ export default function TestimonialsSection() {
     <section className="bg-hero-gradient" style={{ padding: '32px 24px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <p style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
+        <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
           textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>{t('home.testimonials')}</p>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(22px, 3.5vw, 28px)', fontWeight: 600, margin: 0, color: '#fff' }}>
             {t('home.testimonials')}
@@ -43,7 +43,7 @@ export default function TestimonialsSection() {
           return (
             <div key={review._id} style={{ background: '#fff', borderRadius: 14,
               border: '1px solid var(--color-border-primary)', padding: '20px', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.12)'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(24,175,169,0.12)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.boxShadow = 'none'; }}>
               {/* Stars */}
               <div style={{ display: 'flex', gap: 2, marginBottom: 10 }}>

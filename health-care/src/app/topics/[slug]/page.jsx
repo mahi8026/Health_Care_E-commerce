@@ -105,7 +105,7 @@ export default async function TopicClusterPage({ params }) {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden text-white"
-        style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #001D5D 0%, #002B78 60%, #18AFA9 100%)' }}
       >
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl" />
@@ -190,8 +190,8 @@ export default async function TopicClusterPage({ params }) {
         {landingPages.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#0b2545]">Prices &amp; Specifications</h2>
-              <Link href="/equipment" className="text-xs font-semibold text-[#0b7a60] hover:underline">
+              <h2 className="text-base font-bold text-[#001D5D]">Prices &amp; Specifications</h2>
+              <Link href="/equipment" className="text-xs font-semibold text-[#18AFA9] hover:underline">
                 All price guides →
               </Link>
             </div>
@@ -200,15 +200,15 @@ export default async function TopicClusterPage({ params }) {
                 <Link
                   key={page.slug}
                   href={`/equipment/${page.slug}`}
-                  className="group flex items-start gap-4 rounded-2xl bg-white border border-[#cfe0ec] p-5 hover:border-[#0b7a60]/50 hover:shadow-md transition-all"
+                  className="group flex items-start gap-4 rounded-2xl bg-white border border-[#cfe0ec] p-5 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
                 >
                   <div className="w-11 h-11 rounded-xl bg-[#f1f5f9] flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
                     {page.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-[#0b2545] mb-1 leading-snug group-hover:text-[#0b7a60] transition-colors">{page.title}</h3>
+                    <h3 className="text-sm font-semibold text-[#001D5D] mb-1 leading-snug group-hover:text-[#18AFA9] transition-colors">{page.title}</h3>
                     <p className="text-xs text-tertiary leading-relaxed line-clamp-2">{page.excerpt}</p>
-                    <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0b7a60]">
+                    <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#18AFA9]">
                       View prices
                       <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -226,13 +226,13 @@ export default async function TopicClusterPage({ params }) {
           <section>
             <div className="flex items-end justify-between mb-4">
               <div>
-                <h2 className="text-base font-bold text-[#0b2545]">Featured Products</h2>
+                <h2 className="text-base font-bold text-[#001D5D]">Featured Products</h2>
                 <p className="text-xs text-tertiary mt-0.5">Genuine, DGDA-registered stock ready to ship</p>
               </div>
               {categoryName && (
                 <Link
                   href={`/products/category/${cluster.categorySlug}`}
-                  className="text-xs font-semibold text-[#0b7a60] hover:underline"
+                  className="text-xs font-semibold text-[#18AFA9] hover:underline"
                 >
                   View all {categoryName} →
                 </Link>
@@ -252,8 +252,8 @@ export default async function TopicClusterPage({ params }) {
             {/* Leading brands */}
             {brands.length > 0 && (
               <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
-                <h2 className="text-sm font-bold text-[#0b2545] mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-md bg-[#0b2545]/8 flex items-center justify-center text-base">🏷️</span>
+                <h2 className="text-sm font-bold text-[#001D5D] mb-3 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-md bg-[#001D5D]/8 flex items-center justify-center text-base">🏷️</span>
                   Leading Brands
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -261,12 +261,12 @@ export default async function TopicClusterPage({ params }) {
                     <Link
                       key={b.slug}
                       href={`/brands/${b.slug}`}
-                      className="inline-flex items-center text-xs font-semibold text-[#0b7a60] border border-[#0b7a60]/30 rounded-lg px-3 py-1.5 hover:bg-[#0b7a60] hover:text-white transition-colors"
+                      className="inline-flex items-center text-xs font-semibold text-[#18AFA9] border border-[#18AFA9]/30 rounded-lg px-3 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors"
                     >
                       {b.name}
                     </Link>
                   ))}
-                  <Link href="/brands" className="inline-flex items-center text-xs text-tertiary hover:text-[#0b7a60] px-2 py-1.5 transition-colors">
+                  <Link href="/brands" className="inline-flex items-center text-xs text-tertiary hover:text-[#18AFA9] px-2 py-1.5 transition-colors">
                     All brands →
                   </Link>
                 </div>
@@ -276,8 +276,8 @@ export default async function TopicClusterPage({ params }) {
             {/* Guides */}
             {guides.length > 0 && (
               <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
-                <h2 className="text-sm font-bold text-[#0b2545] mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-md bg-[#0b2545]/8 flex items-center justify-center text-base">📖</span>
+                <h2 className="text-sm font-bold text-[#001D5D] mb-3 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-md bg-[#001D5D]/8 flex items-center justify-center text-base">📖</span>
                   Buying Guides
                 </h2>
                 <div className="space-y-2">
@@ -285,13 +285,13 @@ export default async function TopicClusterPage({ params }) {
                     <Link
                       key={guide.slug}
                       href={`/guides/${guide.slug}`}
-                      className="group flex items-start gap-2.5 rounded-xl border border-[#e2e8f0] p-3 hover:border-[#0b7a60]/40 hover:bg-[#f8fffe] transition-all"
+                      className="group flex items-start gap-2.5 rounded-xl border border-[#e2e8f0] p-3 hover:border-[#18AFA9]/40 hover:bg-[#f8fffe] transition-all"
                     >
                       <span className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-tertiary w-16 flex-shrink-0">
                         {guide.type === 'compare' ? 'Compare' : 'Guide'}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-[#0b2545] leading-snug group-hover:text-[#0b7a60] transition-colors">{guide.title}</p>
+                        <p className="text-xs font-semibold text-[#001D5D] leading-snug group-hover:text-[#18AFA9] transition-colors">{guide.title}</p>
                         <p className="text-[10px] text-tertiary mt-0.5 line-clamp-1">{guide.excerpt}</p>
                       </div>
                     </Link>
@@ -304,16 +304,16 @@ export default async function TopicClusterPage({ params }) {
 
         {/* Related topics */}
         <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
-          <h2 className="text-sm font-bold text-[#0b2545] mb-3">Related Topics</h2>
+          <h2 className="text-sm font-bold text-[#001D5D] mb-3">Related Topics</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             {otherClusters.map(c => (
               <Link
                 key={c.slug}
                 href={`/topics/${c.slug}`}
-                className="group flex items-center gap-2 rounded-xl border border-[#e2e8f0] p-3 hover:border-[#0b7a60]/40 hover:bg-[#f8fffe] transition-all"
+                className="group flex items-center gap-2 rounded-xl border border-[#e2e8f0] p-3 hover:border-[#18AFA9]/40 hover:bg-[#f8fffe] transition-all"
               >
                 <span className="text-lg">{c.icon}</span>
-                <span className="text-xs font-medium text-[#475569] group-hover:text-[#0b7a60] leading-snug line-clamp-2 transition-colors">
+                <span className="text-xs font-medium text-[#475569] group-hover:text-[#18AFA9] leading-snug line-clamp-2 transition-colors">
                   {c.title.replace(/ in Bangladesh$/, '')}
                 </span>
               </Link>
@@ -324,7 +324,7 @@ export default async function TopicClusterPage({ params }) {
         {/* CTA */}
         <div
           className="rounded-2xl text-white p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-10"
-          style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #001D5D 0%, #002B78 60%, #18AFA9 100%)' }}
         >
           <div className="flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-teal-300 mb-1">Free Expert Consultation</p>
@@ -338,7 +338,7 @@ export default async function TopicClusterPage({ params }) {
           <div className="flex flex-wrap gap-3 flex-shrink-0">
             <Link
               href="/quotes/request"
-              className="px-5 py-2.5 rounded-xl bg-[#0b7a60] text-white text-sm font-bold hover:bg-[#096450] transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-[#18AFA9] text-white text-sm font-bold hover:bg-[#007F7B] transition-colors"
             >
               Request a Quote
             </Link>

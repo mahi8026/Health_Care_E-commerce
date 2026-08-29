@@ -29,7 +29,7 @@ export default function CategoryGrid({ categories, categoryCounts }) {
     : FALLBACK_CATEGORIES;
 
   return (
-    <section className="py-6 sm:py-8 md:py-12 bg-white">
+    <section className="py-6 sm:py-8 md:py-12 bg-[var(--color-background-secondary)]">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-6 sm:mb-8 md:mb-10">
           <h2 className="text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)] mb-3">
@@ -50,15 +50,15 @@ export default function CategoryGrid({ categories, categoryCounts }) {
               <Link
                 key={categoryName}
                 href={slug ? `/products/category/${slug}` : `/products?category=${encodeURIComponent(categoryName)}`}
-                className="group bg-white rounded-2xl p-3 sm:p-6 border-2 border-[var(--color-border-tertiary)] hover:border-brand-teal hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
+                className="group bg-white rounded-2xl p-3 sm:p-6 border-2 border-[var(--color-border-primary)] hover:border-brand-teal hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center"
               >
                 <div 
-                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 sm:mb-4 text-xl sm:text-3xl text-brand-teal group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: cat.color || 'var(--color-status-success-tint)' }}
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-2 sm:mb-4 text-xl sm:text-3xl text-[var(--color-brand-teal-icon)] group-hover:scale-110 transition-transform"
+                  style={{ backgroundColor: cat.color || 'var(--color-brand-teal-tint)' }}
                 >
                   {getCategoryIcon(categoryName)}
                 </div>
-                <h3 className="font-semibold text-[var(--color-text-primary)] mb-1 sm:mb-2 text-xs sm:text-sm md:text-base">
+                <h3 className="font-semibold text-brand-navy mb-1 sm:mb-2 text-xs sm:text-sm md:text-base">
                   {categoryName}
                 </h3>
                 <p className="text-[10px] sm:text-xs text-[var(--color-text-secondary)] mb-2 sm:mb-3">

@@ -45,8 +45,8 @@ export default function TopicsHub() {
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section
-        className="relative overflow-hidden bg-[#0b2545] text-white"
-        style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%)' }}
+        className="relative overflow-hidden bg-[#001D5D] text-white"
+        style={{ background: 'linear-gradient(135deg, #001D5D 0%, #002B78 60%, #18AFA9 100%)' }}
       >
         {/* Decorative glows */}
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -67,7 +67,7 @@ export default function TopicsHub() {
           <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4">
             Medical Equipment
             <span className="block text-transparent bg-clip-text"
-              style={{ backgroundImage: 'linear-gradient(90deg, #4ddbb8, #7ee8cc)' }}>
+              style={{ backgroundImage: 'linear-gradient(90deg, #00D0CA, #00D0CA)' }}>
               Topic Guides
             </span>
           </h1>
@@ -96,7 +96,7 @@ export default function TopicsHub() {
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
       <nav aria-label="Breadcrumb" className="bg-white border-b border-[#cfe0ec]">
         <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
-          <Link href="/" className="hover:text-[#0b7a60] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-[#18AFA9] transition-colors">Home</Link>
           <span>/</span>
           <span className="text-[#0f172a] font-medium">Topics</span>
         </div>
@@ -106,7 +106,7 @@ export default function TopicsHub() {
       <div className="container mx-auto max-w-6xl px-4 py-10">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#0b2545]">Browse All Topics</h2>
+            <h2 className="text-lg font-bold text-[#001D5D]">Browse All Topics</h2>
             <p className="text-xs text-tertiary mt-0.5">{TOPICAL_CLUSTERS.length} categories · Updated regularly</p>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function TopicsHub() {
                 </div>
 
                 {/* Title & description */}
-                <h2 className="text-sm font-bold text-[#0b2545] mb-1.5 leading-snug group-hover:text-[#0b7a60] transition-colors">
+                <h2 className="text-sm font-bold text-[#001D5D] mb-1.5 leading-snug group-hover:text-[#18AFA9] transition-colors">
                   {cluster.title}
                 </h2>
                 <p className="text-xs text-[#475569] leading-relaxed line-clamp-3 flex-1">
@@ -157,7 +157,7 @@ export default function TopicsHub() {
                       {cluster.guideSlugs.length} guides
                     </span>
                   </div>
-                  <span className="text-[#0b7a60] font-semibold text-xs flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
+                  <span className="text-[#18AFA9] font-semibold text-xs flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
                     Explore
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -177,21 +177,21 @@ export default function TopicsHub() {
               icon: '💰',
               label: 'Equipment Price Directory',
               sub: `${totalLanding} price guides`,
-              color: 'from-[#0b2545] to-[#0d3162]',
+              color: 'from-[#001D5D] to-[#002B78]',
             },
             {
               href: '/guides',
               icon: '📖',
               label: 'All Buying Guides',
               sub: `${totalGuides} expert guides`,
-              color: 'from-[#0b7a60] to-[#096450]',
+              color: 'from-[#18AFA9] to-[#007F7B]',
             },
             {
               href: '/brands',
               icon: '🏷️',
               label: 'Brand Directory',
               sub: '35+ global brands',
-              color: 'from-[#1e3a5f] to-[#0b2545]',
+              color: 'from-[#1e3a5f] to-[#001D5D]',
             },
           ].map(({ href, icon, label, sub, color }) => (
             <Link
@@ -213,7 +213,7 @@ export default function TopicsHub() {
 
         {/* ── Quick links ─────────────────────────────────────────────── */}
         <section className="mt-8 rounded-2xl bg-white border border-[#cfe0ec] p-6">
-          <h2 className="text-sm font-bold text-[#0b2545] mb-3">Quick Links</h2>
+          <h2 className="text-sm font-bold text-[#001D5D] mb-3">Quick Links</h2>
           <div className="flex flex-wrap gap-2">
             {[
               { href: '/products', label: 'All Products' },
@@ -222,7 +222,7 @@ export default function TopicsHub() {
               { href: '/b2b', label: 'B2B Portal' },
               { href: '/contact', label: 'Get a Quote' },
             ].map(({ href, label }) => (
-              <Link key={href} href={href} className="text-xs font-medium text-[#0b7a60] border border-[#0b7a60]/30 rounded-lg px-3 py-1.5 hover:bg-[#0b7a60] hover:text-white transition-colors">
+              <Link key={href} href={href} className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-lg px-3 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors">
                 {label}
               </Link>
             ))}

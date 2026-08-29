@@ -35,12 +35,12 @@ export default function FloatingCartButton({ onClick }) {
       onClick={handleClick}
       className={`fixed top-[110px] right-4 md:right-5 z-dropdown transition-all duration-300 hover:scale-105 active:scale-95 ${bounce ? 'animate-bounce-cart' : ''}`}
       style={{
-        background: 'rgba(11,37,69,0.72)',
+        background: 'rgba(0,29,93,0.72)',
         backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.1)',
         WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.1)',
         border: '1px solid rgba(255,255,255,0.22)',
         borderRadius: '1rem',
-        boxShadow: '0 8px 32px rgba(11,37,69,0.28), inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.08)',
+        boxShadow: '0 8px 32px rgba(0,29,93,0.28), inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.08)',
       }}
       aria-label={`Shopping cart with ${cartCount} items`}
     >
@@ -57,7 +57,7 @@ export default function FloatingCartButton({ onClick }) {
         <div className="relative">
           <FaShoppingCart size={18} style={{ color: 'var(--color-brand-teal-light)' }} />
           <span className="absolute -top-2 -right-2 w-4 h-4 flex items-center justify-center rounded-full text-xs font-semibold"
-            style={{ background: 'linear-gradient(135deg,var(--color-brand-teal-light),var(--color-brand-teal))', color: '#fff', boxShadow: '0 2px 6px rgba(14,138,110,0.5)' }}>
+            style={{ background: 'linear-gradient(135deg,var(--color-brand-teal-light),var(--color-brand-teal))', color: '#fff', boxShadow: '0 2px 6px rgba(24,175,169,0.5)' }}>
             {cartCount > 9 ? '9+' : cartCount}
           </span>
         </div>

@@ -19,8 +19,8 @@ const SUPPORT_OPTIONS = [
     title: 'Buying Guides',
     desc: 'Prices, brands & comparisons',
     action: '/guides',
-    color: '#0E8A6E',
-    bgColor: '#F0FDF9'
+    color: '#18AFA9',
+    bgColor: 'var(--color-brand-teal-tint)'
   },
   {
     icon: <FaPhoneAlt />,
@@ -198,7 +198,7 @@ export default function SupportResources() {
           style={{ 
             marginTop: 40, 
             padding: '24px', 
-            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134B70 100%)', 
+            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)', 
             borderRadius: 12,
             textAlign: 'center'
           }}

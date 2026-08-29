@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { COMPARISON_GUIDES } from '@/config/guides';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
@@ -51,7 +51,7 @@ export default function CompareHub() {
       <StructuredData schema={collectionSchema} />
       <section className="bg-brand-navy text-white py-12 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-[var(--text-xs)] font-semibold uppercase tracking-widest text-brand-teal-light mb-3">
+          <p className="text-[var(--text-xs)] font-semibold uppercase tracking-widest text-brand-teal mb-3">
             Brand vs Brand
           </p>
           <h1 className="text-2xl md:text-4xl font-semibold mb-4">

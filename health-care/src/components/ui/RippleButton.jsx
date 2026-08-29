@@ -82,7 +82,7 @@ export function RippleDiv({
   children, 
   onClick, 
   className = '',
-  rippleColor = 'rgba(14, 138, 110, 0.3)',
+  rippleColor = 'rgba(24, 175, 169, 0.3)',
   ...props 
 }) {
   const [ripples, setRipples] = useState([]);

@@ -86,7 +86,7 @@ export default async function BrandsHub() {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden text-white"
-        style={{ background: 'linear-gradient(135deg, #0b2545 0%, #0d3162 60%, #0b7a60 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #001D5D 0%, #002B78 60%, #18AFA9 100%)' }}
       >
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl" />
@@ -102,7 +102,7 @@ export default async function BrandsHub() {
           <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-4">
             Global Brands,
             <span className="block text-transparent bg-clip-text"
-              style={{ backgroundImage: 'linear-gradient(90deg, #4ddbb8, #7ee8cc)' }}>
+              style={{ backgroundImage: 'linear-gradient(90deg, #00D0CA, #00D0CA)' }}>
               Delivered in Bangladesh
             </span>
           </h1>
@@ -130,7 +130,7 @@ export default async function BrandsHub() {
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
       <nav aria-label="Breadcrumb" className="bg-white border-b border-[#cfe0ec]">
         <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
-          <Link href="/" className="hover:text-[#0b7a60] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-[#18AFA9] transition-colors">Home</Link>
           <span>/</span>
           <span className="text-[#0f172a] font-medium">Brands</span>
         </div>
@@ -142,7 +142,7 @@ export default async function BrandsHub() {
         {topBrands.length > 0 && (
           <section className="mb-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#0b2545]">Featured Brands</h2>
+              <h2 className="text-base font-bold text-[#001D5D]">Featured Brands</h2>
               <span className="text-xs text-tertiary">Most products</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -152,7 +152,7 @@ export default async function BrandsHub() {
                   <Link
                     key={brand._id}
                     href={`/brands/${brand.slug}`}
-                    className="group flex flex-col items-center gap-2.5 rounded-2xl bg-white border border-[#cfe0ec] p-4 hover:border-[#0b7a60]/50 hover:shadow-md transition-all"
+                    className="group flex flex-col items-center gap-2.5 rounded-2xl bg-white border border-[#cfe0ec] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
                   >
                     {brand.logo?.url ? (
                       <div className="relative w-16 h-16 rounded-xl border border-[#e2e8f0] bg-white flex items-center justify-center p-2 overflow-hidden">
@@ -168,7 +168,7 @@ export default async function BrandsHub() {
                       <div className="w-16 h-16 rounded-xl bg-[#f1f5f9] flex items-center justify-center text-2xl">🏥</div>
                     )}
                     <div className="text-center min-w-0 w-full">
-                      <p className="text-xs font-semibold text-[#0b2545] truncate group-hover:text-[#0b7a60] transition-colors">{brand.name}</p>
+                      <p className="text-xs font-semibold text-[#001D5D] truncate group-hover:text-[#18AFA9] transition-colors">{brand.name}</p>
                       <p className="text-[10px] text-tertiary mt-0.5">{brand.productCount || 0} products</p>
                     </div>
                   </Link>
@@ -185,7 +185,7 @@ export default async function BrandsHub() {
               <a
                 key={l}
                 href={`#letter-${l}`}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold text-[#0b7a60] border border-[#0b7a60]/25 hover:bg-[#0b7a60] hover:text-white transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold text-[#18AFA9] border border-[#18AFA9]/25 hover:bg-[#18AFA9] hover:text-white transition-colors"
               >
                 {l}
               </a>
@@ -199,7 +199,7 @@ export default async function BrandsHub() {
             {letters.map(letter => (
               <section key={letter} id={`letter-${letter}`} className="scroll-mt-24">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#0b2545] flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#001D5D] flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                     {letter}
                   </div>
                   <div className="h-px flex-1 bg-[#e2e8f0]" />
@@ -212,7 +212,7 @@ export default async function BrandsHub() {
                       <Link
                         key={brand._id}
                         href={`/brands/${brand.slug}`}
-                        className="group flex items-center gap-3 rounded-xl bg-white border border-[#cfe0ec] p-4 hover:border-[#0b7a60]/50 hover:shadow-md transition-all"
+                        className="group flex items-center gap-3 rounded-xl bg-white border border-[#cfe0ec] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
                       >
                         {brand.logo?.url ? (
                           <div className="relative w-11 h-11 rounded-lg border border-[#e2e8f0] bg-white flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
@@ -228,12 +228,12 @@ export default async function BrandsHub() {
                           <div className="w-11 h-11 rounded-lg bg-[#f1f5f9] flex items-center justify-center text-xl flex-shrink-0">🏥</div>
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-[#0b2545] truncate group-hover:text-[#0b7a60] transition-colors">{brand.name}</p>
+                          <p className="text-sm font-semibold text-[#001D5D] truncate group-hover:text-[#18AFA9] transition-colors">{brand.name}</p>
                           <p className="text-xs text-tertiary mt-0.5">
                             {brand.productCount || 0} products{brand.country ? ` · ${brand.country}` : ''}
                           </p>
                         </div>
-                        <svg className="w-4 h-4 text-[#cfe0ec] group-hover:text-[#0b7a60] group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg className="w-4 h-4 text-[#cfe0ec] group-hover:text-[#18AFA9] group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                       </Link>
@@ -246,7 +246,7 @@ export default async function BrandsHub() {
         ) : (
           <div className="rounded-2xl bg-white border border-[#cfe0ec] p-12 text-center">
             <div className="text-4xl mb-3">🏥</div>
-            <p className="text-sm font-semibold text-[#0b2545] mb-1">Brand directory is being updated</p>
+            <p className="text-sm font-semibold text-[#001D5D] mb-1">Brand directory is being updated</p>
             <p className="text-xs text-tertiary">Please check back soon.</p>
           </div>
         )}
@@ -254,7 +254,7 @@ export default async function BrandsHub() {
         {/* ── Internal links ──────────────────────────────────────────── */}
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
-            <h2 className="text-sm font-bold text-[#0b2545] mb-3">Shop by Category</h2>
+            <h2 className="text-sm font-bold text-[#001D5D] mb-3">Shop by Category</h2>
             <div className="flex flex-wrap gap-2">
               {[
                 { href: '/products/category/diagnostic-equipment', label: 'Diagnostic Equipment' },
@@ -264,7 +264,7 @@ export default async function BrandsHub() {
                 { href: '/products/category/diabetes-care', label: 'Diabetes Care' },
                 { href: '/products', label: 'All Products →' },
               ].map(({ href, label }) => (
-                <Link key={href} href={href} className="text-xs font-medium text-[#0b7a60] border border-[#0b7a60]/30 rounded-lg px-3 py-1.5 hover:bg-[#0b7a60] hover:text-white transition-colors">
+                <Link key={href} href={href} className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-lg px-3 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors">
                   {label}
                 </Link>
               ))}
@@ -272,7 +272,7 @@ export default async function BrandsHub() {
           </section>
 
           <section className="rounded-2xl bg-white border border-[#cfe0ec] p-5">
-            <h2 className="text-sm font-bold text-[#0b2545] mb-3">Equipment Price Guides</h2>
+            <h2 className="text-sm font-bold text-[#001D5D] mb-3">Equipment Price Guides</h2>
             <div className="flex flex-wrap gap-2">
               {[
                 { href: '/equipment/ecg-machine-price-bangladesh', label: 'ECG Machine Prices' },
@@ -281,7 +281,7 @@ export default async function BrandsHub() {
                 { href: '/equipment/patient-monitor-price-bangladesh', label: 'Patient Monitor Prices' },
                 { href: '/equipment', label: 'All Price Guides →' },
               ].map(({ href, label }) => (
-                <Link key={href} href={href} className="text-xs font-medium text-[#0b7a60] border border-[#0b7a60]/30 rounded-lg px-3 py-1.5 hover:bg-[#0b7a60] hover:text-white transition-colors">
+                <Link key={href} href={href} className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-lg px-3 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors">
                   {label}
                 </Link>
               ))}

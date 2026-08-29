@@ -331,7 +331,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
       <style jsx>{`
         .best-selling-card:hover {
           border-color: var(--color-brand-teal) !important;
-          box-shadow: 0 10px 30px rgba(11, 37, 69, 0.15) !important;
+          box-shadow: 0 10px 30px rgba(0, 29, 93, 0.15) !important;
           transform: translateY(-4px) !important;
         }
 

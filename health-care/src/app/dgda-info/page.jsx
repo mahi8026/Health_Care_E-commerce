@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -121,7 +121,7 @@ export default function DGDAInfoPage() {
             <span aria-hidden="true">/</span>
             <span className="text-white/80">DGDA Compliance</span>
           </nav>
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-teal-light mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-brand-teal mb-3">
             Regulatory Compliance
           </p>
           <h1 className="text-2xl md:text-4xl font-semibold mb-4">

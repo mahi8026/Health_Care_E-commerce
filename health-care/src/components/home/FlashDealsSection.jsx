@@ -33,7 +33,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
       style={{ background: '#fff', borderRadius: 14, overflow: 'hidden',
         border: '1px solid var(--color-border-primary)', cursor: 'pointer',
         transition: 'box-shadow 0.2s, transform 0.2s', display: 'flex', flexDirection: 'column' }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,29,93,0.12)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
 
       {/* Image */}
@@ -137,12 +137,12 @@ const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
         { val: timeLeft.s, label: 'sec' },
       ].map((t, i) => (
         <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 4 : 0 }}>
-          {i > 0 && <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600, fontSize: 16 }}>:</span>}
+          {i > 0 && <span style={{ color: 'var(--color-brand-teal)', fontWeight: 600, fontSize: 16 }}>:</span>}
           <div style={{
             background: 'rgba(255,255,255,0.1)', borderRadius: 8,
             padding: '6px 10px', textAlign: 'center', minWidth: 46,
           }}>
-            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal-light)', lineHeight: 1 }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--color-brand-teal)', lineHeight: 1 }}>
               {String(t.val).padStart(2, '0')}
             </div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 2 }}>{t.label}</div>
@@ -223,7 +223,7 @@ export default function FlashDealsSection() {
           {/* Title + countdown stacked on mobile */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--color-brand-teal-light)', fontWeight: 600,
+              <div style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
                 textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
                 FLASH DEALS
               </div>

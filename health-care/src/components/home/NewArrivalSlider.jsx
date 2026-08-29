@@ -171,7 +171,7 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
         height: '100%',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 10px 30px rgba(11,37,69,0.15)';
+        e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,29,93,0.15)';
         e.currentTarget.style.transform = 'translateY(-4px)';
         e.currentTarget.style.borderColor = 'var(--color-brand-teal)';
       }}

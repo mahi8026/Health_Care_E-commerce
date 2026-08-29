@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { GUIDES, PILLAR_GUIDE, GUIDE_AUTHOR } from '@/config/guides';
 import StructuredData from '@/utils/structuredData';
@@ -68,7 +68,7 @@ export default function GuidesHub() {
       {/* Hero */}
       <section className="bg-brand-navy text-white py-12 px-4">
         <div className="container mx-auto max-w-4xl text-center">
-          <p className="text-[var(--text-xs)] font-semibold uppercase tracking-widest text-brand-teal-light mb-3">
+          <p className="text-[var(--text-xs)] font-semibold uppercase tracking-widest text-brand-teal mb-3">
             MediportBD Knowledge Hub
           </p>
           <h1 className="text-2xl md:text-4xl font-semibold mb-4">

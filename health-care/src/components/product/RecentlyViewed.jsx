@@ -33,7 +33,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
         cursor: 'pointer'
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 8px 28px rgba(11,37,69,0.12)';
+        e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,29,93,0.12)';
         e.currentTarget.style.transform = 'translateY(-3px)';
       }}
       onMouseLeave={(e) => {

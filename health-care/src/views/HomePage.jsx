@@ -181,7 +181,7 @@ const WhyChooseUsSection = memo(function WhyChooseUsSection({ t, items }) {
           {items.map(({ icon, title, desc }) => (
             <div key={title} className="trust-item"
               style={{ padding: '18px', borderRadius: 14, border: '1px solid var(--color-border-primary)', background: 'var(--color-background-secondary)', transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = '#F0FDF9'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(14,138,110,0.1)'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-brand-teal)'; e.currentTarget.style.background = 'var(--color-brand-teal-tint)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(24,175,169,0.1)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-primary)'; e.currentTarget.style.background = 'var(--color-background-secondary)'; e.currentTarget.style.boxShadow = 'none'; }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-teal-light))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18, marginBottom: 12 }}>
                 {icon}
@@ -241,7 +241,7 @@ const B2BSection = memo(function B2BSection({ t, stats }) {
   return (
     <section className="home-section" style={{ padding: '28px 24px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-      <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3162 100%)',
+      <div className="b2b-banner" style={{ background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)',
         borderRadius: 20, padding: '32px 36px', overflow: 'hidden', position: 'relative' }}>
         {/* Background decoration */}
         <div style={{ position: 'absolute', top: '-20%', right: '10%', width: 'min(400px, 100%)', height: 'min(400px, 100%)',
@@ -250,7 +250,7 @@ const B2BSection = memo(function B2BSection({ t, stats }) {
           gridTemplateColumns: '1fr 220px', gap: 40, alignItems: 'center' }}>
           {/* Left */}
           <div>
-            <span style={{ fontSize: 11, background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)',
+            <span style={{ fontSize: 11, background: 'rgba(0,208,202,0.2)', color: 'var(--color-brand-teal-light)',
               padding: '4px 14px', borderRadius: 999, fontWeight: 600,
               textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('home.b2bProgram')}</span>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(26px, 4vw, 32px)', fontWeight: 600,
@@ -345,7 +345,7 @@ const HeroSearch = memo(function HeroSearch() {
 
   return (
     <div className="hero-left-content hidden lg:block">
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(77,219,184,0.15)', border: '1px solid rgba(77,219,184,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,208,202,0.15)', border: '1px solid rgba(0,208,202,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         <span style={{ width: 6, height: 6, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
         {t('home.tagline')}
       </div>
@@ -446,7 +446,7 @@ const handleKeyDown = (e) => {
         slides.map((slide, i) => currentSlide === i && (
           <div key={slide._id || slide.imageUrl || i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
             {failedSlide === i ? (
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(77,219,184,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(14,138,110,0.5), transparent 60%), linear-gradient(140deg, #0b2545 0%, #12355f 60%, #0e8a6e 140%)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #12355f 60%, #18AFA9 140%)' }} />
             ) : (
               <Image
                 src={slide.imageUrl}
@@ -461,7 +461,7 @@ const handleKeyDown = (e) => {
           </div>
         ))
       ) : (
-        <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(77,219,184,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(14,138,110,0.5), transparent 60%), linear-gradient(140deg, #0b2545 0%, #12355f 60%, #0e8a6e 140%)' }} />
+        <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #12355f 60%, #18AFA9 140%)' }} />
       )}
       {/* Bottom gradient */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', zIndex: 5 }} />
@@ -967,7 +967,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
       {promo && (
         <section style={{ padding: '0 0 0', maxWidth: 1280, margin: '0 auto' }} className="coupon-banner-section">
           <div style={{
-            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #1a3a6b 100%)',
+            background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)',
             borderRadius: 0,
             padding: '18px 28px',
             display: 'flex',
@@ -1140,7 +1140,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
       <div className="cv-slot--video">
         <LazyMount fallback={null}>
           <Suspense fallback={
-            <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #134E7A 100%)' }}>
+            <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)' }}>
               <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', gap: 32, alignItems: 'center', justifyContent: 'center' }}>
                 <Spinner size="lg" variant="medical" />
               </div>

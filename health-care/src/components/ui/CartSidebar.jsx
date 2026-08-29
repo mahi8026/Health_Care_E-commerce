@@ -60,7 +60,7 @@ export default function CartSidebar({ isOpen, onClose }) {
         className={`fixed inset-0 z-drawer transition-all duration-300 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
-        style={{ backdropFilter: isOpen ? 'blur(var(--glass-blur)) saturate(var(--glass-saturate))' : 'none', background: 'rgba(11,37,69,0.35)' }}
+        style={{ backdropFilter: isOpen ? 'blur(var(--glass-blur)) saturate(var(--glass-saturate))' : 'none', background: 'rgba(0,29,93,0.35)' }}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -75,7 +75,7 @@ export default function CartSidebar({ isOpen, onClose }) {
           backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.04)',
           WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.04)',
           borderLeft: '1px solid rgba(255,255,255,0.6)',
-          boxShadow: '-8px 0 48px rgba(11,37,69,0.18), -1px 0 0 rgba(255,255,255,0.5) inset',
+          boxShadow: '-8px 0 48px rgba(0,29,93,0.18), -1px 0 0 rgba(255,255,255,0.5) inset',
         }}
         role="dialog"
         aria-modal="true"
@@ -85,7 +85,7 @@ export default function CartSidebar({ isOpen, onClose }) {
         <div
           className="flex items-center justify-between px-5 py-4 flex-shrink-0"
           style={{
-            background: 'rgba(11,37,69,0.88)',
+            background: 'rgba(0,29,93,0.88)',
             backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate))',
             WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate))',
             borderBottom: '1px solid rgba(255,255,255,0.14)',
@@ -97,7 +97,7 @@ export default function CartSidebar({ isOpen, onClose }) {
             Shopping Cart
             {getCartCount() > 0 && (
               <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-                style={{ background: 'rgba(77,219,184,0.2)', color: 'var(--color-brand-teal-light)', border: '1px solid rgba(77,219,184,0.3)' }}>
+                style={{ background: 'rgba(0,208,202,0.2)', color: 'var(--color-brand-teal-light)', border: '1px solid rgba(0,208,202,0.3)' }}>
                 {getCartCount()}
               </span>
             )}
@@ -117,7 +117,7 @@ export default function CartSidebar({ isOpen, onClose }) {
         {/* Free delivery progress */}
         {cart.length > 0 && (
           <div className="px-5 py-3 flex-shrink-0"
-            style={{ background: 'rgba(14,138,110,0.06)', borderBottom: '1px solid rgba(14,138,110,0.12)' }}>
+            style={{ background: 'rgba(24,175,169,0.06)', borderBottom: '1px solid rgba(24,175,169,0.12)' }}>
             {amountToFreeDelivery === 0 ? (
               <div className="flex items-center gap-2 text-brand-teal">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 flex-shrink-0" aria-hidden="true">
@@ -144,7 +144,7 @@ export default function CartSidebar({ isOpen, onClose }) {
                     Free
                   </span>
                 </div>
-                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(14,138,110,0.15)' }}>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(24,175,169,0.15)' }}>
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${freeDeliveryProgress}%`, background: 'linear-gradient(90deg, var(--color-brand-teal), var(--color-brand-teal-light))' }}
@@ -160,7 +160,7 @@ export default function CartSidebar({ isOpen, onClose }) {
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
               <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4"
-                style={{ background: 'rgba(14,138,110,0.08)', border: '1px solid rgba(14,138,110,0.15)' }}>
+                style={{ background: 'rgba(24,175,169,0.08)', border: '1px solid rgba(24,175,169,0.15)' }}>
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-teal)" strokeWidth="1.5">
                   <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
@@ -171,7 +171,7 @@ export default function CartSidebar({ isOpen, onClose }) {
               <button
                 onClick={() => { onClose(); router.push('/products'); }}
                 className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200"
-                style={{ background: 'linear-gradient(135deg, var(--color-brand-navy), #0d3060)', boxShadow: '0 4px 14px rgba(11,37,69,0.25)' }}
+                style={{ background: 'linear-gradient(135deg, var(--color-brand-navy), #002B78)', boxShadow: '0 4px 14px rgba(0,29,93,0.25)' }}
               >
                 Browse Products
               </button>
@@ -190,7 +190,7 @@ export default function CartSidebar({ isOpen, onClose }) {
                     backdropFilter: 'blur(var(--glass-blur))',
                     WebkitBackdropFilter: 'blur(var(--glass-blur))',
                     border: '1px solid rgba(255,255,255,0.8)',
-                    boxShadow: '0 2px 12px rgba(11,37,69,0.06)',
+                    boxShadow: '0 2px 12px rgba(0,29,93,0.06)',
                   }}
                 >
                   {/* Image */}
@@ -221,11 +221,11 @@ export default function CartSidebar({ isOpen, onClose }) {
                     <div className="flex items-center justify-between">
                       {/* Qty controls */}
                       <div className="flex items-center rounded-lg overflow-hidden"
-                        style={{ border: '1px solid rgba(11,37,69,0.15)', background: 'rgba(255,255,255,0.8)' }}>
+                        style={{ border: '1px solid rgba(0,29,93,0.15)', background: 'rgba(255,255,255,0.8)' }}>
                         <button onClick={() => updateQuantity(id, item.quantity - 1)} disabled={item.quantity <= 1}
                           className="w-7 h-7 flex items-center justify-center text-base font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-30 transition-colors touch-compact">−</button>
                         <span className="w-8 text-center text-xs font-semibold text-[var(--color-text-primary)]"
-                          style={{ borderLeft: '1px solid rgba(11,37,69,0.1)', borderRight: '1px solid rgba(11,37,69,0.1)' }}>
+                          style={{ borderLeft: '1px solid rgba(0,29,93,0.1)', borderRight: '1px solid rgba(0,29,93,0.1)' }}>
                           {item.quantity}
                         </span>
                         <button onClick={() => updateQuantity(id, item.quantity + 1)}
@@ -235,9 +235,9 @@ export default function CartSidebar({ isOpen, onClose }) {
 
                       <button onClick={() => removeFromCart(id)}
                         className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-200 touch-compact"
-                        style={{ color: 'var(--color-status-danger)', background: 'rgba(226,75,74,0.08)', border: '1px solid rgba(226,75,74,0.15)' }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(226,75,74,0.15)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(226,75,74,0.08)'}
+                        style={{ color: 'var(--color-status-danger)', background: 'rgba(220,53,69,0.08)', border: '1px solid rgba(220,53,69,0.15)' }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(220,53,69,0.15)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(220,53,69,0.08)'}
                         aria-label="Remove item">
                         <FaTimes size={11} />
                       </button>
@@ -257,7 +257,7 @@ export default function CartSidebar({ isOpen, onClose }) {
               backdropFilter: 'blur(var(--glass-blur))',
               WebkitBackdropFilter: 'blur(var(--glass-blur))',
               borderTop: '1px solid rgba(255,255,255,0.7)',
-              boxShadow: '0 -8px 24px rgba(11,37,69,0.06)',
+              boxShadow: '0 -8px 24px rgba(0,29,93,0.06)',
             }}>
             <div className="flex justify-between items-center mb-3">
               <span className="text-sm font-medium text-[var(--color-text-secondary)]">
@@ -270,8 +270,8 @@ export default function CartSidebar({ isOpen, onClose }) {
               <button onClick={handleCheckout}
                 className="w-full h-10 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
                 style={{
-                  background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #0d3060 100%)',
-                  boxShadow: '0 4px 20px rgba(11,37,69,0.30), inset 0 1px 0 rgba(255,255,255,0.12)',
+                  background: 'linear-gradient(135deg, var(--color-brand-navy) 0%, #002B78 100%)',
+                  boxShadow: '0 4px 20px rgba(0,29,93,0.30), inset 0 1px 0 rgba(255,255,255,0.12)',
                 }}>
                 Proceed to Checkout
                 <FaArrowRight size={13} />
@@ -279,12 +279,12 @@ export default function CartSidebar({ isOpen, onClose }) {
               <button onClick={handleViewCart}
                 className="w-full h-10 rounded-xl text-sm font-semibold transition-all duration-200"
                 style={{
-                  background: 'rgba(11,37,69,0.06)',
-                  border: '1px solid rgba(11,37,69,0.15)',
+                  background: 'rgba(0,29,93,0.06)',
+                  border: '1px solid rgba(0,29,93,0.15)',
                   color: 'var(--color-brand-navy)',
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(11,37,69,0.10)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(11,37,69,0.06)'}>
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,29,93,0.10)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,29,93,0.06)'}>
                 View Full Cart
               </button>
             </div>

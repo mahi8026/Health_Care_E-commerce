@@ -90,7 +90,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
             <span className="nav-glass-control__label">{firstName}</span>
             <FaChevronDown
               size={10}
-              className={`text-white/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+              className={`text-[var(--color-text-secondary)] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
             />
           </>
         ) : (

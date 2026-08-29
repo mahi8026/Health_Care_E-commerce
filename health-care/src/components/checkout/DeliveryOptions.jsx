@@ -25,7 +25,7 @@ export const DELIVERY_ZONE_INFO = {
     eta: '1–2 business days',
     icon: '🏙️',
     color: 'var(--color-brand-teal)',
-    bg: '#F0FDF9',
+    bg: 'var(--color-brand-teal-tint)',
     border: 'var(--color-brand-teal)',
   },
   dhaka_suburban: {

@@ -127,14 +127,14 @@ export class InvoiceGenerator {
       margin: 0 auto;
       background: #fff;
       overflow: hidden;
-      box-shadow: 0 12px 40px rgba(11, 37, 69, 0.14);
+      box-shadow: 0 12px 40px rgba(0, 29, 93, 0.14);
       position: relative;
       display: flex;
       flex-direction: column;
     }
     /* ————— Header ————— */
     .head {
-      background: linear-gradient(120deg, #0b2545 0%, #0d3162 55%, #123f7e 100%);
+      background: linear-gradient(120deg, #001D5D 0%, #002B78 55%, #123f7e 100%);
       color: #fff;
       padding: 26px 36px 22px;
       position: relative;
@@ -148,7 +148,7 @@ export class InvoiceGenerator {
       width: 220px;
       height: 220px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(77, 219, 184, 0.16) 0%, rgba(77, 219, 184, 0.02) 60%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 208, 202, 0.16) 0%, rgba(0, 208, 202, 0.02) 60%, transparent 70%);
       pointer-events: none;
     }
     .head-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; position: relative; z-index: 1; }
@@ -156,20 +156,20 @@ export class InvoiceGenerator {
     .brand-mark {
       width: 52px; height: 52px;
       border-radius: 14px;
-      background: linear-gradient(135deg, #4ddbb8, #1fa889);
+      background: linear-gradient(135deg, #00D0CA, #1fa889);
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 6px 16px rgba(14, 138, 110, 0.4);
+      box-shadow: 0 6px 16px rgba(24, 175, 169, 0.4);
       flex-shrink: 0;
     }
     .brand-name { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
-    .brand-name span { color: #4ddbb8; }
+    .brand-name span { color: #00D0CA; }
     .brand-tag { font-size: 9.5px; color: #a5b8d4; margin-top: 4px; letter-spacing: 0.02em; }
     .inv-label { text-align: right; }
-    .inv-label .kicker { font-size: 9px; letter-spacing: 0.35em; color: #4ddbb8; font-weight: 700; text-transform: uppercase; }
+    .inv-label .kicker { font-size: 9px; letter-spacing: 0.35em; color: #00D0CA; font-weight: 700; text-transform: uppercase; }
     .inv-label h1 { font-size: 34px; font-weight: 800; letter-spacing: 0.02em; line-height: 1.05; margin-top: 4px; }
     .inv-meta { display: flex; gap: 18px; justify-content: flex-end; margin-top: 10px; font-size: 10px; color: #c5d3e8; }
     .inv-meta b { color: #fff; font-weight: 600; }
-    .accent-bar { height: 5px; background: linear-gradient(90deg, #0e8a6e, #4ddbb8 60%, #0e8a6e); }
+    .accent-bar { height: 5px; background: linear-gradient(90deg, #18AFA9, #00D0CA 60%, #18AFA9); }
     /* ————— Body ————— */
     .body { padding: 26px 36px 20px; flex: 1; }
     .cards {
@@ -183,18 +183,18 @@ export class InvoiceGenerator {
       border: 1px solid #e4ebf2;
       border-radius: 10px;
       padding: 13px 15px;
-      border-top: 3px solid #0e8a6e;
+      border-top: 3px solid #18AFA9;
     }
     .card h3 {
       font-size: 8.5px;
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      color: #0e8a6e;
+      color: #18AFA9;
       margin-bottom: 8px;
       font-weight: 800;
     }
     .card p { font-size: 10.5px; line-height: 1.55; color: #334155; }
-    .card strong { color: #0b2545; }
+    .card strong { color: #001D5D; }
     .card .sub { font-size: 9.5px; color: #64748b; }
     .chip {
       display: inline-flex; align-items: center; gap: 6px;
@@ -210,7 +210,7 @@ export class InvoiceGenerator {
     /* ————— Table ————— */
     table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
     thead th {
-      background: #0b2545;
+      background: #001D5D;
       color: #fff;
       font-size: 8.5px;
       text-transform: uppercase;
@@ -228,11 +228,11 @@ export class InvoiceGenerator {
       vertical-align: top;
     }
     tbody tr:nth-child(even) { background: #fafcfd; }
-    tbody tr:last-child td { border-bottom: 2px solid #0b2545; }
-    .item-name { font-weight: 700; color: #0b2545; font-size: 11px; }
+    tbody tr:last-child td { border-bottom: 2px solid #001D5D; }
+    .item-name { font-weight: 700; color: #001D5D; font-size: 11px; }
     .item-meta { font-size: 9px; color: #7c8ba1; margin-top: 3px; }
     .num { text-align: right; white-space: nowrap; }
-    .strong { font-weight: 700; color: #0b2545; }
+    .strong { font-weight: 700; color: #001D5D; }
     /* ————— Totals ————— */
     .totals-row { display: flex; justify-content: space-between; gap: 26px; align-items: flex-start; margin-bottom: 18px; }
     .words {
@@ -242,14 +242,14 @@ export class InvoiceGenerator {
       line-height: 1.7;
       padding-top: 4px;
     }
-    .words b { color: #0b2545; }
+    .words b { color: #001D5D; }
     .totals { width: 250px; margin-left: auto; }
     .t-line { display: flex; justify-content: space-between; padding: 4.5px 0; font-size: 10.5px; color: #64748b; }
     .t-line b { color: #1e293b; font-weight: 600; }
-    .t-line.discount b { color: #0e8a6e; }
+    .t-line.discount b { color: #18AFA9; }
     .t-grand {
       display: flex; justify-content: space-between; align-items: center;
-      background: linear-gradient(120deg, #0b2545, #0d3162);
+      background: linear-gradient(120deg, #001D5D, #002B78);
       color: #fff;
       padding: 12px 16px;
       border-radius: 10px;
@@ -257,12 +257,12 @@ export class InvoiceGenerator {
       font-size: 11.5px;
       font-weight: 700;
     }
-    .t-grand .amt { font-size: 17px; color: #4ddbb8; font-weight: 800; }
+    .t-grand .amt { font-size: 17px; color: #00D0CA; font-weight: 800; }
     /* ————— Payment / Footer ————— */
     .pay-box {
       background: #f0f8f4;
       border: 1px solid #cde9dd;
-      border-left: 4px solid #0e8a6e;
+      border-left: 4px solid #18AFA9;
       border-radius: 8px;
       padding: 13px 16px;
       margin-bottom: 16px;
@@ -271,16 +271,16 @@ export class InvoiceGenerator {
       line-height: 1.7;
       display: flex; justify-content: space-between; align-items: center; gap: 16px;
     }
-    .pay-box strong { color: #0b2545; }
+    .pay-box strong { color: #001D5D; }
     .pay-ref {
       text-align: right;
       font-size: 9px;
       color: #7c8ba1;
       white-space: nowrap;
     }
-    .pay-ref b { display: block; color: #0b2545; font-size: 12px; letter-spacing: 0.06em; margin-top: 2px; }
+    .pay-ref b { display: block; color: #001D5D; font-size: 12px; letter-spacing: 0.06em; margin-top: 2px; }
     .foot {
-      background: #0b2545;
+      background: #001D5D;
       color: #aab8cc;
       padding: 14px 36px 16px;
       text-align: center;
@@ -288,7 +288,7 @@ export class InvoiceGenerator {
       line-height: 1.7;
     }
     .foot strong { color: #fff; }
-    .foot .reg { color: #4ddbb8; }
+    .foot .reg { color: #00D0CA; }
     @media print {
       body { background: #fff; padding: 0; }
       .sheet { box-shadow: none; width: 100%; min-height: auto; }

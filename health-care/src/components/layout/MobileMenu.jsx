@@ -37,7 +37,7 @@ const CATEGORY_ICON_MAP = {
 // Glass style tokens
 const glass = {
   panel: {
-    background: 'rgba(11,37,69,0.82)',
+    background: 'rgba(0,29,93,0.82)',
     backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.06)',
     WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(1.06)',
     borderLeft: '1px solid rgba(255,255,255,0.14)',
@@ -162,17 +162,17 @@ export default function MobileMenu({ isOpen, onClose }) {
               style={{
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '10px 12px', width: '100%', border: 'none', textAlign: 'left', cursor: 'pointer',
-                background: 'rgba(77,219,184,0.10)',
+                background: 'rgba(0,208,202,0.10)',
                 borderRadius: 12,
-                border: '1px solid rgba(77,219,184,0.18)',
+                border: '1px solid rgba(0,208,202,0.18)',
               }}
             >
               <div style={{
                 width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
-                background: 'linear-gradient(145deg,#0a6b55,var(--color-brand-teal),var(--color-brand-teal-light))',
+                background: 'linear-gradient(145deg,#007F7B,var(--color-brand-teal),var(--color-brand-teal-light))',
                 color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 'var(--text-sm)', fontWeight: 600,
-                boxShadow: '0 2px 10px rgba(14,138,110,0.4)',
+                boxShadow: '0 2px 10px rgba(24,175,169,0.4)',
               }}>
                 {initials}
               </div>
@@ -212,8 +212,8 @@ export default function MobileMenu({ isOpen, onClose }) {
                 style={{
                   marginTop: 8, width: '100%', padding: '11px 14px',
                   display: 'flex', alignItems: 'center', gap: 10,
-                  background: 'rgba(14,138,110,0.18)',
-                  border: '1px solid rgba(77,219,184,0.30)',
+                  background: 'rgba(24,175,169,0.18)',
+                  border: '1px solid rgba(0,208,202,0.30)',
                   borderRadius: 10, cursor: 'pointer',
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
                 }}
@@ -222,8 +222,8 @@ export default function MobileMenu({ isOpen, onClose }) {
                 <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-brand-teal-light)', flex: 1 }}>B2B Portal</span>
                 <span style={{
                   fontSize: 'var(--text-xs)', fontWeight: 600, padding: '2px 7px', borderRadius: 999,
-                  background: 'rgba(14,138,110,0.30)', border: '1px solid rgba(77,219,184,0.35)',
-                  color: 'rgba(77,219,184,0.95)', letterSpacing: '0.04em',
+                  background: 'rgba(24,175,169,0.30)', border: '1px solid rgba(0,208,202,0.35)',
+                  color: 'rgba(0,208,202,0.95)', letterSpacing: '0.04em',
                 }}>B2B</span>
               </button>
             )}
@@ -341,8 +341,8 @@ export default function MobileMenu({ isOpen, onClose }) {
                 width: '100%', padding: '12px', border: 'none', borderRadius: 12,
                 fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer',
                 color: 'var(--color-brand-teal-light)',
-                background: 'rgba(77,219,184,0.10)',
-                border: '1px solid rgba(77,219,184,0.25)',
+                background: 'rgba(0,208,202,0.10)',
+                border: '1px solid rgba(0,208,202,0.25)',
               }}>
               Register
             </button>
@@ -356,13 +356,13 @@ export default function MobileMenu({ isOpen, onClose }) {
               width: '100%', padding: '13px', border: 'none', borderRadius: 12,
               fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer', color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              background: 'rgba(14,138,110,0.35)',
+              background: 'rgba(24,175,169,0.35)',
               backdropFilter: 'blur(var(--glass-blur))',
-              border: '1px solid rgba(77,219,184,0.30)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 16px rgba(14,138,110,0.20)',
+              border: '1px solid rgba(0,208,202,0.30)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 16px rgba(24,175,169,0.20)',
             }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(14,138,110,0.48)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(14,138,110,0.35)'}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(24,175,169,0.48)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(24,175,169,0.35)'}
           >
             <FaBuilding size={14} />
             B2B Portal — Bulk Pricing
@@ -403,20 +403,20 @@ function GlassAccountButton({ icon, label, onClick, danger, admin }) {
   const [hovered, setHovered] = useState(false);
 
   const color = danger
-    ? (hovered ? '#ff6b6b' : 'rgba(226,75,74,0.85)')
+    ? (hovered ? '#ff6b6b' : 'rgba(220,53,69,0.85)')
     : admin
     ? (hovered ? '#c4b5fd' : 'rgba(167,139,250,0.9)')
     : (hovered ? '#fff' : 'rgba(255,255,255,0.72)');
 
   const iconColor = danger
-    ? (hovered ? '#ff6b6b' : 'rgba(226,75,74,0.7)')
+    ? (hovered ? '#ff6b6b' : 'rgba(220,53,69,0.7)')
     : admin
     ? (hovered ? '#c4b5fd' : 'rgba(167,139,250,0.7)')
     : (hovered ? 'var(--color-brand-teal-light)' : 'rgba(255,255,255,0.4)');
 
   const bg = hovered
     ? danger
-      ? 'rgba(226,75,74,0.08)'
+      ? 'rgba(220,53,69,0.08)'
       : admin
       ? 'rgba(124,58,237,0.14)'
       : 'rgba(255,255,255,0.06)'
