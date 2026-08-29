@@ -233,9 +233,6 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                 className="object-contain"
               />
             </div>
-            <span className="hidden sm:block font-[family-name:var(--font-lora)] text-lg font-semibold text-white group-hover:text-brand-teal-light transition-colors">
-              Mediport<span className="text-brand-teal-light">BD</span>
-            </span>
           </button>
 
           <div className="hidden md:block nav-divider" />

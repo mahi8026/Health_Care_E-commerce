@@ -148,9 +148,6 @@ export default function MobileMenu({ isOpen, onClose }) {
                 style={{ objectFit: 'contain' }}
               />
             </div>
-            <span style={{ fontSize: 'var(--text-lg)', fontWeight: 600, color: '#fff', letterSpacing: '-0.3px' }}>
-              Mediport<span style={{ color: 'var(--color-brand-teal-light)' }}>BD</span>
-            </span>
           </div>
           <button
             onClick={onClose}

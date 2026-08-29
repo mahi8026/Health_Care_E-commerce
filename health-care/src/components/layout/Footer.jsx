@@ -134,9 +134,6 @@ export default function Footer() {
                   className="object-contain"
                 />
               </div>
-              <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
-                Mediport<span className="text-brand-teal-light">BD</span>
-              </div>
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
@@ -233,9 +230,6 @@ export default function Footer() {
                   className="object-contain"
                 />
               </div>
-              <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
-                Mediport<span className="text-brand-teal-light">BD</span>
-              </div>
             </div>
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment.
@@ -284,9 +278,6 @@ export default function Footer() {
                   sizes="56px"
                   className="object-contain"
                 />
-              </div>
-              <div className="font-[family-name:var(--font-lora)] text-xl font-semibold text-white">
-                Mediport<span className="text-brand-teal-light">BD</span>
               </div>
             </div>
             <p className="text-xs text-white/70 leading-relaxed">
