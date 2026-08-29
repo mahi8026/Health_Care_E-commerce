@@ -2,7 +2,7 @@
 
 // CSRF protection using double submit cookie pattern
 const {
-  generateToken,
+  generateCsrfToken,      // v4 renamed generateToken → generateCsrfToken
   doubleCsrfProtection,
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET,
@@ -20,7 +20,7 @@ const {
 
 // Middleware to generate and attach CSRF token
 const csrfTokenMiddleware = (req, res, next) => {
-  const token = generateToken(req, res);
+  const token = generateCsrfToken(req, res);
   res.locals.csrfToken = token;
   next();
 };
