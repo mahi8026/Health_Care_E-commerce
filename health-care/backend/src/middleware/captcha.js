@@ -79,6 +79,10 @@ async function verifyRecaptcha(token, action) {
 
 /**
  * Express middleware to verify reCAPTCHA
+ * reCAPTCHA is a SOFT signal — a missing or low-score token logs a warning
+ * but never blocks the request. The backend relies on rate limiting and
+ * credential validation as the hard security gates. Blocking on reCAPTCHA
+ * prevents legitimate users with ad blockers or slow connections from logging in.
  * @param {String} action - Expected action name
  */
 function captchaMiddleware(action) {
@@ -88,27 +92,24 @@ function captchaMiddleware(action) {
       const token = req.headers['x-recaptcha-token'] || req.body.recaptchaToken;
 
       if (!token) {
-        // Bypass when CAPTCHA is not configured or SKIP_CAPTCHA_DEV is set
-        if (!process.env.RECAPTCHA_SECRET_KEY || process.env.SKIP_CAPTCHA_DEV === 'true') {
-          logger.debug('[CAPTCHA] Bypassing — RECAPTCHA_SECRET_KEY not configured');
-          return next();
-        }
-
-        return res.status(400).json({
-          success: false,
-          message: 'CAPTCHA token required'
-        });
+        // No token — skip silently (ad blockers, slow load, etc.)
+        logger.debug(`[CAPTCHA] No token for action "${action}" — skipping (soft enforcement)`);
+        return next();
       }
 
-      // Verify token
+      // Verify token — but only block when explicitly configured AND CAPTCHA_HARD_ENFORCE=true
       const result = await verifyRecaptcha(token, action);
 
       if (!result.success) {
-        return res.status(403).json({
-          success: false,
-          message: result.error || 'CAPTCHA verification failed',
-          captchaFailed: true
-        });
+        if (process.env.CAPTCHA_HARD_ENFORCE === 'true') {
+          return res.status(403).json({
+            success: false,
+            message: result.error || 'CAPTCHA verification failed',
+            captchaFailed: true
+          });
+        }
+        // Soft mode: log and continue
+        logger.warn(`[CAPTCHA] Soft fail for action "${action}": ${result.error} — proceeding anyway`);
       }
 
       // Add score to request for logging
@@ -118,11 +119,8 @@ function captchaMiddleware(action) {
       next();
     } catch (error) {
       logger.error(`[CAPTCHA] Middleware error: ${error.message}`);
-
-      res.status(500).json({
-        success: false,
-        message: 'CAPTCHA verification error'
-      });
+      // Never block on internal errors
+      next();
     }
   };
 }
