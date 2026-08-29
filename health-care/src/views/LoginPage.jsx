@@ -76,14 +76,15 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     setError('');
     setIsSubmitting(true);
 
+    // Attempt reCAPTCHA but don't block login if it fails — the token
+    // is a soft signal for the backend, not a hard client-side gate.
+    // Ad blockers, slow connections, and domain mismatches can all cause
+    // executeRecaptcha to return null; blocking login in those cases just
+    // prevents legitimate users from signing in.
     let recaptchaToken = null;
     if (recaptchaSiteKey) {
       recaptchaToken = await executeRecaptcha('login');
-      if (!recaptchaToken) {
-        setError('Security verification failed. Please refresh the page and try again.');
-        setIsSubmitting(false);
-        return;
-      }
+      // null is acceptable — backend will score the request without it
     }
 
     const result = await login(email, password, recaptchaToken);
@@ -105,11 +106,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
     let recaptchaToken = null;
     if (recaptchaSiteKey) {
       recaptchaToken = await executeRecaptcha('login');
-      if (!recaptchaToken) {
-        setError('Security verification failed. Please refresh the page and try again.');
-        setIsSubmitting(false);
-        return;
-      }
+      // null is acceptable — don't block dev quick-login
     }
 
     const result = await login(testEmail, testPassword, recaptchaToken);

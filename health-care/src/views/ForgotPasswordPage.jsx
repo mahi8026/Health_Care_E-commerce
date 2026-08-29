@@ -49,10 +49,7 @@ export default function ForgotPasswordPage() {
       let recaptchaToken = null;
       if (recaptchaSiteKey) {
         recaptchaToken = await executeRecaptcha('password_reset');
-        if (!recaptchaToken) {
-          setError('Security verification failed. Please refresh the page and try again.');
-          return;
-        }
+        // null is acceptable — don't block password reset
       }
 
       const res = await fetch(`${API}/auth/forgot-password`, {

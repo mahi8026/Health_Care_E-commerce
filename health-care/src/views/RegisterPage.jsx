@@ -95,14 +95,11 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
     e.preventDefault();
     if (!validate()) return;
     
-    // Execute reCAPTCHA before submitting
+    // Execute reCAPTCHA but don't block registration if it fails
     let recaptchaToken = null;
     if (recaptchaSiteKey) {
       recaptchaToken = await executeRecaptcha('register');
-      if (!recaptchaToken) {
-        setErrors({ submit: 'Security verification failed. Please refresh the page and try again.' });
-        return;
-      }
+      // null is acceptable — backend will score without it
     }
     
     // Add reCAPTCHA token to form data

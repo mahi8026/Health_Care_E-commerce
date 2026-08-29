@@ -208,11 +208,10 @@ export default function B2BRegisterPage() {
       let recaptchaToken = null;
       if (recaptchaSiteKey) {
         recaptchaToken = await executeRecaptcha('register');
-        if (!recaptchaToken) {
-          setError('Security verification failed. Please refresh the page and try again.');
-          return;
+        // null is acceptable — don't block B2B registration
+        if (recaptchaToken) {
+          registrationData.recaptchaToken = recaptchaToken;
         }
-        registrationData.recaptchaToken = recaptchaToken;
       }
 
       const res = await fetch(`${API}/auth/register`, {
