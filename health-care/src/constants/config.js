@@ -1,7 +1,7 @@
 // Frontend configuration constants
 
 export const TIMEOUTS = {
-  API_REQUEST: 30000, // 30 seconds
+  API_REQUEST: 60000, // 60 seconds — generous enough for Render dyno warm-up & network variance
   AUTH_CHECK: 8000, // 8 seconds
 };
 
