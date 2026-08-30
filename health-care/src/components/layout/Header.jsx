@@ -276,18 +276,18 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
               {megaMenuOpen && (
                 <div
-                  className="absolute top-[calc(100%+10px)] left-0 w-[720px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-dropdown p-4 nav-dropdown-enter"
+                  className="absolute top-[calc(100%+10px)] left-0 w-[780px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-dropdown p-3 nav-dropdown-enter"
                   onMouseLeave={() => setMegaMenuOpen(false)}
                   role="menu"
                 >
-                  <div className="grid grid-cols-3 gap-1">
+                  <div className="grid grid-cols-4 gap-x-1 gap-y-0.5">
                     {categoriesLoading ? (
                       // Loading skeleton
-                      Array.from({ length: 9 }).map((_, i) => (
-                        <div key={i} className="flex items-start gap-3 p-3 rounded-lg animate-pulse">
+                      Array.from({ length: 12 }).map((_, i) => (
+                        <div key={i} className="flex items-start gap-2.5 px-2.5 py-2 rounded-lg animate-pulse">
                           <div className="w-4 h-4 bg-[var(--color-background-muted)] rounded mt-0.5" />
                           <div className="flex-1">
-                            <div className="h-3 bg-[var(--color-background-muted)] rounded w-3/4 mb-2" />
+                            <div className="h-3 bg-[var(--color-background-muted)] rounded w-3/4 mb-1.5" />
                             <div className="h-2 bg-[var(--color-background-tertiary)] rounded w-full" />
                           </div>
                         </div>
@@ -297,45 +297,45 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                         <button
                           key={cat.href}
                           onClick={() => { router.push(cat.href); setMegaMenuOpen(false); }}
-                          className="flex items-start gap-3 p-3 rounded-lg hover:bg-brand-teal-tint transition-colors text-left group"
+                          className="flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-brand-teal-tint transition-colors text-left group"
                           role="menuitem"
                         >
                           <span className="mt-0.5 text-brand-teal flex-shrink-0 group-hover:scale-110 transition-transform">
                             {cat.icon}
                           </span>
-                          <div>
-                            <div className="text-sm font-semibold text-[var(--color-text-primary)] group-hover:text-brand-teal transition-colors">
+                          <div className="min-w-0">
+                            <div className="text-[13px] font-semibold leading-tight text-[var(--color-text-primary)] group-hover:text-brand-teal transition-colors">
                               {cat.label}
                             </div>
-                            <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">{cat.desc}</div>
+                            <div className="text-[10.5px] leading-snug text-[var(--color-text-secondary)] mt-0.5">{cat.desc}</div>
                           </div>
                         </button>
                       ))
                     )}
                   </div>
-                  <div className="mt-3 pt-3 border-t border-[var(--color-border-tertiary)]">
+                  <div className="mt-2 pt-2 border-t border-[var(--color-border-tertiary)]">
                     <div className="flex items-center justify-between gap-2">
                       <button
                         onClick={() => { router.push('/products'); setMegaMenuOpen(false); }}
-                        className="flex-1 py-2 text-center text-xs font-semibold text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                        className="flex-1 py-1.5 text-center text-xs font-semibold text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                       >
                         View All Products →
                       </button>
                       <button
                         onClick={() => { router.push('/equipment'); setMegaMenuOpen(false); }}
-                        className="flex-1 py-2 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                        className="flex-1 py-1.5 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                       >
                         Price Guides →
                       </button>
                       <button
                         onClick={() => { router.push('/brands'); setMegaMenuOpen(false); }}
-                        className="flex-1 py-2 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                        className="flex-1 py-1.5 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                       >
                         Browse by Brand →
                       </button>
                       <button
                         onClick={() => { router.push('/topics'); setMegaMenuOpen(false); }}
-                        className="flex-1 py-2 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
+                        className="flex-1 py-1.5 text-center text-xs font-semibold text-[var(--color-text-secondary)] hover:text-brand-teal hover:bg-brand-teal-tint rounded-lg transition-colors"
                       >
                         Topic Guides →
                       </button>
