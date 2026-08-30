@@ -164,7 +164,7 @@ return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control', 'Pragma', 'X-CSRF-Token'],
   exposedHeaders: ['X-Total-Count', 'X-Page', 'X-Per-Page'],
   maxAge: 86400,
   preflightContinue: false,
