@@ -197,6 +197,21 @@ class ApiError extends Error {
 let isRefreshing = false;
 let refreshSubscribers = [];
 
+// S-14: cold-start gate for POST orders — allows one retry after the free-tier
+// dyno wakes up (10s gate) so the first POST /orders doesn't fail instantly.
+let coldStartPostGate = null;
+function waitForColdStartPostGate() {
+  if (!coldStartPostGate) {
+    coldStartPostGate = new Promise((resolve) => {
+      setTimeout(() => {
+        coldStartPostGate = null;
+        resolve();
+      }, 10000); // 10s matching the GET cold-start gate
+    });
+  }
+  return coldStartPostGate;
+}
+
 // Subscribe to token refresh completion
 function subscribeTokenRefresh(callback) {
   refreshSubscribers.push(callback);
@@ -517,10 +532,12 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         // Caller unmounted/cancelled — stop immediately, never retry.
         if (externalSignal?.aborted) throw error;
         const transient = error.name === 'AbortError' || error.message.includes('fetch');
-        // Retry ONLY idempotent methods on network errors/timeouts. A timed-out
-        // POST (order placement, payment execute) may have reached the server;
-        // blindly re-sending it can create duplicate orders/charges, so those
-        // failures surface to the caller instead of being auto-retried.
+        // Retry on network errors / timeouts:
+        // - GET/HEAD: retry up to MAX_RETRIES with exponential backoff
+        // - POST (createOrder, payment execute): retry ONCE after the cold-start
+        //   gate clears, because the first POST after dyno wake-up may hit during
+        //   the 10s boot window. Subsequent failures surface to the caller to
+        //   avoid duplicate orders/charges.
         // (429/503 above are safe for any method — the server rejected them
         // without processing the request.)
         if (transient) {
@@ -532,6 +549,14 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
               continue;
             }
             devLog.error('[API] Request failed after retries:', url);
+          } else if (method === 'POST' && attempts === 0) {
+            // First POST network error — wait for cold-start gate then retry once.
+            // This handles the Render free-tier dyno wake-up window (10s gate).
+            try {
+              await waitForColdStartPostGate();
+            } catch {}
+            attempts += 1;
+            continue;
           } else {
             devLog.error('[API] Non-idempotent request failed (no auto-retry):', url);
           }
