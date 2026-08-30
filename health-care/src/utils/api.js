@@ -198,39 +198,42 @@ let isRefreshing = false;
 let refreshSubscribers = [];
 
 // S-14: cold-start gate for POST orders — allows one retry after the free-tier
-// dyno wakes up (10s gate) so the first POST /orders doesn't fail instantly.
+// dyno wakes up so the first POST /orders doesn't fail instantly.
+// Render free-tier dynos need ~30-60s to cold-start after sleeping.
 let coldStartPostGate = null;
+let coldStartPostGateAttempted = false;
 function waitForColdStartPostGate() {
   if (!coldStartPostGate) {
     coldStartPostGate = new Promise((resolve) => {
       setTimeout(() => {
         coldStartPostGate = null;
+        coldStartPostGateAttempted = false;
         resolve();
-      }, 10000); // 10s matching the GET cold-start gate
+      }, 45000); // 45s matching Render dyno typical warm-up time
     });
   }
   return coldStartPostGate;
 }
 
 // S-15: Global cold-start gate — any request (GET/POST) during the first
-// 15s after dyno wake-up gets one automatic retry after the gate clears.
-// Prevents "Unable to connect to server" / timeouts for ALL endpoints.
+// 45s after dyno wake-up gets ONE automatic retry after the gate clears,
+// covering ALL endpoints when the free-tier dyno is waking up.
 let coldStartGateGlobal = null;
-let coldStartGateAttempted = false;
+let coldStartGateGlobalAttempted = false;
 function waitForColdStartGlobalGate() {
   if (!coldStartGateGlobal) {
     coldStartGateGlobal = new Promise((resolve) => {
       setTimeout(() => {
         coldStartGateGlobal = null;
-        coldStartGateAttempted = false;
+        coldStartGateGlobalAttempted = false;
         resolve();
-      }, 15000); // 15s total window matching Render dyno warm-up
+      }, 45000); // 45s matching the POST gate above
     });
   }
   return coldStartGateGlobal;
 }
-// Track if we've already attempted a cold-start retry to avoid double-retry
-let coldStartAlreadyRetried = false;
+// Track whether we've already attempted a cold-start retry to avoid
+// double-retry loops. Separate flags for POST-specific vs global gate.
 
 // Subscribe to token refresh completion
 function subscribeTokenRefresh(callback) {
@@ -569,21 +572,22 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
               continue;
             }
             devLog.error('[API] Request failed after retries:', url);
-          } else if (method === 'POST' && attempts === 0) {
+          } else if (method === 'POST' && attempts === 0 && coldStartPostGateAttempted === false) {
             // First POST network error — wait for cold-start gate then retry once.
-            // This handles the Render free-tier dyno wake-up window (10s gate).
+            // This handles the Render free-tier dyno wake-up window (45s gate).
             try {
               await waitForColdStartPostGate();
+              coldStartPostGateAttempted = true;
             } catch {}
             attempts += 1;
             continue;
-          } else if (coldStartGateAttempted === false && coldStartGateGlobal) {
-            // First network error of ANY type during the 15s cold-start window —
+          } else if (coldStartGateGlobalAttempted === false && coldStartGateGlobal) {
+            // First network error of ANY type during the 45s cold-start window —
             // wait for the global gate then retry once. This covers all endpoints
-            // (not just /orders) when the dyno is waking up.
+            // (not just /orders) when the free-tier dyno is waking up.
             try {
               await waitForColdStartGlobalGate();
-              coldStartGateAttempted = true;
+              coldStartGateGlobalAttempted = true;
             } catch {}
             attempts += 1;
             continue;
