@@ -135,7 +135,12 @@ function initRedis() {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
-      maxRetriesPerRequest: 3,
+      // FIX: commandTimeout ensures every Redis command (EXISTS, GET, SET, etc.)
+      // fails fast instead of hanging indefinitely when Redis is slow/degraded.
+      // Without this, auth middleware (tokenBlacklist) and rate-limit-redis stall
+      // for the full 30s request timeout on every order placement attempt.
+      commandTimeout: 3000,       // 3s per command — fail fast, fall back to memory
+      maxRetriesPerRequest: 1,    // One fast retry then give up (was 3 = up to 9s stall)
       enableReadyCheck: true,
       lazyConnect: false,
       connectTimeout: 10000,

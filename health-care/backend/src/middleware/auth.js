@@ -17,15 +17,7 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Not authorized to access this route' });
     }
 
-    // ✅ Check if token is blacklisted (logout, password change)
-    const isBlacklisted = await tokenBlacklist.isBlacklisted(token);
-    if (isBlacklisted) {
-      logger.warn('[protect] Attempted use of blacklisted token', {
-        tokenPrefix: token.substring(0, 20) + '...'
-      });
-      return res.status(401).json({ success: false, message: 'Token has been revoked. Please log in again.' });
-    }
-
+    // Verify JWT first (sync, zero I/O) — fail fast before any Redis calls
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -33,16 +25,38 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid or expired token' });
     }
 
-    // ✅ Check if token was issued before JWT secret rotation
-    if (decoded.iat) {
-      const isFromBeforeRotation = await tokenBlacklist.isTokenFromBeforeRotation(decoded.iat);
-      if (isFromBeforeRotation) {
-        logger.warn('[protect] Token issued before secret rotation', {
-          userId: decoded.id,
-          issuedAt: new Date(decoded.iat * 1000)
-        });
-        return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
-      }
+    // ✅ Check blacklist + rotation + user invalidation in parallel.
+    // Each tokenBlacklist call already has its own try/catch and falls back to
+    // the in-memory mirror, so errors here are non-fatal. The ioredis client is
+    // configured with commandTimeout:3000 so a slow Redis never stalls this check
+    // for more than ~3s total (commands run in parallel, not serial).
+    const [isBlacklisted, isFromBeforeRotation, isUserTokenInvalidated] = await Promise.all([
+      tokenBlacklist.isBlacklisted(token),
+      decoded.iat ? tokenBlacklist.isTokenFromBeforeRotation(decoded.iat) : Promise.resolve(false),
+      decoded.iat ? tokenBlacklist.isUserTokenInvalidated(decoded.id, decoded.iat) : Promise.resolve(false),
+    ]);
+
+    if (isBlacklisted) {
+      logger.warn('[protect] Attempted use of blacklisted token', {
+        tokenPrefix: token.substring(0, 20) + '...'
+      });
+      return res.status(401).json({ success: false, message: 'Token has been revoked. Please log in again.' });
+    }
+
+    if (isFromBeforeRotation) {
+      logger.warn('[protect] Token issued before secret rotation', {
+        userId: decoded.id,
+        issuedAt: new Date(decoded.iat * 1000)
+      });
+      return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+    }
+
+    if (isUserTokenInvalidated) {
+      logger.warn('[protect] User tokens invalidated', {
+        userId: decoded.id,
+        issuedAt: new Date(decoded.iat * 1000)
+      });
+      return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
     }
 
     const user = await User.findById(decoded.id).select('-password');
@@ -52,18 +66,6 @@ exports.protect = async (req, res, next) => {
 
     if (!user.isActive) {
       return res.status(401).json({ success: false, message: 'Account is deactivated' });
-    }
-
-    // ✅ Check if user's tokens were invalidated (password change, security event)
-    if (decoded.iat) {
-      const isUserTokenInvalidated = await tokenBlacklist.isUserTokenInvalidated(decoded.id, decoded.iat);
-      if (isUserTokenInvalidated) {
-        logger.warn('[protect] User tokens invalidated', {
-          userId: decoded.id,
-          issuedAt: new Date(decoded.iat * 1000)
-        });
-        return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
-      }
     }
 
     req.user = user;

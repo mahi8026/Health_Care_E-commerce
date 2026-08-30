@@ -66,7 +66,9 @@ function createLimiter({
     try {
       const client = getRedisClient();
       config.store = new RedisStore({
-        // ioredis client — rate-limit-redis v4 uses sendCommand
+        // ioredis client — rate-limit-redis v4 uses sendCommand.
+        // The ioredis client is configured with commandTimeout:3000 so a slow
+        // Redis won't stall the rate-limit check for more than 3s.
         sendCommand: (...args) => client.call(...args),
         prefix: keyPrefix || 'rl:'
       });
