@@ -212,6 +212,26 @@ function waitForColdStartPostGate() {
   return coldStartPostGate;
 }
 
+// S-15: Global cold-start gate — any request (GET/POST) during the first
+// 15s after dyno wake-up gets one automatic retry after the gate clears.
+// Prevents "Unable to connect to server" / timeouts for ALL endpoints.
+let coldStartGateGlobal = null;
+let coldStartGateAttempted = false;
+function waitForColdStartGlobalGate() {
+  if (!coldStartGateGlobal) {
+    coldStartGateGlobal = new Promise((resolve) => {
+      setTimeout(() => {
+        coldStartGateGlobal = null;
+        coldStartGateAttempted = false;
+        resolve();
+      }, 15000); // 15s total window matching Render dyno warm-up
+    });
+  }
+  return coldStartGateGlobal;
+}
+// Track if we've already attempted a cold-start retry to avoid double-retry
+let coldStartAlreadyRetried = false;
+
 // Subscribe to token refresh completion
 function subscribeTokenRefresh(callback) {
   refreshSubscribers.push(callback);
@@ -554,6 +574,16 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
             // This handles the Render free-tier dyno wake-up window (10s gate).
             try {
               await waitForColdStartPostGate();
+            } catch {}
+            attempts += 1;
+            continue;
+          } else if (coldStartGateAttempted === false && coldStartGateGlobal) {
+            // First network error of ANY type during the 15s cold-start window —
+            // wait for the global gate then retry once. This covers all endpoints
+            // (not just /orders) when the dyno is waking up.
+            try {
+              await waitForColdStartGlobalGate();
+              coldStartGateAttempted = true;
             } catch {}
             attempts += 1;
             continue;
