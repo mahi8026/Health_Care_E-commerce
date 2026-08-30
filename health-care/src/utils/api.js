@@ -834,15 +834,42 @@ export const api = {
   },
 
   async createOrder(orderData) {
-    const response = await fetchWithAuth(`${API_BASE_URL}/orders`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(orderData),
-      credentials: 'include'
-    });
-    // Clear orders cache after creating new order
-    clearCache('/orders');
-    return handleResponse(response);
+    // Use extended timeout for order creation to handle Render free tier cold start
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.ORDER_CREATION);
+    
+    const startTime = Date.now();
+    
+    try {
+      const response = await fetchWithAuth(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(orderData),
+        credentials: 'include',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      // Log slow responses (possible cold start)
+      const duration = Date.now() - startTime;
+      if (duration > 30000 && process.env.NODE_ENV === 'development') {
+        console.warn(`[ORDER] Slow order creation: ${duration}ms (possible cold start)`);
+      }
+      
+      // Clear orders cache after creating new order
+      clearCache('/orders');
+      return handleResponse(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      const duration = Date.now() - startTime;
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`[ORDER] Failed after ${duration}ms:`, error.message);
+      }
+      
+      throw error;
+    }
   },
 
   // FIX-016: No PATCH /orders/:id route exists on the backend.

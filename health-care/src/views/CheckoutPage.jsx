@@ -32,6 +32,7 @@ export default function CheckoutPage({ onBackToCart }) {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
   const [showAuthGate, setShowAuthGate] = useState(false);
+  const [isSlowRequest, setIsSlowRequest] = useState(false);
   
   // ✅ Security Fix #4: Generate idempotency key to prevent double charging
   const [idempotencyKey] = useState(() => {
@@ -192,6 +193,12 @@ export default function CheckoutPage({ onBackToCart }) {
 
     setLoading(true);
     setError(null);
+    setIsSlowRequest(false);
+
+    // Show "taking longer than expected" message after 10 seconds
+    const slowConnectionTimer = setTimeout(() => {
+      setIsSlowRequest(true);
+    }, 10000);
 
     // Log cart data for debugging
     if (process.env.NODE_ENV === 'development') {
@@ -247,6 +254,10 @@ export default function CheckoutPage({ onBackToCart }) {
       };
 
       const response = await api.createOrder(orderData);
+      
+      clearTimeout(slowConnectionTimer);
+      setIsSlowRequest(false);
+      
       const orderObj = response.data?.order || response.order || response.data || {};
       
       // ✅ Handle duplicate order response
@@ -299,6 +310,9 @@ export default function CheckoutPage({ onBackToCart }) {
         clearCart();
       }
     } catch (err) {
+      clearTimeout(slowConnectionTimer);
+      setIsSlowRequest(false);
+      
       if (process.env.NODE_ENV === 'development') {
         console.error('[Checkout] Order failed:', err.message, err.data || err);
         if (err.data?.errors) {
@@ -309,7 +323,11 @@ export default function CheckoutPage({ onBackToCart }) {
       // Provide more helpful error messages based on error type
       let errorMessage = 'Could not place order. Please try again.';
       
-      if (err.status === 500 || err.message?.includes('500')) {
+      if (err.status === 0 || err.message?.includes('Aborted') || err.message?.includes('timeout')) {
+        errorMessage = 'Request timed out. The server may be waking up from sleep mode. Please wait 30 seconds and try again.';
+      } else if (err.status === 503) {
+        errorMessage = 'Server is temporarily unavailable. Please wait 30 seconds and try again.';
+      } else if (err.status === 500 || err.message?.includes('500')) {
         errorMessage = 'Server error occurred. One or more products in your cart may no longer be available. Please refresh the page and try again.';
       } else if (err.status === 404) {
         errorMessage = 'One or more products in your cart are no longer available. Please remove them and try again.';
@@ -440,6 +458,26 @@ export default function CheckoutPage({ onBackToCart }) {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-4 lg:gap-5 items-start">
             <div className="space-y-4 min-w-0">
               <CheckoutSteps currentStep={currentStep} itemCount={cart.length} />
+
+              {isSlowRequest && !error && (
+                <div
+                  role="status"
+                  className="px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 text-yellow-800"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <ButtonLoader size="sm" />
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p className="font-semibold">Taking longer than expected...</p>
+                      <p className="text-yellow-700">
+                        The server may be waking up from sleep mode. This can take up to 60 seconds. 
+                        Please do not refresh or close this page.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {error && (
                 <div

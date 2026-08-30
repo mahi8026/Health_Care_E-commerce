@@ -2,6 +2,9 @@
 
 export const TIMEOUTS = {
   API_REQUEST: 60000, // 60 seconds — generous enough for Render dyno warm-up & network variance
+  ORDER_CREATION: 90000, // 90 seconds — extended for Render free tier cold start (30-60s)
+  PAYMENT_REQUEST: 60000, // 60 seconds — payment gateway processing
+  IMAGE_UPLOAD: 120000, // 120 seconds — large file uploads
   AUTH_CHECK: 8000, // 8 seconds
 };
 
