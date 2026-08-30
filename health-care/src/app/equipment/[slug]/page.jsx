@@ -173,6 +173,7 @@ export default async function EquipmentLandingPage({ params }) {
           </div>
         </header>
 
+        <div google-add-preferred-source-btn data-theme="light" className="preferred-source-slot" />
         {/* Live product grid */}
         <section className="mt-8">
           <div className="flex items-end justify-between mb-4">

@@ -160,6 +160,12 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
+
+        {/* Google Preferred Sources SDK — official two-line implementation
+            (developers.google.com/search/docs/appearance/preferred-sources).
+            Async: loads after HTML parse without blocking rendering. */}
+        <script async src="https://news.google.com/swg/js/v1/publisher.js" />
+
         {/* PWA manifest */}
         <link rel="manifest" href="/manifest.json" />
         

@@ -56,8 +56,9 @@ export default function NewsPage() {
             Company announcements, new product ranges, and updates that matter to hospitals, clinics, and suppliers across Bangladesh.
           </p>
         </div>
-      </section>
+</section>
 
+      <div google-add-preferred-source-btn data-theme="light" className="preferred-source-slot" />
       {/* Articles */}
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-4xl">

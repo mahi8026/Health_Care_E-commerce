@@ -83,6 +83,18 @@ const BRANDS = {
     },
     tags: ['Comen', 'Hospital Equipment', 'China Quality'],
   },
+  excel: {
+    name: 'Excel',
+    country: 'Bangladesh',
+    website: 'https://excelbrandbgd.com',
+    description: 'Excel Rapid Test - a trusted Bangladeshi rapid diagnostic test brand by M/S. Patwary Enterprise. Manufactured with international quality standards and DGDA compliant, Excel rapid tests cover pregnancy testing, hepatitis screening (HBsAg, HBeAg, HCV, HAV), dengue (NS1 and IgG/IgM), HIV, H. pylori, syphilis, and malaria detection. Widely used by hospitals, diagnostic centers, and clinics across Bangladesh for fast, accurate, and affordable in vitro diagnostics.',
+    priceOnRequest: false,
+    dataFile: 'excel-products.json',
+    categoryMap: {
+      'Laboratory Reagents': 'Laboratory Reagents',
+    },
+    tags: ['Excel', 'Rapid Test', 'Rapid Diagnostic Test', 'Made in Bangladesh Quality'],
+  },
 };
 
 function parseArgs() {

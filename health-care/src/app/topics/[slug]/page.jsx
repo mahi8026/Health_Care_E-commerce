@@ -173,6 +173,7 @@ export default async function TopicClusterPage({ params }) {
         </div>
       </section>
 
+      <div google-add-preferred-source-btn data-theme="light" className="preferred-source-slot" />
       {/* ── Main content ─────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 space-y-8">
 

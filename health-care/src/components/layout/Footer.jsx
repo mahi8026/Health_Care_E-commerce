@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { API, CONTACT } from '@/constants/api';
-import PreferredSourcesButton from '@/components/seo/PreferredSourcesButton';
+import PreferredSourcesButton from '../seo/PreferredSourcesButton';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

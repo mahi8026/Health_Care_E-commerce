@@ -159,6 +159,8 @@ export default async function GuidePage({ params }) {
         </div>
       </header>
 
+      <div google-add-preferred-source-btn data-theme="light" className="preferred-source-slot" />
+
       <div className="container mx-auto max-w-3xl px-4 py-8">
         {/* Author byline (E-E-A-T) */}
         <div className="flex items-center gap-3 mb-6 pb-6 border-b border-[var(--color-border-primary)]">

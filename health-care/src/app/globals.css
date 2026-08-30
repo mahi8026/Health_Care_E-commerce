@@ -2464,3 +2464,33 @@ color: var(--color-brand-teal);
     font-size: 1.25rem;
   }
 }
+
+/* ── Google Preferred Sources ────────────────────────────────────────────────── */
+/* Declarative slot for the official JS button; reserves space to prevent
+   layout shift when publisher.js injects its badge. */
+.preferred-source-slot {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+}
+
+/* Fallback link rendered when the Google SDK cannot load. Stylized to match
+   site design — teal outline pill consistent with other inline links. */
+.preferred-source-fallback {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-brand-teal);
+  color: var(--color-brand-teal);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.preferred-source-fallback:hover {
+  background: var(--color-brand-teal);
+  color: #fff;
+}
