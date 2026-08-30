@@ -134,10 +134,11 @@ export default function AdminShell({ children, title, action, onAction }) {
 
   return (
     <div className="flex min-h-screen bg-page-muted overflow-x-hidden">
-      {/* Mobile Backdrop */}
+      {/* Mobile Backdrop — must sit BELOW the drawer (z-drawer) so sidebar
+          clicks reach the nav. Equal z-index + later DOM order = sidebar wins. */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-modal md:hidden"
+          className="fixed inset-0 bg-black/50 z-drawer md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
