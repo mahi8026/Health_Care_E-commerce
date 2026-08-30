@@ -581,14 +581,10 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
             }
             devLog.error('[API] Request failed after retries:', url);
           } else if (method === 'POST' && attempts === 0 && coldStartPostGateAttempted === false) {
-            // First POST network error — wait for cold-start gate then retry once.
-            // This handles the Render free-tier dyno wake-up window (45s gate).
-            try {
-              await waitForColdStartPostGate();
-              coldStartPostGateAttempted = true;
-            } catch {}
-            attempts += 1;
-            continue;
+            // Cold-start gate disabled for POST — waiting 45s before retrying
+            // a state-changing request risks duplicate orders/charges. The gate
+            // was masking actual network failures; surface them immediately.
+            devLog.error('[API] POST request failed (no auto-retry for mutations):', url);
           } else if (coldStartGateGlobalAttempted === false && coldStartGateGlobal) {
             // First network error of ANY type during the 45s cold-start window —
             // wait for the global gate then retry once. This covers all endpoints
@@ -842,40 +838,46 @@ export const api = {
   },
 
   async createOrder(orderData) {
-    // Use extended timeout for order creation to handle Render free tier cold start
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.ORDER_CREATION);
-    
+    // Use fetchWithRetry directly so we control the exact timeout (90s).
+    // fetchWithAuth wraps every POST in a 45s cold-start gate + its own 60s
+    // per-attempt timeout, totalling up to 165s and ignoring our signal.
+    // fetchWithRetry is simpler: one attempt, 90s timeout, no gate waits.
     const startTime = Date.now();
     
+    // Attach CSRF token and auth header manually (fetchWithAuth normally does this)
+    const csrfTok = await ensureCsrfToken();
+    const headers = {
+      ...getAuthHeaders(),
+      ...(csrfTok ? { 'X-CSRF-Token': csrfTok } : {}),
+    };
+
     try {
-      const response = await fetchWithAuth(`${API_BASE_URL}/orders`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(orderData),
-        credentials: 'include',
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      // Log slow responses (possible cold start)
-      const duration = Date.now() - startTime;
-      if (duration > 30000 && process.env.NODE_ENV === 'development') {
-        console.warn(`[ORDER] Slow order creation: ${duration}ms (possible cold start)`);
+      const response = await fetchWithRetry(
+        `${API_BASE_URL}/orders`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(orderData),
+          credentials: 'include',
+        },
+        { maxRetries: 0, timeout: TIMEOUTS.ORDER_CREATION, cache: false }
+      );
+
+      if (process.env.NODE_ENV === 'development') {
+        const duration = Date.now() - startTime;
+        if (duration > 10000) console.warn(`[ORDER] Slow order creation: ${duration}ms`);
       }
-      
-      // Clear orders cache after creating new order
+
       clearCache('/orders');
       return handleResponse(response);
     } catch (error) {
-      clearTimeout(timeoutId);
-      
-      const duration = Date.now() - startTime;
       if (process.env.NODE_ENV === 'development') {
-        console.error(`[ORDER] Failed after ${duration}ms:`, error.message);
+        console.error(`[ORDER] Failed after ${Date.now() - startTime}ms:`, error.message);
       }
-      
+      // Map AbortError (timeout) to a user-friendly message
+      if (error.name === 'AbortError') {
+        throw new ApiError('Request timed out. Please try again.', 0, { originalError: error.message });
+      }
       throw error;
     }
   },
