@@ -27,7 +27,7 @@ const SUPPORT_OPTIONS = [
     title: 'Call Us',
     desc: '+880 1646-886795',
     action: 'tel:+8801646886795',
-    color: '#0066CC',
+    color: 'var(--color-status-info)',
     bgColor: 'var(--color-status-info-tint)'
   },
   {
@@ -43,23 +43,23 @@ const SUPPORT_OPTIONS = [
     title: 'Email Us',
     desc: 'mahimrahman07@gmail.com',
     action: 'mailto:mahimrahman07@gmail.com',
-    color: 'var(--color-status-danger)',
-    bgColor: 'var(--color-status-danger-tint)'
+    color: 'var(--color-brand-navy)',
+    bgColor: 'var(--color-background-secondary)'
   },
   {
     icon: <FaQuestionCircle />,
     title: 'FAQs',
     desc: 'Common questions',
     action: '/faq',
-    color: '#7C3AED',
-    bgColor: '#FAF5FF'
+    color: 'var(--color-brand-teal)',
+    bgColor: 'var(--color-brand-teal-tint)'
   },
   {
     icon: <FaFileAlt />,
     title: 'Request Quote',
     desc: 'Get B2B pricing',
     action: '/quotes/request',
-    color: '#EA580C',
+    color: 'var(--color-brand-orange)',
     bgColor: 'var(--color-status-warning-tint)'
   },
   {
@@ -67,7 +67,7 @@ const SUPPORT_OPTIONS = [
     title: 'Track Order',
     desc: 'Check delivery status',
     action: '/track',
-    color: '#0891B2',
+    color: 'var(--color-status-success)',
     bgColor: 'var(--color-status-success-tint)'
   },
   {

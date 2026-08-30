@@ -239,13 +239,13 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
             position: 'absolute',
             top: '10px',
             right: '10px',
-            background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+            background: 'linear-gradient(135deg, #FF6B00 0%, #EA580C 100%)',
             color: '#fff',
             fontSize: '11px',
             fontWeight: 700,
             padding: '4px 10px',
             borderRadius: '6px',
-            boxShadow: '0 2px 8px rgba(239,68,68,0.3)',
+            boxShadow: '0 2px 8px rgba(255,107,0,0.3)',
           }}>
             -{discount}%
           </div>

@@ -61,7 +61,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         {/* Badges */}
         <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {hasDiscount && (
-            <span style={{ background: '#DC2626', color: '#fff', fontSize: 10, fontWeight: 600,
+            <span style={{ background: 'var(--color-brand-orange)', color: '#fff', fontSize: 10, fontWeight: 600,
               padding: '3px 8px', borderRadius: 6 }}>-{discount}%</span>
           )}
           {!inStock && (

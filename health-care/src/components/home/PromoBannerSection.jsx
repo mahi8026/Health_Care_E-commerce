@@ -82,7 +82,7 @@ export default function PromoBannerSection({ bannerId = 0 }) {
       className="promo-banner-hero"
       style={{
         padding: '0',
-        background: '#f8f9fa',
+        background: 'var(--color-background-secondary)',
         marginBottom: '0',
       }}
     >

@@ -51,14 +51,14 @@ const TestimonialsSection = lazy(() => import('@/components/home/TestimonialsSec
 const FALLBACK_CATEGORIES = [
   { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: 'var(--color-status-info-tint)' },
   { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: 'var(--color-status-success-tint)' },
-  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical · Molecular', color: '#FAF5FF' },
+  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical · Molecular', color: 'var(--color-brand-teal-tint)' },
   { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU · Ventilators · Dialysis', color: 'var(--color-status-warning-tint)' },
   { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges · Microscopes', color: 'var(--color-status-success-tint)' },
   { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: 'var(--color-status-danger-tint)' },
   { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: 'var(--color-status-warning-tint)' },
   { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: 'var(--color-background-secondary)' },
   { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings · Tapes · Ostomy', color: 'var(--color-status-success-tint)' },
-  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters · Test Strips', color: '#FAF5FF' },
+  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters · Test Strips', color: 'var(--color-brand-teal-tint)' },
   { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS · Heating Pads', color: 'var(--color-status-warning-tint)' },
   { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes · Otoscopes', color: 'var(--color-status-info-tint)' },
   { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas · Infusion Sets', color: 'var(--color-status-success-tint)' },
@@ -446,7 +446,7 @@ const handleKeyDown = (e) => {
         slides.map((slide, i) => currentSlide === i && (
           <div key={slide._id || slide.imageUrl || i} className="slide-active" style={{ position: 'absolute', inset: 0 }}>
             {failedSlide === i ? (
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #12355f 60%, #18AFA9 140%)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #002B78 60%, #18AFA9 140%)' }} />
             ) : (
               <Image
                 src={slide.imageUrl}
@@ -461,7 +461,7 @@ const handleKeyDown = (e) => {
           </div>
         ))
       ) : (
-        <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #12355f 60%, #18AFA9 140%)' }} />
+        <div className="slide-active" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #002B78 60%, #18AFA9 140%)' }} />
       )}
       {/* Bottom gradient */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)', zIndex: 5 }} />
@@ -577,7 +577,7 @@ const HOME_STYLES = `
         /* Button states - Kept (essential UX) */
         .tab-active { background: var(--color-brand-navy) !important; color: #fff !important; }
         .pill-hover:hover { background: rgba(255,255,255,0.2) !important; }
-        .btn-primary-hover:hover { background: #0a1f3d !important; }
+        .btn-primary-hover:hover { background: var(--color-brand-navy-hover) !important; }
         .btn-teal-hover:hover { background: var(--color-brand-teal-hover) !important; transform: scale(1.02); }
 
         /* Trust badges - Kept (lightweight) */
@@ -625,7 +625,7 @@ const HOME_STYLES = `
           height: 400px;
           border-radius: 16px;
           overflow: hidden;
-          background: #1a3a5c;
+          background: #002B78;
           box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
         /* Tablet breakpoint: prevent horizontal overflow */
@@ -762,7 +762,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
         .slice(0, 16);
     }
     return [
-      { name: 'Lab Reagents', emoji: '🧪', color: '#FAF5FF', slug: 'laboratory-reagents' },
+      { name: 'Lab Reagents', emoji: '🧪', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
       { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
       { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
       { name: 'PPE & Safety', emoji: '🛡️', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
@@ -867,7 +867,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
               };
 
               const emoji = cat.emoji || iconMap[categoryName] || '🏥';
-              const colors = ['#FAF5FF', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', '#FFF1F2', '#F5F8FB', '#EFF6FF', '#F0FDF4', '#FFFBEB'];
+              const colors = ['var(--color-brand-teal-tint)', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', 'var(--color-status-danger-tint)', '#F5F8FB', 'var(--color-status-info-tint)', 'var(--color-status-success-tint)', 'var(--color-status-warning-tint)'];
               const color = cat.color || colors[index % colors.length];
 
               return (

@@ -95,7 +95,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
         )}
 
         {hasDiscount && (
-          <div className="absolute top-1 left-1 bg-[#7C3AED] text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
+          <div className="absolute top-1 left-1 bg-[var(--color-brand-orange)] text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
             -{discount}%
           </div>
         )}

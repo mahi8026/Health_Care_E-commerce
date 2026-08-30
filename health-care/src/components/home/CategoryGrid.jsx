@@ -101,7 +101,7 @@ function getCategoryIcon(categoryName) {
 const FALLBACK_CATEGORIES = [
   { name: 'Diagnostic Equipment', desc: 'ECG · Ultrasound · Monitors', color: 'var(--color-status-info-tint)' },
   { name: 'Surgical Instruments', desc: 'Instruments · Implants', color: 'var(--color-status-success-tint)' },
-  { name: 'Laboratory Reagents', desc: 'Clinical · Molecular', color: '#FAF5FF' },
+  { name: 'Laboratory Reagents', desc: 'Clinical · Molecular', color: 'var(--color-brand-teal-tint)' },
   { name: 'Hospital Machines', desc: 'ICU · Ventilators · Dialysis', color: 'var(--color-status-warning-tint)' },
   { name: 'Lab Equipment', desc: 'Centrifuges · Microscopes', color: 'var(--color-status-success-tint)' },
   { name: 'PPE & Safety', desc: 'Masks · Gloves · Gowns', color: 'var(--color-status-danger-tint)' },

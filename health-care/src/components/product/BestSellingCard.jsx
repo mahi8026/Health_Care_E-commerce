@@ -165,7 +165,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
             position: 'absolute',
             top: '10px',
             right: '10px',
-            background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+            background: 'linear-gradient(135deg, #FF6B00 0%, #EA580C 100%)',
             color: '#fff',
             fontSize: '11px',
             fontWeight: 700,
