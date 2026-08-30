@@ -700,29 +700,47 @@ const HOME_STYLES = `
         .category-product-row { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 6px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-product-row::-webkit-scrollbar { display: none; }
         @media (max-width: 768px) {
-          /* Remove extra spacing on mobile */
-          .coupon-banner-section { padding: 0 !important; margin: 0 !important; }
-          .category-section { padding: 16px 0 !important; }
-
-          .hero-grid-container { grid-template-columns: 1fr !important; gap: 24px !important; padding: 0 16px; }
-          .hero-left-content { order: 2; }
-          .hero-right-panel { order: 1; display: block !important; height: 260px !important; border-radius: 14px !important; }
+          /* SHOW hero text/search on mobile (was hidden by the hidden lg:block classes) */
+          .hero-left-content { display: block !important; order: 2; }
+          .hero-grid-container { grid-template-columns: 1fr !important; gap: 16px !important; padding: 0 16px; }
+          .hero-right-panel { order: 1; display: block !important; height: 240px !important; border-radius: 14px !important; }
           .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .cat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
           .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
+          .coupon-banner-section { padding: 12px 14px !important; margin: 0 !important; }
+          .category-section { padding: 16px 0 !important; }
+
+          /* Collapse video section to one column on phones/tablets */
+          .home-video-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .home-video-section { padding: 36px 16px !important; }
+          .home-support-section { padding: 36px 16px !important; }
+          .home-testimonials-section { padding: 24px 16px !important; }
         }
         @media (max-width: 640px) {
-          .hero-right-panel { height: 220px !important; border-radius: 12px !important; }
+          .hero-right-panel { height: 200px !important; border-radius: 12px !important; }
           .hero-slider-arrows { display: none !important; }
-          .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-          .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-          .trust-grid { grid-template-columns: 1fr !important; }
+          .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .trust-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
           .b2b-cols { grid-template-columns: 1fr !important; }
-          .b2b-banner { padding: 28px 20px !important; }
-          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .testimonials-grid { grid-template-columns: 1fr !important; }
+          .b2b-banner { padding: 20px 16px !important; border-radius: 14px !important; }
+          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+          .testimonials-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+          /* Compact ALL home sections on small screens */
+          .home-section { padding: 20px 16px !important; }
+          .category-section-header { padding: 0 16px !important; margin-bottom: 10px !important; }
+          .category-product-row { padding: 0 16px 4px !important; gap: 10px !important; }
+        }
+        @media (max-width: 480px) {
+          .hero-grid-container { padding: 0 14px !important; gap: 12px !important; }
+          .hero-left-content h1 { font-size: 22px !important; line-height: 1.2 !important; }
+          .coupon-banner-section { padding: 8px 10px !important; }
+          .deal-grid { gap: 8px !important; }
+          .b2b-banner h2 { font-size: 22px !important; }
+          .home-video-section, .home-support-section { padding: 28px 14px !important; }
         }
         @media (max-width: 1024px) {
           .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }

@@ -24,7 +24,7 @@ export default function TestimonialsSection() {
   if (!testimonials.length) return null;
 
   return (
-    <section className="bg-hero-gradient" style={{ padding: '32px 24px' }}>
+    <section className="bg-hero-gradient home-testimonials-section" style={{ padding: '32px 24px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,

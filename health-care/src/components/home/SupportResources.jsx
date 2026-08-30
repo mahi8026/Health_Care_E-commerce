@@ -100,7 +100,7 @@ export default function SupportResources() {
   };
 
   return (
-    <section style={{ padding: '60px 24px', background: 'var(--color-background-page)' }}>
+    <section className="home-support-section" style={{ padding: '60px 24px', background: 'var(--color-background-page)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
         <div className="text-center" style={{ marginBottom: 40 }}>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { API, CONTACT } from '@/constants/api';
+import PreferredSourcesButton from '@/components/seo/PreferredSourcesButton';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -137,6 +138,7 @@ export default function Footer() {
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
+            <PreferredSourcesButton theme="dark" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
             </h3>
@@ -232,6 +234,7 @@ export default function Footer() {
             <p className="text-sm text-white/70 mb-4 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment.
             </p>
+            <PreferredSourcesButton theme="dark" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
               Newsletter
             </h3>
@@ -280,6 +283,7 @@ export default function Footer() {
             <p className="text-xs text-white/70 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
+            <PreferredSourcesButton theme="dark" />
           </div>
           {/* Links 2x2 */}
           <div className="grid grid-cols-2 gap-4">
