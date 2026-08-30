@@ -63,8 +63,12 @@ const pwaConfig = withPWA({
       },
     },
     {
+      // Only cache GET API responses — never intercept POST/PUT/PATCH/DELETE.
+      // A 10s service worker timeout on POST /api/orders was silently killing
+      // order placement requests before the backend could respond.
       urlPattern: /\/api\/.*/i,
       handler: 'NetworkFirst',
+      method: 'GET',
       options: {
         cacheName: 'api-cache',
         expiration: {

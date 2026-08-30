@@ -254,13 +254,21 @@ let csrfToken = null;
 async function ensureCsrfToken() {
   if (csrfToken) return csrfToken;
   try {
-    const res = await fetch(`${API_BASE_URL}/csrf-token`, { credentials: 'include' });
+    // 3s timeout — CSRF endpoint is a no-op until CSRF_ENFORCED=true is set.
+    // A missing token is non-fatal; we must never block createOrder waiting for it.
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(`${API_BASE_URL}/csrf-token`, {
+      credentials: 'include',
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
     if (res.ok) {
       const data = await res.json();
       csrfToken = data.csrfToken || null;
     }
   } catch {
-    // Non-fatal: backend may not be enforcing yet, or endpoint unreachable.
+    // Non-fatal: CSRF not enforced yet, or endpoint unreachable / timed out.
   }
   return csrfToken;
 }
