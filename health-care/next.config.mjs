@@ -252,6 +252,13 @@ const nextConfig = {
 
   // Image optimization configuration
   images: {
+    // All remote images are hosted on Cloudinary, which already serves
+    // optimized AVIF/WebP via optimizeCloudinaryUrl (src/utils/cloudinary.js).
+    // Vercel's /_next/image optimizer exceeded its monthly quota and started
+    // returning 402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED, breaking every
+    // next/image without `unoptimized` (hero, banners, OptimizedImage, etc.).
+    // Bypass the optimizer entirely — browsers load Cloudinary URLs directly.
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     // Trimmed device/image sizes — only the breakpoints actually used in the UI
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
