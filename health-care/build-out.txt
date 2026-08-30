@@ -1,0 +1,23 @@
+▲ Next.js 16.3.3 (Turbopack)
+- Environments: .env.local, .env.production
+✅ Environment variable validation passed
+✓ Running next.config.mjs took 8.5s
+- Experiments (use with caution):
+  · optimizePackageImports
+  ✓ webpackBuildWorker
+
+  Creating an optimized production build ...
+✅ Environment variable validation passed
+✓ Compiled successfully in 22.5s
+  Skipping validation of types
+  Finished TypeScript config validation in 347ms ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/104) ...
+  Generating static pages using 3 workers (26/104) 
+  Generating static pages using 3 workers (52/104) 
+  Generating static pages using 3 workers (78/104) 
+Failed to build /topics/[slug]/page: /topics/ecg-machines (attempt 1 of 3) because it took more than 60 seconds. Retrying again shortly.
+Failed to build /page: / (attempt 1 of 3) because it took more than 60 seconds. Retrying again shortly.
+Failed to build /topics/[slug]/page: /topics/ecg-machines (attempt 2 of 3) because it took more than 60 seconds. Retrying again shortly.
+Failed to build /page: / (attempt 2 of 3) because it took more than 60 seconds. Retrying again shortly.
+Failed to build /topics/[slug]/page: /topics/ecg-machines after 3 attempts.

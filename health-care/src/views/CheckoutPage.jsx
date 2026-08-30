@@ -32,7 +32,6 @@ export default function CheckoutPage({ onBackToCart }) {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
   const [showAuthGate, setShowAuthGate] = useState(false);
-  const [isSlowRequest, setIsSlowRequest] = useState(false);
   
   // ✅ Security Fix #4: Generate idempotency key to prevent double charging
   const [idempotencyKey] = useState(() => {
@@ -193,12 +192,6 @@ export default function CheckoutPage({ onBackToCart }) {
 
     setLoading(true);
     setError(null);
-    setIsSlowRequest(false);
-
-    // Show "taking longer than expected" message after 10 seconds
-    const slowConnectionTimer = setTimeout(() => {
-      setIsSlowRequest(true);
-    }, 10000);
 
     // Log cart data for debugging
     if (process.env.NODE_ENV === 'development') {
@@ -255,9 +248,6 @@ export default function CheckoutPage({ onBackToCart }) {
 
       const response = await api.createOrder(orderData);
       
-      clearTimeout(slowConnectionTimer);
-      setIsSlowRequest(false);
-      
       const orderObj = response.data?.order || response.order || response.data || {};
       
       // ✅ Handle duplicate order response
@@ -310,9 +300,6 @@ export default function CheckoutPage({ onBackToCart }) {
         clearCart();
       }
     } catch (err) {
-      clearTimeout(slowConnectionTimer);
-      setIsSlowRequest(false);
-      
       if (process.env.NODE_ENV === 'development') {
         console.error('[Checkout] Order failed:', err.message, err.data || err);
         if (err.data?.errors) {
@@ -458,26 +445,6 @@ export default function CheckoutPage({ onBackToCart }) {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-4 lg:gap-5 items-start">
             <div className="space-y-4 min-w-0">
               <CheckoutSteps currentStep={currentStep} itemCount={cart.length} />
-
-              {isSlowRequest && !error && (
-                <div
-                  role="status"
-                  className="px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200 text-yellow-800"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <ButtonLoader size="sm" />
-                    </div>
-                    <div className="text-sm space-y-1">
-                      <p className="font-semibold">Taking longer than expected...</p>
-                      <p className="text-yellow-700">
-                        The server may be waking up from sleep mode. This can take up to 60 seconds. 
-                        Please do not refresh or close this page.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {error && (
                 <div

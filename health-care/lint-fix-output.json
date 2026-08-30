@@ -1,0 +1,4 @@
+
+> mediportbd@0.1.8 lint
+> eslint --config eslint.config.mjs src/ --fix --format json
+

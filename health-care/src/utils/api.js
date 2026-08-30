@@ -14,22 +14,7 @@ const devLog = {
 const requestCache = new Map();
 const pendingRequests = new Map();
 
-// Shared "backend is booting" gate: when the free-tier instance cold-starts
-// it answers 503 for a while; all concurrent callers wait on ONE gate instead
-// of each stacking its own full retry backoff.
-const COLD_START_GATE_MS = 10000;
-let coldStartGate = null;
-function waitForColdStartGate() {
-  if (!coldStartGate) {
-    coldStartGate = new Promise((resolve) => {
-      setTimeout(() => {
-        coldStartGate = null;
-        resolve();
-      }, COLD_START_GATE_MS);
-    });
-  }
-  return coldStartGate;
-}
+
 
 // Cache configuration
 const CACHE_TTL = {
@@ -196,44 +181,6 @@ class ApiError extends Error {
 // Track if we're currently refreshing to prevent multiple refresh attempts
 let isRefreshing = false;
 let refreshSubscribers = [];
-
-// S-14: cold-start gate for POST orders — allows one retry after the free-tier
-// dyno wakes up so the first POST /orders doesn't fail instantly.
-// Render free-tier dynos need ~30-60s to cold-start after sleeping.
-let coldStartPostGate = null;
-let coldStartPostGateAttempted = false;
-function waitForColdStartPostGate() {
-  if (!coldStartPostGate) {
-    coldStartPostGate = new Promise((resolve) => {
-      setTimeout(() => {
-        coldStartPostGate = null;
-        coldStartPostGateAttempted = false;
-        resolve();
-      }, 45000); // 45s matching Render dyno typical warm-up time
-    });
-  }
-  return coldStartPostGate;
-}
-
-// S-15: Global cold-start gate — any request (GET/POST) during the first
-// 45s after dyno wake-up gets ONE automatic retry after the gate clears,
-// covering ALL endpoints when the free-tier dyno is waking up.
-let coldStartGateGlobal = null;
-let coldStartGateGlobalAttempted = false;
-function waitForColdStartGlobalGate() {
-  if (!coldStartGateGlobal) {
-    coldStartGateGlobal = new Promise((resolve) => {
-      setTimeout(() => {
-        coldStartGateGlobal = null;
-        coldStartGateGlobalAttempted = false;
-        resolve();
-      }, 45000); // 45s matching the POST gate above
-    });
-  }
-  return coldStartGateGlobal;
-}
-// Track whether we've already attempted a cold-start retry to avoid
-// double-retry loops. Separate flags for POST-specific vs global gate.
 
 // Subscribe to token refresh completion
 function subscribeTokenRefresh(callback) {
@@ -409,7 +356,7 @@ export async function fetchWithRetry(
       clearTimeout(timeoutId);
       if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
 
-      const retriable = response.status === 503 || response.status === 429;
+      const retriable = response.status === 429 || response.status === 503;
       if (!retriable || attempt >= maxRetries) {
         // Cache successful GET responses
         if (cache && method === 'GET' && response.ok) {
@@ -421,15 +368,7 @@ export async function fetchWithRetry(
         return response;
       }
 
-      // During a cold start every concurrent request sees 503 — share ONE
-      // wait so they all retry together instead of stacking backoffs.
-      if (response.status === 503) {
-        await waitForColdStartGate();
-        continue;
-      }
-
-      // Prefer the server's retry hint (Retry-After header or the retryAfter
-      // field the backend puts in the JSON body), fall back to local backoff.
+      // 429/503: wait then retry with backoff
       let delay = baseDelay * (attempt + 1);
       try {
         const header = response.headers.get('Retry-After');
@@ -460,8 +399,7 @@ export async function fetchWithRetry(
 // Includes request deduplication and caching to prevent rate limiting
 async function fetchWithAuth(url, options = {}, retryCount = 0) {
   const MAX_RETRIES = 3;
-  const RETRY_DELAY = 2000; // 2 seconds
-  const COLD_START_DELAY = 5000; // Render free tier needs 30-60s to boot
+  const RETRY_DELAY = 2000;
   const method = options.method || 'GET';
   const externalSignal = options.signal;
 
@@ -540,18 +478,14 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         clearTimeout(timeoutId);
         if (externalSignal) externalSignal.removeEventListener('abort', onExternalAbort);
 
-        // Handle 429 (Too Many Requests - Rate Limited) and 503 (Service
-        // Unavailable - Backend sleeping or DB reconnecting)
+        // Handle 429 (rate limited) — retry with backoff
         const retriable = response.status === 429 || response.status === 503;
         if (retriable && attempts < MAX_RETRIES) {
           const retryAfter = response.headers.get('Retry-After');
           const delay = retryAfter
             ? parseInt(retryAfter) * 1000
-            : response.status === 503
-              ? COLD_START_DELAY * (attempts + 1)
-              : RETRY_DELAY * Math.pow(2, attempts);
+            : RETRY_DELAY * Math.pow(2, attempts);
           devLog.error(`[API] ${response.status} for ${url}. Retrying after ${delay}ms...`);
-          // Abort-aware: a caller cancel during the wait stops the loop.
           await abortableSleep(delay, externalSignal);
           attempts += 1;
           continue;
@@ -574,29 +508,10 @@ async function fetchWithAuth(url, options = {}, retryCount = 0) {
         if (transient) {
           if (method === 'GET' || method === 'HEAD') {
             if (attempts < MAX_RETRIES) {
-              // Abort-aware: stops instantly if the caller cancels mid-wait.
               await abortableSleep(RETRY_DELAY, externalSignal);
               attempts += 1;
               continue;
             }
-            devLog.error('[API] Request failed after retries:', url);
-          } else if (method === 'POST' && attempts === 0 && coldStartPostGateAttempted === false) {
-            // Cold-start gate disabled for POST — waiting 45s before retrying
-            // a state-changing request risks duplicate orders/charges. The gate
-            // was masking actual network failures; surface them immediately.
-            devLog.error('[API] POST request failed (no auto-retry for mutations):', url);
-          } else if (coldStartGateGlobalAttempted === false && coldStartGateGlobal) {
-            // First network error of ANY type during the 45s cold-start window —
-            // wait for the global gate then retry once. This covers all endpoints
-            // (not just /orders) when the free-tier dyno is waking up.
-            try {
-              await waitForColdStartGlobalGate();
-              coldStartGateGlobalAttempted = true;
-            } catch {}
-            attempts += 1;
-            continue;
-          } else {
-            devLog.error('[API] Non-idempotent request failed (no auto-retry):', url);
           }
           throw new ApiError(
             'Unable to connect to server. Please check your connection.',
