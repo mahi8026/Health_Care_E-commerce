@@ -214,7 +214,7 @@ export default function ProductTabsEnhanced({ product }) {
                 <p className="text-sm text-[var(--color-text-secondary)]">
                   <strong>Need Help?</strong> Contact our customer support at{' '}
                   <span className="text-brand-teal font-semibold">+880 1646-886795</span> or{' '}
-                  <span className="text-brand-teal font-semibold">mahimrahman07@gmail.com</span>
+                  <span className="text-brand-teal font-semibold">mediportbdofficial@gmail.com</span>
                 </p>
               </div>
             </div>

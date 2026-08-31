@@ -37,7 +37,7 @@ const settingsSchema = new mongoose.Schema({
   },
   contactEmail: {
     type: String,
-    default: 'mahimrahman07@gmail.com',
+    default: 'mediportbdofficial@gmail.com',
   },
   companyName: {
     type: String,

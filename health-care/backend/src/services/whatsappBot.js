@@ -324,7 +324,7 @@ https://MediportBD.com/b2b
 Our team will respond within 24 hours!
 
 📞 Urgent? Call: +8801646886795
-📧 Email: mahimrahman07@gmail.com`;
+📧 Email: mediportbdofficial@gmail.com`;
 
     await whatsappService.sendMessage(from, message, {
       isBot: true,
@@ -356,7 +356,7 @@ How can we help you?
 Please describe your issue, and I'll connect you with our support team.
 
 📞 Call: +8801646886795 (24/7)
-📧 Email: mahimrahman07@gmail.com
+📧 Email: mediportbdofficial@gmail.com
 ⏰ Office Hours: 9 AM - 6 PM (Sat-Thu)`;
 
     await whatsappService.sendMessage(from, message, {

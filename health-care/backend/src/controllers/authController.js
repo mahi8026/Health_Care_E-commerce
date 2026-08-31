@@ -346,6 +346,7 @@ exports.getMe = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        b2bAccount: user.b2bAccount,
         accountType: user.accountType,
         company: user.companyName || user.company,
         companyName: user.companyName,

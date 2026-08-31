@@ -38,9 +38,9 @@ const CONTACT_OPTIONS = [
   {
     icon: <FaEnvelope className="text-xl" />,
     label: 'Email Support',
-    value: 'mahimrahman07@gmail.com',
+    value: 'mediportbdofficial@gmail.com',
     sub: 'Response within 24 hours',
-    href: 'mailto:mahimrahman07@gmail.com',
+    href: 'mailto:mediportbdofficial@gmail.com',
     color: 'bg-purple-50 text-purple-600',
     cta: 'Send Email',
   },
@@ -243,7 +243,7 @@ export default function HelpPage() {
               Our support team is ready to assist with any question not covered above.
             </p>
             <a
-              href="mailto:mahimrahman07@gmail.com"
+              href="mailto:mediportbdofficial@gmail.com"
               className="inline-block bg-white text-brand-navy font-semibold text-sm px-6 py-3 rounded-xl hover:bg-[var(--color-background-tertiary)] transition-colors"
             >
               Email Support Team

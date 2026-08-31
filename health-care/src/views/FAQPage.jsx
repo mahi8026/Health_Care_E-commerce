@@ -22,7 +22,7 @@ const FAQ_CATEGORIES = [
       },
       {
         question: 'Can I cancel or modify my order?',
-        answer: 'Yes, you can cancel or modify your order within 2 hours of placement. Contact us immediately at +880 1646-886795 or mahimrahman07@gmail.com. Once shipped, cancellation is not possible, but you can initiate a return.'
+        answer: 'Yes, you can cancel or modify your order within 2 hours of placement. Contact us immediately at +880 1646-886795 or mediportbdofficial@gmail.com. Once shipped, cancellation is not possible, but you can initiate a return.'
       },
       {
         question: 'Do you provide invoices?',
@@ -308,7 +308,7 @@ export default function FAQPage() {
               </div>
             </a>
             <a
-              href="mailto:mahimrahman07@gmail.com"
+              href="mailto:mediportbdofficial@gmail.com"
               className="bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3 transition-all"
             >
               <div className="bg-white/20 p-3 rounded-lg">
@@ -316,7 +316,7 @@ export default function FAQPage() {
               </div>
               <div>
                 <p className="text-sm text-white/80">Email Us</p>
-                <p className="font-semibold">mahimrahman07@gmail.com</p>
+                <p className="font-semibold">mediportbdofficial@gmail.com</p>
               </div>
             </a>
             <a

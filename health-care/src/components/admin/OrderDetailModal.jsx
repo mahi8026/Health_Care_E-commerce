@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import OrderStatusUpdate from './OrderStatusUpdate';
-import { InvoiceGenerator } from '@/utils/invoiceGenerator';
 import { showToast } from '@/components/ui/Toast';
 import { confirmAction } from '@/components/ui/ConfirmDialog';
 import { API } from '@/constants/api';
@@ -49,7 +48,6 @@ export default function OrderDetailModal({ orderId, onClose }) {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showStatusUpdate, setShowStatusUpdate] = useState(false);
-  const [generatingInvoice, setGeneratingInvoice] = useState(false);
   const [steadfastBalance, setSteadfastBalance] = useState(null);
   const [shipping, setShipping] = useState(null);
   const [shippingViaSteadfast, setShippingViaSteadfast] = useState(false);
@@ -156,15 +154,13 @@ export default function OrderDetailModal({ orderId, onClose }) {
     setShowStatusUpdate(false);
   };
 
-  const handlePrintInvoice = async () => {
-    try {
-      setGeneratingInvoice(true);
-      await InvoiceGenerator.generateInvoice(order);
-    } catch (error) {
-      showToast.error('Failed to generate invoice: ' + error.message);
-    } finally {
-      setGeneratingInvoice(false);
+  const handlePrintInvoice = () => {
+    // Unified invoice page — same design customers see, opens in a new tab.
+    if (!order?._id) {
+      showToast.error('Order ID is missing');
+      return;
     }
+    window.open(`/orders/${order._id}/invoice`, '_blank');
   };
 
   const getStatusColor = (status) => {
@@ -428,10 +424,9 @@ export default function OrderDetailModal({ orderId, onClose }) {
                 </button>
                 <button 
                   onClick={handlePrintInvoice}
-                  disabled={generatingInvoice}
-                  className="flex-1 px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-semibold hover:bg-[var(--color-background-tertiary)] transition-colors"
                 >
-                  {generatingInvoice ? 'Generating...' : 'Print Invoice'}
+                  View Invoice
                 </button>
               </div>
             </div>

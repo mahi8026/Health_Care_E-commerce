@@ -13,7 +13,7 @@ export default function Invoice() {
   const params = useParams();
   const router = useRouter();
   const { orderId } = params;
-  
+
   const [order, setOrder] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,27 +29,24 @@ export default function Invoice() {
         }
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-        const orderUrl = `${apiUrl}/orders/${orderId}`;
-        
-        console.log('🔗 Fetching order from:', orderUrl);
-        
-        // Fetch order details
-        const response = await fetch(orderUrl, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        };
 
-        console.log('📡 Response status:', response.status);
-
+        // Prefer the dedicated invoice endpoint — it populates the user profile
+        // (addresses, accountType, b2bAccount, paymentTerms) and product brands.
+        // Fall back to the regular order endpoint for compatibility.
+        let response = await fetch(`${apiUrl}/orders/${orderId}/invoice`, { headers });
+        if (!response.ok) {
+          response = await fetch(`${apiUrl}/orders/${orderId}`, { headers });
+        }
         if (!response.ok) {
           throw new Error('Failed to fetch order');
         }
 
         const data = await response.json();
-        console.log('📦 Raw API Response:', data);
-        
+
         // Handle multiple response formats
         let orderData;
         if (data.data && data.data.order) {
@@ -60,25 +57,17 @@ export default function Invoice() {
           orderData = data.order;
         } else if (data.orders && Array.isArray(data.orders)) {
           // Orders list response: { success: true, orders: [{...}] }
-          // Find the specific order by ID
           orderData = data.orders.find(o => o._id === orderId || o.orderNumber === orderId);
           if (!orderData) {
             throw new Error('Order not found in response');
           }
         } else if (data._id) {
-          // Direct order object response: { _id: "...", orderNumber: "...", ... }
+          // Direct order object response
           orderData = data;
         } else {
-          console.error('❌ Unrecognized response format:', data);
           throw new Error('Invalid response format');
         }
-        
-        // Debug: Log the order data
-        console.log('📦 Order Data:', orderData);
-        console.log('👤 User in Order:', orderData.user);
-        console.log('📋 Order Items:', orderData.items);
-        console.log('🏠 Delivery Address:', orderData.deliveryAddress);
-        
+
         // Ensure legacy field mapping
         if (!orderData.orderNumber && orderData.orderId) {
           orderData.orderNumber = orderData.orderId;
@@ -86,32 +75,53 @@ export default function Invoice() {
         if (!orderData.totalAmount && orderData.total) {
           orderData.totalAmount = orderData.total;
         }
-        
-        // Fetch user details if user is populated as ID only
-        let userData = orderData.user;
-        if (userData && typeof userData === 'string') {
-          // User is just an ID, fetch full user details
+        if (!orderData.deliveryAddress && orderData.shippingAddress) {
+          orderData.deliveryAddress = orderData.shippingAddress;
+        }
+
+        // Resolve the user payload (populated object vs raw id)
+        let userData = orderData.user && typeof orderData.user === 'object' ? orderData.user : null;
+
+        // Enrich with the full profile whenever critical billing/B2B fields are
+        // missing (the generic /orders/:id endpoint only returns a few fields).
+        const needsProfile =
+          !userData ||
+          !userData.addresses ||
+          !userData.accountType ||
+          userData.b2bAccount === undefined ||
+          !userData.paymentTerms;
+        if (needsProfile) {
           try {
-            const userResponse = await fetch(`${apiUrl}/auth/me`, {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            });
+            const userResponse = await fetch(`${apiUrl}/auth/me`, { headers });
+            if (userResponse.ok) {
+              const userJson = await userResponse.json();
+              const meUser = userJson.user || userJson;
+              if (meUser && (meUser._id || meUser.id)) {
+                userData = { ...(userData || {}), ...meUser };
+              }
+            }
+          } catch {
+            // Best-effort — the invoice still renders with whatever is available
+          }
+        }
+
+        // Last resort: use the logged-in profile as billing info
+        if (!userData) {
+          try {
+            const userResponse = await fetch(`${apiUrl}/auth/me`, { headers });
             if (userResponse.ok) {
               const userJson = await userResponse.json();
               userData = userJson.user || userJson;
             }
-          } catch (err) {
-            console.warn('Could not fetch user details:', err);
+          } catch {
+            // ignore
           }
         }
-        
+
         setOrder(orderData);
         setUser(userData || {});
       } catch (err) {
-        console.error('Error fetching order:', err);
-        setError(err.message);
+        setError(err.message || 'Failed to load invoice');
       } finally {
         setLoading(false);
       }

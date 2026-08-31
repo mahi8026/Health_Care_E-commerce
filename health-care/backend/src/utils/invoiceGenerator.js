@@ -46,6 +46,47 @@ function formatDate(d) {
   });
 }
 
+/**
+ * Invoice number for display: normalizes MC- order numbers to the MPBD-INV-
+ * format so the PDF matches the browser invoice and bank references align.
+ */
+function formatInvoiceNo(order) {
+  const raw = order.invoiceNumber || order.orderNumber || order.orderId || '';
+  if (!raw) return '—';
+  let s = String(raw).trim()
+    .replace(/^MC-/i, 'MPBD-INV-')
+    .replace(/^MPBD-INV-/i, 'MPBD-INV-')
+    .replace(/^INV-/i, '');
+  if (s.startsWith('MPBD-INV-')) return s;
+  return `MPBD-INV-${s}`;
+}
+
+/**
+ * Convert a number to English words (BDT style, up to crores).
+ */
+function amountInWords(n) {
+  const num = Math.floor(Math.abs(Number(n) || 0));
+  if (num === 0) return 'Zero Taka Only';
+  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  const two = (d) => (d < 20 ? ones[d] : `${tens[Math.floor(d / 10)]}${d % 10 ? ` ${ones[d % 10]}` : ''}`);
+  const three = (d) => {
+    const h = Math.floor(d / 100);
+    const r = d % 100;
+    return `${h ? `${ones[h]} Hundred` : ''}${h && r ? ' ' : ''}${r ? two(r) : ''}`;
+  };
+  const crore = Math.floor(num / 10000000);
+  const lakh = Math.floor((num % 10000000) / 100000);
+  const thousand = Math.floor((num % 100000) / 1000);
+  const rest = num % 1000;
+  let s = '';
+  if (crore) s += `${three(crore)} Crore`;
+  if (lakh) s += `${s ? ' ' : ''}${two(lakh)} Lakh`;
+  if (thousand) s += `${s ? ' ' : ''}${two(thousand)} Thousand`;
+  if (rest) s += `${s ? ' ' : ''}${three(rest)}`;
+  return `${s} Taka Only`;
+}
+
 function paymentLabel(method) {
   const labels = {
     bkash: 'bKash',
@@ -146,7 +187,7 @@ function generateInvoice(order, user) {
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    const invoiceNo = order.invoiceNumber || order.orderNumber || order.orderId || '—';
+    const invoiceNo = formatInvoiceNo(order);
     const orderDate = formatDate(order.createdAt);
 
     const drawPageHeader = () => {
@@ -164,7 +205,7 @@ function generateInvoice(order, user) {
         fontSize: 8,
         fillColor: MINT,
       });
-      textAt(doc, 'Dhaka, Bangladesh  ·  +880 1646-886795  ·  mahimrahman07@gmail.com', MARGIN, 60, {
+      textAt(doc, 'Dhaka, Bangladesh  ·  +880 1646-886795  ·  mediportbdofficial@gmail.com', MARGIN, 60, {
         fontSize: 7,
         fillColor: '#CBD5E1',
       });
@@ -413,10 +454,11 @@ doc.rect(MARGIN, y, CONTENT_W, rowH).fill(ROW_ALT);
     const couponDiscount = Number(
       order.couponDiscount || order.promoDiscount || order.appliedCoupon?.discountAmount || 0
     );
+    const vat = Number(order.vatAmount || 0);
     const deliveryFee = Number(order.deliveryFee || 0);
     const totalAmount = Number(order.totalAmount || order.total || 0);
 
-    ensureSpace(110);
+    ensureSpace(110 + (vat > 0 ? 15 : 0));
     const totalsX = MARGIN + 300;
     const labelW = 90;
     const valueW = 85;
@@ -447,6 +489,9 @@ addTotalRow('B2B discount', `− ${formatBdt(b2bDiscount)}`, true);
     if (couponDiscount > 0) {
 addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
 }
+    if (vat > 0) {
+addTotalRow('VAT / Tax', formatBdt(vat));
+}
     addTotalRow('Delivery', formatBdt(deliveryFee));
 
     y += 2;
@@ -467,6 +512,25 @@ addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
     });
     y += 36;
 
+    // ── Amount in words ─────────────────────────────────────────────────────────
+    y += 8;
+    const words = amountInWords(totalAmount);
+    const wordsX = MARGIN + 108;
+    const wordsWidth = CONTENT_W - wordsX - 12;
+    doc.font('Helvetica-Bold').fontSize(9);
+    const wordsHeight = Math.max(22, doc.heightOfString(words, { width: wordsWidth }) + 8);
+    ensureSpace(wordsHeight + 10);
+    doc.rect(MARGIN, y, CONTENT_W, wordsHeight).fill(ROW_ALT);
+    doc.strokeColor(BORDER).lineWidth(0.5).rect(MARGIN, y, CONTENT_W, wordsHeight).stroke();
+    textAt(doc, 'Amount in words:', MARGIN + 12, y + 7, {
+      font: 'Helvetica-Bold',
+      fontSize: 8,
+      fillColor: SLATE,
+    });
+    doc.font('Helvetica-Bold').fontSize(9).fillColor(TEXT);
+    doc.text(words, wordsX, y + 7, { width: wordsWidth });
+    y += wordsHeight + 10;
+
     ensureSpace(58);
     doc.roundedRect(MARGIN, y, CONTENT_W, 48, 5).fill('#EFF6FF');
     doc.strokeColor('#BFDBFE').lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, 48, 5).stroke();
@@ -475,7 +539,7 @@ addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
       fontSize: 8,
       fillColor: NAVY,
     });
-    textAt(doc, 'BRAC Bank PLC  ·  MEDIPORT BANGLADESH LTD  ·  A/C 1081267690001', MARGIN + 12, y + 22, {
+    textAt(doc, 'BRAC Bank PLC  ·  MAHI M RAHMAN  ·  A/C 1081267690001', MARGIN + 12, y + 22, {
       fontSize: 8,
       fillColor: '#475569',
     });
@@ -486,12 +550,13 @@ addTotalRow('Coupon', `− ${formatBdt(couponDiscount)}`, true);
 
     const range = doc.bufferedPageRange();
     const pageCount = range.count;
+    const bin = process.env.COMPANY_BIN ? `  ·  BIN: ${process.env.COMPANY_BIN}` : '';
     for (let i = range.start; i < range.start + pageCount; i++) {
       doc.switchToPage(i);
       const footerY = PAGE_H - 36;
       doc.strokeColor(BORDER).lineWidth(0.5);
       doc.moveTo(MARGIN, footerY).lineTo(MARGIN + CONTENT_W, footerY).stroke();
-      textAt(doc, 'Mediport Bangladesh Ltd  ·  DGDA Reg. DA-2024-0891  ·  www.MediportBD.com', MARGIN, footerY + 6, {
+      textAt(doc, `Mediport Bangladesh Ltd  ·  DGDA Reg. DA-2024-0891${bin}  ·  www.MediportBD.com`, MARGIN, footerY + 6, {
         width: CONTENT_W,
         align: 'center',
         fontSize: 7,

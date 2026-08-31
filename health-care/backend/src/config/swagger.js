@@ -9,7 +9,7 @@ const options = {
       description: 'Comprehensive API documentation for MediportBD medical equipment e-commerce platform',
       contact: {
         name: 'MediportBD',
-        email: 'mahimrahman07@gmail.com',
+        email: 'mediportbdofficial@gmail.com',
         url: 'https://health-care-e-commerce-murex.vercel.app'
       },
       license: {

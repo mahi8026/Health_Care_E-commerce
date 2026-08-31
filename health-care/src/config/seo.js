@@ -29,7 +29,7 @@ export const SITE_CONFIG = {
   twitterHandle: '@mediportbd',
   locale:       'en_BD',
   phone:        '+880 1646-886795',
-  email:        'info@mediportbd.com',
+  email:        'mediportbdofficial@gmail.com',
   address: {
     street:     '17/2/A Azad Tower, Shop-08 (Beside BMA Bhaban), Topkhana Road',
     city:       'Dhaka',

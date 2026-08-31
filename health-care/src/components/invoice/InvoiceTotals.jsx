@@ -7,7 +7,7 @@ import { formatBdt, numberToWords } from '@/utils/invoiceHelpers';
  * Displays invoice totals section
  */
 export default function InvoiceTotals({ totals }) {
-  const { subtotal, discount, discountPct, vat, shipping, grandTotal } = totals;
+  const { subtotal, b2bDiscount, b2bDiscountPct, couponDiscount, vat, vatRate, shipping, grandTotal } = totals;
 
   return (
     <div className="invoice-totals mt-3">
@@ -21,14 +21,24 @@ export default function InvoiceTotals({ totals }) {
           </span>
         </div>
 
-        {/* Discount */}
-        {discount > 0 && (
+        {/* B2B Discount */}
+        {b2bDiscount > 0 && (
           <div className="flex items-center justify-between border-b border-gray-200 pb-1 text-xs">
             <span className="font-medium text-gray-600">
-              Discount {discountPct > 0 ? `(${discountPct}%)` : ''}
+              B2B Discount {b2bDiscountPct > 0 ? `(${b2bDiscountPct}%)` : ''}
             </span>
             <span className="font-semibold text-brand-teal">
-              − BDT {formatBdt(discount)}
+              − BDT {formatBdt(b2bDiscount)}
+            </span>
+          </div>
+        )}
+
+        {/* Coupon Discount */}
+        {couponDiscount > 0 && (
+          <div className="flex items-center justify-between border-b border-gray-200 pb-1 text-xs">
+            <span className="font-medium text-gray-600">Coupon Discount</span>
+            <span className="font-semibold text-brand-teal">
+              − BDT {formatBdt(couponDiscount)}
             </span>
           </div>
         )}
@@ -36,7 +46,9 @@ export default function InvoiceTotals({ totals }) {
         {/* VAT / Tax */}
         {vat > 0 && (
           <div className="flex items-center justify-between border-b border-gray-200 pb-1 text-xs">
-            <span className="font-medium text-gray-600">VAT / Tax (7.5%)</span>
+            <span className="font-medium text-gray-600">
+              VAT / Tax{vatRate > 0 ? ` (${vatRate}%)` : ''}
+            </span>
             <span className="font-semibold text-gray-900">
               BDT {formatBdt(vat)}
             </span>
@@ -47,7 +59,7 @@ export default function InvoiceTotals({ totals }) {
         <div className="flex items-center justify-between border-b border-gray-200 pb-1 text-xs">
           <span className="font-medium text-gray-600">Shipping / Delivery</span>
           <span className="font-semibold text-gray-900">
-            BDT {formatBdt(shipping)}
+            {shipping > 0 ? `BDT ${formatBdt(shipping)}` : 'Free'}
           </span>
         </div>
 

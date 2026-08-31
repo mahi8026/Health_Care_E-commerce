@@ -225,5 +225,8 @@ orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ user: 1, 'metadata.idempotencyKey': 1 }, { unique: true, sparse: true });
 // Top-selling aggregation ($lookup on items.product) scans every order without this
 orderSchema.index({ 'items.product': 1 });
+// Invoice numbers are unique per order (null allowed for legacy orders created
+// before sequential numbering was introduced).
+orderSchema.index({ invoiceNumber: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('Order', orderSchema);

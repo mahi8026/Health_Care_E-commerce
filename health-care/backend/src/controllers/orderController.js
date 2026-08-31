@@ -14,7 +14,7 @@ const { sendToUser, notifications } = require('../utils/oneSignalService');
 const { ORDER_STATUSES, ORDER_STATUS_TRANSITIONS } = require('../constants/orderStatus');
 // P4-1 — single source of truth for order-number generation now lives in
 // orderService; the local copy below was deleted to prevent format drift.
-const { generateOrderNumber } = require('../services/orderService');
+const { generateOrderNumber, generateInvoiceNumber } = require('../services/orderService');
 
 const cacheService = new CacheService();
 
@@ -423,6 +423,19 @@ zone = 'dhaka_suburban';
     // checker queries the Order collection for uniqueness.
     const orderNumber = await generateOrderNumber(async (candidate) => !!(await Order.findOne({ orderNumber: candidate }).lean()));
 
+    // Sequential fiscal-year invoice number (atomic Counter — race-safe).
+    // Assigned at placement so every order carries a permanent invoice number.
+    // Non-fatal: if the counter fails the order still places and the invoice
+    // surfaces fall back to the order number. The counter sits outside the
+    // order transaction, so an aborted order may leave a numbering gap
+    // (acceptable for invoices) — duplicates are impossible.
+    let invoiceNumber = null;
+    try {
+      invoiceNumber = await generateInvoiceNumber();
+    } catch (invErr) {
+      logger.error(`[createOrder] invoice number generation failed (non-fatal): ${invErr.message}`);
+    }
+
     // D1 — pre-compute loyalty earnings so they persist on the order itself
     // (cancelOrder later rolls back these exact values instead of guessing 0)
     const loyaltyServiceForEarn = require('../services/loyaltyService');
@@ -434,6 +447,7 @@ zone = 'dhaka_suburban';
     const order = await Order.create([{
       orderNumber,
       orderId: orderNumber,
+      invoiceNumber,
       user: req.user.id,
       items: orderItems,
       subtotal,

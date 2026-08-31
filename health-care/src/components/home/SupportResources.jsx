@@ -41,8 +41,8 @@ const SUPPORT_OPTIONS = [
   {
     icon: <FaEnvelope />,
     title: 'Email Us',
-    desc: 'mahimrahman07@gmail.com',
-    action: 'mailto:mahimrahman07@gmail.com',
+    desc: 'mediportbdofficial@gmail.com',
+    action: 'mailto:mediportbdofficial@gmail.com',
     color: 'var(--color-brand-navy)',
     bgColor: 'var(--color-background-secondary)'
   },

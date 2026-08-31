@@ -2,11 +2,26 @@
 
 import InvoiceToolbar from './InvoiceToolbar';
 import InvoiceDocument from './InvoiceDocument';
-import {
-  calculateInvoiceTotals,
-  getInvoiceNumber,
-  formatInvoiceNumber,
-} from '@/utils/invoiceHelpers';
+import { calculateInvoiceTotals, getInvoiceNumber } from '@/utils/invoiceHelpers';
+
+/**
+ * B2B detection works on every population shape the API can return:
+ * - order.isB2BOrder (authoritative, always present on B2B orders)
+ * - user.b2bAccount boolean (getInvoiceData population)
+ * - user.accountType === 'B2B' (both getInvoiceData and /auth/me)
+ * - presence of user.b2bId / user.b2bTier (B2B profile fields)
+ */
+function isB2BOrder(order, user) {
+  const u = user || {};
+  return !!(
+    order?.isB2BOrder ||
+    u.b2bAccount === true ||
+    u.b2bAccount === 'true' ||
+    String(u.accountType || '').toUpperCase() === 'B2B' ||
+    u.b2bId ||
+    u.b2bTier
+  );
+}
 
 /**
  * InvoicePage Component
@@ -16,18 +31,22 @@ export default function InvoicePage({ order, user }) {
 
   // Prepare invoice data
   const invoiceNumber = getInvoiceNumber(order);
+  const orderNumber = order.orderNumber || order.orderId || '';
   const invoiceDate = order.createdAt;
-  
-  // Calculate due date (30 days from invoice date for B2B, immediate for others)
-  const dueDate = new Date(invoiceDate);
-  const isB2B = user?.b2bAccount || user?.accountType === 'B2B' || order.isB2BOrder;
-  if (isB2B) {
-    dueDate.setDate(dueDate.getDate() + (user?.paymentTerms || 30));
+  const isB2B = isB2BOrder(order, user);
+
+  // Calculate due date (payment terms after invoice date for B2B, none otherwise)
+  let dueDate = null;
+  if (invoiceDate) {
+    dueDate = new Date(invoiceDate);
+    if (isB2B && !Number.isNaN(dueDate.getTime())) {
+      dueDate.setDate(dueDate.getDate() + (Number(user?.paymentTerms) || 30));
+    }
   }
 
   // Extract user info - handle both populated and unpopulated user references
   const userInfo = typeof order.user === 'object' ? order.user : user;
-  
+
   // Billing Info
   const billingInfo = {
     name: userInfo?.name || order.deliveryAddress?.name || 'Customer',
@@ -48,17 +67,20 @@ export default function InvoicePage({ order, user }) {
   // Calculate totals
   const totals = calculateInvoiceTotals(order);
 
-  // Payment Info
+  // Payment Info — bank details match the backend PDF (BRAC Bank PLC) and the
+  // transaction ref is the real payment reference, never a derived invoice number.
   const paymentInfo = {
-    accountName: 'MediportBD',
+    accountName: 'MAHI M RAHMAN',
     paymentMethod: order.paymentMethod,
-    bankInfo: 'Dutch-Bangla Bank Ltd · A/C 1721 2030 5678',
-    transactionRef: order.transactionId || formatInvoiceNumber(invoiceNumber),
+    paymentStatus: order.paymentStatus || order.status || '—',
+    bankInfo: 'BRAC Bank PLC · MAHI M RAHMAN · A/C 1081267690001',
+    transactionRef: order.transactionId || '—',
   };
 
   // Prepare invoice data
   const invoiceData = {
     invoiceNumber,
+    orderNumber,
     invoiceDate,
     dueDate: isB2B ? dueDate : null,
     billingInfo,
@@ -73,7 +95,8 @@ export default function InvoicePage({ order, user }) {
     window.print();
   };
 
-  // Removed PDF download functionality - users can use Print -> Save as PDF instead
+  // PDF download is intentionally not offered inline — Print → "Save as PDF" gives
+  // pixel-identical output and avoids the previously reported stuck loading dialog.
 
   return (
     <div className="invoice-page min-h-screen bg-gray-100 py-8 print:bg-white print:py-0">

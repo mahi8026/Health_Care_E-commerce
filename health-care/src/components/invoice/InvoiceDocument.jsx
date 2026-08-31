@@ -6,7 +6,6 @@ import InvoiceItemsTable from './InvoiceItemsTable';
 import InvoiceTotals from './InvoiceTotals';
 import PaymentInformation from './PaymentInformation';
 import TermsAndConditions from './TermsAndConditions';
-import SignatureSection from './SignatureSection';
 import InvoiceFooter from './InvoiceFooter';
 
 /**
@@ -16,6 +15,7 @@ import InvoiceFooter from './InvoiceFooter';
 export default function InvoiceDocument({ invoiceData }) {
   const {
     invoiceNumber,
+    orderNumber,
     invoiceDate,
     dueDate,
     billingInfo,
@@ -38,6 +38,7 @@ export default function InvoiceDocument({ invoiceData }) {
         {/* Header */}
         <InvoiceHeader
           invoiceNumber={invoiceNumber}
+          orderNumber={orderNumber}
           invoiceDate={invoiceDate}
           dueDate={dueDate}
         />
@@ -59,9 +60,6 @@ export default function InvoiceDocument({ invoiceData }) {
 
         {/* Totals */}
         <InvoiceTotals totals={totals} />
-
-        {/* Signature Section */}
-        <SignatureSection />
       </div>
 
       {/* Footer */}

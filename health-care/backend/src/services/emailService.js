@@ -8,7 +8,7 @@
  *
  * Required env vars on Render.com:
  *   BREVO_API_KEY   — get from app.brevo.com → Settings → API Keys
- *   BREVO_FROM_EMAIL — your verified sender email (e.g. mahimrahman07@gmail.com)
+ *   BREVO_FROM_EMAIL — your verified sender email (e.g. mediportbdofficial@gmail.com)
  *   BREVO_FROM_NAME  — (optional) sender name, defaults to "MediportBD"
  */
 
@@ -20,9 +20,9 @@ const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 function getConfig() {
   return {
     apiKey:    process.env.BREVO_API_KEY,
-    fromEmail: process.env.BREVO_FROM_EMAIL || process.env.SMTP_USER || 'mahimrahman07@gmail.com',
+    fromEmail: process.env.BREVO_FROM_EMAIL || process.env.SMTP_USER || 'mediportbdofficial@gmail.com',
     fromName:  process.env.BREVO_FROM_NAME  || process.env.EMAIL_FROM_NAME || 'MediportBD',
-    adminEmail: process.env.ADMIN_EMAIL     || process.env.BREVO_FROM_EMAIL || 'mahimrahman07@gmail.com',
+    adminEmail: process.env.ADMIN_EMAIL     || process.env.BREVO_FROM_EMAIL || 'mediportbdofficial@gmail.com',
     siteUrl:   process.env.FRONTEND_URL     || 'https://health-care-e-commerce-murex.vercel.app',
   };
 }

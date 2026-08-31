@@ -20,7 +20,7 @@ exports.getSettings = async (req, res) => {
         certifications: ['DGDA Registered', 'ISO 13485 Certified'],
         supportHours: '24/7',
         contactPhone: '+880 1646-886795',
-        contactEmail: 'mahimrahman07@gmail.com',
+        contactEmail: 'mediportbdofficial@gmail.com',
         companyName: 'MediportBD',
         tagline: "Bangladesh's Most Trusted Medical Equipment Supplier",
       });

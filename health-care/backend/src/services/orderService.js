@@ -7,6 +7,7 @@
 
 const logger = require('../utils/logger');
 const { DELIVERY_FEES } = require('../config/constants');
+const Counter = require('../models/Counter');
 
 /**
  * Generate a collision-resistant order number
@@ -46,6 +47,43 @@ return orderNumber;
   }
 
   throw new Error('Failed to generate unique order number');
+}
+
+/**
+ * Bangladesh fiscal year for a given date (FY runs 1 July – 30 June).
+ * Returns a 4-digit label like `2627` for Sep 2026 (FY 2026-27) or `2526`
+ * for Jun 2026 (FY 2025-26). Invoice numbers reset at each fiscal year.
+ */
+function computeFiscalYear(date = new Date()) {
+  const d = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(d.getTime())) {
+    d.setTime(Date.now());
+  }
+  const pad = (n) => String(n).padStart(2, '0');
+  const startYear = d.getMonth() + 1 >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+  return `${pad(startYear % 100)}${pad((startYear + 1) % 100)}`;
+}
+
+/**
+ * Sequential, race-safe invoice number for the current fiscal year:
+ *   MPBD-INV-<FY>-<5-digit sequence>  →  e.g. MPBD-INV-2627-00001
+ *
+ * Uses an atomic Counter $inc so concurrent order placements can never
+ * receive the same number. The counter lives outside the order transaction:
+ * an aborted order may leave a numbering gap (normal and acceptable for
+ * invoices), but a duplicate number is impossible.
+ */
+async function generateInvoiceNumber(date = new Date()) {
+  const fy = computeFiscalYear(date);
+  const counter = await Counter.findOneAndUpdate(
+    { _id: `invoice-${fy}` },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  if (!counter || typeof counter.seq !== 'number') {
+    throw new Error('Invoice counter did not return a sequence');
+  }
+  return `MPBD-INV-${fy}-${String(counter.seq).padStart(5, '0')}`;
 }
 
 /**
@@ -462,6 +500,8 @@ function validateOrderCancellation(order) {
 
 module.exports = {
   generateOrderNumber,
+  computeFiscalYear,
+  generateInvoiceNumber,
   calculateSubtotal,
   calculateB2BDiscount,
   validateAndApplyCoupon,

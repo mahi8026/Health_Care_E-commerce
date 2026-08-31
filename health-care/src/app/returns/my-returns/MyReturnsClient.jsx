@@ -277,8 +277,8 @@ export default function MyReturnsClient() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <p className="font-medium text-[var(--color-text-primary)] mb-1">📧 Email Support</p>
-              <a href="mailto:mahimrahman07@gmail.com" className="text-brand-teal hover:underline">
-                mahimrahman07@gmail.com
+              <a href="mailto:mediportbdofficial@gmail.com" className="text-brand-teal hover:underline">
+                mediportbdofficial@gmail.com
               </a>
             </div>
             <div>

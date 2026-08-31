@@ -4,14 +4,16 @@
  */
 
 /**
- * Format currency in BDT
+ * Format currency in BDT.
+ * Whole taka renders without trailing ".00" (matches the backend PDF); amounts
+ * with fractional parts keep 2 decimals so real paisa values are never hidden.
  */
 export function formatBdt(amount) {
   const num = Number(amount) || 0;
-  return num.toLocaleString('en-BD', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const opts = Number.isInteger(num)
+    ? { maximumFractionDigits: 0 }
+    : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+  return num.toLocaleString('en-BD', opts);
 }
 
 /**
@@ -189,8 +191,11 @@ export function formatAddress(address) {
     lines.push(cityParts.join(', '));
   }
   
-  if (address.postcode || address.postalCode) {
-    lines.push(`Dhaka-${address.postcode || address.postalCode}`);
+  // Postcode as its own line — no hardcoded "Dhaka-" prefix so orders shipped
+  // outside Dhaka (e.g. Chittagong-4000) are printed correctly.
+  const postcode = address.postcode || address.postalCode;
+  if (postcode) {
+    lines.push(String(postcode));
   }
   
   if (!lines.length && (address.district || address.city)) {
@@ -203,34 +208,51 @@ export function formatAddress(address) {
 }
 
 /**
- * Calculate invoice totals
+ * Calculate invoice totals.
+ *
+ * Accuracy rules:
+ * - Subtotal comes from the stored `order.subtotal` when present (single source
+ *   of truth); it is only recomputed from line items as a fallback.
+ * - Coupon/promo discounts are included — previously they were silently dropped,
+ *   inflating the displayed grand total for coupon orders.
+ * - The grand total prefers the authoritative recorded `order.totalAmount` and
+ *   only recomputes when that value is missing.
  */
 export function calculateInvoiceTotals(order) {
   const items = order.items || [];
   
-  // Calculate subtotal from items
-  const subtotal = items.reduce((sum, item) => {
-    return sum + calculateItemTotal(item);
-  }, 0);
+  const storedSubtotal = Number(order.subtotal);
+  const subtotal = Number.isFinite(storedSubtotal) && storedSubtotal >= 0
+    ? storedSubtotal
+    : items.reduce((sum, item) => sum + calculateItemTotal(item), 0);
   
-  // Get discounts
-  const discount = Number(order.b2bDiscount || order.discount || 0);
-  const discountPct = Number(order.b2bDiscountPct || 0);
+  const b2bDiscount = Number(order.b2bDiscount || order.discount || 0);
+  const b2bDiscountPct = Number(order.b2bDiscountPct || 0);
+  const couponDiscount = Number(
+    order.couponDiscount || order.promoDiscount || order.appliedCoupon?.discountAmount || 0
+  );
   
-  // Get VAT
+  // VAT
   const vat = Number(order.vatAmount || 0);
+  const vatRate = order.vatRate ? Number(order.vatRate) : 0;
   
-  // Get shipping
-  const shipping = Number(order.deliveryFee || 0);
+  // Shipping
+  const shipping = Number(order.deliveryFee || order.shippingCost || 0);
   
-  // Calculate grand total
-  const grandTotal = subtotal - discount + vat + shipping;
+  // Grand total — the recorded total is authoritative when present.
+  const recordedTotal = Number(order.totalAmount || order.total);
+  const recomputed = subtotal - b2bDiscount - couponDiscount + vat + shipping;
+  const grandTotal = Number.isFinite(recordedTotal) && recordedTotal >= 0
+    ? recordedTotal
+    : recomputed;
   
   return {
     subtotal,
-    discount,
-    discountPct,
+    b2bDiscount,
+    b2bDiscountPct,
+    couponDiscount,
     vat,
+    vatRate,
     shipping,
     grandTotal,
   };
@@ -244,23 +266,26 @@ export function getInvoiceNumber(order) {
 }
 
 /**
- * Format invoice number for display
+ * Format invoice number for display.
+ * Normalizes MC- order numbers and already-prefixed values, strips a raw Mongo
+ * ObjectId (never a valid invoice number), and avoids double prefixes.
  */
 export function formatInvoiceNumber(invoiceNumber) {
   if (!invoiceNumber) return 'MPBD-INV-000000';
   
   // Convert to string and trim
-  const invStr = String(invoiceNumber).trim();
+  let invStr = String(invoiceNumber).trim();
   
-  // If it already has proper MPBD-INV format, use as is
-  if (invStr.startsWith('MPBD-INV-')) {
-    return invStr;
-  }
+  // Raw Mongo ObjectIds are never valid invoice numbers
+  if (/^[a-f0-9]{24}$/i.test(invStr)) return 'MPBD-INV-000000';
   
-  // If it's an order number starting with MC-, convert to invoice format
-  if (invStr.startsWith('MC-')) {
-    return invStr.replace('MC-', 'MPBD-INV-');
-  }
+  // Normalize prefixes (case-insensitive) and avoid double-prefixing
+  invStr = invStr
+    .replace(/^MC-/i, 'MPBD-INV-')
+    .replace(/^MPBD-INV-/i, 'MPBD-INV-')
+    .replace(/^INV-/i, '');
+  
+  if (invStr.startsWith('MPBD-INV-')) return invStr;
   
   // Otherwise, prefix with MPBD-INV-
   return `MPBD-INV-${invStr}`;

@@ -1129,36 +1129,11 @@ export const api = {
     return handleResponse(response);
   },
 
-  // Invoices
-  async downloadInvoice(orderId) {
-    const token = getToken();
-    if (!token) {
-      throw new ApiError('Not authenticated. Please log in and try again.', 401);
-    }
-
-    const response = await fetch(`${API_BASE_URL}/invoices/${orderId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      let message = 'Failed to download invoice';
-      try {
-        const error = await response.json();
-        message = error.message || message;
-      } catch { /* ignore parse error */ }
-      throw new ApiError(message, response.status);
-    }
-
-    return response.blob();
-  },
-
   // Notifications (Admin)
   // NOTE: sendOrderConfirmation/sendPaymentReceipt/sendShippingNotification/sendDeliveryConfirmation
   // are defined earlier in this file and call POST /orders/:id/notify — do not redefine here.
+  // The legacy GET /api/invoices/:orderId PDF download (downloadInvoice) was removed:
+  // invoice viewing/downloading now uses the unified /orders/[orderId]/invoice page.
 
   async sendQuotationReady(quoteId) {
     try {

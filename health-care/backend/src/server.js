@@ -375,7 +375,6 @@ app.use('/api/analytics', dbHealthCheck, require('./routes/analyticsRoutes'));
 app.use('/api/quotes', dbHealthCheck, require('./routes/quoteRoutes'));
 app.use('/api/notifications', dbHealthCheck, require('./routes/notificationRoutes'));
 app.use('/api/admin', dbHealthCheck, require('./routes/adminRoutes')); // Has its own rate limiters
-app.use('/api/invoices', dbHealthCheck, require('./routes/invoiceRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes')); // Has its own rate limiters (no DB check needed for uploads)
 app.use('/api/returns', dbHealthCheck, require('./routes/returnRoutes'));
 app.use('/api/coupons', dbHealthCheck, require('./routes/couponRoutes'));

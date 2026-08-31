@@ -41,7 +41,9 @@
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
-    page-break-after: always;
+    /* 'auto' avoids a blank trailing page for single-page invoices
+       (page-break-after: always appends an empty sheet in Chrome). */
+    page-break-after: auto;
   }
 
   /* Prevent page breaks inside important sections */
