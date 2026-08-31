@@ -81,7 +81,7 @@
     "nodemailer": "^9.0.3",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "pdfkit": "^0.19.1",
+    "pdfkit": "^0.20.1",
     "qrcode": "^1.5.4",
     "rate-limit-redis": "^4.3.1",
     "resend": "^6.18.1",
