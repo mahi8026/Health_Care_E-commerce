@@ -321,12 +321,12 @@ function OrderDetailModal({ order, onClose, onUpdate }) {
         <div style={{ padding: '14px 20px', borderTop: '0.5px solid var(--color-background-tertiary)',
           display: 'flex', gap: 10, justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', gap: 8 }}>
-            <a href={`${API}/invoices/${order._id}`}
+            <a href={`/orders/${order._id}/invoice`}
               target="_blank" rel="noreferrer"
               style={{ padding: '8px 16px', background: 'var(--color-background-tertiary)', color: 'var(--color-text-primary)',
                 borderRadius: 7, fontSize: 'var(--text-xs)', fontWeight: 500, textDecoration: 'none',
                 display: 'flex', alignItems: 'center', gap: 6 }}>
-              📄 Invoice PDF
+              📄 View Invoice
             </a>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>

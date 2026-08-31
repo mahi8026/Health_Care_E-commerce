@@ -156,26 +156,10 @@ export default function OrderTrackingPage({ orderNumber: initialOrderNumber }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialOrderNumber]);
 
-  const handleDownloadInvoice = async () => {
+  const handleDownloadInvoice = () => {
     if (!order?._id) return;
-    
-    setDownloading(true);
-    try {
-      const blob = await api.downloadInvoice(order._id);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${order.orderNumber}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      // Failed to download invoice
-      showToast.error('Failed to download invoice. Please try again.');
-    } finally {
-      setDownloading(false);
-    }
+    // Navigate to new invoice page
+    window.open(`/orders/${order._id}/invoice`, '_blank');
   };
 
   const handleSubmit = (e) => {
