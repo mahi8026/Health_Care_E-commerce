@@ -29,21 +29,51 @@ export default function Invoice() {
         }
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+        const orderUrl = `${apiUrl}/orders/${orderId}`;
+        
+        console.log('🔗 Fetching order from:', orderUrl);
         
         // Fetch order details
-        const response = await fetch(`${apiUrl}/orders/${orderId}`, {
+        const response = await fetch(orderUrl, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
 
+        console.log('📡 Response status:', response.status);
+
         if (!response.ok) {
           throw new Error('Failed to fetch order');
         }
 
         const data = await response.json();
-        let orderData = data.order || data;
+        console.log('📦 Raw API Response:', data);
+        
+        // Handle both single order and orders array response
+        let orderData;
+        if (data.order) {
+          // Single order response: { success: true, order: {...} }
+          orderData = data.order;
+        } else if (data.orders && Array.isArray(data.orders)) {
+          // Orders list response: { success: true, orders: [{...}] }
+          // Find the specific order by ID
+          orderData = data.orders.find(o => o._id === orderId || o.orderNumber === orderId);
+          if (!orderData) {
+            throw new Error('Order not found in response');
+          }
+        } else if (data._id) {
+          // Direct order object response: { _id: "...", orderNumber: "...", ... }
+          orderData = data;
+        } else {
+          throw new Error('Invalid response format');
+        }
+        
+        // Debug: Log the order data
+        console.log('📦 Order Data:', orderData);
+        console.log('👤 User in Order:', orderData.user);
+        console.log('📋 Order Items:', orderData.items);
+        console.log('🏠 Delivery Address:', orderData.deliveryAddress);
         
         // Ensure legacy field mapping
         if (!orderData.orderNumber && orderData.orderId) {
