@@ -240,7 +240,7 @@ export function calculateInvoiceTotals(order) {
  * Generate invoice number if not present
  */
 export function getInvoiceNumber(order) {
-  return order.invoiceNumber || order.orderNumber || order.orderId || order._id || 'INV-000000';
+  return order.invoiceNumber || order.orderNumber || order.orderId || order._id || '000000';
 }
 
 /**
@@ -249,16 +249,19 @@ export function getInvoiceNumber(order) {
 export function formatInvoiceNumber(invoiceNumber) {
   if (!invoiceNumber) return 'MPBD-INV-000000';
   
-  // If it already has proper format, use as is
-  if (invoiceNumber.startsWith('MC-') || invoiceNumber.startsWith('MPBD-INV-')) {
-    return invoiceNumber;
+  // Convert to string and trim
+  const invStr = String(invoiceNumber).trim();
+  
+  // If it already has proper MPBD-INV format, use as is
+  if (invStr.startsWith('MPBD-INV-')) {
+    return invStr;
   }
   
   // If it's an order number starting with MC-, convert to invoice format
-  if (invoiceNumber.startsWith('MC-')) {
-    return invoiceNumber.replace('MC-', 'MPBD-INV-');
+  if (invStr.startsWith('MC-')) {
+    return invStr.replace('MC-', 'MPBD-INV-');
   }
   
   // Otherwise, prefix with MPBD-INV-
-  return `MPBD-INV-${invoiceNumber}`;
+  return `MPBD-INV-${invStr}`;
 }
