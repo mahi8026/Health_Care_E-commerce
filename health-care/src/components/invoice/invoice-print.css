@@ -1,0 +1,206 @@
+/**
+ * Invoice Print Styles
+ * Professional A4 print CSS for invoice documents
+ */
+
+/* Print Page Setup */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* Print-specific styles */
+@media print {
+  /* Reset body */
+  body {
+    background: white !important;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Hide non-print elements */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  /* Invoice page container */
+  .invoice-page {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Invoice document */
+  .invoice-document {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+  }
+
+  /* Prevent page breaks inside important sections */
+  .invoice-header,
+  .billing-shipping,
+  .invoice-items-table thead,
+  .invoice-totals,
+  .payment-information,
+  .terms-conditions,
+  .signature-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Table rows should not break */
+  .invoice-items-table tbody tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure colors are printed */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Force background colors */
+  .bg-brand-navy,
+  .bg-brand-teal,
+  .bg-brand-orange,
+  .bg-blue-50,
+  .bg-gray-50 {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Table header background */
+  .invoice-items-table thead {
+    background-color: #0B2D5C !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-items-table thead th {
+    background-color: #0B2D5C !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Grand total background */
+  .invoice-totals .bg-brand-navy {
+    background-color: #0B2D5C !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Footer background */
+  .invoice-footer .bg-brand-navy {
+    background-color: #0B2D5C !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* SVG waves */
+  .invoice-footer svg {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Remove shadows in print */
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
+  }
+
+  /* Adjust spacing for print */
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Hide overflow */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* Ensure table fits on page */
+  .invoice-items-table {
+    width: 100% !important;
+  }
+
+  .invoice-items-table table {
+    width: 100% !important;
+    font-size: 10pt;
+  }
+
+  /* Adjust font sizes for print */
+  body,
+  p,
+  td,
+  th {
+    font-size: 10pt;
+  }
+
+  h1 {
+    font-size: 36pt;
+  }
+
+  h2 {
+    font-size: 18pt;
+  }
+
+  h3 {
+    font-size: 12pt;
+  }
+
+  /* Links should not be underlined */
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Footer stays at bottom */
+  .invoice-footer {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Avoid widows and orphans */
+  p {
+    widows: 3;
+    orphans: 3;
+  }
+}
+
+/* Screen preview styles */
+@media screen {
+  .invoice-page {
+    background: #eef1f5;
+  }
+
+  .invoice-document {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Landscape warning (optional) */
+@media print and (orientation: landscape) {
+  body::before {
+    content: 'Please print in Portrait mode for best results';
+    display: block;
+    text-align: center;
+    padding: 20px;
+    background: #fff3cd;
+    color: #856404;
+    font-weight: bold;
+  }
+}

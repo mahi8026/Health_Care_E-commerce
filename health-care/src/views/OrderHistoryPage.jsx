@@ -131,7 +131,6 @@ export default function OrderHistoryPage() {
   const [reviewModal, setReviewModal] = useState(null); // { productId, productName }
   const [confirmCancelId, setConfirmCancelId] = useState(null);
   const [cancellingId, setCancellingId]       = useState(null);
-  const [downloadingId, setDownloadingId]     = useState(null);
   const [refreshKey, setRefreshKey]           = useState(0);
 
   // ── Auth guard ────────────────────────────────────────────────────────────
@@ -177,40 +176,14 @@ export default function OrderHistoryPage() {
     router.push(`/track?order=${orderNumber}`);
   };
 
-  // ── Invoice — authenticated download, not window.open ─────────────────────
-  const handleInvoice = async (order) => {
+  // ── Invoice — navigate to invoice page ────────────────────────────────────
+  const handleInvoice = (order) => {
     const id = order._id;
-    if (!id) { showToast.error('Order ID missing'); return; }
-    setDownloadingId(id);
-    try {
-      const token = getToken();
-      if (!token) throw new Error('Not authenticated. Please log in.');
-      const res = await fetch(`${API}/invoices/${id}`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: 'include',
-      });
-      if (!res.ok) {
-        let msg = 'Failed to download invoice';
-        try { const err = await res.json(); msg = err.message || msg; } catch { /* ignore */ }
-        throw new Error(msg);
-      }
-      const blob = await res.blob();
-      if (!blob || blob.size === 0) throw new Error('Received empty PDF');
-      const url = URL.createObjectURL(blob);
-      const a   = document.createElement('a');
-      a.href     = url;
-      a.download = `Invoice-${order.orderNumber || id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      showToast.success('Invoice downloaded');
-    } catch (err) {
-      showToast.error(err.message || 'Could not download invoice');
-    } finally {
-      setDownloadingId(null);
+    if (!id) { 
+      showToast.error('Order ID missing'); 
+      return; 
     }
+    router.push(`/orders/${id}/invoice`);
   };
 
   // ── Return ────────────────────────────────────────────────────────────────
@@ -371,10 +344,9 @@ export default function OrderHistoryPage() {
                           <Dot />
                           <ActionBtn
                             variant="navy"
-                            disabled={downloadingId === order._id}
                             onClick={() => handleInvoice(order)}
                           >
-                            {downloadingId === order._id ? 'Downloading…' : t('orders.invoice')}
+                            {t('orders.invoice')}
                           </ActionBtn>
 
                           {/* Return */}
@@ -491,10 +463,9 @@ export default function OrderHistoryPage() {
 
                   <MobileBtn
                     variant="navy"
-                    disabled={downloadingId === order._id}
                     onClick={() => handleInvoice(order)}
                   >
-                    {downloadingId === order._id ? '…' : t('orders.invoice')}
+                    {t('orders.invoice')}
                   </MobileBtn>
 
                   {canRequestReturn(order) && (

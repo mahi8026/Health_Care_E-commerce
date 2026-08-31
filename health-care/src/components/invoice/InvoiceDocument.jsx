@@ -1,0 +1,71 @@
+'use client';
+
+import InvoiceHeader from './InvoiceHeader';
+import BillingShipping from './BillingShipping';
+import InvoiceItemsTable from './InvoiceItemsTable';
+import InvoiceTotals from './InvoiceTotals';
+import PaymentInformation from './PaymentInformation';
+import TermsAndConditions from './TermsAndConditions';
+import SignatureSection from './SignatureSection';
+import InvoiceFooter from './InvoiceFooter';
+
+/**
+ * InvoiceDocument Component
+ * Main invoice document container (A4 portrait)
+ */
+export default function InvoiceDocument({ invoiceData }) {
+  const {
+    invoiceNumber,
+    invoiceDate,
+    dueDate,
+    billingInfo,
+    shippingInfo,
+    items,
+    totals,
+    paymentInfo,
+  } = invoiceData;
+
+  return (
+    <div
+      className="invoice-document mx-auto bg-white shadow-lg print:shadow-none"
+      style={{
+        width: '210mm',
+        minHeight: '297mm',
+      }}
+    >
+      {/* Invoice Content */}
+      <div className="p-8">
+        {/* Header */}
+        <InvoiceHeader
+          invoiceNumber={invoiceNumber}
+          invoiceDate={invoiceDate}
+          dueDate={dueDate}
+        />
+
+        {/* Billing & Shipping */}
+        <BillingShipping
+          billingInfo={billingInfo}
+          shippingInfo={shippingInfo}
+        />
+
+        {/* Items Table */}
+        <InvoiceItemsTable items={items} />
+
+        {/* Two Column Layout: Payment Info & Terms */}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <PaymentInformation paymentInfo={paymentInfo} />
+          <TermsAndConditions />
+        </div>
+
+        {/* Totals */}
+        <InvoiceTotals totals={totals} />
+
+        {/* Signature Section */}
+        <SignatureSection />
+      </div>
+
+      {/* Footer */}
+      <InvoiceFooter />
+    </div>
+  );
+}
