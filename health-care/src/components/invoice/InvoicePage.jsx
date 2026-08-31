@@ -22,16 +22,20 @@ export default function InvoicePage({ order, user }) {
   
   // Calculate due date (30 days from invoice date for B2B, immediate for others)
   const dueDate = new Date(invoiceDate);
-  if (user?.b2bAccount || user?.accountType === 'B2B') {
-    dueDate.setDate(dueDate.getDate() + (user.paymentTerms || 30));
+  const isB2B = user?.b2bAccount || user?.accountType === 'B2B' || order.isB2BOrder;
+  if (isB2B) {
+    dueDate.setDate(dueDate.getDate() + (user?.paymentTerms || 30));
   }
 
+  // Extract user info - handle both populated and unpopulated user references
+  const userInfo = typeof order.user === 'object' ? order.user : user;
+  
   // Billing Info
   const billingInfo = {
-    name: user?.name || order.user?.name || 'Customer',
-    email: user?.email || order.user?.email || '',
-    phone: user?.phone || order.user?.phone || order.deliveryAddress?.phone || '',
-    address: user?.addresses?.[0] || order.deliveryAddress || {},
+    name: userInfo?.name || order.deliveryAddress?.name || 'Customer',
+    email: userInfo?.email || order.deliveryAddress?.email || '',
+    phone: userInfo?.phone || order.deliveryAddress?.phone || '',
+    address: userInfo?.addresses?.[0] || order.deliveryAddress || {},
   };
 
   // Shipping Info
@@ -39,6 +43,7 @@ export default function InvoicePage({ order, user }) {
   const shippingInfo = {
     name: deliveryAddress.name || billingInfo.name,
     phone: deliveryAddress.phone || billingInfo.phone,
+    email: deliveryAddress.email || billingInfo.email,
     address: deliveryAddress,
   };
 
@@ -57,12 +62,13 @@ export default function InvoicePage({ order, user }) {
   const invoiceData = {
     invoiceNumber,
     invoiceDate,
-    dueDate: user?.b2bAccount || user?.accountType === 'B2B' ? dueDate : null,
+    dueDate: isB2B ? dueDate : null,
     billingInfo,
     shippingInfo,
     items: order.items || [],
     totals,
     paymentInfo,
+    isB2B,
   };
 
   const handlePrint = () => {

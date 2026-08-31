@@ -247,11 +247,18 @@ export function getInvoiceNumber(order) {
  * Format invoice number for display
  */
 export function formatInvoiceNumber(invoiceNumber) {
-  // If it starts with MC- or MPBD-, use as is
-  if (invoiceNumber.startsWith('MC-') || invoiceNumber.startsWith('MPBD-')) {
+  if (!invoiceNumber) return 'MPBD-INV-000000';
+  
+  // If it already has proper format, use as is
+  if (invoiceNumber.startsWith('MC-') || invoiceNumber.startsWith('MPBD-INV-')) {
     return invoiceNumber;
   }
   
-  // Otherwise, prefix with MPBD-
-  return `MPBD-${invoiceNumber}`;
+  // If it's an order number starting with MC-, convert to invoice format
+  if (invoiceNumber.startsWith('MC-')) {
+    return invoiceNumber.replace('MC-', 'MPBD-INV-');
+  }
+  
+  // Otherwise, prefix with MPBD-INV-
+  return `MPBD-INV-${invoiceNumber}`;
 }

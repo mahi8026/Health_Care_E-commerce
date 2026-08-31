@@ -29,6 +29,8 @@ export default function Invoice() {
         }
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+        
+        // Fetch order details
         const response = await fetch(`${apiUrl}/orders/${orderId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -41,10 +43,38 @@ export default function Invoice() {
         }
 
         const data = await response.json();
-        const orderData = data.order || data;
+        let orderData = data.order || data;
+        
+        // Ensure legacy field mapping
+        if (!orderData.orderNumber && orderData.orderId) {
+          orderData.orderNumber = orderData.orderId;
+        }
+        if (!orderData.totalAmount && orderData.total) {
+          orderData.totalAmount = orderData.total;
+        }
+        
+        // Fetch user details if user is populated as ID only
+        let userData = orderData.user;
+        if (userData && typeof userData === 'string') {
+          // User is just an ID, fetch full user details
+          try {
+            const userResponse = await fetch(`${apiUrl}/auth/me`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            if (userResponse.ok) {
+              const userJson = await userResponse.json();
+              userData = userJson.user || userJson;
+            }
+          } catch (err) {
+            console.warn('Could not fetch user details:', err);
+          }
+        }
         
         setOrder(orderData);
-        setUser(orderData.user || {});
+        setUser(userData || {});
       } catch (err) {
         console.error('Error fetching order:', err);
         setError(err.message);
