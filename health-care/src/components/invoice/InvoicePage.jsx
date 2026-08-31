@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import InvoiceToolbar from './InvoiceToolbar';
 import InvoiceDocument from './InvoiceDocument';
 import {
@@ -14,7 +13,6 @@ import {
  * Main invoice page with toolbar and document
  */
 export default function InvoicePage({ order, user }) {
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Prepare invoice data
   const invoiceNumber = getInvoiceNumber(order);
@@ -75,41 +73,7 @@ export default function InvoicePage({ order, user }) {
     window.print();
   };
 
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPDF(true);
-    try {
-      // Call backend API to generate PDF
-      const response = await fetch('/api/orders/invoice/pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: order._id || order.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate PDF');
-      }
-
-      // Download the PDF
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Invoice-${formatInvoiceNumber(invoiceNumber)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try printing instead.');
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
+  // Removed PDF download functionality - users can use Print -> Save as PDF instead
 
   return (
     <div className="invoice-page min-h-screen bg-gray-100 py-8 print:bg-white print:py-0">
@@ -117,27 +81,11 @@ export default function InvoicePage({ order, user }) {
         {/* Toolbar (hidden in print) */}
         <InvoiceToolbar
           orderId={order._id || order.id}
-          onDownloadPDF={handleDownloadPDF}
           onPrint={handlePrint}
         />
 
         {/* Invoice Document */}
         <InvoiceDocument invoiceData={invoiceData} />
-
-        {/* Loading Overlay for PDF Generation */}
-        {isGeneratingPDF && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="rounded-lg bg-white p-6 text-center shadow-xl">
-              <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-brand-teal border-t-transparent mx-auto"></div>
-              <p className="text-lg font-semibold text-gray-900">
-                Generating PDF...
-              </p>
-              <p className="mt-2 text-sm text-gray-600">
-                Please wait while we prepare your invoice
-              </p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
