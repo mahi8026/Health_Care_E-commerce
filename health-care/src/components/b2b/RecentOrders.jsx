@@ -14,24 +14,8 @@ export default function RecentOrders({ orders = [] }) {
     { id: 'ORD-8819', date: '2025-04-05', items: 8, total: 67000, status: 'Processing' }
   ];
 
-  const handleDownloadInvoice = async (orderId) => {
-    setDownloading(prev => ({ ...prev, [orderId]: true }));
-    try {
-      const blob = await api.downloadInvoice(orderId);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${orderId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      process.env.NODE_ENV !== "production" && console.error('Failed to download invoice:', error);
-      showToast.error('Failed to download invoice. Please try again.');
-    } finally {
-      setDownloading(prev => ({ ...prev, [orderId]: false }));
-    }
+  const handleDownloadInvoice = (orderId) => {
+    window.open(`/orders/${orderId}/invoice`, '_blank');
   };
 
   return (

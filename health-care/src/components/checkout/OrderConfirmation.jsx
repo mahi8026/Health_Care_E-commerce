@@ -83,40 +83,17 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
   const router = useRouter();
   const [downloading, setDownloading] = useState(false);
 
-  const handleDownloadInvoice = async () => {
-    setDownloading(true);
-    try {
-      // Use mongoId for API call if available, otherwise fall back to orderId
-      const idForDownload = mongoId || orderId;
-      
-      if (!idForDownload) {
-        throw new Error('Order ID is missing');
-      }
-      
-      console.log('[OrderConfirmation] Downloading invoice for:', idForDownload);
-      
-      const blob = await api.downloadInvoice(idForDownload);
-      
-      if (!blob || blob.size === 0) {
-        throw new Error('Received empty response');
-      }
-      
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${orderId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      showToast.success('Invoice downloaded successfully');
-    } catch (error) {
-      console.error('[OrderConfirmation] Failed to download invoice:', error);
-      showToast.error(error.message || 'Failed to download invoice. Please try again or contact support.');
-    } finally {
-      setDownloading(false);
+  const handleDownloadInvoice = () => {
+    // Use mongoId for navigation if available, otherwise fall back to orderId
+    const idForNavigation = mongoId || orderId;
+    
+    if (!idForNavigation) {
+      showToast.error('Order ID is missing');
+      return;
     }
+    
+    // Navigate to new invoice page
+    window.open(`/orders/${idForNavigation}/invoice`, '_blank');
   };
 
   return (
@@ -195,10 +172,9 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
       <div className="flex flex-col sm:flex-row gap-3">
         <button 
           onClick={handleDownloadInvoice}
-          disabled={downloading}
-          className="flex-1 px-4 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 px-4 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] transition-colors"
         >
-          {downloading ? '⏳ Downloading...' : '📄 Download invoice'}
+          📄 View Invoice
         </button>
         <button 
           onClick={() => router.push('/products')}

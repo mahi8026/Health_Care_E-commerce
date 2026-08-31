@@ -374,22 +374,8 @@ function B2BDashboard({ data, onRefresh }) {
   const orders = data.recentOrders || [];
   const quotes = data.recentQuotes || [];
 
-  const handleDownloadInvoice = async (orderId) => {
-    try {
-      const token = localStorage.getItem('Mediport_token');
-      const res = await fetch(`${API}/orders/${orderId}/invoice`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `invoice-${orderId}.pdf`;
-      document.body.appendChild(a); a.click();
-      URL.revokeObjectURL(url); document.body.removeChild(a);
-    } catch {
-      showToast.error('Invoice download failed. Please try again.');
-    }
+  const handleDownloadInvoice = (orderId) => {
+    window.open(`/orders/${orderId}/invoice`, '_blank');
   };
 
   const creditPct = data.creditLimit > 0

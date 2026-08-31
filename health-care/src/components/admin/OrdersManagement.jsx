@@ -439,24 +439,8 @@ export default function OrdersManagement() {
     }
   };
 
-  const handleDownloadInvoice = async (orderId) => {
-    setActionLoading(prev => ({ ...prev, [`invoice-${orderId}`]: true }));
-    try {
-      const blob = await api.downloadInvoice(orderId);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${orderId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      showMessage('Invoice downloaded successfully', 'success');
-    } catch (error) {
-      showMessage(error.message || 'Failed to download invoice', 'error');
-    } finally {
-      setActionLoading(prev => ({ ...prev, [`invoice-${orderId}`]: false }));
-    }
+  const handleDownloadInvoice = (orderId) => {
+    window.open(`/orders/${orderId}/invoice`, '_blank');
   };
 
   const handleSendNotification = async (type, orderId) => {
