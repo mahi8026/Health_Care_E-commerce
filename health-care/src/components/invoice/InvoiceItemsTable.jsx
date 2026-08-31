@@ -15,33 +15,33 @@ import {
 export default function InvoiceItemsTable({ items = [] }) {
   if (!items || items.length === 0) {
     return (
-      <div className="mt-8 rounded-lg bg-gray-50 p-8 text-center text-gray-500">
+      <div className="mt-4 rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-500">
         No items in this invoice
       </div>
     );
   }
 
   return (
-    <div className="invoice-items-table mt-8 overflow-x-auto">
-      <table className="w-full border-collapse">
+    <div className="invoice-items-table mt-4 overflow-x-auto">
+      <table className="w-full border-collapse text-xs">
         <thead>
           <tr className="bg-brand-navy text-white">
-            <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-left text-[10px] font-bold uppercase tracking-wider">
               SL.
             </th>
-            <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-left text-[10px] font-bold uppercase tracking-wider">
               Product / Description
             </th>
-            <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-left text-[10px] font-bold uppercase tracking-wider">
               Brand / Model
             </th>
-            <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-center text-[10px] font-bold uppercase tracking-wider">
               Qty
             </th>
-            <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-right text-[10px] font-bold uppercase tracking-wider">
               Unit Price (BDT)
             </th>
-            <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-right text-[10px] font-bold uppercase tracking-wider">
               Total (BDT)
             </th>
           </tr>
@@ -68,29 +68,29 @@ export default function InvoiceItemsTable({ items = [] }) {
                   index % 2 === 0 ? 'bg-white' : 'bg-blue-50'
                 }`}
               >
-                <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                <td className="px-2 py-2 text-xs font-medium text-gray-900">
                   {index + 1}
                 </td>
-                <td className="px-4 py-4">
-                  <div className="text-sm font-semibold text-gray-900">
+                <td className="px-2 py-2">
+                  <div className="text-xs font-semibold text-gray-900">
                     {itemName}
                   </div>
                   {item.description && (
-                    <div className="mt-1 text-xs text-gray-600">
+                    <div className="mt-0.5 text-[10px] text-gray-600">
                       {item.description}
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-4 text-sm text-gray-700">
+                <td className="px-2 py-2 text-xs text-gray-700">
                   {brandModel || '—'}
                 </td>
-                <td className="px-4 py-4 text-center text-sm font-medium text-gray-900">
+                <td className="px-2 py-2 text-center text-xs font-medium text-gray-900">
                   {quantity}
                 </td>
-                <td className="px-4 py-4 text-right text-sm text-gray-900">
+                <td className="px-2 py-2 text-right text-xs text-gray-900">
                   {formatBdt(unitPrice)}
                 </td>
-                <td className="px-4 py-4 text-right text-sm font-bold text-gray-900">
+                <td className="px-2 py-2 text-right text-xs font-bold text-gray-900">
                   {formatBdt(total)}
                 </td>
               </tr>

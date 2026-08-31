@@ -15,20 +15,20 @@ export default function TermsAndConditions() {
   ];
 
   return (
-    <div className="terms-conditions mt-6 rounded-lg bg-blue-50 p-5">
-      <div className="mb-3 flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-teal text-white">
-          <FaFileContract className="h-4 w-4" />
+    <div className="terms-conditions rounded-lg bg-blue-50 p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-teal text-white">
+          <FaFileContract className="h-3 w-3" />
         </div>
-        <h3 className="text-sm font-bold uppercase tracking-wider text-brand-navy">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-brand-navy">
           Terms & Conditions
         </h3>
       </div>
 
-      <ul className="space-y-2 text-sm text-gray-700">
+      <ul className="space-y-1 text-xs text-gray-700">
         {terms.map((term, index) => (
           <li key={index} className="flex items-start gap-2">
-            <span className="mt-1 text-brand-teal">•</span>
+            <span className="mt-0.5 text-brand-teal">•</span>
             <span>{term}</span>
           </li>
         ))}
