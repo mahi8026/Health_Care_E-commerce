@@ -50,10 +50,13 @@ export default function Invoice() {
         const data = await response.json();
         console.log('📦 Raw API Response:', data);
         
-        // Handle both single order and orders array response
+        // Handle multiple response formats
         let orderData;
-        if (data.order) {
-          // Single order response: { success: true, order: {...} }
+        if (data.data && data.data.order) {
+          // Nested format: { success: true, data: { order: {...} } }
+          orderData = data.data.order;
+        } else if (data.order) {
+          // Direct format: { success: true, order: {...} }
           orderData = data.order;
         } else if (data.orders && Array.isArray(data.orders)) {
           // Orders list response: { success: true, orders: [{...}] }
@@ -66,6 +69,7 @@ export default function Invoice() {
           // Direct order object response: { _id: "...", orderNumber: "...", ... }
           orderData = data;
         } else {
+          console.error('❌ Unrecognized response format:', data);
           throw new Error('Invalid response format');
         }
         
