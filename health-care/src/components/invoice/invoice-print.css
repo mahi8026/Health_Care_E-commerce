@@ -13,13 +13,16 @@
 .invoice-page-wrapper {
   isolation: isolate;
   position: relative;
-  z-index: 9999;
+  z-index: 1;
+  display: block !important;
+  visibility: visible !important;
 }
 
 @media screen {
   .invoice-page-wrapper {
     min-height: 100vh;
     background: #eef1f5;
+    display: block !important;
   }
 }
 
