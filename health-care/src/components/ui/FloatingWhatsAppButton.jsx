@@ -78,7 +78,7 @@ export default function FloatingWhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-24 left-4 md:bottom-6 md:right-6 md:left-auto z-dropdown flex flex-col items-start md:items-end gap-3">
+    <div className="fixed bottom-[76px] right-3 md:bottom-6 md:right-5 z-dropdown flex flex-col items-end gap-2">
       {/* Tooltip */}
       {showTooltip && (
         <div className="animate-fadeSlideUp bg-white rounded-2xl shadow-lg p-4 max-w-xs border border-[var(--color-border-primary)]">
@@ -120,30 +120,23 @@ export default function FloatingWhatsAppButton() {
         </div>
       )}
 
-      {/* Main WhatsApp Button */}
+      {/* Main WhatsApp Button — smaller on mobile */}
       <button
         onClick={handleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        className={`group relative w-14 h-14 bg-gradient-to-br from-[var(--color-status-success)] to-[var(--color-status-success)] rounded-full flex items-center justify-center shadow-lg hover:shadow-green-500/50 hover:scale-110 transition-all duration-300 ${
+        className={`group relative w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-[var(--color-status-success)] to-[var(--color-status-success)] rounded-full flex items-center justify-center shadow-md hover:shadow-green-500/50 hover:scale-110 transition-all duration-300 ${
           bounce ? 'animate-bounce' : ''
         }`}
         aria-label="Chat on WhatsApp"
       >
-        {/* Pulsing ring effect */}
         <span className="absolute inset-0 rounded-full bg-[var(--color-status-success-tint)] animate-ping opacity-20"></span>
-        
-        {/* WhatsApp icon */}
         <FaWhatsapp 
-          size={28} 
+          size={20}
           className="text-white relative z-10 group-hover:scale-110 transition-transform" 
         />
-        
-        {/* Online indicator */}
-        <span className="absolute top-0 right-0 w-4 h-4 bg-success border-2 border-white rounded-full animate-pulse"></span>
-        
-        {/* Hover text - desktop only */}
-        <span className="hidden md:block absolute right-16 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300">
+        <span className="absolute top-0 right-0 w-3 h-3 bg-success border-2 border-white rounded-full animate-pulse"></span>
+        <span className="hidden md:block absolute right-14 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300">
           Chat on WhatsApp
           <span className="absolute top-1/2 -translate-y-1/2 right-[-8px] w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-8 border-l-gray-900"></span>
         </span>
