@@ -25,7 +25,10 @@ async function fetchPage(page) {
   try {
     const res = await fetch(
       `${API_BASE}/products?page=${page}&limit=100&fields=slug,updatedAt`,
-      { next: { revalidate: 43200 } } // 12-hour ISR cache per page
+      // 6-hour ISR cache (was 12h). Halved so deleted/renamed products stop
+      // appearing in the sitemap within half a day rather than a full day,
+      // reducing "Redirect error" entries in Google Search Console.
+      { next: { revalidate: 21600 } }
     );
     if (!res.ok) return { products: [], hasMore: false };
     const data = await res.json();
@@ -85,8 +88,9 @@ export async function GET() {
   return new Response(sitemap, {
     headers: {
       'Content-Type': 'application/xml',
-      // Edge CDN caches for 12 hours; browser revalidates after 1 hour.
-      'Cache-Control': 'public, max-age=3600, s-maxage=43200, stale-while-revalidate=86400',
+      // Edge CDN caches for 6 hours; browser revalidates after 1 hour.
+      // Halved from 12h so deleted/renamed products clear the sitemap faster.
+      'Cache-Control': 'public, max-age=3600, s-maxage=21600, stale-while-revalidate=43200',
     },
   });
 }

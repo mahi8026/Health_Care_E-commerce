@@ -108,19 +108,28 @@ function resolveSlug(segments) {
 export async function generateMetadata({ params }) {
   const { id: segments } = await params;
   const slug = resolveSlug(segments);
+
+  // ID-based URLs are always redirected in the Page component — return minimal
+  // metadata here so Next.js doesn't cache or expose metadata for raw ObjectId paths.
+  const isIdBasedUrl = /^[a-f0-9]{24}$/i.test(slug);
+  if (isIdBasedUrl) {
+    return {
+      robots: { index: false, follow: false },
+    };
+  }
+
   const { status, product } = await fetchProduct(slug);
 
   if (!product) {
     if (status === 'missing') notFound();
-    // Backend error (cold start / timeout) — return minimal metadata without
-    // noindex so the page is NOT permanently excluded from Google's index.
-    // Next.js will revalidate in 60s and serve the real metadata on the next
-    // crawl once the backend is warm.
+    // Backend error (cold start / timeout) — return noindex so Googlebot
+    // doesn't cache an empty shell. Next.js will revalidate in 60s on the
+    // next crawl once the backend warms up, at which point the product will
+    // be correctly indexed with its real metadata.
     return {
       title: 'Product Details | MediportBD',
-      description: 'Medical equipment product details. Please refresh for full information.',
-      // Do NOT set robots: { index: false } here — that would permanently
-      // noindex this URL in Google's cache until a fresh crawl succeeds.
+      description: 'Medical equipment product details.',
+      robots: { index: false, follow: false },
     };
   }
 
@@ -199,12 +208,19 @@ export default async function ProductPage({ params }) {
   }
 
   // ── Canonical redirect ────────────────────────────────────────────────────
-  // If the URL was accessed via a MongoDB ObjectId (24-char hex) but the
-  // product has a proper slug, redirect to the canonical slug URL.
-  // This prevents Google from seeing two URLs for the same product.
+  // If the URL was accessed via a MongoDB ObjectId (24-char hex):
+  //   • Has a slug → 308 redirect to the canonical slug URL (keeps link equity)
+  //   • No slug yet → 301 redirect to /products (avoids a 200 on a bare ID URL
+  //     that Google will never index and wastes crawl budget)
   const isIdBasedUrl = /^[a-f0-9]{24}$/i.test(slug);
-  if (product && isIdBasedUrl && product.slug && product.slug !== slug) {
-    redirect(`/products/${product.slug}`);
+  if (isIdBasedUrl) {
+    if (product?.slug) {
+      redirect(`/products/${product.slug}`);
+    } else {
+      // Legacy product with no slug — send Googlebot to the category listing
+      // rather than serving an unindexable page on a raw ObjectId URL.
+      redirect('/products');
+    }
   }
 
   const canonicalSlug = product?.slug || slug;

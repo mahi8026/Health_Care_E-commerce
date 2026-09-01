@@ -1,6 +1,24 @@
 ﻿import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 import FlashDealsPageClient from './FlashDealsPageClient';
 import { SITE_CONFIG } from '@/config/seo';
+import { API } from '@/constants/api';
+
+// Pre-check for active deals server-side.
+// If none exist, return a real 404 instead of rendering an empty client page
+// (soft 404) which wastes crawl budget and confuses Google.
+async function hasActiveDeals() {
+  try {
+    const res = await fetch(`${API}/flash-deals/active`, {
+      next: { revalidate: 300 }, // 5 min — deals change; ISR clears when they go live
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!(data.success && data.data?.flashDeals?.length > 0);
+  } catch {
+    return false;
+  }
+}
 
 export const metadata = {
   title: '🔥 Flash Deals — Limited Time Offers',
@@ -24,7 +42,13 @@ export const metadata = {
 /**
  * Flash Deals Page — Server Component wrapper
  */
-export default function FlashDealsPage() {
+export default async function FlashDealsPage() {
+  const active = await hasActiveDeals();
+
+  // No active deals → proper 404 so Google doesn't index an empty shell.
+  // When deals go live, the 5-min ISR revalidation clears this automatically.
+  if (!active) notFound();
+
   return (
     <Suspense fallback={<LoadingFallback />}>
       <FlashDealsPageClient />
