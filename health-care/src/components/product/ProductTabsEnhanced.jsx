@@ -20,18 +20,40 @@ export default function ProductTabsEnhanced({ product }) {
   const getSpecifications = () => {
     const specs = product.specifications || {};
     
-    // Merge with defaults
-    return {
-      'Manufacturer': product.manufacturer || (typeof product.brand === 'object' ? product.brand?.name : product.brand) || 'Available on request',
-      'Model Number': product.model || product.sku || 'N/A',
-      'Country of Origin': specs['Country of Origin'] || product.countryOfOrigin || 'China/Germany/Japan',
-      'Warranty Period': product.warranty || specs.Warranty || '12 months manufacturer warranty',
-      'Certification': product.certifications?.join(', ') || 'CE, DGDA',
-      'Package Dimensions': specs['Package Dimensions'] || 'Contact for details',
-      'Product Weight': specs.Weight || specs['Product Weight'] || 'Contact for details',
-      'Package Contents': specs['Package Contents'] || '1x Main Unit, Accessories, User Manual, Warranty Card',
-      ...specs // Include any additional specs from product
-    };
+    // Only include fields that have real data — no invented fallbacks
+    const result = {};
+
+    const manufacturer = product.manufacturer || (typeof product.brand === 'object' ? product.brand?.name : product.brand);
+    if (manufacturer) result['Manufacturer'] = manufacturer;
+
+    const model = product.model || product.sku;
+    if (model) result['Model Number'] = model;
+
+    const origin = specs['Country of Origin'] || product.countryOfOrigin;
+    if (origin) result['Country of Origin'] = origin;
+
+    const warranty = product.warranty || specs['Warranty Period'] || specs.Warranty;
+    if (warranty) result['Warranty Period'] = warranty;
+
+    const certs = product.certifications?.length ? product.certifications.join(', ') : specs.Certification;
+    if (certs) result['Certification'] = certs;
+
+    const dims = specs['Package Dimensions'];
+    if (dims) result['Package Dimensions'] = dims;
+
+    const weight = specs.Weight || specs['Product Weight'];
+    if (weight) result['Product Weight'] = weight;
+
+    const contents = specs['Package Contents'];
+    if (contents) result['Package Contents'] = contents;
+
+    // Merge any remaining product specs (excludes keys already set above)
+    const reservedKeys = new Set(['Country of Origin', 'Warranty Period', 'Warranty', 'Certification', 'Package Dimensions', 'Weight', 'Product Weight', 'Package Contents']);
+    Object.entries(specs).forEach(([k, v]) => {
+      if (!reservedKeys.has(k) && v) result[k] = v;
+    });
+
+    return result;
   };
 
   const specifications = getSpecifications();
@@ -66,17 +88,23 @@ export default function ProductTabsEnhanced({ product }) {
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Technical Specifications</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(specifications).map(([key, value], index) => (
-                <div
-                  key={key}
-                  className={`p-4 rounded-lg transition-colors ${
-                    index % 2 === 0 ? 'bg-[var(--color-background-secondary)]' : 'bg-white border border-[var(--color-border-primary)]'
-                  }`}
-                >
-                  <div className="text-sm font-semibold text-[var(--color-text-secondary)] mb-1">{key}</div>
-                  <div className="text-base font-medium text-[var(--color-text-primary)]">{value}</div>
+              {Object.entries(specifications).length === 0 ? (
+                <div className="col-span-2 py-6 text-center text-sm text-[var(--color-text-secondary)]">
+                  No specification data available for this product. Contact us for details.
                 </div>
-              ))}
+              ) : (
+                Object.entries(specifications).map(([key, value], index) => (
+                  <div
+                    key={key}
+                    className={`p-4 rounded-lg transition-colors ${
+                      index % 2 === 0 ? 'bg-[var(--color-background-secondary)]' : 'bg-white border border-[var(--color-border-primary)]'
+                    }`}
+                  >
+                    <div className="text-sm font-semibold text-[var(--color-text-secondary)] mb-1">{key}</div>
+                    <div className="text-base font-medium text-[var(--color-text-primary)]">{value}</div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Features List */}
