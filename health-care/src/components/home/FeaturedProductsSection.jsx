@@ -415,10 +415,12 @@ export default function FeaturedProductsSection({ categories = [] }) {
                 scrollBehavior: 'smooth',
                 scrollSnapType: 'x mandatory'
               }}>
-              <div className="grid grid-cols-2 grid-rows-2 gap-3 pb-4" style={{ 
-                gridAutoFlow: 'column',
+              <div style={{ 
+                display: 'grid',
                 gridTemplateRows: 'repeat(2, 1fr)',
-                gridTemplateColumns: 'repeat(auto-fill, calc(50% - 6px))',
+                gridAutoFlow: 'column',
+                gap: '12px',
+                paddingBottom: '16px',
                 width: 'max-content'
               }}>
                 {featuredProducts.slice(0, 24).map((p, index) => (
