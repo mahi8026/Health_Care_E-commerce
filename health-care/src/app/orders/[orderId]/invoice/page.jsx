@@ -163,5 +163,9 @@ export default function Invoice() {
     );
   }
 
-  return <InvoicePage order={order} user={user} />;
+  return (
+    <div className="invoice-page-wrapper print-only">
+      <InvoicePage order={order} user={user} />
+    </div>
+  );
 }

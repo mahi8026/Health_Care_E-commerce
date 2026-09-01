@@ -9,6 +9,20 @@
   margin: 0;
 }
 
+/* Invoice page wrapper - isolate from site chrome */
+.invoice-page-wrapper {
+  isolation: isolate;
+  position: relative;
+  z-index: 9999;
+}
+
+@media screen {
+  .invoice-page-wrapper {
+    min-height: 100vh;
+    background: #eef1f5;
+  }
+}
+
 /* Print-specific styles */
 @media print {
   /* Reset body */
@@ -21,10 +35,61 @@
     color-adjust: exact;
   }
 
+  /* CRITICAL: Hide everything except invoice */
+  body > *:not(.invoice-page-wrapper),
+  body > * > *:not(.invoice-page-wrapper),
+  html > *:not(body):not(head) {
+    display: none !important;
+  }
+
+  /* Show only invoice wrapper and its contents */
+  .invoice-page-wrapper,
+  .invoice-page-wrapper * {
+    display: revert !important;
+  }
+
   /* Hide non-print elements */
   .no-print,
   .no-print * {
     display: none !important;
+  }
+
+  /* Hide all site navigation and chrome */
+  header:not(.invoice-header),
+  nav,
+  footer:not(.invoice-footer),
+  .header,
+  .footer:not(.invoice-footer),
+  .navigation,
+  .navbar,
+  .sidebar,
+  .bottom-nav,
+  .mobile-nav,
+  .top-bar,
+  aside,
+  [role="navigation"],
+  [role="banner"],
+  [role="contentinfo"] {
+    display: none !important;
+  }
+
+  /* Hide specific MediportBD navigation elements */
+  [class*="Header"]:not([class*="Invoice"]),
+  [class*="header"]:not([class*="invoice"]),
+  [class*="Nav"],
+  [class*="nav"],
+  [class*="Footer"]:not([class*="Invoice"]),
+  [class*="footer"]:not([class*="invoice"]),
+  [class*="TopBar"],
+  [class*="BottomNav"],
+  [class*="SiteChrome"] {
+    display: none !important;
+  }
+
+  /* Show only invoice content */
+  .invoice-page,
+  .invoice-document {
+    display: block !important;
   }
 
   /* Invoice page container */
