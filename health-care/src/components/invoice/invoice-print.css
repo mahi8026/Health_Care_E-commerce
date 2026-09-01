@@ -42,7 +42,7 @@
     display: none !important;
   }
 
-  /* Compact invoice document for print */
+  /* Ultra-compact invoice document for print */
   .invoice-page {
     background: white !important;
     padding: 0 !important;
@@ -58,9 +58,9 @@
     page-break-after: auto;
   }
 
-  /* Reduce padding on invoice content */
+  /* Minimal padding on invoice content */
   .invoice-document > div {
-    padding: 8mm !important;
+    padding: 5mm 8mm !important;
   }
 
   /* Prevent page breaks inside important sections */
@@ -81,19 +81,21 @@
     page-break-inside: avoid;
   }
 
-  /* Reduce spacing between sections */
+  /* Minimal spacing between sections */
   .invoice-header {
-    margin-bottom: 4mm !important;
+    margin-bottom: 2mm !important;
+    padding-bottom: 2mm !important;
   }
 
   .billing-shipping {
-    margin-top: 4mm !important;
-    margin-bottom: 4mm !important;
+    margin-top: 2mm !important;
+    margin-bottom: 2mm !important;
+    padding: 2mm 0 !important;
   }
 
   .invoice-items-table {
-    margin-top: 4mm !important;
-    margin-bottom: 4mm !important;
+    margin-top: 2mm !important;
+    margin-bottom: 2mm !important;
     width: 100% !important;
   }
 
@@ -101,29 +103,68 @@
     width: 100% !important;
   }
 
-  /* Reduce table cell padding */
+  /* Ultra-compact table cells */
   .invoice-items-table th,
   .invoice-items-table td {
-    padding: 2mm !important;
-    font-size: 9pt !important;
+    padding: 1mm 2mm !important;
+    font-size: 8pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .invoice-items-table th {
+    padding-top: 1.5mm !important;
+    padding-bottom: 1.5mm !important;
   }
 
   /* Compact payment info and terms grid */
   .payment-information,
   .terms-conditions {
-    margin-top: 3mm !important;
-    margin-bottom: 3mm !important;
-    padding: 3mm !important;
+    margin-top: 2mm !important;
+    margin-bottom: 2mm !important;
+    padding: 2mm !important;
+    font-size: 8pt !important;
   }
 
-  /* Reduce totals section spacing */
+  .payment-information h3,
+  .terms-conditions h3 {
+    font-size: 9pt !important;
+    margin-bottom: 1mm !important;
+  }
+
+  .payment-information p,
+  .payment-information div,
+  .terms-conditions p,
+  .terms-conditions li {
+    font-size: 7.5pt !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.5mm !important;
+  }
+
+  .terms-conditions ul {
+    margin-top: 1mm !important;
+    margin-bottom: 0 !important;
+    padding-left: 4mm !important;
+  }
+
+  .terms-conditions li {
+    margin-bottom: 0.5mm !important;
+  }
+
+  /* Minimal totals section spacing */
   .invoice-totals {
-    margin-top: 3mm !important;
-    margin-bottom: 3mm !important;
+    margin-top: 2mm !important;
+    margin-bottom: 2mm !important;
   }
 
   .invoice-totals .totals-row {
-    padding: 1mm 0 !important;
+    padding: 0.5mm 0 !important;
+    font-size: 8pt !important;
+    line-height: 1.3 !important;
+  }
+
+  .invoice-totals .grand-total {
+    padding: 1.5mm 2mm !important;
+    font-size: 10pt !important;
   }
 
   /* Ensure colors are printed */
@@ -196,24 +237,31 @@
     overflow: visible !important;
   }
 
-  /* Adjust font sizes for print */
+  /* Adjust font sizes for ultra-compact print */
   body,
   p,
   td,
   th {
-    font-size: 9pt !important;
+    font-size: 8pt !important;
+    line-height: 1.3 !important;
   }
 
   h1 {
-    font-size: 24pt !important;
+    font-size: 20pt !important;
+    line-height: 1.2 !important;
+    margin-bottom: 1mm !important;
   }
 
   h2 {
-    font-size: 14pt !important;
+    font-size: 11pt !important;
+    line-height: 1.3 !important;
+    margin-bottom: 1mm !important;
   }
 
   h3 {
-    font-size: 11pt !important;
+    font-size: 9pt !important;
+    line-height: 1.3 !important;
+    margin-bottom: 1mm !important;
   }
 
   /* Links should not be underlined */
@@ -222,12 +270,20 @@
     color: inherit;
   }
 
-  /* Footer should not create extra space */
+  /* Compact footer */
   .invoice-footer {
     position: relative;
     width: 100%;
-    margin-top: 3mm !important;
+    margin-top: 2mm !important;
+    padding: 2mm 0 !important;
     page-break-inside: avoid;
+  }
+
+  .invoice-footer p,
+  .invoice-footer div {
+    font-size: 7pt !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
   }
 
   /* Avoid widows and orphans */
