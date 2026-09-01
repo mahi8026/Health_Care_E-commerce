@@ -33,8 +33,8 @@ export default function InvoiceDocument({ invoiceData }) {
         minHeight: '297mm',
       }}
     >
-      {/* Invoice Content - Reduced padding for compact layout */}
-      <div className="p-4">
+      {/* Invoice Content - Compact padding for print */}
+      <div className="p-4 print:p-2">
         {/* Header */}
         <InvoiceHeader
           invoiceNumber={invoiceNumber}
@@ -53,7 +53,7 @@ export default function InvoiceDocument({ invoiceData }) {
         <InvoiceItemsTable items={items} />
 
         {/* Two Column Layout: Payment Info & Terms */}
-        <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2 print:mt-2 print:gap-2">
           <PaymentInformation paymentInfo={paymentInfo} />
           <TermsAndConditions />
         </div>

@@ -31,6 +31,177 @@
     display: none !important;
   }
 
+  /* Compact invoice document for print */
+  .invoice-document {
+    width: 210mm !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    page-break-after: auto;
+  }
+
+  /* Reduce padding on invoice content */
+  .invoice-document > div {
+    padding: 8mm !important;
+  }
+
+  /* Prevent page breaks inside important sections */
+  .invoice-header,
+  .billing-shipping,
+  .invoice-items-table thead,
+  .invoice-totals,
+  .payment-information,
+  .terms-conditions,
+  .signature-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Table rows should not break */
+  .invoice-items-table tbody tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Reduce spacing between sections */
+  .invoice-header {
+    margin-bottom: 4mm !important;
+  }
+
+  .billing-shipping {
+    margin-top: 4mm !important;
+    margin-bottom: 4mm !important;
+  }
+
+  .invoice-items-table {
+    margin-top: 4mm !important;
+    margin-bottom: 4mm !important;
+  }
+
+  /* Reduce table cell padding */
+  .invoice-items-table th,
+  .invoice-items-table td {
+    padding: 2mm !important;
+    font-size: 9pt !important;
+  }
+
+  /* Compact payment info and terms grid */
+  .payment-information,
+  .terms-conditions {
+    margin-top: 3mm !important;
+    margin-bottom: 3mm !important;
+    padding: 3mm !important;
+  }
+
+  /* Reduce totals section spacing */
+  .invoice-totals {
+    margin-top: 3mm !important;
+    margin-bottom: 3mm !important;
+  }
+
+  .invoice-totals .totals-row {
+    padding: 1mm 0 !important;
+  }
+
+  /* Ensure colors are printed */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Force background colors */
+  .bg-brand-navy,
+  .bg-brand-teal,
+  .bg-brand-orange,
+  .bg-blue-50,
+  .bg-gray-50 {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Table header background */
+  .invoice-items-table thead {
+    background-color: #0B2D5C !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-items-table thead th {
+    background-color: #0B2D5C !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Grand total background */
+  .invoice-totals .bg-brand-navy {
+    background-color: #0B2D5C !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Footer background */
+  .invoice-footer .bg-brand-navy {
+    background-color: #0B2D5C !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* SVG waves */
+  .invoice-footer svg {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Remove shadows in print */
+  .shadow-lg,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
+  }
+
+  /* Adjust font sizes for print */
+  body,
+  p,
+  td,
+  th {
+    font-size: 9pt !important;
+  }
+
+  h1 {
+    font-size: 24pt !important;
+  }
+
+  h2 {
+    font-size: 14pt !important;
+  }
+
+  h3 {
+    font-size: 11pt !important;
+  }
+
+  /* Links should not be underlined */
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Footer should not create extra space */
+  .invoice-footer {
+    margin-top: 3mm !important;
+    page-break-inside: avoid;
+  }
+
+  /* Avoid widows and orphans */
+  p {
+    widows: 3;
+    orphans: 3;
+  }
+}
+
   /* Invoice page container */
   .invoice-page {
     background: white !important;
