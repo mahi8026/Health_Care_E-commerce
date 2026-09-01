@@ -2,129 +2,56 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { FaChevronRight } from 'react-icons/fa';
 
 /**
- * Breadcrumb Navigation Component — arrow-style stepper design
+ * Breadcrumb Navigation Component — Compact inline style
+ * Shows "Home / Category / Page Title" format
  */
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
 
-  const isCurrent = (item, idx) => idx === items.length - 1 || item.href === '#';
-
   const renderItems = () =>
     items.map((item, idx) => {
-      const current = isCurrent(item, idx);
-      const isFirst = idx === 0;
       const isLast = idx === items.length - 1;
+      const isCurrent = isLast || item.href === '#' || !item.href;
 
       return (
         <React.Fragment key={`${item.label}-${idx}`}>
-          {current ? (
-            // Current page - plain text with lighter style
+          {isCurrent ? (
+            // Current page - plain text
             <span
-              style={{
-                color: '#9CA3AF',
-                fontWeight: 500,
-                fontSize: '12px',
-                lineHeight: '1.3',
-                letterSpacing: '0.01em',
-                padding: '0 6px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '250px',
-              }}
+              className="text-gray-500 text-xs"
               aria-current="page"
             >
               {item.label}
             </span>
           ) : (
-            // Clickable breadcrumb with arrow shape
-            <div
-              style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                marginRight: isLast ? '0' : '-6px',
-                zIndex: items.length - idx,
-              }}
+            // Clickable breadcrumb link
+            <Link
+              href={item.href}
+              className="text-gray-600 hover:text-brand-teal text-xs transition-colors"
             >
-              <Link
-                href={item.href}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  height: '28px',
-                  paddingLeft: isFirst ? '12px' : '20px',
-                  paddingRight: isLast ? '12px' : '26px',
-                  background: isFirst ? '#4F46E5' : '#E5E7EB',
-                  color: isFirst ? '#FFFFFF' : '#4B5563',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  position: 'relative',
-                  transition: 'all 0.2s ease',
-                  whiteSpace: 'nowrap',
-                  clipPath: isFirst
-                    ? 'polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%)'
-                    : isLast
-                    ? 'polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%)'
-                    : 'polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = isFirst ? '#4338CA' : '#D1D5DB';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isFirst ? '#4F46E5' : '#E5E7EB';
-                }}
-              >
-                {item.label}
-              </Link>
-            </div>
+              {item.label}
+            </Link>
           )}
           
-          {/* Separator chevron for current item */}
-          {!current && !isLast && (
-            <FaChevronRight 
-              size={8} 
-              style={{ 
-                color: '#D1D5DB', 
-                margin: '0 3px',
-                position: 'relative',
-                zIndex: 9999,
-              }} 
-            />
+          {/* Separator */}
+          {!isLast && (
+            <span className="text-gray-400 text-xs mx-2">/</span>
           )}
         </React.Fragment>
       );
     });
 
-  const olStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    listStyle: 'none',
-    margin: 0,
-    padding: 0,
-    gap: '0',
-  };
-
   if (variant === 'default') {
     return (
       <div
-        className={className}
-        style={{
-          width: '100%',
-          background: '#F9FAFB',
-          padding: '8px 0',
-          borderBottom: '1px solid #E5E7EB',
-        }}
+        className={`w-full bg-gray-50 border-b border-gray-200 ${className}`}
+        style={{ padding: '6px 0' }}
       >
-        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 16px' }}>
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <nav aria-label="Breadcrumb">
-            <ol style={olStyle}>
+            <ol className="flex items-center flex-wrap gap-0 list-none m-0 p-0">
               {renderItems()}
             </ol>
           </nav>
@@ -135,7 +62,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol style={olStyle}>
+      <ol className="flex items-center flex-wrap gap-0 list-none m-0 p-0">
         {renderItems()}
       </ol>
     </nav>
