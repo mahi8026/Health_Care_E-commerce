@@ -287,26 +287,30 @@ export default function FeaturedProductsSection({ categories = [] }) {
           }
         </div>
 
-        {/* Products - Grid shows 4 per row with arrow navigation */}
+        {/* Products - 4 at a time on mobile/tablet with arrows, grid on desktop */}
         <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" className="featured-products-panel" style={{ position: 'relative' }}>
-          {/* Left Arrow */}
+          {/* Left Arrow - Mobile/Tablet only */}
           {!featuredLoading && featuredProducts.length > 4 && (
             <button
               onClick={() => {
                 const container = document.getElementById('featured-scroll-container');
                 if (container) {
-                  const scrollAmount = container.offsetWidth; // Scroll by full visible width
+                  // Scroll by width of 4 products
+                  const cardWidth = container.querySelector('.product-card-item')?.offsetWidth || 200;
+                  const gap = 16;
+                  const scrollAmount = (cardWidth + gap) * 4;
                   container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
                 }
               }}
+              className="lg:hidden"
               style={{
                 position: 'absolute',
-                left: -20,
+                left: -12,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 10,
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 borderRadius: '50%',
                 background: 'rgba(255, 255, 255, 0.98)',
                 border: '2px solid var(--color-brand-navy)',
@@ -339,24 +343,28 @@ export default function FeaturedProductsSection({ categories = [] }) {
             </button>
           )}
 
-          {/* Right Arrow */}
+          {/* Right Arrow - Mobile/Tablet only */}
           {!featuredLoading && featuredProducts.length > 4 && (
             <button
               onClick={() => {
                 const container = document.getElementById('featured-scroll-container');
                 if (container) {
-                  const scrollAmount = container.offsetWidth; // Scroll by full visible width
+                  // Scroll by width of 4 products
+                  const cardWidth = container.querySelector('.product-card-item')?.offsetWidth || 200;
+                  const gap = 16;
+                  const scrollAmount = (cardWidth + gap) * 4;
                   container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                 }
               }}
+              className="lg:hidden"
               style={{
                 position: 'absolute',
-                right: -20,
+                right: -12,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 10,
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 borderRadius: '50%',
                 background: 'rgba(255, 255, 255, 0.98)',
                 border: '2px solid var(--color-brand-navy)',
@@ -390,8 +398,8 @@ export default function FeaturedProductsSection({ categories = [] }) {
           )}
 
         {featuredLoading ? (
-          <div id="featured-scroll-container" className="grid grid-cols-2 md:grid-cols-4 gap-4" style={{ padding: '0 4px' }}>
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4" style={{ padding: '0 4px' }}>
+            {[...Array(10)].map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
           </div>
@@ -402,22 +410,32 @@ export default function FeaturedProductsSection({ categories = [] }) {
             <p style={{ fontSize: 14 }}>Try selecting a different category or check back later</p>
           </div>
         ) : (
-          <div
-            id="featured-scroll-container"
-            className="overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-            style={{
-              padding: '0 4px',
-              WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth'
-            }}>
-            <div className="inline-flex gap-4 pb-4" style={{ minWidth: '100%' }}>
-              {featuredProducts.map((p, index) => (
-                <div key={p._id || index} className="snap-start" style={{ width: 'calc(25% - 12px)', minWidth: '220px', flexShrink: 0 }}>
-                  <ProductCard product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
-                </div>
+          <>
+            {/* Mobile/Tablet: Horizontal scroll with 4 products visible */}
+            <div
+              id="featured-scroll-container"
+              className="lg:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              style={{
+                padding: '0 4px',
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: 'smooth'
+              }}>
+              <div className="inline-flex gap-4 pb-4">
+                {featuredProducts.slice(0, 24).map((p, index) => (
+                  <div key={p._id || index} className="product-card-item snap-start" style={{ width: 'calc(25% - 12px)', minWidth: '160px', maxWidth: '220px', flexShrink: 0 }}>
+                    <ProductCard product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop: Grid layout with all products */}
+            <div className="hidden lg:grid grid-cols-5 gap-5" style={{ padding: '0 4px' }}>
+              {featuredProducts.slice(0, 25).map((p, index) => (
+                <ProductCard key={p._id || index} product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
               ))}
             </div>
-          </div>
+          </>
         )}
         </div>
       </div>
