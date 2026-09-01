@@ -28,7 +28,7 @@ export default function BillingShipping({ billingInfo, shippingInfo }) {
           <div className="text-gray-700">Medical Equipment & Healthcare Solutions</div>
           <div className="flex items-start gap-1 text-gray-700">
             <span>📞</span>
-            <span>+880-XXX-XXXXX</span>
+            <span>+8801646886795</span>
           </div>
           <div className="flex items-start gap-1 text-gray-700">
             <span>✉️</span>
