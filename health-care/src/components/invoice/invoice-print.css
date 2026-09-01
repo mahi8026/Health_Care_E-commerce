@@ -270,20 +270,9 @@
     color: inherit;
   }
 
-  /* Compact footer */
+  /* Hide footer in print (company info moved to header area) */
   .invoice-footer {
-    position: relative;
-    width: 100%;
-    margin-top: 2mm !important;
-    padding: 2mm 0 !important;
-    page-break-inside: avoid;
-  }
-
-  .invoice-footer p,
-  .invoice-footer div {
-    font-size: 7pt !important;
-    line-height: 1.2 !important;
-    margin: 0 !important;
+    display: none !important;
   }
 
   /* Avoid widows and orphans */

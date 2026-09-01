@@ -12,61 +12,36 @@ export default function BillingShipping({ billingInfo, shippingInfo }) {
 
   return (
     <div className="billing-shipping mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 print:mt-1 print:gap-1.5">
-      {/* BILL TO */}
+      {/* LEFT SIDE - Company Info (moved from footer) */}
       <div className="rounded-lg bg-gray-50 p-2 print:p-1.5">
         <div className="mb-1 flex items-center gap-2 border-b-2 border-brand-teal pb-0.5 print:mb-0.5 print:pb-0">
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-teal text-white print:h-4 print:w-4">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-navy text-white print:h-4 print:w-4">
             <FaUser className="h-2.5 w-2.5 print:h-2 print:w-2" />
           </div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-brand-teal print:text-[8pt]">
-            Bill To
+          <h3 className="text-xs font-bold uppercase tracking-wider text-brand-navy print:text-[8pt]">
+            Company Information
           </h3>
         </div>
         
         <div className="space-y-0.5 text-xs print:space-y-0 print:text-[7pt] print:leading-tight">
-          <div className="flex">
-            <span className="w-14 font-medium text-gray-600 print:w-12">Name</span>
-            <span className="font-semibold text-gray-900">
-              : {billingInfo.name}
-            </span>
+          <div className="font-bold text-brand-navy">MediportBD</div>
+          <div className="text-gray-700">Medical Equipment & Healthcare Solutions</div>
+          <div className="flex items-start gap-1 text-gray-700">
+            <span>📞</span>
+            <span>+880-XXX-XXXXX</span>
           </div>
-          
-          <div className="flex">
-            <span className="w-14 font-medium text-gray-600 print:w-12">Address</span>
-            <div className="flex-1">
-              <span className="font-medium text-gray-900">
-                : {billingInfo.address?.street || 'N/A'}
-              </span>
-              {billingInfo.address?.thana && (
-                <div className="ml-3 text-gray-700 print:ml-2">
-                  {billingInfo.address.thana}
-                  {billingInfo.address.district && `, ${billingInfo.address.district}`}
-                  {billingInfo.address.postcode && `-${billingInfo.address.postcode}`}
-                </div>
-              )}
-              {billingInfo.address && (
-                <div className="ml-3 text-gray-700 print:ml-2">Bangladesh</div>
-              )}
-            </div>
+          <div className="flex items-start gap-1 text-gray-700">
+            <span>✉️</span>
+            <span>mediportbdofficial@gmail.com</span>
           </div>
-          
-          {billingInfo.phone && (
-            <div className="flex">
-              <span className="w-14 font-medium text-gray-600 print:w-12">Phone</span>
-              <span className="text-gray-900">: {billingInfo.phone}</span>
-            </div>
-          )}
-          
-          {billingInfo.email && (
-            <div className="flex">
-              <span className="w-14 font-medium text-gray-600 print:w-12">Email</span>
-              <span className="text-gray-900">: {billingInfo.email}</span>
-            </div>
-          )}
+          <div className="flex items-start gap-1 text-gray-700">
+            <span>🌐</span>
+            <span>www.mediportbd.com</span>
+          </div>
         </div>
       </div>
 
-      {/* DELIVERY / SHIPPING TO */}
+      {/* RIGHT SIDE - Delivery / Shipping To */}
       <div className="rounded-lg bg-gray-50 p-2 print:p-1.5">
         <div className="mb-1 flex items-center gap-2 border-b-2 border-brand-teal pb-0.5 print:mb-0.5 print:pb-0">
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-teal text-white print:h-4 print:w-4">

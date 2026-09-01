@@ -52,9 +52,8 @@ export default function InvoiceDocument({ invoiceData }) {
         {/* Items Table */}
         <InvoiceItemsTable items={items} />
 
-        {/* Two Column Layout: Payment Info & Terms */}
-        <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2 print:mt-2 print:gap-2">
-          <PaymentInformation paymentInfo={paymentInfo} />
+        {/* Terms & Conditions - Single Column, Compact */}
+        <div className="mt-2 print:mt-1">
           <TermsAndConditions />
         </div>
 
