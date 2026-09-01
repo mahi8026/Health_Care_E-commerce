@@ -4,6 +4,12 @@ import { confirmAction } from '@/components/ui/ConfirmDialog';
 import EmptyState from '@/components/ui/EmptyState';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { API } from '@/constants/api';
+import dynamic from 'next/dynamic';
+
+const FeaturedProductsManager = dynamic(
+  () => import('@/components/admin/FeaturedProductsManager'),
+  { ssr: false, loading: () => <div style={{ padding: 32, textAlign: 'center', color: '#9CA3AF' }}>Loading…</div> }
+);
 
 // ── SKU generation helpers ────────────────────────────────────────────────────
 const SKU_CATEGORY_CODES = {
@@ -68,6 +74,7 @@ const EMPTY_CREATE_FORM = {
 };
 
 export default function ProductsManagement({ openCreateRef }) {
+  const [activeView, setActiveView] = useState('list'); // 'list' | 'featured-order'
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -1547,6 +1554,44 @@ export default function ProductsManagement({ openCreateRef }) {
         </div>
       )}
 
+      {/* ── View Toggle Tabs ──────────────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--color-border-tertiary)', background: 'var(--color-background-secondary)', padding: '0 16px' }}>
+        {[
+          { id: 'list', label: '📋 All Products' },
+          { id: 'featured-order', label: '⭐ Featured Order' },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveView(tab.id)}
+            style={{
+              padding: '10px 16px',
+              fontSize: 13,
+              fontWeight: 600,
+              border: 'none',
+              borderBottom: activeView === tab.id ? '2px solid #0D9488' : '2px solid transparent',
+              background: 'none',
+              color: activeView === tab.id ? '#0D9488' : '#6B7280',
+              cursor: 'pointer',
+              transition: 'color 0.15s',
+              marginBottom: -1,
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Featured Order View ───────────────────────────────────────────── */}
+      {activeView === 'featured-order' && (
+        <div style={{ padding: 20 }}>
+          <FeaturedProductsManager authToken={typeof window !== 'undefined' ? localStorage.getItem('Mediport_token') : ''} />
+        </div>
+      )}
+
+      {/* ── Product List View ─────────────────────────────────────────────── */}
+      {activeView === 'list' && (
+      <>
+
       {/* Filters */}
       <div className="p-4 border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
         {/* Search Bar */}
@@ -1901,6 +1946,8 @@ export default function ProductsManagement({ openCreateRef }) {
             Next →
           </button>
         </div>
+      )}
+      </>
       )}
     </div>
   );

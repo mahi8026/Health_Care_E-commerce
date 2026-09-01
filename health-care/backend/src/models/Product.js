@@ -84,6 +84,7 @@ const productSchema = new mongoose.Schema({
   viewCount: { type: Number, default: 0, min: 0 }, // Track product views
   isActive: { type: Boolean, default: true },
   isFeatured: { type: Boolean, default: false },
+  featuredOrder: { type: Number, default: 0 }, // Lower = appears first in featured section
   createdAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 
@@ -97,7 +98,7 @@ productSchema.index({ name: 'text', description: 'text', brand: 'text', tags: 't
 // Compound indexes for common query patterns
 productSchema.index({ category: 1, isActive: 1, price: 1 });  // category + price filter
 productSchema.index({ brand: 1, isActive: 1 });                // brand filter
-productSchema.index({ isFeatured: 1, isActive: 1 });           // featured products
+productSchema.index({ isFeatured: 1, isActive: 1, featuredOrder: 1 }); // featured products ordered
 productSchema.index({ stock: 1, isActive: 1 });                // stock filter
 productSchema.index({ createdAt: -1, isActive: 1 });           // newest products
 productSchema.index({ price: 1, isActive: 1 });                // price range filter

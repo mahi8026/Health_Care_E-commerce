@@ -7,6 +7,7 @@ const {
   updateProduct,
   deleteProduct,
   getFeaturedProducts,
+  reorderFeaturedProducts,
   getCategoryCounts,
   generateSku
 } = require('../controllers/productController');
@@ -121,6 +122,9 @@ router.get('/', optionalAuth, validateProductQuery, etagMiddleware, redisCacheMi
  *                     $ref: '#/components/schemas/Product'
  */
 router.get('/featured', etagMiddleware, redisCacheMiddleware({ ttl: CACHE_TTL.HOMEPAGE_FEATURED, keyPrefix: `${CACHE_KEYS.HOMEPAGE_FEATURED}:` }), getFeaturedProducts);
+
+// Reorder featured products (admin only) — must be before /:id to avoid param conflicts
+router.put('/featured/reorder', protect, authorize('admin'), reorderFeaturedProducts);
 
 /**
  * @swagger

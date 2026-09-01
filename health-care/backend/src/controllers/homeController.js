@@ -46,12 +46,12 @@ async function buildHomeDataPayload() {
     activePromo,
     stats
   ] = await Promise.all([
-      // 1. Featured products
+      // 1. Featured products — sorted by admin-assigned rank, then newest first
       Product.find({ isFeatured: true, isActive: true })
         .populate('category', 'name slug')
         .populate('brand', 'name slug logo')
-        .select('name price oldPrice images stock discount badge slug rating reviewCount')
-        .sort({ createdAt: -1 })
+        .select('name price oldPrice images stock discount badge slug rating reviewCount featuredOrder discountPct')
+        .sort({ featuredOrder: 1, createdAt: -1 })
         .limit(25)
         .lean(),
 

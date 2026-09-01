@@ -787,7 +787,7 @@ return errorResponse(res, 'Invalid stock value', null, 400);
       return errorResponse(res, 'Product not found', null, 404);
     }
 
-    const allowedFields = ['name', 'slug', 'description', 'brand', 'category', 'price', 'oldPrice', 'stock', 'lowStockThreshold', 'minOrderQty', 'images', 'specifications', 'variants', 'tags', 'badge', 'isActive', 'isFeatured', 'rating', 'reviewCount', 'certifications', 'hasAMC', 'storageTemp', 'hazardClass', 'lotNumber', 'expiryDate', 'tests', 'b2bPrice', 'discountPct'];
+    const allowedFields = ['name', 'slug', 'description', 'brand', 'category', 'price', 'oldPrice', 'stock', 'lowStockThreshold', 'minOrderQty', 'images', 'specifications', 'variants', 'tags', 'badge', 'isActive', 'isFeatured', 'featuredOrder', 'rating', 'reviewCount', 'certifications', 'hasAMC', 'storageTemp', 'hazardClass', 'lotNumber', 'expiryDate', 'tests', 'b2bPrice', 'discountPct'];
     const updateData = Object.fromEntries(allowedFields.filter(f => req.body[f] !== undefined).map(f => [f, req.body[f]]));
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
     
@@ -884,6 +884,7 @@ exports.deleteProduct = async (req, res) => {
 
 /**
  * Get featured products for homepage.
+ * Sorted by featuredOrder (ascending) so admin-assigned rank is respected.
  * 
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
@@ -894,24 +895,11 @@ exports.deleteProduct = async (req, res) => {
  */
 exports.getFeaturedProducts = async (req, res) => {
   try {
-    // Use aggregation pipeline for better performance
     const products = await Product.aggregate([
-      // Match featured and active products
-      {
-        $match: {
-          isFeatured: true,
-          isActive: true
-        }
-      },
-      // Sort by creation date (newest first)
-      {
-        $sort: { createdAt: -1 }
-      },
-      // Limit to 6 products
-      {
-        $limit: 6
-      },
-      // Lookup category
+      { $match: { isFeatured: true, isActive: true } },
+      // Sort by featuredOrder first (lower = higher priority), then by creation date as tie-breaker
+      { $sort: { featuredOrder: 1, createdAt: -1 } },
+      { $limit: 25 },
       {
         $lookup: {
           from: 'categories',
@@ -920,13 +908,7 @@ exports.getFeaturedProducts = async (req, res) => {
           as: 'category'
         }
       },
-      {
-        $unwind: {
-          path: '$category',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      // Lookup brand
+      { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: 'manufacturers',
@@ -935,13 +917,7 @@ exports.getFeaturedProducts = async (req, res) => {
           as: 'brand'
         }
       },
-      {
-        $unwind: {
-          path: '$brand',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      // Project only needed fields
+      { $unwind: { path: '$brand', preserveNullAndEmptyArrays: true } },
       {
         $project: {
           name: 1,
@@ -952,10 +928,13 @@ exports.getFeaturedProducts = async (req, res) => {
           badge: 1,
           slug: 1,
           isActive: 1,
+          isFeatured: 1,
+          featuredOrder: 1,
           createdAt: 1,
           rating: 1,
           oldPrice: 1,
           sku: 1,
+          discountPct: 1,
           'category._id': 1,
           'category.name': 1,
           'category.slug': 1,
@@ -971,6 +950,62 @@ exports.getFeaturedProducts = async (req, res) => {
     return successResponse(res, products);
   } catch (error) {
     logger.error(`[getFeaturedProducts] ${error.message}`);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
+  }
+};
+
+/**
+ * Reorder featured products by saving a new featuredOrder for each.
+ * Accepts an ordered array of product IDs; assigns featuredOrder 1..N.
+ *
+ * @param {Request} req - Express request object  { body: { orderedIds: string[] } }
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ *
+ * @route PUT /api/products/featured/reorder
+ * @access Private/Admin
+ */
+exports.reorderFeaturedProducts = async (req, res) => {
+  try {
+    const { orderedIds } = req.body;
+
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return errorResponse(res, 'orderedIds must be a non-empty array', null, 400);
+    }
+
+    // Validate all ids are valid ObjectIds
+    const invalidIds = orderedIds.filter(id => !mongoose.isValidObjectId(id));
+    if (invalidIds.length > 0) {
+      return errorResponse(res, `Invalid product IDs: ${invalidIds.join(', ')}`, null, 400);
+    }
+
+    // Bulk update: assign position 1-based to each product
+    const bulkOps = orderedIds.map((id, index) => ({
+      updateOne: {
+        filter: { _id: new mongoose.Types.ObjectId(id), isFeatured: true },
+        update: { $set: { featuredOrder: index + 1 } }
+      }
+    }));
+
+    const result = await Product.bulkWrite(bulkOps);
+
+    // Invalidate featured product cache so homepage reflects new order immediately
+    await redisCache.invalidateProductList();
+    invalidateProductListCache();
+
+    logActivityAsync({
+      user: req.user,
+      action: 'FEATURED_REORDERED',
+      targetModel: 'Product',
+      req,
+      metadata: { count: orderedIds.length }
+    });
+
+    logger.info(`[reorderFeaturedProducts] Reordered ${result.modifiedCount} featured products`);
+
+    return successResponse(res, { modifiedCount: result.modifiedCount }, 'Featured products reordered successfully');
+  } catch (error) {
+    logger.error(`[reorderFeaturedProducts] ${error.message}`);
     return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
   }
 };
