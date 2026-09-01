@@ -10,39 +10,6 @@ import Link from 'next/link';
 export default function Breadcrumb({ items, variant = 'default', className = '' }) {
   if (!items?.length) return null;
 
-  const renderItems = () =>
-    items.map((item, idx) => {
-      const isLast = idx === items.length - 1;
-      const isCurrent = isLast || item.href === '#' || !item.href;
-
-      return (
-        <React.Fragment key={`${item.label}-${idx}`}>
-          {isCurrent ? (
-            // Current page - plain text
-            <span
-              className="text-gray-500 text-xs whitespace-nowrap"
-              aria-current="page"
-            >
-              {item.label}
-            </span>
-          ) : (
-            // Clickable breadcrumb link
-            <Link
-              href={item.href}
-              className="text-gray-600 hover:text-brand-teal text-xs transition-colors whitespace-nowrap"
-            >
-              {item.label}
-            </Link>
-          )}
-          
-          {/* Separator */}
-          {!isLast && (
-            <span className="text-gray-400 text-xs mx-1.5 flex-shrink-0">/</span>
-          )}
-        </React.Fragment>
-      );
-    });
-
   if (variant === 'default') {
     return (
       <div
@@ -51,8 +18,26 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <nav aria-label="Breadcrumb">
-            <ol className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide gap-0 list-none m-0 p-0">
-              {renderItems()}
+            <ol className="flex items-center list-none m-0 p-0" style={{ gap: '0.375rem' }}>
+              {items.map((item, idx) => {
+                const isLast = idx === items.length - 1;
+                const isCurrent = isLast || item.href === '#' || !item.href;
+
+                return (
+                  <li key={`${item.label}-${idx}`} className="flex items-center" style={{ gap: '0.375rem' }}>
+                    {isCurrent ? (
+                      <span className="text-gray-500 text-xs whitespace-nowrap" aria-current="page">
+                        {item.label}
+                      </span>
+                    ) : (
+                      <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors whitespace-nowrap">
+                        {item.label}
+                      </Link>
+                    )}
+                    {!isLast && <span className="text-gray-400 text-xs">/</span>}
+                  </li>
+                );
+              })}
             </ol>
           </nav>
         </div>
@@ -62,8 +47,26 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide gap-0 list-none m-0 p-0">
-        {renderItems()}
+      <ol className="flex items-center list-none m-0 p-0" style={{ gap: '0.375rem' }}>
+        {items.map((item, idx) => {
+          const isLast = idx === items.length - 1;
+          const isCurrent = isLast || item.href === '#' || !item.href;
+
+          return (
+            <li key={`${item.label}-${idx}`} className="flex items-center" style={{ gap: '0.375rem' }}>
+              {isCurrent ? (
+                <span className="text-gray-500 text-xs whitespace-nowrap" aria-current="page">
+                  {item.label}
+                </span>
+              ) : (
+                <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors whitespace-nowrap">
+                  {item.label}
+                </Link>
+              )}
+              {!isLast && <span className="text-gray-400 text-xs">/</span>}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
