@@ -82,13 +82,13 @@ export default function WishlistButton({ productId, className = '', size = 'defa
   };
 
   const sizeClasses = {
-    small: 'w-11 h-11',
-    default: 'w-11 h-11',
+    small: 'w-7 h-7',
+    default: 'w-9 h-9',
     large: 'w-11 h-11'
   };
 
   const iconSizes = {
-    small: 12,
+    small: 11,
     default: 14,
     large: 16
   };

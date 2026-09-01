@@ -25,7 +25,7 @@ export default function CompareBar() {
   return (
     <>
       {/* Mobile View - Expandable with product list */}
-      <div className="md:hidden fixed bottom-24 left-4 right-4 z-sticky">
+      <div className="md:hidden fixed bottom-[68px] left-4 right-4 z-sticky">
         {isExpanded && (
           <div className="bg-white rounded-t-2xl shadow-lg mb-[-2px] max-h-[300px] overflow-y-auto">
             <div className="p-3 space-y-2">
