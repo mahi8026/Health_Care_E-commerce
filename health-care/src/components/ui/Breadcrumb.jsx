@@ -18,27 +18,27 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <nav aria-label="Breadcrumb">
-            <ol className="flex items-center list-none m-0 p-0" style={{ gap: '0.375rem' }}>
+            <div className="flex items-center flex-wrap" style={{ gap: '0.375rem' }}>
               {items.map((item, idx) => {
                 const isLast = idx === items.length - 1;
                 const isCurrent = isLast || item.href === '#' || !item.href;
 
                 return (
-                  <li key={`${item.label}-${idx}`} className="flex items-center" style={{ gap: '0.375rem' }}>
+                  <React.Fragment key={`${item.label}-${idx}`}>
                     {isCurrent ? (
-                      <span className="text-gray-500 text-xs whitespace-nowrap" aria-current="page">
+                      <span className="text-gray-500 text-xs inline-block" aria-current="page">
                         {item.label}
                       </span>
                     ) : (
-                      <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors whitespace-nowrap">
+                      <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors inline-block">
                         {item.label}
                       </Link>
                     )}
-                    {!isLast && <span className="text-gray-400 text-xs">/</span>}
-                  </li>
+                    {!isLast && <span className="text-gray-400 text-xs inline-block">/</span>}
+                  </React.Fragment>
                 );
               })}
-            </ol>
+            </div>
           </nav>
         </div>
       </div>
@@ -47,27 +47,27 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol className="flex items-center list-none m-0 p-0" style={{ gap: '0.375rem' }}>
+      <div className="flex items-center flex-wrap" style={{ gap: '0.375rem' }}>
         {items.map((item, idx) => {
           const isLast = idx === items.length - 1;
           const isCurrent = isLast || item.href === '#' || !item.href;
 
           return (
-            <li key={`${item.label}-${idx}`} className="flex items-center" style={{ gap: '0.375rem' }}>
+            <React.Fragment key={`${item.label}-${idx}`}>
               {isCurrent ? (
-                <span className="text-gray-500 text-xs whitespace-nowrap" aria-current="page">
+                <span className="text-gray-500 text-xs inline-block" aria-current="page">
                   {item.label}
                 </span>
               ) : (
-                <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors whitespace-nowrap">
+                <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors inline-block">
                   {item.label}
                 </Link>
               )}
-              {!isLast && <span className="text-gray-400 text-xs">/</span>}
-            </li>
+              {!isLast && <span className="text-gray-400 text-xs inline-block">/</span>}
+            </React.Fragment>
           );
         })}
-      </ol>
+      </div>
     </nav>
   );
 }
