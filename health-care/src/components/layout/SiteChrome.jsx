@@ -23,11 +23,23 @@ function isMinimalChromeRoute(pathname) {
   );
 }
 
+/** Routes that need NO chrome at all (completely bare) */
+function isNoChromeRoute(pathname) {
+  if (!pathname) return false;
+  return pathname.includes('/invoice');
+}
+
 export default function SiteChrome({ children }) {
   const pathname = usePathname();
+  const [cartSidebarOpen, setCartSidebarOpen] = useState(false);
+  
+  // Invoice pages get NO chrome at all — completely bare for printing
+  if (isNoChromeRoute(pathname)) {
+    return <>{children}</>;
+  }
+
   const showStoreNav = !pathname?.startsWith('/admin') && !pathname?.startsWith('/mobile-app');
   const showFooter = showStoreNav && !isMinimalChromeRoute(pathname);
-  const [cartSidebarOpen, setCartSidebarOpen] = useState(false);
 
   // Don't show floating widgets on admin, checkout, or cart pages
   const showFloatingWidgets = showStoreNav && pathname !== '/checkout' && pathname !== '/cart';
