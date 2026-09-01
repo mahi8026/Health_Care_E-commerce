@@ -176,13 +176,13 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         
         {/* Save Badge - Top Left - Compact version */}
         {hasDiscount && (
-          <div className="absolute top-1 left-1 bg-[var(--color-brand-orange)] text-white px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm">
+          <div className="absolute top-1.5 left-1.5 bg-[var(--color-brand-orange)] text-white px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm z-[2]">
             -{discountPercent}%
           </div>
         )}
         
         {/* Other Badges - Compact */}
-        <div className="absolute top-1 left-1 flex flex-col gap-0.5" style={{ marginTop: hasDiscount ? '20px' : '0' }}>
+        <div className="absolute top-1.5 left-1.5 flex flex-col gap-0.5 z-[2]" style={{ marginTop: hasDiscount ? '22px' : '0' }}>
           {product.badges?.map((badge, idx) => (
             <span key={idx} className={`text-[10px] px-1 py-0.5 rounded font-medium ${badge.className}`}>
               {badge.text}
@@ -197,13 +197,13 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
 
         {/* Stock badge - Top Right (optional) - Compact */}
         {showStockBadge && (
-          <div className={`absolute top-1 right-7 px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm ${
+          <div className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm z-[2] ${
             product.stock > 0
               ? product.stock <= (product.lowStockThreshold || 10)
                 ? 'bg-warning text-warning-ink'
                 : 'bg-success text-success-ink'
               : 'bg-danger text-white'
-          }`}>
+          }`} style={{ marginRight: showStockBadge ? '60px' : '0' }}>
             {product.stock <= 0 ? 'Out'
               : product.stock <= (product.lowStockThreshold || 10)
                 ? `Only ${product.stock} left`
@@ -212,7 +212,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         )}
         
         {/* Wishlist Button - Top Right - Compact */}
-        <div className="absolute top-1 right-1 flex gap-0.5">
+        <div className="absolute top-1.5 right-1.5 flex gap-1 z-[3]">
           <WishlistButton productId={product._id || product.id} size="small" />
           {/* Compare Button - Compact */}
           <button
@@ -261,9 +261,9 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         </div>
         
         {/* Price - Extra Compact with B2B indicator */}
-        <div className="flex flex-col gap-0.5 mb-1 sm:mb-1.5">
-          <div className="flex items-baseline gap-1">
-            <span className="font-[family-name:var(--font-lora)] text-sm sm:text-sm font-bold text-brand-navy">
+        <div className="flex flex-col gap-1 mb-1.5 sm:mb-2">
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <span className="font-[family-name:var(--font-lora)] text-sm sm:text-base font-bold text-brand-navy">
               {priceDisplay.formatted}
             </span>
             {priceDisplay.showOriginalPrice && (
@@ -273,17 +273,17 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
             )}
             {!priceDisplay.isB2BPrice && product.oldPrice && (
               <span className="text-[10px] text-[var(--color-text-secondary)] line-through">
-                {product.oldPrice}
+                ৳{product.oldPrice.toLocaleString()}
               </span>
             )}
           </div>
           {/* B2B Price Badge - Compact */}
           {priceDisplay.isB2BPrice && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
+            <span className="inline-flex items-center gap-0.5 text-[9px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
               <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
-              B2B
+              B2B Price
             </span>
           )}
         </div>
@@ -300,11 +300,11 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         </div>
         
         {/* Action Buttons - Extra Compact on mobile */}
-        <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
+        <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
           <button 
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="relative overflow-hidden bg-brand-teal text-white border-none px-1.5 sm:px-2 min-h-[40px] rounded text-xs font-medium cursor-pointer hover:bg-[var(--color-brand-teal-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-0.5 sm:gap-1"
+            className="relative overflow-hidden bg-brand-teal text-white border-none px-2 sm:px-3 py-2 sm:py-2.5 rounded text-[11px] sm:text-xs font-medium cursor-pointer hover:bg-[var(--color-brand-teal-hover)] active:scale-95 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-1"
           >
             {addingToCart ? (
               <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
@@ -313,19 +313,19 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
               </svg>
             ) : (
               <>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                   <circle cx="9" cy="21" r="1"/>
                   <circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
                 </svg>
                 <span className="hidden sm:inline">{t('products.addToCart')}</span>
-                <span className="sm:hidden">Add</span>
+                <span className="sm:hidden truncate">Add</span>
               </>
             )}
           </button>
           <button 
             onClick={handleViewDetails}
-            className="bg-transparent text-brand-navy border border-brand-navy px-1.5 sm:px-2 min-h-[40px] rounded text-xs font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
+            className="bg-transparent text-brand-navy border border-brand-navy px-2 sm:px-3 py-2 sm:py-2.5 rounded text-[11px] sm:text-xs font-medium cursor-pointer hover:bg-[var(--color-background-secondary)] active:scale-95 transition-all duration-150"
           >
             <span className="hidden sm:inline">{t('products.viewDetails')}</span>
             <span className="sm:hidden">View</span>

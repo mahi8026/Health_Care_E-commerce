@@ -178,13 +178,13 @@ export default function FeaturedProductsSection({ categories = [] }) {
   return (
     <section className="home-section" style={{ padding: '28px 0' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
           <div>
-            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{t('home.handPicked')}</p>
-            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 28, fontWeight: 600, margin: 0 }}>{t('home.featuredProducts')}</h2>
+            <p style={{ fontSize: 9, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{t('home.handPicked')}</p>
+            <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 600, margin: 0, lineHeight: 1.2 }}>{t('home.featuredProducts')}</h2>
           </div>
           <button onClick={() => router.push('/products')}
-            style={{ fontSize: 13, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+            style={{ fontSize: 12, color: 'var(--color-brand-teal)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
             {t('home.viewAll')}
           </button>
         </div>
@@ -192,7 +192,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
         {/* Tabs - Dynamic based on top categories */}
         <div role="tablist" aria-label="Product categories" style={{
           display: 'flex',
-          gap: 8,
+          gap: 6,
           flexWrap: 'nowrap',
           overflowX: 'auto',
           overflowY: 'hidden',
@@ -200,7 +200,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
           msOverflowStyle: 'none',    /* IE/Edge */
           WebkitOverflowScrolling: 'touch',
           listStyle: 'none',
-          padding: '4px 0 12px 0',
+          padding: '2px 0 10px 0',
           margin: '0 0 12px 0',
           scrollSnapType: 'x mandatory',
         }}>
@@ -213,12 +213,12 @@ export default function FeaturedProductsSection({ categories = [] }) {
             aria-label="View All Products"
             className={activeTab === 'all' ? 'tab-active' : ''}
             style={{
-              padding: '10px 20px',
-              borderRadius: 8,
+              padding: '7px 14px',
+              borderRadius: 6,
               border: '1.5px solid var(--color-border-primary)',
               background: activeTab === 'all' ? 'var(--color-brand-navy)' : '#fff',
               color: activeTab === 'all' ? '#fff' : '#374151',
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'box-shadow 0.2s ease, transform 0.2s ease',
@@ -227,7 +227,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
               listStyle: 'none',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               flexShrink: 0,
               whiteSpace: 'nowrap',
               scrollSnapAlign: 'start',
@@ -261,12 +261,12 @@ export default function FeaturedProductsSection({ categories = [] }) {
                   aria-label={`View ${categoryName}`}
                   className={activeTab === categoryName ? 'tab-active' : ''}
                   style={{
-                    padding: '10px 20px',
-                    borderRadius: 8,
+                    padding: '7px 14px',
+                    borderRadius: 6,
                     border: '1.5px solid var(--color-border-primary)',
                     background: activeTab === categoryName ? 'var(--color-brand-navy)' : '#fff',
                     color: activeTab === categoryName ? '#fff' : '#374151',
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: 600,
                     cursor: 'pointer',
                     transition: 'box-shadow 0.2s ease, transform 0.2s ease',
@@ -275,31 +275,28 @@ export default function FeaturedProductsSection({ categories = [] }) {
                     listStyle: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                     flexShrink: 0,
                     whiteSpace: 'nowrap',
                     scrollSnapAlign: 'start',
                   }}>
-                  {icon} {categoryName.length > 20 ? categoryName.substring(0, 17) + '...' : categoryName}
+                  {icon} {categoryName.length > 18 ? categoryName.substring(0, 15) + '...' : categoryName}
                 </button>
               );
             })
           }
         </div>
 
-        {/* Products - 4 at a time on mobile/tablet with arrows, grid on desktop */}
+        {/* Products - 2 per row on mobile/tablet with arrows, 5 per row on desktop */}
         <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" className="featured-products-panel" style={{ position: 'relative' }}>
           {/* Left Arrow - Mobile/Tablet only */}
-          {!featuredLoading && featuredProducts.length > 4 && (
+          {!featuredLoading && featuredProducts.length > 2 && (
             <button
               onClick={() => {
                 const container = document.getElementById('featured-scroll-container');
                 if (container) {
-                  // Scroll by width of 4 products
-                  const cardWidth = container.querySelector('.product-card-item')?.offsetWidth || 200;
-                  const gap = 16;
-                  const scrollAmount = (cardWidth + gap) * 4;
-                  container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                  const containerWidth = container.offsetWidth;
+                  container.scrollBy({ left: -containerWidth, behavior: 'smooth' });
                 }
               }}
               className="lg:hidden"
@@ -344,16 +341,13 @@ export default function FeaturedProductsSection({ categories = [] }) {
           )}
 
           {/* Right Arrow - Mobile/Tablet only */}
-          {!featuredLoading && featuredProducts.length > 4 && (
+          {!featuredLoading && featuredProducts.length > 2 && (
             <button
               onClick={() => {
                 const container = document.getElementById('featured-scroll-container');
                 if (container) {
-                  // Scroll by width of 4 products
-                  const cardWidth = container.querySelector('.product-card-item')?.offsetWidth || 200;
-                  const gap = 16;
-                  const scrollAmount = (cardWidth + gap) * 4;
-                  container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                  const containerWidth = container.offsetWidth;
+                  container.scrollBy({ left: containerWidth, behavior: 'smooth' });
                 }
               }}
               className="lg:hidden"
@@ -398,7 +392,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
           )}
 
         {featuredLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4" style={{ padding: '0 4px' }}>
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4" style={{ padding: '0 4px' }}>
             {[...Array(10)].map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -411,25 +405,39 @@ export default function FeaturedProductsSection({ categories = [] }) {
           </div>
         ) : (
           <>
-            {/* Mobile/Tablet: Horizontal scroll with 4 products visible */}
+            {/* Mobile/Tablet: 2 rows x 2 columns, horizontal scroll through all products */}
             <div
               id="featured-scroll-container"
-              className="lg:hidden overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              className="lg:hidden overflow-x-auto scrollbar-hide"
               style={{
                 padding: '0 4px',
                 WebkitOverflowScrolling: 'touch',
-                scrollBehavior: 'smooth'
+                scrollBehavior: 'smooth',
+                scrollSnapType: 'x mandatory'
               }}>
-              <div className="inline-flex gap-4 pb-4">
+              <div className="grid grid-cols-2 grid-rows-2 gap-3 pb-4" style={{ 
+                gridAutoFlow: 'column',
+                gridTemplateRows: 'repeat(2, 1fr)',
+                gridTemplateColumns: 'repeat(auto-fill, calc(50% - 6px))',
+                width: 'max-content'
+              }}>
                 {featuredProducts.slice(0, 24).map((p, index) => (
-                  <div key={p._id || index} className="product-card-item snap-start" style={{ width: 'calc(25% - 12px)', minWidth: '160px', maxWidth: '220px', flexShrink: 0 }}>
+                  <div 
+                    key={p._id || index} 
+                    className="product-card-item" 
+                    style={{ 
+                      width: 'calc((100vw - 64px) / 2)',
+                      minWidth: '160px',
+                      maxWidth: '200px',
+                      scrollSnapAlign: index % 4 === 0 ? 'start' : 'none'
+                    }}>
                     <ProductCard product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Desktop: Grid layout with all products */}
+            {/* Desktop: 5 products per row grid layout */}
             <div className="hidden lg:grid grid-cols-5 gap-5" style={{ padding: '0 4px' }}>
               {featuredProducts.slice(0, 25).map((p, index) => (
                 <ProductCard key={p._id || index} product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
