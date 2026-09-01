@@ -20,7 +20,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           {isCurrent ? (
             // Current page - plain text
             <span
-              className="text-gray-500 text-xs"
+              className="text-gray-500 text-xs whitespace-nowrap"
               aria-current="page"
             >
               {item.label}
@@ -29,7 +29,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
             // Clickable breadcrumb link
             <Link
               href={item.href}
-              className="text-gray-600 hover:text-brand-teal text-xs transition-colors"
+              className="text-gray-600 hover:text-brand-teal text-xs transition-colors whitespace-nowrap"
             >
               {item.label}
             </Link>
@@ -37,7 +37,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           
           {/* Separator */}
           {!isLast && (
-            <span className="text-gray-400 text-xs mx-2">/</span>
+            <span className="text-gray-400 text-xs mx-1.5 flex-shrink-0">/</span>
           )}
         </React.Fragment>
       );
@@ -47,11 +47,11 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
     return (
       <div
         className={`w-full bg-gray-50 border-b border-gray-200 ${className}`}
-        style={{ padding: '6px 0' }}
+        style={{ padding: '8px 0' }}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <nav aria-label="Breadcrumb">
-            <ol className="flex items-center flex-wrap gap-0 list-none m-0 p-0">
+            <ol className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide gap-0 list-none m-0 p-0">
               {renderItems()}
             </ol>
           </nav>
@@ -62,7 +62,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol className="flex items-center flex-wrap gap-0 list-none m-0 p-0">
+      <ol className="flex items-center flex-nowrap overflow-x-auto scrollbar-hide gap-0 list-none m-0 p-0">
         {renderItems()}
       </ol>
     </nav>
