@@ -57,31 +57,30 @@ export default async function ProductsRoute({ searchParams }) {
 
   return (
     <>
-      {/* Server-rendered topic hub links — Googlebot follows these to discover
-          /topics/* and /equipment/* pages from the high-authority products page */}
+      {/* Server-rendered topic hub links — Compact single-line layout */}
       <nav
         aria-label="Browse by topic"
         className="bg-white border-b border-[var(--color-border-tertiary)]"
       >
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex flex-wrap gap-2 items-center">
-          <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mr-1 whitespace-nowrap">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-1.5 flex flex-wrap gap-1.5 items-center">
+          <span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mr-0.5 whitespace-nowrap">
             Topic Guides:
           </span>
-          <Link href="/topics/ecg-machines" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">ECG Machines</Link>
-          <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/blood-pressure-monitors" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">BP Monitors</Link>
-          <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/ultrasound-machines" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Ultrasound</Link>
-          <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/surgical-instruments" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Surgical Instruments</Link>
-          <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/laboratory-equipment-reagents" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Lab Reagents</Link>
-          <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/hospital-icu-equipment" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Hospital & ICU</Link>
-          <span className="text-[var(--color-border-primary)] text-xs">·</span>
-          <Link href="/topics/diabetes-care" className="text-xs text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Diabetes Care</Link>
-          <span className="text-[var(--color-border-primary)] text-xs hidden sm:block">·</span>
-          <Link href="/topics" className="text-xs font-semibold text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap hidden sm:block">All Topics →</Link>
+          <Link href="/topics/ecg-machines" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">ECG Machines</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px]">·</span>
+          <Link href="/topics/blood-pressure-monitors" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">BP Monitors</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px]">·</span>
+          <Link href="/topics/ultrasound-machines" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Ultrasound</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px]">·</span>
+          <Link href="/topics/surgical-instruments" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Surgical Instruments</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px]">·</span>
+          <Link href="/topics/laboratory-equipment-reagents" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Lab Reagents</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px]">·</span>
+          <Link href="/topics/hospital-icu-equipment" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Hospital & ICU</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px]">·</span>
+          <Link href="/topics/diabetes-care" className="text-[10px] text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap">Diabetes Care</Link>
+          <span className="text-[var(--color-border-primary)] text-[10px] hidden sm:block">·</span>
+          <Link href="/topics" className="text-[10px] font-semibold text-[var(--color-brand-teal,#18AFA9)] hover:underline whitespace-nowrap hidden sm:block">All Topics →</Link>
         </div>
       </nav>
 
