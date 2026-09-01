@@ -18,7 +18,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <nav aria-label="Breadcrumb">
-            <div className="flex items-center flex-wrap" style={{ gap: '0.375rem' }}>
+            <div className="text-xs">
               {items.map((item, idx) => {
                 const isLast = idx === items.length - 1;
                 const isCurrent = isLast || item.href === '#' || !item.href;
@@ -26,15 +26,15 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
                 return (
                   <React.Fragment key={`${item.label}-${idx}`}>
                     {isCurrent ? (
-                      <span className="text-gray-500 text-xs inline-block" aria-current="page">
+                      <span className="text-gray-500" aria-current="page">
                         {item.label}
                       </span>
                     ) : (
-                      <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors inline-block">
+                      <Link href={item.href} className="text-gray-600 hover:text-brand-teal transition-colors">
                         {item.label}
                       </Link>
                     )}
-                    {!isLast && <span className="text-gray-400 text-xs inline-block">/</span>}
+                    {!isLast && <span className="text-gray-400 mx-1.5">/</span>}
                   </React.Fragment>
                 );
               })}
@@ -47,7 +47,7 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
 
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <div className="flex items-center flex-wrap" style={{ gap: '0.375rem' }}>
+      <div className="text-xs">
         {items.map((item, idx) => {
           const isLast = idx === items.length - 1;
           const isCurrent = isLast || item.href === '#' || !item.href;
@@ -55,15 +55,15 @@ export default function Breadcrumb({ items, variant = 'default', className = '' 
           return (
             <React.Fragment key={`${item.label}-${idx}`}>
               {isCurrent ? (
-                <span className="text-gray-500 text-xs inline-block" aria-current="page">
+                <span className="text-gray-500" aria-current="page">
                   {item.label}
                 </span>
               ) : (
-                <Link href={item.href} className="text-gray-600 hover:text-brand-teal text-xs transition-colors inline-block">
+                <Link href={item.href} className="text-gray-600 hover:text-brand-teal transition-colors">
                   {item.label}
                 </Link>
               )}
-              {!isLast && <span className="text-gray-400 text-xs inline-block">/</span>}
+              {!isLast && <span className="text-gray-400 mx-1.5">/</span>}
             </React.Fragment>
           );
         })}
