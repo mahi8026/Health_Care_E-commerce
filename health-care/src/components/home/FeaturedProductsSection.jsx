@@ -287,96 +287,102 @@ export default function FeaturedProductsSection({ categories = [] }) {
           }
         </div>
 
-        {/* Products - Horizontal scroll with arrow navigation */}
+        {/* Products - Grid shows 4 per row with arrow navigation */}
         <div id="featured-products-panel" role="tabpanel" aria-label="Featured products" className="featured-products-panel" style={{ position: 'relative' }}>
-          {/* Left Arrow - Always visible on mobile when products exist */}
-          {!featuredLoading && featuredProducts.length > 0 && (
+          {/* Left Arrow */}
+          {!featuredLoading && featuredProducts.length > 4 && (
             <button
               onClick={() => {
                 const container = document.getElementById('featured-scroll-container');
                 if (container) {
-                  const cardWidth = 170; // Card width + gap
-                  container.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+                  const scrollAmount = container.offsetWidth; // Scroll by full visible width
+                  container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
                 }
               }}
-              className="md:hidden"
               style={{
                 position: 'absolute',
-                left: 4,
+                left: -20,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 10,
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: '50%',
                 background: 'rgba(255, 255, 255, 0.98)',
-                border: '1.5px solid var(--color-border-primary)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                border: '2px solid var(--color-brand-navy)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
-                fontSize: 20,
+                transition: 'all 0.3s ease',
+                fontSize: 24,
                 fontWeight: 'bold',
                 color: 'var(--color-brand-navy)',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.background = 'var(--color-brand-teal)';
                 e.currentTarget.style.color = '#fff';
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
+                e.currentTarget.style.borderColor = 'var(--color-brand-teal)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.25)';
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.98)';
                 e.currentTarget.style.color = 'var(--color-brand-navy)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                e.currentTarget.style.borderColor = 'var(--color-brand-navy)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
               }}
               aria-label="Scroll left">
               ‹
             </button>
           )}
 
-          {/* Right Arrow - Always visible on mobile when products exist */}
-          {!featuredLoading && featuredProducts.length > 0 && (
+          {/* Right Arrow */}
+          {!featuredLoading && featuredProducts.length > 4 && (
             <button
               onClick={() => {
                 const container = document.getElementById('featured-scroll-container');
                 if (container) {
-                  const cardWidth = 170; // Card width + gap
-                  container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                  const scrollAmount = container.offsetWidth; // Scroll by full visible width
+                  container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                 }
               }}
-              className="md:hidden"
               style={{
                 position: 'absolute',
-                right: 4,
+                right: -20,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 10,
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: '50%',
                 background: 'rgba(255, 255, 255, 0.98)',
-                border: '1.5px solid var(--color-border-primary)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                border: '2px solid var(--color-brand-navy)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
-                fontSize: 20,
+                transition: 'all 0.3s ease',
+                fontSize: 24,
                 fontWeight: 'bold',
                 color: 'var(--color-brand-navy)',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.background = 'var(--color-brand-teal)';
                 e.currentTarget.style.color = '#fff';
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.25)';
+                e.currentTarget.style.borderColor = 'var(--color-brand-teal)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.25)';
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.98)';
                 e.currentTarget.style.color = 'var(--color-brand-navy)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                e.currentTarget.style.borderColor = 'var(--color-brand-navy)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
+                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
               }}
               aria-label="Scroll right">
               ›
@@ -384,11 +390,9 @@ export default function FeaturedProductsSection({ categories = [] }) {
           )}
 
         {featuredLoading ? (
-          <div id="featured-scroll-container" className="flex md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] overflow-x-auto md:overflow-visible gap-3 md:gap-5 pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide scroll-smooth" style={{ padding: '0 4px', WebkitOverflowScrolling: 'touch' }}>
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="flex-shrink-0 w-[160px] md:w-auto snap-start">
-                <ProductCardSkeleton />
-              </div>
+          <div id="featured-scroll-container" className="grid grid-cols-2 md:grid-cols-4 gap-4" style={{ padding: '0 4px' }}>
+            {[...Array(4)].map((_, i) => (
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : featuredProducts.length === 0 ? (
@@ -400,19 +404,19 @@ export default function FeaturedProductsSection({ categories = [] }) {
         ) : (
           <div
             id="featured-scroll-container"
-            className="flex md:grid md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] overflow-x-auto md:overflow-visible gap-3 md:gap-5 pb-4 snap-x snap-mandatory md:snap-none scrollbar-hide scroll-smooth"
+            className="overflow-x-auto snap-x snap-mandatory scrollbar-hide"
             style={{
               padding: '0 4px',
-              listStyle: 'none',
-              WebkitOverflowScrolling: 'touch', // iOS smooth scrolling
-              scrollPaddingLeft: '4px', // Proper snap alignment
+              WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth'
             }}>
-            {featuredProducts.map((p, index) => (
-              <div key={p._id || index} className="flex-shrink-0 w-[160px] md:w-auto snap-start snap-always">
-                <ProductCard product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
-              </div>
-            ))}
+            <div className="inline-flex gap-4 pb-4" style={{ minWidth: '100%' }}>
+              {featuredProducts.map((p, index) => (
+                <div key={p._id || index} className="snap-start" style={{ width: 'calc(25% - 12px)', minWidth: '220px', flexShrink: 0 }}>
+                  <ProductCard product={p} onClick={() => router.push(`/products/${p.slug || p._id}`)} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
         </div>
