@@ -155,7 +155,8 @@ export default function FeaturedProductsSection({ categories = [] }) {
 
       const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
       const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
-      const products = featured.length >= 8 ? featured : fallback;
+      // Use featured products if available, otherwise use fallback products
+      const products = featured.length > 0 ? featured : fallback;
       setFeaturedProducts(Array.isArray(products) ? products : []);
     } catch {
       setFeaturedProducts([]);
