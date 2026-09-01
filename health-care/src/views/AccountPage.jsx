@@ -15,7 +15,6 @@ import {
   FaStar, 
   FaMapMarkerAlt, 
   FaCreditCard,
-  FaBell,
   FaShieldAlt,
   FaFileInvoiceDollar,
   FaSignOutAlt,
@@ -168,7 +167,6 @@ export default function AccountPage() {
     {
       section: 'Preferences',
       items: [
-        { icon: <FaBell />, label: t('account.notifications'), description: 'Email & SMS preferences', href: '/account/notifications' },
         { icon: <FaShieldAlt />, label: t('account.security'), description: 'Password & security', href: '/account/security' },
       ]
     }

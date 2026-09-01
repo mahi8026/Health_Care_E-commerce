@@ -8,8 +8,6 @@
  * - Cloudinary images: SKIP (let browser fetch directly — Cloudinary has own CDN)
  * - YouTube thumbnails: Cache-first with 24h TTL
  *
- * OneSignal uses its own dedicated service worker (OneSignalSDKWorker.js)
- * which is automatically registered by the OneSignal SDK at /OneSignalSDKWorker.js
  */
 
 const CACHE_VERSION = 'Mediport-v3'; // v3: Clear stale caches after reCAPTCHA CSP fix
@@ -161,9 +159,3 @@ async function networkFirstWithOfflineFallback(request, cacheName) {
     });
   }
 }
-
-// ── Push notifications are handled by OneSignalSDKWorker.js ─────────────────
-// OneSignal registers its own service worker at /OneSignalSDKWorker.js which
-// handles push events and notification clicks. The handlers below are kept
-// only as a fallback for the old VAPID approach and are NOT used when
-// OneSignal is active.

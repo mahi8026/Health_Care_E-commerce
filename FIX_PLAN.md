@@ -10,7 +10,7 @@
 
 | Step | Action | Detail |
 |------|--------|--------|
-| P1 | **Rotate ALL production secrets** | Every key in `.env` (MongoDB URI, JWT secrets, CSRF secret, Brevo API key, Cloudinary creds, Twilio keys, Redis password, Google OAuth secret, OneSignal API key) must be rotated IMMEDIATELY via their respective dashboards. The repo copy is compromised. |
+| P1 | **Rotate ALL production secrets** | Every key in `.env` (MongoDB URI, JWT secrets, CSRF secret, Brevo API key, Cloudinary creds, Twilio keys, Redis password, Google OAuth secret) must be rotated IMMEDIATELY via their respective dashboards. The repo copy is compromised. |
 | P2 | **Add `.env` to `.gitignore`**, create `.env.example` with placeholders | Remove the committed `.env` from git tracking. Create a template. |
 | P3 | **Create a separate `staging` branch** | All fixes should land on `staging` first, then `main` after QA sign-off. |
 | P4 | **Set up Sentry / error monitoring** | Needed to verify Phase 3 fixes are working. |

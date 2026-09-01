@@ -17,7 +17,6 @@
     "fix:slash-slugs": "node src/scripts/fixSlashSlugs.js",
     "verify-indexes": "node src/scripts/verifyIndexes.js",
     "diagnose": "node diagnose-connection.js",
-    "generate-vapid": "node generate-vapid.js",
     "restart": "powershell -ExecutionPolicy Bypass -File restart-server.ps1",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
@@ -52,7 +51,6 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@onesignal/node-onesignal": "^5.12.0",
     "@sentry/node": "^10.63.0",
     "@sentry/profiling-node": "^10.63.0",
     "axios": "^1.18.1",
@@ -91,7 +89,6 @@
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.1",
-    "web-push": "^3.6.7",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
     "xss-clean": "^0.1.4"

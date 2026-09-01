@@ -1,2 +1,0 @@
-To https://github.com/mahi8026/Health_Care_E-commerce.git
-   3c1bd64..aa5bde8  main -> main

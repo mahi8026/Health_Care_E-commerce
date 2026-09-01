@@ -175,6 +175,13 @@ const nextConfig = {
 
     return [
       ...wwwRedirect,
+      // ── Legacy / renamed URL redirects ──────────────────────────────────
+      // These URLs appeared in Google Search Console as "Redirect error" because
+      // Google cached a non-www URL that then hits the www 301 and lands on a
+      // different canonical. These redirects are NOT needed for pages that exist —
+      // the root fix is to add https://www.mediportbd.com as the GSC property
+      // (or verify www in the existing property) so validation runs against www.
+      // ── End legacy redirects ─────────────────────────────────────────────
       ...categoryRedirects.map(({ name, slug }) => ({
         source: '/products',
         has: [{ type: 'query', key: 'category', value: name }],
@@ -197,6 +204,21 @@ const nextConfig = {
             value: 'public, max-age=86400, stale-while-revalidate=604800',
           },
         ],
+      },
+      // Filtered/paginated product listing URLs (?q=, ?sort=, ?brand=, ?page=2+)
+      // carry a canonical back to /products but Google still sometimes indexes them
+      // as "duplicate without user-selected canonical". The X-Robots-Tag header
+      // stops that for non-canonical query-param variants while keeping /products
+      // itself fully indexable (the `has` condition requires a query param to fire).
+      {
+        source: '/products',
+        has: [{ type: 'query', key: 'q' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, follow' }],
+      },
+      {
+        source: '/products',
+        has: [{ type: 'query', key: 'page', value: '(?!1$).*' }],
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, follow' }],
       },
       // Security headers for all pages
       {
@@ -234,14 +256,14 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://browser.sentry-cdn.com https://cdn.onesignal.com https://api.onesignal.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://news.google.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://browser.sentry-cdn.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://news.google.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://www.google-analytics.com https://ssl.gstatic.com https://www.gstatic.com https://img.youtube.com https://news.google.com",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://health-care-e-commerce-ubyy.onrender.com https://api.mediportbd.com https://www.google-analytics.com https://analytics.google.com https://o4508309534613504.ingest.de.sentry.io https://res.cloudinary.com https://img.youtube.com https://onesignal.com https://api.onesignal.com https://cdn.onesignal.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://news.google.com https://www.google.com/preferences/source",
+              "connect-src 'self' https://health-care-e-commerce-ubyy.onrender.com https://api.mediportbd.com https://www.google-analytics.com https://analytics.google.com https://o4508309534613504.ingest.de.sentry.io https://res.cloudinary.com https://img.youtube.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://news.google.com https://www.google.com/preferences/source",
               "frame-src 'self' https://www.youtube.com https://www.google.com https://news.google.com",
               "media-src 'self' https://res.cloudinary.com",
-              "worker-src 'self' blob: https://cdn.onesignal.com https://api.onesignal.com",
+              "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

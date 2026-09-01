@@ -97,7 +97,6 @@ export default function AdminShell({ children, title, action, onAction }) {
     { label: 'WhatsApp',      path: '/admin/whatsapp' },
     { label: 'SMS Settings',  path: '/admin/sms-settings' },
     { label: 'Monitoring',    path: '/admin/monitoring' },
-    { label: 'Push Notifications', path: '/admin/push' },
   ];
   const filteredPages = searchQuery.trim()
     ? SEARCH_PAGES.filter(p => p.label.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -126,7 +125,6 @@ export default function AdminShell({ children, title, action, onAction }) {
     { id: 'security',       path: '/admin/security',          icon: '🔒', label: 'Security' },
     { id: 'analytics',      path: '/admin/analytics',         icon: '📈', label: 'Analytics' },
     { id: 'monitoring',     path: '/admin/monitoring',        icon: '🔍', label: 'Monitoring' },
-    { id: 'push',           path: '/admin/push',              icon: '🔔', label: 'Push Notifications' },
   ];
 
   const isActive    = (path) => path === '/admin' ? pathname === '/admin' : pathname?.startsWith(path);

@@ -10,7 +10,6 @@ const { successResponse, errorResponse } = require('../utils/responseHelper');
 const emailService = require('../services/emailService');
 const pricingService = require('../services/pricingService');
 const flashDealPricing = require('../services/flashDealPricing');
-const { sendToUser, notifications } = require('../utils/oneSignalService');
 const { ORDER_STATUSES, ORDER_STATUS_TRANSITIONS } = require('../constants/orderStatus');
 // P4-1 — single source of truth for order-number generation now lives in
 // orderService; the local copy below was deleted to prevent format drift.
@@ -681,28 +680,6 @@ await session.commitTransaction();
       );
     }
 
-    // Send push notifications asynchronously (non-blocking)
-    try {
-      const userNotif = notifications.orderConfirmed(order[0]);
-      if (userNotif) {
-Promise.resolve(userNotif).catch(err =>
-        logger.error(`[createOrder] Push notification failed: ${err.message}`)
-      );
-}
-    } catch (notifErr) {
-      logger.error(`[createOrder] Push notification error: ${notifErr.message}`);
-    }
-    try {
-      const adminNotif = notifications.newOrderAdmin(order[0]);
-      if (adminNotif) {
-Promise.resolve(adminNotif).catch(err =>
-        logger.error(`[createOrder] Admin push notification failed: ${err.message}`)
-      );
-}
-    } catch (notifErr) {
-      logger.error(`[createOrder] Admin push notification error: ${notifErr.message}`);
-    }
-
     // Emit n8n workflow event (fire-and-forget, never blocks the response)
     try {
       const n8n = require('../services/n8nWebhookService');
@@ -1319,18 +1296,6 @@ order.statusTimestamps = {};
           logger.error(`[updateOrderStatus] WhatsApp failed: ${err.message}`)
         );
       }
-    }
-
-    // Send push notifications for status changes (non-blocking)
-    if (status === 'shipped') {
-      sendToUser(order.user._id || order.user, notifications.orderShipped(order)).catch(err =>
-        logger.error(`[updateOrderStatus] Push notification failed: ${err.message}`)
-      );
-    }
-    if (status === 'delivered') {
-      sendToUser(order.user._id || order.user, notifications.orderDelivered(order)).catch(err =>
-        logger.error(`[updateOrderStatus] Push notification failed: ${err.message}`)
-      );
     }
 
     // Emit n8n workflow event (fire-and-forget, never blocks the response)

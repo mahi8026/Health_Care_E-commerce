@@ -22,8 +22,6 @@ import ServiceWorkerRegistration from "@/components/ui/ServiceWorkerRegistration
 import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
-import NotificationBanner from "@/components/pwa/NotificationBanner";
-import OneSignalProvider from "@/components/pwa/OneSignalProvider";
 import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
 
 // NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
@@ -221,12 +219,7 @@ export default function RootLayout({ children }) {
               </WishlistProvider>
             </CartProvider>
 
-            {/* OneSignal Push Notification SDK — must render before NotificationBanner */}
-            <OneSignalProvider />
-
-            {/* Push Notification Permission Banner */}
-            <NotificationBanner />
-          </AuthProvider>
+            </AuthProvider>
         </LanguageProvider>
 
         {/* Fly-to-cart animation container */}

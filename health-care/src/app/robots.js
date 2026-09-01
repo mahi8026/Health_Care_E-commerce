@@ -32,7 +32,6 @@ export default function robots() {
           '/demo',
           '/demo/*',
           '/demo-loading',
-          '/test-push',
           '/og',
           '/og/*',
           '/search',
@@ -44,6 +43,10 @@ export default function robots() {
           '/orders/*',
           '/track',
           '/track/*',
+          // Block Next.js static font files — they have no SEO value and
+          // waste crawl budget (seen as "Crawled - currently not indexed" in GSC)
+          '/_next/static/media/',
+          '/_next/static/media/*',
         ],
       },
       // Googlebot — same disallows (must be kept in sync with * rule)
@@ -65,7 +68,6 @@ export default function robots() {
           '/demo',
           '/demo/*',
           '/demo-loading',
-          '/test-push',
           '/og',
           '/og/*',
           '/search',
@@ -77,6 +79,8 @@ export default function robots() {
           '/orders/*',
           '/track',
           '/track/*',
+          '/_next/static/media/',
+          '/_next/static/media/*',
         ],
         crawlDelay: 2,
       },
