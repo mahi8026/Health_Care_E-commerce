@@ -19,7 +19,7 @@ export default function ChatButton({ onClick, unreadCount = 0 }) {
   return (
     <button
       onClick={onClick}
-      className={`fixed bottom-[124px] right-3 md:bottom-[66px] md:right-5 z-dropdown bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 ${
+      className={`fixed bottom-[148px] right-3 md:bottom-[66px] md:right-5 z-dropdown bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shadow-md hover:shadow-xl transition-all duration-300 hover:scale-110 ${
         pulse ? 'animate-pulse' : ''
       }`}
       aria-label="Open chat"
