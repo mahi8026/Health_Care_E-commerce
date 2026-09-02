@@ -98,19 +98,19 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-brand-navy to-brand-navy-deep text-white pb-[calc(60px+env(safe-area-inset-bottom))] lg:pb-0">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 lg:py-10">
 
         {/* ── Desktop: Single horizontal row with all columns ── */}
-        <div className="hidden lg:grid lg:grid-cols-6 gap-8 items-start">
+        <div className="hidden lg:grid lg:grid-cols-6 gap-6 items-start">
 
           {/* 5 link columns */}
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-4 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   {col.items.map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
@@ -135,7 +135,7 @@ export default function Footer() {
                 style={{ width: '120px', height: '40px', objectFit: 'contain' }}
               />
             </div>
-            <p className="text-sm text-white/70 mb-4 leading-relaxed">
+            <p className="text-sm text-white/70 mb-3 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
             </p>
             <PreferredSourcesButton theme="dark" />
@@ -183,13 +183,13 @@ export default function Footer() {
         </div>
 
         {/* ── Tablet: 3 columns ── */}
-        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6">
+        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-5">
           {links.slice(0, 3).map((col) => (
             <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-4 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {col.items.map((item) => (
                   <li key={item.label}>
                     <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
@@ -202,13 +202,13 @@ export default function Footer() {
           ))}
         </div>
         
-        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-6 mt-6">
+        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-5 mt-5">
           {links.slice(3).map((col) => (
             <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-4 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {col.items.map((item) => (
                   <li key={item.label}>
                     <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
@@ -231,7 +231,7 @@ export default function Footer() {
                 style={{ width: '120px', height: '40px', objectFit: 'contain' }}
               />
             </div>
-            <p className="text-sm text-white/70 mb-4 leading-relaxed">
+            <p className="text-sm text-white/70 mb-3 leading-relaxed">
               Bangladesh&apos;s trusted source for premium medical equipment.
             </p>
             <PreferredSourcesButton theme="dark" />
@@ -267,7 +267,7 @@ export default function Footer() {
         </div>
 
         {/* ── Mobile layout ── */}
-        <div className="md:hidden space-y-6">
+        <div className="md:hidden space-y-5">
           {/* Logo */}
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -286,13 +286,13 @@ export default function Footer() {
             <PreferredSourcesButton theme="dark" />
           </div>
           {/* Links 2x2 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {col.items.map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="text-xs text-white/70 hover:text-white transition-colors">
@@ -311,9 +311,9 @@ export default function Footer() {
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email" disabled={loading}
                 aria-label="Email address for newsletter"
-                className="w-full px-3 py-3 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal" />
+                className="w-full px-3 py-2.5 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal" />
               <button type="submit" disabled={loading}
-                className="w-full px-4 py-3 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50">
+                className="w-full px-4 py-2.5 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50">
                 {loading ? 'Subscribing...' : 'Subscribe'}
               </button>
               {message && (
@@ -327,7 +327,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar with enhanced separator line */}
-      <div className="border-t border-white/20 mt-8">
+      <div className="border-t border-white/20 mt-6">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
           {/* Desktop: Single row with all items */}
           <div className="hidden xl:flex items-center justify-between gap-4">
@@ -382,7 +382,7 @@ export default function Footer() {
           </div>
 
           {/* Mobile: Three rows, centered */}
-          <div className="flex sm:hidden flex-col gap-3 text-center">
+          <div className="flex sm:hidden flex-col gap-2 text-center">
             <p className="text-xs text-white/50">
               © {currentYear} Mediport Bangladesh Ltd.
             </p>
