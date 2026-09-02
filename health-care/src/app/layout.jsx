@@ -14,7 +14,6 @@ import StructuredData, {
   generateWebSiteSchema,
 } from "@/utils/structuredData";
 import Script from "next/script";
-import LazyChatContainer from "@/components/chat/LazyChatContainer";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
   import ToastProvider from "@/components/ui/ToastProvider";
   import ConfirmDialogProvider from "@/components/ui/ConfirmDialog";
@@ -211,9 +210,6 @@ export default function RootLayout({ children }) {
                     <div>
                       <SiteChrome>{children}</SiteChrome>
                     </div>
-                    <Suspense fallback={null}>
-                      <LazyChatContainer />
-                    </Suspense>
                   </ErrorBoundary>
                 </CompareProvider>
               </WishlistProvider>
