@@ -400,6 +400,7 @@ app.use('/api/test', dbHealthCheck, require('./routes/testRoutes')); // Test and
 app.use('/api/utils', dbHealthCheck, require('./routes/adminUtilRoutes')); // Utility endpoints (fix category counts, etc.)
 app.use('/api/automation', require('./routes/automationRoutes')); // n8n automation API (X-Automation-Key)
 app.use('/api/feeds', dbHealthCheck, require('./routes/feedRoutes')); // Merchant feeds (Google Shopping XML)
+app.use('/api/marketing', dbHealthCheck, require('./routes/marketingRoutes')); // Marketing beacons + admin overview
 
 // ── One-time slug migration endpoint (admin, header-secret-protected) ────────
 // Regenerates all product slugs using the clean name-only format.

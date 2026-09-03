@@ -8,6 +8,7 @@ import { FaWhatsapp, FaTimes, FaCopy, FaCheck, FaGift } from 'react-icons/fa';
 import { API, CONTACT } from '@/constants/api';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
+import { trackMarketingEvent } from '@/utils/marketingBeacon';
 
 /**
  * ExitIntentPopup — a first-order offer shown when a visitor is about to leave.
@@ -50,6 +51,7 @@ export default function ExitIntentPopup() {
     setVisible(true);
     GA4Tracker.trackEvent('exit_intent_popup_shown');
     MetaPixelTracker.trackCustomEvent('ExitIntentPopupShown');
+    trackMarketingEvent('exit_intent_popup_shown');
     // Move focus to the dialog for accessibility.
     requestAnimationFrame(() => closeBtnRef.current?.focus());
   }, []);
@@ -130,6 +132,7 @@ export default function ExitIntentPopup() {
         setSubscribed(true);
         GA4Tracker.trackEvent('generate_lead', { source: 'exit_popup' });
         MetaPixelTracker.trackLead({ value: 0 });
+        trackMarketingEvent('exit_popup_lead');
       } else {
         setError(data.message || 'Failed to subscribe. Please try again.');
       }
@@ -300,6 +303,7 @@ export default function ExitIntentPopup() {
                   onClick={() => {
                     GA4Tracker.trackEvent('exit_popup_whatsapp_click');
                     MetaPixelTracker.trackCustomEvent('ExitPopupWhatsAppClick');
+                    trackMarketingEvent('exit_popup_whatsapp_click');
                   }}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[var(--color-status-success-tint)] hover:bg-[var(--color-status-success)] hover:text-white text-[var(--color-status-success)] font-semibold text-sm transition-colors"
                 >

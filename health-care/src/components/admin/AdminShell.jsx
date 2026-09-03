@@ -119,6 +119,7 @@ export default function AdminShell({ children, title, action, onAction }) {
     { id: 'returns',        path: '/admin/returns',           icon: '↩️', label: 'Returns' },
     { id: 'reviews',        path: '/admin/reviews',           icon: '⭐', label: 'Reviews' },
     { id: 'newsletter',     path: '/admin/newsletter',        icon: '📧', label: 'Newsletter' },
+{ id: 'marketing',      path: '/admin/marketing',         icon: '📣', label: 'Marketing' },
     { id: 'loyalty',        path: '/admin/loyalty',           icon: '🎁', label: 'Loyalty Points' },
     { id: 'activity-logs',  path: '/admin/activity-logs',     icon: '📋', label: 'Activity Logs' },
     { id: 'sms-settings',   path: '/admin/sms-settings',      icon: '📱', label: 'SMS Settings' },

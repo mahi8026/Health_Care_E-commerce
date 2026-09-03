@@ -5,6 +5,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { CONTACT } from '@/constants/api';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
+import { trackMarketingEvent } from '@/utils/marketingBeacon';
 
 /**
  * WhatsAppOrderButton — "Order on WhatsApp" CTA for product pages.
@@ -61,6 +62,13 @@ export default function WhatsAppOrderButton({
     });
     MetaPixelTracker.trackCustomEvent('WhatsAppOrderClick', {
       content_ids: [product?._id || product?.id || product?.sku],
+      value: price * quantity,
+      currency: 'BDT',
+    });
+
+    // First-party beacon for the admin Marketing Dashboard.
+    trackMarketingEvent('whatsapp_order_click', {
+      productId: product?._id || product?.id,
       value: price * quantity,
       currency: 'BDT',
     });
