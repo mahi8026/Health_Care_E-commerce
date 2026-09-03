@@ -23,6 +23,7 @@ import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
 import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
 import MetaPixel from "@/components/tracking/MetaPixel";
+import ExitIntentPopup from "@/components/marketing/ExitIntentPopup";
 
 // NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
 // static so pages can be statically rendered / ISR-cached. Pages that need
@@ -242,6 +243,9 @@ export default function RootLayout({ children }) {
 
         {/* Brave Browser Warning */}
         <BraveBrowserWarning />
+
+        {/* Exit-intent first-order offer — once per visitor, skips purchase pages */}
+        <ExitIntentPopup />
 
         {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (

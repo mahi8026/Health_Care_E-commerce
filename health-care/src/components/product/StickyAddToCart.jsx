@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { FaShoppingCart, FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
+import WhatsAppOrderButton from './WhatsAppOrderButton';
 
 /**
  * Sticky Add to Cart Bar
@@ -221,6 +222,13 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
             Out of Stock
           </div>
         )}
+
+        {/* Order via WhatsApp — compact, right beside Add to Cart */}
+        <WhatsAppOrderButton
+          product={productForCart}
+          quantity={quantity}
+          variant="compact"
+        />
 
         {/* Dismiss button */}
         <button

@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { CONTACT } from '@/constants/api';
 import SizeSelector from './SizeSelector';
+import WhatsAppOrderButton from './WhatsAppOrderButton';
 import { getProductPriceDisplay, getFlashDealDisplay } from '@/utils/pricing';
 import { 
   FaShoppingCart, 
@@ -379,14 +380,28 @@ export default function ProductInfoPanelEnhanced({
               <FaBolt size={16} />
               <span>Buy Now</span>
             </button>
+
+            {/* Order directly via WhatsApp — popular with BD medical buyers */}
+            <WhatsAppOrderButton
+              product={productForCart}
+              quantity={quantity}
+              size={selectedSize}
+            />
           </>
         ) : (
-          <button
-            disabled
-            className="w-full py-3.5 px-6 bg-[var(--color-background-muted)] text-[var(--color-text-secondary)] rounded-xl font-semibold text-base cursor-not-allowed"
-          >
-            Out of Stock
-          </button>
+          <>
+            <button
+              disabled
+              className="w-full py-3.5 px-6 bg-[var(--color-background-muted)] text-[var(--color-text-secondary)] rounded-xl font-semibold text-base cursor-not-allowed"
+            >
+              Out of Stock
+            </button>
+            <WhatsAppOrderButton
+              product={product}
+              quantity={quantity}
+              label="Ask When Back in Stock"
+            />
+          </>
         )}
       </div>
 
