@@ -152,3 +152,28 @@ For local development: add the same line to `health-care/.env.local`.
    and include a 5% coupon.
 4. **Email campaigns** via your newsletter broadcast (welcome / flash sale /
    re-engagement).
+
+---
+
+## 6. Admin Marketing Dashboard
+
+Location: **Admin → 📣 Marketing**
+
+Shows channel KPIs from the last 30 days in one view:
+- **Orders & revenue** (non-cancelled), **WhatsApp order clicks + in-cart value**
+- **Exit-intent popup** impressions, email leads, WhatsApp fallback clicks —
+  plus the currently live promo code/expiry
+- **Newsletter growth** by signup source (footer vs exit popup vs checkout…)
+- **Abandoned carts** awaiting recovery vs already emailed
+- **Best sellers** by lifetime units sold
+
+### How the numbers get there
+All site-side interactions call a public, allow-listed beacon:
+`POST /api/marketing/events` with types:
+- `whatsapp_order_click` (from the product-page WhatsApp order buttons)
+- `exit_intent_popup_shown` / `exit_popup_lead` / `exit_popup_whatsapp_click`
+  (from the exit-intent popup)
+
+The beacon is fire-and-forget (`keepalive`), never breaks the storefront, and
+only accepts known event types. Admin data comes from
+`GET /api/marketing/overview` (admin JWT required).
