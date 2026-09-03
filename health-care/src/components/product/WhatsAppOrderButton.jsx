@@ -70,11 +70,11 @@ export default function WhatsAppOrderButton({
     return (
       <button
         onClick={handleClick}
-        className={`w-full h-12 px-4 bg-gradient-to-r from-[var(--color-status-success)] to-[#16a34a] hover:from-[#16a34a] hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 flex-shrink-0 ${className}`}
+        className={`h-11 px-4 bg-gradient-to-r from-[var(--color-status-success)] to-[#16a34a] hover:from-[#16a34a] hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 flex-shrink-0 whitespace-nowrap ${className}`}
         aria-label={`Order ${product?.name || 'this product'} on WhatsApp`}
       >
-        <FaWhatsapp size={18} />
-        <span className="truncate">{label}</span>
+        <FaWhatsapp size={16} />
+        <span>{label}</span>
       </button>
     );
   }
