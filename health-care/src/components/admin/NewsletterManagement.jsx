@@ -56,9 +56,14 @@ export default function NewsletterManagement() {
       }
 
       const data = await res.json();
-      if (data.success && data.data) {
-        setSubscribers(Array.isArray(data.data.subscribers) ? data.data.subscribers : []);
-        setTotalPages(data.data.pagination?.pages || 1);
+      if (data.success) {
+        // paginatedResponse envelope: { success, data: [...], pagination: { ... } }
+        setSubscribers(Array.isArray(data.data) ? data.data : []);
+        setTotalPages(data.pagination?.totalPages || 1);
+        // Also sync stats from the embedded counts if present
+        if (data.pagination?.stats) {
+          setStats(prev => ({ ...prev, ...data.pagination.stats }));
+        }
       } else {
         setSubscribers([]);
       }
