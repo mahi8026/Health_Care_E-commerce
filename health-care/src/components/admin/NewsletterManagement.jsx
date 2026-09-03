@@ -4,6 +4,7 @@ import { confirmAction } from '@/components/ui/ConfirmDialog';
 import { useState, useEffect, useCallback } from 'react';
 import { API } from '@/constants/api';
 import { showToast } from '@/components/ui/Toast';
+import { CAMPAIGN_TEMPLATES, buildCampaign } from '@/utils/emailCampaigns';
 
 export default function NewsletterManagement() {
   const [stats, setStats] = useState({ total: 0, active: 0, unsubscribed: 0, thisMonth: 0 });
@@ -19,6 +20,8 @@ export default function NewsletterManagement() {
   const [broadcastData, setBroadcastData] = useState({ subject: '', htmlContent: '', targetTags: [] });
   const [broadcasting, setBroadcasting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState(null);
+  const [templateVars, setTemplateVars] = useState({});
 
   const getToken = () => {
     try { return localStorage.getItem('Mediport_token') || ''; } catch { return ''; }
@@ -129,6 +132,28 @@ export default function NewsletterManagement() {
     }
   };
 
+  const handleSelectTemplate = (tpl) => {
+    if (selectedTemplateId === tpl.id) {
+      setSelectedTemplateId(null);
+      setTemplateVars({});
+      return;
+    }
+    setSelectedTemplateId(tpl.id);
+    const defaults = Object.fromEntries((tpl.vars || []).map((v) => [v.key, v.default || '']));
+    setTemplateVars(defaults);
+    const built = buildCampaign(tpl.id, defaults);
+    if (built) setBroadcastData((b) => ({ ...b, subject: built.subject, htmlContent: built.htmlContent }));
+  };
+
+  const handleTemplateVarChange = (key, value) => {
+    setTemplateVars((prev) => {
+      const next = { ...prev, [key]: value };
+      const built = buildCampaign(selectedTemplateId, next);
+      if (built) setBroadcastData((b) => ({ ...b, subject: built.subject, htmlContent: built.htmlContent }));
+      return next;
+    });
+  };
+
   return (
     <div>
       {/* Success banner */}
@@ -180,6 +205,7 @@ export default function NewsletterManagement() {
             <option value="all">All Sources</option>
             <option value="footer">Footer</option>
             <option value="popup">Popup</option>
+            <option value="exit_popup">Exit Popup</option>
             <option value="checkout">Checkout</option>
             <option value="manual">Manual</option>
           </select>
@@ -320,6 +346,46 @@ export default function NewsletterManagement() {
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)] transition-colors text-lg">×</button>
             </div>
             <div className="p-6 space-y-4">
+              {/* Campaign templates */}
+              <div>
+                <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-1.5">
+                  Start from a template <span className="font-normal text-[var(--color-text-secondary)]">(optional — you can still edit everything below)</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {CAMPAIGN_TEMPLATES.map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      title={tpl.description}
+                      onClick={() => handleSelectTemplate(tpl)}
+                      className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                        selectedTemplateId === tpl.id
+                          ? 'bg-brand-navy text-white border-brand-navy'
+                          : 'bg-[var(--color-background-secondary)] text-[var(--color-text-primary)] border-[var(--color-border-primary)] hover:border-brand-navy'
+                      }`}
+                    >
+                      {tpl.icon} {tpl.name}
+                    </button>
+                  ))}
+                </div>
+                {selectedTemplateId && (
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {(CAMPAIGN_TEMPLATES.find((t) => t.id === selectedTemplateId)?.vars || []).map((v) => (
+                      <div key={v.key}>
+                        <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">{v.label}</label>
+                        <input
+                          type="text"
+                          value={templateVars[v.key] ?? ''}
+                          onChange={(e) => handleTemplateVarChange(v.key, e.target.value)}
+                          placeholder={v.default}
+                          className="w-full px-3 h-[36px] text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-1.5">Subject *</label>
                 <input
@@ -340,6 +406,24 @@ export default function NewsletterManagement() {
                   className="w-full px-3 py-2.5 text-sm border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-navy font-mono resize-y"
                 />
                 <p className="text-xs text-[var(--color-text-secondary)] mt-1">Unsubscribe link will be added automatically.</p>
+                {broadcastData.htmlContent && (
+                  <details className="mt-3">
+                    <summary className="text-xs font-semibold text-brand-teal cursor-pointer select-none">
+                      👁 Preview email (as subscribers will see it)
+                    </summary>
+                    <div className="mt-2 rounded-lg border border-[var(--color-border-primary)] overflow-hidden bg-[#F3F4F6]">
+                      <iframe
+                        title="Email preview"
+                        sandbox=""
+                        srcDoc={`<!DOCTYPE html><html><body style="margin:0;padding:16px;background:#F3F4F6;font-family:Helvetica,Arial,sans-serif;"><div style="max-width:600px;margin:0 auto;background:#fff;border:1px solid #E5E7EB;border-radius:8px;padding:24px;">${broadcastData.htmlContent}</div></body></html>`}
+                        className="w-full h-[360px] border-0"
+                      />
+                    </div>
+                    <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                      The MediportBD branded header/footer is added automatically when sending.
+                    </p>
+                  </details>
+                )}
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-xs text-blue-800 font-medium">

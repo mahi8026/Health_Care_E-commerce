@@ -555,6 +555,70 @@ async function verifyConnection() {
   return { success: isConfigured() };
 }
 
+// ─── Newsletter ───────────────────────────────────────────────────────────────
+function unsubscribeFooter(unsubscribeToken) {
+  const { siteUrl } = getConfig();
+  if (!unsubscribeToken) return '';
+  return `
+  <div style="margin-top:28px;padding-top:16px;border-top:1px solid #E5E7EB;text-align:center;">
+    <p style="margin:0;font-size:11px;color:#9CA3AF;">
+      You're receiving this email because you subscribed at MediportBD.<br/>
+      <a href="${siteUrl}/api/newsletter/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}"
+         style="color:#9CA3AF;text-decoration:underline;">Unsubscribe</a>
+    </p>
+  </div>`;
+}
+
+async function sendNewsletterWelcomeEmail(email, name, unsubscribeToken) {
+  const { siteUrl } = getConfig();
+  const firstName = String(name || '').trim().split(/\s+/)[0];
+
+  const body = `
+    <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0B2545;">
+      Welcome${firstName ? `, ${firstName}` : ''}! &#127881;
+    </h2>
+    <p style="margin:0 0 18px;font-size:14px;color:#6B7280;line-height:1.6;">
+      Thanks for joining MediportBD — Bangladesh's trusted source for DGDA-registered
+      medical equipment, surgical instruments and laboratory reagents.
+    </p>
+
+    <div style="background:#E6F4F0;border-radius:8px;padding:16px 18px;margin-bottom:20px;">
+      <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#0E8A6E;text-transform:uppercase;letter-spacing:0.5px;">
+        What you get as a subscriber
+      </p>
+      <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#9889; Early access to flash deals &amp; discounts</p>
+      <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#127973; B2B bulk pricing &amp; credit-term offers</p>
+      <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#128230; New product announcements first</p>
+      <p style="margin:0;font-size:13px;color:#374151;">&#128241; Order updates via email &amp; SMS</p>
+    </div>
+
+    ${ctaButton('Browse Medical Equipment', `${siteUrl}/products`)}
+
+    <p style="margin:18px 0 0;font-size:13px;color:#6B7280;">
+      Need help choosing equipment? Reply to this email or WhatsApp us — our team
+      answers within minutes (Mon&ndash;Sat, 9am&ndash;9pm).
+    </p>
+    ${unsubscribeFooter(unsubscribeToken)}`;
+
+  return sendEmail({
+    to:      email,
+    subject: 'Welcome to MediportBD — Your Exclusive Benefits Inside',
+    html:    emailLayout('Welcome to MediportBD', body),
+  });
+}
+
+async function sendNewsletterBroadcast(email, name, subject, htmlContent, unsubscribeToken) {
+  const body = `
+    ${htmlContent}
+    ${unsubscribeFooter(unsubscribeToken)}`;
+
+  return sendEmail({
+    to:      email,
+    subject,
+    html:    emailLayout(subject, body),
+  });
+}
+
 module.exports = {
   sendEmail,
   sendOrderConfirmation,
@@ -568,5 +632,7 @@ module.exports = {
   sendPasswordResetEmail,
   sendAbandonedCartEmail,
   sendQuotationReady,
+  sendNewsletterWelcomeEmail,
+  sendNewsletterBroadcast,
   verifyConnection,
 };
