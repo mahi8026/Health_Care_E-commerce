@@ -22,6 +22,7 @@ import { FlyToCartContainer } from "@/components/ui/FlyToCart";
 import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
 import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
+import MetaPixel from "@/components/tracking/MetaPixel";
 
 // NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
 // static so pages can be statically rendered / ISR-cached. Pages that need
@@ -147,6 +148,8 @@ export default function RootLayout({ children }) {
     // F10 — accept BOTH env spellings; .env.production defines the GA4 variant
   // and the old name is kept for local/legacy overrides.
   const gaId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  // Meta/Facebook Pixel ID (configured in Vercel + env files).
+  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
   return (
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
@@ -157,6 +160,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://connect.facebook.net" />
 
         {/* Google Preferred Sources SDK — official two-line implementation
             (developers.google.com/search/docs/appearance/preferred-sources).
@@ -255,6 +259,21 @@ export default function RootLayout({ children }) {
               `}
             </Script>
           </>
+        )}
+
+        {/* Meta / Facebook Pixel — conversion tracking for paid ads.
+            SSR-safe, no-op without NEXT_PUBLIC_META_PIXEL_ID. Fires PageView on
+            every client-side route change. */}
+        <MetaPixel />
+
+        {/* Meta Pixel noscript fallback (part of the official Meta snippet) —
+            fires the tracking pixel for visitors with JavaScript disabled. */}
+        {metaPixelId && (
+          <noscript
+            dangerouslySetInnerHTML={{
+              __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1" alt="" />`,
+            }}
+          />
         )}
 
         {/* Accessibility fixes for third-party widgets */}

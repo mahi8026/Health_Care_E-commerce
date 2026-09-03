@@ -1,5 +1,7 @@
 // health-care/src/services/GA4Tracker.js
 
+import MetaPixelTracker from './MetaPixelTracker';
+
 let reactGAPromise = null;
 
 /**
@@ -120,6 +122,13 @@ class GA4Tracker {
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 View Item Error:', error);
     });
+
+    // Mirror to Meta Pixel — same funnel event for paid-ads optimization.
+    MetaPixelTracker.trackViewContent({
+      contentIds: [product._id || product.id || product.sku],
+      value: product.price,
+      contentName: product.name,
+    });
   }
 
   /**
@@ -147,6 +156,14 @@ class GA4Tracker {
       });
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Add to Cart Error:', error);
+    });
+
+    // Mirror to Meta Pixel.
+    MetaPixelTracker.trackAddToCart({
+      contentIds: [product._id || product.id || product.sku],
+      value: product.price * quantity,
+      numItems: quantity,
+      contentName: product.name,
     });
   }
 
@@ -176,6 +193,13 @@ class GA4Tracker {
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Remove from Cart Error:', error);
     });
+
+    // Mirror to Meta Pixel (custom event — Meta has no standard RemoveFromCart).
+    MetaPixelTracker.trackCustomEvent('RemoveFromCart', {
+      content_ids: [product._id || product.id || product.sku],
+      value: product.price * quantity,
+      currency: 'BDT',
+    });
   }
 
   /**
@@ -203,6 +227,14 @@ class GA4Tracker {
       });
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Begin Checkout Error:', error);
+    });
+
+    // Mirror to Meta Pixel.
+    const checkoutItems = cart?.items || cart || [];
+    MetaPixelTracker.trackInitiateCheckout({
+      contentIds: MetaPixelTracker.toContentIds(checkoutItems),
+      value,
+      numItems: checkoutItems.reduce((sum, item) => sum + (item.quantity || 1), 0),
     });
   }
 
@@ -233,6 +265,12 @@ class GA4Tracker {
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Purchase Error:', error);
     });
+
+    // Mirror to Meta Pixel — `Purchase` is the conversion event ads optimize for.
+    MetaPixelTracker.trackPurchase({
+      value: order.total,
+      contentIds: MetaPixelTracker.toContentIds(order.items || []),
+    });
   }
 
   /**
@@ -254,6 +292,9 @@ class GA4Tracker {
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Search Error:', error);
     });
+
+    // Mirror to Meta Pixel.
+    MetaPixelTracker.trackSearch({ searchString: searchTerm });
   }
 
   /**
@@ -313,6 +354,9 @@ class GA4Tracker {
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Payment Method Selected Error:', error);
     });
+
+    // Mirror to Meta Pixel.
+    MetaPixelTracker.trackAddPaymentInfo({ method });
   }
 
   /**
@@ -334,6 +378,9 @@ class GA4Tracker {
     }).catch((error) => {
       if (process.env.NODE_ENV !== 'production') console.error('GA4 Quotation Request Error:', error);
     });
+
+    // Mirror to Meta Pixel — quote requests are B2B sales leads.
+    MetaPixelTracker.trackLead({ value: quotation.total });
   }
 
   /**
