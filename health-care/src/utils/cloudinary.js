@@ -20,17 +20,43 @@ function parseCloudinaryUrl(url) {
   if (!url || typeof url !== 'string') return null;
   if (!url.includes('res.cloudinary.com')) return null;
 
-  // Match: https://res.cloudinary.com/{cloud_name}/image/upload/{version?}/{public_id}
+  // Extract cloud name and the path after /image/upload/
   const match = url.match(
-    /https?:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(?:(v\d+)\/)?(.+)/
+    /res\.cloudinary\.com\/([^/]+)\/image\/upload\/(.+)/
   );
   if (!match) return null;
 
-  return {
-    cloudName: match[1],
-    version: match[2] || '',
-    publicId: match[3],
-  };
+  const cloudName = match[1];
+  let remainder = match[2];
+
+  // Strip any existing transformation segments before the version or public_id.
+  // Transformation segments: comma-separated params like "f_auto,q_auto,w_400"
+  // They always contain an underscore (e.g. f_auto) and no dots.
+  // Stop when we hit a version token (v\d+) or the public_id (contains a dot or slash-path).
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const seg = remainder.match(/^([^/]+)\//);
+    if (!seg) break;
+    const token = seg[1];
+    // Version token — stop
+    if (/^v\d+$/.test(token)) break;
+    // Transformation token: contains underscore, no dot, all lowercase/digits/comma/underscore
+    if (/^[a-z0-9_,.:]+$/.test(token) && token.includes('_') && !token.includes('.')) {
+      remainder = remainder.slice(seg[0].length);
+      changed = true;
+    }
+  }
+
+  // Extract optional version
+  const versionMatch = remainder.match(/^(v\d+)\//);
+  let version = '';
+  if (versionMatch) {
+    version = versionMatch[1];
+    remainder = remainder.slice(versionMatch[0].length);
+  }
+
+  return { cloudName, version, publicId: remainder };
 }
 
 /**

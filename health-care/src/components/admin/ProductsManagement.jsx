@@ -5,7 +5,6 @@ import EmptyState from '@/components/ui/EmptyState';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { API } from '@/constants/api';
 import dynamic from 'next/dynamic';
-import { getProductCardImage } from '@/utils/cloudinary';
 
 const FeaturedProductsManager = dynamic(
   () => import('@/components/admin/FeaturedProductsManager'),
@@ -1788,7 +1787,7 @@ export default function ProductsManagement({ openCreateRef }) {
                     {img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img 
-                        src={getProductCardImage(img)} 
+                        src={img} 
                         alt={product.name} 
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -1880,7 +1879,7 @@ export default function ProductsManagement({ openCreateRef }) {
                         {img ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img 
-                            src={getProductCardImage(img)} 
+                            src={img} 
                             alt={product.name} 
                             className="w-full h-full object-cover"
                             loading="lazy"
