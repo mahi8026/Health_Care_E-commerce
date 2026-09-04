@@ -5,6 +5,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { API } from '@/constants/api';
 import dynamic from 'next/dynamic';
+import { getProductCardImage } from '@/utils/cloudinary';
 
 const FeaturedProductsManager = dynamic(
   () => import('@/components/admin/FeaturedProductsManager'),
@@ -1787,16 +1788,14 @@ export default function ProductsManagement({ openCreateRef }) {
                     {img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img 
-                        src={img} 
+                        src={getProductCardImage(img)} 
                         alt={product.name} 
                         className="w-full h-full object-cover"
-                        crossOrigin="anonymous"
-                        referrerPolicy="no-referrer"
                         loading="lazy"
+                        onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex'; }}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-2xl">🏥</div>
-                    )}
+                    ) : null}
+                    <div className="w-full h-full items-center justify-center text-2xl" style={{ display: img ? 'none' : 'flex' }}>🏥</div>
                   </div>
 
                   {/* Product info */}
@@ -1881,16 +1880,14 @@ export default function ProductsManagement({ openCreateRef }) {
                         {img ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img 
-                            src={img} 
+                            src={getProductCardImage(img)} 
                             alt={product.name} 
                             className="w-full h-full object-cover"
-                            crossOrigin="anonymous"
-                            referrerPolicy="no-referrer"
                             loading="lazy"
+                            onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex'; }}
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xl">🏥</div>
-                        )}
+                        ) : null}
+                        <div className="w-full h-full items-center justify-center text-xl" style={{ display: img ? 'none' : 'flex' }}>🏥</div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs font-mono text-[var(--color-text-secondary)]">{product.sku}</td>
