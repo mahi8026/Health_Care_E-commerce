@@ -69,7 +69,7 @@ const FALLBACK_CATEGORIES = [
   { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: 'var(--color-status-warning-tint)' },
 ];
 
-const SEARCH_SUGGESTIONS = ['Patient Monitor', 'HbA1c Kit', 'ECG Machine', 'Pulse Oximeter', 'Surgical Gloves', 'Nebulizer', 'Glucose Meter'];
+const SEARCH_SUGGESTIONS = ['ECG Machine', 'Patient Monitor', 'HbA1c Kit', 'Pulse Oximeter', 'Nebulizer'];
 
 const B2B_FEATURES = [
   '8–22% bulk discounts', '30–90 day credit terms',
@@ -361,9 +361,9 @@ const HeroSearch = memo(function HeroSearch() {
       <div style={{ maxWidth: 520, marginBottom: 12, width: '100%' }}>
         <EnhancedSearchBox placeholder={placeholder} variant="hero" />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, maxWidth: 520, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, maxWidth: 520, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Popular:</span>
-        <div style={{ display: 'flex', gap: 6, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {SEARCH_SUGGESTIONS.map(q => (
             <button
               key={q}
