@@ -16,6 +16,11 @@ export const CONTACT = {
   supportEmail: 'mediportbdofficial@gmail.com',
 };
 
+// Official social media pages
+export const SOCIAL = {
+  facebook: 'https://www.facebook.com/profile.php?id=61590311825607',
+};
+
 export const ENDPOINTS = {
   // Auth
   login: `${API_BASE}/auth/login`,

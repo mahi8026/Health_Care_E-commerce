@@ -34,7 +34,7 @@ export default function LocalBusinessSchema() {
     areaServed:         'Bangladesh',
     description:        'Medical equipment and surgical instruments supplier in Bangladesh. DGDA registered. Serving hospitals and clinics since 2020.',
     sameAs: [
-      'https://www.facebook.com/MediportBD',
+      'https://www.facebook.com/profile.php?id=61590311825607',
       'https://www.linkedin.com/company/MediportBD',
     ],
   };

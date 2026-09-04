@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { API, CONTACT } from '@/constants/api';
+import { API, CONTACT, SOCIAL } from '@/constants/api';
 import PreferredSourcesButton from '../seo/PreferredSourcesButton';
 
 export default function Footer() {
@@ -343,6 +343,10 @@ export default function Footer() {
                 className="hover:text-white/80 transition-colors whitespace-nowrap">
                 ✉️ {CONTACT.email}
               </a>
+              <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer"
+                className="hover:text-white/80 transition-colors whitespace-nowrap">
+                📘 Facebook
+              </a>
             </div>
             <div className="flex items-center gap-3">
               <a href="/privacy" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Privacy Policy</a>
@@ -373,6 +377,10 @@ export default function Footer() {
                   className="hover:text-white/80 transition-colors">
                   ✉️ {CONTACT.email}
                 </a>
+                <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer"
+                  className="hover:text-white/80 transition-colors">
+                  📘 Facebook
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <a href="/privacy" className="hover:text-white/80 transition-colors">Privacy</a>
@@ -394,6 +402,10 @@ export default function Footer() {
               <a href={`mailto:${CONTACT.email}`}
                 className="hover:text-white/80 transition-colors">
                 ✉️ {CONTACT.email}
+              </a>
+              <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer"
+                className="hover:text-white/80 transition-colors">
+                📘 Facebook
               </a>
             </div>
             <div className="flex items-center justify-center gap-2">
