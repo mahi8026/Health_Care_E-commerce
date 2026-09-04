@@ -69,7 +69,7 @@ const FALLBACK_CATEGORIES = [
   { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: 'var(--color-status-warning-tint)' },
 ];
 
-const SEARCH_SUGGESTIONS = ['ECG Machine', 'HbA1c Kit', 'Ventilator', 'Surgical Set', 'Reagents'];
+const SEARCH_SUGGESTIONS = ['Patient Monitor', 'HbA1c Kit', 'ECG Machine', 'Pulse Oximeter', 'Surgical Gloves', 'Nebulizer', 'Glucose Meter'];
 
 const B2B_FEATURES = [
   '8–22% bulk discounts', '30–90 day credit terms',
@@ -358,18 +358,44 @@ const HeroSearch = memo(function HeroSearch() {
       <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 20, maxWidth: 480, lineHeight: 1.6 }}>
         {t('home.heroSubtitle')}
       </p>
-      <div style={{ maxWidth: 520, marginBottom: 16, width: '100%' }}>
+      <div style={{ maxWidth: 520, marginBottom: 12, width: '100%' }}>
         <EnhancedSearchBox placeholder={placeholder} variant="hero" />
       </div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {SEARCH_SUGGESTIONS.map(q => (
-          <button key={q} onClick={() => router.push(`/products?q=${encodeURIComponent(q)}`)}
-            style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}>
-            {q}
-          </button>
-        ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, maxWidth: 520, overflow: 'hidden' }}>
+        <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>Popular:</span>
+        <div style={{ display: 'flex', gap: 6, overflow: 'hidden' }}>
+          {SEARCH_SUGGESTIONS.map(q => (
+            <button
+              key={q}
+              onClick={() => router.push(`/products?q=${encodeURIComponent(q)}`)}
+              style={{
+                padding: '5px 12px',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: 'rgba(255,255,255,0.75)',
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+                letterSpacing: '0.01em',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(0,208,202,0.18)';
+                e.currentTarget.style.borderColor = 'rgba(0,208,202,0.5)';
+                e.currentTarget.style.color = 'var(--color-brand-teal-light)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
+              }}
+            >
+              {q}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

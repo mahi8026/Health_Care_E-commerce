@@ -12,11 +12,15 @@ import { getProductCardImage } from '@/utils/cloudinary';
 
 const POPULAR_SEARCHES = [
   'ECG Machine',
+  'Patient Monitor',
   'HbA1c Kit',
-  'Ventilator',
   'Pulse Oximeter',
-  'Surgical Set',
+  'Nebulizer',
   'Blood Pressure Monitor',
+  'Glucose Meter',
+  'Surgical Gloves',
+  'Oxygen Concentrator',
+  'CBC Reagent',
 ];
 
 export default function EnhancedSearchBox({ placeholder = 'Search medical equipment...', autoFocus = false, onClose, variant = 'default' }) {
