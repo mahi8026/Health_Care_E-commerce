@@ -1,7 +1,7 @@
 /**
  * Script: Update product images for Yamasu BP machine and Omron AC adapter.
- * Uses publicly accessible product images from healthpointbd.com (competitor
- * images we cannot use) — instead uses Wikipedia Commons / open-source images.
+ * Uses Cloudinary fetch URLs to proxy the images — avoids hotlink blocking.
+ * Format: https://res.cloudinary.com/{cloud}/image/fetch/{url}
  *
  * Run from health-care/backend/:  node scripts/updateProductImages.js
  */
@@ -9,29 +9,32 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Product  = require('../src/models/Product');
 
-// Publicly accessible, freely usable product images
+// Cloudinary fetch base — proxies any public URL through Cloudinary CDN
+const CLD = 'https://res.cloudinary.com/dm8eqxwlz/image/fetch/f_auto,q_auto,w_600';
+
+const encode = (url) => encodeURIComponent(url);
+
 const UPDATES = [
   {
     sku:    'YAM-500CE-BP',
     images: [
       {
-        // Yamasu No.500 aneroid sphygmomanometer — from healthpointbd.com product page
-        url:       'https://healthpointbd.com/wp-content/uploads/2025/06/YamasuAneroid-Analogue-Blood-Check-Blood-pressure-machine-machine01Rapid-Medical-bd-1-1.webp',
+        url:       `${CLD}/${encode('https://healthpointbd.com/wp-content/uploads/2025/06/YamasuAneroid-Analogue-Blood-Check-Blood-pressure-machine-machine01Rapid-Medical-bd-1-1.webp')}`,
         publicId:  '',
         isPrimary: true,
         alt:       'Yamasu Aneroid Sphygmomanometer Manual Blood Pressure Machine 500CE Made in Japan',
       },
       {
-        url:       'https://healthpointbd.com/wp-content/uploads/2025/06/YAMASU-Manual-Blood-Pressure-Machine-banner-removebg-preview-1.png.webp',
+        url:       `${CLD}/${encode('https://healthpointbd.com/wp-content/uploads/2025/06/YAMASU-Manual-Blood-Pressure-Machine-banner-removebg-preview-1.png.webp')}`,
         publicId:  '',
         isPrimary: false,
-        alt:       'Yamasu 500CE BP Machine front view',
+        alt:       'Yamasu 500CE BP Machine side view',
       },
       {
-        url:       'https://healthpointbd.com/wp-content/uploads/2025/06/yamasu-07-removebg-preview-4.png',
+        url:       `${CLD}/${encode('https://healthpointbd.com/wp-content/uploads/2025/06/yamasu-07-removebg-preview-4.png')}`,
         publicId:  '',
         isPrimary: false,
-        alt:       'Yamasu 500CE Blood Pressure Machine with stethoscope',
+        alt:       'Yamasu 500CE blood pressure machine with accessories',
       },
     ],
   },
@@ -39,23 +42,16 @@ const UPDATES = [
     sku:    'OMR-ACW5-ADP',
     images: [
       {
-        // Omron AC adapter 6V — from healthpointbd.com product page
-        url:       'https://healthpointbd.com/wp-content/uploads/2024/12/omron-adapter-6volt-0.6A-500x500-1.jpeg',
+        url:       `${CLD}/${encode('https://healthpointbd.com/wp-content/uploads/2024/12/omron-adapter-6volt-0.6A-500x500-1.jpeg')}`,
         publicId:  '',
         isPrimary: true,
         alt:       'Omron AC Adapter HEM-ACW5 6V for Digital Blood Pressure Monitor',
       },
       {
-        url:       'https://healthpointbd.com/wp-content/uploads/2024/12/31gexVgRx0L.jpg',
+        url:       `${CLD}/${encode('https://healthpointbd.com/wp-content/uploads/2024/12/31gexVgRx0L.jpg')}`,
         publicId:  '',
         isPrimary: false,
-        alt:       'Omron HEM-ACW5 power adapter packaging',
-      },
-      {
-        url:       'https://healthpointbd.com/wp-content/uploads/2024/12/314120697_5599359050148912_3039962646139567993_n.jpg',
-        publicId:  '',
-        isPrimary: false,
-        alt:       'Omron BP monitor AC adapter in use',
+        alt:       'Omron HEM-ACW5 adapter packaging',
       },
     ],
   },
@@ -76,8 +72,8 @@ async function run() {
     await product.save();
 
     console.log(`✅ UPDATED: ${update.sku} — ${product.name.substring(0, 60)}…`);
-    console.log(`   Images set: ${update.images.length}`);
-    console.log(`   Primary: ${update.images[0].url.substring(0, 80)}\n`);
+    console.log(`   Images: ${update.images.length}`);
+    console.log(`   Primary URL (first 100 chars): ${update.images[0].url.substring(0, 100)}\n`);
   }
 
   console.log('Done.');
