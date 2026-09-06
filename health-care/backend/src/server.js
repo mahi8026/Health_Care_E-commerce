@@ -18,6 +18,7 @@ const connectDB = require('./config/database');
 const { dbHealthCheck } = require('./middleware/dbHealthCheck');
 const errorHandler = require('./middleware/errorHandler');
 const { startCronJobs } = require('./utils/stockAlertCron');
+const { initKeepAlive } = require('./utils/keepAlive');
 const logger = require('./utils/logger');
 const { performanceMonitor } = require('./middleware/performanceMonitor');
 const { monitorConnections } = require('./utils/databaseMonitor');
@@ -727,6 +728,10 @@ if (process.env.NODE_ENV !== 'test') {
     
     // Start cron jobs
     startCronJobs();
+    
+    // Initialize keep-alive service to prevent cold starts (Render.com)
+    // Fixes "Discovered - currently not indexed" errors in Google Search Console
+    initKeepAlive();
 
     // Warm critical caches after DB is ready (3s delay for stability)
     setTimeout(warmCache, 3000);

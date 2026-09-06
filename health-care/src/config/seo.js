@@ -75,24 +75,24 @@ export const organization = {
 
 export const PAGE_SEO = {
   home: {
-    title:       'MediportBD — Medical Equipment Supplier Bangladesh | DGDA Certified',
-    description: 'Buy medical equipment online in Bangladesh. 350+ products: ECG machines, diagnostic kits, surgical instruments, lab reagents. B2B discounts up to 30%. Free delivery Dhaka. DGDA registered.',
-    keywords:    'medical equipment Bangladesh, buy medical equipment online BD, ECG machine Bangladesh, diagnostic equipment price Bangladesh',
+    title:       'Medical Equipment Bangladesh — 350+ Products | DGDA Certified | Free Delivery Dhaka',
+    description: 'Buy medical equipment in Bangladesh ✓ ECG, ultrasound, lab reagents ✓ DGDA certified ✓ 8-30% B2B discount ✓ Free delivery Dhaka ✓ 500+ hospitals trust us. Call: 01646-886795',
+    keywords:    'medical equipment Bangladesh, buy medical equipment online BD, hospital equipment Dhaka, diagnostic equipment price Bangladesh, medical supply Dhaka, ECG machine Bangladesh, medical device supplier BD',
   },
   products: {
-    title:       'Medical Equipment & Supplies — MediportBD Bangladesh',
-    description: 'Browse 350+ medical products: diagnostic machines, surgical instruments, laboratory reagents, hospital equipment. Genuine brands. DGDA certified. B2B pricing available.',
-    keywords:    'medical supplies Bangladesh, buy surgical instruments online, lab equipment price BD',
+    title:       'Medical Equipment Bangladesh — 350+ Products | Buy Online | Fast Delivery',
+    description: 'Shop 350+ medical products in BD ✓ ECG, ultrasound, surgical tools ✓ Roche, Abbott, Mindray ✓ DGDA certified ✓ B2B bulk pricing ✓ Same-day Dhaka delivery. Call: 01646-886795',
+    keywords:    'medical supplies Bangladesh, buy medical equipment online Bangladesh, hospital supplies Dhaka, surgical instruments BD, lab equipment price Bangladesh, medical device online shop',
   },
   reagentStore: {
-    title:       'Laboratory Reagents Bangladesh — HbA1c, CBC, Biochemistry Kits | MediportBD',
-    description: 'Buy laboratory reagents in Bangladesh. HbA1c, CBC, troponin, lipid profile kits from Roche, Siemens, Abbott. Cold chain delivery. DGDA approved. Bulk B2B pricing.',
-    keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh',
+    title:       'Lab Reagents Bangladesh — HbA1c, CBC, Troponin | Cold Chain | Dhaka',
+    description: 'Buy lab reagents BD ✓ HbA1c, CBC, troponin kits ✓ Roche, Siemens, Abbott ✓ Cold chain 2-8°C ✓ DGDA approved ✓ B2B bulk pricing ✓ Same-day Dhaka. Call: 01646-886795',
+    keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh, lab reagent online Bangladesh, diagnostic reagent Dhaka',
   },
   b2b: {
-    title:       'MediportBD B2B Portal — Bulk Medical Supply BD',
-    description: 'MediportBD B2B portal: bulk medical equipment and supplies for hospitals, clinics and diagnostic centers in Bangladesh. Credit terms 30–90 days. 8–30% bulk discounts. Dedicated account manager. Request a free quote.',
-    keywords:    'B2B medical supplier Bangladesh, MediportBD B2B, hospital equipment supplier Dhaka, bulk medical supplies BD, free quote Bangladesh',
+    title:       'B2B Medical Equipment BD — 8-30% Discount | Hospital Supplier Dhaka',
+    description: 'Save 8-30% on bulk orders ✓ 30-90 day credit ✓ Free installation Dhaka ✓ Account manager ✓ 500+ hospitals trust us ✓ Government tender support. Call: 01646-886795',
+    keywords:    'B2B medical supplier Bangladesh, hospital equipment supplier Dhaka, bulk medical supplies BD, medical equipment wholesale Bangladesh, government hospital supplier, clinic equipment BD',
   },
   search: {
     title:       'Search Medical Equipment — MediportBD Bangladesh',

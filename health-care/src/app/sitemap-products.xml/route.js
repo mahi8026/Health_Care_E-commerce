@@ -9,6 +9,12 @@
  * Filters out bare MongoDB ObjectIds so the sitemap only contains
  * canonical slug-based URLs (e.g. /products/siemens-ecg-cardiostat-pro).
  *
+ * Priority calculation based on:
+ * - Product age (newer products get higher priority)
+ * - Stock status (in-stock products prioritized)
+ * - Category importance (diagnostic equipment > accessories)
+ * - Update frequency (recently updated products ranked higher)
+ *
  * Route: /sitemap-products.xml
  */
 
@@ -20,11 +26,77 @@ const API_BASE =
 
 const MONGO_ID_RE = /^[a-f0-9]{24}$/i;
 
+// Top-priority categories for SEO
+const TOP_CATEGORIES = [
+  'Diagnostic Equipment',
+  'Laboratory Reagents',
+  'Hospital Machines',
+  'Surgical Instruments',
+  'Laboratory Equipment'
+];
+
+/**
+ * Calculate dynamic priority for a product based on multiple factors
+ * @param {Object} product - Product data with slug, createdAt, stock, category
+ * @returns {string} Priority value between 0.4 and 0.9
+ */
+function calculatePriority(product) {
+  let priority = 0.5; // Base priority for all products
+
+  // 1. Category importance boost (+0.2 for top categories)
+  const categoryName = typeof product.category === 'object' 
+    ? product.category?.name 
+    : product.category;
+  
+  if (categoryName && TOP_CATEGORIES.includes(categoryName)) {
+    priority += 0.2;
+  }
+
+  // 2. Stock status boost (+0.1 for in-stock)
+  if (product.stock > 0 || product.inStock === true) {
+    priority += 0.1;
+  }
+
+  // 3. Product age boost (newer products within 60 days get +0.15)
+  if (product.createdAt) {
+    const daysSinceCreated = (Date.now() - new Date(product.createdAt)) / (1000 * 60 * 60 * 24);
+    if (daysSinceCreated < 60) {
+      priority += 0.15;
+    }
+  }
+
+  // 4. Recently updated boost (+0.05 for updates within 30 days)
+  if (product.updatedAt) {
+    const daysSinceUpdated = (Date.now() - new Date(product.updatedAt)) / (1000 * 60 * 60 * 24);
+    if (daysSinceUpdated < 30) {
+      priority += 0.05;
+    }
+  }
+
+  // Cap at 0.9 (homepage is 1.0, category pages are 0.9)
+  return Math.min(priority, 0.9).toFixed(1);
+}
+
+/**
+ * Calculate changefreq based on product update patterns
+ * @param {Object} product - Product with updatedAt timestamp
+ * @returns {string} One of: daily, weekly, monthly
+ */
+function calculateChangeFreq(product) {
+  if (!product.updatedAt) return 'monthly';
+
+  const daysSinceUpdate = (Date.now() - new Date(product.updatedAt)) / (1000 * 60 * 60 * 24);
+
+  if (daysSinceUpdate < 7) return 'daily';
+  if (daysSinceUpdate < 30) return 'weekly';
+  return 'monthly';
+}
+
 /** Fetch one page of products (slug + updatedAt only). */
 async function fetchPage(page) {
   try {
     const res = await fetch(
-      `${API_BASE}/products?page=${page}&limit=100&fields=slug,updatedAt`,
+      `${API_BASE}/products?page=${page}&limit=100&fields=slug,updatedAt,createdAt,stock,inStock,category`,
       // 6-hour ISR cache (was 12h). Halved so deleted/renamed products stop
       // appearing in the sitemap within half a day rather than a full day,
       // reducing "Redirect error" entries in Google Search Console.
@@ -71,12 +143,15 @@ export async function GET() {
       const lastmod = p.updatedAt
         ? new Date(p.updatedAt).toISOString()
         : now;
+      const priority = calculatePriority(p);
+      const changefreq = calculateChangeFreq(p);
+      
       return `
   <url>
     <loc>${SITE_CONFIG.url}/products/${p.slug}</loc>
     <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>`;
     })
     .join('');

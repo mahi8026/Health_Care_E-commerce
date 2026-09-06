@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FaHeart, FaExpand, FaSearchPlus, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getProductDetailImage, getProductCardImage } from '@/utils/cloudinary';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 
 /**
  * World-Class Enhanced Product Image Gallery
@@ -109,7 +110,7 @@ export default function ProductImageGalleryEnhanced({
           <div className="relative w-full h-full">
             <Image
               src={getProductDetailImage(activeImage.url)}
-              alt={product.name || 'Product'}
+              alt={generateProductAltText(product, activeIndex === 0 ? 'main' : 'gallery')}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className={`object-contain p-4 transition-transform duration-300 ${
@@ -221,7 +222,7 @@ export default function ProductImageGalleryEnhanced({
                 {!failedThumbs.has(idx) ? (
                   <Image
                     src={getProductCardImage(img.url)}
-                    alt={`${product.name} view ${idx + 1}`}
+                    alt={generateProductAltText(product, idx === 0 ? 'main' : 'gallery')}
                     fill
                     sizes="80px"
                     className="object-cover"
@@ -288,7 +289,7 @@ export default function ProductImageGalleryEnhanced({
             {failedIndex !== activeIndex ? (
               <Image
                 src={getProductDetailImage(activeImage.url)}
-                alt={product.name || 'Product'}
+                alt={generateProductAltText(product, activeIndex === 0 ? 'main' : 'detail')}
                 fill
                 sizes="100vw"
                 className="object-contain"
@@ -338,7 +339,7 @@ export default function ProductImageGalleryEnhanced({
               >
                 <Image
                   src={getProductCardImage(img.url)}
-                  alt={`Thumbnail ${idx + 1}`}
+                  alt={generateProductAltText(product, idx === 0 ? 'main' : 'gallery')}
                   fill
                   sizes="64px"
                   className="object-cover"

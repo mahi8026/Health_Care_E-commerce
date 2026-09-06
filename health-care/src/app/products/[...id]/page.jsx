@@ -3,7 +3,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
-import { notFound, redirect, unstable_noStore as noStore } from 'next/navigation';
+import { notFound, permanentRedirect, unstable_noStore as noStore } from 'next/navigation';
 import { SITE_CONFIG } from '@/config/seo';
 import ProductDetailPage from '@/views/ProductDetailPage';
 // import TrustBand from '@/components/seo/TrustBand'; // Removed - not needed on product pages
@@ -209,17 +209,17 @@ export default async function ProductPage({ params }) {
 
   // ── Canonical redirect ────────────────────────────────────────────────────
   // If the URL was accessed via a MongoDB ObjectId (24-char hex):
-  //   • Has a slug → 308 redirect to the canonical slug URL (keeps link equity)
-  //   • No slug yet → 301 redirect to /products (avoids a 200 on a bare ID URL
+  //   • Has a slug → 308 permanent redirect to the canonical slug URL (keeps link equity)
+  //   • No slug yet → 308 permanent redirect to /products (avoids a 200 on a bare ID URL
   //     that Google will never index and wastes crawl budget)
   const isIdBasedUrl = /^[a-f0-9]{24}$/i.test(slug);
   if (isIdBasedUrl) {
     if (product?.slug) {
-      redirect(`/products/${product.slug}`);
+      permanentRedirect(`/products/${product.slug}`); // 308 permanent redirect
     } else {
       // Legacy product with no slug — send Googlebot to the category listing
       // rather than serving an unindexable page on a raw ObjectId URL.
-      redirect('/products');
+      permanentRedirect('/products'); // 308 permanent redirect
     }
   }
 

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { API, CONTACT, SOCIAL } from '@/constants/api';
 import PreferredSourcesButton from '../seo/PreferredSourcesButton';
+import PaymentTrustBadges from '../ui/PaymentTrustBadges';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -328,6 +329,14 @@ export default function Footer() {
 
       {/* Bottom bar with enhanced separator line */}
       <div className="border-t border-white/20 mt-6">
+        {/* Payment Trust Badges - Bangladesh Market Trust Signals */}
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-white/70 font-medium">We Accept:</p>
+            <PaymentTrustBadges size="sm" />
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
           {/* Desktop: Single row with all items */}
           <div className="hidden xl:flex items-center justify-between gap-4">

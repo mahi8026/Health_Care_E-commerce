@@ -11,6 +11,7 @@ import WishlistButton from './wishlist/WishlistButton';
 import RatingStars from '@/components/ui/RatingStars';
 import { getProductPriceDisplay } from '@/utils/pricing';
 import { getProductCardImage } from '@/utils/cloudinary';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 
 const ProductCard = React.memo(function ProductCard({ product, onProductClick, showStockBadge = false, showFeaturedBadge = false, showCategory = false }) {
   const router = useRouter();
@@ -143,7 +144,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           <>
             <Image
               src={primaryImage.url}
-              alt={`${product.name}${typeof product.brand === 'string' && product.brand ? ` — ${product.brand}` : typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
+              alt={generateProductAltText(product, 'main')}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 250px"
               className="object-cover p-3 group-hover:scale-105 transition-transform duration-200 ease-out"

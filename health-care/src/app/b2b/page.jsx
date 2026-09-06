@@ -2,6 +2,7 @@ import Link from 'next/link';
 import B2BDashboardPage from '@/views/B2BDashboardPage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
+import B2BFAQs from '@/components/seo/B2BFAQs';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,7 @@ export default function B2B() {
     <>
       <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
       <StructuredData schema={serviceSchema} />
+      <B2BFAQs />
       <B2BDashboardPage />
 
       {/* Server-rendered internal link section — Googlebot follows these even

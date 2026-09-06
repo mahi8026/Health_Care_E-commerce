@@ -23,6 +23,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb';
 import ReviewSchema from '@/components/seo/ReviewSchema';
 import ProductSeoContent from '@/components/seo/ProductSeoContent';
 import { getProductCardImage } from '@/utils/cloudinary';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 
 // Innovation Features
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
@@ -360,7 +361,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
                       {recImageUrl ? (
                         <Image
                           src={recImageUrl}
-                          alt={`${recProduct.name}${recProduct.brand ? ` — ${typeof recProduct.brand === 'object' ? recProduct.brand.name : recProduct.brand}` : ''} — Related product Bangladesh — MediportBD`}
+                          alt={generateProductAltText(recProduct, 'gallery')}
                           fill
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
                           style={{ objectFit: 'cover' }}

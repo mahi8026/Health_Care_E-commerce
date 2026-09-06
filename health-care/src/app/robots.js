@@ -25,6 +25,7 @@ export default function robots() {
           '/checkout/*',
           '/cart',
           '/b2b/dashboard',
+          '/b2b/dashboard/*',
           '/api/*',
           '/oauth/*',
           '/auth/*',
@@ -34,7 +35,8 @@ export default function robots() {
           '/demo-loading',
           '/og',
           '/og/*',
-          '/search',
+          '/search', // Search results should not be indexed
+          '/search/*',
           '/returns/request',
           '/returns/request/*',
           '/returns/my-returns',
@@ -43,10 +45,22 @@ export default function robots() {
           '/orders/*',
           '/track',
           '/track/*',
+          '/quotes', // Quote requests are private
+          '/quotes/*',
+          '/login',
+          '/register',
+          '/forgot-password',
+          '/reset-password',
+          '/wishlist', // User-specific content
           // Block Next.js static font files — they have no SEO value and
           // waste crawl budget (seen as "Crawled - currently not indexed" in GSC)
           '/_next/static/media/',
           '/_next/static/media/*',
+          // Block paginated/filtered product URLs to prevent duplicate content
+          '/products?*page=*', // Pagination
+          '/products?*sort=*', // Sort variations
+          '/products?*minPrice=*', // Price filters
+          '/products?*maxPrice=*',
         ],
       },
       // Googlebot — same disallows (must be kept in sync with * rule)
@@ -61,6 +75,7 @@ export default function robots() {
           '/checkout/*',
           '/cart',
           '/b2b/dashboard',
+          '/b2b/dashboard/*',
           '/api/*',
           '/oauth/*',
           '/auth/*',
@@ -71,6 +86,7 @@ export default function robots() {
           '/og',
           '/og/*',
           '/search',
+          '/search/*',
           '/returns/request',
           '/returns/request/*',
           '/returns/my-returns',
@@ -79,10 +95,21 @@ export default function robots() {
           '/orders/*',
           '/track',
           '/track/*',
+          '/quotes',
+          '/quotes/*',
+          '/login',
+          '/register',
+          '/forgot-password',
+          '/reset-password',
+          '/wishlist',
           '/_next/static/media/',
           '/_next/static/media/*',
+          '/products?*page=*',
+          '/products?*sort=*',
+          '/products?*minPrice=*',
+          '/products?*maxPrice=*',
         ],
-        crawlDelay: 2,
+        crawlDelay: 1, // Reduced from 2 to 1 second for faster crawling
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
