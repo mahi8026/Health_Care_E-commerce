@@ -99,202 +99,19 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-br from-brand-navy to-brand-navy-deep text-white pb-[calc(60px+env(safe-area-inset-bottom))] lg:pb-0">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 lg:py-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 md:py-6">
 
-        {/* ── Desktop: Single horizontal row with all columns ── */}
-        <div className="hidden lg:grid lg:grid-cols-6 gap-6 items-start">
-
+        {/* ── Desktop: Compact 5-column grid ── */}
+        <div className="hidden lg:grid lg:grid-cols-5 gap-6">
           {/* 5 link columns */}
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
-                <ul className="space-y-2">
-                  {col.items.map((item) => (
-                    <li key={item.label}>
-                      <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
-                        {item.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
-
-          {/* MediportBD column — logo + description + newsletter */}
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <Image
-                src="/Mediport_Logo.png"
-                alt="MediportBD"
-                width={120}
-                height={40}
-                unoptimized
-                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
-              />
-            </div>
-            <p className="text-sm text-white/70 mb-3 leading-relaxed">
-              Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
-            </p>
-            <PreferredSourcesButton theme="dark" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
-              Newsletter
-            </h3>
-            <form onSubmit={handleSubscribe} className="space-y-2">
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email"
-                  disabled={loading}
-                  aria-label="Email address for newsletter"
-                  className="flex-1 px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-4 py-2 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50"
-                >
-                  {loading ? '...' : 'Subscribe'}
-                </button>
-              </div>
-              {!showNameInput && !message && (
-                <button type="button" onClick={() => setShowNameInput(true)}
-                  className="text-xs text-white/50 hover:text-white/80 transition-colors">
-                  + Add your name (optional)
-                </button>
-              )}
-              {showNameInput && (
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name (optional)" disabled={loading}
-                  aria-label="Your name for newsletter"
-                  className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50" />
-              )}
-              {message && (
-                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal' : 'bg-danger/20 text-[#FCA5A5]'}`}>
-                  {messageType === 'success' ? '✓' : '✗'} {message}
-                </div>
-              )}
-            </form>
-          </div>
-        </div>
-
-        {/* ── Tablet: 3 columns ── */}
-        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-5">
-          {links.slice(0, 3).map((col) => (
-            <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
-                {col.heading}
-              </h3>
-              <ul className="space-y-2">
-                {col.items.map((item) => (
-                  <li key={item.label}>
-                    <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        
-        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-5 mt-5">
-          {links.slice(3).map((col) => (
-            <div key={col.heading}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
-                {col.heading}
-              </h3>
-              <ul className="space-y-2">
-                {col.items.map((item) => (
-                  <li key={item.label}>
-                    <a href={item.href} className="text-sm text-white/70 hover:text-white transition-colors">
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {/* Newsletter on tablet */}
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <Image
-                src="/Mediport_Logo.png"
-                alt="MediportBD"
-                width={120}
-                height={40}
-                unoptimized
-                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
-              />
-            </div>
-            <p className="text-sm text-white/70 mb-3 leading-relaxed">
-              Bangladesh&apos;s trusted source for premium medical equipment.
-            </p>
-            <PreferredSourcesButton theme="dark" />
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">
-              Newsletter
-            </h3>
-            <form onSubmit={handleSubscribe} className="space-y-2">
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email"
-                  disabled={loading}
-                  aria-label="Email address for newsletter"
-                  className="flex-1 px-3 py-2 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal disabled:opacity-50"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-4 py-2 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50"
-                >
-                  {loading ? '...' : 'Subscribe'}
-                </button>
-              </div>
-              {message && (
-                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal' : 'bg-danger/20 text-[#FCA5A5]'}`}>
-                  {messageType === 'success' ? '✓' : '✗'} {message}
-                </div>
-              )}
-            </form>
-          </div>
-        </div>
-
-        {/* ── Mobile layout ── */}
-        <div className="md:hidden space-y-5">
-          {/* Logo */}
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Image
-                src="/Mediport_Logo.png"
-                alt="MediportBD"
-                width={120}
-                height={40}
-                unoptimized
-                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
-              />
-            </div>
-            <p className="text-xs text-white/70 leading-relaxed">
-              Bangladesh&apos;s trusted source for premium medical equipment, surgical instruments, and laboratory reagents.
-            </p>
-            <PreferredSourcesButton theme="dark" />
-          </div>
-          {/* Links 2x2 */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-            {links.map((col) => (
-              <div key={col.heading}>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
-                  {col.heading}
-                </h3>
-                <ul className="space-y-1.5">
-                  {col.items.map((item) => (
+                <ul className="space-y-1">
+                  {col.items.slice(0, 4).map((item) => (
                     <li key={item.label}>
                       <a href={item.href} className="text-xs text-white/70 hover:text-white transition-colors">
                         {item.label}
@@ -304,127 +121,129 @@ export default function Footer() {
                 </ul>
               </div>
             ))}
+          </nav>
+        </div>
+
+        {/* ── Tablet: Compact 3 columns ── */}
+        <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-4">
+          {links.slice(0, 3).map((col) => (
+            <div key={col.heading}>
+              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
+                {col.heading}
+              </h3>
+              <ul className="space-y-1">
+                {col.items.slice(0, 3).map((item) => (
+                  <li key={item.label}>
+                    <a href={item.href} className="text-xs text-white/70 hover:text-white transition-colors">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Mobile: Compact layout ── */}
+        <div className="md:hidden space-y-3">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <Image
+              src="/Mediport_Logo.png"
+              alt="MediportBD"
+              width={80}
+              height={27}
+              unoptimized
+              style={{ width: '80px', height: '27px', objectFit: 'contain' }}
+            />
+            <PreferredSourcesButton theme="dark" />
           </div>
-          {/* Newsletter */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-teal mb-3 font-[family-name:var(--font-plus-jakarta)]">Newsletter</h3>
-            <form onSubmit={handleSubscribe} className="space-y-2">
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email" disabled={loading}
-                aria-label="Email address for newsletter"
-                className="w-full px-3 py-2.5 text-sm bg-white/10 border border-white/20 rounded text-white placeholder-white/50 focus:outline-none focus:border-brand-teal" />
-              <button type="submit" disabled={loading}
-                className="w-full px-4 py-2.5 bg-brand-teal text-white text-sm font-medium rounded hover:bg-[var(--color-brand-teal-hover)] transition-colors disabled:opacity-50">
-                {loading ? 'Subscribing...' : 'Subscribe'}
-              </button>
-              {message && (
-                <div className={`text-xs p-2 rounded ${messageType === 'success' ? 'bg-brand-teal/20 text-brand-teal' : 'bg-danger/20 text-[#FCA5A5]'}`}>
-                  {messageType === 'success' ? '✓' : '✗'} {message}
-                </div>
-              )}
-            </form>
+          {/* Compact 2-column links - only key items */}
+          <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+            {links.map((col) => (
+              <div key={col.heading}>
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-teal mb-1 font-[family-name:var(--font-plus-jakarta)]">
+                  {col.heading}
+                </h3>
+                <ul className="space-y-0.5">
+                  {col.items.slice(0, 3).map((item) => (
+                    <li key={item.label}>
+                      <a href={item.href} className="text-[11px] text-white/70 hover:text-white transition-colors">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Bottom bar with enhanced separator line */}
-      <div className="border-t border-white/20 mt-6">
-        {/* Payment Trust Badges - Bangladesh Market Trust Signals */}
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 border-b border-white/10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-white/70 font-medium">We Accept:</p>
+      {/* Bottom bar - ultra compact */}
+      <div className="border-t border-white/20 mt-4">
+        {/* Payment badges - compact */}
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
+            <p className="text-[10px] text-white/70 font-medium">We Accept:</p>
             <PaymentTrustBadges size="sm" />
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
-          {/* Desktop: Single row with all items */}
-          <div className="hidden xl:flex items-center justify-between gap-4">
-            <p className="text-xs text-white/50 whitespace-nowrap">
-              © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
-            </p>
-            <div className="flex items-center gap-4 text-xs text-white/50">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2">
+          {/* Desktop: Single compact row */}
+          <div className="hidden lg:flex items-center justify-between gap-3 text-[10px]">
+            <p className="text-white/50">© {currentYear} Mediport Bangladesh Ltd.</p>
+            <div className="flex items-center gap-3 text-white/50">
               <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
-                className="hover:text-white/80 transition-colors whitespace-nowrap">
-                📱 {CONTACT.phone}
-              </a>
-              <a href={`mailto:${CONTACT.email}`}
-                className="hover:text-white/80 transition-colors whitespace-nowrap">
-                ✉️ {CONTACT.email}
-              </a>
+                className="hover:text-white/80 transition-colors">📱 {CONTACT.phone}</a>
+              <a href={`mailto:${CONTACT.email}`} className="hover:text-white/80 transition-colors">
+                ✉️ {CONTACT.email}</a>
               <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer"
-                className="hover:text-white/80 transition-colors whitespace-nowrap">
-                📘 Facebook
-              </a>
+                className="hover:text-white/80 transition-colors">📘 Facebook</a>
             </div>
-            <div className="flex items-center gap-3">
-              <a href="/privacy" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Privacy Policy</a>
-              <a href="/terms" className="text-xs text-white/50 hover:text-white/80 transition-colors whitespace-nowrap">Terms of Service</a>
-              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">DGDA Registered</span>
-              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded whitespace-nowrap">ISO 13485</span>
+            <div className="flex items-center gap-2">
+              <a href="/privacy" className="text-white/50 hover:text-white/80 transition-colors">Privacy</a>
+              <span className="text-white/30">·</span>
+              <a href="/terms" className="text-white/50 hover:text-white/80 transition-colors">Terms</a>
+              <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded ml-1">DGDA</span>
+              <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded">ISO</span>
             </div>
           </div>
 
-          {/* Tablet: Two rows */}
-          <div className="hidden sm:flex xl:hidden flex-col gap-3">
+          {/* Tablet: Compact 2 rows */}
+          <div className="hidden md:flex lg:hidden flex-col gap-1.5 text-[10px]">
             <div className="flex items-center justify-between">
-              <p className="text-xs text-white/50">
-                © {currentYear} Mediport Bangladesh Ltd. All rights reserved.
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA Registered</span>
-                <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
+              <p className="text-white/50">© {currentYear} Mediport Bangladesh Ltd.</p>
+              <div className="flex items-center gap-1.5">
+                <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded">DGDA</span>
+                <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded">ISO</span>
               </div>
             </div>
-            <div className="flex items-center justify-between text-xs text-white/50">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between text-white/50">
+              <div className="flex items-center gap-2">
                 <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
-                  className="hover:text-white/80 transition-colors">
-                  📱 {CONTACT.phone}
-                </a>
-                <a href={`mailto:${CONTACT.email}`}
-                  className="hover:text-white/80 transition-colors">
-                  ✉️ {CONTACT.email}
-                </a>
-                <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer"
-                  className="hover:text-white/80 transition-colors">
-                  📘 Facebook
-                </a>
+                  className="hover:text-white/80 transition-colors">📱 {CONTACT.phone}</a>
+                <a href={`mailto:${CONTACT.email}`} className="hover:text-white/80 transition-colors">
+                  ✉️ {CONTACT.email}</a>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <a href="/privacy" className="hover:text-white/80 transition-colors">Privacy</a>
                 <a href="/terms" className="hover:text-white/80 transition-colors">Terms</a>
               </div>
             </div>
           </div>
 
-          {/* Mobile: Three rows, centered */}
-          <div className="flex sm:hidden flex-col gap-2 text-center">
-            <p className="text-xs text-white/50">
-              © {currentYear} Mediport Bangladesh Ltd.
-            </p>
-            <div className="flex flex-col gap-2 text-xs text-white/50">
-              <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
-                className="hover:text-white/80 transition-colors">
-                📱 {CONTACT.phone}
-              </a>
-              <a href={`mailto:${CONTACT.email}`}
-                className="hover:text-white/80 transition-colors">
-                ✉️ {CONTACT.email}
-              </a>
-              <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer"
-                className="hover:text-white/80 transition-colors">
-                📘 Facebook
-              </a>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <a href="/privacy" className="text-xs text-white/50 hover:text-white/80 transition-colors">Privacy</a>
+          {/* Mobile: Ultra compact */}
+          <div className="flex md:hidden flex-col gap-1 text-center text-[10px]">
+            <p className="text-white/50">© {currentYear} Mediport BD</p>
+            <div className="flex items-center justify-center gap-1.5">
+              <a href="/privacy" className="text-white/50 hover:text-white/80 transition-colors">Privacy</a>
               <span className="text-white/30">·</span>
-              <a href="/terms" className="text-xs text-white/50 hover:text-white/80 transition-colors">Terms</a>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">DGDA</span>
-              <span className="text-xs text-brand-teal font-medium border border-brand-teal px-2 py-0.5 rounded">ISO 13485</span>
+              <a href="/terms" className="text-white/50 hover:text-white/80 transition-colors">Terms</a>
+              <span className="text-white/30">·</span>
+              <span className="text-brand-teal font-medium border border-brand-teal px-1 py-0.5 rounded">DGDA</span>
+              <span className="text-brand-teal font-medium border border-brand-teal px-1 py-0.5 rounded">ISO</span>
             </div>
           </div>
         </div>
