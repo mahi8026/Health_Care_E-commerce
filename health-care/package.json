@@ -37,7 +37,7 @@
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^20.5.3",
     "@lhci/cli": "^0.15.1",
-    "@next/bundle-analyzer": "^16.2.6",
+    "@next/bundle-analyzer": "^16.3.4",
     "@opennextjs/cloudflare": "^1.20.0",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
