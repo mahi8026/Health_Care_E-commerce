@@ -109,7 +109,6 @@ export default function robots() {
           '/products?*minPrice=*',
           '/products?*maxPrice=*',
         ],
-        crawlDelay: 1, // Reduced from 2 to 1 second for faster crawling
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

@@ -75,8 +75,8 @@ export const organization = {
 
 export const PAGE_SEO = {
   home: {
-    title:       'Medical Equipment Bangladesh — 350+ Products | DGDA Certified | Free Delivery Dhaka',
-    description: 'Buy medical equipment in Bangladesh ✓ ECG, ultrasound, lab reagents ✓ DGDA certified ✓ 8-30% B2B discount ✓ Free delivery Dhaka ✓ 500+ hospitals trust us. Call: 01646-886795',
+    title:       'Medical Equipment Bangladesh — DGDA Certified Supplier',
+    description: 'Buy medical equipment in Bangladesh. ECG, ultrasound, lab reagents. DGDA certified. 8-30% B2B discount. Free delivery Dhaka. Call: 01646-886795',
     keywords:    'medical equipment Bangladesh, buy medical equipment online BD, hospital equipment Dhaka, diagnostic equipment price Bangladesh, medical supply Dhaka, ECG machine Bangladesh, medical device supplier BD',
   },
   products: {
