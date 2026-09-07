@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>MediportBD - Medical Equipment Bangladesh</title>
+    <link>https://www.mediportbd.com</link>
+    <description>Medical equipment, surgical instruments, laboratory reagents and hospital machines in Bangladesh</description>
+    <!-- Products will be dynamically generated -->
+  </channel>
+</rss>
