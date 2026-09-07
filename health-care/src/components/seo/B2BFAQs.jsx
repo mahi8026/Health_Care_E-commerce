@@ -22,7 +22,7 @@ export const B2B_FAQS = [
   },
   {
     question: "How do hospitals request a B2B quote from MediportBD?",
-    answer: "Hospitals can request a free B2B quote by: (1) Visiting mediportbd.com/b2b and filling the quote request form, (2) Calling +880 1646-886795, or (3) Emailing mediportbdofficial@gmail.com with your requirements. Our B2B team responds within 24 hours with customized pricing and credit terms."
+    answer: "Hospitals can request a free B2B quote by: (1) Visiting www.mediportbd.com/b2b and filling the quote request form, (2) Calling +880 1646-886795, or (3) Emailing mediportbdofficial@gmail.com with your requirements. Our B2B team responds within 24 hours with customized pricing and credit terms."
   },
   {
     question: "Does MediportBD supply laboratory reagents in bulk for diagnostic centers?",

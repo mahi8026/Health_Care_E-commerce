@@ -9,12 +9,13 @@
  */
 
 import { escapeJsonLd } from '@/utils/helpers';
+import getSiteUrl from '@/utils/siteUrl';
 
 export default function OfferSchema({ product, offer }) {
   if (!product || !offer) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
-  const productUrl = `${baseUrl}/products/${product._id || product.slug}`;
+  const baseUrl = getSiteUrl();
+  const productUrl = `${baseUrl}/products/${product.slug || product._id}`;
   
   // Calculate default validity date (30 days from now) - use server-side timestamp if available
   const defaultValidUntil = offer.validUntil || (() => {
@@ -83,8 +84,8 @@ export default function OfferSchema({ product, offer }) {
 export function AggregateOfferSchema({ product, offers }) {
   if (!product || !offers || offers.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
-  const productUrl = `${baseUrl}/products/${product._id || product.slug}`;
+  const baseUrl = getSiteUrl();
+  const productUrl = `${baseUrl}/products/${product.slug || product._id}`;
 
   // Find lowest and highest prices
   const prices = offers.map(o => o.price || o.discountedPrice || 0);

@@ -38,7 +38,7 @@ export const HOMEPAGE_FAQS = [
   },
   {
     question: "How can I request a quote for bulk medical equipment orders?",
-    answer: "You can request a free B2B quote by visiting mediportbd.com/b2b, calling +880 1646-886795, or emailing mediportbdofficial@gmail.com. Our B2B team will respond within 24 hours with customized pricing, credit terms, and delivery timelines."
+    answer: "You can request a free B2B quote by visiting www.mediportbd.com/b2b, calling +880 1646-886795, or emailing mediportbdofficial@gmail.com. Our B2B team will respond within 24 hours with customized pricing, credit terms, and delivery timelines."
   }
 ];
 

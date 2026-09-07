@@ -12,7 +12,7 @@ export const metadata = {
     title:       PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
     url:         SITE_CONFIG.url,
-    images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630, alt: 'MediportBD — Bangladesh Medical Equipment Supplier' }],
+    images: [{ url: `${SITE_CONFIG.url}/og-default.png?v=2026`, width: 1200, height: 630, alt: 'MediportBD — Bangladesh Medical Equipment Supplier' }],
   },
   twitter: {
     card:        'summary_large_image',

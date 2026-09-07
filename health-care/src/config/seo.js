@@ -13,11 +13,14 @@
 // Site-wide configuration
 // ---------------------------------------------------------------------------
 
+import { getSiteUrl } from '@/utils/siteUrl';
+
 // Canonical origin MUST match the serving host (www.mediportbd.com — the
 // apex 308-redirects here). A mismatch makes every page declare a canonical
 // that redirects elsewhere, which stalls Google indexing site-wide.
-// Guard against an empty-string env var (as seen in the Vercel dashboard).
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || '').trim().replace(/\/+$/, '') || 'https://www.mediportbd.com';
+// getSiteUrl() guards against an empty-string env var (seen in the Vercel
+// dashboard) and normalizes a non-www NEXT_PUBLIC_SITE_URL to the www host.
+const SITE_URL = getSiteUrl();
 
 export const SITE_CONFIG = {
   name:         'MediportBD',

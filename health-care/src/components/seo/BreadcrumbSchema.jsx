@@ -9,11 +9,12 @@
  */
 
 import { escapeJsonLd } from '@/utils/helpers';
+import getSiteUrl from '@/utils/siteUrl';
 
 export default function BreadcrumbSchema({ items }) {
   if (!items || !Array.isArray(items) || items.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
+  const baseUrl = getSiteUrl();
 
   // Build breadcrumb list
   const schema = {
@@ -82,7 +83,7 @@ export function generateProductBreadcrumbs(product) {
   // Add product as final item
   items.push({
     name: product.name,
-    url: `/products/${product._id || product.slug}`
+    url: `/products/${product.slug || product._id}`
   });
 
   return items;

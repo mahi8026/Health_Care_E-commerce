@@ -13,6 +13,7 @@
  */
 
 import { escapeJsonLd } from '@/utils/helpers';
+import getSiteUrl from '@/utils/siteUrl';
 
 const PRICE_VALID_UNTIL = '2099-12-31';
 
@@ -31,9 +32,9 @@ export default function ProductSchema({ product }) {
     ? product.images.map(img => {
         const url = typeof img === 'string' ? img : img?.url;
         // Ensure absolute URLs for schema
-        return url?.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}${url}`;
+        return url?.startsWith('http') ? url : `${getSiteUrl()}${url}`;
       })
-    : [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}/images/placeholder-product.jpg`];
+    : [`${getSiteUrl()}/images/placeholder-product.jpg`];
 
   // Price and availability
   const price = product.price || product.sellingPrice || 0;
@@ -66,14 +67,14 @@ export default function ProductSchema({ product }) {
     gtin,
     offers: {
       '@type': 'Offer',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'}/products/${product._id || product.slug}`,
+      url: `${getSiteUrl()}/products/${product.slug || product._id}`,
       priceCurrency: 'BDT',
       price: price.toString(),
       availability,
       seller: {
         '@type': 'Organization',
         name: 'MediportBD',
-        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com'
+        url: getSiteUrl()
       },
       priceValidUntil: PRICE_VALID_UNTIL,
       itemCondition: 'https://schema.org/NewCondition',

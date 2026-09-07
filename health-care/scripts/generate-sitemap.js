@@ -13,8 +13,9 @@
 const fs = require('fs');
 const path = require('path');
 
-// Canonical origin must match the serving host (www) — see src/config/seo.js
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || '').trim().replace(/\/+$/, '') || 'https://www.mediportbd.com';
+// Canonical origin must match the serving host (www) — see src/utils/siteUrl.js.
+// main() normalizes this from NEXT_PUBLIC_SITE_URL at runtime via getSiteUrl().
+let SITE_URL = 'https://www.mediportbd.com';
 // Local dev uses a relative API URL (/api) that only works via Next's dev
 // proxy — fall back to the production backend when it is not absolute.
 const envApi = process.env.NEXT_PUBLIC_API_URL;
@@ -358,6 +359,16 @@ function writeXmlFile(relPath, xml, label) {
 
 // Main execution
 async function main() {
+  // Normalize the canonical host from NEXT_PUBLIC_SITE_URL (single source of
+  // truth in src/utils/siteUrl.js) so an apex/non-www env value can never
+  // pollute sitemap <loc> URLs with a non-www host.
+  try {
+    const { getSiteUrl } = await import('../src/utils/siteUrl.js');
+    SITE_URL = getSiteUrl();
+  } catch {
+    console.warn(`[Sitemap] Could not load siteUrl helper; keeping ${SITE_URL}`);
+  }
+
   console.log('=================================================');
   console.log('  MediportBD - Build-Time Sitemap Generator');
   console.log('=================================================');

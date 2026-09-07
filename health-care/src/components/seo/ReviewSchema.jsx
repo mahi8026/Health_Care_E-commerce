@@ -9,11 +9,12 @@
  */
 
 import { escapeJsonLd } from '@/utils/helpers';
+import getSiteUrl from '@/utils/siteUrl';
 
 export default function ReviewSchema({ reviews, productName, productId }) {
   if (!reviews || reviews.length === 0) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://MediportBD.com';
+  const baseUrl = getSiteUrl();
 
   // Create individual review schemas
   const reviewSchemas = reviews.slice(0, 5).map((review, index) => ({
