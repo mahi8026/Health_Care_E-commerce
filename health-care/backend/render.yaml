@@ -2,12 +2,19 @@ services:
   - type: web
     name: mediportbd-api
     runtime: node
+    region: singapore
+    plan: free
     rootDir: .
-    buildCommand: npm install
+    buildCommand: npm install --production
     startCommand: npm start
     healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+      - key: LOG_LEVEL
+        value: info
+    # Note: Add all other environment variables in Render Dashboard UI
+    # (MongoDB URI, JWT secrets, API keys, etc.)
