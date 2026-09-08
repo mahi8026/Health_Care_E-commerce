@@ -5,6 +5,8 @@
 import { redirect } from 'next/navigation';
 
 export const metadata = {
+  title: 'Search Medical Equipment | MediportBD',
+  description: 'Search DGDA-registered medical equipment, laboratory reagents and surgical instruments in Bangladesh. Find products by name, brand, category or price.',
   robots: { index: false, follow: true },
 };
 

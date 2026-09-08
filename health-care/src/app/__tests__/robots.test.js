@@ -5,6 +5,7 @@
  */
 
 import robots from '../robots'
+import { SITE_CONFIG } from '@/config/seo'
 
 describe('robots()', () => {
   let result
@@ -45,8 +46,12 @@ describe('robots()', () => {
       expect(disallowedPaths).toContain('/admin')
     })
 
-    it('disallows /b2b', () => {
-      expect(disallowedPaths).toContain('/b2b')
+    it('disallows the private /b2b/dashboard but keeps /b2b crawlable', () => {
+      // /b2b is the PUBLIC B2B marketing landing page (indexed, earns GSC
+      // impressions) — it must stay crawlable. Only the private dashboard is
+      // blocked.
+      expect(disallowedPaths).toContain('/b2b/dashboard')
+      expect(disallowedPaths).not.toContain('/b2b')
     })
 
     it('disallows /checkout', () => {
@@ -57,8 +62,8 @@ describe('robots()', () => {
       expect(disallowedPaths).toContain('/cart')
     })
 
-    it('disallows /api', () => {
-      expect(disallowedPaths).toContain('/api')
+    it('disallows /api/*', () => {
+      expect(disallowedPaths).toContain('/api/*')
     })
 
     it('applies rules to all user agents (*)', () => {
@@ -83,7 +88,9 @@ describe('robots()', () => {
     })
 
     it('points to the correct sitemap URL', () => {
-      expect(result.sitemap).toBe('https://MediportBD.com/sitemap.xml')
+      // Assert against SITE_CONFIG so the test holds for any canonical origin
+      // (localhost in tests, https://www.mediportbd.com in production).
+      expect(result.sitemap).toBe(`${SITE_CONFIG.url}/sitemap.xml`)
     })
 
     it('sitemap URL is a valid HTTPS URL', () => {

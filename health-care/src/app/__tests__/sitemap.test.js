@@ -1,202 +1,160 @@
 /**
- * Unit tests for the sitemap generator.
+ * Unit tests for the live sitemap routes.
  *
- * Validates: Requirements 7.1, 7.2, 7.6
+ * The sitemap architecture is split:
+ *   /sitemap.xml          → sitemap INDEX pointing at the sub-sitemaps
+ *   /sitemap-static.xml   → static public pages only (no private/redirect URLs)
+ *   /sitemap-products.xml → dynamic product URLs (requires the backend API)
+ *
+ * This suite covers the two pure routes (index + static). The products route
+ * is exercised indirectly through `scripts/generate-sitemap.js`.
  */
 
-import sitemap from '../sitemap'
+// Polyfill Response for the jsdom test environment — the route handlers
+// construct `new Response(xml, { headers })`, but jsdom does not ship it.
+class ResponseStub {
+  constructor(body) {
+    this._body = body
+  }
+  async text() {
+    return this._body
+  }
+}
+if (typeof globalThis.Response === 'undefined') {
+  globalThis.Response = ResponseStub
+}
 
-// Mock the siteConfig so tests are not coupled to the real domain value
-jest.mock('@/config/seo', () => ({
-  siteConfig: {
-    url: 'https://MediportBD.com',
-  },
-}))
+import { GET as sitemapIndexGET } from '../sitemap.xml/route'
+import { GET as sitemapStaticGET } from '../sitemap-static.xml/route'
+import { SITE_CONFIG } from '@/config/seo'
 
-// Mock fetchProducts so tests run without a real backend
-jest.mock('@/utils/serverFetch', () => ({
-  fetchProducts: jest.fn(),
-}))
-
-import { fetchProducts } from '@/utils/serverFetch'
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-const BASE = 'https://MediportBD.com'
-
-/** URLs that must always appear in the sitemap (static public pages). */
-const REQUIRED_STATIC_URLS = [
-  BASE,
-  `${BASE}/search`,
-  `${BASE}/reagent-store`,
-  `${BASE}/mobile-app`,
-  `${BASE}/login`,
-  `${BASE}/register`,
-]
-
-/** Paths that must NEVER appear in the sitemap. */
-const EXCLUDED_PATHS = ['/admin', '/b2b', '/checkout', '/cart', '/api']
+/** Pull every <loc> value out of a sitemap XML string. */
+const extractLocs = (xml) =>
+  [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
 
 // ---------------------------------------------------------------------------
-// Tests
+// /sitemap.xml — the sitemap index
 // ---------------------------------------------------------------------------
 
-describe('sitemap()', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
+describe('/sitemap.xml (sitemap index)', () => {
+  let xml
+  let locs
+
+  beforeAll(async () => {
+    const res = await sitemapIndexGET()
+    xml = await res.text()
+    locs = extractLocs(xml)
   })
 
-  // -------------------------------------------------------------------------
-  // Static pages — Requirement 7.1
-  // -------------------------------------------------------------------------
-
-  describe('static pages', () => {
-    beforeEach(() => {
-      fetchProducts.mockResolvedValue([])
-    })
-
-    it('includes all required static page URLs', async () => {
-      const entries = await sitemap()
-      const urls = entries.map((e) => e.url)
-
-      for (const expected of REQUIRED_STATIC_URLS) {
-        expect(urls).toContain(expected)
-      }
-    })
-
-    it('does not include admin, b2b, checkout, cart, or api paths', async () => {
-      const entries = await sitemap()
-      const urls = entries.map((e) => e.url)
-
-      for (const excluded of EXCLUDED_PATHS) {
-        const match = urls.find((u) => u.includes(excluded))
-        expect(match).toBeUndefined()
-      }
-    })
-
-    it('assigns changeFrequency and priority to every static entry', async () => {
-      const entries = await sitemap()
-      // Filter to only static entries (no product pages when fetchProducts returns [])
-      for (const entry of entries) {
-        expect(entry).toHaveProperty('changeFrequency')
-        expect(entry).toHaveProperty('priority')
-        expect(typeof entry.priority).toBe('number')
-      }
-    })
-
-    it('gives the homepage the highest priority of 1.0', async () => {
-      const entries = await sitemap()
-      const home = entries.find((e) => e.url === BASE)
-      expect(home).toBeDefined()
-      expect(home.priority).toBe(1.0)
-    })
+  it('is declared as a sitemapindex', () => {
+    expect(xml).toContain('<sitemapindex')
   })
 
-  // -------------------------------------------------------------------------
-  // Product pages — Requirement 7.2
-  // -------------------------------------------------------------------------
-
-  describe('product pages', () => {
-    const mockProducts = [
-      { _id: 'prod-1', updatedAt: '2024-01-15T10:00:00.000Z' },
-      { _id: 'prod-2', updatedAt: '2024-02-20T12:00:00.000Z' },
-      { _id: 'prod-3' }, // no updatedAt — should fall back to current date
+  it('references all seven sub-sitemaps on the canonical origin', () => {
+    const expected = [
+      'sitemap-static.xml',
+      'sitemap-categories.xml',
+      'sitemap-brands.xml',
+      'sitemap-products.xml',
+      'sitemap-guides.xml',
+      'sitemap-equipment.xml',
+      'sitemap-topics.xml',
     ]
-
-    beforeEach(() => {
-      fetchProducts.mockResolvedValue(mockProducts)
-    })
-
-    it('includes a URL entry for every product returned by fetchProducts', async () => {
-      const entries = await sitemap()
-      const urls = entries.map((e) => e.url)
-
-      for (const product of mockProducts) {
-        expect(urls).toContain(`${BASE}/products/${product._id}`)
-      }
-    })
-
-    it('sets lastModified to the product updatedAt date when available', async () => {
-      const entries = await sitemap()
-      const prod1Entry = entries.find((e) => e.url === `${BASE}/products/prod-1`)
-
-      expect(prod1Entry).toBeDefined()
-      expect(prod1Entry.lastModified).toBeInstanceOf(Date)
-      expect(prod1Entry.lastModified.toISOString()).toBe('2024-01-15T10:00:00.000Z')
-    })
-
-    it('falls back to current date for products without updatedAt', async () => {
-      const before = new Date()
-      const entries = await sitemap()
-      const after = new Date()
-
-      const prod3Entry = entries.find((e) => e.url === `${BASE}/products/prod-3`)
-      expect(prod3Entry).toBeDefined()
-      expect(prod3Entry.lastModified).toBeInstanceOf(Date)
-      expect(prod3Entry.lastModified.getTime()).toBeGreaterThanOrEqual(before.getTime())
-      expect(prod3Entry.lastModified.getTime()).toBeLessThanOrEqual(after.getTime())
-    })
-
-    it('assigns changeFrequency "weekly" and priority 0.7 to product entries', async () => {
-      const entries = await sitemap()
-      const productEntries = entries.filter((e) => e.url.includes('/products/'))
-
-      for (const entry of productEntries) {
-        expect(entry.changeFrequency).toBe('weekly')
-        expect(entry.priority).toBe(0.7)
-      }
-    })
-
-    it('returns static pages plus product pages when products are available', async () => {
-      const entries = await sitemap()
-      const urls = entries.map((e) => e.url)
-
-      // All static pages present
-      for (const expected of REQUIRED_STATIC_URLS) {
-        expect(urls).toContain(expected)
-      }
-
-      // All product pages present
-      for (const product of mockProducts) {
-        expect(urls).toContain(`${BASE}/products/${product._id}`)
-      }
-    })
+    expect(locs).toHaveLength(expected.length)
+    for (const name of expected) {
+      expect(locs).toContain(`${SITE_CONFIG.url}/${name}`)
+    }
   })
 
-  // -------------------------------------------------------------------------
-  // Error handling — Requirement 7.1 (graceful degradation), 7.6
-  // -------------------------------------------------------------------------
+  it('contains only sub-sitemap references — never page URLs', () => {
+    // Every <loc> must point at a sub-sitemap file, not at a page. Page URLs
+    // in the index would dilute crawl signals and duplicate the sub-sitemaps.
+    for (const loc of locs) {
+      expect(loc).toMatch(/\.xml$/)
+    }
+  })
 
-  describe('error handling', () => {
-    it('returns only static pages when fetchProducts throws an error', async () => {
-      fetchProducts.mockRejectedValue(new Error('Database connection failed'))
+  it('stamps lastmod on every entry', () => {
+    const lastmods = [...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)]
+    expect(lastmods).toHaveLength(locs.length)
+  })
+})
 
-      const entries = await sitemap()
-      const urls = entries.map((e) => e.url)
+// ---------------------------------------------------------------------------
+// /sitemap-static.xml — static public pages
+// ---------------------------------------------------------------------------
 
-      // Static pages must still be present
-      for (const expected of REQUIRED_STATIC_URLS) {
-        expect(urls).toContain(expected)
-      }
+describe('/sitemap-static.xml', () => {
+  let xml
+  let locs
 
-      // No product pages should appear
-      const productEntries = entries.filter((e) => e.url.includes('/products/'))
-      expect(productEntries).toHaveLength(0)
-    })
+  beforeAll(async () => {
+    const res = await sitemapStaticGET()
+    xml = await res.text()
+    locs = extractLocs(xml)
+  })
 
-    it('does not throw when fetchProducts rejects', async () => {
-      fetchProducts.mockRejectedValue(new Error('Network timeout'))
+  it('is declared as a urlset', () => {
+    expect(xml).toContain('<urlset')
+  })
 
-      await expect(sitemap()).resolves.not.toThrow()
-    })
+  it('includes the core public money pages', () => {
+    const required = [
+      SITE_CONFIG.url,
+      `${SITE_CONFIG.url}/products`,
+      `${SITE_CONFIG.url}/equipment`,
+      `${SITE_CONFIG.url}/reagent-store`,
+      `${SITE_CONFIG.url}/b2b`,
+      `${SITE_CONFIG.url}/brands`,
+      `${SITE_CONFIG.url}/about`,
+      `${SITE_CONFIG.url}/contact`,
+      `${SITE_CONFIG.url}/help`,
+    ]
+    for (const url of required) {
+      expect(locs).toContain(url)
+    }
+  })
 
-    it('returns a non-empty array even when the database is unavailable', async () => {
-      fetchProducts.mockRejectedValue(new Error('DB unavailable'))
+  it('never includes private, transactional or noindex paths', () => {
+    const forbidden = [
+      '/admin',
+      '/account',
+      '/cart',
+      '/checkout',
+      '/login',
+      '/register',
+      '/search',
+      '/orders',
+      '/wishlist',
+    ]
+    for (const path of forbidden) {
+      const match = locs.find((u) => u.includes(path))
+      expect(match).toBeUndefined()
+    }
+  })
 
-      const entries = await sitemap()
-      expect(entries.length).toBeGreaterThan(0)
-    })
+  it('excludes URLs that redirect — no crawl-budget waste', () => {
+    // /support 308-redirects to /help and /flash-deals 404s when no deals
+    // are live; neither belongs in the sitemap.
+    expect(locs.find((u) => u.includes('/support'))).toBeUndefined()
+    expect(locs.find((u) => u.includes('/flash-deals'))).toBeUndefined()
+  })
+
+  it('stamps lastmod, changefreq and priority on every entry', () => {
+    const urlBlocks = [...xml.matchAll(/<url>[\s\S]*?<\/url>/g)].map((m) => m[0])
+    expect(urlBlocks.length).toBe(locs.length)
+    for (const block of urlBlocks) {
+      expect(block).toMatch(/<lastmod>/)
+      expect(block).toMatch(/<changefreq>/)
+      expect(block).toMatch(/<priority>/)
+    }
+  })
+
+  it('gives the homepage the highest priority of 1.0', () => {
+    const homeBlock = [...xml.matchAll(/<url>[\s\S]*?<\/url>/g)]
+      .map((m) => m[0])
+      .find((block) => block.includes(`<loc>${SITE_CONFIG.url}</loc>`))
+    expect(homeBlock).toBeDefined()
+    expect(homeBlock).toMatch(/<priority>1<\/priority>|<priority>1\.0<\/priority>/)
   })
 })

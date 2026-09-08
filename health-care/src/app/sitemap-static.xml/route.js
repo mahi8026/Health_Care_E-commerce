@@ -30,7 +30,9 @@ export async function GET() {
     { url: `${SITE_URL}/news`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 },
     { url: `${SITE_URL}/warranty`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/help`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITE_URL}/support`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    // NOTE: /support is intentionally excluded — it 308-redirects to /help.
+    // A sitemap URL that redirects wastes crawl budget and creates
+    // "Page with redirect" entries in Google Search Console.
     { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     // NOTE: /flash-deals is intentionally excluded — it returns 404 when no active

@@ -71,7 +71,7 @@ describe('generatePageMetadata', () => {
 
   it('includes og:locale', () => {
     const meta = generatePageMetadata(baseParams)
-    expect(meta.openGraph.locale).toBe('en_US')
+    expect(meta.openGraph.locale).toBe('en_BD')
   })
 
   it('includes og:url matching the canonical URL', () => {
@@ -190,14 +190,22 @@ describe('generateProductMetadata', () => {
     expect(meta.title).toContain(validProduct.brand)
   })
 
-  it('includes the category in the title', () => {
+  it('includes the category in keywords', () => {
     const meta = generateProductMetadata(validProduct)
-    expect(meta.title).toContain(validProduct.category)
+    // Category stays OUT of the title (keeps titles lean); it lives in keywords instead.
+
+    expect(meta.keywords).toContain(`${validProduct.category} Bangladesh`)
   })
 
-  it('sets the description from the product', () => {
+  it('builds a rich SEO description from the product', () => {
     const meta = generateProductMetadata(validProduct)
-    expect(meta.description).toBe(validProduct.description)
+    // The description generator enriches the product description with buying
+    // context (name,brand,price, trust signals) while keeping the original
+    // product description as the leading sentence..
+    expect(meta.description).toContain(`Buy ${validProduct.name} in Bangladesh.`)
+    expect(meta.description).toContain(validProduct.description)
+    expect(meta.description).toContain(`Brand: ${validProduct.brand}.`)
+    expect(meta.description).toContain('DGDA certified. Free delivery Dhaka.')
   })
 
   it('generates a canonical URL containing the product ID', () => {
@@ -229,14 +237,15 @@ describe('generateProductMetadata', () => {
 
   it('includes og:locale', () => {
     const meta = generateProductMetadata(validProduct)
-    expect(meta.openGraph.locale).toBe('en_US')
+    expect(meta.openGraph.locale).toBe('en_BD')
   })
 
   it('includes twitter card tags', () => {
     const meta = generateProductMetadata(validProduct)
     expect(meta.twitter.card).toBeDefined()
     expect(meta.twitter.title).toContain(validProduct.name)
-    expect(meta.twitter.description).toBe(validProduct.description)
+    expect(meta.twitter.description).toContain(`Buy ${validProduct.name} in Bangladesh.`)
+    expect(meta.twitter.description).toContain('DGDA certified.')
     expect(meta.twitter.images[0]).toBe(validProduct.image)
   })
 

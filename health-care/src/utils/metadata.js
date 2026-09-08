@@ -151,8 +151,9 @@ export function generateProductMetadata(product) {
   const brandRaw = typeof product.brand === 'object' ? product.brand?.name : product.brand
   const catRaw   = typeof product.category === 'object' ? product.category?.name : product.category
 
-  // Keyword-rich title targeting "price in Bangladesh" searches
-  const title = `${name} — Price in Bangladesh | ${siteConfig.name}`
+  // Keyword-rich title targeting "price in Bangladesh" searches.
+  // Brand-first prefix boosts brand+product queries (e.g. "Omron BP monitor price bangladesh".)
+  const title = `${brandRaw ? `${brandRaw} ` : ''}${name} — Price in Bangladesh | ${siteConfig.name}`
 
   // Rich description: first 110 chars of description + brand + price
   const descChunk = (product.description || '').replace(/\s+/g, ' ').trim().slice(0, 110)
@@ -193,7 +194,7 @@ export function generateProductMetadata(product) {
       title,
       description,
       url: canonicalUrl,
-      type: 'website',
+      type: 'product',
       images: [
         {
           url: ogImage,

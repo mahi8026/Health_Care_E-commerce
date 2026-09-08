@@ -4,14 +4,18 @@ import { SITE_CONFIG } from '@/config/seo';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export const metadata = {
-  title: 'Contact Us',
+  // Entity-explicit title — a generic "Contact Us" title lets Google match
+  // this page to hundreds of unrelated queries (444 impressions at position
+  // ~76 with zero clicks in GSC, Sep 2026). Naming the business + location
+  // pins the page to "contact MediportBD" intent only.
+  title: 'Contact MediportBD — Medical Equipment Supplier in Dhaka',
   description:
     'Contact MediportBD for medical equipment inquiries, orders, B2B partnerships, and support. Phone, WhatsApp, email, and our Dhaka showroom address.',
   keywords:
     'contact MediportBD, medical equipment supplier contact, Dhaka medical equipment, B2B medical supplier, MediportBD phone, MediportBD email',
   alternates: { canonical: `${SITE_CONFIG.url}/contact` },
   openGraph: {
-    title: 'Contact Us',
+    title: 'Contact MediportBD — Medical Equipment Supplier in Dhaka',
     description:
       'Reach MediportBD by phone, WhatsApp, or email. Visit our Dhaka showroom or send a B2B partnership inquiry.',
     url: `${SITE_CONFIG.url}/contact`,

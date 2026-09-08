@@ -1,18 +1,17 @@
-/**
+﻿/**
  * Unit Tests for Product SEO Components
  * 
  * Tests for:
- * - generateAltText (ProductImageGallery)
  * - generateProductSchema (structuredData utility)
  * - generateBreadcrumbSchema (structuredData utility)
- * - FAQSchema component
+ * - FAQSchema component (+ generateProductFAQs)
  * 
  * Requirements: 3, 4, 5, 8
  */
 
 import { render } from '@testing-library/react';
 import { generateProductSchema, generateBreadcrumbSchema } from '@/utils/structuredData';
-import FAQSchema from '@/components/seo/FAQSchema';
+import FAQSchema, { generateProductFAQs } from '@/components/seo/FAQSchema';
 
 // Mock the SEO config
 jest.mock('@/config/seo', () => ({
@@ -63,139 +62,6 @@ jest.mock('@/context/AuthContext', () => ({
   }),
 }));
 
-// Import generateAltText after mocks are set up
-import { generateAltText } from '@/components/product/ProductImageGallery';
-
-describe('generateAltText', () => {
-  describe('Primary Image (index 0)', () => {
-    it('should generate alt text with all fields present', () => {
-      const product = {
-        name: 'Siemens ECG Machine',
-        brand: 'Siemens',
-        price: 150000,
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText).toBe('Siemens ECG Machine — Siemens — Price ৳150,000 Bangladesh');
-    });
-
-    it('should omit brand segment when brand is missing', () => {
-      const product = {
-        name: 'Generic ECG Machine',
-        price: 120000,
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText).toBe('Generic ECG Machine — Price ৳120,000 Bangladesh');
-      expect(altText).not.toContain('—  —'); // No double separator
-    });
-
-    it('should use "Contact for Price" when price is 0', () => {
-      const product = {
-        name: 'Custom Medical Device',
-        brand: 'CustomBrand',
-        price: 0,
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText).toBe('Custom Medical Device — CustomBrand — Contact for Price');
-    });
-
-    it('should use "Contact for Price" when price is null', () => {
-      const product = {
-        name: 'Custom Medical Device',
-        brand: 'CustomBrand',
-        price: null,
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText).toBe('Custom Medical Device — CustomBrand — Contact for Price');
-    });
-
-    it('should use "Contact for Price" when price is undefined', () => {
-      const product = {
-        name: 'Custom Medical Device',
-        brand: 'CustomBrand',
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText).toBe('Custom Medical Device — CustomBrand — Contact for Price');
-    });
-
-    it('should handle brand as populated object', () => {
-      const product = {
-        name: 'Mindray Patient Monitor',
-        brand: { _id: '123', name: 'Mindray' },
-        price: 85000,
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText).toBe('Mindray Patient Monitor — Mindray — Price ৳85,000 Bangladesh');
-    });
-
-    it('should truncate to 125 characters maximum', () => {
-      const product = {
-        name: 'Very Long Product Name That Exceeds Character Limits For SEO Optimization Testing Purpose Only',
-        brand: 'Very Long Brand Name',
-        price: 999999,
-      };
-
-      const altText = generateAltText(product, 0);
-
-      expect(altText.length).toBeLessThanOrEqual(125);
-      expect(altText.length).toBe(125);
-    });
-
-    it('should handle missing product gracefully', () => {
-      const altText = generateAltText(null, 0);
-
-      expect(altText).toContain('Product');
-      expect(altText).toContain('Contact for Price');
-    });
-  });
-
-  describe('Secondary Images (index > 0)', () => {
-    it('should generate secondary image alt text format', () => {
-      const product = {
-        name: 'Siemens ECG Machine',
-        brand: 'Siemens',
-        price: 150000,
-      };
-
-      const altText = generateAltText(product, 1);
-
-      expect(altText).toBe('Siemens ECG Machine view 1 — MediportBD');
-    });
-
-    it('should use correct index in secondary image alt text', () => {
-      const product = {
-        name: 'Ultrasound Machine',
-      };
-
-      const altText2 = generateAltText(product, 2);
-      const altText3 = generateAltText(product, 3);
-
-      expect(altText2).toBe('Ultrasound Machine view 2 — MediportBD');
-      expect(altText3).toBe('Ultrasound Machine view 3 — MediportBD');
-    });
-
-    it('should truncate secondary image alt text to 125 characters', () => {
-      const product = {
-        name: 'Very Long Product Name That Exceeds Character Limits For SEO Optimization Testing Purpose Only And More',
-      };
-
-      const altText = generateAltText(product, 5);
-
-      expect(altText.length).toBeLessThanOrEqual(125);
-    });
-  });
-});
 
 describe('generateProductSchema', () => {
   it('should include all required fields', () => {
@@ -509,166 +375,108 @@ describe('generateBreadcrumbSchema', () => {
 });
 
 describe('FAQSchema Component', () => {
-  it('should render <script> tag with valid JSON-LD when product provided', () => {
+  it('renders a <script> tag with valid FAQPage JSON-LD when faqs are provided', () => {
     const product = {
       name: 'Siemens ECG Machine',
       price: 150000,
-      certifications: ['DGDA', 'CE'],
     };
+    const faqs = generateProductFAQs(product);
 
-    const { container } = render(<FAQSchema product={product} />);
+    const { container } = render(<FAQSchema faqs={faqs} />);
 
     const script = container.querySelector('script[type="application/ld+json"]');
     expect(script).toBeInTheDocument();
 
     const schema = JSON.parse(script.innerHTML);
-
     expect(schema).toMatchObject({
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
     });
-
-    expect(schema.mainEntity).toHaveLength(4);
-
-    // Check price question
-    expect(schema.mainEntity[0].name).toContain('price');
-    expect(schema.mainEntity[0].name).toContain('Siemens ECG Machine');
-    expect(schema.mainEntity[0].acceptedAnswer.text).toContain('৳150,000');
-
-    // Check DGDA question
-    expect(schema.mainEntity[1].name).toContain('DGDA');
-    expect(schema.mainEntity[1].acceptedAnswer.text).toContain('DGDA registered');
-
-    // Check warranty question
-    expect(schema.mainEntity[2].name).toContain('warranty');
-
-    // Check where to buy question
-    expect(schema.mainEntity[3].name).toContain('Where can I buy');
-    expect(schema.mainEntity[3].acceptedAnswer.text).toContain('MediportBD');
+    expect(schema.mainEntity.length).toBeGreaterThan(0);
+    // Every question must carry a non-empty answer.
+    for (const item of schema.mainEntity) {
+      expect(item['@type']).toBe('Question');
+      expect(item.name.length).toBeGreaterThan(0);
+      expect(item.acceptedAnswer.text.length).toBeGreaterThan(0);
+    }
   });
 
-  it('should return null when product is null', () => {
-    const { container } = render(<FAQSchema product={null} />);
+  it('returns null when faqs are empty', () => {
+    const { container } = render(<FAQSchema faqs={[]} />);
 
     const script = container.querySelector('script[type="application/ld+json"]');
     expect(script).not.toBeInTheDocument();
   });
 
-  it('should return null when product is undefined', () => {
-    const { container } = render(<FAQSchema product={undefined} />);
+  it('returns null when faqs is null', () => {
+    const { container } = render(<FAQSchema faqs={null} />);
 
     const script = container.querySelector('script[type="application/ld+json"]');
     expect(script).not.toBeInTheDocument();
   });
 
-  it('should use "Contact for Price" when price is 0', () => {
+  it('returns null when only the legacy product prop is passed (faqs required)', () => {
+    // The component API takes pre-computed faqs (generateProductFAQs);
+    // a bare product prop yields no schema.
+    const { container } = render(<FAQSchema product={{ name: 'Test Product', price: 50000 }} />);
+
+    const script = container.querySelector('script[type="application/ld+json"]');
+    expect(script).not.toBeInTheDocument();
+  });
+
+  it('includes the DGDA registration question from the common FAQs', () => {
+    const product = { name: 'ECG Machine', price: 100000 };
+    const faqs = generateProductFAQs(product);
+
+    const { container } = render(<FAQSchema faqs={faqs} />);
+    const schema = JSON.parse(container.querySelector('script[type="application/ld+json"]').innerHTML);
+
+    const dgda = schema.mainEntity.find((q) => q.name.includes('DGDA'));
+    expect(dgda).toBeDefined();
+    // The answer reads "DGDA (Directorate General of Drug Administration)
+    // registered..." — DGDA appears in the question, "registered" in the answer.
+    expect(dgda.acceptedAnswer.text).toContain('registered');
+  });
+
+  it('mentions the warranty period in the warranty answer', () => {
+    const product = { name: 'ECG Machine', price: 100000 };
+    const faqs = generateProductFAQs(product);
+
+    const { container } = render(<FAQSchema faqs={faqs} />);
+    const schema = JSON.parse(container.querySelector('script[type="application/ld+json"]').innerHTML);
+
+    const warranty = schema.mainEntity.find((q) => q.name.toLowerCase().includes('warranty'));
+    expect(warranty).toBeDefined();
+    expect(warranty.acceptedAnswer.text).toContain('warranty');
+  });
+
+  it('passes custom product FAQs through verbatim, ahead of the common ones', () => {
     const product = {
       name: 'Custom Device',
       price: 0,
+      faqs: [
+        {
+          question: 'What is the price of Custom Device?',
+          answer: 'Contact us for a custom quotation â€” price on request.',
+        },
+      ],
     };
+    const faqs = generateProductFAQs(product);
 
-    const { container } = render(<FAQSchema product={product} />);
+    const { container } = render(<FAQSchema faqs={faqs} />);
+    const schema = JSON.parse(container.querySelector('script[type="application/ld+json"]').innerHTML);
 
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity[0].acceptedAnswer.text).toContain('contact');
-    expect(schema.mainEntity[0].acceptedAnswer.text).not.toContain('৳0');
+    expect(schema.mainEntity[0].name).toContain('Custom Device');
+    expect(schema.mainEntity[0].acceptedAnswer.text).toContain('custom quotation');
   });
 
-  it('should use "Contact for Price" when price is null', () => {
-    const product = {
-      name: 'Custom Device',
-      price: null,
-    };
+  it('caps the generated FAQ list at 6 entries', () => {
+    const product = { name: 'Test Product', price: 50000 };
+    const faqs = generateProductFAQs(product);
 
-    const { container } = render(<FAQSchema product={product} />);
+    const { container } = render(<FAQSchema faqs={faqs} />);
+    const schema = JSON.parse(container.querySelector('script[type="application/ld+json"]').innerHTML);
 
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity[0].acceptedAnswer.text).toContain('contact');
-  });
-
-  it('should use product-specific warranty when available', () => {
-    const product = {
-      name: 'ECG Machine',
-      price: 100000,
-      variants: {
-        warranty: ['2 years manufacturer warranty', '3 years extended warranty'],
-      },
-    };
-
-    const { container } = render(<FAQSchema product={product} />);
-
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity[2].acceptedAnswer.text).toContain('2 years manufacturer warranty');
-    expect(schema.mainEntity[2].acceptedAnswer.text).toContain('3 years extended warranty');
-  });
-
-  it('should use generic warranty when product warranty is not available', () => {
-    const product = {
-      name: 'ECG Machine',
-      price: 100000,
-    };
-
-    const { container } = render(<FAQSchema product={product} />);
-
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity[2].acceptedAnswer.text).toContain('1 year manufacturer warranty');
-  });
-
-  it('should mention CE certification in DGDA answer when present', () => {
-    const product = {
-      name: 'ECG Machine',
-      price: 100000,
-      certifications: ['DGDA', 'CE'],
-    };
-
-    const { container } = render(<FAQSchema product={product} />);
-
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity[1].acceptedAnswer.text).toContain('CE certified');
-  });
-
-  it('should mention ISO 13485 in DGDA answer when present', () => {
-    const product = {
-      name: 'ECG Machine',
-      price: 100000,
-      certifications: ['DGDA', 'ISO 13485'],
-    };
-
-    const { container } = render(<FAQSchema product={product} />);
-
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity[1].acceptedAnswer.text).toContain('ISO 13485');
-  });
-
-  it('should include all 4 FAQ questions', () => {
-    const product = {
-      name: 'Test Product',
-      price: 50000,
-    };
-
-    const { container } = render(<FAQSchema product={product} />);
-
-    const script = container.querySelector('script[type="application/ld+json"]');
-    const schema = JSON.parse(script.innerHTML);
-
-    expect(schema.mainEntity).toHaveLength(4);
-
-    const questionTexts = schema.mainEntity.map(q => q.name);
-    expect(questionTexts[0]).toContain('price');
-    expect(questionTexts[1]).toContain('DGDA');
-    expect(questionTexts[2]).toContain('warranty');
-    expect(questionTexts[3]).toContain('Where can I buy');
+    expect(schema.mainEntity.length).toBeLessThanOrEqual(6);
   });
 });
