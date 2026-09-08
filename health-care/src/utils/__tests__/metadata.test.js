@@ -190,6 +190,15 @@ describe('generateProductMetadata', () => {
     expect(meta.title).toContain(validProduct.brand)
   })
 
+  it('does not duplicate the brand when the name already starts with it', () => {
+    const product = { ...validProduct, name: 'Omron Digital Blood Pressure Monitor AX150', brand: 'Omron' }
+    const meta = generateProductMetadata(product)
+    // Brand appears already in the product name — prefixing it again would give
+    // spammy "Omron Omron ..." which wastes title characters and hurts CTR.
+    expect(meta.title).not.toContain('Omron Omron')
+    expect(meta.title).toContain('Omron Digital Blood Pressure Monitor AX150')
+  })
+
   it('includes the category in keywords', () => {
     const meta = generateProductMetadata(validProduct)
     // Category stays OUT of the title (keeps titles lean); it lives in keywords instead.

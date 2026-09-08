@@ -147,13 +147,16 @@ export function generateProductMetadata(product) {
     })
   }
 
-  const name     = product.name || 'Product'
-  const brandRaw = typeof product.brand === 'object' ? product.brand?.name : product.brand
+  const name     = (product.name || 'Product').trim()
+  const brandRaw = (typeof product.brand === 'object' ? product.brand?.name : product.brand || '').trim()
   const catRaw   = typeof product.category === 'object' ? product.category?.name : product.category
 
-  // Keyword-rich title targeting "price in Bangladesh" searches.
-  // Brand-first prefix boosts brand+product queries (e.g. "Omron BP monitor price bangladesh".)
-  const title = `${brandRaw ? `${brandRaw} ` : ''}${name} — Price in Bangladesh | ${siteConfig.name}`
+  // Keyword-rich title targeting "price in Bangladesh" searches..
+  // Brand-first prefix, but ONLY when the name doesn't already start with the brand
+  // (many names already include it, e.g. "Abbott Bioline Dengue Test" — avoids
+  // dupes like "Abbott Abbott ..." and keeps the title lean for the SERP).
+  const nameHasBrand = brandRaw && name.toLowerCase().startsWith(brandRaw.toLowerCase())
+  const title = `${nameHasBrand ? '' : brandRaw ? `${brandRaw} ` : ''}${name} — Price in Bangladesh | ${siteConfig.name}`
 
   // Rich description: first 110 chars of description + brand + price
   const descChunk = (product.description || '').replace(/\s+/g, ' ').trim().slice(0, 110)

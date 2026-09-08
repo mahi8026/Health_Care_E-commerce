@@ -140,10 +140,13 @@ export async function generateMetadata({ params }) {
   // Canonical always uses the clean slug stored on the product (no slashes)
   const canonicalSlug = product.slug || slug;
 
-  // Include brand in title when available — adds ~15% CTR in search results
-  const title = brandName
-    ? `${name} — ${brandName} | Price in Bangladesh`
-    : `${name} | Price in Bangladesh`;
+  // Brand-first title, but ONLY when the name doesn't already start with the brand.
+  // Many product names already include it (e.g. "Abbott Bioline Dengue Test"), so
+  // dedup avoids spammy "Abbott Abbott ..." titles and keeps keywords dense for the
+  // "price in Bangladesh" money queries. Pattern: "Jumper Digital BP Monitor HA300".
+  const nameHasBrand =
+    brandName && name.trim().toLowerCase().startsWith(brandName.toLowerCase());
+  const title = `${nameHasBrand ? '' : brandName ? `${brandName} ` : ''}${name} | Price in Bangladesh`;
   const description = buildDescription(name, brandName, catName, product.price, product.description);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
