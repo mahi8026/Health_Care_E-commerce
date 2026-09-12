@@ -281,7 +281,17 @@ return errorResponse(res, 'Product not found', null, 404);
 
     // ── Sort config (single source of truth for both the $sort stage and the
     //    keyset cursor filter) ────────────────────────────────────────────────
-    const { key: sortKey, dir: sortDir } = SORT_CONFIGS[sortBy] || DEFAULT_SORT;
+    // When isFeatured=true, always sort by featuredOrder (admin-assigned rank)
+    // regardless of the sortBy param so the homepage respects the admin order.
+    let sortKey, sortDir;
+    if (isFeatured === 'true') {
+      sortKey = 'featuredOrder';
+      sortDir = 1;
+    } else {
+      const resolved = SORT_CONFIGS[sortBy] || DEFAULT_SORT;
+      sortKey = resolved.key;
+      sortDir = resolved.dir;
+    }
 
     // Cursor-based pagination: decode the composite cursor and add its keyset
     // filter (B4 — old code filtered by _id only, which was wrong for every

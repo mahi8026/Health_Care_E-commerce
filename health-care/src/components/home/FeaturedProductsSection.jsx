@@ -156,14 +156,22 @@ export default function FeaturedProductsSection({ categories = [] }) {
       const featured = Array.isArray(featuredData.data) ? featuredData.data : (featuredData.data?.products || featuredData.products || []);
       const fallback = Array.isArray(fallbackData.data) ? fallbackData.data : (fallbackData.data?.products || fallbackData.products || []);
 
+      // Sort featured by featuredOrder (ascending) so admin-assigned rank is respected.
+      // getProducts returns by createdAt by default — we must re-sort client-side.
+      const sortedFeatured = [...featured].sort((a, b) => {
+        const ao = a.featuredOrder ?? 9999;
+        const bo = b.featuredOrder ?? 9999;
+        return ao - bo;
+      });
+
       // Merge featured + fallback, deduped by _id. Featured items appear first.
       // This ensures we always show a full grid even when few products are marked isFeatured.
       const MIN_DISPLAY = 4;
-      let products = featured;
-      if (featured.length < MIN_DISPLAY) {
-        const featuredIds = new Set(featured.map(p => p._id));
+      let products = sortedFeatured;
+      if (sortedFeatured.length < MIN_DISPLAY) {
+        const featuredIds = new Set(sortedFeatured.map(p => p._id));
         const extra = fallback.filter(p => !featuredIds.has(p._id));
-        products = [...featured, ...extra];
+        products = [...sortedFeatured, ...extra];
       }
       setFeaturedProducts(Array.isArray(products) ? products : []);
     } catch {
