@@ -364,6 +364,7 @@ return errorResponse(res, 'Product not found', null, 404);
       expiryDate: 1,
       hasAMC: 1,
       isFeatured: 1,
+      featuredOrder: 1,
       lowStockThreshold: 1,
       subcategory: 1,
       discountPct: 1,
@@ -982,7 +983,7 @@ exports.reorderFeaturedProducts = async (req, res) => {
     // Bulk update: assign position 1-based to each product
     const bulkOps = orderedIds.map((id, index) => ({
       updateOne: {
-        filter: { _id: new mongoose.Types.ObjectId(id), isFeatured: true },
+        filter: { _id: new mongoose.Types.ObjectId(id) },
         update: { $set: { featuredOrder: index + 1 } }
       }
     }));
@@ -991,6 +992,7 @@ exports.reorderFeaturedProducts = async (req, res) => {
 
     // Invalidate featured product cache so homepage reflects new order immediately
     await redisCache.invalidateProductList();
+    await redisCache.del('homepage:aggregated:v1');
     invalidateProductListCache();
 
     logActivityAsync({
