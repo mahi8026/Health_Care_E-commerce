@@ -36,10 +36,17 @@ export default function ProductSchema({ product }) {
       })
     : [`${getSiteUrl()}/images/placeholder-product.jpg`];
 
-  // Price and availability
-  const price = product.price || product.sellingPrice || 0;
-  const availability = product.stock > 0 
-    ? 'https://schema.org/InStock' 
+  // Price and availability.
+  // A sellable Offer requires a real positive price. Unpriced products
+  // ("Contact for Price") omit the Offer entirely — emitting price "0" is a
+  // Google Rich Results policy violation (mirrors generateProductSchema in
+  // src/utils/structuredData.js).
+  const numericPrice = typeof product.price === 'number'
+    ? product.price
+    : (typeof product.price === 'string' && product.price.trim() !== '') ? parseFloat(product.price) : NaN;
+  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
+  const availability = product.stock > 0
+    ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
 
   // Rating data
@@ -65,47 +72,49 @@ export default function ProductSchema({ product }) {
     category,
     sku,
     gtin,
-    offers: {
-      '@type': 'Offer',
-      url: `${getSiteUrl()}/products/${product.slug || product._id}`,
-      priceCurrency: 'BDT',
-      price: price.toString(),
-      availability,
-      seller: {
-        '@type': 'Organization',
-        name: 'MediportBD',
-        url: getSiteUrl()
-      },
-      priceValidUntil: PRICE_VALID_UNTIL,
-      itemCondition: 'https://schema.org/NewCondition',
-      shippingDetails: {
-        '@type': 'OfferShippingDetails',
-        shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'BD'
+    ...(hasPrice && {
+      offers: {
+        '@type': 'Offer',
+        url: `${getSiteUrl()}/products/${product.slug || product._id}`,
+        priceCurrency: 'BDT',
+        price: numericPrice.toString(),
+        availability,
+        seller: {
+          '@type': 'Organization',
+          name: 'MediportBD',
+          url: getSiteUrl()
         },
-        deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
-          businessDays: {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        priceValidUntil: PRICE_VALID_UNTIL,
+        itemCondition: 'https://schema.org/NewCondition',
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingDestination: {
+            '@type': 'DefinedRegion',
+            addressCountry: 'BD'
           },
-          cutoffTime: '17:00',
-          handlingTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 1,
-            maxValue: 2,
-            unitCode: 'DAY'
-          },
-          transitTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 1,
-            maxValue: 3,
-            unitCode: 'DAY'
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            businessDays: {
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+            },
+            cutoffTime: '17:00',
+            handlingTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 1,
+              maxValue: 2,
+              unitCode: 'DAY'
+            },
+            transitTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 1,
+              maxValue: 3,
+              unitCode: 'DAY'
+            }
           }
         }
       }
-    }
+    })
   };
 
   // Add aggregate rating if available

@@ -67,22 +67,30 @@ export function ItemListSchema({ items, listName, numberOfItems }) {
     '@type': 'ItemList',
     name: listName || 'Products',
     numberOfItems: numberOfItems || items.length,
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'Product',
-        name: escapeJsonLd(item.name),
-        image: item.images?.[0] || item.image,
-        url: `${baseUrl}/products/${item.slug || item._id}`,
-        offers: item.price ? {
-          '@type': 'Offer',
-          price: item.price.toString(),
-          priceCurrency: 'BDT',
-          availability: item.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-        } : undefined
-      }
-    }))
+    itemListElement: items.map((item, index) => {
+      // Same guard as generateProductSchema: only a real positive price may
+      // produce an Offer — "0" / junk strings must not leak into rich results.
+      const itemPrice = typeof item.price === 'number'
+        ? item.price
+        : (typeof item.price === 'string' && item.price.trim() !== '') ? parseFloat(item.price) : NaN;
+      const itemHasPrice = Number.isFinite(itemPrice) && itemPrice > 0;
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Product',
+          name: escapeJsonLd(item.name),
+          image: item.images?.[0] || item.image,
+          url: `${baseUrl}/products/${item.slug || item._id}`,
+          offers: itemHasPrice ? {
+            '@type': 'Offer',
+            price: itemPrice.toString(),
+            priceCurrency: 'BDT',
+            availability: item.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+          } : undefined
+        }
+      };
+    })
   };
 
   const cleanSchema = JSON.parse(JSON.stringify(schema));
