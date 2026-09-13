@@ -8,6 +8,8 @@ import {
   generatePageMetadata,
   generateProductMetadata,
   getDefaultOGImage,
+  finalTitle,
+  socialTitle,
 } from '../metadata'
 
 // ---------------------------------------------------------------------------
@@ -173,11 +175,22 @@ describe('generateProductMetadata', () => {
     image: 'https://example.com/bp-monitor.jpg',
     brand: 'Omron',
     category: 'Diagnostic Equipment',
+    price: 4850,
   }
 
   it('includes the product name in the title', () => {
     const meta = generateProductMetadata(validProduct)
     expect(meta.title).toContain(validProduct.name)
+  })
+
+  it('uses the product price in the title when priced', () => {
+    const meta = generateProductMetadata(validProduct)
+    expect(meta.title).toContain('Price ৳4,850')
+  })
+
+  it('uses a generic online suffix when the product has no price', () => {
+    const meta = generateProductMetadata({ ...validProduct, price: null })
+    expect(meta.title).toContain('Buy Online Bangladesh')
   })
 
   it('includes the site name in the title', () => {
@@ -316,5 +329,33 @@ describe('generateProductMetadata', () => {
     const product = { ...validProduct, image: '/images/product.jpg' }
     const meta = generateProductMetadata(product)
     expect(meta.openGraph.images[0].url).toMatch(/^https?:\/\//)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// finalTitle / socialTitle
+// ---------------------------------------------------------------------------
+
+describe('finalTitle', () => {
+  it('adds the site suffix to an unsuffixed retail title', () => {
+    expect(finalTitle('Laboratory Reagents Bangladesh — Dengue, TSH Kits | Cold Chain')).toEqual({
+      absolute: 'Laboratory Reagents Bangladesh — Dengue, TSH Kits | Cold Chain | MediportBD',
+    })
+  })
+
+  it('does not duplicate the suffix already present in a retail title', () => {
+    expect(finalTitle('Pulse Oximeter Price in Bangladesh 2026 | MediportBD')).toEqual({
+      absolute: 'Pulse Oximeter Price in Bangladesh 2026 | MediportBD',
+    })
+  })
+
+  it('renders plain strings exactly once for share cards', () => {
+    expect(socialTitle('Medical Equipment Bangladesh — 350+ DGDA Products | MediportBD')).toBe(
+      'Medical Equipment Bangladesh — 350+ DGDA Products | MediportBD'
+    )
+  })
+
+  it('falls back to the site name when empty', () => {
+    expect(finalTitle('')).toEqual({ absolute: 'MediportBD' })
   })
 })

@@ -81,7 +81,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'siemens-ecg-machine' }) });
 
-      expect(metadata.title).toBe('Siemens ECG Machine | Price in Bangladesh');
+      expect(metadata.title).toBe('Siemens ECG Machine | Price ৳150,000');
       expect(metadata.title).not.toContain('Siemens Siemens');
     });
 
@@ -95,7 +95,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'jumper-digital-bp-monitor-ax150' }) });
 
-      expect(metadata.title).toBe('Jumper Digital Blood Pressure Monitor AX150 | Price in Bangladesh');
+      expect(metadata.title).toBe('Jumper Digital Blood Pressure Monitor AX150 | Price ৳1,200');
     });
 
     it('omits the brand when none is set', async () => {
@@ -107,7 +107,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'test-product' }) });
 
-      expect(metadata.title).toBe('Test Product | Price in Bangladesh');
+      expect(metadata.title).toBe('Test Product | Price ৳100,000');
     });
 
     it('falls back to "Product" whenethe name is missing', async () => {
@@ -115,7 +115,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'test-product' }) });
 
-      expect(metadata.title).toBe('Product | Price in Bangladesh');
+      expect(metadata.title).toBe('Product | Price ৳100,000');
     });
 
     it('returns noindex-only metadata for raw ObjectId URLs', async () => {
@@ -161,7 +161,7 @@ describe('Product Metadata Generation', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ id: 'mindray-patient-monitor' }) });
 
-      expect(metadata.openGraph.title).toBe('Mindray Patient Monitor | Price in Bangladesh');
+      expect(metadata.openGraph.title).toBe('Mindray Patient Monitor | Price ৳250,000');
       expect(metadata.openGraph.url).toBe(`${SITE_CONFIG.url}/products/mindray-patient-monitor`);
       expect(metadata.openGraph.images[0].url).toContain('/og?');
       expect(metadata.openGraph.images[0].width).toBe(1200);

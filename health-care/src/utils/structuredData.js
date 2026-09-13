@@ -18,7 +18,10 @@ import { escapeJsonLd } from '@/utils/helpers';
  * Required fields per schema type for development-mode validation.
  */
 const REQUIRED_FIELDS = {
-  Product: ['name', 'description', 'offers'],
+  // Note: `offers` is intentionally NOT required — no-price ("Contact for
+  // Price") products emit a valid Product without an Offer rather than a
+  // misleading zero-priced one.
+  Product: ['name', 'description'],
   Organization: ['name', 'url'],
   BreadcrumbList: ['itemListElement'],
   WebSite: ['name', 'url'],
@@ -113,6 +116,9 @@ export function generateProductSchema(product) {
     price,
     priceCurrency = 'BDT',
     inStock = true,
+    isOutOfStock,
+    isOnBackorder,
+    stock,
     url,
     slug,
     _id,
@@ -126,10 +132,28 @@ export function generateProductSchema(product) {
     url ||
     (slug ? `${siteConfig.url}/products/${slug}` : _id ? `${siteConfig.url}/products/${_id}` : siteConfig.url);
 
-  // Availability: InStock or OutOfStock based on product.inStock
-  const availability = inStock
-    ? 'https://schema.org/InStock'
-    : 'https://schema.org/OutOfStock';
+  // Availability — InStock / OutOfStock / BackOrder.
+  // `inStock` defaults true (back-compat). `isOutOfStock` and `stock <= 0`
+  // take precedence when present, and `isOnBackorder` maps to the schema.org
+  // BackOrder value so we never advertise InStock for something we can't ship
+  // right now (misleading availability is a Rich Results policy issue).
+  const explicitOutOfStock = typeof isOutOfStock === 'boolean'
+    ? isOutOfStock
+    : (typeof stock === 'number' && stock <= 0);
+  const availability = isOnBackorder
+    ? 'https://schema.org/BackOrder'
+    : (inStock && !explicitOutOfStock)
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
+
+  // A sellable Offer requires a real positive numeric price. Products with a
+  // null/zero price ("Contact for Price" items) omit the Offer entirely — a
+  // fake "0.00" price is a Google Rich Results policy violation and suppresses
+  // product snippets catalog-wide.
+  const numericPrice = typeof price === 'number'
+    ? price
+    : (typeof price === 'string' && price.trim() !== '') ? parseFloat(price) : NaN;
+  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
 
   // Resolve brand name whether it's a string or populated object
   const brandName = typeof brand === 'object' ? brand?.name : brand;
@@ -188,13 +212,16 @@ export function generateProductSchema(product) {
         worstRating: '1',
       },
     }),
-    // Offers object with all required fields
-    offers: {
-      '@type': 'Offer',
-      url: productUrl,
-      priceCurrency,
-      price: price !== undefined ? Number(price).toFixed(2) : '0.00',
-      availability,
+    // Offers — only attached when a real positive price exists. Attaching a
+    // zero/misleading price is a Google Rich Results policy violation and
+    // suppresses product snippets catalog-wide.
+    ...(hasPrice && {
+      offers: {
+        '@type': 'Offer',
+        url: productUrl,
+        priceCurrency,
+        price: numericPrice.toFixed(2),
+        availability,
       priceValidUntil,
       itemCondition: 'https://schema.org/NewCondition',
       seller: {
@@ -231,6 +258,7 @@ export function generateProductSchema(product) {
         },
       },
     },
+    }),
     // additionalProperty array for certifications (DGDA, CE, ISO)
     ...(certifications?.length > 0 && {
       additionalProperty: certifications.map(cert => ({

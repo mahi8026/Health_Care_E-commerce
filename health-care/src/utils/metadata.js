@@ -7,6 +7,45 @@
 
 import { siteConfig } from '@/config/seo'
 
+/**
+ * Site-name suffix used by the root layout title template.
+ */
+export const SITE_TITLE_SUFFIX = ' | MediportBD';
+
+/**
+ * Build a Next.js Metadata `title` that renders the site name exactly once.
+ *
+ * The root layout already appends ` | MediportBD` through its title
+ * template, so passing another suffixed string would render
+ * `... | MediportBD | MediportBD`. This helper preserves a configured
+ * suffix when present and adds it only when missing.
+ *
+ * @param {string} title - Candidate title, with or without the site suffix
+ * @returns {{ absolute: string }} Exact browser-tab title
+ */
+export function finalTitle(title) {
+  const text = String(title ?? '').trim();
+  if (!text) {
+    return { absolute: siteConfig.name };
+  }
+
+  const suffixed = text.toLowerCase().endsWith('| mediportbd')
+    ? text
+    : `${text}${SITE_TITLE_SUFFIX}`;
+
+  return { absolute: suffixed };
+}
+
+/**
+ * Renderable string form of {@link finalTitle}, for Open Graph/Twitter.
+ *
+ * @param {string} title - Candidate title, with or without the site suffix
+ * @returns {string} Exact share title
+ */
+export function socialTitle(title) {
+  return finalTitle(title).absolute;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -151,12 +190,18 @@ export function generateProductMetadata(product) {
   const brandRaw = (typeof product.brand === 'object' ? product.brand?.name : product.brand || '').trim()
   const catRaw   = typeof product.category === 'object' ? product.category?.name : product.category
 
-  // Keyword-rich title targeting "price in Bangladesh" searches..
-  // Brand-first prefix, but ONLY when the name doesn't already start with the brand
-  // (many names already include it, e.g. "Abbott Bioline Dengue Test" — avoids
-  // dupes like "Abbott Abbott ..." and keeps the title lean for the SERP).
-  const nameHasBrand = brandRaw && name.toLowerCase().startsWith(brandRaw.toLowerCase())
-  const title = `${nameHasBrand ? '' : brandRaw ? `${brandRaw} ` : ''}${name} — Price in Bangladesh | ${siteConfig.name}`
+  // Brand-first SERP title, but ONLY when the name doesn't already start with the brand.
+  // Many product names already include it (e.g. "Abbott Bioline Dengue Test"), so
+  // dedup avoids spammy "Abbott Abbott ..." titles and keeps keywords dense for the
+  // "price in Bangladesh" money queries. Pattern: "Jumper Digital BP Monitor HA300".
+  const nameHasBrand =
+    brandRaw && name.toLowerCase().startsWith(brandRaw.toLowerCase())
+  // Data-tied suffix: real BDT price when present, otherwise a delivery anchor
+  // warranted by existing PDP metadata copy. No stock, warranty, reviews, or B2B claims.
+  const moneySuffix = product.price && Number(product.price) > 0
+    ? `Price ৳${Number(product.price).toLocaleString('en-BD')}`
+    : 'Buy Online Bangladesh';
+  const title = `${nameHasBrand ? '' : brandRaw ? `${brandRaw} ` : ''}${name} — ${moneySuffix} | ${siteConfig.name}`;
 
   // Rich description: first 110 chars of description + brand + price
   const descChunk = (product.description || '').replace(/\s+/g, ' ').trim().slice(0, 110)

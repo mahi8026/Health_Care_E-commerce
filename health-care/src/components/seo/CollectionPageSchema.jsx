@@ -74,7 +74,7 @@ export function ItemListSchema({ items, listName, numberOfItems }) {
         '@type': 'Product',
         name: escapeJsonLd(item.name),
         image: item.images?.[0] || item.image,
-        url: `${baseUrl}/products/${item._id || item.slug}`,
+        url: `${baseUrl}/products/${item.slug || item._id}`,
         offers: item.price ? {
           '@type': 'Offer',
           price: item.price.toString(),

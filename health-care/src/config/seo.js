@@ -83,8 +83,8 @@ export const PAGE_SEO = {
     keywords:    'medical equipment Bangladesh, buy medical equipment online BD, hospital equipment Dhaka, diagnostic equipment price Bangladesh, medical supply Dhaka, ECG machine Bangladesh, medical device supplier BD',
   },
   products: {
-    title:       'Medical Equipment Bangladesh — 350+ Products | Buy Online | Fast Delivery',
-    description: 'Shop 350+ medical products in BD ✓ ECG, ultrasound, surgical tools ✓ Roche, Abbott, Mindray ✓ DGDA certified ✓ B2B bulk pricing ✓ Same-day Dhaka delivery. Call: 01646-886795',
+    title:       'Medical Equipment Bangladesh — 350+ DGDA Products | MediportBD',
+    description: 'Shop 350+ medical products in BD: ECG, ultrasound, surgical tools from Roche, Abbott, Mindray. DGDA-certified, B2B pricing, same-day Dhaka delivery.',
     keywords:    'medical supplies Bangladesh, buy medical equipment online Bangladesh, hospital supplies Dhaka, surgical instruments BD, lab equipment price Bangladesh, medical device online shop',
   },
   reagentStore: {
@@ -171,8 +171,8 @@ export const CATEGORY_SEO = {
     h1:          'Surgical Instruments in Bangladesh',
   },
   'Laboratory Reagents': {
-    title:       'Laboratory Reagents Bangladesh — TSH, Dengue, Thyroid Rapid Test Kits | MediportBD',
-    description: 'Laboratory reagents and rapid test kits in Bangladesh. TSH, T3, T4, FT3, Vitamin B12, Dengue NS1, RF/RA latex tests from Finecare, Biopanda. Cold chain delivery.',
+    title:       'Lab Reagents Bangladesh — Dengue, TSH Kits',
+    description: 'Buy lab reagents in Bangladesh: Dengue, TSH/FT3 and RF/RA rapid tests from Finecare & Biopanda. DGDA-registered, cold-chain delivery, B2B pricing.',
     h1:          'Laboratory Reagents in Bangladesh',
   },
   'Laboratory Equipment': {

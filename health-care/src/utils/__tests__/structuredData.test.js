@@ -119,6 +119,24 @@ describe('generateProductSchema', () => {
     expect(schema.offers.availability).toBe('https://schema.org/InStock')
   })
 
+  it('marks OutOfStock when isOutOfStock is true (even if inStock defaults true)', () => {
+    const product = { ...validProduct, isOutOfStock: true }
+    const schema = generateProductSchema(product)
+    expect(schema.offers.availability).toBe('https://schema.org/OutOfStock')
+  })
+
+  it('marks OutOfStock when stock is <= 0', () => {
+    const product = { ...validProduct, stock: 0 }
+    const schema = generateProductSchema(product)
+    expect(schema.offers.availability).toBe('https://schema.org/OutOfStock')
+  })
+
+  it('marks BackOrder when isOnBackorder is true', () => {
+    const product = { ...validProduct, isOnBackorder: true }
+    const schema = generateProductSchema(product)
+    expect(schema.offers.availability).toBe('https://schema.org/BackOrder')
+  })
+
   // --- URL ---
 
   it('builds a product URL from _id when url is not provided', () => {
@@ -163,10 +181,39 @@ describe('generateProductSchema', () => {
     expect(schema.offers.price).toBe('1299.90')
   })
 
-  it('defaults price to "0.00" when price is undefined', () => {
+  it('omits the Offer entirely when price is undefined (no fake 0.00)', () => {
     const product = { ...validProduct, price: undefined }
     const schema = generateProductSchema(product)
-    expect(schema.offers.price).toBe('0.00')
+    // P0 fix: a Product without a real price must NOT emit a misleading
+    // "0.00" Offer — Google treats zero/misleading prices as a Rich Results
+    // violation. The Product node itself stays valid.
+    expect(schema).not.toHaveProperty('offers')
+  })
+
+  it('omits the Offer entirely when price is null (Contact for Price)', () => {
+    const product = { ...validProduct, price: null }
+    const schema = generateProductSchema(product)
+    expect(schema).not.toHaveProperty('offers')
+  })
+
+  it('omits the Offer entirely when price is zero', () => {
+    const product = { ...validProduct, price: 0 }
+    const schema = generateProductSchema(product)
+    expect(schema).not.toHaveProperty('offers')
+  })
+
+  it('omits the Offer entirely when price is a non-numeric string', () => {
+    const product = { ...validProduct, price: 'on request' }
+    const schema = generateProductSchema(product)
+    expect(schema).not.toHaveProperty('offers')
+  })
+
+  it('still emits a valid Product (name/description/url) when price is missing', () => {
+    const product = { ...validProduct, price: null }
+    const schema = generateProductSchema(product)
+    expect(schema.name).toBe(validProduct.name)
+    expect(schema.description).toBe(validProduct.description)
+    expect(schema.url).toMatch(/^https?:\/\//)
   })
 
   // --- Enhanced features: Images array ---

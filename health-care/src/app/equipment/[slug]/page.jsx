@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 import { API } from '@/constants/api';
 import { LANDING_PAGES, getLandingPageBySlug } from '@/config/landingPages';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
@@ -20,20 +21,20 @@ export async function generateMetadata({ params }) {
 
   const canonicalUrl = `${SITE_CONFIG.url}/equipment/${slug}`;
   return {
-    title: page.metaTitle,
+    title: finalTitle(page.metaTitle),
     description: page.metaDescription,
     keywords: page.keywords.join(', '),
     alternates: { canonical: canonicalUrl },
     openGraph: {
       type: 'website',
       url: canonicalUrl,
-      title: page.metaTitle,
+      title: socialTitle(page.metaTitle),
       description: page.metaDescription,
       images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630, alt: page.title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: page.metaTitle,
+      title: socialTitle(page.metaTitle),
       description: page.metaDescription,
     },
   };

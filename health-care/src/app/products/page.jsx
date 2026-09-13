@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ProductsPage from '@/views/ProductsPage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import { fetchListing } from '@/lib/listingData';
 
@@ -17,26 +18,29 @@ export async function generateMetadata({ searchParams }) {
   const resolvedParams = await Promise.resolve(searchParams || {});
   const page = parseInt(resolvedParams.page) || 1;
   const hasFilters = resolvedParams.category || resolvedParams.brand || resolvedParams.sort;
-  
+  const resolvedTitle = PAGE_SEO.products.title;
+  const exactTitle = finalTitle(resolvedTitle);
+  const shareTitle = socialTitle(resolvedTitle);
+
   // SEO Fix: noindex pagination and filtered pages to prevent duplicate content
   // Only page 1 without filters should be indexed
   if (page > 1 || hasFilters) {
     return {
-      title: PAGE_SEO.products.title,
+      title: exactTitle,
       description: PAGE_SEO.products.description,
       robots: { index: false, follow: true }, // noindex but follow links
       alternates: { canonical: `${SITE_CONFIG.url}/products` }, // canonical to page 1
     };
   }
-  
+
   // Page 1 without filters - full SEO metadata
   return {
-    title:       PAGE_SEO.products.title,
+    title: exactTitle,
     description: PAGE_SEO.products.description,
     keywords:    PAGE_SEO.products.keywords,
     alternates:  { canonical: `${SITE_CONFIG.url}/products` },
     openGraph: {
-      title:       PAGE_SEO.products.title,
+      title: shareTitle,
       description: PAGE_SEO.products.description,
       url:         `${SITE_CONFIG.url}/products`,
       images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],

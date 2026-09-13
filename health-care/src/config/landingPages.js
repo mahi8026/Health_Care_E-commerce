@@ -91,7 +91,7 @@ export const LANDING_PAGES = [
     title: 'Ultrasound Machine Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Ultrasound Machine Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Ultrasound machine price in Bangladesh from MediportBD — portable and color Doppler ultrasound systems with DGDA certification, probes, warranty and B2B pricing.',
+      'Ultrasound machine prices in Bangladesh: portable units from ৳350,000. Mindray, Edan & Contec Doppler systems, DGDA-certified, installation included.',
     keywords: [
       'ultrasound machine price Bangladesh',
       'color Doppler ultrasound price BD',
@@ -203,7 +203,7 @@ export const LANDING_PAGES = [
     title: 'Pulse Oximeter Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Pulse Oximeter Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Pulse oximeter price in Bangladesh — fingertip and handheld SpO2 monitors from Beurer, Rossmax and Yuwell with DGDA certification and nationwide delivery.',
+      'Pulse oximeter price in Bangladesh: fingertip SpO2 from ৳800. Beurer, Rossmax & Yuwell models, DGDA-certified, free Dhaka delivery.',
     keywords: [
       'pulse oximeter price Bangladesh',
       'finger pulse oximeter price BD',

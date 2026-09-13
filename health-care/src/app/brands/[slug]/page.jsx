@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import BrandPage from '@/views/BrandPage';
 import { SITE_CONFIG } from '@/config/seo';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 import { API } from '@/constants/api';
 import {
   getBrandFaqs,
@@ -25,14 +26,16 @@ async function fetchBrands() {
 
 async function fetchBrandProducts(name) {
   try {
-    const res = await fetch(`${API}/products?brand=${encodeURIComponent(name)}&limit=48`, {
+    const res = await fetch(`${API}/products?brand=${encodeURIComponent(name)}&limit=100`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) return { products: [], total: 0 };
     const data = await res.json();
-    return Array.isArray(data.data) ? data.data : [];
+    const products = Array.isArray(data.data) ? data.data : [];
+    const total = Number(data?.pagination?.total) || Number(data?.pagination?.totalDocs) || 0;
+    return { products, total };
   } catch {
-    return [];
+    return { products: [], total: 0 };
   }
 }
 
@@ -55,22 +58,30 @@ export async function generateMetadata({ params }) {
   }
 
   const brandName = brand.name || 'Medical Brand';
-  // CTR-optimized title: include brand + key benefit phrase
-  const title = `${brandName} Medical Equipment & Prices | DGDA-Registered | MediportBD`;
-  const description =
-    brand.seo?.metaDescription ||
-    brand.description ||
-    `Buy ${brandName} medical equipment and supplies in Bangladesh. DGDA-registered products, warranty and B2B pricing from MediportBD.`;
+  const products = (await fetchBrandProducts(brandName)).products;
+  const productCount = products.length || brand.productCount || 0;
+  const categoryAnchor = products[0]?.category?.name
+    || (typeof products[0]?.category === 'string' ? products[0]?.category : '');
+  // Data-tied title/description only: live sample count + first category seen.
+  // No invented ranges, availability, delivery, stock, reviews, or warranty.
+  const title = productCount > 0
+    ? `${brandName} in Bangladesh — ${productCount}+ Products${categoryAnchor ? ` | ${categoryAnchor}` : ''} | MediportBD`
+    : `${brandName} in Bangladesh | Shop Genuine Products | MediportBD`;
+  const description = brand.seo?.metaDescription
+    || brand.description
+    || (productCount > 0
+      ? `Browse ${productCount}+ ${brandName} products in Bangladesh${categoryAnchor ? `, starting with ${categoryAnchor}` : ''}. Genuine catalogue, DGDA documentation available for regulated items.`
+      : `Shop genuine ${brandName} medical equipment and supplies in Bangladesh from MediportBD.`);
 
   const canonicalUrl = `${SITE_CONFIG.url}/brands/${slug}`;
   const logoUrl = brand.logo?.url ? brand.logo.url : `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`;
 
   return {
-    title,
+    title: finalTitle(title),
     description,
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title,
+      title: socialTitle(title),
       description,
       url: canonicalUrl,
       type: 'website',
@@ -78,7 +89,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: socialTitle(title),
       description,
       images: [logoUrl],
     },
@@ -97,7 +108,7 @@ export default async function BrandDetailPage({ params }) {
     notFound();
   }
 
-  const products = await fetchBrandProducts(brand.name);
+  const { products } = await fetchBrandProducts(brand.name);
   const brandName = brand.name || 'Medical Brand';
   const canonicalUrl = `${SITE_CONFIG.url}/brands/${slug}`;
   const quickAnswer = getBrandQuickAnswer(slug, brandName);

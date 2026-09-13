@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ProductsPage from '@/views/ProductsPage';
 import { CATEGORY_SEO, SITE_CONFIG } from '@/config/seo';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
 import { fetchListing } from '@/lib/listingData';
 import {
@@ -50,19 +51,19 @@ export async function generateMetadata({ params }) {
   const canonicalUrl = `${SITE_CONFIG.url}/products/category/${resolvedParams.slug}`;
 
   return {
-    title:       seo.title,
+    title:       finalTitle(seo.title),
     description: seo.description,
     keywords:    `${categoryName} Bangladesh, buy ${categoryName.toLowerCase()} online BD, ${categoryName.toLowerCase()} supplier Dhaka`,
     alternates:  { canonical: canonicalUrl },
     openGraph: {
-      title:       seo.title,
+      title:       socialTitle(seo.title),
       description: seo.description,
       url:         canonicalUrl,
       images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],
     },
     twitter: {
       card:        'summary_large_image',
-      title:       seo.title,
+      title:       socialTitle(seo.title),
       description: seo.description,
     },
   };

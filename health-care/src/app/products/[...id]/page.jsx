@@ -146,7 +146,12 @@ export async function generateMetadata({ params }) {
   // "price in Bangladesh" money queries. Pattern: "Jumper Digital BP Monitor HA300".
   const nameHasBrand =
     brandName && name.trim().toLowerCase().startsWith(brandName.toLowerCase());
-  const title = `${nameHasBrand ? '' : brandName ? `${brandName} ` : ''}${name} | Price in Bangladesh`;
+  // Data-tied title suffix only: real BDT price when present; otherwise a generic
+  // delivery anchor already used in PDP copy. No stock/warranty/review claims.
+  const moneySuffix = product.price && Number(product.price) > 0
+    ? `Price ৳${Number(product.price).toLocaleString('en-BD')}`
+    : 'Buy Online Bangladesh';
+  const title = `${nameHasBrand ? '' : brandName ? `${brandName} ` : ''}${name} | ${moneySuffix}`;
   const description = buildDescription(name, brandName, catName, product.price, product.description);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
