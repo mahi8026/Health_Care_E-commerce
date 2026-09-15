@@ -86,7 +86,7 @@ export default async function Home() {
               Why Choose MediportBD for Medical Equipment in Bangladesh?
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] max-w-3xl mx-auto leading-relaxed">
-              As Bangladesh&apos;s most trusted medical equipment supplier since 2020, MediportBD has been serving over 500 hospitals, 
+              As Bangladesh&apos;s most trusted medical equipment supplier since 2020, MediportBD has been supplying hospitals, 
               diagnostic centers, clinics and healthcare professionals across all 64 districts with premium quality diagnostic devices, 
               surgical instruments, laboratory reagents and hospital machines from the world&apos;s leading brands.
             </p>
@@ -95,11 +95,11 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
               <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                🏥 DGDA Registered &amp; ISO 13485 Certified
+                🏥 DGDA-Registered Supplier &amp; ISO 13485-Certified Brands
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Every product in our 350+ item catalog is DGDA registered and CE certified, meeting Bangladesh regulatory standards 
-                and international quality benchmarks. We are ISO 13485 certified for medical device quality management.
+                Products in our 600+ item catalog are sourced from leading global manufacturers, with DGDA registration details and conformity documents available on request, meeting Bangladesh regulatory standards 
+                and international quality benchmarks. We supply products from manufacturers certified to ISO 13485 for medical device quality management.
               </p>
             </div>
             
@@ -145,10 +145,10 @@ export default async function Home() {
             
             <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
               <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                📞 24/7 Technical Support
+                📞 Technical Support Team
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Round-the-clock technical support team available via phone, WhatsApp and email. B2B clients receive priority 
+                Technical support team available via phone, WhatsApp and email (Sat–Thu, 9am–6pm). B2B clients receive priority 
                 support with dedicated account managers and service contracts for preventive maintenance.
               </p>
             </div>

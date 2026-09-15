@@ -154,7 +154,7 @@ export const BENGALI_SEO_KEYWORDS = [
 // Bengali content for meta descriptions (converts to Bengali)
 export const BENGALI_META_TEMPLATES = {
   product: (productBn, price) => 
-    `${productBn} বাংলাদেশে কিনুন মাত্র ৳${price} টাকায়। ✓ DGDA সার্টিফাইড ✓ ঢাকায় ফ্রি ডেলিভারি ✓ ওয়ারেন্টি। কল: ০১৬৪৬-৮৮৬৭৯৫`,
+    `${productBn} বাংলাদেশে কিনুন মাত্র ৳${price} টাকায়। ✓ DGDA রেজিস্টার্ড সাপ্লায়ার ✓ ঢাকায় ফ্রি ডেলিভারি ✓ ওয়ারেন্টি। কল: ০১৬৪৬-৮৮৬৭৯৫`,
   
   category: (categoryBn) =>
     `${categoryBn} বাংলাদেশে কিনুন সেরা দামে। ✓ DGDA অনুমোদিত ✓ ফ্রি ডেলিভারি ✓ ইনস্টলেশন সেবা। কল: ০১৬৪৬-৮৮৬৭৯৫`,

@@ -38,6 +38,12 @@ const NewArrivalSlider = lazy(() => import('@/components/home/NewArrivalSlider')
 const BestSellingSection = lazy(() => import('@/components/home/BestSellingSection'));
 const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
 const FlashDealsSection = lazy(() => import('@/components/home/FlashDealsSection'));
+// Safety bound for the homepage category strip. The strip scrolls
+// horizontally and must stay a complete index of the catalogue — a previous
+// `.slice(0, 16)` cap hid 5 of the 21 database categories from the homepage.
+// Keep this comfortably above the real category count.
+const MAX_HOME_CATEGORY_TILES = 40;
+
 const CategoryProductSections = lazy(() => import('@/components/home/CategoryProductSections'));
 const RecentlyViewed = lazy(() => import('@/components/product/RecentlyViewed'));
 const FeaturedProductsSection = lazy(() => import('@/components/home/FeaturedProductsSection'));
@@ -78,10 +84,13 @@ const B2B_FEATURES = [
 ];
 
 const B2B_STATS = [
-  { val: '500+', label: 'Active B2B Clients' },
+  // NOTE: index 0 is replaced at render time with the real count from the
+  // stats API (see B2BSection). The fallback must stay honest — a medical
+  // supplier must never render an invented trust number when the API fails.
+  { val: '0+', label: 'Active B2B Clients' },
   { val: '30%', label: 'Max Bulk Discount' },
   { val: '90 days', label: 'Credit Terms' },
-  { val: '24/7', label: 'Dedicated Support' },
+  { val: 'Sat–Thu', label: 'Dedicated Support' },
 ];
 
 // WHY_US is built dynamically from settings — see buildWhyUs() below
@@ -97,7 +106,7 @@ function buildWhyUs(settings) {
     ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
     : '৳50K';
   const returnDays = settings?.returnPolicyDays ?? 30;
-  const supportHours = settings?.supportHours ?? '24/7';
+  const supportHours = settings?.supportHours ?? 'Sat–Thu 9am–6pm';
   const certifications = settings?.certifications?.join(', ') || 'DGDA Registered';
   return [
     { icon: <FaCheckCircle />, title: certifications.split(',')[0]?.trim() || 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
@@ -801,9 +810,16 @@ export default function HomePage({ initialData = null, initialSettings = null })
     if (categories.length > 0) {
       // Hide empty categories (productCount 0) so visitors never land on
       // an empty grid; fall back treats missing productCount as populated.
+      //
+      // NOTE: this strip scrolls horizontally, so it must not hard-cap the
+      // catalogue. It previously used `.slice(0, 16)` while the database holds
+      // 21 categories, which left ppe-and-safety, medical-devices,
+      // diagnostic-devices and mobility-aids unreachable from the homepage
+      // (≈46% of the catalogue had no path from the homepage). The cap is now
+      // only a safety bound, comfortably above the current category count.
       return categories
         .filter(cat => (cat.productCount ?? 1) > 0)
-        .slice(0, 16);
+        .slice(0, MAX_HOME_CATEGORY_TILES);
     }
     return [
       { name: 'Lab Reagents', emoji: '🧪', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
@@ -881,7 +897,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
           {/* Horizontal scrollable category circles - Dynamic from API */}
           <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8,
             scrollbarWidth: 'thin', scrollbarColor: '#E5E7EB transparent' }}>
-            {/* Show first 16 categories from API, or fallback to hardcoded if loading */}
+            {/* Show every populated category from the API, or fall back to hardcoded if loading */}
             {navCategories.map((cat, index) => {
               const categoryName = cat.name || cat;
               const categorySlug = cat.slug || CATEGORY_NAME_TO_SLUG[categoryName] || categoryName.toLowerCase().replace(/\s+/g, '-');

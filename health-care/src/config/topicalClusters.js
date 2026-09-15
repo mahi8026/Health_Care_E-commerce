@@ -97,7 +97,7 @@ export const TOPICAL_CLUSTERS = [
     ],
     intro: [
       'MediportBD supplies premium surgical instruments to operation theatres, surgical clinics and hospitals across Bangladesh. Our catalog includes scissors, forceps, needle holders, trocars, scalpels and complete surgical sets in medical-grade stainless steel.',
-      'All instruments are CE certified, autoclavable and DGDA registered, with bulk B2B pricing for hospitals, surgical centres and medical colleges. Request a formal quotation for tenders and institutional procurement.',
+      'All instruments are CE-marked, autoclavable stainless steel, with bulk B2B pricing for hospitals, surgical centres and medical colleges. Request a formal quotation for tenders and institutional procurement.',
     ],
     landingSlugs: ['surgical-instruments-price-bangladesh'],
     guideSlugs: ['surgical-instruments-guide-bangladesh'],

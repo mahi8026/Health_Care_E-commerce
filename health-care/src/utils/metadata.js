@@ -207,8 +207,8 @@ export function generateProductMetadata(product) {
   const descChunk = (product.description || '').replace(/\s+/g, ' ').trim().slice(0, 110)
   const priceStr  = product.price ? `৳${Number(product.price).toLocaleString()}` : ''
   const description = descChunk
-    ? `Buy ${name} in Bangladesh. ${descChunk} Brand: ${brandRaw || ''}. Price: ${priceStr}. DGDA certified. Free delivery Dhaka.`
-    : `Buy ${name} in Bangladesh. Brand: ${brandRaw || ''}. Price: ${priceStr}. DGDA certified. Free delivery Dhaka.`
+    ? `Buy ${name} in Bangladesh. ${descChunk} Brand: ${brandRaw || ''}. Price: ${priceStr}. DGDA-registered supplier. Free delivery Dhaka.`
+    : `Buy ${name} in Bangladesh. Brand: ${brandRaw || ''}. Price: ${priceStr}. DGDA-registered supplier. Free delivery Dhaka.`
 
   // Use slug for canonical URL when available — avoids MongoDB ID in URL
   const slugOrId = product.slug || product._id

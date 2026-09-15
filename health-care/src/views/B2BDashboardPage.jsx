@@ -134,12 +134,12 @@ function B2BLanding() {
   const deliveryThreshold = settings?.freeDeliveryThreshold
     ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
     : '৳50K';
-  const supportHours = settings?.supportHours ?? '24/7';
-  const contactPhone = settings?.contactPhone ?? '+880 1800-Mediport';
-  const contactEmail = settings?.contactEmail ?? 'b2b@MediportBD.com';
+  const supportHours = settings?.supportHours ?? 'Sat–Thu 9am–6pm';
+  const contactPhone = settings?.contactPhone ?? '+880 1646-886795';
+  const contactEmail = settings?.contactEmail ?? 'mediportbdoficial@gmail.com';
   const totalProducts = siteStats?.totalProducts
     ? `${siteStats.totalProducts.toLocaleString()}+`
-    : '350+';
+    : '600+'; // verified floor (catalogue holds 621) — never render an invented count
   const totalB2BClients = siteStats?.totalB2BClients
     ? `${siteStats.totalB2BClients}+`
     : '1+';
@@ -201,7 +201,7 @@ function B2BLanding() {
               </div>
               <div className="mt-5 flex items-center gap-4 text-xs text-[var(--color-text-secondary)]">
                 <span>✓ DGDA Registered</span>
-                <span>✓ ISO 13485 Certified</span>
+                <span>✓ Products from ISO 13485-Certified Manufacturers</span>
                 <span>{totalProducts} Products</span>
               </div>
             </div>
@@ -553,14 +553,14 @@ function B2BDashboard({ data, onRefresh }) {
               <div className="space-y-2 text-xs mb-4">
                 <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-                  +880 1800-Mediport
+                  +880 1646-886795
                 </div>
                 <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                  b2b@MediportBD.com
+                  mediportbdoficial@gmail.com
                 </div>
               </div>
-              <a href="mailto:b2b@MediportBD.com"
+              <a href="mailto:mediportbdoficial@gmail.com"
                 className="block w-full py-2.5 bg-brand-teal hover:bg-[var(--color-brand-teal-hover)] text-white rounded-xl text-xs font-semibold text-center transition-colors">
                 Contact Manager
               </a>
@@ -591,7 +591,7 @@ function B2BDashboard({ data, onRefresh }) {
               ) : (
                 <div className="text-center py-4">
                   <div className="text-sm text-[var(--color-text-tertiary)] mb-3">No credit line yet</div>
-                  <a href="mailto:b2b@MediportBD.com"
+                  <a href="mailto:mediportbdoficial@gmail.com"
                     className="text-xs text-brand-teal font-semibold hover:underline">
                     Request credit terms →
                   </a>

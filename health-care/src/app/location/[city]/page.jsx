@@ -24,7 +24,7 @@ export async function generateMetadata({ params }) {
   }
 
   const title = `Medical Equipment ${division.name} — Supplier in ${division.name} Bangladesh`;
-  const description = `Buy medical equipment in ${division.name}, Bangladesh. ✓ DGDA certified ✓ Free delivery in ${division.name} ✓ ECG, ultrasound, lab reagents ✓ Serving ${division.population} people. Call: 01646-886795`;
+  const description = `Buy medical equipment in ${division.name}, Bangladesh. ✓ DGDA-registered supplier ✓ Free delivery in ${division.name} ✓ ECG, ultrasound, lab reagents ✓ Serving ${division.population} people. Call: 01646-886795`;
 
   return {
     title,
@@ -127,7 +127,7 @@ export default async function CityPage({ params }) {
               Medical Equipment Supplier in {division.name}, Bangladesh
             </h1>
             <p className="text-lg text-[var(--color-text-secondary)] mb-4">
-              Serving {division.population} people in {division.name} with DGDA certified medical equipment, 
+              Serving {division.population} people in {division.name} with medical equipment from a DGDA-registered importer, 
               diagnostic machines, laboratory reagents, and hospital supplies.
             </p>
             <div className="flex flex-wrap gap-3 text-sm">
@@ -135,7 +135,7 @@ export default async function CityPage({ params }) {
                 📍 Free Delivery in {division.name}
               </span>
               <span className="bg-[var(--color-status-success-tint)] text-[var(--color-brand-teal)] px-3 py-1 rounded-full">
-                ✅ DGDA Certified
+                ✅ DGDA-Registered Supplier
               </span>
               <span className="bg-[var(--color-status-success-tint)] text-[var(--color-brand-teal)] px-3 py-1 rounded-full">
                 🚚 1-3 Days Delivery
@@ -279,7 +279,7 @@ export default async function CityPage({ params }) {
               <div className="flex gap-4">
                 <div className="text-3xl">📞</div>
                 <div>
-                  <h3 className="font-semibold text-[var(--color-brand-navy)] mb-2">24/7 Support</h3>
+                  <h3 className="font-semibold text-[var(--color-brand-navy)] mb-2">Support (Sat–Thu)</h3>
                   <p className="text-sm text-[var(--color-text-secondary)]">
                     Technical support hotline for {division.name} hospitals. Call: 01646-886795
                   </p>
@@ -323,7 +323,7 @@ export default async function CityPage({ params }) {
                 <p className="text-sm text-[var(--color-text-secondary)]">
                   MediportBD supplies all types of medical equipment in {division.name}: diagnostic machines (ECG, ultrasound, 
                   patient monitors), surgical instruments, laboratory reagents, hospital furniture, PPE, and medical consumables. 
-                  All products are DGDA registered and CE certified.
+                  Registration documentation is available on request.
                 </p>
               </div>
 

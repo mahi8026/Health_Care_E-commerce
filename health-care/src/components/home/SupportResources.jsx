@@ -80,7 +80,7 @@ const SUPPORT_OPTIONS = [
   },
   {
     icon: <FaHeadset />,
-    title: '24/7 Support',
+    title: 'Support (Sat–Thu)',
     desc: 'Technical assistance',
     action: '/support',
     color: 'var(--color-status-success)',
@@ -207,7 +207,7 @@ export default function SupportResources() {
             Need Technical Support?
           </h3>
           <p style={{ fontSize: 'var(--text-sm)', color: 'rgba(255,255,255,0.8)', marginBottom: 16 }}>
-            Our medical equipment specialists are available 24/7 to assist you
+            Our medical equipment specialists are available during business hours (Sat–Thu, 9am–6pm) to assist you
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button

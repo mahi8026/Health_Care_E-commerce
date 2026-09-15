@@ -67,7 +67,7 @@ function buildFeatures(settings) {
     ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
     : '৳50K';
   const returnDays = settings?.returnPolicyDays ?? 30;
-  const supportHours = settings?.supportHours ?? '24/7';
+  const supportHours = settings?.supportHours ?? 'Sat–Thu 9am–6pm';
   const certifications = settings?.certifications?.join(', ') || 'DGDA Registered';
 
   return [

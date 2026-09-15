@@ -10,15 +10,15 @@ import FAQSchema from './FAQSchema';
 export const HOMEPAGE_FAQS = [
   {
     question: "What medical equipment does MediportBD supply in Bangladesh?",
-    answer: "MediportBD supplies 350+ medical equipment products including diagnostic machines (ECG, ultrasound, patient monitors), surgical instruments, laboratory reagents (HbA1c, CBC, troponin kits), hospital equipment, PPE, and medical supplies. All products are DGDA registered and CE certified."
+    answer: "MediportBD supplies 600+ medical equipment products including diagnostic machines (ECG, ultrasound, patient monitors), surgical instruments, laboratory reagents (HbA1c, CBC, troponin kits), hospital equipment, PPE, and medical supplies. Products are sourced from leading global manufacturers, with DGDA registration details and conformity documents available on request."
   },
   {
     question: "Does MediportBD offer B2B bulk pricing for hospitals?",
-    answer: "Yes, MediportBD offers 8-30% bulk discounts for hospitals, clinics, and diagnostic centers in Bangladesh. B2B clients receive 30-90 day credit terms, free installation in Dhaka metro area, dedicated account managers, and 24/7 technical support."
+    answer: "Yes, MediportBD offers 8-30% bulk discounts for hospitals, clinics, and diagnostic centers in Bangladesh. B2B clients receive 30-90 day credit terms, free installation in Dhaka metro area, dedicated account managers, and priority technical support during business hours (Sat–Thu, 9am–6pm)."
   },
   {
     question: "Are MediportBD products DGDA registered and certified?",
-    answer: "Yes, MediportBD is a DGDA registered medical equipment supplier (License No: [Add License Number]). All products we sell are DGDA approved and CE certified, meeting Bangladesh medical device regulations and international quality standards."
+    answer: "MediportBD is a DGDA-registered medical equipment supplier (License No: [Add License Number]). We source products from leading global manufacturers, and DGDA registration details and conformity documents for the products we sell are available on request for institutional buyers."
   },
   {
     question: "What is the delivery time for medical equipment in Dhaka?",

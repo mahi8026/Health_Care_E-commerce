@@ -480,7 +480,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               >
                 <div className="relative">
                   <EnhancedSearchBox 
-                    placeholder="Search 350+ medical products..." 
+                    placeholder="Search 600+ medical products..." 
                     autoFocus 
                     onClose={() => setSearchOpen(false)}
                   />

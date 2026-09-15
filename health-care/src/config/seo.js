@@ -78,23 +78,23 @@ export const organization = {
 
 export const PAGE_SEO = {
   home: {
-    title:       'Medical Equipment Bangladesh — DGDA Certified Supplier',
-    description: 'Buy medical equipment in Bangladesh. ECG, ultrasound, lab reagents. DGDA certified. 8-30% B2B discount. Free delivery Dhaka. Call: 01646-886795',
+    title:       'Medical Equipment Bangladesh — DGDA-Registered Supplier',
+    description: 'Buy medical equipment in Bangladesh. ECG, ultrasound, lab reagents. DGDA-registered supplier. 8-30% B2B discount. Free delivery Dhaka. Call: 01646-886795',
     keywords:    'medical equipment Bangladesh, buy medical equipment online BD, hospital equipment Dhaka, diagnostic equipment price Bangladesh, medical supply Dhaka, ECG machine Bangladesh, medical device supplier BD',
   },
   products: {
-    title:       'Medical Equipment Bangladesh — 350+ DGDA Products | MediportBD',
-    description: 'Shop 350+ medical products in BD: ECG, ultrasound, surgical tools from Roche, Abbott, Mindray. DGDA-certified, B2B pricing, same-day Dhaka delivery.',
+    title:       'Medical Equipment Bangladesh — 600+ Products | MediportBD',
+    description: 'Shop 600+ medical products in BD: ECG, ultrasound, surgical tools from Roche, Abbott, Mindray. Genuine brands, B2B pricing, same-day Dhaka delivery.',
     keywords:    'medical supplies Bangladesh, buy medical equipment online Bangladesh, hospital supplies Dhaka, surgical instruments BD, lab equipment price Bangladesh, medical device online shop',
   },
   reagentStore: {
     title:       'Lab Reagents Bangladesh — HbA1c, CBC, Troponin | Cold Chain | Dhaka',
-    description: 'Buy lab reagents BD ✓ HbA1c, CBC, troponin kits ✓ Roche, Siemens, Abbott ✓ Cold chain 2-8°C ✓ DGDA approved ✓ B2B bulk pricing ✓ Same-day Dhaka. Call: 01646-886795',
+    description: 'Buy lab reagents BD ✓ HbA1c, CBC, troponin kits ✓ Roche, Siemens, Abbott ✓ Cold chain 2-8°C ✓ Product documents on request ✓ B2B bulk pricing ✓ Same-day Dhaka. Call: 01646-886795',
     keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh, lab reagent online Bangladesh, diagnostic reagent Dhaka',
   },
   b2b: {
     title:       'B2B Medical Equipment BD — 8-30% Discount | Hospital Supplier Dhaka',
-    description: 'Save 8-30% on bulk orders ✓ 30-90 day credit ✓ Free installation Dhaka ✓ Account manager ✓ 500+ hospitals trust us ✓ Government tender support. Call: 01646-886795',
+    description: 'Save 8-30% on bulk orders ✓ 30-90 day credit ✓ Free installation Dhaka ✓ Account manager ✓ Trusted by hospitals & diagnostic centres ✓ Tender support. Call: 01646-886795',
     keywords:    'B2B medical supplier Bangladesh, hospital equipment supplier Dhaka, bulk medical supplies BD, medical equipment wholesale Bangladesh, government hospital supplier, clinic equipment BD',
   },
   search: {
@@ -162,12 +162,12 @@ export const pageMetadata = {
 export const CATEGORY_SEO = {
   'Diagnostic Equipment': {
     title:       'Diagnostic Equipment Bangladesh — Blood Pressure Monitors, Scales, Stethoscopes | MediportBD',
-    description: 'Buy diagnostic equipment in Bangladesh. Blood pressure monitors, weighing scales, thermometers, pulse oximeters, stethoscopes, fetal dopplers from Rossmax, Omron, Microlife, Beurer. DGDA certified.',
+    description: 'Buy diagnostic equipment in Bangladesh. Blood pressure monitors, weighing scales, thermometers, pulse oximeters, stethoscopes, fetal dopplers from Rossmax, Omron, Microlife, Beurer. DGDA-registered supplier.',
     h1:          'Diagnostic Equipment in Bangladesh',
   },
   'Surgical Instruments': {
     title:       'Surgical Instruments Bangladesh — Scissors, Forceps, Trocar Sets | MediportBD',
-    description: 'Quality surgical instruments in Bangladesh. Scissors, forceps, trocar sets, scalpels, needle holders. CE certified. Bulk B2B pricing for hospitals.',
+    description: 'Quality surgical instruments in Bangladesh. Scissors, forceps, trocar sets, scalpels, needle holders. CE-marked. Bulk B2B pricing for hospitals.',
     h1:          'Surgical Instruments in Bangladesh',
   },
   'Laboratory Reagents': {
@@ -182,7 +182,7 @@ export const CATEGORY_SEO = {
   },
   'Hospital Machines': {
     title:       'Hospital Machines Bangladesh — Nebulizers, Suction Units, CPAP | MediportBD',
-    description: 'Hospital equipment in Bangladesh. Nebulizers, suction units, CPAP/BiPAP machines from Rossmax, Beurer, Yuwell, Omron, Microlife. CE certified. B2B pricing.',
+    description: 'Hospital equipment in Bangladesh. Nebulizers, suction units, CPAP/BiPAP machines from Rossmax, Beurer, Yuwell, Omron, Microlife. B2B pricing.',
     h1:          'Hospital Machines & Equipment in Bangladesh',
   },
   'PPE & Safety': {
@@ -237,7 +237,7 @@ export const CATEGORY_SEO = {
   },
   'Respiratory Equipment': {
     title:       'Respiratory Equipment Bangladesh — Respirometers, CPAP Supplies | MediportBD',
-    description: 'Respiratory equipment and supplies in Bangladesh. Respirometers, 3-in-1 respiratory solutions from Rossmax, Romsons. CE certified.',
+    description: 'Respiratory equipment and supplies in Bangladesh. Respirometers, 3-in-1 respiratory solutions from Rossmax, Romsons.',
     h1:          'Respiratory Equipment in Bangladesh',
   },
   'Compression Garments': {
@@ -252,7 +252,7 @@ export const CATEGORY_SEO = {
   },
   'Medical Devices': {
     title:       'Medical Devices Bangladesh — Monitors, Analyzers | MediportBD',
-    description: 'Medical devices in Bangladesh. Body composition analyzers, monitoring equipment from leading global brands. CE certified, DGDA registered.',
+    description: 'Medical devices in Bangladesh. Body composition analyzers, monitoring equipment from leading global brands. B2B pricing.',
     h1:          'Medical Devices in Bangladesh',
   },
   'Mobility Aids': {
@@ -269,13 +269,13 @@ export const CATEGORY_SEO = {
 export const CATEGORY_CONTENT = {
   'Diagnostic Equipment': `MediportBD is Bangladesh's leading supplier of diagnostic equipment for hospitals, clinics and diagnostic centers. Our catalog includes 12-lead ECG machines, digital ultrasound systems, patient monitors, pulse oximeters, blood pressure monitors and spirometers from world-leading brands including Siemens Healthineers, GE Healthcare, Philips, Mindray and Nihon Kohden.
 
-All diagnostic equipment is DGDA registered and CE certified. We offer free installation and staff training in Dhaka metro area. B2B clients receive 8–22% bulk discount and 30–90 day credit terms.
+All diagnostic equipment is supplied with DGDA registration documentation on request. We offer free installation and staff training in Dhaka metro area. B2B clients receive 8–22% bulk discount and 30–90 day credit terms.
 
 Popular diagnostic equipment: Siemens Cardiostat ECG Machine price Bangladesh, Mindray Patient Monitor price Bangladesh, GE Ultrasound price in Bangladesh.`,
 
   'Laboratory Reagents': `Buy laboratory reagents in Bangladesh from MediportBD. We supply HbA1c reagents, CBC reagents, clinical chemistry kits, immunoassay reagents, coagulation reagents and urinalysis strips from Roche Diagnostics, Abbott Laboratories, Beckman Coulter and bioMérieux.
 
-All reagents are stored and transported with proper cold chain management (2–8°C or −20°C as required). DGDA approved. Compatible with Cobas, ARCHITECT, UniCel analyzers. Bulk pricing and regular supply contracts available for hospitals and reference labs.`,
+All reagents are stored and transported with proper cold chain management (2–8°C or −20°C as required). Product registration documents are available on request. Compatible with Cobas, ARCHITECT, UniCel analyzers. Bulk pricing and regular supply contracts available for hospitals and reference labs.`,
 
   'Surgical Instruments': `MediportBD supplies premium surgical instruments to hospitals, clinics and operating theatres across Bangladesh. Our range includes scissors, forceps, needle holders, trocar sets, scalpels, retractors and specialised surgical sets from CE-certified manufacturers.
 
@@ -283,7 +283,7 @@ All instruments are sterilisation-compatible and available in stainless steel. B
 
   'Hospital Machines': `MediportBD is a trusted supplier of hospital equipment and ICU machines in Bangladesh. Our range includes mechanical and electronic ventilators, haemodialysis machines, infusion pumps, syringe drivers, defibrillators and patient monitoring systems.
 
-All hospital machines are CE certified and DGDA registered. Professional installation and commissioning service available. 24/7 technical support for B2B clients. Financing options available for large orders.`,
+Hospital machines are supplied from manufacturers with CE-marked, DGDA-registered product lines. Professional installation and commissioning service available. Technical support for B2B clients. Financing options available for large orders.`,
 
   'Laboratory Equipment': `Source laboratory equipment in Bangladesh from MediportBD. We supply centrifuges, microcentrifuges, microscopes, autoclaves, incubators, water baths, spectrophotometers and analytical balances from Eppendorf, Beckman Coulter and Grant Instruments.
 
@@ -307,7 +307,7 @@ Ostomy bag price in Bangladesh and colostomy care supplies — browse our full r
 
   'Consumables': `MediportBD supplies medical consumables to hospitals, clinics, diagnostics centers and home care patients across Bangladesh. Our range includes syringes, needles, IV cannulas, catheters, urinary drainage bags, stop cocks, three-way valves, HME filters, endotracheal tubes, suction catheters and adult diapers from Romsons, B-Braun and JMS.
 
-Every consumable is sterilised, CE certified and DGDA registered. Hospitals and clinics enjoy bulk B2B pricing with monthly supply contracts and scheduled delivery.
+Every consumable is sterilised and supplied with regulatory documentation on request. Hospitals and clinics enjoy bulk B2B pricing with monthly supply contracts and scheduled delivery.
 
 Spinal needle price Bangladesh, urine bag, catheter and syringe prices — order medical consumables online with same-day dispatch in Dhaka.`,
 
@@ -349,7 +349,7 @@ Blood bag price in Bangladesh and transfusion set prices — contact our B2B tea
 
   'Respiratory Equipment': `Respiratory care equipment and supplies from MediportBD support hospitals, clinics and home patients across Bangladesh. We supply respirometers, spirometers, CPAP and BiPAP machines, oxygen concentrators, nebulizers, peak flow meters and 3-in-1 respiratory sets from Rossmax, Romsons and Yuwell.
 
-Our respiratory devices are CE certified and DGDA registered, with installation support and after-sales service. B2B clients receive bulk pricing for hospital departments.
+Our respiratory devices are supplied with regulatory documentation on request, with installation support and after-sales service. B2B clients receive bulk pricing for hospital departments.
 
 Nebulizer price in Bangladesh and CPAP machine price — compare respiratory equipment and buy online with nationwide delivery.`,
 
@@ -365,7 +365,7 @@ These devices give doctors, clinics and home users fast, accurate results with m
 
 Pulse oximeter price in Bangladesh and fetal doppler price — buy diagnostic devices online with free delivery in Dhaka.`,
 
-  'Medical Devices': `MediportBD supplies advanced medical devices to hospitals and specialty clinics in Bangladesh. Our range includes body composition analyzers, patient monitors, ECG machines and laboratory analyzers from leading global manufacturers — all CE certified and DGDA registered.
+  'Medical Devices': `MediportBD supplies advanced medical devices to hospitals and specialty clinics in Bangladesh. Our range includes body composition analyzers, patient monitors, ECG machines and laboratory analyzers from leading global manufacturers.
 
 We support institutional buyers with professional installation, staff training, service contracts and B2B pricing on multi-unit orders. Contact our team for quotations on hospital-grade medical devices.`,
 

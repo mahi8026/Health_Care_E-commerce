@@ -93,7 +93,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               <p className="text-sm text-white/60 mb-4 flex flex-wrap items-center gap-3">
                 <span className="flex items-center gap-1.5">
                   <FaShieldAlt className="text-teal-400" />
-                  {productCount} DGDA-registered products
+                  {productCount} genuine products available
                 </span>
                 {website && (
                   <a

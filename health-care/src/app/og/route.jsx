@@ -179,7 +179,7 @@ export async function GET(request) {
 
             {/* Bottom: Trust tags */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {['CE Certified', 'Free Delivery Dhaka', 'B2B Pricing'].map((tag) => (
+              {['Bangladesh', 'Genuine Brands', 'Free Delivery Dhaka', 'B2B Pricing'].map((tag) => (
                 <div key={tag} style={{
                   padding: '6px 12px', borderRadius: '6px',
                   background: 'rgba(255,255,255,0.08)',
@@ -314,7 +314,7 @@ export async function GET(request) {
                 color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em',
                 display: 'flex',
               }}>
-                ISO 13485
+                ISO 13485 SOURCING
               </div>
             </div>
           </div>
@@ -352,7 +352,7 @@ export async function GET(request) {
 
           {/* Bottom: Feature tags */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-            {['Bangladesh', 'B2B & Retail', 'DGDA Certified', 'Free Delivery Dhaka'].map((tag) => (
+            {['Bangladesh', 'B2B & Retail', 'DGDA-Registered', 'Free Delivery Dhaka'].map((tag) => (
               <div key={tag} style={{
                 padding: '8px 16px', borderRadius: '8px',
                 background: 'rgba(255,255,255,0.08)',

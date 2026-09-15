@@ -62,7 +62,7 @@ export const COMMON_PRODUCT_FAQS = [
   },
   {
     question: 'Is technical support available after purchase?',
-    answer: 'Yes, we provide 24/7 technical support for all equipment. Our trained engineers are available for on-site service and remote troubleshooting.'
+    answer: 'Yes, we provide technical support for the equipment we supply (Sat–Thu, 9am–6pm). Our trained engineers handle on-site service and remote troubleshooting, with AMC options for institutional clients.'
   }
 ];
 

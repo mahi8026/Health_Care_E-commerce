@@ -13,7 +13,7 @@ const ARTICLES = [
   },
   {
     date: 'April 2026',
-    title: 'New range of DGDA-registered surgical instruments now available',
+    title: 'New range of surgical instruments now available',
     tag: 'Products',
     excerpt:
       'Over 120 new surgical instruments from verified manufacturers are now listed, each carrying a valid DGDA registration number with documentation on request.',

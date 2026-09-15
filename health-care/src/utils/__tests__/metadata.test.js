@@ -227,7 +227,7 @@ describe('generateProductMetadata', () => {
     expect(meta.description).toContain(`Buy ${validProduct.name} in Bangladesh.`)
     expect(meta.description).toContain(validProduct.description)
     expect(meta.description).toContain(`Brand: ${validProduct.brand}.`)
-    expect(meta.description).toContain('DGDA certified. Free delivery Dhaka.')
+    expect(meta.description).toContain('DGDA-registered supplier. Free delivery Dhaka.')
   })
 
   it('generates a canonical URL containing the product ID', () => {
@@ -267,7 +267,7 @@ describe('generateProductMetadata', () => {
     expect(meta.twitter.card).toBeDefined()
     expect(meta.twitter.title).toContain(validProduct.name)
     expect(meta.twitter.description).toContain(`Buy ${validProduct.name} in Bangladesh.`)
-    expect(meta.twitter.description).toContain('DGDA certified.')
+    expect(meta.twitter.description).toContain('DGDA-registered supplier.')
     expect(meta.twitter.images[0]).toBe(validProduct.image)
   })
 

@@ -73,7 +73,7 @@ export async function GET() {
   <channel>
     <title>MediportBD - Medical Equipment Bangladesh</title>
     <link>${SITE_URL}</link>
-    <description>DGDA certified medical equipment, surgical instruments, laboratory reagents and hospital machines in Bangladesh. 350+ products from Siemens, GE, Roche, Abbott and more.</description>
+    <description>Medical equipment, surgical instruments, laboratory reagents and hospital machines in Bangladesh. 600+ products from Siemens, GE, Roche, Abbott and more. DGDA-registered supplier.</description>
     ${products.map(generateProductXml).join('')}
   </channel>
 </rss>`;

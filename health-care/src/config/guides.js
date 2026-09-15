@@ -233,7 +233,7 @@ export const GUIDES = [
       },
       {
         q: 'Are diagnostic devices in Bangladesh DGDA registered?',
-        a: 'Yes — DGDA registration is mandatory for diagnostic devices sold in Bangladesh. All diagnostic equipment sold by MediportBD is DGDA registered and CE certified, and certificates are available on request.',
+        a: 'DGDA registration is mandatory for regulated diagnostic devices sold in Bangladesh. Regulated diagnostic equipment sold by MediportBD is DGDA registered, and certificates are available on request.',
       },
       {
         q: 'Where can I buy diagnostic equipment in Dhaka?',
@@ -413,7 +413,7 @@ export const GUIDES = [
     excerpt:
       'Hospital machines in Bangladesh — nebulizers, suction units, CPAP and patient monitors — run from ৳2,500 to ৳600,000+. Capital ICU purchases like ventilators and defibrillators need DGDA registration, installation and service contracts.',
     quickAnswer:
-      'Hospital equipment in Bangladesh spans small patient-side machines (nebulizers ৳2,500–৳25,000, suction units ৳6,000–৳60,000, CPAP/BiPAP ৳40,000–৳200,000) to capital ICU systems (patient monitors ৳85,000–৳600,000, ventilators and defibrillators from ৳6,00,000). Every machine must be CE certified and DGDA registered, with local installation, commissioning and 24/7 technical support. MediportBD supplies hospital machines in Dhaka with free installation, AMC service options and B2B credit terms.',
+      'Hospital equipment in Bangladesh spans small patient-side machines (nebulizers ৳2,500–৳25,000, suction units ৳6,000–৳60,000, CPAP/BiPAP ৳40,000–৳200,000) to capital ICU systems (patient monitors ৳85,000–৳600,000, ventilators and defibrillators from ৳6,00,000). Every machine must be CE certified and DGDA registered, with local installation, commissioning and technical support. MediportBD supplies hospital machines in Dhaka with free installation, AMC service options and B2B credit terms.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     relatedCategories: [
@@ -455,14 +455,14 @@ export const GUIDES = [
       {
         heading: 'B2B procurement for hospitals',
         paragraphs: [
-          'Hospitals typically procure through tenders or rate contracts. DGDA-registered distributors like MediportBD provide written quotations, bulk pricing (8–30% off), 30–90 day credit terms, installation, staff training and 24/7 technical support for B2B clients.',
+          'Hospitals typically procure through tenders or rate contracts. DGDA-registered distributors like MediportBD provide written quotations, bulk pricing (8–30% off), 30–90 day credit terms, installation, staff training and technical support for B2B clients.',
         ],
       },
     ],
     faqs: [
       {
         q: 'How much does a patient monitor cost in Bangladesh?',
-        a: 'Multiparameter patient monitors in Bangladesh typically cost ৳85,000–৳600,000 depending on the number of parameters, display size and brand. CE certified and DGDA registered units include installation and staff training.',
+        a: 'Multiparameter patient monitors in Bangladesh typically cost ৳85,000–৳600,000 depending on the number of parameters, display size and brand. Units sourced from CE-marked, DGDA-registered product lines include installation and staff training.',
       },
       {
         q: 'Are ventilators available for hospitals in Bangladesh?',
@@ -893,7 +893,7 @@ export const GUIDES = [
           rows: [
             ['Typical price (BDT)', '৳1,80,000 – ৳250,000+', '৳1,80,000 – ৳250,000+'],
             ['Strengths', 'Connectivity, automated interpretation, modular design', 'Rugged build, simple workflow, fast service response'],
-            ['Service network in BD', 'Authorised distributor support', 'Widely supported by local engineers'],
+            ['Service network in BD', 'Distributor support network', 'Widely supported by local engineers'],
             ['Best for', 'Large cardiology departments, network reporting', 'Hospitals and clinics prioritising uptime'],
             ['Warranty (typical)', '1–3 years', '1–3 years'],
           ],

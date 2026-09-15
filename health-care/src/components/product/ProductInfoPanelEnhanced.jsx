@@ -256,7 +256,7 @@ export default function ProductInfoPanelEnhanced({
             <FaHeadset className="text-blue-600" size={16} />
           </div>
           <div>
-            <div className="text-xs text-[var(--color-text-secondary)]">24/7 Support</div>
+            <div className="text-xs text-[var(--color-text-secondary)]">Support 9am–6pm</div>
             <div className="text-xs font-semibold text-[var(--color-text-primary)]">Expert Help</div>
           </div>
         </div>
@@ -266,7 +266,7 @@ export default function ProductInfoPanelEnhanced({
             <FaAward className="text-brand-teal" size={16} />
           </div>
           <div>
-            <div className="text-xs text-[var(--color-text-secondary)]">DGDA Certified</div>
+            <div className="text-xs text-[var(--color-text-secondary)]">DGDA-Registered Supplier</div>
             <div className="text-xs font-semibold text-[var(--color-text-primary)]">Authentic</div>
           </div>
         </div>

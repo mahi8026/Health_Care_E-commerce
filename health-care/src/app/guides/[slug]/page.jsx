@@ -295,7 +295,7 @@ export default async function GuidePage({ params }) {
         <div className="rounded-2xl bg-brand-navy text-white p-6 text-center">
           <h2 className="text-lg font-semibold mb-2">Need help choosing the right equipment?</h2>
           <p className="text-sm text-white/70 mb-4">
-            Our medical equipment specialists in Dhaka are available 24/7 for free advice, quotations and B2B pricing.
+            Our medical equipment specialists in Dhaka are available during business hours for free advice, quotations and B2B pricing.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link

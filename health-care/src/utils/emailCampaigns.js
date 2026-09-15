@@ -44,7 +44,7 @@ export const CAMPAIGN_TEMPLATES = [
     buildSubject: (v) => `⚡ Flash Sale: ${v.discount}% OFF Everything — Ends ${v.endDate}!`,
     buildHtml: (v) => `
       ${heading(`⚡ ${v.discount}% OFF — Flash Sale!`)}
-      ${paragraph(`For a very limited time, enjoy <strong>${v.discount}% OFF</strong> on DGDA-registered
+      ${paragraph(`For a very limited time, enjoy <strong>${v.discount}% OFF</strong> on selected
         medical equipment, surgical instruments and laboratory reagents. Stocks are limited —
         once they're gone, they're gone.`)}
       ${couponBlock(v.couponCode, `Apply this code at checkout · Valid until ${v.endDate}`)}
@@ -86,7 +86,7 @@ export const CAMPAIGN_TEMPLATES = [
         .join('');
       return `
         ${heading(`🆕 ${v.headline}`)}
-        ${paragraph('Fresh stock has arrived at MediportBD — DGDA-registered, warranty-backed, and ready to ship with free installation in Dhaka.')}
+        ${paragraph('Fresh stock has arrived at MediportBD — warranty-backed and ready to ship with free installation in Dhaka.')}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">${products || ''}
         </table>
         <div style="text-align:center;margin:24px 0;">
@@ -111,7 +111,7 @@ export const CAMPAIGN_TEMPLATES = [
         <strong>up to ${v.bulkDiscount}% bulk discounts</strong>, <strong>${v.creditTerms}-day credit terms</strong>,
         a dedicated account manager and priority order processing.`)}
       <div style="background:#E6F4F0;border-radius:8px;padding:16px 18px;margin-bottom:20px;">
-        <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#9989; DGDA-registered equipment with warranty</p>
+        <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#9989; Genuine equipment with warranty</p>
         <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#128666; Free installation &amp; staff training (Dhaka)</p>
         <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#10052;&#65039; Cold-chain delivery for reagents</p>
         <p style="margin:0;font-size:13px;color:#374151;">&#128179; Custom quotations within 24 hours</p>

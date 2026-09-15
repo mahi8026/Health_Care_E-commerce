@@ -4,12 +4,12 @@ import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData
 
 export const metadata = {
   title: 'Medical Equipment Price List Bangladesh 2026 — Complete Pricing Guide | MediportBD',
-  description: 'Complete medical equipment price list in Bangladesh 2026. Compare ECG machines, patient monitors, ultrasound, surgical instruments, lab reagents. Updated monthly. 350+ product prices.',
+  description: 'Complete medical equipment price list in Bangladesh 2026. Compare ECG machines, patient monitors, ultrasound, surgical instruments, lab reagents. Updated monthly. 600+ product prices.',
   keywords: 'medical equipment price bangladesh, ecg machine price bd, patient monitor price, ultrasound machine price bangladesh, surgical instruments price, lab reagent price bangladesh',
   alternates: { canonical: `${SITE_CONFIG.url}/guides/medical-equipment-price-list-bangladesh-2026` },
   openGraph: {
     title: 'Medical Equipment Price List Bangladesh 2026 | MediportBD',
-    description: 'Complete pricing guide for medical equipment in Bangladesh. Compare 350+ products from ECG machines to lab reagents. Updated monthly.',
+    description: 'Complete pricing guide for medical equipment in Bangladesh. Compare 600+ products from ECG machines to lab reagents. Updated monthly.',
     url: `${SITE_CONFIG.url}/guides/medical-equipment-price-list-bangladesh-2026`,
     images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],
   },
@@ -39,7 +39,7 @@ export default function MedicalEquipmentPriceList() {
         name: 'Where can I find the best prices for medical equipment in Bangladesh?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'MediportBD offers competitive medical equipment prices in Bangladesh with 8-30% B2B discounts, free delivery in Dhaka for orders above ৳50,000, and 30-90 day credit terms for hospitals. All products are DGDA registered and CE certified.'
+          text: 'MediportBD offers competitive medical equipment prices in Bangladesh with 8-30% B2B discounts, free delivery in Dhaka for orders above ৳50,000, and 30-90 day credit terms for hospitals. Registration documentation is available on request.'
         }
       }
     ]
@@ -69,7 +69,7 @@ export default function MedicalEquipmentPriceList() {
               Medical Equipment Price List Bangladesh 2026
             </h1>
             <p className="text-lg text-[var(--color-text-secondary)] mb-4">
-              Complete pricing guide for medical equipment in Bangladesh. Compare 350+ products including ECG machines, patient monitors, ultrasound systems, surgical instruments, and laboratory reagents.
+              Complete pricing guide for medical equipment in Bangladesh. Compare 600+ products including ECG machines, patient monitors, ultrasound systems, surgical instruments, and laboratory reagents.
             </p>
             <div className="flex flex-wrap gap-3 text-sm text-[var(--color-text-tertiary)]">
               <span>📅 Updated: September 2026</span>
@@ -298,7 +298,7 @@ export default function MedicalEquipmentPriceList() {
                   <li>✓ 30-90 day credit terms</li>
                   <li>✓ Free installation in Dhaka</li>
                   <li>✓ Dedicated account manager</li>
-                  <li>✓ 24/7 technical support</li>
+                  <li>✓ Technical support</li>
                   <li>✓ Quarterly maintenance visits</li>
                 </ul>
               </div>
@@ -334,7 +334,7 @@ export default function MedicalEquipmentPriceList() {
               <div className="bg-white rounded-lg p-6 shadow-sm">
                 <h3 className="font-semibold text-[var(--color-brand-navy)] mb-2">Where can I find the best prices for medical equipment in Bangladesh?</h3>
                 <p className="text-[var(--color-text-secondary)]">
-                  MediportBD offers competitive medical equipment prices in Bangladesh with 8-30% B2B discounts, free delivery in Dhaka for orders above ৳50,000, and 30-90 day credit terms for hospitals. All products are DGDA registered and CE certified.
+                  MediportBD offers competitive medical equipment prices in Bangladesh with 8-30% B2B discounts, free delivery in Dhaka for orders above ৳50,000, and 30-90 day credit terms for hospitals. Registration documentation is available on request.
                 </p>
               </div>
 

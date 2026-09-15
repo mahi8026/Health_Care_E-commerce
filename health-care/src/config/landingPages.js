@@ -44,7 +44,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Are ECG machines DGDA approved?',
-        a: 'Yes. All ECG machines supplied by MediportBD are DGDA registered and CE certified, with full documentation for hospital procurement.',
+        a: 'ECG machines supplied by MediportBD come with DGDA registration documentation on request for hospital procurement.',
       },
     ],
   },
@@ -68,7 +68,7 @@ export const LANDING_PAGES = [
       'Browse live patient monitor prices in Bangladesh — bedside, multiparameter and ICU monitors with installation, training and B2B hospital pricing.',
     intro: [
       'MediportBD supplies genuine patient monitors to hospitals, ICU units and diagnostic centres across Bangladesh. Our range includes bedside monitors, multiparameter monitors and vital signs monitors from Mindray, GE Healthcare and Rossmax.',
-      'Every patient monitor is CE certified, DGDA registered and delivered with installation, calibration and operator training. 24/7 technical support for institutional clients.',
+      'Every patient monitor is supplied from CE-marked, DGDA-registered product lines and delivered with installation, calibration and operator training. Technical support for institutional clients.',
       'Request a bulk quotation for ICU fit-outs, hospital departments and diagnostic centre expansion projects.',
     ],
     faqs: [
@@ -143,7 +143,7 @@ export const LANDING_PAGES = [
       'Browse live X-ray machine prices in Bangladesh — digital radiography and portable X-ray systems with DGDA registration and installation.',
     intro: [
       'MediportBD supplies X-ray machines to hospitals, clinics and diagnostic imaging centres in Bangladesh. Our range includes portable X-ray units and digital radiography systems for high-quality imaging.',
-      'All X-ray equipment is CE certified and DGDA registered with installation, radiation safety checks and operator training included.',
+      'All X-ray equipment is supplied with installation, radiation safety checks and operator training included, and registration documentation is available on request.',
       'B2B buyers receive bulk pricing plus installation and maintenance contracts. Contact us for hospital radiology department quotations.',
     ],
     faqs: [
@@ -254,7 +254,7 @@ export const LANDING_PAGES = [
       'Compare infusion pump prices in Bangladesh — syringe pumps and volumetric infusion pumps with installation, training and B2B pricing.',
     intro: [
       'MediportBD supplies infusion pumps and syringe pumps to hospitals, clinics and ICUs across Bangladesh. Our range is ideal for accurate IV fluid and drug delivery.',
-      'All infusion pumps are CE certified and DGDA registered with free installation and nurse training. 24/7 technical support for institutional clients.',
+      'All infusion pumps are supplied from CE-marked, DGDA-registered product lines with free installation and nurse training. Technical support for institutional clients.',
       'Request a bulk quotation for hospital departments, ICUs and surgical units.',
     ],
     faqs: [
@@ -291,7 +291,7 @@ export const LANDING_PAGES = [
       'Browse live ventilator prices in Bangladesh — ICU and transport ventilators with DGDA registration, installation and B2B pricing.',
     intro: [
       'MediportBD supplies ventilators to hospitals and ICUs across Bangladesh. Our range includes invasive ICU ventilators and non-invasive ventilation devices from CE-certified manufacturers.',
-      'Every ventilator is delivered with installation, commissioning, clinical training and comprehensive service support. 24/7 technical assistance for critical care departments.',
+      'Every ventilator is delivered with installation, commissioning, clinical training and comprehensive service support and technical assistance for critical care departments.',
       'B2B buyers receive bulk pricing, service contracts and priority support for emergency procurement.',
     ],
     faqs: [
@@ -328,7 +328,7 @@ export const LANDING_PAGES = [
       'Browse surgical instruments prices in Bangladesh — scissors, forceps, needle holders and OT sets with CE certification and bulk pricing.',
     intro: [
       'MediportBD supplies premium surgical instruments to operation theatres, clinics and hospitals across Bangladesh. Our range includes scissors, forceps, needle holders, trocars, scalpels and specialised surgical sets.',
-      'All instruments are sterilisation-compatible stainless steel, CE certified and DGDA registered. Bulk B2B pricing available for hospitals and surgical centres.',
+      'All instruments are sterilisation-compatible stainless steel from CE-marked manufacturer lines. Bulk B2B pricing available for hospitals and surgical centres.',
       'Browse our catalog for current prices or request a formal quotation for hospital procurement and tenders.',
     ],
     faqs: [
@@ -365,7 +365,7 @@ export const LANDING_PAGES = [
       'Compare autoclave prices in Bangladesh — portable, vertical and horizontal steam sterilizers with DGDA registration and warranty.',
     intro: [
       'MediportBD supplies autoclaves and steam sterilizers to clinics, laboratories, dental practices and hospitals across Bangladesh. Our range includes portable, vertical and horizontal models in various capacities.',
-      'Every autoclave is CE certified and DGDA registered with installation and operator training included. B2B pricing available for hospitals and labs.',
+      'Every autoclave is delivered with installation and operator training included, and registration documentation is available on request. B2B pricing available for hospitals and labs.',
       'Order online with nationwide delivery or request a quotation for institutional procurement.',
     ],
     faqs: [

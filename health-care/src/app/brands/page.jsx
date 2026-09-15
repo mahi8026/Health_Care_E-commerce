@@ -116,7 +116,7 @@ export default async function BrandsHub() {
               { value: `${sorted.length}+`, label: 'Brands' },
               { value: '10,000+', label: 'Products' },
               { value: 'DGDA', label: 'Registered' },
-              { value: 'ISO 13485', label: 'Certified' },
+              { value: 'ISO 13485', label: 'Certified Brands' },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-white">{value}</div>

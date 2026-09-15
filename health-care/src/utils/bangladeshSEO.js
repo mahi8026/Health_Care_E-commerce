@@ -79,7 +79,7 @@ export function generateLocationAltText(city, imageType = 'hero') {
   const imageTypes = {
     hero: `Medical equipment supplier in ${city} — MediportBD (${cityBn})`,
     delivery: `Free delivery in ${city} (${cityBn}) — Fast medical equipment delivery`,
-    hospital: `${city} hospitals trust MediportBD — Medical equipment supplier`,
+    hospital: `${city} hospitals & diagnostic centres use MediportBD — Medical equipment supplier`,
   };
   
   return imageTypes[imageType] || imageTypes.hero;
@@ -94,19 +94,19 @@ export function generateBangladeshMetaDescription(data) {
   
   switch (type) {
     case 'product':
-      return `Buy ${name} in Bangladesh at ${price ? `৳${price.toLocaleString('en-BD')}` : 'best price'}. ✓ DGDA certified ✓ Free delivery Dhaka ✓ Warranty ✓ Installation. Best ${category} supplier. Call: ${PHONE_ENGLISH}`;
+      return `Buy ${name} in Bangladesh at ${price ? `৳${price.toLocaleString('en-BD')}` : 'best price'}. ✓ Genuine brands ✓ Free delivery Dhaka ✓ Warranty ✓ Installation. Best ${category} supplier. Call: ${PHONE_ENGLISH}`;
     
     case 'category':
-      return `Buy ${name} in Bangladesh ✓ 350+ products ✓ DGDA certified ✓ Free delivery Dhaka ✓ 8-30% B2B discount ✓ EMI available. Call: ${PHONE_ENGLISH}`;
+      return `Buy ${name} in Bangladesh ✓ 600+ products ✓ Genuine brands ✓ Free delivery Dhaka ✓ 8-30% B2B discount ✓ EMI available. Call: ${PHONE_ENGLISH}`;
     
     case 'location':
-      return `Medical equipment supplier in ${city} Bangladesh ✓ DGDA registered ✓ Free delivery ✓ Installation service ✓ 500+ hospitals trust us. Call: ${PHONE_ENGLISH}`;
+      return `Medical equipment supplier in ${city} Bangladesh ✓ DGDA-registered supplier ✓ Free delivery ✓ Installation service ✓ Trusted by hospitals & diagnostic centres. Call: ${PHONE_ENGLISH}`;
     
     case 'b2b':
-      return `B2B medical equipment supplier Bangladesh ✓ 8-30% bulk discount ✓ 30-90 day credit ✓ DGDA certified ✓ 500+ hospitals served. Call: ${PHONE_ENGLISH}`;
+      return `B2B medical equipment supplier Bangladesh ✓ 8-30% bulk discount ✓ 30-90 day credit ✓ DGDA-registered supplier ✓ Hospitals & diagnostic centres served. Call: ${PHONE_ENGLISH}`;
     
     default:
-      return `Medical equipment supplier Bangladesh ✓ DGDA certified ✓ 350+ products ✓ Free delivery Dhaka ✓ Warranty. Call: ${PHONE_ENGLISH}`;
+      return `Medical equipment supplier Bangladesh ✓ DGDA-registered supplier ✓ 600+ products ✓ Free delivery Dhaka ✓ Warranty. Call: ${PHONE_ENGLISH}`;
   }
 }
 
@@ -131,10 +131,10 @@ export function generateBangladeshTitle(data) {
       if (price) {
         return `${name} Price ৳${price.toLocaleString('en-BD')} | Buy in Bangladesh | MediportBD`;
       }
-      return `${name} | Buy in Bangladesh | DGDA Certified | MediportBD`;
+      return `${name} | Buy in Bangladesh | Genuine Brands | MediportBD`;
     
     case 'category':
-      return `${name} Bangladesh — 350+ Products | Buy Online | Fast Delivery`;
+      return `${name} Bangladesh — 600+ Products | Buy Online | Fast Delivery`;
     
     case 'location':
       return `Medical Equipment ${city} | Supplier in ${city} Bangladesh | MediportBD`;
@@ -146,7 +146,7 @@ export function generateBangladeshTitle(data) {
       return `Lab Reagents Bangladesh — HbA1c, CBC, Troponin | Cold Chain | Dhaka`;
     
     default:
-      return `Medical Equipment Bangladesh — 350+ Products | DGDA Certified | Free Delivery`;
+      return `Medical Equipment Bangladesh — 600+ Products | Free Delivery`;
   }
 }
 
@@ -154,13 +154,17 @@ export function generateBangladeshTitle(data) {
  * Add Bangladesh trust signals to content
  */
 export function getBangladeshTrustSignals() {
+  // Every line below must be independently verifiable. Blanket claims such as
+  // "all products DGDA-registered", or a distributor asserting its own ISO
+  // 13485 certificate, are misstatements a hospital procurement officer will
+  // catch — and a false regulatory claim is a compliance risk, not just copy.
   return [
-    '✓ DGDA Registered',
-    '✓ 500+ Hospitals Trust Us',
+    '✓ DGDA-Registered Supplier',
+    '✓ Trusted by Hospitals & Diagnostic Centres',
     '✓ Free Delivery Dhaka',
-    '✓ 5+ Years in Bangladesh',
-    '✓ 24/7 Support',
-    '✓ ISO 13485 Certified',
+    '✓ Serving Bangladesh Since 2020',
+    '✓ Technical Support Team',
+    '✓ Products from ISO 13485-Certified Manufacturers',
   ];
 }
 
@@ -303,10 +307,10 @@ export function getBangladeshFAQs(category = 'general') {
         answerBn: 'MediportBD থেকে অনলাইনে অর্ডার করুন বা ঢাকার অফিসে আসুন। ৳৫০,০০০ টাকার উপরে ঢাকায় ফ্রি ডেলিভারি।',
       },
       {
-        question: 'Are your products DGDA certified?',
-        questionBn: 'আপনার পণ্য কি DGDA সার্টিফাইড?',
-        answer: 'Yes, all our medical equipment is DGDA registered and certified. We only sell products that meet Bangladesh regulatory standards.',
-        answerBn: 'হ্যাঁ, আমাদের সকল চিকিৎসা সরঞ্জাম DGDA রেজিস্টার্ড এবং সার্টিফাইড। আমরা শুধুমাত্র বাংলাদেশের নিয়মকানুন মেনে পণ্য বিক্রয় করি।',
+        question: 'Are your products DGDA registered?',
+        questionBn: 'আপনার পণ্য কি DGDA রেজিস্টার্ড?',
+        answer: 'MediportBD operates as a DGDA-registered importer and sources products that meet Bangladesh regulatory standards. Registration documents for any product are available on request.',
+        answerBn: 'MediportBD একটি DGDA রেজিস্টার্ড আমদানিকারক এবং বাংলাদেশের নিয়মকানুন মেনে পণ্য সরবরাহ করে। যেকোনো পণ্যের নিবন্ধন ডকুমেন্ট অনুরোধে দেওয়া হয়।',
       },
       {
         question: 'Do you provide installation service?',

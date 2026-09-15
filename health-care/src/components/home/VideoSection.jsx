@@ -11,11 +11,11 @@ export default function VideoSection() {
   const [thumbnail, setThumbnail] = useState('https://img.youtube.com/vi/xWaEQ_YPNy0/maxresdefault.jpg');
 
   const features = [
-    'DGDA Certified Products',
-    'ISO 13485 Quality Standards',
+    'DGDA-Registered Supplier',
+    'ISO 13485-Certified Manufacturers',
     'Free Installation & Training',
     'Cold Chain Delivery for Reagents',
-    '24/7 Technical Support',
+    'Technical Support Team',
     'Flexible Payment Options',
   ];
 

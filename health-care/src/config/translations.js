@@ -25,7 +25,7 @@ export const translations = {
     home: {
       tagline: "Bangladesh's #1 Medical Equipment Platform",
       heroTitle: 'Medical Equipment &',
-      heroSubtitle: '350+ DGDA-registered products from 40+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals & clinics.',
+      heroSubtitle: '600+ products from 40+ global brands. Free installation, cold-chain delivery, and B2B credit terms for hospitals & clinics.',
       searchBtn: ' Search',
       shopByCategory: 'Shop by Category',
       ourCatalog: 'Our Catalog',
@@ -51,12 +51,12 @@ export const translations = {
       b2bDesc: 'Join healthcare institutions saving with our B2B program. Get bulk discounts, flexible credit terms, and a dedicated account manager.',
       registerB2B: 'Register for B2B ?',
       learnMore: 'Learn more',
-      freeDelivery: 'Free delivery over ?50,000',
+      freeDelivery: 'Free delivery over ৳50,000',
       coldChain: 'Cold chain for reagents',
       freeInstall: 'Free installation in Dhaka',
-      support247: '24/7 technical support',
+      support247: 'Technical support (Sat–Thu, 9am–6pm)',
       returns30: '30-day returns',
-      seeAllDeals: 'See all deals ?',
+      seeAllDeals: 'See all deals →',
       copyCode: 'Copy code',
       shopNow: 'Shop now ?',
       limitedTime: 'Limited time: Use code',
@@ -129,7 +129,7 @@ export const translations = {
       onThisOrder: 'on this order',
       secureCheckout: 'Secure\nCheckout',
       returns: '30-Day\nReturns',
-      support: '24/7\nSupport',
+      support: 'Support\n9am–6pm',
     },
 
     // Checkout

@@ -6,21 +6,21 @@ import FAQSchema from '@/components/seo/FAQSchema';
 export const metadata = {
   title: 'DGDA Registration & Medical Device Compliance Bangladesh | MediportBD',
   description:
-    'MediportBD operates in full compliance with the DGDA (Directorate General of Drug Administration). All medical equipment we sell is DGDA registered, CE certified and imported through authorised channels. Certificates available on request.',
+    'MediportBD operates as a DGDA-registered importer. Regulated products are imported through authorised channels and product registration documents are available on request.',
   keywords:
-    'DGDA registered medical equipment Bangladesh, DGDA compliance medical devices, CE certified medical equipment BD, DGDA registration Bangladesh, medical device regulation Bangladesh',
+    'DGDA registered medical equipment Bangladesh, DGDA compliance medical devices, CE marked medical equipment BD, DGDA registration Bangladesh, medical device regulation Bangladesh',
   alternates: { canonical: `${SITE_CONFIG.url}/dgda-info` },
   openGraph: {
     title: 'DGDA Registration & Medical Device Compliance Bangladesh | MediportBD',
     description:
-      'Every product at MediportBD is DGDA registered and CE certified. Understand how medical device regulation works in Bangladesh and why it matters for your clinic or hospital.',
+      'MediportBD is a DGDA-registered importer of medical equipment. Understand how medical device regulation works in Bangladesh and why it matters for your clinic or hospital.',
     url: `${SITE_CONFIG.url}/dgda-info`,
     images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'DGDA Registration & Medical Device Compliance | MediportBD',
-    description: 'DGDA-registered medical equipment supplier in Bangladesh. All products CE certified.',
+    description: 'DGDA-registered medical equipment importer in Bangladesh. Product registration documents available on request.',
   },
 };
 
@@ -53,8 +53,8 @@ const COMPLIANCE_POINTS = [
     desc: 'MediportBD holds DGDA registration as a medical device importer in Bangladesh. Every regulated product we sell is individually DGDA registered.',
   },
   {
-    title: 'CE Certified Products Only',
-    desc: 'We source exclusively from manufacturers with CE certification — the internationally recognised safety standard used by Bangladesh regulators as a quality benchmark.',
+    title: 'CE-Marked Manufacturer Lines',
+    desc: 'We prioritise manufacturers whose product lines carry CE marking — the internationally recognised safety benchmark used by Bangladesh regulators as a quality reference.',
   },
   {
     title: 'Manufacturer Authorisation Letters',
@@ -69,8 +69,8 @@ const COMPLIANCE_POINTS = [
     desc: 'Temperature-sensitive reagents and IVDs are stored at 2–8°C or −20°C as required and delivered with temperature-monitored cold-chain packaging.',
   },
   {
-    title: 'ISO 13485 Compliant',
-    desc: 'Our quality management system follows ISO 13485 standards for medical device distribution, covering supplier qualification, product acceptance, and post-market surveillance.',
+    title: 'ISO 13485-Certified Manufacturers',
+    desc: 'We source from manufacturers whose quality management systems follow ISO 13485 standards for medical device distribution, covering supplier qualification, product acceptance, and post-market surveillance.',
   },
 ];
 

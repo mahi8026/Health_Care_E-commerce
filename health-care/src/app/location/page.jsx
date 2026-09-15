@@ -5,12 +5,12 @@ import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData
 
 export const metadata = {
   title: 'Medical Equipment Supplier All Bangladesh — Dhaka, Chittagong, Sylhet | MediportBD',
-  description: 'Medical equipment supplier serving all Bangladesh divisions: Dhaka, Chittagong, Sylhet, Rajshahi, Khulna, Barisal, Rangpur, Mymensingh. ✓ Free delivery ✓ DGDA certified. Call: 01646-886795',
+  description: 'Medical equipment supplier serving all Bangladesh divisions: Dhaka, Chittagong, Sylhet, Rajshahi, Khulna, Barisal, Rangpur, Mymensingh. ✓ Free delivery ✓ DGDA-registered supplier. Call: 01646-886795',
   keywords: 'medical equipment supplier bangladesh, medical equipment all bangladesh, hospital equipment nationwide, medical supply bangladesh divisions',
   alternates: { canonical: `${SITE_CONFIG.url}/location` },
   openGraph: {
     title: 'Medical Equipment Supplier All Bangladesh | MediportBD',
-    description: 'Serving all 8 divisions of Bangladesh with DGDA certified medical equipment',
+    description: 'Serving all 8 divisions of Bangladesh with medical equipment from a DGDA-registered supplier',
     url: `${SITE_CONFIG.url}/location`,
     images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],
   },
@@ -33,7 +33,7 @@ export default function LocationsPage() {
               Medical Equipment Supplier All Bangladesh
             </h1>
             <p className="text-lg text-[var(--color-text-secondary)] max-w-3xl mx-auto">
-              Serving 8 divisions with DGDA certified medical equipment, diagnostic machines, 
+              Serving 8 divisions with medical equipment from a DGDA-registered supplier, diagnostic machines, 
               laboratory reagents, and hospital supplies nationwide
             </p>
           </header>
@@ -49,12 +49,12 @@ export default function LocationsPage() {
               <div className="text-sm text-[var(--color-text-secondary)]">Districts Reached</div>
             </div>
             <div className="bg-white rounded-xl p-6 text-center shadow-sm">
-              <div className="text-3xl font-bold text-[var(--color-brand-teal)] mb-2">500+</div>
-              <div className="text-sm text-[var(--color-text-secondary)]">Hospitals Served</div>
+              <div className="text-3xl font-bold text-[var(--color-brand-teal)] mb-2">600+</div>
+              <div className="text-sm text-[var(--color-text-secondary)]">Products in Catalogue</div>
             </div>
             <div className="bg-white rounded-xl p-6 text-center shadow-sm">
-              <div className="text-3xl font-bold text-[var(--color-brand-teal)] mb-2">24/7</div>
-              <div className="text-sm text-[var(--color-text-secondary)]">Support Available</div>
+              <div className="text-3xl font-bold text-[var(--color-brand-teal)] mb-2">Sat–Thu</div>
+              <div className="text-sm text-[var(--color-text-secondary)]">Support 9am–6pm</div>
             </div>
           </div>
 

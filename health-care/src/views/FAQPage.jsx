@@ -62,7 +62,7 @@ const FAQ_CATEGORIES = [
     faqs: [
       {
         question: 'Are all products DGDA registered?',
-        answer: 'Yes, 100% of our products are DGDA registered and CE certified. DGDA registration numbers are displayed on product pages.'
+        answer: 'All regulated products we sell carry DGDA registration, and registration documents are available on request. Unregulated accessories are clearly labelled on the product page.'
       },
       {
         question: 'Do you have stock available?',

@@ -15,20 +15,20 @@ const ISO_CERT = process.env.NEXT_PUBLIC_ISO_CERT_NUMBER || '';
 export const metadata = {
   title: 'Certifications & Regulatory Registration',
   description:
-    'MediportBD certifications: DGDA-registered medical equipment supplier in Dhaka, ISO 13485 compliant, with trade license and BIN/VAT registration. Verification documents available on request.',
+    'MediportBD certifications: DGDA-registered medical equipment supplier in Dhaka, products sourced from manufacturers certified to ISO 13485, with trade license and BIN/VAT registration. Verification documents available on request.',
   keywords: 'MediportBD certifications, DGDA registration Bangladesh, ISO 13485 Bangladesh, medical equipment supplier license BD, BIN number Dhaka',
   alternates: { canonical: `${SITE_CONFIG.url}/certifications` },
   openGraph: {
     title: 'Certifications & Regulatory Registration',
     description:
-      'Verify MediportBD\u2019s regulatory registrations: DGDA, ISO 13485, trade license and BIN — certificates available on request for institutional buyers.',
+      'Verify MediportBD\u2019s regulatory registrations: DGDA supplier registration, ISO 13485-certified manufacturers, trade license and BIN — certificates available on request for institutional buyers.',
     url: `${SITE_CONFIG.url}/certifications`,
     images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Certifications & Regulatory Registration',
-    description: 'DGDA-registered, ISO 13485 compliant medical equipment supplier in Dhaka, Bangladesh.',
+    description: 'DGDA-registered medical equipment supplier in Dhaka, Bangladesh, distributing products from ISO 13485-certified manufacturers.',
   },
 };
 
@@ -39,9 +39,9 @@ const CREDENTIALS = [
     note: 'Directorate General of Drug Administration, Bangladesh — all regulated products we sell carry valid DGDA registration.',
   },
   {
-    title: 'ISO 13485 Compliant',
+    title: 'ISO 13485 (Manufacturer Certifications)',
     detail: ISO_CERT || 'Available on request',
-    note: 'Quality management for medical devices — certification documents available to institutional buyers on request.',
+    note: 'We source from manufacturers certified to ISO 13485 — certificate copies available to institutional buyers on request.',
   },
   {
     title: 'Trade License',

@@ -321,7 +321,7 @@ export default function ProductInfo({
 
       {/* Trust Icons */}
       <div className="flex gap-2 flex-wrap">
-        {['CE Certified', 'ISO 13485', 'DGDA Cleared', '24/7 Support'].map((trust, idx) => (
+        {['Genuine Brands', 'CE-Marked Products', 'DGDA-Registered Supplier', 'Support 9am–6pm'].map((trust, idx) => (
           <div key={idx} className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] bg-[var(--color-background-secondary)] px-2 py-1 rounded-sm">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <polyline points="20 6 9 17 4 12"/>

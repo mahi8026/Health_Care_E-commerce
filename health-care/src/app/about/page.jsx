@@ -21,7 +21,7 @@ export const metadata = {
   openGraph: {
     title: 'About MediportBD — Medical Equipment Supplier in Dhaka, Bangladesh',
     description:
-      'Mediport Bangladesh Ltd. (MediportBD) — DGDA-registered medical equipment supplier in Dhaka, Bangladesh. ISO 13485 compliant. Serving hospitals and clinics nationwide.',
+      'Mediport Bangladesh Ltd. (MediportBD) — DGDA-registered medical equipment supplier in Dhaka, Bangladesh. We distribute products from ISO 13485-certified manufacturers to hospitals, clinics and diagnostic centres nationwide.',
     url: `${SITE_CONFIG.url}/about`,
     images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
@@ -33,9 +33,9 @@ export const metadata = {
 };
 
 const STATS = [
-  { value: '350+', label: 'Products in catalogue' },
+  { value: '600+', label: 'Products in catalogue' },
   { value: '40+', label: 'Global brands supplied' },
-  { value: '18+', label: 'Product categories' },
+  { value: '21', label: 'Product categories' },
   { value: 'DGDA', label: 'Registered importer' },
 ];
 
@@ -50,7 +50,7 @@ const VALUES = [
   },
   {
     title: 'Service after the sale',
-    desc: 'Free installation and staff training on equipment, 24/7 technical support, and AMC options keep your equipment running.',
+    desc: 'Free installation and staff training on equipment, technical support, and AMC options keep your equipment running.',
   },
   {
     title: 'Transparent B2B pricing',
@@ -65,9 +65,9 @@ const CREDENTIALS = [
     note: 'Directorate General of Drug Administration, Bangladesh — all regulated products carry DGDA registration.',
   },
   {
-    title: 'ISO 13485 Compliant',
+    title: 'ISO 13485-Certified Manufacturers',
     detail: ISO_CERT || 'Available on request',
-    note: 'Quality management for medical devices — certification documents available to institutional buyers.',
+    note: 'We supply products from manufacturers holding ISO 13485 quality-management certification for medical devices. Certificate references are available to institutional buyers.',
   },
   {
     title: 'Trade License',
@@ -166,7 +166,7 @@ export default function AboutPage() {
           </p>
           <p className="text-sm md:text-[15px] leading-relaxed text-[var(--color-text-primary)]">
             Today MediportBD serves GP chambers, clinics, diagnostic centres, hospitals and
-            government and private health programmes with 350+ products across 18+
+            government and private health programmes with 600+ products across 21
             categories and 40+ global brands, including Rossmax, Omron, Microlife, Beurer,
             Accu-Chek, Tynor, JMS, Romsons, B.Braun and ConvaTec.
           </p>

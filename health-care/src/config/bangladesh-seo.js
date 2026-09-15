@@ -162,32 +162,39 @@ export const BANGLADESH_COMPETITORS = {
     'Free installation Dhaka (competitors charge)',
     'Cold chain delivery for reagents (unique)',
     '30-90 day credit terms (competitors: 15-30 days)',
-    'Online ordering with live chat (24/7)',
+    'Online ordering with live chat (business hours)',
   ]
 };
 
 // Bangladesh-specific trust signals
 export const BANGLADESH_TRUST_SIGNALS = {
   certifications: [
-    'DGDA Registered',
-    'ISO 13485:2016 Certified',
-    'CE Certified Products',
-    'WHO GMP Compliant',
-    'FDA Approved (USA)',
+    // Verifiable claims only. "FDA Approved (USA)" and "WHO GMP Compliant" were
+    // removed: both are product/facility specific and cannot be asserted
+    // catalogue-wide by a distributor. ISO 13485 is a MANUFACTURER
+    // certification — a distributor may only claim it for the manufacturers
+    // it represents.
+    'DGDA-Registered Supplier',
+    'Products from ISO 13485-Certified Manufacturers',
+    'CE-Marked Products',
+    'Product Documents on Request',
   ],
   
   localCredibility: [
-    '500+ Hospitals Trust Us',
-    '5+ Years in Bangladesh',
-    'Authorized Distributor',
-    'Official Importer',
-    '24/7 Bangladesh Support',
+    // "500+ Hospitals Trust Us" removed — unverifiable and contradicted by the
+    // live "Active B2B Clients" stat. "Authorized Distributor" / "Official
+    // Importer" require authorization letters and import documentation.
+    'Trusted by Hospitals & Diagnostic Centres',
+    'Serving Bangladesh Since 2020',
+    'Nationwide Delivery Network',
+    'Technical Support Team',
   ],
   
   paymentSecurity: [
+    // "Official Partner" / "Verified Merchant" require a live merchant
+    // agreement — use plain acceptance claims until one exists.
     'SSL Secure Checkout',
-    'bKash Official Partner',
-    'Nagad Verified Merchant',
+    'bKash & Nagad Accepted',
     'Cash on Delivery Available',
   ],
   
@@ -196,7 +203,7 @@ export const BANGLADESH_TRUST_SIGNALS = {
     'Same-Day Dispatch',
     'Nationwide Coverage',
     'Track Your Order',
-    'Cold Chain Maintained',
+    'Cold Chain for Reagents & IVDs',
   ]
 };
 
@@ -216,11 +223,11 @@ export const BANGLADESH_CONTENT_TEMPLATES = {
   
   // Meta description template
   metaDescription: (product, price, category) => 
-    `Buy ${product} in Bangladesh at ৳${price}. ✓ DGDA certified ✓ Free delivery Dhaka ✓ Warranty ✓ EMI available. Best ${category} supplier in Dhaka. Call: 01646-886795`,
+    `Buy ${product} in Bangladesh at ৳${price}. ✓ DGDA-registered supplier ✓ Free delivery Dhaka ✓ Warranty ✓ EMI available. Best ${category} supplier in Dhaka. Call: 01646-886795`,
   
   // Bengali meta description
   metaDescriptionBn: (product, price) => 
-    `${product} বাংলাদেশে কিনুন মাত্র ৳${price} টাকায়। ✓ DGDA সার্টিফাইড ✓ ঢাকায় ফ্রি ডেলিভারি ✓ ওয়ারেন্টি। কল: ০১৬৪৬-৮৮৬৭৯৫`,
+    `${product} বাংলাদেশে কিনুন মাত্র ৳${price} টাকায়। ✓ DGDA রেজিস্টার্ড সাপ্লায়ার ✓ ঢাকায় ফ্রি ডেলিভারি ✓ ওয়ারেন্টি। কল: ০১৬৪৬-৮৮৬৭৯৫`,
 };
 
 // Local business schema for Bangladesh
@@ -229,7 +236,7 @@ export const BANGLADESH_LOCAL_BUSINESS = {
   '@type': 'MedicalBusiness',
   name: 'Mediport Bangladesh Ltd.',
   alternateName: 'MediportBD',
-  description: 'Leading medical equipment supplier in Bangladesh. DGDA registered. Serving 500+ hospitals and clinics nationwide.',
+  description: 'Leading medical equipment supplier in Bangladesh. DGDA registered. Serving hospitals, clinics and home users nationwide.',
   
   address: {
     '@type': 'PostalAddress',

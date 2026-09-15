@@ -18,7 +18,7 @@ export const B2B_FAQS = [
   },
   {
     question: "What services are included in MediportBD's B2B program?",
-    answer: "MediportBD B2B clients receive: 8-30% bulk discounts, 30-90 day credit terms, free installation and staff training in Dhaka metro, dedicated account manager, priority technical support 24/7, quarterly maintenance visits, and customized procurement solutions."
+    answer: "MediportBD B2B clients receive: 8-30% bulk discounts, 30-90 day credit terms, free installation and staff training in Dhaka metro, dedicated account manager, priority technical support during business hours, quarterly maintenance visits, and customized procurement solutions."
   },
   {
     question: "How do hospitals request a B2B quote from MediportBD?",

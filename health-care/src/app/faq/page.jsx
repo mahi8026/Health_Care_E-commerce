@@ -10,7 +10,7 @@ const ALL_FAQS = [
   { q: 'How long does delivery take?', a: 'Dhaka: 1–2 business days. Chittagong & Sylhet: 2–3 business days. Other areas: 3–5 business days. Express same-day delivery available in Dhaka.' },
   { q: 'Do you provide installation and training?', a: 'Yes, free installation and staff training are included for diagnostic equipment in Dhaka metro. Installation charges apply outside Dhaka.' },
   { q: 'What about cold chain delivery for reagents?', a: 'All temperature-sensitive reagents are shipped with proper cold chain packaging (ice packs, insulated boxes) to maintain 2–8°C throughout transit.' },
-  { q: 'Are all products DGDA registered?', a: 'Yes, 100% of our products are DGDA registered and CE certified. DGDA registration documents are available on request.' },
+  { q: 'Are all products DGDA registered?', a: 'All regulated products we sell carry DGDA registration, and registration documents are available on request. Unregulated accessories are clearly labelled on the product page.' },
   { q: 'What is your return policy?', a: '7-day return policy for unused items in original packaging. Medical equipment must be unopened. Reagents and consumables are non-returnable unless damaged.' },
   { q: 'Do you offer bulk discounts for hospitals?', a: 'Yes. B2B institutions get 8–30% discount based on order volume. Apply via the B2B Portal to activate institutional pricing and credit terms.' },
   { q: 'What B2B credit terms do you offer?', a: 'We offer 30, 60, or 90-day credit terms to approved B2B customers (hospitals, clinics, diagnostic centers). Apply via the B2B Portal with trade license and bank details.' },

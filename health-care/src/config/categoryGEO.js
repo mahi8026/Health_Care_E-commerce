@@ -18,7 +18,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Is DGDA registration required to buy diagnostic equipment in Bangladesh?',
-        a: 'Yes, DGDA registration is mandatory for medical devices sold in Bangladesh. All diagnostic equipment sold by MediportBD is DGDA registered and CE certified, with certificates available on request.',
+        a: 'DGDA registration is mandatory for regulated medical devices sold in Bangladesh. Regulated diagnostic equipment sold by MediportBD is DGDA registered, and certificates are available on request.',
       },
       {
         q: 'How long does delivery take for diagnostic equipment in Bangladesh?',
@@ -94,7 +94,7 @@ export const CATEGORY_GEO = {
     faqs: [
       {
         q: 'How much does a patient monitor cost in Bangladesh?',
-        a: 'Multiparameter patient monitors in Bangladesh typically cost ৳85,000–৳600,000 depending on parameters, display and brand. CE certified and DGDA registered units include installation and staff training.',
+        a: 'Multiparameter patient monitors in Bangladesh typically cost ৳85,000–৳600,000 depending on parameters, display and brand. Units sourced from CE-marked, DGDA-registered product lines include installation and staff training.',
       },
       {
         q: 'Are ventilators available for hospitals in Bangladesh?',
@@ -220,7 +220,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'What respiratory brands are available in Bangladesh?',
-        a: 'MediportBD supplies respiratory equipment from Rossmax, Romsons, Yuwell and Beurer, all CE certified and DGDA registered.',
+        a: 'MediportBD supplies respiratory equipment from Rossmax, Romsons, Yuwell and Beurer, with regulatory documentation available on request.',
       },
     ],
   },
@@ -304,7 +304,7 @@ export const CATEGORY_GEO = {
     faqs: [
       {
         q: 'What medical devices does MediportBD supply in Bangladesh?',
-        a: 'MediportBD supplies body composition analyzers, monitoring equipment and diagnostic devices from leading global brands, all CE certified and DGDA registered.',
+        a: 'MediportBD supplies body composition analyzers, monitoring equipment and diagnostic devices from leading global manufacturers, with regulatory documentation available on request.',
       },
       {
         q: 'Do you install and train staff on medical devices in Bangladesh?',

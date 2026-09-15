@@ -34,7 +34,7 @@ export default function ProductSeoContent({ product }) {
   const faqs = [
     {
       q: `Is this ${product.name} genuine and DGDA registered?`,
-      a: `Yes. MediportBD is an authorised distributor${brandName ? ` of ${brandName}` : ''} in Bangladesh. All products are DGDA registered and CE certified, with full documentation available for hospital procurement and tenders.`,
+      a: `MediportBD supplies genuine ${brandName ? `${brandName} ` : ''}products in Bangladesh with import and regulatory documentation available on request for hospital procurement and tenders.`,
     },
     {
       q: `What is the warranty on this product?`,
@@ -54,7 +54,7 @@ export default function ProductSeoContent({ product }) {
     },
   ];
 
-  const certificationList = certifications.length > 0 ? certifications : ['DGDA Registered', 'CE Certified'];
+  const certificationList = certifications.length > 0 ? certifications : null;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-[var(--color-border-tertiary)] p-4 sm:p-6 mt-5">
@@ -84,6 +84,7 @@ export default function ProductSeoContent({ product }) {
       )}
 
       {/* Certifications */}
+      {certificationList && certificationList.length > 0 && (
       <div className="mb-4">
         <h3 className="text-sm font-semibold text-brand-navy mb-2">Certifications & Compliance</h3>
         <div className="flex flex-wrap gap-2">
@@ -97,6 +98,7 @@ export default function ProductSeoContent({ product }) {
           ))}
         </div>
       </div>
+      )}
 
       {/* Applications */}
       {applications.length > 0 && (
@@ -132,7 +134,7 @@ export default function ProductSeoContent({ product }) {
           </li>
           <li className="flex items-start gap-2">
             <FaCheckCircle className="text-brand-teal mt-0.5 flex-shrink-0" size={13} />
-            <span>24/7 technical support and AMC contracts available for institutional clients.</span>
+            <span>Technical support and AMC contracts available for institutional clients.</span>
           </li>
         </ul>
       </div>

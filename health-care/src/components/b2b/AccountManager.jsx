@@ -5,8 +5,8 @@ export default function AccountManager({ accountManager }) {
   const manager = accountManager || {
     name: 'B2B Support Team',
     role: 'Senior B2B Executive',
-    phone: '+880 1800-Mediport',
-    email: 'b2b@MediportBD.com',
+    phone: '+880 1646-886795',
+    email: 'mediportbdoficial@gmail.com',
     isOnline: false,
   };
 

@@ -154,8 +154,8 @@ export default function ProductTabsEnhanced({ product }) {
                   and medical laboratories.
                 </p>
                 <p>
-                  MediportBD is an authorized distributor offering genuine products with full manufacturer warranty and after-sales support. 
-                  All products are DGDA registered and comply with local regulatory requirements.
+                  MediportBD offers genuine products with full manufacturer warranty and after-sales support. 
+                  Regulated products carry DGDA registration, with documentation available on request.
                 </p>
               </div>
             )}
