@@ -117,7 +117,10 @@ export default function OrderSummary({
       return;
     }
     if (!isAuthenticated()) {
-      setCouponError('Login required');
+      // WAVE-GUEST v1: coupon redemption stays sign-in only in the UI (per-user
+      // usage tracking). The backend already accepts guest coupons, so this can
+      // be relaxed without a backend change.
+      setCouponError('Sign in to use coupons tracked to your account');
       return;
     }
     if (appliedCoupon) {

@@ -16,7 +16,7 @@ const {
 } = require('../controllers/orderController');
 const { trackOrder, steadfastWebhook } = require('../controllers/trackingController');
 const { generateInvoicePDF, getInvoiceData } = require('../controllers/invoiceController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalOrderAuth } = require('../middleware/auth');
 const { noStore } = require('../middleware/cache');
 const { orderLimiter, adminLimiter } = require('../middleware/rateLimiter');
 const {
@@ -46,7 +46,9 @@ router.post('/invoice/pdf', protect, noStore, generateInvoicePDF);
 router.get('/:id/invoice', protect, noStore, validateMongoId, getInvoiceData);
 
 // ? Security Enhancement: Add order rate limiter and comprehensive validation
-router.post('/', protect, orderLimiter, noStore, validateCreateOrder, createOrder);
+// WAVE-GUEST: POST /orders accepts guest orders — optionalOrderAuth attaches a
+// synthetic guest user when no token is sent; signed-in users are unaffected.
+router.post('/', optionalOrderAuth, orderLimiter, noStore, validateCreateOrder, createOrder);
 router.get('/', protect, noStore, validatePagination, getOrders);
 router.get('/:id', protect, noStore, validateMongoId, getOrder);
 router.put('/:id/cancel', protect, noStore, validateMongoId, cancelOrder);

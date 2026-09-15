@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 import { FaArrowLeft } from 'react-icons/fa';
 
-export default function CheckoutAuthGate({ onSuccess, onBack }) {
+export default function CheckoutAuthGate({ onSuccess, onBack, onGuest }) {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const { login, register, loading } = useAuth();
 
@@ -124,6 +124,15 @@ export default function CheckoutAuthGate({ onSuccess, onBack }) {
         </div>
 
         <div className="bg-white rounded-2xl border border-[var(--color-border-primary)] p-6 shadow-sm">
+
+          {/* WAVE-GUEST: guests can place the order without an account */}
+          <button
+            type="button"
+            onClick={onGuest}
+            className="w-full mb-5 py-2.5 rounded-xl border-[0.5px] border-brand-teal/40 bg-brand-teal-tint text-sm font-semibold text-brand-teal hover:border-brand-teal transition-colors"
+          >
+            Continue as guest
+          </button>
 
           {/* Google login — always visible */}
           <GoogleLoginButton fullWidth className="mb-5" />

@@ -35,6 +35,9 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  // WAVE-GUEST: true when the order was placed without an account. The user
+  // field then references a one-off synthetic ObjectId (no User document).
+  isGuestOrder: { type: Boolean, default: false },
   items: [orderItemSchema],
   subtotal: { type: Number, required: true },
   b2bDiscount: { type: Number, default: 0 },

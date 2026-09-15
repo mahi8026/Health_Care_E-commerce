@@ -19,6 +19,7 @@ const POSTCODE_REGEX = /^\d{4}$/;
 
 const EMPTY_FORM = {
   fullName: '',
+  email: '',
   phone: '',
   street: '',
   division: 'Dhaka',
@@ -40,6 +41,9 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
     switch (name) {
       case 'fullName':
         return (val || '').trim().length < 2 ? 'Name must be at least 2 characters' : '';
+      case 'email':
+        // WAVE-GUEST: guests provide an email so the order confirmation reaches them
+        return (val || '').trim() && !/^\S+@\S+\.\S+$/.test(val.trim()) ? 'Enter a valid email address' : '';
       case 'phone': {
         const digits = (val || '').replace(/[\s\-+]/g, '');
         return !PHONE_REGEX.test(digits) ? 'Enter a valid Bangladesh number (01XXXXXXXXX)' : '';
@@ -135,6 +139,20 @@ export default function DeliveryAddress({ value, onChange, savedAddress }) {
             autoComplete="tel"
             error={errors.phone}
             required
+          />
+        </div>
+
+        {/* WAVE-GUEST: guests receive the order confirmation at this email */}
+        <div className="sm:col-span-2">
+          <Input
+            label="Email (order updates)"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="you@example.com"
+            autoComplete="email"
+            error={errors.email}
           />
         </div>
 

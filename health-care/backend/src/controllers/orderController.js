@@ -159,14 +159,21 @@ await session.abortTransaction();
     // eslint-disable-next-line no-unused-vars
     const { items, deliveryAddress, deliveryMethod, deliveryType, paymentMethod, promoCode, notes, poNumber, loyaltyPointsToRedeem, idempotencyKey } = req.body;
 
+    // WAVE-GUEST: optionalOrderAuth attaches a synthetic guest user (isGuest)
+    // when no token is sent, so every request reaches this point with a
+    // req.user. Guest ids are one-off ObjectIds — never real user documents.
+    const isGuestOrder = !!(req.user?.isGuest || req.guestOrder);
+
     // ? Security Fix #4: Validate idempotency key to prevent double charging
     if (!idempotencyKey || typeof idempotencyKey !== 'string') {
       return abortAndError(res, 'Idempotency key required. Please refresh and try again.', 400);
     }
 
     // ? Check for duplicate order with same idempotency key
+    // WAVE-GUEST: guest orders have a unique one-off synthetic user id, so the
+    // user field is useless for dedupe; key on the idempotency key alone.
     const existingOrder = await Order.findOne({
-      user: req.user.id,
+      ...(req.user?.isGuest ? {} : { user: req.user.id }),
       'metadata.idempotencyKey': idempotencyKey
     }).lean();
 
@@ -188,9 +195,11 @@ await session.abortTransaction();
     let totalB2BSavings = 0; // Track total B2B savings across all items
     const orderItems = [];
 
-    // Load user early — needed for server-side B2B pricing
-    const user = await withSession(User.findById(req.user.id));
-    if (!user) {
+    // Load user early — needed for server-side B2B pricing.
+    // WAVE-GUEST: guest orders have no user document; pricingService falls
+    // back to retail pricing for a null user (server-side pricing unchanged).
+    const user = isGuestOrder ? null : await withSession(User.findById(req.user.id));
+    if (!isGuestOrder && !user) {
       return abortAndError(res, 'User not found', 404);
     }
 
@@ -279,13 +288,18 @@ await session.abortTransaction();
         const now = new Date();
         const isValid = now >= coupon.startDate && now <= coupon.endDate;
         const hasUsageLeft = !coupon.usageLimit || coupon.usageCount < coupon.usageLimit;
-        const notUsedByUser = !coupon.usedBy.includes(req.user.id);
+        // WAVE-GUEST: guests have no purchase history — skip per-user guards
+        const notUsedByUser = isGuestOrder || !coupon.usedBy.includes(req.user.id);
         const meetsMinimum = subtotal >= coupon.minimumOrderAmount;
-        const roleMatches = coupon.applicableUserRoles.length === 0 || coupon.applicableUserRoles.includes(user.role);
+        // WAVE-GUEST: guests have no role document — treat as default 'customer'
+        const roleMatches = isGuestOrder
+          ? (coupon.applicableUserRoles.length === 0 || coupon.applicableUserRoles.includes('customer'))
+          : (coupon.applicableUserRoles.length === 0 || coupon.applicableUserRoles.includes(user.role));
         
         let isFirstOrder = true;
         if (coupon.isFirstOrderOnly) {
-          const orderCount = await withSession(Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } }));
+          // WAVE-GUEST: guests have no order history — first-order coupons apply
+          const orderCount = isGuestOrder ? 0 : await withSession(Order.countDocuments({ user: req.user.id, status: { $ne: 'cancelled' } }));
           isFirstOrder = orderCount === 0;
         }
         
@@ -325,7 +339,8 @@ await session.abortTransaction();
             {
               _id: coupon._id,
               ...(coupon.usageLimit ? { usageCount: { $lt: coupon.usageLimit } } : {}),
-              usedBy: { $ne: req.user.id }
+              // WAVE-GUEST: guests are not tracked in usedBy; global limit still applies
+              ...(isGuestOrder ? {} : { usedBy: { $ne: req.user.id } })
             },
             { $inc: { usageCount: 1 }, $push: { usedBy: req.user.id } }
           ));
@@ -381,9 +396,10 @@ zone = 'dhaka_suburban';
     const deliveryFee = DELIVERY_FEES[zone] ?? DELIVERY_FEES.outside_dhaka;
 
     // Loyalty points redemption
+    // WAVE-GUEST: loyalty points belong to real accounts — guests cannot redeem.
     let loyaltyDiscount = 0;
     let pointsRedeemed = 0;
-    if (loyaltyPointsToRedeem && loyaltyPointsToRedeem > 0) {
+    if (loyaltyPointsToRedeem && loyaltyPointsToRedeem > 0 && !isGuestOrder) {
       const loyaltyService = require('../services/loyaltyService');
       const { MIN_REDEEM_POINTS } = loyaltyService.config;
       const subtotalAfterDiscounts = subtotal - b2bDiscount - couponDiscount;
@@ -447,7 +463,9 @@ zone = 'dhaka_suburban';
       orderNumber,
       orderId: orderNumber,
       invoiceNumber,
-      user: req.user.id,
+      user: isGuestOrder ? req.user._id : req.user.id,
+      // WAVE-GUEST: marks orders placed without an account (synthetic user id)
+      isGuestOrder,
       items: orderItems,
       subtotal,
       b2bDiscount,
@@ -597,11 +615,12 @@ await session.commitTransaction();
 }
 
     // Award loyalty points asynchronously (non-blocking)
+    // WAVE-GUEST: guests have no account to accrue points on — skip earning.
     try {
       const loyaltyService = require('../services/loyaltyService');
       const LoyaltyTransaction = require('../models/LoyaltyTransaction');
 
-      if (loyaltyPointsEarned > 0) {
+      if (loyaltyPointsEarned > 0 && !isGuestOrder) {
         const updatedUser = await User.findByIdAndUpdate(
           req.user.id,
           { $inc: { loyaltyPoints: loyaltyPointsEarned } },
@@ -640,9 +659,19 @@ await session.commitTransaction();
     cacheService.invalidateAnalytics();
 
     // Send order confirmation email asynchronously
-    emailService.sendNewOrderEmail(order[0], user).then(result => {
+    // WAVE-GUEST: guests have no account record — email goes to the address
+    // entered at checkout (deliveryAddress.email); SMS/WhatsApp to the phone.
+    const contactEmail = user?.email || deliveryAddress?.email || null;
+    const contactName = user?.name || deliveryAddress?.name || 'Valued Customer';
+    const contactCustomer = {
+      name: contactName,
+      email: contactEmail,
+      phone: user?.phone || deliveryAddress?.phone || null,
+      ...(isGuestOrder ? { isGuest: true } : {}),
+    };
+    emailService.sendNewOrderEmail(order[0], contactCustomer).then(result => {
       if (result.success) {
-        logger.info(`[createOrder] ? Order confirmation email sent to ${user.email}`);
+        logger.info(`[createOrder] ? Order confirmation email sent to ${contactEmail || 'N/A'}`);
       } else if (result.skipped) {
         logger.warn(`[createOrder] ?? Email skipped: ${result.reason}`);
       } else {
@@ -654,7 +683,7 @@ await session.commitTransaction();
     });
 
     // Send new-order notification to admin email asynchronously
-    emailService.sendNewOrderAdminEmail(order[0], user).then(result => {
+    emailService.sendNewOrderAdminEmail(order[0], contactCustomer).then(result => {
       if (result.success) {
         logger.info(`[createOrder] ? Admin notification sent for order #${orderNumber}`);
       } else if (result.skipped) {
@@ -665,7 +694,7 @@ await session.commitTransaction();
     });
 
     // Send order confirmation SMS asynchronously (non-blocking)
-    if (user.phone) {
+    if (contactCustomer.phone) {
       const { sendOrderConfirmationSMS } = require('../services/smsService');
       sendOrderConfirmationSMS(user.phone, orderNumber, totalAmount).catch(err => 
         logger.error(`[createOrder] SMS failed: ${err.message}`)
@@ -673,7 +702,7 @@ await session.commitTransaction();
     }
 
     // Send WhatsApp order confirmation asynchronously (non-blocking)
-    if (user.phone) {
+    if (contactCustomer.phone) {
       const whatsappBot = require('../services/whatsappBot');
       whatsappBot.sendOrderConfirmation(order[0], user).catch(err =>
         logger.error(`[createOrder] WhatsApp failed: ${err.message}`)
@@ -692,13 +721,14 @@ await session.commitTransaction();
         totalAmount,
         paymentMethod,
         deliveryType: deliveryType || deliveryMethod || null,
-        isB2BOrder: !!user.b2bAccount,
+        isB2BOrder: !!user?.b2bAccount,
         deliveryAddress: {
           name: deliveryAddress?.name,
           phone: deliveryAddress?.phone,
           district: deliveryAddress?.district || deliveryAddress?.city
         },
-        customer: { id: user._id, name: user.name, email: user.email, phone: user.phone }
+        customer: { id: user?._id || null, name: user?.name || deliveryAddress?.name || null, email: user?.email || deliveryAddress?.email || null, phone: user?.phone || deliveryAddress?.phone || null },
+        isGuestOrder: isGuestOrder
       });
     } catch (n8nErr) {
       logger.error(`[createOrder] n8n event error: ${n8nErr.message}`);
@@ -706,7 +736,7 @@ await session.commitTransaction();
 
     // Log order placement activity
     logActivityAsync({
-      user: req.user,
+      user: isGuestOrder ? null : req.user,
       action: ACTIONS.ORDER.PLACED,
       targetModel: 'Order',
       targetId: order[0]._id,

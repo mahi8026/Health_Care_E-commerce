@@ -1,4 +1,5 @@
 ﻿const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 const tokenBlacklist = require('../services/tokenBlacklist');
@@ -144,5 +145,45 @@ exports.optionalAuth = async (req, res, next) => {
   } catch (error) {
     logger.error(`[optionalAuth] ${error.message}`);
     next(); // Continue even on error
+  }
+};
+
+// Guest order authentication — lets unauthenticated visitors place orders by
+// attaching a synthetic one-off user object instead of rejecting the request.
+// A real token still goes through the full protect() path (blacklist, rotation
+// and invalidation checks included), so signed-in behaviour is unchanged.
+// Guest ids are never persisted as users; the controller persists
+// isGuestOrder on the order and the guest email on the delivery address.
+// WAVE-GUEST: introduced for guest checkout.
+exports.optionalOrderAuth = async (req, res, next) => {
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  // No token at all → guest order with a synthetic one-off user id.
+  if (!token) {
+    const guestId = new mongoose.Types.ObjectId();
+    req.user = {
+      id: guestId,
+      _id: guestId,
+      name: 'Guest',
+      email: null,
+      phone: null,
+      role: 'customer',
+      accountType: 'Retail',
+      loyaltyPoints: 0,
+      isActive: true,
+      isGuest: true,
+    };
+    req.guestOrder = true;
+    return next();
+  }
+
+  // Token present → behave exactly like protect().
+  try {
+    return exports.protect(req, res, next);
+  } catch (error) {
+    return next(error);
   }
 };

@@ -144,6 +144,8 @@ export default function CheckoutPage({ onBackToCart }) {
   }, [itemsWithB2BPricing, appliedCoupon, redeemedPoints, deliveryFee]);
 
   const handlePlaceOrder = useCallback(async () => {
+    // WAVE-GUEST: soft auth gate — signed-in users place directly; guests get
+    // the auth gate with a "Continue as guest" option (guest checkout enabled).
     if (!isAuthenticated()) {
       // Save address so it survives the auth flow
       try {
@@ -366,11 +368,13 @@ export default function CheckoutPage({ onBackToCart }) {
   }, [cart, clearCart, orderId, orderTotal, deliveryFee, selectedPayment]);
 
   // Show auth gate overlay when user tries to place order without being logged in
+  // WAVE-GUEST: the gate offers login/register plus "Continue as guest"
   if (showAuthGate && !isAuthenticated()) {
     return (
       <CheckoutAuthGate
         onSuccess={() => setShowAuthGate(false)}
         onBack={() => setShowAuthGate(false)}
+        onGuest={() => setShowAuthGate(false)}
       />
     );
   }
@@ -408,19 +412,15 @@ export default function CheckoutPage({ onBackToCart }) {
     };
   });
 
-  // Show loading while checking authentication
+  // WAVE-GUEST: checkout is browsable without an account — the auth gate
+  // (with a guest option) appears only when placing the order. Signed-in
+  // users still get saved addresses, coupons and loyalty points.
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Spinner />
       </div>
     );
-  }
-
-  // Don't render checkout if not authenticated
-  if (!isAuthenticated()) {
-    router.replace('/login');
-    return null;
   }
 
   return (
@@ -506,7 +506,7 @@ export default function CheckoutPage({ onBackToCart }) {
                 showPlaceOrder
                 loyaltyPoints={user?.loyaltyPoints || 0}
                 redeemedPoints={redeemedPoints}
-                onRedeemPoints={setRedeemedPoints}
+                onRedeemPoints={isAuthenticated() ? setRedeemedPoints : undefined}
               />
             </aside>
           </div>
