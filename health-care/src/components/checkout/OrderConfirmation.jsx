@@ -5,6 +5,8 @@ import { showToast } from '@/components/ui/Toast';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
+import { useAuth } from '@/context/AuthContext';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 
 // Inline copy button for bank details
 function CopyBtn({ text }) {
@@ -79,11 +81,201 @@ function BankTransferConfirmation({ orderId }) {
   );
 }
 
-export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery, paymentMethod }) {
+// WAVE-CLAIM — post-purchase account-acquisition prompt shown to guest buyers.
+// The highest-converting conversion moment in e-commerce: the order is already
+// placed and trust is established. Creates the account via register(), which
+// auto-signs the user in, then links the just-placed guest order via
+// POST /orders/claim-guest (backend verifies delivery email === account email).
+function GuestAccountPrompt({ orderNumber, guestEmail }) {
+  const { register, isAuthenticated } = useAuth();
   const router = useRouter();
+  // reCAPTCHA parity with RegisterPage: a soft signal only. When no site key is
+  // configured (or reCAPTCHA fails to load) the token is simply omitted, which
+  // the backend treats as "skip" — signup is never blocked by this.
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha } = useRecaptcha(recaptchaSiteKey);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState(guestEmail || '');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [done, setDone] = useState(false);
+
+  // Only guests see the prompt; already signed-in users get nothing.
+  if (isAuthenticated()) return null;
+
+  const PASSWORD_RULE =
+    'At least 8 characters with uppercase, lowercase, number, and special character';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (!name.trim() || name.trim().length < 2) {
+      setError('Please enter your name');
+      return;
+    }
+    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!/^(?:\+880|880|0)?1[3-9]\d{8}$/.test((phone || '').replace(/[\s\-+]/g, ''))) {
+      setError('Enter a valid Bangladesh phone number (01XXXXXXXXX)');
+      return;
+    }
+    if (
+      password.length < 8 ||
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]/.test(password)
+    ) {
+      setError(PASSWORD_RULE);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // reCAPTCHA is executed but never blocks account creation (same contract
+      // as RegisterPage): null tokens are simply omitted from the payload.
+      let recaptchaToken = null;
+      if (recaptchaSiteKey) {
+        recaptchaToken = await executeRecaptcha('register');
+      }
+      // register() stores the returned token — the user is signed in on success.
+      const result = await register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        phone: phone.trim(),
+        ...(recaptchaToken ? { recaptchaToken } : {}),
+      });
+      if (!result.success) {
+        setError(result.error || 'Could not create your account. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+      // Account created and signed in — link the guest order (non-fatal).
+      try {
+        await api.claimGuestOrder(orderNumber);
+      } catch {
+        // Claim failures (e.g. email mismatch) never block account creation;
+        // the order remains trackable via /track/<orderNumber> either way.
+      }
+      setDone(true);
+      showToast.success('Account created — order saved to your account');
+      router.refresh();
+    } catch {
+      setError('Could not create your account. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="mt-5 flex items-start gap-3 text-left bg-[var(--color-status-success-tint)] rounded-lg p-3.5">
+        <span className="text-base">🎉</span>
+        <div className="flex-1">
+          <div className="text-sm font-semibold text-[var(--color-status-success)] m-0">
+            Account created!
+          </div>
+          <p className="text-xs text-[var(--color-status-success)] mt-1 m-0">
+            This order is now saved to your account. View it any time under
+            &quot;My Orders&quot; — and you&apos;ll earn loyalty points on future orders.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 text-left bg-[var(--color-background-secondary)] rounded-xl border border-[var(--color-border-primary)] p-4">
+      <div className="flex items-start gap-3">
+        <span className="text-xl">🎁</span>
+        <div className="flex-1">
+          <h3 className="text-sm font-semibold text-brand-navy m-0">
+            Save this order &amp; earn points
+          </h3>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-1 m-0">
+            Create a free account with the email you used at checkout — this order
+            will be linked automatically, and you&apos;ll earn loyalty points on
+            everything you buy.
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-3 space-y-2.5" noValidate>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full name"
+            autoComplete="name"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm text-brand-navy bg-white border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
+          />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email (used at checkout)"
+            autoComplete="email"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm text-brand-navy bg-white border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone (01XXXXXXXXX)"
+            autoComplete="tel"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm text-brand-navy bg-white border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Create a password"
+            autoComplete="new-password"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm text-brand-navy bg-white border border-[var(--color-border-primary)] rounded-lg focus:outline-none focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/15"
+          />
+        </div>
+
+        {error && (
+          <p className="text-xs text-danger m-0" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full py-2.5 min-h-[44px] text-sm font-semibold bg-brand-teal text-white rounded-lg hover:bg-[var(--color-brand-teal-hover)] disabled:opacity-50 transition-colors"
+        >
+          {submitting ? 'Creating account…' : 'Create account & save this order'}
+        </button>
+        <p className="text-[11px] text-[var(--color-text-tertiary)] m-0">
+          Password rule: {PASSWORD_RULE}
+        </p>
+      </form>
+    </div>
+  );
+}
+
+export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery, paymentMethod, guestEmail }) {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [downloading, setDownloading] = useState(false);
 
+  // WAVE-CLAIM: the invoice page is behind login (protect-gated API). Guests
+  // who skipped account creation would hit a /login redirect, so route them to
+  // the public order tracker instead. The live session check wins: a guest who
+  // just used the claim prompt above is signed in and keeps invoice access.
+  const isGuest = !isAuthenticated();
   const handleDownloadInvoice = () => {
+    if (isGuest) {
+      window.open(`/track/${orderId}`, '_blank');
+      return;
+    }
+
     // Use mongoId for navigation if available, otherwise fall back to orderId
     const idForNavigation = mongoId || orderId;
     
@@ -168,13 +360,16 @@ export default function OrderConfirmation({ orderId, mongoId, estimatedDelivery,
         </div>
       </div>
 
+      {/* WAVE-CLAIM — guest account conversion prompt (renders only for guests) */}
+      <GuestAccountPrompt orderNumber={orderId} guestEmail={guestEmail} />
+
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
         <button 
           onClick={handleDownloadInvoice}
           className="flex-1 px-4 py-2.5 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-medium font-[family-name:var(--font-plus-jakarta)] hover:bg-[var(--color-background-tertiary)] transition-colors"
         >
-          📄 View Invoice
+          {isGuest ? '📦 Track Order' : '📄 View Invoice'}
         </button>
         <button 
           onClick={() => router.push('/products')}

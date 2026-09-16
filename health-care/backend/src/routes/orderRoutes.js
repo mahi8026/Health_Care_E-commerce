@@ -9,6 +9,7 @@ const {
   cancelOrder,
   addOrderNote,
   sendNotification,
+  claimGuestOrder,
   shipViaSteadfast,
   getSteadfastBalance,
   bulkShipViaSteadfast,
@@ -44,6 +45,9 @@ router.get('/webhooks/steadfast', noStore, (_req, res) => {
 // Invoice routes
 router.post('/invoice/pdf', protect, noStore, generateInvoicePDF);
 router.get('/:id/invoice', protect, noStore, validateMongoId, getInvoiceData);
+
+// WAVE-CLAIM — guest order claim (must stay before any '/:id' POST patterns)
+router.post('/claim-guest', protect, orderLimiter, noStore, claimGuestOrder);
 
 // ? Security Enhancement: Add order rate limiter and comprehensive validation
 // WAVE-GUEST: POST /orders accepts guest orders — optionalOrderAuth attaches a

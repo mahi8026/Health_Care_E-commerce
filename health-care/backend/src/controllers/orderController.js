@@ -780,6 +780,68 @@ session.endSession();
 };
 
 /**
+ * WAVE-CLAIM — Claim a guest order after creating an account.
+ * Re-assigns a guest order (synthetic user id, isGuestOrder=true) to the
+ * authenticated caller's account. Safety rules:
+ *   1. Only orders created via guest checkout can be claimed.
+ *   2. The delivery email on the order must match the caller's account email
+ *      (case-insensitive) — proof that the same person placed the order.
+ *   3. Idempotent: already-claimed or already-owned orders return success
+ *      without mutation, so retries are harmless.
+ * @route POST /api/orders/claim-guest
+ * @access Private
+ */
+exports.claimGuestOrder = async (req, res) => {
+  try {
+    const { orderNumber } = req.body || {};
+    if (!orderNumber || typeof orderNumber !== 'string') {
+      return errorResponse(res, 'Order number is required', null, 400);
+    }
+
+    const order = await Order.findOne({
+      $or: [{ orderNumber }, { orderId: orderNumber }],
+      // Guest orders only — real user orders must never be reassigned
+      isGuestOrder: true
+    });
+
+    if (!order) {
+      // Not a claimable guest order (may already belong to an account)
+      return errorResponse(res, 'Order not found or already linked to an account', null, 404);
+    }
+
+    // Delivery email must match the account email (case-insensitive).
+    const orderEmail = (order.deliveryAddress?.email || '').toLowerCase().trim();
+    const userEmail = (req.user.email || '').toLowerCase().trim();
+    if (!orderEmail || orderEmail !== userEmail) {
+      logger.warn(`[claimGuestOrder] Email mismatch for ${order.orderNumber}: order=${orderEmail ? 'set' : 'missing'} user=${userEmail ? 'set' : 'missing'}`);
+      return errorResponse(res, 'This order was placed with a different email address', null, 403);
+    }
+
+    // Already owned by this account (e.g. user clicked twice) — idempotent success
+    if (String(order.user) === String(req.user.id)) {
+      return successResponse(res, { order }, 'Order already linked to your account', 200);
+    }
+
+    // Re-assign atomically, guarded on isGuestOrder staying true
+    const claimed = await Order.findOneAndUpdate(
+      { _id: order._id, isGuestOrder: true },
+      { $set: { user: req.user.id, isGuestOrder: false } },
+      { new: true }
+    );
+
+    if (!claimed) {
+      return errorResponse(res, 'Order was just claimed by another account', null, 409);
+    }
+
+    logger.info(`[claimGuestOrder] Order ${claimed.orderNumber} claimed by user ${req.user.email}`);
+    return successResponse(res, { order: claimed }, 'Order linked to your account', 200);
+  } catch (error) {
+    logger.error(`[claimGuestOrder] ${error.message}`);
+    return errorResponse(res, 'Failed to claim order', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
+  }
+};
+
+/**
  * Get all orders (admin gets all, user gets own).
  * 
  * @param {Request} req - Express request object

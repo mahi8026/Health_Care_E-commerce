@@ -231,6 +231,9 @@ export default function CheckoutPage({ onBackToCart }) {
         deliveryAddress: {
           name: deliveryAddress.fullName,
           phone: deliveryAddress.phone,
+          // WAVE-GUEST/CLAIM: guests receive confirmations at this address and
+          // use it later to claim the order after creating an account.
+          ...(deliveryAddress.email ? { email: deliveryAddress.email.trim() } : {}),
           street: deliveryAddress.street,
           thana: deliveryAddress.thana,
           district: deliveryAddress.district,
@@ -517,6 +520,7 @@ export default function CheckoutPage({ onBackToCart }) {
               mongoId={createdOrderId}
               estimatedDelivery="2–5 business days"
               paymentMethod={selectedPayment}
+              guestEmail={deliveryAddress?.email || ''}
             />
           </div>
         )}

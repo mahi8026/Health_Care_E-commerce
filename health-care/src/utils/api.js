@@ -797,6 +797,19 @@ export const api = {
     }
   },
 
+  // WAVE-CLAIM — link a guest order to the caller's account after sign-up.
+  // Backend re-assigns the order only when the delivery email matches the
+  // account email, so this is safe to call after any successful registration.
+  async claimGuestOrder(orderNumber) {
+    const response = await fetchWithAuth(`${API_BASE_URL}/orders/claim-guest`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ orderNumber }),
+      credentials: 'include'
+    });
+    return handleResponse(response);
+  },
+
   // FIX-016: No PATCH /orders/:id route exists on the backend.
   // Use api.updateOrderStatus(id, status) for status changes,
   // or api.cancelOrder(id) for cancellations.
