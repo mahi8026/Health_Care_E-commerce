@@ -664,6 +664,7 @@ await session.commitTransaction();
     const contactEmail = user?.email || deliveryAddress?.email || null;
     const contactName = user?.name || deliveryAddress?.name || 'Valued Customer';
     const contactCustomer = {
+      id: user?._id || null,
       name: contactName,
       email: contactEmail,
       phone: user?.phone || deliveryAddress?.phone || null,
@@ -694,9 +695,14 @@ await session.commitTransaction();
     });
 
     // Send order confirmation SMS asynchronously (non-blocking)
+    // WAVE-GUEST FIX: guests have no user record (user === null), and a guest's
+    // phone always lives on the checkout address. Evaluating `user.phone` here
+    // threw AFTER the order was committed and stock was decremented, so the
+    // outer catch returned a 500 for an order that actually existed — guests
+    // were told the order failed. Always use the guest-safe contact object.
     if (contactCustomer.phone) {
       const { sendOrderConfirmationSMS } = require('../services/smsService');
-      sendOrderConfirmationSMS(user.phone, orderNumber, totalAmount).catch(err => 
+      sendOrderConfirmationSMS(contactCustomer.phone, orderNumber, totalAmount).catch(err =>
         logger.error(`[createOrder] SMS failed: ${err.message}`)
       );
     }
@@ -704,7 +710,7 @@ await session.commitTransaction();
     // Send WhatsApp order confirmation asynchronously (non-blocking)
     if (contactCustomer.phone) {
       const whatsappBot = require('../services/whatsappBot');
-      whatsappBot.sendOrderConfirmation(order[0], user).catch(err =>
+      whatsappBot.sendOrderConfirmation(order[0], contactCustomer).catch(err =>
         logger.error(`[createOrder] WhatsApp failed: ${err.message}`)
       );
     }
