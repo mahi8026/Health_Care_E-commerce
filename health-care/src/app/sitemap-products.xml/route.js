@@ -140,8 +140,12 @@ export async function GET() {
   const urls = products
     .filter(p => p.slug && !MONGO_ID_RE.test(p.slug))
     .map(p => {
-      const lastmod = p.updatedAt
-        ? new Date(p.updatedAt).toISOString()
+      // Real modification time from the API; fall back to creation date for
+      // legacy documents, never to "generation time" (that produced 600+
+      // identical lastmods and fake freshness signals).
+      const lastmodSource = p.updatedAt || p.createdAt;
+      const lastmod = lastmodSource
+        ? new Date(lastmodSource).toISOString()
         : now;
       const priority = calculatePriority(p);
       const changefreq = calculateChangeFreq(p);

@@ -358,6 +358,10 @@ return errorResponse(res, 'Product not found', null, 404);
       slug: 1,
       isActive: 1,
       createdAt: 1,
+      // updatedAt must be projected: the sitemap generators use it for
+      // <lastmod>. Omitting it silently forced every sitemap URL onto the
+      // "generation time" fallback (thousands of identical lastmods in GSC).
+      updatedAt: 1,
       rating: 1,
       oldPrice: 1,
       sku: 1,
@@ -402,7 +406,13 @@ return errorResponse(res, 'Product not found', null, 404);
           filteredProject[field] = 1;
         }
       });
-      
+      // Always expose updatedAt (with createdAt fallback below for legacy
+      // documents) — sitemap/SEO consumers depend on it and it costs ~30
+      // bytes per document. Unknown field names were silently ignored before,
+      // which stripped updatedAt from ?fields= responses.
+      filteredProject.updatedAt = 1;
+      filteredProject.createdAt = 1;
+
       pipeline.push({ $project: filteredProject });
     } else {
       pipeline.push({ $project: projectStage });

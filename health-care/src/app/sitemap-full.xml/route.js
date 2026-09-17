@@ -107,7 +107,11 @@ async function productUrls(now) {
         .filter(p => p.slug && !MONGO_ID_RE.test(p.slug))
         .forEach(p => all.push({
           loc:     `${SITE_URL}/products/${p.slug}`,
-          lastmod: p.updatedAt ? new Date(p.updatedAt).toISOString() : now,
+          // updatedAt from the API; createdAt for legacy docs; "now" only when
+          // neither exists (same policy as sitemap-products.xml).
+          lastmod: p.updatedAt || p.createdAt
+            ? new Date(p.updatedAt || p.createdAt).toISOString()
+            : now,
           pri:     0.7,
           freq:    'weekly',
         }));

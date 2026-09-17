@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useCompare } from '@/context/CompareContext';
@@ -113,30 +114,29 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
     }
   }, [product, onProductClick, router]);
 
-  // Handle card click
-  const handleCardClick = useCallback(() => {
-    const productSlug = product.slug || product._id || product.id;
+  // Crawlable product URL — slug is canonical; ObjectId mirrors the old
+  // router.push fallback so behavior is unchanged for slug-less items.
+  const productHref = `/products/${product.slug || product._id || product.id}`;
+
+  // Real anchors must own navigation. Delegate to onProductClick when a
+  // parent supplied one; otherwise let Next's client-side nav handle it.
+  // stopPropagation prevents the wrapper div's onClick from firing a
+  // duplicate router.push.
+  const handleLinkClick = useCallback((e) => {
+    e.stopPropagation();
     if (onProductClick) {
-      onProductClick(productSlug);
-    } else {
-      router.push(`/products/${productSlug}`);
+      e.preventDefault();
+      onProductClick(product.slug || product._id || product.id);
     }
-  }, [product, onProductClick, router]);
+  }, [onProductClick, product]);
 
   return (
-    <div 
+    <Link
+      href={productHref}
       ref={cardRef}
-      role="link"
-      tabIndex={0}
       aria-label={`${product.name} — view details`}
-      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-md overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1"
-      onClick={handleCardClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleCardClick();
-        }
-      }}
+      className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-md overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1 block"
+      onClick={handleLinkClick}
     >
       {/* Image Container - Fixed aspect ratio 1:1 (square) for consistent sizing */}
       <div className="aspect-square w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
@@ -333,7 +333,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 });
 
