@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { FaTimes, FaCircle } from 'react-icons/fa';
 import Spinner from '@/components/ui/Spinner';
 import ChatMessages from './ChatMessages';
@@ -30,6 +30,14 @@ export default function ChatWidget({ onClose }) {
   const [isSending, setIsSending]           = useState(false);
   const pollRef          = useRef(null);
   const lastCountRef     = useRef(0);
+
+  // True when a stored conversation id exists and the visitor is signed in.
+  // Gates the restore effect: a guest tab that later logs in must not be
+  // handed the pre-login (anonymously accessible) conversation.
+  const hasStoredConvIdForUser = useMemo(() => {
+    const storedId = getStoredConvId();
+    return !!storedId && !!user;
+  }, [user]);
 
   // ── Fetch messages ──────────────────────────────────────────────────────
   const fetchMessages = useCallback((convId) => {
@@ -82,7 +90,10 @@ export default function ChatWidget({ onClose }) {
     }
 
     return () => clearInterval(pollRef.current);
-  }, [token]);
+    // Re-run on auth changes ONLY when the stored conversation belongs to the
+    // signed-in user — a guest tab that later logs in must not be handed the
+    // pre-login (anonymously accessible) conversation.
+  }, [token, hasStoredConvIdForUser]);
 
   // ── Start polling once we have a conversationId ─────────────────────────
   // Polling is visibility-aware: the timer only runs while the tab is
@@ -119,10 +130,11 @@ export default function ChatWidget({ onClose }) {
       },
       body: JSON.stringify({
         customer: {
-          userId: user?._id || null,
-          name:   user?.name  || 'Guest',
-          email:  user?.email || null,
-          phone:  user?.phone || null
+          // No client-supplied identity: the server derives userId/isAuthenticated
+          // from the Authorization token only (guest room-claim fix).
+          name:  user?.name  || 'Guest',
+          email: user?.email || null,
+          phone: user?.phone || null
         },
         source: 'website'
       })

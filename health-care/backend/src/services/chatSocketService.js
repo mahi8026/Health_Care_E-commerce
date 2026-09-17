@@ -24,7 +24,9 @@ class ChatSocketService {
     const userId = reqOrSocket.userId;
     const role = reqOrSocket.userRole || reqOrSocket.role || null;
 
-    if (role === 'admin') return true;
+    if (role === 'admin') {
+      return true;
+    }
     if (role === 'agent') {
       const assigned = conversation.assignedTo;
       const assignedId = assigned?._id ? String(assigned._id) : (assigned ? String(assigned) : null);
@@ -53,6 +55,9 @@ class ChatSocketService {
     delete doc.internalNotesHistory;
     if (doc.metadata) {
       delete doc.metadata.ip;
+      // S3 — the Conversation schema stores these as metadata.ipAddress /
+      // metadata.userAgent (chatController sets them via req.ip / req.get).
+      delete doc.metadata.ipAddress;
       delete doc.metadata.userAgent;
     }
     return doc;

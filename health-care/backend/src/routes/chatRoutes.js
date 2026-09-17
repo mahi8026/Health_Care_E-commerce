@@ -16,7 +16,7 @@ const {
   getChatConfig,
   updateChatConfig
 } = require('../controllers/chatController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/enhancedRateLimiter');
 const { upload } = require('../services/uploadService');
 
@@ -48,9 +48,12 @@ const { upload } = require('../services/uploadService');
  */
 router.post('/conversations', authLimiter, createConversation);
 
-// Public message routes (protected — auth required to read/send)
-router.get('/messages/:conversationId', protect, getConversationMessages);
-router.post('/messages', protect, authLimiter, sendPublicMessage);
+// Guest-capable widget paths — optionalAuth attaches req.user when a token is
+// present (identity derivation S5 + ownership checks S3), and lets guests
+// through with req.user undefined; the controllers enforce membership via
+// canAccessConversation (anonymous callers only reach ownerless guest rooms).
+router.get('/messages/:conversationId', optionalAuth, getConversationMessages);
+router.post('/messages', optionalAuth, authLimiter, sendPublicMessage);
 
 /**
  * @swagger

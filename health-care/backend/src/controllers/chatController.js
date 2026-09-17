@@ -18,7 +18,10 @@ exports.createConversation = async (req, res) => {
     const name = req.body.name || req.body.customer?.name;
     const email = req.body.email || req.body.customer?.email;
     const phone = req.body.phone || req.body.customer?.phone;
-    const userId = req.body.userId || req.body.customer?.userId || req.user?._id || null;
+    // S5 — identity is derived from the verified token only. A public caller
+    // (widget) must not be able to claim someone else's userId: that would
+    // attach the new room to that account and let the caller hijack it.
+    const userId = req.user?._id || null;
     const { metadata, source } = req.body;
 
     // Validate - only name is required, email is optional for guests
@@ -336,9 +339,9 @@ exports.getConversationMessages = async (req, res) => {
 
     // S3 — same membership rule as getConversation. Anonymous reads are only
     // permitted for guest-owned rooms (conversationId = unguessable UUID).
-    const accessor = req.user
-      ? { userId: req.user._id, userRole: req.user.role }
-      : { userId: null, userRole: null };
+    // optionalAuth on the route may leave req.user undefined for guests, so
+    // build the accessor defensively — same shape either way.
+    const accessor = { userId: req.user?._id || null, userRole: req.user?.role || null };
     if (!chatSocketService.canAccessConversation(conversation, accessor)) {
       return errorResponse(res, 'Access denied', null, 403);
     }
@@ -374,9 +377,9 @@ exports.sendPublicMessage = async (req, res) => {
     if (!targetConversation) {
       return errorResponse(res, 'Conversation not found', null, 404);
     }
-    const accessCheck = req.user
-      ? { userId: req.user._id, userRole: req.user.role }
-      : { userId: null, userRole: null };
+    // optionalAuth on the route may leave req.user undefined for guests, so
+    // build the accessor defensively — same shape either way.
+    const accessCheck = { userId: req.user?._id || null, userRole: req.user?.role || null };
     if (!chatSocketService.canAccessConversation(targetConversation, accessCheck)) {
       return errorResponse(res, 'Access denied', null, 403);
     }
