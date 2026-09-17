@@ -441,9 +441,14 @@ exports.trackGuestCart = async (req, res) => {
 
     // Guests are keyed by sessionId only — never touch an account's cart.
     let cart = await Cart.findOne({ sessionId, user: null });
-    if (!cart) {
-      cart = new Cart({ sessionId, items: [] });
+    const isNewCart = !cart;
+    if (isNewCart) {
+      cart = new Cart({ sessionId, user: null, items: [] });
     }
+
+    // Stays undefined when the client sends no items array, which means
+    // "leave the stored items exactly as they are".
+    let trackedItems;
 
     if (Array.isArray(items)) {
       const requested = items.slice(0, MAX_TRACKED_ITEMS);
@@ -491,19 +496,41 @@ exports.trackGuestCart = async (req, res) => {
             : {}),
         });
       }
-      cart.items = tracked;
+      trackedItems = tracked;
     }
 
-    // Capturing an email arms recovery. `recoveryEmailSent` is deliberately NOT
-    // reset here: suppression is max one recovery email per cart (same rule the
-    // n8n WF-03 workflow documents).
-    if (contactEmail) {
-      cart.contactEmail = contactEmail;
-    }
+    const applySnapshot = (target) => {
+      if (trackedItems) {
+        target.items = trackedItems;
+      }
+      // Capturing an email arms recovery. `recoveryEmailSent` is deliberately NOT
+      // reset here: suppression is max one recovery email per cart (same rule the
+      // n8n WF-03 workflow documents).
+      if (contactEmail) {
+        target.contactEmail = contactEmail;
+      }
+      // Every tracking call is activity — this is what "abandoned" is measured against.
+      target.lastActivity = new Date();
+    };
 
-    // Every tracking call is activity — this is what "abandoned" is measured against.
-    cart.lastActivity = new Date();
-    await cart.save();
+    applySnapshot(cart);
+    try {
+      await cart.save();
+    } catch (saveErr) {
+      // Two concurrent first-track calls for the same sessionId race here; the
+      // unique index on sessionId rejects the loser with E11000. Re-load the
+      // winner and apply the snapshot to it instead of failing the request or
+      // leaving a duplicate guest cart behind.
+      if (saveErr?.code !== 11000 || !isNewCart) {
+        throw saveErr;
+      }
+      cart = await Cart.findOne({ sessionId, user: null });
+      if (!cart) {
+        throw saveErr;
+      }
+      applySnapshot(cart);
+      await cart.save();
+    }
 
     return successResponse(
       res,

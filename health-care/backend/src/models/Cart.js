@@ -31,10 +31,14 @@ const cartSchema = new mongoose.Schema({
     sparse: true, // Allow null for guest carts (though we won't use them)
     index: true   // P6 — sparse does NOT create an index; getCart by user needs one
   },
+  // WAVE-GUEST-RECOVERY: opaque per-browser key for guest carts. Guests have no
+  // account, so this is what ties a tracked snapshot to the browser that
+  // abandoned it. Unique so two concurrent first-track calls cannot create two
+  // carts for one sessionId; sparse because account carts never set it.
   sessionId: {
     type: String,
-    sparse: true, // For guest users (future use)
-    index: true
+    sparse: true,
+    unique: true
   },
   items: [cartItemSchema],
   subtotal: {

@@ -219,3 +219,70 @@ describe('recoveryOptOut — unsubscribe link target', () => {
     expect(res404.status).toHaveBeenCalledWith(404);
   });
 });
+
+// The first track call for a brand-new sessionId is a find-then-create, which
+// two concurrent calls can race. The unique index on sessionId rejects the loser
+// with E11000; the loser must apply its snapshot to the winner's cart instead of
+// failing the request or leaving a duplicate guest cart behind.
+describe('trackGuestCart — concurrent first-track race', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getActiveDealPriceMap.mockResolvedValue(new Map());
+  });
+
+  it('re-applies the snapshot to the winning cart on E11000', async () => {
+    Cart.findOne
+      .mockResolvedValueOnce(null) // we saw no cart, so we created one...
+      .mockResolvedValueOnce({ items: [], save: jest.fn().mockResolvedValue(true) }); // ...and lost
+
+    const duplicate = Object.assign(new Error('E11000 duplicate key'), { code: 11000 });
+    Cart.mockImplementation(() => ({ items: [], save: jest.fn().mockRejectedValue(duplicate) }));
+    mockProducts([{ _id: P1, price: 900, variants: {} }]);
+
+    const req = mockReq({
+      body: { sessionId: SESSION, email: EMAIL, items: [{ id: P1, quantity: 2 }] },
+    });
+    const res = mockRes();
+
+    await trackGuestCart(req, res);
+
+    const winner = await Cart.findOne.mock.results[1].value;
+    expect(winner.items).toHaveLength(1);
+    expect(winner.items[0].price).toBe(900);
+    expect(winner.contactEmail).toBe(EMAIL);
+    expect(winner.save).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('surfaces a non-duplicate save failure as a 500', async () => {
+    Cart.findOne.mockResolvedValue(null);
+    Cart.mockImplementation(() => ({
+      items: [],
+      save: jest.fn().mockRejectedValue(new Error('connection lost')),
+    }));
+    mockProducts([]);
+
+    const req = mockReq({ body: { sessionId: SESSION, email: EMAIL, items: [] } });
+    const res = mockRes();
+
+    await trackGuestCart(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+  });
+
+  it('does not retry a duplicate error on an existing cart', async () => {
+    // An already-loaded cart can only collide if two requests updated the same
+    // document, which is not the race this handles — so it must not be swallowed.
+    const duplicate = Object.assign(new Error('E11000 duplicate key'), { code: 11000 });
+    Cart.findOne.mockResolvedValue({ items: [], save: jest.fn().mockRejectedValue(duplicate) });
+    mockProducts([]);
+
+    const req = mockReq({ body: { sessionId: SESSION, items: [] } });
+    const res = mockRes();
+
+    await trackGuestCart(req, res);
+
+    expect(Cart.findOne).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(500);
+  });
+});

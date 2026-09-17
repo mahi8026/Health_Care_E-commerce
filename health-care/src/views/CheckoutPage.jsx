@@ -19,7 +19,7 @@ import PaymentModal from '@/components/payment/PaymentModal';
 import Spinner, { ButtonLoader } from '@/components/ui/Spinner';
 import { FaArrowLeft } from 'react-icons/fa';
 import CheckoutAuthGate from '@/components/checkout/CheckoutAuthGate';
-import { getGuestCartSessionId } from '@/utils/guestCartSession';
+import { trackGuestCartForEmail } from '@/utils/guestCartTracking';
 
 export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
@@ -146,33 +146,20 @@ export default function CheckoutPage({ onBackToCart }) {
 
   // ── Guest cart recovery: persist a snapshot once the guest's email is known ──
   // Guests have no server-side cart, so without this the recovery sweep has
-  // nothing to email (it previously filtered on an existing user). Signed-in
-  // carts are already tracked by the backend, so this only runs for guests.
-  // Prices are intentionally not sent — the server re-derives them.
+  // nothing to email. Signed-in carts are already tracked by the backend.
   useEffect(() => {
     if (authLoading || isAuthenticated()) return;
 
     const email = (deliveryAddress?.email || '').trim();
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) return;
-    if (!itemsWithB2BPricing.length) return;
-
-    const sessionId = getGuestCartSessionId();
-    if (!sessionId) return;
 
     // Debounce — the guest is still filling in the address form.
     const timer = setTimeout(() => {
-      api.trackGuestCart({
-        sessionId,
-        email,
-        items: itemsWithB2BPricing.map((item) => ({
-          id: item.id || item._id,
-          quantity: item.quantity,
-        })),
-      });
+      trackGuestCartForEmail(email, cart);
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [authLoading, isAuthenticated, deliveryAddress?.email, itemsWithB2BPricing]);
+  }, [authLoading, isAuthenticated, deliveryAddress?.email, cart]);
 
   const handlePlaceOrder = useCallback(async () => {
     // WAVE-GUEST: soft auth gate — signed-in users place directly; guests get

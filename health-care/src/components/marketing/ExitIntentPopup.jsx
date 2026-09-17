@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { FaWhatsapp, FaTimes, FaCopy, FaCheck, FaGift } from 'react-icons/fa';
 import { API, CONTACT } from '@/constants/api';
+import { useCart } from '@/context/CartContext';
+import { trackGuestCartForEmail } from '@/utils/guestCartTracking';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
 import { trackMarketingEvent } from '@/utils/marketingBeacon';
@@ -34,6 +36,7 @@ function isSkipPath(pathname) {
 
 export default function ExitIntentPopup() {
   const pathname = usePathname();
+  const { cart } = useCart();
   const [visible, setVisible] = useState(false);
   const [coupon, setCoupon] = useState(null);
   const [email, setEmail] = useState('');
@@ -133,6 +136,11 @@ export default function ExitIntentPopup() {
         GA4Tracker.trackEvent('generate_lead', { source: 'exit_popup' });
         MetaPixelTracker.trackLead({ value: 0 });
         trackMarketingEvent('exit_popup_lead');
+        // WAVE-GUEST-RECOVERY: pair the just-captured email with whatever this
+        // visitor has in their cart. This popup fires on the way out — often
+        // before checkout — so without this the email and the cart contents never
+        // meet and the guest stays unrecoverable. Best-effort, never throws.
+        trackGuestCartForEmail(em, cart);
       } else {
         setError(data.message || 'Failed to subscribe. Please try again.');
       }

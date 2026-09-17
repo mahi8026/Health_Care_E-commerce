@@ -206,6 +206,10 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <AuthProvider>
             <CartProvider>
+              {/* Exit-intent first-order offer — once per visitor, skips purchase
+                  pages. Lives inside CartProvider because a captured email is
+                  linked to the guest's cart contents (abandoned-cart recovery). */}
+              <ExitIntentPopup />
               <WishlistProvider>
                 <CompareProvider>
                   <ErrorBoundary
@@ -244,8 +248,8 @@ export default function RootLayout({ children }) {
         {/* Brave Browser Warning */}
         <BraveBrowserWarning />
 
-        {/* Exit-intent first-order offer — once per visitor, skips purchase pages */}
-        <ExitIntentPopup />
+        {/* Exit-intent first-order offer — mounted inside CartProvider (see above)
+            so a captured email can be linked to the guest's cart contents. */}
 
         {/* Google Analytics 4 — deferred to lazyOnload for better performance */}
         {gaId && (
