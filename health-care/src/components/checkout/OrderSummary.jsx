@@ -128,23 +128,18 @@ export default function OrderSummary({
       return;
     }
 
-    // Get userId from props or user context
-    const currentUserId = userId || user?.id || user?._id;
-    if (!currentUserId) {
-      setCouponError('User ID not found. Please refresh and try again.');
-      return;
-    }
-
     setCouponLoading(true);
     setCouponError('');
 
     try {
-      const token = localStorage.getItem('Mediport_token');
+      // Guest-checkout fix: validation is public — only attach the auth header
+      // when a token actually exists, so guests never send "Bearer null".
+      const token = typeof window !== 'undefined' ? localStorage.getItem('Mediport_token') : null;
       const res = await fetch(`${API}/coupons/validate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
           code: couponCode.toUpperCase(),
@@ -155,7 +150,6 @@ export default function OrderSummary({
             quantity: item.quantity,
             price: item.price,
           })),
-          userId: currentUserId,
         }),
       });
 

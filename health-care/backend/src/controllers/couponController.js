@@ -6,11 +6,16 @@ const { successResponse, errorResponse, paginatedResponse } = require('../utils/
 /**
  * @desc    Validate coupon code and calculate discount
  * @route   POST /api/coupons/validate
- * @access  Private
+ * @access  Public (optionalAuth) — guests can validate at checkout; per-user
+ *          and first-order-only rules apply only to signed-in callers.
+ *          Redemption is enforced separately at order placement.
  */
 exports.validateCoupon = async (req, res) => {
   try {
     const { code, cartTotal, cartItems } = req.body;
+    // optionalAuth — guests have no req.user; all user-scoped checks below
+    // must degrade gracefully instead of throwing.
+    const user = req.user || null;
 
     // Validation — only reject truly malformed requests with 400
     if (!code || cartTotal === undefined || cartTotal === null || !cartItems) {
@@ -47,15 +52,16 @@ exports.validateCoupon = async (req, res) => {
       return successResponse(res, { valid: false }, 'This coupon has reached its usage limit');
     }
 
-    // Check if user already used this coupon
-    if (coupon.hasBeenUsedBy(req.user.id)) {
+    // Check if user already used this coupon (signed-in callers only)
+    if (user && coupon.hasBeenUsedBy(user.id)) {
       return successResponse(res, { valid: false }, 'You have already used this coupon');
     }
 
-    // Check if first order only
-    if (coupon.isFirstOrderOnly) {
+    // Check if first order only (signed-in callers only; guests have no order
+    // history, matching the WAVE-GUEST semantics in orderController.createOrder)
+    if (user && coupon.isFirstOrderOnly) {
       const orderCount = await Order.countDocuments({ 
-        user: req.user.id,
+        user: user.id,
         status: { $ne: 'cancelled' }
       });
       
@@ -69,9 +75,8 @@ exports.validateCoupon = async (req, res) => {
       return successResponse(res, { valid: false }, `Minimum order amount of ৳${coupon.minimumOrderAmount.toLocaleString()} required`);
     }
 
-    // Check applicable user roles
+    // Check applicable user roles (guests: coupon must not be role-restricted)
     if (coupon.applicableUserRoles && coupon.applicableUserRoles.length > 0) {
-      const user = req.user;
       if (!user || !coupon.applicableUserRoles.includes(user.role)) {
         return successResponse(res, { valid: false }, 'This coupon is not applicable to your account type');
       }

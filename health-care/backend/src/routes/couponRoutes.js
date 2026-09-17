@@ -9,7 +9,8 @@ const {
   deleteCoupon,
   getCouponStats
 } = require('../controllers/couponController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, optionalAuth } = require('../middleware/auth');
+const { couponValidateLimiter } = require('../middleware/rateLimiter');
 const Coupon = require('../models/Coupon');
 
 // Public: active promo banner
@@ -31,7 +32,11 @@ router.get('/active-promo', async (req, res) => {
 });
 
 // Public/User routes
-router.post('/validate', protect, validateCoupon);
+// Guest-checkout fix: validation is public (optionalAuth) so promo-driven
+// guests can check coupon eligibility before placing an order. Per-user usage
+// and first-order-only rules only apply to signed-in callers; redemption is
+// still enforced at order placement (orderController, D2 guarded update).
+router.post('/validate', couponValidateLimiter, optionalAuth, validateCoupon);
 
 // Admin routes
 router.get('/stats', protect, authorize('admin'), getCouponStats);

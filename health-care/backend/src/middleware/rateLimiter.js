@@ -214,6 +214,20 @@ const adminLimiter = createLimiter({
   keyGenerator: (req) => req.user?._id?.toString() || req.ip
 });
 
+/**
+ * Coupon validate rate limiter — 10 validations per 5 minutes per IP.
+ *
+ * POST /api/coupons/validate is public (guest checkout), so this tight window
+ * prevents coupon-code enumeration while comfortably allowing a real guest to
+ * try a code (or two) during checkout.
+ */
+const couponValidateLimiter = createLimiter({
+  windowMs: 5 * 60 * 1000,
+  max: 10,
+  message: 'Too many coupon attempts. Please wait a few minutes and try again.',
+  keyPrefix: 'rl:coupon-validate:'
+});
+
 module.exports = { 
   authLimiter, 
   apiLimiter, 
@@ -221,5 +235,6 @@ module.exports = {
   paymentLimiter,
   orderLimiter,
   passwordResetLimiter,
-  adminLimiter
+  adminLimiter,
+  couponValidateLimiter
 };
