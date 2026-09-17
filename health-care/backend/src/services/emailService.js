@@ -489,17 +489,25 @@ async function sendPasswordResetEmail(user, resetUrl) {
   });
 }
 
-async function sendAbandonedCartEmail(cart, user) {
+async function sendAbandonedCartEmail(cart, user, optOutToken) {
   const cfg   = getConfig();
+  const greetingName = (user && user.name) || 'there';
   const items = (cart.items || []).map(item => {
     const p = item.product || {};
     const img = p.images?.[0] || `${cfg.siteUrl}/images/placeholder.png`;
+    // Guests' carts live in localStorage, so an email link cannot restore the
+    // cart itself — link each row to its product so they can re-add in one tap.
+    const productKey = p.slug || p._id || '';
+    const productUrl = productKey ? `${cfg.siteUrl}/products/${productKey}` : cfg.siteUrl;
+    const nameCell = p.name
+      ? `<a href="${productUrl}" style="color:#0B2545;text-decoration:underline;">${p.name}</a>`
+      : 'Product no longer available';
     return `
     <tr>
       <td style="padding:8px;">
         <img src="${img}" alt="${p.name}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" />
       </td>
-      <td style="padding:8px;font-size:13px;color:#0B2545;">${p.name}</td>
+      <td style="padding:8px;font-size:13px;color:#0B2545;">${nameCell}</td>
       <td style="padding:8px;text-align:center;font-size:13px;color:#6B7280;">${item.quantity}</td>
       <td style="padding:8px;text-align:right;font-size:14px;font-weight:600;color:#0B2545;">৳${(item.price || 0).toLocaleString('en-BD')}</td>
     </tr>`;
@@ -510,7 +518,7 @@ async function sendAbandonedCartEmail(cart, user) {
   const body = `
     <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;color:#0B2545;">You Left Something Behind!</h2>
     <p style="margin:0 0 16px;font-size:14px;color:#6B7280;">
-      Hi ${user.name}, your cart is still waiting. Complete your order before items sell out!
+      Hi ${greetingName}, your cart is still waiting. Complete your order before items sell out!
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:8px;border:1px solid #E5E7EB;margin-bottom:16px;">
       <thead><tr style="background:#F9FAFB;">
@@ -527,7 +535,13 @@ async function sendAbandonedCartEmail(cart, user) {
     ${ctaButton('Complete Order', `${cfg.siteUrl}/cart`)}
     <p style="margin-top:16px;font-size:12px;color:#9CA3AF;">
       Your items are reserved, but they may go out of stock if someone else purchases them first.
-    </p>`;
+    </p>
+    ${optOutToken ? `
+    <p style="margin-top:16px;font-size:11px;color:#9CA3AF;">
+      You received this because you entered your email at checkout.
+      <a href="${cfg.siteUrl}/api/cart/recovery-optout?token=${encodeURIComponent(optOutToken)}"
+         style="color:#9CA3AF;text-decoration:underline;">Unsubscribe</a>
+    </p>` : ''}`;
 
   return sendEmail({
     to:      user.email,
@@ -558,7 +572,9 @@ async function verifyConnection() {
 // ─── Newsletter ───────────────────────────────────────────────────────────────
 function unsubscribeFooter(unsubscribeToken) {
   const { siteUrl } = getConfig();
-  if (!unsubscribeToken) return '';
+  if (!unsubscribeToken) {
+    return '';
+  }
   return `
   <div style="margin-top:28px;padding-top:16px;border-top:1px solid #E5E7EB;text-align:center;">
     <p style="margin:0;font-size:11px;color:#9CA3AF;">

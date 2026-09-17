@@ -19,6 +19,7 @@ import PaymentModal from '@/components/payment/PaymentModal';
 import Spinner, { ButtonLoader } from '@/components/ui/Spinner';
 import { FaArrowLeft } from 'react-icons/fa';
 import CheckoutAuthGate from '@/components/checkout/CheckoutAuthGate';
+import { getGuestCartSessionId } from '@/utils/guestCartSession';
 
 export default function CheckoutPage({ onBackToCart }) {
   const router = useRouter();
@@ -142,6 +143,36 @@ export default function CheckoutPage({ onBackToCart }) {
     const pointsDiscount = (redeemedPoints || 0) * 0.1;
     return Math.round((sub - discount - pointsDiscount + deliveryFee) * 100) / 100;
   }, [itemsWithB2BPricing, appliedCoupon, redeemedPoints, deliveryFee]);
+
+  // ── Guest cart recovery: persist a snapshot once the guest's email is known ──
+  // Guests have no server-side cart, so without this the recovery sweep has
+  // nothing to email (it previously filtered on an existing user). Signed-in
+  // carts are already tracked by the backend, so this only runs for guests.
+  // Prices are intentionally not sent — the server re-derives them.
+  useEffect(() => {
+    if (authLoading || isAuthenticated()) return;
+
+    const email = (deliveryAddress?.email || '').trim();
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) return;
+    if (!itemsWithB2BPricing.length) return;
+
+    const sessionId = getGuestCartSessionId();
+    if (!sessionId) return;
+
+    // Debounce — the guest is still filling in the address form.
+    const timer = setTimeout(() => {
+      api.trackGuestCart({
+        sessionId,
+        email,
+        items: itemsWithB2BPricing.map((item) => ({
+          id: item.id || item._id,
+          quantity: item.quantity,
+        })),
+      });
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [authLoading, isAuthenticated, deliveryAddress?.email, itemsWithB2BPricing]);
 
   const handlePlaceOrder = useCallback(async () => {
     // WAVE-GUEST: soft auth gate — signed-in users place directly; guests get

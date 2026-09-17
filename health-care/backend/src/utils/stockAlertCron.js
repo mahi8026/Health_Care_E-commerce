@@ -1,9 +1,15 @@
 ﻿const cron = require('node-cron');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
+const Order = require('../models/Order');
 const { sendLowStockAlert, sendAbandonedCartEmail } = require('./emailService');
 const { updateFlashDealStatuses } = require('../controllers/flashDealController');
 const logger = require('./logger');
+
+/** Escape a user-supplied string before embedding it in a RegExp. */
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 /**
  * Daily 8:00 AM BDT (UTC+6 = 02:00 UTC) — check low stock and email admin.
@@ -67,18 +73,24 @@ function startCronJobs() {
       // Find carts that:
       // - Are not marked as abandoned yet
       // - Have not been active for 1+ hour
-      // - Have not received recovery email
-      // - Have a user (skip guest carts)
+      // - Have not received recovery email and have not opted out
       // - Have items
+      // - Belong to a user OR are a guest cart that captured an email
+      //   (WAVE-GUEST-RECOVERY: guests were previously skipped entirely, so the
+      //    whole guest segment was unrecoverable)
       const abandonedCarts = await Cart.find({
         isAbandoned: false,
         lastActivity: { $lt: oneHourAgo },
         recoveryEmailSent: false,
-        user: { $exists: true, $ne: null },
-        'items.0': { $exists: true } // Has at least one item
+        recoveryOptOut: { $ne: true },
+        'items.0': { $exists: true }, // Has at least one item
+        $or: [
+          { user: { $exists: true, $ne: null } },
+          { contactEmail: { $exists: true, $nin: [null, ''] } }
+        ]
       }).limit(200) // P2 — bound batch size per 2h run; stragglers picked up next run
         .populate('user', 'name email')
-        .populate('items.product', 'name images price');
+        .populate('items.product', 'name images price slug');
 
       logger.info(`[CRON] Found ${abandonedCarts.length} abandoned cart(s)`);
 
@@ -88,13 +100,36 @@ function startCronJobs() {
           cart.isAbandoned = true;
           cart.abandonedAt = new Date();
 
-          // Send recovery email
-          if (cart.user && cart.user.email) {
-            await sendAbandonedCartEmail(cart, cart.user);
+          // Recipient: the account owner, or the email captured at guest checkout.
+          const recipient = cart.user && cart.user.email
+            ? { name: cart.user.name, email: cart.user.email }
+            : (cart.contactEmail ? { name: 'there', email: cart.contactEmail } : null);
+
+          if (!recipient) {
+            await cart.save();
+            continue;
+          }
+
+          // Suppress recovery when this email already placed an order after the
+          // cart was created — otherwise we chase a guest who did complete
+          // checkout (guest orders store the address email, not a user ref).
+          const alreadyOrdered = await Order.exists({
+            'deliveryAddress.email': new RegExp(`^${escapeRegExp(recipient.email)}$`, 'i'),
+            createdAt: { $gte: cart.createdAt || new Date(0) }
+          });
+          if (alreadyOrdered) {
             cart.recoveryEmailSent = true;
             cart.recoveryEmailSentAt = new Date();
-            logger.info(`[CRON] Recovery email sent to ${cart.user.email}`);
+            await cart.save();
+            logger.info(`[CRON] Recovery skipped for ${recipient.email} — order already placed`);
+            continue;
           }
+
+          // Send recovery email
+          await sendAbandonedCartEmail(cart, recipient, cart.recoveryOptOutToken);
+          cart.recoveryEmailSent = true;
+          cart.recoveryEmailSentAt = new Date();
+          logger.info(`[CRON] Recovery email sent to ${recipient.email}`);
 
           await cart.save();
         } catch (emailErr) {

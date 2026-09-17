@@ -810,6 +810,27 @@ export const api = {
     return handleResponse(response);
   },
 
+  // WAVE-GUEST-RECOVERY — persist a guest cart snapshot + checkout email so the
+  // backend recovery sweep can email the guest back.
+  //
+  // Public endpoint (guests have no account) and deliberately fire-and-forget:
+  // it must never throw, surface an error, or trigger an auth redirect in the
+  // middle of checkout. Plain fetch (not fetchWithAuth) keeps it out of the
+  // auth/redirect machinery entirely.
+  async trackGuestCart(payload) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/cart/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'omit',
+      });
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null; // best-effort — checkout must not break over tracking
+    }
+  },
+
   // FIX-016: No PATCH /orders/:id route exists on the backend.
   // Use api.updateOrderStatus(id, status) for status changes,
   // or api.cancelOrder(id) for cancellations.

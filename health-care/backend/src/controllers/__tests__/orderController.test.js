@@ -67,7 +67,10 @@ const mockReq = (overrides = {}) => ({
 // ── createOrder — input validation only ──────────────────────────────────────
 describe('createOrder - input validation', () => {
   it('returns 400 when items array is empty', async () => {
-    const req = mockReq({ body: { items: [] } });
+    // The controller validates the idempotency key (and does its duplicate
+    // lookup) BEFORE the items check, so both must be provided/mocked here.
+    Order.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    const req = mockReq({ body: { items: [], idempotencyKey: 'test-idem-key-000001' } });
     const res = mockRes();
     await createOrder(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
@@ -75,10 +78,12 @@ describe('createOrder - input validation', () => {
   });
 
   it('returns 400 when items is missing', async () => {
-    const req = mockReq({ body: {} });
+    Order.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    const req = mockReq({ body: { idempotencyKey: 'test-idem-key-000002' } });
     const res = mockRes();
     await createOrder(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json.mock.calls[0][0].message).toMatch(/at least one item/i);
   });
 });
 
@@ -151,11 +156,11 @@ describe('getOrder', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('returns 404 when order not found', async () => {
+    // getOrder chains 4 populate() calls and ends with .lean()
     const mockChain = {
       populate: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(null),
     };
-    // Last populate resolves to null
-    mockChain.populate.mockReturnValueOnce(mockChain).mockReturnValueOnce(mockChain).mockResolvedValueOnce(null);
     Order.findById.mockReturnValue(mockChain);
 
     const req = mockReq({ params: { id: 'nonexistent' } });
@@ -169,11 +174,11 @@ describe('getOrder', () => {
       _id: 'order123',
       user: { _id: { toString: () => 'otheruser' } },
     };
-    const mockChain = { populate: jest.fn().mockReturnThis() };
-    mockChain.populate
-      .mockReturnValueOnce(mockChain)
-      .mockReturnValueOnce(mockChain)
-      .mockResolvedValueOnce(fakeOrder);
+    // .lean() means user._id arrives as a plain (string-like) value
+    const mockChain = {
+      populate: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(fakeOrder),
+    };
     Order.findById.mockReturnValue(mockChain);
 
     const req = mockReq({ params: { id: 'order123' }, user: { id: 'user123', role: 'customer' } });
@@ -187,11 +192,11 @@ describe('getOrder', () => {
       _id: 'order123',
       user: { _id: { toString: () => 'user123' } },
     };
-    const mockChain = { populate: jest.fn().mockReturnThis() };
-    mockChain.populate
-      .mockReturnValueOnce(mockChain)
-      .mockReturnValueOnce(mockChain)
-      .mockResolvedValueOnce(fakeOrder);
+    // .lean() means user._id arrives as a plain (string-like) value
+    const mockChain = {
+      populate: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(fakeOrder),
+    };
     Order.findById.mockReturnValue(mockChain);
 
     const req = mockReq({ params: { id: 'order123' } });
@@ -253,25 +258,32 @@ describe('updateOrderStatus', () => {
   });
 
   it('sets deliveredAt when status is delivered', async () => {
+    // 'shipped -> delivered' is intentionally NOT allowed (the order must pass
+    // through out_for_delivery), so start from out_for_delivery.
     const fakeOrder = {
       _id: 'order123',
       orderNumber: 'ORD-001',
-      status: 'shipped',
+      status: 'out_for_delivery',
       statusTimestamps: {},
       tracking: {},
       deliveredAt: null,
+      items: [],
       markModified: jest.fn(),
       save: jest.fn().mockResolvedValue(true),
       populate: jest.fn().mockResolvedValue(true),
       user: null,
     };
     Order.findById.mockResolvedValue(fakeOrder);
+    // B8 — the transition is claimed atomically before side effects
+    Order.updateOne.mockResolvedValue({ matchedCount: 1 });
 
     const req = mockReq({ body: { status: 'delivered' }, params: { id: 'order123' }, user: { id: 'admin1', role: 'admin' } });
     const res = mockRes();
     await updateOrderStatus(req, res);
 
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(fakeOrder.deliveredAt).toBeInstanceOf(Date);
+    expect(fakeOrder.status).toBe('delivered');
   });
 });
 
@@ -328,6 +340,8 @@ describe('cancelOrder', () => {
     };
     Order.findById.mockReturnValue({ populate: jest.fn().mockResolvedValue(fakeOrder) });
     Product.findByIdAndUpdate.mockResolvedValue(true);
+    // B8 — cancellation is claimed atomically before stock restore
+    Order.updateOne.mockResolvedValue({ matchedCount: 1 });
 
     const req = mockReq({ params: { id: 'order123' } });
     const res = mockRes();
@@ -356,14 +370,25 @@ describe('cancelOrder', () => {
     fakeOrder.user._id = { toString: () => 'user123' };
     Order.findById.mockReturnValue({ populate: jest.fn().mockResolvedValue(fakeOrder) });
     User.findByIdAndUpdate.mockResolvedValue(true);
+    // B8 — cancellation is claimed atomically before the finance rollback
+    Order.updateOne.mockResolvedValue({ matchedCount: 1 });
 
     const req = mockReq({ params: { id: 'order123' } });
     const res = mockRes();
     await cancelOrder(req, res);
 
+    expect(res.status).toHaveBeenCalledWith(200);
+    // The rollback also appends a creditTransactions audit entry via $push, so
+    // assert on the credit decrement specifically rather than the whole object.
     expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
       fakeOrder.user._id,
-      { $inc: { creditUsed: -5000 } }
+      expect.objectContaining({ $inc: { creditUsed: -5000 } })
+    );
+    expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
+      fakeOrder.user._id,
+      expect.objectContaining({
+        $push: { creditTransactions: expect.objectContaining({ amount: 5000, type: 'refund' }) },
+      })
     );
   });
 });

@@ -1,4 +1,5 @@
 ﻿const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const cartItemSchema = new mongoose.Schema({
   product: {
@@ -59,6 +60,27 @@ const cartSchema = new mongoose.Schema({
   recoveredAt: {
     type: Date
   },
+  // ── WAVE-GUEST-RECOVERY ────────────────────────────────────────────────────
+  // Guest carts have no `user`, so recovery needs an email captured during
+  // checkout. Stored lowercase+trimmed to match User.email.
+  contactEmail: {
+    type: String,
+    lowercase: true,
+    trim: true,
+    sparse: true,
+    index: true
+  },
+  // Set when the guest clicks the unsubscribe link in a recovery email.
+  recoveryOptOut: {
+    type: Boolean,
+    default: false
+  },
+  // Opaque token for the public opt-out link (mirrors Newsletter.unsubscribeToken).
+  recoveryOptOutToken: {
+    type: String,
+    sparse: true,
+    unique: true
+  },
   lastActivity: {
     type: Date,
     default: Date.now,
@@ -87,6 +109,15 @@ cartSchema.pre('save', function(next) {
 cartSchema.pre('save', function(next) {
   if (this.isModified('items')) {
     this.lastActivity = new Date();
+  }
+  next();
+});
+
+// Mint the opt-out token the first time a contact email is captured, so the
+// recovery email always carries a working unsubscribe link.
+cartSchema.pre('save', function(next) {
+  if (this.contactEmail && !this.recoveryOptOutToken) {
+    this.recoveryOptOutToken = crypto.randomUUID();
   }
   next();
 });

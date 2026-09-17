@@ -1,5 +1,6 @@
 ﻿const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 const { getActiveDealPriceMap } = require('../services/flashDealPricing');
@@ -406,3 +407,167 @@ exports.getAbandonedCartStats = async (req, res) => {
     });
   }
 };
+// ─── Guest Cart Recovery: Track Snapshot (public) ─────────────────────────────
+// POST /api/cart/track
+//
+// Guest carts live only in localStorage, so the recovery cron had nothing to
+// act on for guests — it filtered on `user: { $exists: true, $ne: null }`.
+// This persists a guest cart snapshot keyed by a client-generated sessionId
+// together with the email captured at checkout, which is exactly what the
+// recovery sweep needs to email the guest back.
+//
+// Prices are always re-derived from the database; the client snapshot is never
+// trusted, so a tampered localStorage cannot inflate the cart shown in email.
+const MAX_TRACKED_ITEMS = 50;
+
+exports.trackGuestCart = async (req, res) => {
+  try {
+    const { sessionId, email, items } = req.body || {};
+
+    // The sessionId is the guest's cart key — keep it opaque, bounded and safe
+    // to use as a query value.
+    if (typeof sessionId !== 'string' || !/^[A-Za-z0-9_-]{8,64}$/.test(sessionId)) {
+      return errorResponse(res, 'A valid sessionId is required', null, 400);
+    }
+
+    const contactEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    if (contactEmail && !/^\S+@\S+\.\S+$/.test(contactEmail)) {
+      return errorResponse(res, 'A valid email address is required', null, 400);
+    }
+
+    if (items !== undefined && !Array.isArray(items)) {
+      return errorResponse(res, 'items must be an array', null, 400);
+    }
+
+    // Guests are keyed by sessionId only — never touch an account's cart.
+    let cart = await Cart.findOne({ sessionId, user: null });
+    if (!cart) {
+      cart = new Cart({ sessionId, items: [] });
+    }
+
+    if (Array.isArray(items)) {
+      const requested = items.slice(0, MAX_TRACKED_ITEMS);
+      const productIds = requested
+        .map((i) => i && (i.id || i.productId || i._id))
+        .filter((id) => id && mongoose.Types.ObjectId.isValid(String(id)))
+        .map(String);
+
+      const dealPriceMap = await getActiveDealPriceMap(productIds);
+      const products = await Product.find({ _id: { $in: productIds }, isActive: true })
+        .select('price variants')
+        .lean();
+      const byId = new Map(products.map((p) => [String(p._id), p]));
+
+      const tracked = [];
+      for (const item of requested) {
+        const id = String((item && (item.id || item.productId || item._id)) || '');
+        const product = byId.get(id);
+        if (!product) {
+          continue; // deleted or inactive product — skip the row
+        }
+
+        const quantity = Math.max(1, Math.min(99, parseInt(item.quantity, 10) || 1));
+
+        // Reject a size the product does not offer (stale localStorage snapshot).
+        const sizeName = (item.selectedSize && item.selectedSize.name) || item.size || null;
+        let sizeAdjustment = 0;
+        if (sizeName) {
+          const sizeVariant = product.variants?.sizes?.find((s) => s.name === sizeName);
+          if (!sizeVariant) {
+            continue; // stale size — drop the line
+          }
+          sizeAdjustment = Number(sizeVariant.priceAdjustment) || 0;
+        }
+
+        const dealPrice = dealPriceMap.get(id);
+        const basePrice = Number.isFinite(dealPrice) ? dealPrice : (product.price || 0);
+
+        tracked.push({
+          product: product._id,
+          quantity,
+          price: Math.max(0, Math.round((basePrice + sizeAdjustment) * 100) / 100),
+          ...(sizeName
+            ? { selectedSize: { name: String(sizeName), priceAdjustment: sizeAdjustment } }
+            : {}),
+        });
+      }
+      cart.items = tracked;
+    }
+
+    // Capturing an email arms recovery. `recoveryEmailSent` is deliberately NOT
+    // reset here: suppression is max one recovery email per cart (same rule the
+    // n8n WF-03 workflow documents).
+    if (contactEmail) {
+      cart.contactEmail = contactEmail;
+    }
+
+    // Every tracking call is activity — this is what "abandoned" is measured against.
+    cart.lastActivity = new Date();
+    await cart.save();
+
+    return successResponse(
+      res,
+      { tracked: cart.items.length, hasEmail: Boolean(cart.contactEmail) },
+      'Cart tracked'
+    );
+  } catch (error) {
+    logger.error('Track guest cart error:', error);
+    return errorResponse(res, 'Failed to track cart', [error.message], 500);
+  }
+};
+
+// ─── Guest Cart Recovery: Opt Out (public) ───────────────────────────────────
+// GET /api/cart/recovery-optout?token=...
+//
+// Target of the unsubscribe link in a recovery email. Sets recoveryOptOut so
+// the guest is never emailed about this cart again, and marks recoveryEmailSent
+// so the recovery sweep stops picking the row up.
+//
+// No request data is echoed into the HTML, so there is nothing to escape.
+function optOutPage(ok, heading, message) {
+  const accent = ok ? '#0F766E' : '#B91C1C';
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>${heading} — MediportBD</title></head>
+<body style="margin:0;background:#F8FAFC;font-family:-apple-system,Segoe UI,Roboto,sans-serif;">
+  <div style="max-width:520px;margin:12vh auto;padding:32px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;text-align:center;">
+    <h1 style="margin:0 0 10px;font-size:20px;color:${accent};">${heading}</h1>
+    <p style="margin:0;font-size:14px;color:#6B7280;line-height:1.6;">${message}</p>
+    <p style="margin:24px 0 0;"><a href="/" style="font-size:14px;color:#0B2545;text-decoration:underline;">Continue browsing</a></p>
+  </div>
+</body></html>`;
+}
+
+exports.recoveryOptOut = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (typeof token !== 'string' || !token) {
+      return res.status(400).send(optOutPage(false, 'Invalid link', 'This unsubscribe link is missing its token.'));
+    }
+
+    const cart = await Cart.findOne({ recoveryOptOutToken: token });
+    if (!cart) {
+      return res.status(404).send(optOutPage(
+        false,
+        'Link not recognised',
+        'We could not find this cart. It may have already been cleaned up.'
+      ));
+    }
+
+    cart.recoveryOptOut = true;
+    cart.recoveryEmailSent = true; // ensures the sweep skips it even if the flag is missed
+    await cart.save();
+
+    return res.status(200).send(optOutPage(
+      true,
+      'You are unsubscribed',
+      'We will not send you any more reminders about this cart.'
+    ));
+  } catch (error) {
+    logger.error('Cart recovery opt-out error:', error);
+    return res.status(500).send(optOutPage(false, 'Something went wrong', 'Please try again later.'));
+  }
+};
+

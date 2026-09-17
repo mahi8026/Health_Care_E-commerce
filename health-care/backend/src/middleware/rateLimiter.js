@@ -228,6 +228,20 @@ const couponValidateLimiter = createLimiter({
   keyPrefix: 'rl:coupon-validate:'
 });
 
+/**
+ * Guest cart recovery tracking — 30 snapshots per 10 minutes per IP.
+ *
+ * POST /api/cart/track is public (guest checkout), so this caps how fast a
+ * single IP can create/refresh guest cart records while comfortably allowing
+ * the handful of calls a real guest generates (email blur + item changes).
+ */
+const cartTrackLimiter = createLimiter({
+  windowMs: 10 * 60 * 1000,
+  max: 30,
+  message: 'Too many cart updates. Please try again shortly.',
+  keyPrefix: 'rl:cart-track:'
+});
+
 module.exports = { 
   authLimiter, 
   apiLimiter, 
@@ -236,5 +250,6 @@ module.exports = {
   orderLimiter,
   passwordResetLimiter,
   adminLimiter,
-  couponValidateLimiter
+  couponValidateLimiter,
+  cartTrackLimiter
 };
