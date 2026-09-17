@@ -150,4 +150,24 @@ describe('validateCoupon — guest checkout fix', () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(Coupon.findOne).not.toHaveBeenCalled();
   });
+
+  it('normalizes lowercase and whitespace-padded codes (paste-friendly lookup)', async () => {
+    // Schema stores uppercase+trim; lookups must match so a code pasted from an
+    // SMS/email banner ("  save10 ") still resolves.
+    Coupon.findOne.mockReturnValue({
+      populate: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockResolvedValue(baseCoupon()),
+    });
+
+    const req = mockReq({
+      body: { code: '  save10 ', cartTotal: 1500, cartItems: [{ productId: 'p1' }] },
+    });
+    const res = mockRes();
+    await validateCoupon(req, res);
+
+    expect(Coupon.findOne).toHaveBeenCalledWith({ code: 'SAVE10' });
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: true, data: expect.objectContaining({ valid: true }) })
+    );
+  });
 });

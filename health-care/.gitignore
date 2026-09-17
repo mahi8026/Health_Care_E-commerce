@@ -213,6 +213,13 @@ temp/
 *.bak
 *.cache
 
+# Transient build / test / lint logs (never commit these)
+*-out.txt
+*-err.txt
+*-stderr.txt
+commit-msg.txt
+commit-pid.txt
+
 # ── Deployment ───────────────────────────────────────────────────────────────
 .vercel
 .netlify

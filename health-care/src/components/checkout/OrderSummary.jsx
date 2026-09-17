@@ -41,7 +41,7 @@ export default function OrderSummary({
   redeemedPoints = 0,
   onRedeemPoints,
 }) {
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
   const [couponCode, setCouponCode] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
@@ -116,13 +116,8 @@ export default function OrderSummary({
       setCouponError('Enter a coupon code');
       return;
     }
-    if (!isAuthenticated()) {
-      // WAVE-GUEST v1: coupon redemption stays sign-in only in the UI (per-user
-      // usage tracking). The backend already accepts guest coupons, so this can
-      // be relaxed without a backend change.
-      setCouponError('Sign in to use coupons tracked to your account');
-      return;
-    }
+    // Guests may apply coupons too — the backend (/coupons/validate) is public
+    // and skips per-user guards when there is no authenticated user.
     if (appliedCoupon) {
       setCouponError('Remove current coupon first');
       return;
@@ -142,7 +137,7 @@ export default function OrderSummary({
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          code: couponCode.toUpperCase(),
+          code: couponCode.trim().toUpperCase(),
           cartTotal: subtotal,
           cartItems: items.map((item) => ({
             productId: item.id,

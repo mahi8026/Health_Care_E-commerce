@@ -282,14 +282,30 @@ await session.abortTransaction();
     let reservedCouponId = null;
     if (promoCode) {
       const Coupon = require('../models/Coupon');
-      const coupon = await withSession(Coupon.findOne({ code: promoCode.toUpperCase(), isActive: true }));
+      // Same normalization as validateCoupon — pasted codes may carry whitespace.
+      const coupon = await withSession(Coupon.findOne({ code: String(promoCode).trim().toUpperCase(), isActive: true }));
       
       if (coupon) {
         const now = new Date();
         const isValid = now >= coupon.startDate && now <= coupon.endDate;
         const hasUsageLeft = !coupon.usageLimit || coupon.usageCount < coupon.usageLimit;
-        // WAVE-GUEST: guests have no purchase history — skip per-user guards
-        const notUsedByUser = isGuestOrder || !coupon.usedBy.includes(req.user.id);
+        // WAVE-GUEST: guests have no purchase history — skip per-user guards.
+        // Abuse guard: guests are not recorded in usedBy, so a signed-in user could
+        // otherwise re-use a one-per-account coupon by checking out as a guest with
+        // the same email. Resolve the guest email to a real account and apply the
+        // normal per-user guard whenever that account exists.
+        let notUsedByUser = true;
+        if (isGuestOrder) {
+          const guestEmail = String(deliveryAddress?.email || '').trim().toLowerCase();
+          if (guestEmail && coupon.usedBy && coupon.usedBy.length) {
+            const existingUser = await User.findOne({ email: guestEmail }).select('_id').lean();
+            if (existingUser && coupon.usedBy.some((id) => String(id) === String(existingUser._id))) {
+              notUsedByUser = false;
+            }
+          }
+        } else {
+          notUsedByUser = !coupon.usedBy.includes(req.user.id);
+        }
         const meetsMinimum = subtotal >= coupon.minimumOrderAmount;
         // WAVE-GUEST: guests have no role document — treat as default 'customer'
         const roleMatches = isGuestOrder
@@ -342,7 +358,12 @@ await session.abortTransaction();
               // WAVE-GUEST: guests are not tracked in usedBy; global limit still applies
               ...(isGuestOrder ? {} : { usedBy: { $ne: req.user.id } })
             },
-            { $inc: { usageCount: 1 }, $push: { usedBy: req.user.id } }
+            // WAVE-GUEST: only real accounts are recorded in usedBy. Guest ids are
+            // throwaway ObjectIds, so pushing them would grow the array on every
+            // guest order (unbounded) and make usedBy useless for abuse checks.
+            isGuestOrder
+              ? { $inc: { usageCount: 1 } }
+              : { $inc: { usageCount: 1 }, $push: { usedBy: req.user.id } }
           ));
 
           if (couponReserved.matchedCount === 0) {

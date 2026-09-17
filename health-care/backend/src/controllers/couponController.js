@@ -22,9 +22,10 @@ exports.validateCoupon = async (req, res) => {
       return errorResponse(res, 'Missing required fields: code, cartTotal, cartItems', null, 400);
     }
 
-    // Find coupon (case-insensitive)
+    // Find coupon — normalize to match the schema's uppercase+trim storage, so
+    // pasted codes like " save10 " resolve instead of "Invalid coupon code".
     const coupon = await Coupon.findOne({ 
-      code: code.toUpperCase() 
+      code: String(code).trim().toUpperCase() 
     }).populate('applicableProducts applicableCategories')
     .lean();
 
