@@ -38,6 +38,7 @@ const mockProductFound = product => {
 const mockReq = (overrides = {}) => ({
   body: {},
   params: {},
+  query: {},
   user: { _id: 'user123' },
   ...overrides,
 });

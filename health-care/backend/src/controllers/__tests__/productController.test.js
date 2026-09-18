@@ -59,26 +59,23 @@ const mockReq = (overrides = {}) => ({
 describe('getProducts', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  const buildProductChain = (products = [], total = 0) => {
-    const chain = {
-      select: jest.fn().mockReturnThis(),
-      populate: jest.fn().mockReturnThis(),
-      sort: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      lean: jest.fn().mockResolvedValue(products),
-    };
-    Product.find.mockReturnValue(chain);
-    Product.countDocuments.mockResolvedValue(total);
-    return chain;
+  // getProducts runs ONE aggregation pipeline ($match → $facet).
+  // data[0] of the aggregate call is the $match stage.
+  const buildFacet = (products = [], total = 0) => {
+    Product.aggregate.mockResolvedValue([
+      { metadata: [{ total }], data: [...products] },
+    ]);
   };
 
+  // The $match conditions of the first aggregate call
+  const getMatchArg = () => Product.aggregate.mock.calls[0][0][0].$match;
+
   it('returns active products for public users', async () => {
-    buildProductChain([{ _id: 'p1', name: 'ECG Machine', isActive: true }], 1);
+    buildFacet([{ _id: 'p1', name: 'ECG Machine', isActive: true }], 1);
     const req = mockReq({ query: {} });
     const res = mockRes();
     await getProducts(req, res);
-    expect(Product.find).toHaveBeenCalledWith(expect.objectContaining({ isActive: true }));
+    expect(getMatchArg().isActive).toBe(true);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json.mock.calls[0][0].success).toBe(true);
   });
@@ -89,54 +86,57 @@ describe('getProducts', () => {
     const res = mockRes();
     await getProducts(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json.mock.calls[0][0].products).toEqual([]);
-    expect(res.json.mock.calls[0][0].total).toBe(0);
+    expect(res.json.mock.calls[0][0].data).toEqual([]);
+    expect(res.json.mock.calls[0][0].pagination.total).toBe(0);
   });
 
   it('applies price range filter', async () => {
-    buildProductChain([], 0);
+    buildFacet([], 0);
     const req = mockReq({ query: { minPrice: '1000', maxPrice: '5000' } });
     const res = mockRes();
     await getProducts(req, res);
-    expect(Product.find).toHaveBeenCalledWith(
-      expect.objectContaining({ price: { $gte: 1000, $lte: 5000 } })
-    );
+    expect(getMatchArg().price).toEqual({ $gte: 1000, $lte: 5000 });
   });
 
   it('applies inStock filter', async () => {
-    buildProductChain([], 0);
+    buildFacet([], 0);
     const req = mockReq({ query: { inStock: 'true' } });
     const res = mockRes();
     await getProducts(req, res);
-    expect(Product.find).toHaveBeenCalledWith(
-      expect.objectContaining({ stock: { $gt: 0 } })
-    );
+    expect(getMatchArg().stock).toEqual({ $gt: 0 });
   });
 
   it('applies search filter with $or query', async () => {
-    buildProductChain([], 0);
+    buildFacet([], 0);
     const req = mockReq({ query: { search: 'ECG' } });
     const res = mockRes();
     await getProducts(req, res);
-    const callArg = Product.find.mock.calls[0][0];
-    expect(callArg.$or).toBeDefined();
-    expect(callArg.$or.length).toBeGreaterThan(0);
+    const matchArg = getMatchArg();
+    expect(matchArg.$or).toBeDefined();
+    expect(matchArg.$or.length).toBeGreaterThan(0);
   });
 
   it('applies isFeatured filter', async () => {
-    buildProductChain([], 0);
+    buildFacet([], 0);
     const req = mockReq({ query: { isFeatured: 'true' } });
     const res = mockRes();
     await getProducts(req, res);
-    expect(Product.find).toHaveBeenCalledWith(
-      expect.objectContaining({ isFeatured: true })
-    );
+    expect(getMatchArg().isFeatured).toBe(true);
+  });
+
+  it('supports cursor pagination (keyset filter applied)', async () => {
+    const cursor = Buffer.from(
+      JSON.stringify({ id: '507f1f77bcf86cd799439011', v: 1000 })
+    ).toString('base64url');
+    buildFacet([], 0);
+    const req = mockReq({ query: { cursor } });
+    const res = mockRes();
+    await getProducts(req, res);
+    expect(getMatchArg().$or).toBeDefined();
   });
 
   it('returns 500 on database error', async () => {
-    Product.find.mockImplementation(() => {
- throw new Error('DB error'); 
-});
+    Product.aggregate.mockRejectedValue(new Error('DB error'));
     const req = mockReq({ query: {} });
     const res = mockRes();
     await getProducts(req, res);
@@ -173,17 +173,17 @@ describe('getProduct', () => {
     const res = mockRes();
     await getProduct(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json.mock.calls[0][0].product.name).toBe('ECG Machine');
+    expect(res.json.mock.calls[0][0].data.name).toBe('ECG Machine');
   });
 
-  it('returns shouldRedirect when accessed by MongoDB ObjectId', async () => {
+  it('returns the product (frontend redirects via slug) when accessed by MongoDB ObjectId', async () => {
     const fakeProduct = { _id: '507f1f77bcf86cd799439011', name: 'ECG Machine', slug: 'ecg-machine' };
     buildFindOneChain(fakeProduct);
     const req = mockReq({ params: { id: '507f1f77bcf86cd799439011' } });
     const res = mockRes();
     await getProduct(req, res);
-    expect(res.json.mock.calls[0][0].shouldRedirect).toBe(true);
-    expect(res.json.mock.calls[0][0].slugUrl).toBe('ecg-machine');
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json.mock.calls[0][0].data.slug).toBe('ecg-machine');
   });
 });
 
@@ -207,13 +207,20 @@ describe('createProduct', () => {
   });
 
   it('creates product and returns 201', async () => {
-    const fakeProduct = { _id: 'p1', name: 'New Product', price: 5000, sku: 'MC-DX-SIE-0001' };
+    const fakeProduct = {
+      _id: 'p1',
+      name: 'New Product',
+      price: 5000,
+      sku: 'MC-DX-SIE-0001',
+      slug: 'new-product',
+      toObject: () => ({ _id: 'p1', name: 'New Product', price: 5000, sku: 'MC-DX-SIE-0001', slug: 'new-product' }),
+    };
     Product.create.mockResolvedValue(fakeProduct);
     const req = mockReq({ body: { name: 'New Product', price: 5000 }, user: { id: 'admin1', role: 'admin' } });
     const res = mockRes();
     await createProduct(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json.mock.calls[0][0].product.name).toBe('New Product');
+    expect(res.json.mock.calls[0][0].data.name).toBe('New Product');
   });
 
   it('returns 500 on database error', async () => {
@@ -249,11 +256,20 @@ describe('updateProduct', () => {
     Product.findById.mockReturnValue({ lean: jest.fn().mockResolvedValue({ _id: 'p1', name: 'Old', price: 1000 }) });
     const fakeUpdated = { _id: 'p1', name: 'Updated', price: 2000, sku: 'MC-DX-SIE-0001' };
     Product.findByIdAndUpdate.mockResolvedValue(fakeUpdated);
-    const req = mockReq({ body: { name: 'Updated', price: 2000 }, params: { id: 'p1' }, user: { id: 'admin1' } });
+    const req = mockReq({ body: { name: 'Updated', price: 2000 }, params: { id: 'p1' }, user: { id: 'admin1', role: 'admin' } });
     const res = mockRes();
     await updateProduct(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json.mock.calls[0][0].product.name).toBe('Updated');
+    expect(res.json.mock.calls[0][0].data.name).toBe('Updated');
+  });
+
+  it('returns 500 on database error', async () => {
+    Product.findById.mockReturnValue({ lean: jest.fn().mockResolvedValue({ _id: 'p1', name: 'Old', price: 1000 }) });
+    Product.findByIdAndUpdate.mockRejectedValue(new Error('DB error'));
+    const req = mockReq({ body: { name: 'Updated' }, params: { id: 'p1' }, user: { id: 'admin1', role: 'admin' } });
+    const res = mockRes();
+    await updateProduct(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 });
 
@@ -286,20 +302,16 @@ describe('getFeaturedProducts', () => {
 
   it('returns featured products', async () => {
     const fakeProducts = [{ _id: 'p1', name: 'Featured', isFeatured: true }];
-    const chain = {
-      select: jest.fn().mockReturnThis(),
-      populate: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      sort: jest.fn().mockReturnThis(),
-      lean: jest.fn().mockResolvedValue(fakeProducts),
-    };
-    Product.find.mockReturnValue(chain);
+    Product.aggregate.mockResolvedValue(fakeProducts);
     const req = mockReq();
     const res = mockRes();
     await getFeaturedProducts(req, res);
-    expect(Product.find).toHaveBeenCalledWith({ isFeatured: true, isActive: true });
+    expect(Product.aggregate).toHaveBeenCalled();
+    const pipeline = Product.aggregate.mock.calls[0][0];
+    expect(pipeline[0]).toEqual({ $match: { isFeatured: true, isActive: true } });
+    expect(pipeline[1]).toEqual({ $sort: { featuredOrder: 1, createdAt: -1 } });
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json.mock.calls[0][0].products).toEqual(fakeProducts);
+    expect(res.json.mock.calls[0][0].data).toEqual(fakeProducts);
   });
 });
 
@@ -331,7 +343,7 @@ describe('generateSku', () => {
     const res = mockRes();
     await generateSku(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    const body = res.json.mock.calls[0][0];
+    const body = res.json.mock.calls[0][0].data;
     expect(body.sku).toMatch(/^MC-DX-SIE-\d{4}$/);
     expect(body.sequence).toBe(1);
   });
@@ -343,7 +355,7 @@ describe('generateSku', () => {
     const req = mockReq({ query: { categoryId: 'cat1', brandId: 'brand1' } });
     const res = mockRes();
     await generateSku(req, res);
-    expect(res.json.mock.calls[0][0].sequence).toBe(4);
-    expect(res.json.mock.calls[0][0].sku).toBe('MC-DX-SIE-0004');
+    expect(res.json.mock.calls[0][0].data.sequence).toBe(4);
+    expect(res.json.mock.calls[0][0].data.sku).toBe('MC-DX-SIE-0004');
   });
 });
