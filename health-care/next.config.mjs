@@ -187,6 +187,7 @@ const nextConfig = {
         has: [{ type: 'query', key: 'category', value: name }],
         destination: `/products/category/${slug}`,
         permanent: true,
+        statusCode: 301, // Explicit 301 — 308 (default for permanent) is handled inconsistently by crawlers
       })),
     ];
   },
