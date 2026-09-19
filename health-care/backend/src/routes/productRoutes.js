@@ -9,7 +9,8 @@ const {
   getFeaturedProducts,
   reorderFeaturedProducts,
   getCategoryCounts,
-  generateSku
+  generateSku,
+  getProductDiagnostics
 } = require('../controllers/productController');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const { redisCacheMiddleware } = require('../middleware/cache');
@@ -176,6 +177,20 @@ router.get('/category-counts', redisCacheMiddleware({ ttl: CACHE_TTL.PRODUCTS_LI
  *                   type: string
  */
 router.get('/generate-sku', protect, authorize('admin'), generateSku);
+
+/**
+ * @swagger
+ * /products/diagnostics:
+ *   get:
+ *     summary: Get product visibility diagnostics (Admin only)
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Product visibility diagnostics
+ */
+router.get('/diagnostics', protect, authorize('admin'), getProductDiagnostics);
 
 /**
  * @swagger

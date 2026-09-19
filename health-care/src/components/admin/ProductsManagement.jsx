@@ -258,11 +258,16 @@ export default function ProductsManagement({ openCreateRef }) {
         if (categoryFilter) filters.category = categoryFilter;
         if (brandFilter) filters.brand = brandFilter;
         if (searchQuery) filters.search = searchQuery;
+        
+        // Admin visibility: Show ALL products by default (active + inactive)
+        // Only apply isActive filter when user explicitly selects a status
         if (statusFilter) {
           if (statusFilter === 'active') filters.isActive = 'true';
           if (statusFilter === 'inactive') filters.isActive = 'false';
           if (statusFilter === 'featured') filters.isFeatured = 'true';
         }
+        // No else clause - admin sees everything when statusFilter is empty
+        
         if (stockFilter) {
           if (stockFilter === 'instock') filters.inStock = 'true';
           if (stockFilter === 'lowstock') filters.lowStock = 'true';
@@ -318,11 +323,16 @@ export default function ProductsManagement({ openCreateRef }) {
       if (categoryFilter) filters.category = categoryFilter;
       if (brandFilter) filters.brand = brandFilter;
       if (searchQuery) filters.search = searchQuery;
+      
+      // Admin visibility: Show ALL products by default (active + inactive)
+      // Only apply isActive filter when user explicitly selects a status
       if (statusFilter) {
         if (statusFilter === 'active') filters.isActive = 'true';
         if (statusFilter === 'inactive') filters.isActive = 'false';
         if (statusFilter === 'featured') filters.isFeatured = 'true';
       }
+      // No else clause - admin sees everything when statusFilter is empty
+      
       if (stockFilter) {
         if (stockFilter === 'instock') filters.inStock = 'true';
         if (stockFilter === 'lowstock') filters.lowStock = 'true';

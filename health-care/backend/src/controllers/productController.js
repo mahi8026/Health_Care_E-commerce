@@ -103,6 +103,91 @@ function applyCursorFilter(matchConditions, cursorState, sortKey, dir) {
 }
 
 /**
+ * Diagnostic endpoint to check product visibility issues (admin only).
+ * Returns counts of products by various states.
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ * 
+ * @route GET /api/products/diagnostics
+ * @access Private/Admin
+ */
+exports.getProductDiagnostics = async (req, res) => {
+  try {
+    const [
+      totalProducts,
+      activeProducts,
+      inactiveProducts,
+      missingCategory,
+      missingBrand,
+      outOfStock,
+      lowStock,
+      inStock,
+      featured,
+      missingImages
+    ] = await Promise.all([
+      Product.countDocuments(),
+      Product.countDocuments({ isActive: true }),
+      Product.countDocuments({ isActive: false }),
+      Product.countDocuments({ category: { $in: [null, undefined] } }),
+      Product.countDocuments({ brand: { $in: [null, undefined] } }),
+      Product.countDocuments({ stock: 0 }),
+      Product.countDocuments({ $expr: { $and: [{ $gt: ['$stock', 0] }, { $lte: ['$stock', { $ifNull: ['$lowStockThreshold', 10] }] }] } }),
+      Product.countDocuments({ stock: { $gt: 10 } }),
+      Product.countDocuments({ isFeatured: true }),
+      Product.countDocuments({ $or: [{ images: { $size: 0 } }, { images: null }] })
+    ]);
+
+    // Get sample inactive products
+    const inactiveProductsSample = await Product.find({ isActive: false })
+      .select('sku name isActive category brand stock')
+      .populate('category', 'name')
+      .populate('brand', 'name')
+      .limit(20)
+      .lean();
+
+    // Get products with missing references
+    const missingRefsSample = await Product.find({
+      $or: [
+        { category: { $in: [null, undefined] } },
+        { brand: { $in: [null, undefined] } }
+      ]
+    })
+      .select('sku name category brand')
+      .limit(20)
+      .lean();
+
+    return successResponse(res, {
+      summary: {
+        total: totalProducts,
+        active: activeProducts,
+        inactive: inactiveProducts,
+        missingCategory,
+        missingBrand,
+        outOfStock,
+        lowStock,
+        inStock,
+        featured,
+        missingImages
+      },
+      samples: {
+        inactiveProducts: inactiveProductsSample,
+        missingReferences: missingRefsSample
+      },
+      tips: {
+        inactiveProducts: 'Set isActive: true to make these products visible',
+        missingReferences: 'Assign valid category and brand to these products',
+        adminFilter: 'Use ?isActive=false in admin panel to see inactive products'
+      }
+    });
+  } catch (error) {
+    logger.error(`[getProductDiagnostics] ${error.message}`);
+    return errorResponse(res, 'Server error', process.env.ERROR_DETAIL_ENABLED === 'true' ? [error.message] : null, 500);
+  }
+};
+
+/**
  * Get paginated list of products with optional filters.
  * Supports filtering by category, brand, price range, stock status, and search.
  * 
