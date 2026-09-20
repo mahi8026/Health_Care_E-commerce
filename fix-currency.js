@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const CORRUPTED_SYMBOL = 'à§³';  // Corrupted UTF-8
+const CORRUPTED_SYMBOL = '৳';  // Corrupted UTF-8
 const CORRECT_SYMBOL = '৳';       // Bengali Taka (U+09F3)
 
 let totalFiles = 0;
@@ -61,7 +61,7 @@ function walkDir(dir, filePattern = /\.(jsx?|tsx?)$/) {
 
 console.log('===============================================');
 console.log('  Fix Bengali Taka Symbol Encoding');
-console.log('  Replacing corrupted à§³ with proper ৳');
+console.log('  Replacing corrupted ৳ with proper ৳');
 console.log('===============================================\n');
 
 // Start from health-care/src directory

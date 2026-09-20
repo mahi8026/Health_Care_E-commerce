@@ -41,7 +41,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
-            alt={`${product.name}${brandName ? ` â€” ${brandName}` : ''} â€” Price à§³${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
+            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
             style={{ objectFit: 'cover', transition: 'transform 0.3s' }}
@@ -85,11 +85,11 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
-            {finalPrice > 0 ? `à§³${finalPrice.toLocaleString()}` : 'Contact for price'}
+            {finalPrice > 0 ? `৳${finalPrice.toLocaleString()}` : 'Contact for price'}
           </span>
           {originalPrice > finalPrice && (
             <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
-              à§³{originalPrice.toLocaleString()}
+              ৳{originalPrice.toLocaleString()}
             </span>
           )}
         </div>
@@ -100,7 +100,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
 
 // Countdown owns its own state so the 1s tick never re-renders the deal cards
 // (previously the section held timeLeft and re-rendered the whole grid every
-// second â€” a major main-thread churn source).
+// second — a major main-thread churn source).
 const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
   const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
 
@@ -235,15 +235,15 @@ export default function FlashDealsSection() {
               style={{ background: 'var(--section-flash-soft)', color: 'var(--section-flash-accent)',
                 border: '1px solid rgba(255,107,0,0.3)', padding: '7px 16px', borderRadius: 8,
                 fontSize: 12, cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
-              See all deals â†’
+              See all deals →
             </button>
           </div>
 
-          {/* Countdown timer â€” isolated so the 1s tick only re-renders digits */}
+          {/* Countdown timer — isolated so the 1s tick only re-renders digits */}
           <FlashDealCountdown endTime={currentDeal.endTime} />
         </div>
 
-        {/* Deal product cards â€” 2 cols on mobile, 4 on desktop */}
+        {/* Deal product cards — 2 cols on mobile, 4 on desktop */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',

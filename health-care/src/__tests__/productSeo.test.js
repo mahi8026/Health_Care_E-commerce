@@ -457,7 +457,7 @@ describe('FAQSchema Component', () => {
       faqs: [
         {
           question: 'What is the price of Custom Device?',
-          answer: 'Contact us for a custom quotation â€” price on request.',
+          answer: 'Contact us for a custom quotation — price on request.',
         },
       ],
     };

@@ -1,9 +1,9 @@
 ﻿/**
  * Unit tests for product metadata generation.
  *
- * Tests the generateMetadata() function from src/app/products/[...id]/page.jsx â€”
+ * Tests the generateMetadata() function from src/app/products/[...id]/page.jsx —
  * the real catch-all product route. Covers:
- *   - Brand-first titles with dedup (brand already in the name â†’ no duplication)
+ *   - Brand-first titles with dedup (brand already in the name → no duplication)
  *   - Canonical slug URLs, OG cards, keywords, robust fallbacks.
  */
 
@@ -71,7 +71,7 @@ describe('Product Metadata Generation', () => {
   };
 
   describe('Title Generation', () => {
-    it('uses the brand when already in the name â€” no duplicate', async () => {
+    it('uses the brand when already in the name — no duplicate', async () => {
       seedFetch({
         name: 'Siemens ECG Machine',
         price: 150000,

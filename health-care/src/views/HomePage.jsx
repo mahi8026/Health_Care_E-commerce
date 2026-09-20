@@ -39,7 +39,7 @@ const BestSellingSection = lazy(() => import('@/components/home/BestSellingSecti
 const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
 const FlashDealsSection = lazy(() => import('@/components/home/FlashDealsSection'));
 // Safety bound for the homepage category strip. The strip scrolls
-// horizontally and must stay a complete index of the catalogue â€” a previous
+// horizontally and must stay a complete index of the catalogue — a previous
 // `.slice(0, 16)` cap hid 5 of the 21 database categories from the homepage.
 // Keep this comfortably above the real category count.
 const MAX_HOME_CATEGORY_TILES = 40;
@@ -78,22 +78,22 @@ const FALLBACK_CATEGORIES = [
 const SEARCH_SUGGESTIONS = ['ECG Machine', 'Patient Monitor', 'HbA1c Kit', 'Pulse Oximeter', 'Nebulizer'];
 
 const B2B_FEATURES = [
-  '8â€“22% bulk discounts', '30â€“90 day credit terms',
+  '8–22% bulk discounts', '30–90 day credit terms',
   'Dedicated account manager', 'Priority order processing',
   'Free installation & training', 'Custom quotations',
 ];
 
 const B2B_STATS = [
   // NOTE: index 0 is replaced at render time with the real count from the
-  // stats API (see B2BSection). The fallback must stay honest â€” a medical
+  // stats API (see B2BSection). The fallback must stay honest — a medical
   // supplier must never render an invented trust number when the API fails.
   { val: '0+', label: 'Active B2B Clients' },
   { val: '30%', label: 'Max Bulk Discount' },
   { val: '90 days', label: 'Credit Terms' },
-  { val: 'Satâ€“Thu', label: 'Dedicated Support' },
+  { val: 'Sat–Thu', label: 'Dedicated Support' },
 ];
 
-// WHY_US is built dynamically from settings â€” see buildWhyUs() below
+// WHY_US is built dynamically from settings — see buildWhyUs() below
 const HOW_IT_WORKS = [
   { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 40+ global brands' },
   { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
@@ -103,10 +103,10 @@ const HOW_IT_WORKS = [
 
 function buildWhyUs(settings) {
   const threshold = settings?.freeDeliveryThreshold
-    ? `à§³${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
-    : 'à§³50K';
+    ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
+    : '৳50K';
   const returnDays = settings?.returnPolicyDays ?? 30;
-  const supportHours = settings?.supportHours ?? 'Satâ€“Thu 9amâ€“6pm';
+  const supportHours = settings?.supportHours ?? 'Sat–Thu 9am–6pm';
   const certifications = settings?.certifications?.join(', ') || 'DGDA Registered';
   return [
     { icon: <FaCheckCircle />, title: certifications.split(',')[0]?.trim() || 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
@@ -273,7 +273,7 @@ const B2BSection = memo(function B2BSection({ t, stats }) {
               {B2B_FEATURES.map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
                   fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
-                  <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>âœ“</span> {f}
+                  <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>✓</span> {f}
                 </div>
               ))}
             </div>
@@ -336,7 +336,7 @@ const TypewriterText = memo(function TypewriterText() {
   return <span key={text} className="typewriter-text" style={{ display: 'inline-block' }}>{text}</span>;
 });
 
-// Hero left column â€” owns the cycling search placeholder; the search box
+// Hero left column — owns the cycling search placeholder; the search box
 // manages its own query state.
 const HeroSearch = memo(function HeroSearch() {
   const router = useRouter();
@@ -410,7 +410,7 @@ const HeroSearch = memo(function HeroSearch() {
   );
 });
 
-// Hero right panel â€” owns slide index, hover state, scroll-pause and autoplay
+// Hero right panel — owns slide index, hover state, scroll-pause and autoplay
 // so scroll/hover/timer churn never touches the rest of the page.
 const HeroSlider = memo(function HeroSlider({ slides }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -418,7 +418,7 @@ const HeroSlider = memo(function HeroSlider({ slides }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const activeSlides = slides.filter(s => s.isActive).length || 1;
 
-  // Pause autoplay while the user is scrolling â€” state lives here, not the page
+  // Pause autoplay while the user is scrolling — state lives here, not the page
   useEffect(() => {
     let scrollTimeout;
     let ticking = false;
@@ -485,7 +485,7 @@ const handleKeyDown = (e) => {
             ) : (
               <Image
                 src={slide.imageUrl}
-                alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} â€” MediportBD`}
+                alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
                 fill
                 sizes="(max-width: 768px) 100vw, 52vw"
                 style={{ objectFit: 'cover' }}
@@ -533,7 +533,7 @@ const handleKeyDown = (e) => {
         style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
         className="hero-slider-arrows"
       >
-        â€¹
+        ‹
       </button>
       <button
         onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
@@ -541,7 +541,7 @@ const handleKeyDown = (e) => {
         style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
         className="hero-slider-arrows"
       >
-        â€º
+        ›
       </button>
     </div>
   );
@@ -551,7 +551,7 @@ const handleKeyDown = (e) => {
 // MAIN HOMEPAGE COMPONENT
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// Homepage-scoped styles â€” hoisted to module scope so the 200-line style string
+// Homepage-scoped styles — hoisted to module scope so the 200-line style string
 // is created ONCE instead of on every HomePage render.
 const HOME_STYLES = `
         /* OPTIMIZED ANIMATIONS - Phase 3 */
@@ -566,7 +566,7 @@ const HOME_STYLES = `
         }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* Stable product grid heights â€” the loading skeleton already reserves
+        /* Stable product grid heights — the loading skeleton already reserves
            the section, so no forced min-height here: a fixed 780px left a dead
            whitespace band on desktop whenever the rail returned a single row
            (same tradeoff BestSellingSection already made). The mobile scroll
@@ -739,22 +739,22 @@ export default function HomePage({ initialData = null, initialSettings = null })
   const router = useRouter();
   const t = useT();
 
-  // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // Seeded from server-rendered (ISR) data when available â€” SSR HTML contains
+  // ── State ──────────────────────────────────────────────────────────────────
+  // Seeded from server-rendered (ISR) data when available — SSR HTML contains
   // the full home content instead of an empty skeleton.
   const [categories, setCategories] = useState(() => initialData?.categories?.length ? initialData.categories : []);
   const [categoryCounts, setCategoryCounts] = useState(() => initialData?.categoryCounts || {});
   const [promo, setPromo] = useState(() => initialData?.activePromo || null);
   // Zeroes, not fabricated defaults: a medical-supplier site must never
   // display invented trust numbers ("40 brands", "1200+ B2B clients") when
-  // the stats API fails â€” the previous fallback rendered fiction as fact.
+  // the stats API fails — the previous fallback rendered fiction as fact.
   const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 });
   const [siteSettings, setSiteSettings] = useState(() => initialSettings);
   const [heroSlides, setHeroSlides] = useState(() => initialSettings?.heroSlides?.length
     ? initialSettings.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order)
     : []);
 
-  // â”€â”€ Memoized Values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Memoized Values ────────────────────────────────────────────────────────
   const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
   const navCategories = useMemo(() => {
     if (categories.length > 0) {
@@ -765,24 +765,24 @@ export default function HomePage({ initialData = null, initialSettings = null })
       // catalogue. It previously used `.slice(0, 16)` while the database holds
       // 21 categories, which left ppe-and-safety, medical-devices,
       // diagnostic-devices and mobility-aids unreachable from the homepage
-      // (â‰ˆ46% of the catalogue had no path from the homepage). The cap is now
+      // (≈46% of the catalogue had no path from the homepage). The cap is now
       // only a safety bound, comfortably above the current category count.
       return categories
         .filter(cat => (cat.productCount ?? 1) > 0)
         .slice(0, MAX_HOME_CATEGORY_TILES);
     }
     return [
-      { name: 'Lab Reagents', emoji: 'ðŸ§ª', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
+      { name: 'Lab Reagents', emoji: '🧪', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
       { name: 'Hospital Machines', emoji: 'ðŸ¥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
-      { name: 'Lab Equipment', emoji: 'ðŸ”¬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
+      { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
       { name: 'PPE & Safety', emoji: 'ðŸ›¡ï¸', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
-      { name: 'Implants', emoji: 'ðŸ¦´', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
-      { name: 'Diagnostic', emoji: 'ðŸ©º', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
-      { name: 'Surgical', emoji: 'ðŸ’‰', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
+      { name: 'Implants', emoji: '🦴', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
+      { name: 'Diagnostic', emoji: '🩺', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
+      { name: 'Surgical', emoji: '💉', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
     ];
   }, [categories]);
 
-  // â”€â”€ Effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Effects ────────────────────────────────────────────────────────────────
 
   // Load banner settings (deduped/cached via fetchWithRetry)
   useEffect(() => {
@@ -816,11 +816,11 @@ export default function HomePage({ initialData = null, initialSettings = null })
 
   return (
     <div className="min-h-screen home-page-root">
-      {/* Global Styles â€” static string, not recreated per render */}
+      {/* Global Styles — static string, not recreated per render */}
       <style>{HOME_STYLES}</style>
 
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-      {/* SECTION 1: HERO â€” left: text+search  |  right: image slider */}
+      {/* SECTION 1: HERO — left: text+search  |  right: image slider */}
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="home-hero home-hero--padded">
         <div className="hero-grid-container">
@@ -856,24 +856,24 @@ export default function HomePage({ initialData = null, initialSettings = null })
 
               // Category icons mapping
               const iconMap = {
-                'Lab Reagents': 'ðŸ§ª', 'Laboratory Reagents': 'ðŸ§ª',
+                'Lab Reagents': '🧪', 'Laboratory Reagents': '🧪',
                 'Hospital Machines': 'ðŸ¥',
-                'Lab Equipment': 'ðŸ”¬', 'Laboratory Equipment': 'ðŸ”¬',
+                'Lab Equipment': '🔬', 'Laboratory Equipment': '🔬',
                 'PPE & Safety': 'ðŸ›¡ï¸',
-                'Implants': 'ðŸ¦´', 'Implants & Ortho': 'ðŸ¦´',
-                'Diagnostic': 'ðŸ©º', 'Diagnostic Equipment': 'ðŸ©º', 'Diagnostic Devices': 'ðŸ©º',
-                'Surgical': 'ðŸ’‰', 'Surgical Instruments': 'ðŸ’‰', 'Surgical & Wound Care': 'ðŸ©¹',
+                'Implants': '🦴', 'Implants & Ortho': '🦴',
+                'Diagnostic': '🩺', 'Diagnostic Equipment': '🩺', 'Diagnostic Devices': '🩺',
+                'Surgical': '💉', 'Surgical Instruments': '💉', 'Surgical & Wound Care': '🩹',
                 'Medical Devices': 'ðŸ¥',
                 'Medical Supplies': 'ðŸ¥',
-                'Consumables': 'ðŸ“¦',
-                'Orthopedic Supports': 'ðŸ¦´',
-                'Diabetes Care': 'ðŸ’Š',
-                'Blood Bank Supplies': 'ðŸ©¸',
-                'IV & Infusion Therapy': 'ðŸ’§',
+                'Consumables': '📦',
+                'Orthopedic Supports': '🦴',
+                'Diabetes Care': '💊',
+                'Blood Bank Supplies': '🩸',
+                'IV & Infusion Therapy': '💧',
                 'Ophthalmology & ENT Equipment': 'ðŸ‘ï¸',
                 'Physiotherapy & Rehabilitation': 'ðŸƒ',
-                'Respiratory Equipment': 'ðŸ˜·',
-                'Compression Garments': 'ðŸ‘•',
+                'Respiratory Equipment': '😷',
+                'Compression Garments': '👕',
               };
 
               const emoji = cat.emoji || iconMap[categoryName] || 'ðŸ¥';
@@ -925,7 +925,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 24, marginBottom: 6, border: '2px solid var(--color-brand-teal)',
                 color: '#fff', fontWeight: 600 }}>
-                â†’
+                →
               </div>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand-teal)',
                 textAlign: 'center' }}>
@@ -936,7 +936,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </div>
       </section>
 
-      {/* Below-fold content is skipped until scrolled near â€” see .cv-lazy-stack in globals.css */}
+      {/* Below-fold content is skipped until scrolled near — see .cv-lazy-stack in globals.css */}
       <div className="cv-lazy-stack">
       {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 3: FLASH DEALS (Time-sensitive, creates urgency) */}
@@ -994,10 +994,10 @@ export default function HomePage({ initialData = null, initialSettings = null })
                 <div style={{ color: 'var(--color-brand-navy)', fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
                   {promo.type === 'percentage'
                     ? `${promo.value}% OFF your order`
-                    : `à§³${promo.value?.toLocaleString()} OFF your order`}
+                    : `৳${promo.value?.toLocaleString()} OFF your order`}
                   {promo.minPurchase > 0 && (
                     <span style={{ fontWeight: 400, fontSize: 13, color: 'var(--color-text-secondary)' }}>
-                      {' '}on orders over à§³{promo.minPurchase?.toLocaleString()}
+                      {' '}on orders over ৳{promo.minPurchase?.toLocaleString()}
                     </span>
                   )}
                 </div>

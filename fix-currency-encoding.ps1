@@ -1,5 +1,5 @@
 # PowerShell script to fix Bengali Taka currency symbol encoding issues
-# This fixes corrupted UTF-8 encoding where ৳ (U+09F3) appears as à§³
+# This fixes corrupted UTF-8 encoding where ৳ (U+09F3) appears as ৳
 
 Write-Host "===============================================" -ForegroundColor Cyan
 Write-Host "  Fix Bengali Taka Symbol Encoding" -ForegroundColor Cyan
@@ -29,12 +29,12 @@ foreach ($pattern in $patterns) {
             $content = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
             
             # Check if file contains corrupted symbol
-            if ($content.Contains("à§³")) {
+            if ($content.Contains("৳")) {
                 # Count occurrences
-                $count = ([regex]::Matches($content, "à§³")).Count
+                $count = ([regex]::Matches($content, "৳")).Count
                 
                 # Replace corrupted symbol with correct one
-                $newContent = $content.Replace("à§³", "৳")
+                $newContent = $content.Replace("৳", "৳")
                 
                 # Save file with UTF-8 encoding without BOM
                 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
