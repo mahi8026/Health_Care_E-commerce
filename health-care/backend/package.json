@@ -38,7 +38,10 @@
     "fetch:healthway-all": "node scripts/fetch-healthway-tynor.js --all",
     "upload:cloudinary": "node scripts/upload-images-to-cloudinary.js",
     "upload:cloudinary-tynor": "node scripts/upload-images-to-cloudinary.js --brand=Tynor",
-    "upload:cloudinary-dry": "node scripts/upload-images-to-cloudinary.js --dry-run"
+    "upload:cloudinary-dry": "node scripts/upload-images-to-cloudinary.js --dry-run",
+    "diagnose:timestamps": "node scripts/diagnose-timestamps.js",
+    "fix:timestamps": "node scripts/fix-product-timestamps.js",
+    "fix:timestamps-dry": "node scripts/fix-product-timestamps.js --dry-run"
   },
   "keywords": [
     "medical",

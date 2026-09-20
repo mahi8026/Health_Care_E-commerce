@@ -23,7 +23,7 @@ export default function TrustBand() {
       aria-label="Trust and quality information"
       className="border-b border-[var(--color-border-primary)] bg-[var(--color-background-secondary)]"
     >
-      <div className="container mx-auto max-w-[1400px] px-4 py-3">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           {items.map((item) => (
             <div key={item.label} className="flex items-center gap-2">

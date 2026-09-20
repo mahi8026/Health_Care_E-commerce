@@ -141,7 +141,7 @@ export default function ProductImageGalleryEnhanced({
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <span className="text-sm">{config.icon}</span>
-                <span className="text-[10px] font-semibold whitespace-nowrap">{config.label}</span>
+                <span className="text-[11px] font-semibold whitespace-nowrap">{config.label}</span>
               </div>
             );
           })}
@@ -177,7 +177,7 @@ export default function ProductImageGalleryEnhanced({
 
         {/* Zoom Indicator - Compact */}
         {isZooming && (
-          <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-[10px] font-medium flex items-center gap-1.5 backdrop-blur-sm">
+          <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-[11px] font-medium flex items-center gap-1.5 backdrop-blur-sm">
             <FaSearchPlus size={12} />
             <span>Hover to zoom</span>
           </div>
@@ -185,7 +185,7 @@ export default function ProductImageGalleryEnhanced({
 
         {/* Image Counter - Compact */}
         {images.length > 1 && (
-          <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-[10px] font-medium backdrop-blur-sm">
+          <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-[11px] font-medium backdrop-blur-sm">
             {activeIndex + 1} / {images.length}
           </div>
         )}

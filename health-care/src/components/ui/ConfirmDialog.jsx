@@ -92,7 +92,7 @@ export default function ConfirmDialogProvider() {
           onClick={() => confirmManager.settle(current.id, true)}
           className={`flex-1 py-2.5 text-white rounded-xl text-sm font-semibold transition-colors ${
             current.danger
-              ? 'bg-danger hover:bg-[#C93A39]'
+              ? 'bg-danger hover:bg-danger-hover'
               : 'bg-brand-teal hover:bg-[var(--color-brand-teal-hover)]'
           }`}
         >

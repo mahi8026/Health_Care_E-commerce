@@ -215,7 +215,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
         }
       `}</style>
       <header className="glass-nav">
-        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 md:px-6 h-[52px] nav-header-row gap-1.5 sm:gap-2 md:gap-3">
+        <div className="max-w-[var(--container-width)] mx-auto px-2 sm:px-4 md:px-6 h-[52px] nav-header-row gap-1.5 sm:gap-2 md:gap-3">
 
           {/* Logo */}
           <button
@@ -230,6 +230,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               height={40}
               priority
               unoptimized
+              className="nav-logo-img"
               style={{ width: '120px', height: '40px', objectFit: 'contain' }}
             />
           </button>
@@ -237,7 +238,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           <div className="hidden md:block nav-divider" />
 
           {/* Tablet/Mobile Horizontal Nav (md to lg) */}
-          <nav className="flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0" aria-label="Main navigation">
+          <nav className="nav-links-mobile flex lg:hidden items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0" aria-label="Main navigation">
             <button
               onClick={() => router.push('/products')}
               className={`nav-link-mobile whitespace-nowrap ${isActive('/products') ? 'nav-link-active' : ''}`}
@@ -307,7 +308,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                             <div className="text-[13px] font-semibold leading-tight text-[var(--color-text-primary)] group-hover:text-brand-teal transition-colors">
                               {cat.label}
                             </div>
-                            <div className="text-[10.5px] leading-snug text-[var(--color-text-secondary)] mt-0.5">{cat.desc}</div>
+                            <div className="text-[11px] leading-snug text-[var(--color-text-secondary)] mt-0.5">{cat.desc}</div>
                           </div>
                         </button>
                       ))
@@ -470,7 +471,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
           />
           {/* Modal panel: higher z-index, stopPropagation on the white card only */}
           <div 
-            className="fixed top-[62px] left-0 right-0 z-modal px-4 animate-slide-down-modal pointer-events-none"
+            className="nav-search-modal fixed left-0 right-0 z-modal px-4 animate-slide-down-modal pointer-events-none"
           >
             <div className="max-w-[680px] mx-auto pointer-events-none">
               {/* White card — re-enable pointer events here so all children are clickable */}

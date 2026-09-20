@@ -7,15 +7,15 @@
  */
 
 import { API } from '@/constants/api';
+import { serverFetchJson } from '@/lib/serverFetch';
 
-export async function fetchJson(url) {
-  try {
-    const res = await fetch(url, { next: { revalidate: 60 } });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
+/**
+ * Thin wrapper over the deadlined server fetch. The deadline matters at build
+ * time: without it a slow/cold API hangs static generation until Next's 60s
+ * page timeout aborts the whole build. See src/lib/serverFetch.js.
+ */
+export async function fetchJson(url, { revalidate = 60, timeout } = {}) {
+  return serverFetchJson(url, { revalidate, timeout });
 }
 
 export function parseNumber(value) {

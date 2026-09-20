@@ -411,7 +411,7 @@ export default function NewsletterManagement() {
                     <summary className="text-xs font-semibold text-brand-teal cursor-pointer select-none">
                       👁 Preview email (as subscribers will see it)
                     </summary>
-                    <div className="mt-2 rounded-lg border border-[var(--color-border-primary)] overflow-hidden bg-[#F3F4F6]">
+                    <div className="mt-2 rounded-lg border border-[var(--color-border-primary)] overflow-hidden bg-gray-100">
                       <iframe
                         title="Email preview"
                         sandbox=""

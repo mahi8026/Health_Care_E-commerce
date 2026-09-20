@@ -4,6 +4,7 @@ import BrandPage from '@/views/BrandPage';
 import { SITE_CONFIG } from '@/config/seo';
 import { finalTitle, socialTitle } from '@/utils/metadata';
 import { API } from '@/constants/api';
+import { serverFetchJson, extractList } from '@/lib/serverFetch';
 import {
   getBrandFaqs,
   getBrandQuickAnswer,
@@ -13,30 +14,18 @@ import {
 // Data fetching
 // ---------------------------------------------------------------------------
 async function fetchBrands() {
-  try {
-    const res = await fetch(`${API}/manufacturers`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const list = data.data?.manufacturers || data.manufacturers || [];
-    return Array.isArray(list) ? list : [];
-  } catch {
-    return [];
-  }
+  const data = await serverFetchJson(`${API}/manufacturers`, { revalidate: 3600 });
+  return extractList(data, 'manufacturers');
 }
 
 async function fetchBrandProducts(name) {
-  try {
-    const res = await fetch(`${API}/products?brand=${encodeURIComponent(name)}&limit=100`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return { products: [], total: 0 };
-    const data = await res.json();
-    const products = Array.isArray(data.data) ? data.data : [];
-    const total = Number(data?.pagination?.total) || Number(data?.pagination?.totalDocs) || 0;
-    return { products, total };
-  } catch {
-    return { products: [], total: 0 };
-  }
+  const data = await serverFetchJson(
+    `${API}/products?brand=${encodeURIComponent(name)}&limit=100`,
+    { revalidate: 3600 }
+  );
+  const products = Array.isArray(data?.data) ? data.data : [];
+  const total = Number(data?.pagination?.total) || Number(data?.pagination?.totalDocs) || 0;
+  return { products, total };
 }
 
 // Allow brands not present at build time (new manufacturers)

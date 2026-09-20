@@ -67,7 +67,7 @@ const BottomNav = memo(function BottomNav() {
 
   return (
     <nav
-      className="bottom-nav-bar fixed bottom-0 left-0 right-0 w-full h-[60px] bg-white border-t border-[var(--color-border-primary)] z-[var(--z-bottom-nav)] flex shadow-[0_-2px_12px_rgba(0,0,0,0.06)] lg:hidden"
+      className="bottom-nav-bar fixed bottom-0 left-0 right-0 w-full h-[60px] bg-white border-t border-[var(--color-border-primary)] z-[var(--z-bottom-nav)] flex shadow-[0_-2px_12px_rgba(0,0,0,0.06)] md:hidden"
       aria-label="Mobile navigation"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >

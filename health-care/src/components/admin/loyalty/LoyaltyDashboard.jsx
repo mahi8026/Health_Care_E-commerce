@@ -143,7 +143,7 @@ export default function LoyaltyDashboard() {
 
         <div className="bg-white rounded-xl border border-[var(--color-border-primary)] p-5">
           <div className="flex items-center justify-between mb-2">
-            <FaTrophy className="text-[#FFD700] w-5 h-5" />
+            <FaTrophy className="text-gold w-5 h-5" />
             <span className="text-xs text-[var(--color-text-secondary)]">Top Tier</span>
           </div>
           <p className="text-2xl font-semibold text-brand-navy">{stats.tierDistribution.Platinum}</p>

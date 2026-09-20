@@ -69,7 +69,7 @@ export default function BankTransferForm({ orderNumber }) {
               <span className="text-sm flex-shrink-0">{icon}</span>
               <div className="min-w-0">
                 <p className="text-xs text-[var(--color-text-secondary)] m-0 uppercase tracking-wide font-semibold">{label}</p>
-                <p className={`text-xs text-[#002B78] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>
+                <p className={`text-xs text-brand-navy-deep font-semibold m-0 ${mono ? 'font-mono' : ''}`}>
                   {value}
                 </p>
               </div>
@@ -86,7 +86,7 @@ export default function BankTransferForm({ orderNumber }) {
             <p className="text-xs text-warning-ink font-semibold uppercase tracking-wide m-0">
               ⚠️ Payment Reference (Required)
             </p>
-            <p className="text-sm font-semibold text-[#78350F] font-mono m-0 mt-0.5">
+            <p className="text-sm font-semibold text-warning-deep font-mono m-0 mt-0.5">
               {referenceText}
             </p>
             <p className="text-xs text-warning-ink m-0 mt-0.5">

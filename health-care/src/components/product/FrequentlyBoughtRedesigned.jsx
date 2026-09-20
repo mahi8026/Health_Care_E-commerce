@@ -77,7 +77,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
             <div
               key={product._id || product.id}
               className={`border rounded-xl p-4 flex flex-col gap-3 bg-white hover:shadow-md transition-all flex-shrink-0 w-[200px] ${
-                isSelected ? 'border-brand-teal border-2' : 'border-[#E5E7EB]'
+                isSelected ? 'border-brand-teal border-2' : 'border-gray-200'
               }`}
             >
               {/* Image */}
@@ -125,7 +125,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
 
       {/* Bundle Total (if products selected) */}
       {selectedProducts.length > 0 && (
-        <div className="mt-4 bg-[#E1F5EE] rounded-lg p-4 flex items-center justify-between">
+        <div className="mt-4 bg-whatsapp-tint rounded-lg p-4 flex items-center justify-between">
           <div>
             <div className="text-xs text-brand-teal font-medium">Bundle Total</div>
             <div className="text-xl font-semibold text-brand-navy">

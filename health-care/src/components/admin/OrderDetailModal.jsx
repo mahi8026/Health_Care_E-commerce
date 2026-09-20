@@ -170,7 +170,7 @@ export default function OrderDetailModal({ orderId, onClose }) {
       confirmed: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
       processing: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
       shipped: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
-      out_for_delivery: 'bg-[#FED7AA] text-[#9A3412]',
+      out_for_delivery: 'bg-warning-tint-strong text-warning-mid',
       delivered: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
       cancelled: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
     };

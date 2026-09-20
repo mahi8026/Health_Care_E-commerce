@@ -124,7 +124,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
                 <span
                   className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-semibold ${
                     user.b2bTier === 'Platinum'
-                      ? 'bg-[#EEEDFE] text-[#3C3489]'
+                      ? 'bg-role-admin-tint-mid text-role-admin-ink'
                       : user.b2bTier === 'Gold'
                       ? 'bg-[var(--color-status-warning-tint)] text-warning-ink'
                       : 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]'

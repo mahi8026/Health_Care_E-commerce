@@ -307,7 +307,7 @@ export default function SystemMonitoring() {
             type="button"
             onClick={() => fetchDashboard(true)}
             disabled={refreshing}
-            className="px-3 py-2 md:py-1.5 bg-brand-navy text-white rounded-lg text-xs font-semibold hover:bg-[#0a1f3a] disabled:opacity-60 min-h-[44px] md:min-h-0"
+            className="px-3 py-2 md:py-1.5 bg-brand-navy text-white rounded-lg text-xs font-semibold hover:bg-surface-deep disabled:opacity-60 min-h-[44px] md:min-h-0"
           >
             Refresh
           </button>

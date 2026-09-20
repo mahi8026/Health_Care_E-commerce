@@ -327,7 +327,7 @@ export default function MobileMenu({ isOpen, onClose }) {
           <div style={{ padding: '16px' }}>
             <button onClick={() => handleNavigate('/login')}
               style={{
-                width: '100%', padding: '12px', marginBottom: 8, border: 'none', borderRadius: 12,
+                width: '100%', padding: '12px', marginBottom: 8, borderRadius: 12,
                 fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer', color: '#fff',
                 background: 'rgba(255,255,255,0.14)',
                 backdropFilter: 'blur(var(--glass-blur))',

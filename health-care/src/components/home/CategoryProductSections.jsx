@@ -95,7 +95,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
         )}
 
         {hasDiscount && (
-          <div className="absolute top-1 left-1 bg-[var(--color-brand-orange)] text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
+          <div className="absolute top-1 left-1 bg-[var(--color-brand-orange)] text-white text-[11px] font-semibold px-1.5 py-0.5 rounded">
             -{discount}%
           </div>
         )}
@@ -103,7 +103,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
 
       <div className="p-2">
         {brandName && (
-          <div className="text-[10px] font-semibold text-brand-teal uppercase tracking-wide mb-1">
+          <div className="text-[11px] font-semibold text-brand-teal uppercase tracking-wide mb-1">
             {brandName}
           </div>
         )}
@@ -117,7 +117,7 @@ const ProductCard = memo(function ProductCard({ product, onCardClick, onAddToCar
             ৳{price > 0 ? price.toLocaleString() : 'Call'}
           </div>
           {hasDiscount && (
-            <div className="text-[10px] text-[var(--color-text-secondary)] line-through">
+            <div className="text-[11px] text-[var(--color-text-secondary)] line-through">
               ৳{oldPrice.toLocaleString()}
             </div>
           )}

@@ -581,7 +581,7 @@ export default function OrdersManagement() {
       confirmed: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
       processing: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
       shipped: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
-      out_for_delivery: 'bg-[#FED7AA] text-[#9A3412]',
+      out_for_delivery: 'bg-warning-tint-strong text-warning-mid',
       delivered: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
       cancelled: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]'
     };
@@ -650,7 +650,7 @@ export default function OrdersManagement() {
             <button
               onClick={() => handleBulkShip(selectedOrders, `Ship ${selectedOrders.length} selected order(s) via SteadFast`)}
               disabled={bulkShipping}
-              className="text-sm px-4 py-1.5 bg-brand-navy text-white rounded-lg font-semibold hover:bg-[#0a1e3a] disabled:opacity-40 disabled:cursor-not-allowed min-h-[36px]"
+              className="text-sm px-4 py-1.5 bg-brand-navy text-white rounded-lg font-semibold hover:bg-surface-deep-alt disabled:opacity-40 disabled:cursor-not-allowed min-h-[36px]"
               title="Book SteadFast consignments for selected orders"
             >
               {bulkShipping ? 'Shipping…' : '🚚 Bulk Ship'}
@@ -788,7 +788,7 @@ export default function OrdersManagement() {
       ) : (
         <>
           {/* Desktop Table - allows horizontal scroll for better column spacing */}
-          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <div className="hidden lg:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '1200px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)] bg-[var(--color-background-secondary)]">
@@ -932,7 +932,7 @@ export default function OrdersManagement() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-3 p-3">
+          <div className="lg:hidden space-y-3 p-3">
             {orders.map((order, index) => {
               const isSelected = selectedOrders.includes(order._id);
               return (
@@ -1019,7 +1019,7 @@ export default function OrdersManagement() {
                 <div className="flex flex-col gap-2 pt-2 border-t border-[var(--color-border-tertiary)]">
                   <button
                     onClick={() => setSelectedOrder(order)}
-                    className="w-full min-h-[48px] px-4 py-2 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-[#0a1e3a] flex items-center justify-center gap-2"
+                    className="w-full min-h-[48px] px-4 py-2 bg-brand-navy text-white rounded-lg text-sm font-semibold hover:bg-surface-deep-alt flex items-center justify-center gap-2"
                   >
                     📋 View Details
                   </button>

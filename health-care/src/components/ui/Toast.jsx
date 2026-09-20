@@ -94,7 +94,7 @@ export function Toast({ id, message, type = 'info', duration = 3000, onClose }) 
       {/* Close button */}
       <button
         onClick={handleClose}
-        className="flex-shrink-0 text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] transition-colors"
+        className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-md text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] transition-colors"
         aria-label="Close notification"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

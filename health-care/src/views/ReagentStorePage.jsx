@@ -45,7 +45,7 @@ class ReagentErrorBoundary extends Component {
 
 const STORAGE_LEGEND = [
   { label: 'Cold 2–8°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#E6F1FB] to-[#D0E7F8] text-[var(--color-status-info)] border-[#B8D9F3]' },
-  { label: 'Frozen −20°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-[#EEEDFE] to-[#DDD9FE] text-[#3C3489] border-[#C5C0F5]' },
+  { label: 'Frozen −20°C', icon: <FaSnowflake />, className: 'bg-gradient-to-br from-role-admin-tint-mid to-role-admin-border-soft text-role-admin-ink border-[#C5C0F5]' },
   { label: 'Room temp', icon: <FaTint />, className: 'bg-gradient-to-br from-brand-teal-tint to-[#C8EBDD] text-[var(--color-status-success)] border-[#B0E1CE]' },
 ];
 
@@ -243,7 +243,7 @@ const [reagents, setReagents] = useState([]);
       <div className="min-h-screen bg-[var(--color-background-secondary)]">
         {/* Compact Header */}
         <div className="bg-white border-b border-[var(--color-border-primary)]">
-          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4">
+          <div className="max-w-[var(--container-width)] mx-auto px-4 md:px-6 py-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
                 <h1 className="text-xl md:text-2xl font-semibold text-text-primary mb-1">
@@ -267,7 +267,7 @@ const [reagents, setReagents] = useState([]);
           </div>
         </div>
 
-        <div className="max-w-[1400px] mx-auto flex">
+        <div className="max-w-[var(--container-width)] mx-auto flex">
           {/* Desktop sidebar */}
           <aside className="hidden lg:block w-[260px] flex-shrink-0">
             <div className="sticky top-[62px] max-h-[calc(100vh-78px)] overflow-y-auto">

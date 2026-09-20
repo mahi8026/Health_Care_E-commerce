@@ -98,8 +98,8 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-br from-brand-navy to-brand-navy-deep text-white pb-[calc(60px+env(safe-area-inset-bottom))] lg:pb-0">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 md:py-6">
+    <footer className="bg-gradient-to-br from-brand-navy to-brand-navy-deep text-white pb-[calc(60px+env(safe-area-inset-bottom))] md:pb-0">
+      <div className="max-w-[var(--container-width)] mx-auto px-4 md:px-6 py-5 md:py-6">
 
         {/* ── Desktop: Compact 5-column grid ── */}
         <div className="hidden lg:grid lg:grid-cols-5 gap-6">
@@ -107,7 +107,7 @@ export default function Footer() {
           <nav aria-label="Footer navigation" className="contents">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
                 <ul className="space-y-1">
@@ -128,7 +128,7 @@ export default function Footer() {
         <div className="hidden md:grid lg:hidden md:grid-cols-3 gap-4">
           {links.slice(0, 3).map((col) => (
             <div key={col.heading}>
-              <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-teal mb-2 font-[family-name:var(--font-plus-jakarta)]">
                 {col.heading}
               </h3>
               <ul className="space-y-1">
@@ -162,7 +162,7 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-x-3 gap-y-2">
             {links.map((col) => (
               <div key={col.heading}>
-                <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-teal mb-1 font-[family-name:var(--font-plus-jakarta)]">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-teal mb-1 font-[family-name:var(--font-plus-jakarta)]">
                   {col.heading}
                 </h3>
                 <ul className="space-y-0.5">
@@ -185,14 +185,14 @@ export default function Footer() {
         {/* Payment badges - compact */}
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-2 border-b border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2">
-            <p className="text-[10px] text-white/70 font-medium">We Accept:</p>
+            <p className="text-[11px] text-white/70 font-medium">We Accept:</p>
             <PaymentTrustBadges size="sm" />
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-2">
           {/* Desktop: Single compact row */}
-          <div className="hidden lg:flex items-center justify-between gap-3 text-[10px]">
+          <div className="hidden lg:flex items-center justify-between gap-3 text-[11px]">
             <p className="text-white/50">© {currentYear} Mediport Bangladesh Ltd.</p>
             <div className="flex items-center gap-3 text-white/50">
               <a href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer"
@@ -212,7 +212,7 @@ export default function Footer() {
           </div>
 
           {/* Tablet: Compact 2 rows */}
-          <div className="hidden md:flex lg:hidden flex-col gap-1.5 text-[10px]">
+          <div className="hidden md:flex lg:hidden flex-col gap-1.5 text-[11px]">
             <div className="flex items-center justify-between">
               <p className="text-white/50">© {currentYear} Mediport Bangladesh Ltd.</p>
               <div className="flex items-center gap-1.5">
@@ -235,7 +235,7 @@ export default function Footer() {
           </div>
 
           {/* Mobile: Ultra compact */}
-          <div className="flex md:hidden flex-col gap-1 text-center text-[10px]">
+          <div className="flex md:hidden flex-col gap-1 text-center text-[11px]">
             <p className="text-white/50">© {currentYear} Mediport BD</p>
             <div className="flex items-center justify-center gap-1.5">
               <a href="/privacy" className="text-white/50 hover:text-white/80 transition-colors">Privacy</a>

@@ -91,7 +91,7 @@ export default function UserReviewsClient() {
   const renderStars = (rating) => (
     <div className="flex gap-[2px] text-sm">
       {[1, 2, 3, 4, 5].map(star => (
-        <span key={star} className={star <= rating ? 'text-[#FFA500]' : 'border-[var(--color-border-primary)]'}>★</span>
+        <span key={star} className={star <= rating ? 'text-amber' : 'border-[var(--color-border-primary)]'}>★</span>
       ))}
     </div>
   );

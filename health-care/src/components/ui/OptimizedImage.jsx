@@ -72,6 +72,10 @@ export default function OptimizedImage({
         style={{
           width: fill ? '100%' : width,
           height: fill ? '100%' : height,
+          // fill mode renders inside a parent that gets its height from this
+          // absolutely-positioned layer — the fallback must keep the same
+          // geometry or it collapses to zero height when the image errors.
+          ...(fill ? { position: 'absolute', inset: 0 } : {}),
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -81,10 +85,13 @@ export default function OptimizedImage({
           ...style,
         }}
         role="img"
-        aria-label={alt}
+        aria-label={alt ? `${alt} (unavailable)` : 'Image unavailable'}
         className={className}
       >
         {fallback}
+        {/* Screen-reader-only caption — keeps the visible fallback as a plain
+            emoji while telling assistive tech why the image is missing. */}
+        <span className="sr-only">Image unavailable</span>
       </div>
     );
   }

@@ -23,7 +23,7 @@ export default function RatingStars({ rating = 0, size = 'sm', count, showCount 
             >
               {fill > 0 && (
                 <div
-                  className="absolute inset-0 bg-[#FFB020]"
+                  className="absolute inset-0 bg-amber-bright"
                   style={{ clipPath: STAR_CLIP, width: `${fill * 100}%` }}
                 />
               )}

@@ -177,7 +177,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         
         {/* Save Badge - Top Left - Compact version */}
         {hasDiscount && (
-          <div className="absolute top-1.5 left-1.5 bg-[var(--color-brand-orange)] text-white px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm z-[2]">
+          <div className="absolute top-1.5 left-1.5 bg-[var(--color-brand-orange)] text-white px-1.5 py-0.5 rounded text-[11px] font-semibold shadow-sm z-[2]">
             -{discountPercent}%
           </div>
         )}
@@ -185,12 +185,12 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         {/* Other Badges - Compact */}
         <div className="absolute top-1.5 left-1.5 flex flex-col gap-0.5 z-[2]" style={{ marginTop: hasDiscount ? '22px' : '0' }}>
           {product.badges?.map((badge, idx) => (
-            <span key={idx} className={`text-[10px] px-1 py-0.5 rounded font-medium ${badge.className}`}>
+            <span key={idx} className={`text-[11px] px-1 py-0.5 rounded font-medium ${badge.className}`}>
               {badge.text}
             </span>
           ))}
           {showFeaturedBadge && product.isFeatured && !hasDiscount && (
-            <span className="bg-warning text-warning-ink text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-sm">
+            <span className="bg-warning text-warning-ink text-[11px] font-semibold px-1.5 py-0.5 rounded shadow-sm">
               ⭐
             </span>
           )}
@@ -198,7 +198,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
 
         {/* Stock badge - Top Right (optional) - Compact */}
         {showStockBadge && (
-          <div className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-semibold shadow-sm z-[2] ${
+          <div className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[11px] font-semibold shadow-sm z-[2] ${
             product.stock > 0
               ? product.stock <= (product.lowStockThreshold || 10)
                 ? 'bg-warning text-warning-ink'
@@ -221,7 +221,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
             disabled={isComparing}
             className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-sm ${
               inCompareList
-                ? 'bg-[#7C3AED] text-white'
+                ? 'bg-role-admin text-white'
                 : 'bg-white/90 text-[var(--color-text-secondary)] hover:bg-white'
             }`}
             title={inCompareList ? 'Remove from compare' : 'Add to compare'}
@@ -240,14 +240,14 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         {/* Category (optional) + Brand */}
         {showCategory && (
           <div className="flex items-center gap-1 mb-0.5 flex-wrap">
-            <span className="text-[10px] font-semibold text-brand-teal uppercase tracking-wide">
+            <span className="text-[11px] font-semibold text-brand-teal uppercase tracking-wide">
               {typeof product.category === 'object' ? product.category?.name : product.category}
             </span>
-            <span className="text-[var(--color-text-tertiary)] text-[10px]">·</span>
+            <span className="text-[var(--color-text-tertiary)] text-[11px]">·</span>
           </div>
         )}
         {/* Brand - Extra Compact */}
-        <div className="text-[10px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
+        <div className="text-[11px] text-brand-teal font-medium uppercase tracking-wide mb-0.5">
           {typeof product.brand === 'object' ? product.brand?.name : product.brand}
         </div>
         
@@ -268,19 +268,19 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
               {priceDisplay.formatted}
             </span>
             {priceDisplay.showOriginalPrice && (
-              <span className="text-[10px] text-[var(--color-text-secondary)] line-through">
+              <span className="text-[11px] text-[var(--color-text-secondary)] line-through">
                 {priceDisplay.originalPriceFormatted}
               </span>
             )}
             {!priceDisplay.isB2BPrice && product.oldPrice && (
-              <span className="text-[10px] text-[var(--color-text-secondary)] line-through">
+              <span className="text-[11px] text-[var(--color-text-secondary)] line-through">
                 ৳{product.oldPrice.toLocaleString()}
               </span>
             )}
           </div>
           {/* B2B Price Badge - Compact */}
           {priceDisplay.isB2BPrice && (
-            <span className="inline-flex items-center gap-0.5 text-[9px] text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
+            <span className="inline-flex items-center gap-0.5 text-[11px] text-role-admin font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full w-fit">
               <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
@@ -292,7 +292,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         {/* Stock Status - Extra Compact */}
         <div className="flex items-center gap-0.5 sm:gap-1 mb-1 sm:mb-1.5">
           <div className="w-1 h-1 sm:w-1 sm:h-1 rounded-full bg-[var(--color-status-success)] flex-shrink-0"></div>
-          <span className="text-[10px] sm:text-xs text-[var(--color-text-secondary)]">
+          <span className="text-[11px] sm:text-xs text-[var(--color-text-secondary)]">
             {product.stock <= 0 ? 'Out of stock'
               : product.stock <= (product.lowStockThreshold || 10)
                 ? `Only ${product.stock} left`

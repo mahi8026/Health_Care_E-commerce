@@ -125,11 +125,83 @@ html.lang-bn h6 {
   --color-brand-navy-hover: #002B78;
   --color-brand-teal-hover: #007F7B;
 
+  /* ── Third-party service colors ──────────────────────────────────────────────
+     These are EXTERNAL BRAND colors (payment gateways, messaging) — they must
+     match each provider's published palette and must never be re-themed to the
+     Mediport brand. They live here so components reference a token instead of
+     an inline hex literal. */
+  --color-bkash: #E2136E;
+  --color-bkash-dark: #C91160;
+  --color-nagad: #F26828;
+  --color-nagad-dark: #D95820;
+  --color-whatsapp: #25D366;
+  --color-whatsapp-dark: #16A34A;
+  --color-whatsapp-deep: #0C7359;
+  --color-whatsapp-tint: #E1F5EE;
+  --color-whatsapp-tint-soft: #F0FBF8;
+  --color-whatsapp-ink: #20BA5A;
+
+  /* ── Role / plan accents ─────────────────────────────────────────────────────
+     Admin-role (super-admin / violet) surfaces used by badges, chips and
+     account menus. */
+  --color-role-admin: #7C3AED;
+  --color-role-admin-strong: #5B21B6;
+  --color-role-admin-deep: #4A42A5;
+  --color-role-admin-mid: #534AB7;
+  --color-role-admin-hover: #6D28D9;
+  --color-role-admin-tint: #EDE9FE;
+  --color-role-admin-tint-soft: #F5F3FF;
+  --color-role-admin-tint-mid: #EEEDFE;
+  --color-role-admin-border: #DDD6FE;
+  --color-role-admin-border-soft: #DDD9FE;
+  --color-role-admin-ink: #3C3489;
+
+  /* ── Deep navy surfaces ─────────────────────────────────────────────────────
+     Dark chrome used by the admin sidebar, error screens and the invoice
+     header (darker than --color-brand-navy). */
+  --color-surface-deep: #0A1F3A;
+  --color-surface-deep-alt: #0A1E3A;
+
+  /* ── Accent gold (loyalty points, ratings) ─────────────────────────────────── */
+  --color-gold: #FFD700;
+  --color-amber: #FFA500;
+  --color-amber-bright: #FFB020;
+
+  /* ── Success / green scale ────────────────────────────────────────────────── */
+  --color-success-bright: #22C55E;
+  --color-success-light: #4ADE80;
+  --color-success-mid: #6EE7B7;
+  --color-success-tint: #A7F3D0;
+  --color-success-deep: #0A7560;
+
+  /* ── Amber / warning scale ────────────────────────────────────────────────── */
+  --color-warning-deep: #78350F;
+  --color-warning-strong: #B45309;
+  --color-warning-mid: #9A3412;
+  --color-warning-tint: #FED7AA;
+  --color-warning-tint-soft: #FAEEDA;
+  --color-warning-bright: #D97706;
+
+  /* ── Danger / red scale ──────────────────────────────────────────────────── */
+  --color-danger-strong: #B91C1C;
+  --color-danger-hover: #C93A39;
+  --color-danger-tint-soft: #FCEBEB;
+
+  /* ── Brand interaction washes ────────────────────────────────────────────── */
+  --color-brand-teal-wash: #F8FFFE;
+
+  /* ── Blue scale (bank transfer, info surfaces) ────────────────────────────── */
+  --color-blue-strong: #185FA5;
+  --color-blue-deep: #144A8A;
+
   /* Storefront default — Clean white background */
   --page-gradient-wash: #F7FAFD;
 
   /* Fluid Typography Scale */
-  --text-xs: clamp(10px, 2vw, 12px);
+  /* 11px floor: micro-copy (nav labels, badges, table meta) must stay legible
+     on a 320px phone — the previous 10px floor failed the project's own
+     "no text below 11px" rule. */
+  --text-xs: clamp(11px, 2vw, 12px);
   --text-sm: clamp(12px, 2.5vw, 14px);
   --text-base: clamp(14px, 3vw, 16px);
   --text-lg: clamp(16px, 3.5vw, 18px);
@@ -207,8 +279,10 @@ html.lang-bn h6 {
   --gradient-primary: linear-gradient(135deg, #001D5D 0%, #002B78 100%);
   --gradient-teal: linear-gradient(135deg, #18AFA9 0%, #007F7B 100%);
 
-  /* Layout tokens */
-  --container-width: 1200px;
+  /* Layout tokens — single source of truth for every full-width layout band
+     (store header, page .container, footer, wide listing pages). Tailwind's
+     max-w-7xl is also 1280px, so the whole site now shares one content edge. */
+  --container-width: 1280px;
   --bottom-nav-offset: 60px;
 }
 
@@ -374,11 +448,20 @@ html.lang-bn h6 {
     padding 0.28s ease;
 }
 
-/* On mobile, allow topbar to wrap if needed */
+/* On mobile, allow topbar to wrap if needed.
+   The layout token has to move with the real height: .site-main, the sticky
+   add-to-cart bar and the search modal all offset by --site-nav-height, so a
+   stale 2rem value let the fixed nav cover the top ~8px of page content on
+   phones. `:root` (not `html`) is required here — the base declaration is on
+   `:root`, which outranks the bare element selector. */
 @media (max-width: 640px) {
+  :root {
+    --site-topbar-height: 2.5rem;
+  }
+
   .site-topbar {
     height: auto;
-    min-height: 2.5rem;
+    min-height: var(--site-topbar-height);
   }
 }
 
@@ -492,6 +575,31 @@ html.topbar-hidden .site-topbar {
   .mobile-menu-root {
     display: none !important;
   }
+}
+
+/* ── Nav: phone-only link strip + search modal offset ──────────────────────── */
+/* Under 400px the header cannot hold the logo, the scrollable link strip and
+   the action cluster at once (the strip was collapsing to an invisible 0-width
+   scroller). The same links live in the hamburger menu, so the strip yields. */
+@media (max-width: 399px) {
+  .nav-links-mobile {
+    display: none;
+  }
+
+  .nav-logo-img {
+    width: 96px !important;
+    height: 32px !important;
+  }
+}
+
+/* Search panel: open below the real fixed-nav height instead of the hardcoded
+   62px, which tucked the panel under the announcement bar on phones. */
+.nav-search-modal {
+  top: calc(var(--site-nav-height) + 0.5rem);
+}
+
+html.topbar-hidden .nav-search-modal {
+  top: calc(var(--site-header-height) + 0.5rem);
 }
 
 /* ── Main header — Apple Liquid Glass ──────────────────────────────────────── */
@@ -685,7 +793,8 @@ html.nav-scrolled .site-nav-shell::after {
 }
 
 .nav-glass-control__label {
-  font-size: 9px;
+  /* Was 9px — below the project's 11px legibility floor for control labels. */
+  font-size: 10px;
   font-weight: 500;
   color: var(--color-text-secondary);
   line-height: 1;
@@ -963,7 +1072,8 @@ html.nav-scrolled .site-nav-shell::after {
   position: relative;
   padding: 0.35rem 0.65rem;
   border-radius: 0.5rem;
-  font-size: 10.5px;
+  /* 11px floor — was 10.5px on the narrowest phones. */
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-text-primary);
   background: rgba(0, 29, 93, 0.05);
@@ -982,7 +1092,7 @@ html.nav-scrolled .site-nav-shell::after {
 /* Reagent button same styling as Products */
 .nav-link-mobile--reagent {
   padding: 0.35rem 0.65rem;
-  font-size: 10.5px;
+  font-size: 11px;
 }
 
 /* Small phones: extra compact */
@@ -1359,7 +1469,11 @@ img, video {
 /* ── Container System ───────────────────────────────────────────────────────── */
 .container {
   width: 100%;
-  max-width: 1200px;
+  /* Was a hardcoded 1200px while the header/footer/listing pages used 1280px
+     (max-w-7xl) and a few pages used 1400px — the content column visibly
+     stepped in/out by 40-100px per page on desktop. All bands now read the
+     same token. */
+  max-width: var(--container-width);
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -1373,20 +1487,59 @@ img, video {
 }
 
 /* ── Touch & Interaction ────────────────────────────────────────────────────── */
+/* Hit-area sizing is scoped to touch devices (pointer: coarse).
+   Previously `button, a { min-height:44px; min-width:44px }` and
+   `input { min-height:48px }` applied at EVERY viewport, so every compact
+   control that lacked a .touch-compact opt-out was silently inflated:
+   - toolbar buttons / selects rendered 44-48px tall inside 32-40px designs,
+   - table row actions, pagination and quantity steppers lost their alignment,
+   - checkboxes (`w-4 h-4`) rendered 16px wide × 48px tall, because
+     `min-height` wins over an explicit `height`.
+   The opt-outs (.touch-compact / .input-compact) stay for the handful of
+   controls that must stay small even on touch screens. */
 button,
 a {
-  min-height: 44px;
-  min-width: 44px;
   touch-action: manipulation;
 }
 
-input[type="checkbox"], input[type="radio"] {
+@media (pointer: coarse) {
+  button:not(.touch-compact),
+  a:not(.touch-compact) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* iOS zooms the page when a focused text field is smaller than 16px, but that
+   guard must not touch checkboxes/radios (they are replaced controls and would
+   inherit the 48px minimum as a stretched sliver). */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    min-height: 48px;
+    font-size: 16px;
+  }
+}
+
+/* Replaced controls keep their own size; the surrounding <label> provides the
+   tap area. */
+input[type="checkbox"],
+input[type="radio"] {
+  min-height: 0;
+  min-width: 0;
+  font-size: inherit;
+  accent-color: var(--color-brand-teal);
   touch-action: manipulation;
 }
 
-input, textarea, select {
-  min-height: 48px;
-  font-size: 16px; /* Prevents iOS zoom */
+/* WCAG 2.5.8 (AA) — 24×24 minimum target for the control itself on touch. */
+@media (pointer: coarse) {
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 1.25rem;
+    min-height: 1.25rem;
+  }
 }
 
 /* Opt-outs for intentionally compact controls (must be explicit, never implicit) */
@@ -2494,3 +2647,63 @@ color: var(--color-brand-teal);
   background: var(--color-brand-teal);
   color: #fff;
 }
+/* -- HomePage responsive layout consolidation ------------------------------- */
+/* Moved from HomePage.jsx / FlashDealsSection.jsx styled-jsx so all home-page
+   responsive grid rules live in one place. Scoped with .home-page-root to
+   provide higher specificity than the base component styles without relying
+   on !important. Rules that must beat inline styles keep !important and are
+   marked [inline override]. */
+
+@media (max-width: 1024px) {
+  .home-page-root .how-it-works-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-page-root .how-it-works-step-line { display: none; }
+  .home-page-root .b2b-cols { grid-template-columns: 1fr; }
+  .home-page-root .testimonials-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .home-page-root .hero-left-content { display: block; order: 2; }
+  .home-page-root .hero-grid-container { grid-template-columns: 1fr; gap: 16px; padding: 0 16px; }
+  .home-page-root .hero-right-panel { order: 1; display: block; height: 240px; border-radius: 14px; }
+  .home-page-root .prod-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .home-page-root .cat-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .home-page-root .trust-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-page-root .how-it-works-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-page-root .testimonials-grid { grid-template-columns: 1fr; }
+  .home-page-root .coupon-banner-section { padding: 12px 14px !important; margin: 0 !important; } /* [inline override] */
+  .home-page-root .category-section { padding: 16px 0; }
+  .home-page-root .home-video-grid { grid-template-columns: 1fr !important; gap: 24px !important; } /* [inline override] */
+  .home-page-root .home-video-section { padding: 36px 16px !important; } /* [inline override] */
+  .home-page-root .home-support-section { padding: 36px 16px !important; } /* [inline override] */
+  .home-page-root .home-testimonials-section { padding: 24px 16px !important; } /* [inline override] */
+}
+
+@media (max-width: 640px) {
+  .home-page-root .hero-right-panel { height: 200px; border-radius: 12px; }
+  .home-page-root .hero-slider-arrows { display: none; }
+  .home-page-root .prod-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .home-page-root .stats-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .home-page-root .trust-grid { grid-template-columns: 1fr; gap: 10px; }
+  .home-page-root .b2b-cols { grid-template-columns: 1fr; }
+  .home-page-root .b2b-banner { padding: 20px 16px; border-radius: 14px; }
+  .home-page-root .how-it-works-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .home-page-root .testimonials-grid { grid-template-columns: 1fr; gap: 12px; }
+  .home-page-root .home-section { padding: 20px 16px !important; } /* [inline override] */
+  .home-page-root .category-section-header { padding: 0 16px; margin-bottom: 10px; }
+  .home-page-root .category-product-row { padding: 0 16px 4px; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  .home-page-root .hero-grid-container { padding: 0 14px; gap: 12px; }
+  .home-page-root .hero-left-content h1 { font-size: 22px; line-height: 1.2; }
+  .home-page-root .coupon-banner-section { padding: 8px 10px !important; } /* [inline override] */
+  .home-page-root .deal-grid { gap: 8px !important; } /* [inline override] */
+  .home-page-root .b2b-banner h2 { font-size: 22px; }
+  .home-page-root .home-video-section,
+  .home-page-root .home-support-section { padding: 28px 14px !important; } /* [inline override] */
+}
+
+@media (min-width: 768px) {
+  .home-page-root .deal-grid { grid-template-columns: repeat(4, 1fr) !important; } /* [inline override] FlashDealsSection base is 2 cols */
+}
+

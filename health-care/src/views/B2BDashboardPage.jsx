@@ -178,8 +178,8 @@ function B2BLanding() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 bg-brand-teal/20 text-[#4ADE80] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-                <span className="w-2 h-2 bg-[#4ADE80] rounded-full animate-pulse"/>
+              <div className="inline-flex items-center gap-2 bg-brand-teal/20 text-success-light text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
+                <span className="w-2 h-2 bg-success-light rounded-full animate-pulse"/>
                 B2B Portal — Bangladesh&apos;s #1 Medical Supplier
               </div>
               <h1 className="text-2xl md:text-3xl font-semibold leading-tight mb-3">
@@ -195,7 +195,7 @@ function B2BLanding() {
                   Apply for B2B Account
                 </button>
                 <button onClick={() => router.push('/products')}
-                  className="px-6 py-3 border border-[#334155] hover:border-[var(--color-border-secondary)] text-[var(--color-text-tertiary)] rounded-xl text-sm font-semibold transition-colors">
+                  className="px-6 py-3 border border-slate-700 hover:border-[var(--color-border-secondary)] text-[var(--color-text-tertiary)] rounded-xl text-sm font-semibold transition-colors">
                   Browse Catalog
                 </button>
               </div>
@@ -213,7 +213,7 @@ function B2BLanding() {
                 { n: `${maxDiscount}%`, l: 'Max Discount' },
                 { n: supportHours,    l: 'Support' },
               ].map(({ n, l }) => (
-                <div key={l} className="bg-[#001D5D] rounded-2xl p-6 text-center border border-[#002B78]">
+                <div key={l} className="bg-brand-navy rounded-2xl p-6 text-center border border-brand-navy-deep">
                   <div className="text-2xl font-semibold text-brand-teal mb-1">{n}</div>
                   <div className="text-xs text-[var(--color-text-secondary)]">{l}</div>
                 </div>
@@ -394,8 +394,8 @@ function B2BDashboard({ data, onRefresh }) {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden md:inline-flex items-center gap-1.5 text-xs bg-brand-teal/20 text-[#4ADE80] px-3 py-1.5 rounded-full font-semibold">
-              <span className="w-1.5 h-1.5 bg-[#4ADE80] rounded-full"/>
+            <span className="hidden md:inline-flex items-center gap-1.5 text-xs bg-brand-teal/20 text-success-light px-3 py-1.5 rounded-full font-semibold">
+              <span className="w-1.5 h-1.5 bg-success-light rounded-full"/>
               {data.tier} Tier · {data.discount}% off
             </span>
             <button onClick={() => router.push('/products')}
@@ -545,8 +545,8 @@ function B2BDashboard({ data, onRefresh }) {
                   <div className="text-sm font-semibold text-brand-navy">B2B Support Team</div>
                   <div className="text-xs text-[var(--color-text-secondary)]">Senior B2B Executive</div>
                   <div className="flex items-center gap-1 mt-0.5">
-                    <span className="w-2 h-2 bg-[#22C55E] rounded-full"/>
-                    <span className="text-xs text-[#22C55E] font-medium">Available</span>
+                    <span className="w-2 h-2 bg-success-bright rounded-full"/>
+                    <span className="text-xs text-success-bright font-medium">Available</span>
                   </div>
                 </div>
               </div>
@@ -601,7 +601,7 @@ function B2BDashboard({ data, onRefresh }) {
 
             {/* Loyalty points */}
             {data.loyaltyPoints > 0 && (
-              <div className="bg-gradient-to-br from-brand-navy to-[#002B78] rounded-2xl p-5 text-white">
+              <div className="bg-gradient-to-br from-brand-navy to-brand-navy-deep rounded-2xl p-5 text-white">
                 <div className="text-xs text-[var(--color-text-secondary)] mb-1">Loyalty Points</div>
                 <div className="text-2xl font-semibold text-brand-teal">{data.loyaltyPoints.toLocaleString()}</div>
                 <div className="text-xs text-[var(--color-text-tertiary)] mt-1">Redeem on your next order</div>

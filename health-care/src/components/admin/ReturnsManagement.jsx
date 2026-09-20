@@ -218,7 +218,7 @@ export default function ReturnsManagement() {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+            <div className="hidden lg:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
               <table className="w-full" style={{minWidth: '900px'}}>
                 <thead className="bg-[var(--color-background-secondary)] border-b">
                   <tr>
@@ -257,7 +257,7 @@ export default function ReturnsManagement() {
             </div>
 
             {/* Mobile Card View */}
-            <div className="md:hidden space-y-3 p-3">
+            <div className="lg:hidden space-y-3 p-3">
               {returns.map(returnRequest => (
                 <div key={returnRequest._id} className="bg-[var(--color-background-secondary)] rounded-lg border p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">

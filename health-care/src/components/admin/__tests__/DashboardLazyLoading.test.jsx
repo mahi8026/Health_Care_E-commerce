@@ -53,9 +53,12 @@ describe('Admin Dashboard Lazy Loading Components', () => {
 
     it('should have proper background colors matching design system', () => {
       const { container } = render(<DashboardSkeleton />);
-      
+
       const mainContainer = container.firstChild;
-      expect(mainContainer).toHaveClass('bg-[var(--color-background-tertiary)]');
+      // The skeleton root uses the semantic `bg-page-muted` utility, which
+      // resolves to --color-background-tertiary. Asserting the utility class
+      // (not the raw var) keeps this readable and CSS-selector-safe.
+      expect(mainContainer).toHaveClass('bg-page-muted');
     });
   });
 
@@ -164,15 +167,16 @@ describe('Admin Dashboard Lazy Loading Components', () => {
         throw new Error('Test error');
       };
 
-      const { container } = render(
+      render(
         <DashboardErrorBoundary>
           <ThrowError />
         </DashboardErrorBoundary>
       );
 
-      // Check for error icon container
-      const errorIcon = container.querySelector('.bg-[var(--color-status-danger-tint)]');
-      expect(errorIcon).toBeInTheDocument();
+      // querySelector with a class name containing []() is not a valid CSS
+      // selector (nwsapi throws SyntaxError) — assert via the component's
+      // stable test id instead.
+      expect(screen.getByTestId('error-icon')).toBeInTheDocument();
     });
 
     it('should increment retry count on retry button click', () => {
@@ -312,36 +316,36 @@ describe('B2B Dashboard Lazy Loading', () => {
     });
   });
 
-  describe('B2B lazy loading configuration in App', () => {
-    it('should verify next/dynamic is used for B2BDashboardPage in App.jsx', () => {
-      // Read App.jsx source to verify dynamic import configuration
-      // next/dynamic with ssr: false ensures B2B dashboard JS is not in the initial bundle
-      // This is validated by inspecting the source code pattern
+  describe('B2B route integration (App Router)', () => {
+    // The app was migrated from the pages/ `App.jsx` shell to the Next.js
+    // App Router, so there is no `next/dynamic` boundary to inspect any more.
+    // The B2B dashboard is imported directly by its route file, and the page
+    // opts into force-dynamic so the client dashboard renders per-request.
+    it('should import and render B2BDashboardPage from its route file', () => {
       const fs = require('fs');
       const path = require('path');
-      const appSource = fs.readFileSync(
-        path.resolve(__dirname, '../../../App.jsx'),
+      const routeSource = fs.readFileSync(
+        path.resolve(__dirname, '../../../app/b2b/page.jsx'),
         'utf8'
       );
 
-      // Verify B2BDashboardPage uses next/dynamic
-      expect(appSource).toContain("import('./views/B2BDashboardPage')");
-      // Verify ssr: false is set (requirement 3.1)
-      expect(appSource).toMatch(/B2BDashboardPage[\s\S]*?ssr:\s*false/);
-      // Verify DashboardSkeleton is used as loading component (requirement 3.5)
-      expect(appSource).toMatch(/B2BDashboardPage[\s\S]*?DashboardSkeleton/);
+      // Dashboard is rendered by the route (not lazily code-split any more)
+      expect(routeSource).toContain("import B2BDashboardPage from '@/views/B2BDashboardPage'");
+      expect(routeSource).toContain('<B2BDashboardPage />');
     });
 
-    it('should confirm DashboardErrorBoundary wraps B2BDashboardPage in App.jsx', () => {
+    it('should keep the B2B route dynamic and crawlable', () => {
       const fs = require('fs');
       const path = require('path');
-      const appSource = fs.readFileSync(
-        path.resolve(__dirname, '../../../App.jsx'),
+      const routeSource = fs.readFileSync(
+        path.resolve(__dirname, '../../../app/b2b/page.jsx'),
         'utf8'
       );
 
-      // Verify DashboardErrorBoundary wraps B2BDashboardPage
-      expect(appSource).toMatch(/DashboardErrorBoundary[\s\S]*?B2BDashboardPage/);
+      // force-dynamic keeps per-request auth state out of the static cache,
+      // while the structured-data markup keeps the marketing page crawlable.
+      expect(routeSource).toContain("export const dynamic = 'force-dynamic'");
+      expect(routeSource).toMatch(/StructuredData|generateBreadcrumbSchema/);
     });
 
     it('should confirm DashboardSkeleton is reused as B2B loading component', () => {

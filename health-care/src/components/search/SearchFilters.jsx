@@ -96,7 +96,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-[var(--color-border-tertiary)] overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-brand-teal to-[#0c7359] px-3 py-2 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-brand-teal to-whatsapp-deep px-3 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FaFilter className="text-white text-xs" />
           <h3 className="text-white font-semibold text-xs">Filters</h3>
@@ -109,7 +109,7 @@ export default function SearchFilters({ onFilterChange, activeFilters = {} }) {
         {activeFilterCount > 0 && (
           <button
             onClick={handleClearAll}
-            className="text-white text-xs hover:underline flex items-center gap-1"
+            className="min-h-7 px-1 text-white text-xs hover:underline flex items-center gap-1"
             aria-label="Clear all filters"
           >
             <FaTimes size={8} />

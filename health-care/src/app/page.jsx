@@ -80,7 +80,7 @@ export default async function Home() {
 
       {/* Why Choose MediportBD - Rich content section for SEO */}
       <section className="bg-[var(--color-background-secondary)] border-t border-[var(--color-border-primary)] py-10 px-4">
-        <div className="max-w-[1200px] mx-auto">
+        <div className="max-w-[var(--container-width)] mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-semibold text-[var(--color-brand-navy)] mb-3">
               Why Choose MediportBD for Medical Equipment in Bangladesh?
@@ -177,7 +177,7 @@ export default async function Home() {
 
       {/* Server-rendered SEO content band — answer-first + internal links */}
       <section className="bg-white border-t border-[var(--color-border-primary)] py-12 px-4">
-        <div className="max-w-[1200px] mx-auto">
+        <div className="max-w-[var(--container-width)] mx-auto">
           <div className="rounded-2xl border border-[var(--color-brand-teal)] bg-[var(--color-status-success-tint)] p-6 mb-8">
             <p className="text-[var(--text-xs)] font-bold uppercase tracking-wider text-[var(--color-brand-teal)] mb-2">
               Quick Answer

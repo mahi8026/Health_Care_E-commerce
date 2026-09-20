@@ -14,7 +14,7 @@ const STATUS_META = {
   pending:   { label: 'Pending',   cls: 'bg-[var(--color-status-warning-tint)] text-warning-ink' },
   sent:      { label: 'Sent',      cls: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]' },
   approved:  { label: 'Approved',  cls: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
-  converted: { label: 'Converted', cls: 'bg-[#EDE9FE] text-[#5B21B6]' },
+  converted: { label: 'Converted', cls: 'bg-role-admin-tint text-role-admin-strong' },
   expired:   { label: 'Expired',   cls: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]' },
   rejected:  { label: 'Rejected',  cls: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]' },
 };

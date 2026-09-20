@@ -288,7 +288,7 @@ export default function CustomersManagement() {
               </button>
               <button
                 onClick={() => deleteConfirm === 'bulk' ? handleBulkDelete() : handleDeleteCustomer(deleteConfirm.id)}
-                className="flex-1 px-4 py-2.5 bg-danger text-white rounded-lg font-semibold hover:bg-[#B91C1C] transition-colors"
+                className="flex-1 px-4 py-2.5 bg-danger text-white rounded-lg font-semibold hover:bg-danger-strong transition-colors"
               >
                 Delete
               </button>
@@ -312,7 +312,7 @@ export default function CustomersManagement() {
             </button>
             <button
               onClick={() => setDeleteConfirm('bulk')}
-              className="text-sm px-4 py-1.5 bg-danger text-white rounded-lg font-semibold hover:bg-[#B91C1C]"
+              className="text-sm px-4 py-1.5 bg-danger text-white rounded-lg font-semibold hover:bg-danger-strong"
             >
               Delete Selected
             </button>
@@ -387,7 +387,7 @@ export default function CustomersManagement() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <div className="hidden lg:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '900px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
@@ -512,7 +512,7 @@ export default function CustomersManagement() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-3 p-3">
+          <div className="lg:hidden space-y-3 p-3">
             {customers.map((customer, index) => {
               const customerId = customer._id || customer.id;
               const isSelected = selectedCustomers.includes(customerId);

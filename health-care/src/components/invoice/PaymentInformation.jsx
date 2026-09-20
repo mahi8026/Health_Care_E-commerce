@@ -36,7 +36,7 @@ export default function PaymentInformation({ paymentInfo }) {
           </h3>
         </div>
         {/* Payment status chip */}
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusClass}`}>
+        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${statusClass}`}>
           <span className="h-1.5 w-1.5 rounded-full bg-current"></span>
           {statusLabel}
         </span>
@@ -66,7 +66,7 @@ export default function PaymentInformation({ paymentInfo }) {
 
         <div className="flex items-start">
           <span className="w-32 font-medium text-gray-600">Transaction Ref</span>
-          <span className="flex-1 font-mono text-gray-900 text-[10px]">
+          <span className="flex-1 font-mono text-gray-900 text-[11px]">
             : {transactionRef || '____________________'}
           </span>
         </div>

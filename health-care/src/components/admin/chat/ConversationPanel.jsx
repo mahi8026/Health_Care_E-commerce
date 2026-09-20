@@ -89,7 +89,7 @@ export default function ConversationPanel({ conversation, onClose, currentUserId
           </h3>
           <button
             onClick={onClose}
-            className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-md text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)] transition-colors"
             aria-label="Close panel"
           >
             <FaTimes className="w-5 h-5" />

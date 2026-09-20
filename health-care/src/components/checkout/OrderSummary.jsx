@@ -201,7 +201,7 @@ export default function OrderSummary({
                     <p className="text-xs text-[var(--color-text-tertiary)] m-0 mt-0.5">{item.brand}</p>
                   )}
                   {item.isB2BPrice && (
-                    <span className="inline-flex items-center gap-1 text-xs text-[#7C3AED] font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full mt-1">
+                    <span className="inline-flex items-center gap-1 text-xs text-role-admin font-semibold bg-purple-50 px-1.5 py-0.5 rounded-full mt-1">
                       <FaShieldAlt size={7} />
                       B2B
                     </span>
@@ -321,7 +321,7 @@ export default function OrderSummary({
                         }
                         if (pts > 0) { onRedeemPoints(pts); setShowPointsInput(false); }
                       }}
-                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-warning text-warning-ink rounded-lg hover:bg-[#D97706]"
+                      className="px-4 py-2 min-h-[44px] text-xs font-semibold bg-warning text-warning-ink rounded-lg hover:bg-warning-bright"
                     >
                       Apply
                     </button>
@@ -345,7 +345,7 @@ export default function OrderSummary({
             <span className="font-medium text-brand-navy">৳{subtotal.toLocaleString()}</span>
           </div>
           {b2bSavings > 0 && (
-            <div className="flex justify-between text-[#7C3AED]">
+            <div className="flex justify-between text-role-admin">
               <div className="flex items-center gap-1">
                 <FaShieldAlt size={11} />
                 <span>B2B discount</span>

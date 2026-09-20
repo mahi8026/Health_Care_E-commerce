@@ -134,7 +134,7 @@ export default function WriteReviewModal({ productId, onClose, onSuccess }) {
           >
             <span className={
               star <= (hoverRating || rating) 
-                ? 'text-[#FFA500]' 
+                ? 'text-amber' 
                 : 'text-[var(--color-text-tertiary)]'
             }>
               ★

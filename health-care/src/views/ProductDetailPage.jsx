@@ -225,7 +225,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
   const productForCart = flashDealPrice ? { ...product, price: flashDealPrice } : product;
 
   return (
-    <div className="bg-page min-h-screen pb-24 md:pb-8">
+    <div className="bg-page min-h-screen pb-[calc(120px_+_env(safe-area-inset-bottom))] md:pb-8">
       {/* Standalone Review schema — Product/Breadcrumb/FAQ structured data
           is emitted server-side in app/products/[...id]/page.jsx to avoid
           duplicate JSON-LD on the page. */}
@@ -402,7 +402,7 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
 
       {/* ── Mobile Sticky Bottom Bar ───────────────────────────────────── */}
       <div
-        className="lg:hidden fixed bottom-[60px] left-0 right-0 bg-white border-t border-[var(--color-border-primary)] px-4 py-2.5 z-sticky shadow-lg flex items-center gap-2.5"
+        className="md:hidden fixed bottom-[60px] left-0 right-0 bg-white border-t border-[var(--color-border-primary)] px-4 py-2.5 z-sticky shadow-lg flex items-center gap-2.5"
         style={{ paddingBottom: 'calc(10px + env(safe-area-inset-bottom))' }}
       >
         <div className="flex-1">

@@ -44,7 +44,7 @@ function BankTransferConfirmation({ orderId }) {
         <span className="text-lg">🏦</span>
         <div>
           <p className="text-sm font-semibold text-warning-ink m-0">Complete Your Bank Transfer</p>
-          <p className="text-xs text-[#B45309] m-0">Transfer within 24 hours to confirm your order</p>
+          <p className="text-xs text-warning-strong m-0">Transfer within 24 hours to confirm your order</p>
         </div>
       </div>
 
@@ -53,7 +53,7 @@ function BankTransferConfirmation({ orderId }) {
           <div key={label} className="flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs text-warning-ink font-semibold uppercase tracking-wide m-0">{label}</p>
-              <p className={`text-xs text-[#78350F] font-semibold m-0 ${mono ? 'font-mono' : ''}`}>{value}</p>
+              <p className={`text-xs text-warning-deep font-semibold m-0 ${mono ? 'font-mono' : ''}`}>{value}</p>
             </div>
             <CopyBtn text={value} />
           </div>
@@ -64,7 +64,7 @@ function BankTransferConfirmation({ orderId }) {
           <div className="flex items-center justify-between gap-2 bg-[var(--color-status-warning-tint)] rounded-lg px-3 py-2">
             <div>
               <p className="text-xs text-warning-ink font-semibold uppercase tracking-wide m-0">⚠️ Transfer Reference (Required)</p>
-              <p className="text-sm font-semibold text-[#78350F] font-mono m-0">{orderId}</p>
+              <p className="text-sm font-semibold text-warning-deep font-mono m-0">{orderId}</p>
             </div>
             <CopyBtn text={orderId} />
           </div>

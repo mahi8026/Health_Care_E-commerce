@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,9 +8,9 @@ import { API } from '@/constants/api';
 import { getProductCardImage } from '@/utils/cloudinary';
 import { fetchWithRetry } from '@/utils/api';
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // PRODUCT CARD COMPONENT (matches existing ProductCard style)
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick }) {
   const { addToCart } = useCart();
@@ -41,7 +41,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
-            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
+            alt={`${product.name}${brandName ? ` â€” ${brandName}` : ''} â€” Price à§³${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
             style={{ objectFit: 'cover', transition: 'transform 0.3s' }}
@@ -50,11 +50,11 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
             onError={() => setImgError(true)}
           />
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>🏥</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: 52, color: '#CBD5E1' }}>ðŸ¥</div>
         )}
         {/* Discount badge */}
         {discountPct > 0 && (
-          <div style={{ position: 'absolute', top: 10, left: 10, background: 'var(--section-flash-accent)', color: '#fff', fontSize: 10, fontWeight: 600,
+          <div style={{ position: 'absolute', top: 10, left: 10, background: 'var(--section-flash-accent)', color: '#fff', fontSize: 11, fontWeight: 600,
             padding: '3px 8px', borderRadius: 6 }}>-{discountPct}%</div>
         )}
         {/* Quick add button on hover */}
@@ -73,7 +73,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
       {/* Content */}
       <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {brandName && (
-          <div style={{ fontSize: 10, color: 'var(--color-brand-teal)', fontWeight: 600,
+          <div style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
             {brandName}
           </div>
@@ -85,11 +85,11 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--color-brand-navy)' }}>
-            {finalPrice > 0 ? `৳${finalPrice.toLocaleString()}` : 'Contact for price'}
+            {finalPrice > 0 ? `à§³${finalPrice.toLocaleString()}` : 'Contact for price'}
           </span>
           {originalPrice > finalPrice && (
             <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', textDecoration: 'line-through' }}>
-              ৳{originalPrice.toLocaleString()}
+              à§³{originalPrice.toLocaleString()}
             </span>
           )}
         </div>
@@ -100,7 +100,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
 
 // Countdown owns its own state so the 1s tick never re-renders the deal cards
 // (previously the section held timeLeft and re-rendered the whole grid every
-// second — a major main-thread churn source).
+// second â€” a major main-thread churn source).
 const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
   const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
 
@@ -146,7 +146,7 @@ const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--section-flash-accent)', lineHeight: 1 }}>
               {String(t.val).padStart(2, '0')}
             </div>
-            <div style={{ fontSize: 10, color: 'var(--color-text-secondary)', marginTop: 2 }}>{t.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 2 }}>{t.label}</div>
           </div>
         </div>
       ))}
@@ -154,9 +154,9 @@ const FlashDealCountdown = memo(function FlashDealCountdown({ endTime }) {
   );
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN FLASH DEALS SECTION COMPONENT
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 export default function FlashDealsSection() {
   const router = useRouter();
@@ -175,7 +175,7 @@ export default function FlashDealsSection() {
         setFlashDeals([]);
       }
     } catch (error) {
-      console.error('❌ Failed to fetch flash deals:', error);
+      console.error('âŒ Failed to fetch flash deals:', error);
       setFlashDeals([]);
     } finally {
       setLoading(false);
@@ -203,7 +203,7 @@ export default function FlashDealsSection() {
   if (loading) {
     return (
       <section style={{ background: 'var(--section-flash)', padding: '24px 16px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', color: 'var(--color-text-primary)' }}>
+        <div style={{ maxWidth: 'var(--container-width)', margin: '0 auto', textAlign: 'center', color: 'var(--color-text-primary)' }}>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Loading Flash Deals...</div>
         </div>
       </section>
@@ -218,7 +218,7 @@ export default function FlashDealsSection() {
 
   return (
     <section style={{ background: 'var(--section-flash)', padding: '24px 16px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ maxWidth: 'var(--container-width)', margin: '0 auto' }}>
         {/* Header row */}
         <div style={{ marginBottom: 20 }}>
           {/* Title + countdown stacked on mobile */}
@@ -235,15 +235,15 @@ export default function FlashDealsSection() {
               style={{ background: 'var(--section-flash-soft)', color: 'var(--section-flash-accent)',
                 border: '1px solid rgba(255,107,0,0.3)', padding: '7px 16px', borderRadius: 8,
                 fontSize: 12, cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
-              See all deals →
+              See all deals â†’
             </button>
           </div>
 
-          {/* Countdown timer — isolated so the 1s tick only re-renders digits */}
+          {/* Countdown timer â€” isolated so the 1s tick only re-renders digits */}
           <FlashDealCountdown endTime={currentDeal.endTime} />
         </div>
 
-        {/* Deal product cards — 2 cols on mobile, 4 on desktop */}
+        {/* Deal product cards â€” 2 cols on mobile, 4 on desktop */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
@@ -263,10 +263,8 @@ export default function FlashDealsSection() {
 
       <style>{`
         div:hover .quick-add-btn { opacity: 1 !important; }
-        @media (min-width: 768px) {
-          .deal-grid { grid-template-columns: repeat(4, 1fr) !important; }
-        }
       `}</style>
     </section>
   );
 }
+

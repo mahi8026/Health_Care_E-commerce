@@ -64,6 +64,60 @@ module.exports = {
         // Semantic status info
         'info': 'var(--color-status-info)',
         'info-tint': 'var(--color-status-info-tint)',
+
+        // ── Third-party service colors (external brand palettes — never
+        //    re-themed to the Mediport brand) ──────────────────────────────
+        'bkash': 'var(--color-bkash)',
+        'bkash-dark': 'var(--color-bkash-dark)',
+        'nagad': 'var(--color-nagad)',
+        'nagad-dark': 'var(--color-nagad-dark)',
+        'whatsapp': 'var(--color-whatsapp)',
+        'whatsapp-dark': 'var(--color-whatsapp-dark)',
+        'whatsapp-deep': 'var(--color-whatsapp-deep)',
+        'whatsapp-tint': 'var(--color-whatsapp-tint)',
+        'whatsapp-tint-soft': 'var(--color-whatsapp-tint-soft)',
+        'whatsapp-ink': 'var(--color-whatsapp-ink)',
+
+        // ── Role / plan accents ───────────────────────────────────────────
+        'role-admin': 'var(--color-role-admin)',
+        'role-admin-strong': 'var(--color-role-admin-strong)',
+        'role-admin-deep': 'var(--color-role-admin-deep)',
+        'role-admin-mid': 'var(--color-role-admin-mid)',
+        'role-admin-hover': 'var(--color-role-admin-hover)',
+        'role-admin-tint': 'var(--color-role-admin-tint)',
+        'role-admin-tint-soft': 'var(--color-role-admin-tint-soft)',
+        'role-admin-tint-mid': 'var(--color-role-admin-tint-mid)',
+        'role-admin-border': 'var(--color-role-admin-border)',
+        'role-admin-border-soft': 'var(--color-role-admin-border-soft)',
+        'role-admin-ink': 'var(--color-role-admin-ink)',
+
+        // ── Deep navy chrome ─────────────────────────────────────────────
+        'surface-deep': 'var(--color-surface-deep)',
+        'surface-deep-alt': 'var(--color-surface-deep-alt)',
+
+        // ── Accents ──────────────────────────────────────────────────────
+        'gold': 'var(--color-gold)',
+        'amber': 'var(--color-amber)',
+        'amber-bright': 'var(--color-amber-bright)',
+
+        // ── Success / warning / danger / blue scales ─────────────────────
+        'success-bright': 'var(--color-success-bright)',
+        'success-light': 'var(--color-success-light)',
+        'success-mid': 'var(--color-success-mid)',
+        'success-tint-strong': 'var(--color-success-tint)',
+        'success-deep': 'var(--color-success-deep)',
+        'warning-deep': 'var(--color-warning-deep)',
+        'warning-strong': 'var(--color-warning-strong)',
+        'warning-mid': 'var(--color-warning-mid)',
+        'warning-tint-strong': 'var(--color-warning-tint)',
+        'warning-tint-soft': 'var(--color-warning-tint-soft)',
+        'warning-bright': 'var(--color-warning-bright)',
+        'danger-strong': 'var(--color-danger-strong)',
+        'danger-hover': 'var(--color-danger-hover)',
+        'danger-tint-soft': 'var(--color-danger-tint-soft)',
+        'blue-strong': 'var(--color-blue-strong)',
+        'blue-deep': 'var(--color-blue-deep)',
+        'brand-teal-wash': 'var(--color-brand-teal-wash)',
       },
       fontFamily: {
         sans: ['var(--font-plus-jakarta)', 'Plus Jakarta Sans', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
@@ -73,15 +127,21 @@ module.exports = {
         'xs': '480px',
       },
       fontSize: {
-        'xs': 'var(--text-xs)',
-        'sm': 'var(--text-sm)',
-        'base': 'var(--text-base)',
-        'lg': 'var(--text-lg)',
-        'xl': 'var(--text-xl)',
-        '2xl': 'var(--text-2xl)',
-        '3xl': 'var(--text-3xl)',
-        '4xl': 'var(--text-4xl)',
-        '5xl': 'var(--text-5xl)',
+        // Fluid scale tokens. Line-heights must be declared alongside each size:
+        // overriding a fontSize entry with a bare string drops the paired
+        // line-height, and every text-* utility then inherited line-height 1.5
+        // from preflight — headings rendered ~25% looser than designed
+        // (text-3xl at 45px leading instead of 36px) on every device.
+        // Ratios below mirror Tailwind's own defaults.
+        'xs': ['var(--text-xs)', { lineHeight: '1.35' }],
+        'sm': ['var(--text-sm)', { lineHeight: '1.43' }],
+        'base': ['var(--text-base)', { lineHeight: '1.5' }],
+        'lg': ['var(--text-lg)', { lineHeight: '1.55' }],
+        'xl': ['var(--text-xl)', { lineHeight: '1.4' }],
+        '2xl': ['var(--text-2xl)', { lineHeight: '1.33' }],
+        '3xl': ['var(--text-3xl)', { lineHeight: '1.2' }],
+        '4xl': ['var(--text-4xl)', { lineHeight: '1.11' }],
+        '5xl': ['var(--text-5xl)', { lineHeight: '1' }],
       },
       zIndex: {
         'sticky': '500',

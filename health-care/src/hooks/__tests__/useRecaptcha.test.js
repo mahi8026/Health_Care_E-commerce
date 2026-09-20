@@ -87,9 +87,10 @@ describe('useRecaptcha', () => {
     // Try to execute before ready
     const token = await result.current.executeRecaptcha('register');
     expect(token).toBeNull();
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      '[reCAPTCHA] reCAPTCHA not ready'
-    );
+    // The hook appends debug context to the message; assert the stable prefix
+    // so the test survives future message improvements.
+    const warning = consoleWarnSpy.mock.calls[0][0];
+    expect(String(warning)).toContain('[reCAPTCHA] reCAPTCHA not ready');
 
     consoleWarnSpy.mockRestore();
   });

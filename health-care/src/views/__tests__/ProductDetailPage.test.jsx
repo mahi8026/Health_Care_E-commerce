@@ -52,6 +52,40 @@ jest.mock('@/components/product/FrequentlyBoughtRedesigned', () => {
   };
 });
 
+// These children use context providers (Wishlist/Cart/Compare/Auth) that the
+// slug-redirect tests don't mount — the page is rendered bare, so heavy
+// children are stubbed out. The redirects under test only depend on the
+// product fetch and the router.
+jest.mock('@/components/product/CustomersAlsoViewed', () => {
+  return function MockCustomersAlsoViewed() {
+    return <div data-testid="customers-also-viewed">Customers Also Viewed</div>;
+  };
+});
+
+jest.mock('@/components/product/RecentlyViewed', () => {
+  return function MockRecentlyViewed() {
+    return <div data-testid="recently-viewed">Recently Viewed</div>;
+  };
+});
+
+jest.mock('@/components/product/StickyAddToCart', () => {
+  return function MockStickyAddToCart() {
+    return <div data-testid="sticky-add-to-cart">Sticky Add To Cart</div>;
+  };
+});
+
+jest.mock('@/components/product/ProductVideo', () => {
+  return function MockProductVideo() {
+    return <div data-testid="product-video">Product Video</div>;
+  };
+});
+
+jest.mock('@/components/seo/ProductSeoContent', () => {
+  return function MockProductSeoContent() {
+    return <div data-testid="product-seo-content">SEO Content</div>;
+  };
+});
+
 describe('ProductDetailPage - Slug-Based Redirect', () => {
   const mockReplace = jest.fn();
   const mockPush = jest.fn();

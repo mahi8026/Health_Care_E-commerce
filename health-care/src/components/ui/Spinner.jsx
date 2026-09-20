@@ -115,8 +115,8 @@ export default function Spinner({ size = 'md', className = '', variant = 'medica
     const dotSize = size === 'sm' ? 'w-1.5 h-1.5' : size === 'md' ? 'w-2 h-2' : size === 'lg' ? 'w-3 h-3' : 'w-4 h-4';
     return (
       <div className={`flex items-center justify-center gap-2 ${className}`}>
-        <div className={`${dotSize} bg-gradient-to-br from-brand-teal to-[#0a7560] rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0s' }} />
-        <div className={`${dotSize} bg-gradient-to-br from-[#0a7560] to-brand-navy rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0.2s' }} />
+        <div className={`${dotSize} bg-gradient-to-br from-brand-teal to-success-deep rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0s' }} />
+        <div className={`${dotSize} bg-gradient-to-br from-success-deep to-brand-navy rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0.2s' }} />
         <div className={`${dotSize} bg-gradient-to-br from-brand-navy to-brand-teal rounded-full animate-bounce shadow-lg`} style={{ animationDelay: '0.4s' }} />
       </div>
     );

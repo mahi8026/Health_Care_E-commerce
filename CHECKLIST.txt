@@ -1,0 +1,190 @@
+╔═══════════════════════════════════════════════════════════════╗
+║          PRODUCT VISIBILITY FIX - DEPLOYMENT CHECKLIST       ║
+║                     mediportbd.com                            ║
+╚═══════════════════════════════════════════════════════════════╝
+
+PLATFORM: Render (Backend) + Vercel (Frontend)
+STATUS: Code pushed to GitHub ✅ (commit: bac8e0d)
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ PHASE 1: WAIT FOR AUTO-DEPLOY (5-10 minutes)                 │
+└───────────────────────────────────────────────────────────────┘
+
+☐ Open Render Dashboard
+  → https://dashboard.render.com
+  
+☐ Check Backend Deployment Status
+  → Select your backend service
+  → Click "Events" tab
+  → Wait for "Deploy live" ✅
+  → Estimated time: 2-5 minutes
+
+☐ Check Frontend Deployment Status  
+  → https://vercel.com/dashboard
+  → Look for green checkmark
+  → Estimated time: 3-5 minutes
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ PHASE 2: RUN DIAGNOSTIC (5 minutes)                          │
+└───────────────────────────────────────────────────────────────┘
+
+☐ Open Render Shell
+  → Dashboard → Your Service → "Shell" tab
+  → Wait 10-20 seconds for connection
+
+☐ Run Diagnostic Command
+  → Paste: node scripts/fix-product-visibility.js --mode=diagnose
+  → Press Enter
+  → Wait for results
+
+☐ Review Output
+  → Check "Total Products" count
+  → Check "Inactive" count
+  → Note sample inactive products
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ PHASE 3: FIX INACTIVE PRODUCTS (2 minutes)                   │
+└───────────────────────────────────────────────────────────────┘
+
+IF INACTIVE PRODUCTS FOUND:
+
+☐ Run Activation Command
+  → Paste: node scripts/fix-product-visibility.js --mode=activate-all
+  → Wait 5 seconds (or Ctrl+C to cancel)
+  → Confirm activation
+
+☐ Verify Activation
+  → Check "Successfully activated X products" message
+  → Review updated diagnostics
+
+IF NO INACTIVE PRODUCTS:
+  → Skip to Phase 4 (verification)
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ PHASE 4: VERIFY CHANGES (10 minutes)                         │
+└───────────────────────────────────────────────────────────────┘
+
+☐ Test Admin Panel
+  → Open: https://mediportbd.com/admin/products
+  → Login with admin credentials
+  → Verify total product count matches diagnostic
+  → Check for status badges (Active/Inactive)
+  → Test status filters (All/Active/Inactive)
+
+☐ Test Public Site (as Customer)
+  → Open incognito window
+  → Visit: https://mediportbd.com/products
+  → Verify products appear
+  → Check: https://mediportbd.com/reagent-store
+  → Search for specific products
+
+☐ Test Product Categories
+  → Click on different categories
+  → Verify products appear in each
+  → Check "Laboratory Reagents" specifically
+
+☐ Clear Cache (if needed)
+  → Browser: Ctrl+Shift+R (hard refresh)
+  → Or open in incognito mode
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ PHASE 5: FINAL CHECKS                                        │
+└───────────────────────────────────────────────────────────────┘
+
+☐ Check Render Logs
+  → Dashboard → Your Service → Logs
+  → Look for errors (should be none)
+
+☐ Test Search Functionality
+  → Search for products by name
+  → Search by SKU
+  → Search by brand
+
+☐ Verify Product Counts
+  → Admin shows: ALL products
+  → Public shows: Only active products
+  → Counts should match expectations
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ SUCCESS CRITERIA                                              │
+└───────────────────────────────────────────────────────────────┘
+
+✓ Admin panel displays all products (active + inactive)
+✓ Public site shows only active products  
+✓ Status filters work correctly
+✓ Product search returns results
+✓ All categories display products
+✓ Laboratory Reagents visible in reagent store
+✓ No errors in Render logs
+✓ Diagnostic API accessible (admin-only)
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING QUICK REFERENCE                              │
+└───────────────────────────────────────────────────────────────┘
+
+ISSUE: Shell won't connect
+FIX: Refresh page, wait 30 sec, try again
+
+ISSUE: "Cannot find module" error  
+FIX: Check directory with pwd, look for scripts/ folder
+
+ISSUE: Products still not showing
+FIX: Run diagnostic again, clear cache, check logs
+
+ISSUE: MongoDB connection error
+FIX: Check Environment variables in Render Dashboard
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ DOCUMENTATION REFERENCE                                       │
+└───────────────────────────────────────────────────────────────┘
+
+📄 README_PRODUCT_FIX.md       → Start here (overview)
+📄 RENDER_DEPLOYMENT_STEPS.md  → Detailed step-by-step guide  
+📄 QUICK_FIX_COMMANDS.md        → Command reference
+📄 DEPLOY_PRODUCT_FIX.md        → Full deployment guide
+📄 PRODUCT_VISIBILITY_GUIDE.md  → Troubleshooting guide
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ IMPORTANT COMMANDS                                            │
+└───────────────────────────────────────────────────────────────┘
+
+Diagnose:
+  node scripts/fix-product-visibility.js --mode=diagnose
+
+Activate All:
+  node scripts/fix-product-visibility.js --mode=activate-all
+
+Activate Category:
+  node scripts/fix-product-visibility.js --mode=activate-category --category="Laboratory Reagents"
+
+
+┌───────────────────────────────────────────────────────────────┐
+│ COMPLETION SIGNATURE                                          │
+└───────────────────────────────────────────────────────────────┘
+
+Deployment Date: ___________________
+
+Deployed By: ___________________
+
+Verification Status:
+  ☐ All checks passed
+  ☐ Issues found (documented below)
+
+Notes:
+_____________________________________________________________
+_____________________________________________________________
+_____________________________________________________________
+
+
+═══════════════════════════════════════════════════════════════
+                    🎉 DEPLOYMENT COMPLETE 🎉
+═══════════════════════════════════════════════════════════════

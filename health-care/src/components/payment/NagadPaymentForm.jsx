@@ -100,9 +100,9 @@ export default function NagadPaymentForm({ amount, orderId, onSuccess, onError }
   if (step === 'verify') {
     return (
       <form onSubmit={handleVerify} className="space-y-3 md:space-y-4">
-        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[#F26828] rounded-lg p-3 md:p-4 text-center">
+        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-nagad rounded-lg p-3 md:p-4 text-center">
           <div className="text-3xl md:text-4xl mb-2">📱</div>
-          <h3 className="text-sm md:text-sm font-semibold mb-1 text-[#F26828]">
+          <h3 className="text-sm md:text-sm font-semibold mb-1 text-nagad">
             Complete Payment in Nagad
           </h3>
           <p className="text-xs md:text-xs text-[var(--color-text-secondary)] mb-2 md:mb-3 px-2">
@@ -118,7 +118,7 @@ export default function NagadPaymentForm({ amount, orderId, onSuccess, onError }
               href={redirectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-[#F26828] underline"
+              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-nagad underline"
             >
               Re-open Nagad payment page →
             </a>
@@ -134,7 +134,7 @@ export default function NagadPaymentForm({ amount, orderId, onSuccess, onError }
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#F26828] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#D95820] transition-colors"
+          className="w-full bg-nagad text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-nagad-dark transition-colors"
         >
           {loading ? (
             <>
@@ -162,7 +162,7 @@ export default function NagadPaymentForm({ amount, orderId, onSuccess, onError }
     <form onSubmit={handleInitiate} className="space-y-3 md:space-y-4">
       <div className="bg-[var(--color-status-danger-tint)] rounded-lg p-3 md:p-4 text-center">
         <div className="text-4xl md:text-5xl mb-2">
-          <span className="font-extrabold text-[#F26828] tracking-tight">nagad</span>
+          <span className="font-extrabold text-nagad tracking-tight">nagad</span>
         </div>
         <p className="text-xs md:text-xs text-[var(--color-text-secondary)] px-2">
           You will be redirected to Nagad to complete the payment of{' '}
@@ -185,7 +185,7 @@ export default function NagadPaymentForm({ amount, orderId, onSuccess, onError }
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#F26828] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#D95820] transition-colors"
+        className="w-full bg-nagad text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-nagad-dark transition-colors"
       >
         {loading ? (
           <>

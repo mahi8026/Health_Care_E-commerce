@@ -66,7 +66,7 @@ describe('OptimizedImage', () => {
       expect(image).not.toHaveAttribute('height');
     });
 
-    it('should pass className to next/image', () => {
+    it('should apply className to the wrapper (aspect-ratio container)', () => {
       render(
         <OptimizedImage
           src="/test-image.jpg"
@@ -77,8 +77,11 @@ describe('OptimizedImage', () => {
         />
       );
 
-      const image = screen.getByTestId('next-image');
-      expect(image).toHaveClass('custom-class', 'rounded-lg');
+      // The blur-up placeholder requires a positioned wrapper, so className
+      // is intentionally applied to the wrapper — not forwarded to <Image>
+      // (which receives its own object-fit/opacity styling).
+      const wrapper = screen.getByTestId('next-image').parentElement;
+      expect(wrapper).toHaveClass('custom-class', 'rounded-lg');
     });
 
     it('should pass sizes prop to next/image', () => {

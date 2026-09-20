@@ -159,7 +159,7 @@ export default function ProductInfoPanelEnhanced({
           </span>
         )}
         {product.sku && (
-          <span className="px-2 py-0.5 bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] rounded-full text-[10px] font-mono">
+          <span className="px-2 py-0.5 bg-[var(--color-background-secondary)] text-[var(--color-text-secondary)] rounded-full text-[11px] font-mono">
             SKU: {product.sku}
           </span>
         )}
@@ -203,7 +203,7 @@ export default function ProductInfoPanelEnhanced({
             <span className="text-sm text-[var(--color-text-secondary)] line-through">
               ৳{displayOldPrice?.toLocaleString()}
             </span>
-            <span className={`px-2 py-0.5 ${hasFlashDiscount ? 'bg-orange-500' : hasB2BDiscount ? 'bg-purple-500' : 'bg-[var(--color-status-danger-tint)]'} text-white rounded-full text-[10px] font-semibold`}>
+            <span className={`px-2 py-0.5 ${hasFlashDiscount ? 'bg-orange-500' : hasB2BDiscount ? 'bg-purple-500' : 'bg-[var(--color-status-danger-tint)]'} text-white rounded-full text-[11px] font-semibold`}>
               {hasFlashDiscount ? `Flash Deal -${discountPercent}%` : hasB2BDiscount ? `B2B ${discountPercent}%` : `Save ${discountPercent}%`}
             </span>
           </div>
@@ -223,7 +223,7 @@ export default function ProductInfoPanelEnhanced({
         {/* B2B Badge - Compact */}
         {priceDisplay.isB2BPrice && (
           <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="inline-flex items-center gap-1 text-[10px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[11px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-full">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z"/>
               </svg>
@@ -233,7 +233,7 @@ export default function ProductInfoPanelEnhanced({
         )}
 
         {finalPrice > 0 && !priceDisplay.isB2BPrice && (
-          <p className="text-[10px] text-[var(--color-text-secondary)]">
+          <p className="text-[11px] text-[var(--color-text-secondary)]">
             B2B pricing available for bulk orders (8-30% off)
           </p>
         )}

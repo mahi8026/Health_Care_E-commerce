@@ -29,7 +29,7 @@ const TimeBlock = ({ value, label }) => (
       {String(value).padStart(2, '0')}
     </div>
     <div style={{
-      fontSize: 10,
+      fontSize: 11,
       color: '#64748B',
       fontWeight: 600,
       marginTop: 4,

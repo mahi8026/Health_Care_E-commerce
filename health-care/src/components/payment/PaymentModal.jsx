@@ -164,9 +164,9 @@ export default function PaymentModal({
       case 'cheque':
         return (
           <div className="space-y-4">
-            <div className="bg-[#EEEDFE] border-[0.5px] border-[#534AB7] rounded-lg p-4 text-center">
+            <div className="bg-role-admin-tint-mid border-[0.5px] border-role-admin-mid rounded-lg p-4 text-center">
               <div className="text-4xl mb-2">📝</div>
-              <h3 className="text-sm font-semibold mb-2 text-[#534AB7]">
+              <h3 className="text-sm font-semibold mb-2 text-role-admin-mid">
                 Cheque Payment
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] mb-3">
@@ -183,7 +183,7 @@ export default function PaymentModal({
             </div>
             <button
               onClick={() => handleSuccess({ method: 'cheque', orderId })}
-              className="w-full bg-[#534AB7] text-white px-4 py-3 rounded-lg text-sm font-semibold hover:bg-[#4A42A5] transition-colors"
+              className="w-full bg-role-admin-mid text-white px-4 py-3 rounded-lg text-sm font-semibold hover:bg-role-admin-deep transition-colors"
             >
               Confirm Cheque Payment
             </button>

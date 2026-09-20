@@ -93,8 +93,8 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-      <div className="bg-[var(--color-status-info-tint)] border-[0.5px] border-[#185FA5] rounded-lg p-3 md:p-4">
-        <h3 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-[#185FA5]">
+      <div className="bg-[var(--color-status-info-tint)] border-[0.5px] border-blue-strong rounded-lg p-3 md:p-4">
+        <h3 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-blue-strong">
           Bank Account Details
         </h3>
         <div className="space-y-1.5 md:space-y-2 text-xs md:text-xs">
@@ -143,7 +143,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
           onChange={(e) => setTransactionRef(e.target.value)}
           placeholder="Enter your bank transaction reference"
           required
-          className="w-full px-2.5 md:px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs md:text-sm focus:outline-none focus:border-[#185FA5]"
+          className="w-full px-2.5 md:px-3 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs md:text-sm focus:outline-none focus:border-blue-strong"
         />
         <p className="text-xs md:text-xs text-[var(--color-text-secondary)] mt-1">
           This is the reference number from your bank transfer receipt
@@ -159,7 +159,7 @@ export default function BankTransferForm({ amount, orderId, onSuccess, onError }
       <button
         type="submit"
         disabled={loading || !transactionRef}
-        className="w-full bg-[#185FA5] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#144A8A] transition-colors"
+        className="w-full bg-blue-strong text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-blue-deep transition-colors"
       >
         {loading ? (
           <>

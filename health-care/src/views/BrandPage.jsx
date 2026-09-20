@@ -33,7 +33,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
   const website = brand?.website;
 
   return (
-    <div className="min-h-screen bg-[#F5F8FB]">
+    <div className="min-h-screen bg-background-secondary">
       {/* ── Hero banner ──────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden text-white"
@@ -77,11 +77,11 @@ export default function BrandPage({ brand, initialProducts = [] }) {
             {/* Brand info */}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-teal-400/15 border border-teal-400/25 px-2.5 py-0.5 text-[10px] font-semibold text-teal-300 uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1 rounded-full bg-teal-400/15 border border-teal-400/25 px-2.5 py-0.5 text-[11px] font-semibold text-teal-300 uppercase tracking-wider">
                   <FaCheckCircle size={8} /> DGDA Registered
                 </span>
                 {brand?.country && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 text-[10px] font-semibold text-white/70">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-white/70">
                     <FaMapMarkerAlt size={8} className="text-teal-400" /> {brand.country}
                   </span>
                 )}
@@ -112,18 +112,18 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => router.push('/quotes/request')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#001D5D] text-sm font-bold hover:bg-[#F5F8FB] transition-colors shadow-md"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-brand-navy text-sm font-bold hover:bg-background-secondary transition-colors shadow-md"
                 >
-                  <FaFileInvoiceDollar size={14} className="text-[#18AFA9]" />
+                  <FaFileInvoiceDollar size={14} className="text-brand-teal" />
                   Request Bulk Quote
                 </button>
                 <a
                   href={`https://wa.me/${CONTACT.whatsapp}?text=${waMsg}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366]/20 border border-[#25D366]/30 text-white text-sm font-semibold hover:bg-[#25D366]/30 transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-whatsapp/20 border border-whatsapp/30 text-white text-sm font-semibold hover:bg-whatsapp/30 transition-colors"
                 >
-                  <FaWhatsapp size={14} className="text-[#4ade80]" />
+                  <FaWhatsapp size={14} className="text-success-light" />
                   Ask on WhatsApp
                 </a>
               </div>
@@ -137,9 +137,9 @@ export default function BrandPage({ brand, initialProducts = [] }) {
 
         {/* Brand description */}
         {brand?.description && (
-          <div className="mb-6 rounded-2xl bg-white border border-[#D9E4EC] p-5">
+          <div className="mb-6 rounded-2xl bg-white border border-border-primary p-5">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-tertiary mb-2">About {brandName}</h2>
-            <p className="text-sm text-[#475569] leading-relaxed">{brand.description}</p>
+            <p className="text-sm text-slate-600 leading-relaxed">{brand.description}</p>
           </div>
         )}
 
@@ -151,11 +151,11 @@ export default function BrandPage({ brand, initialProducts = [] }) {
             { icon: '🚚', label: 'Fast Delivery', sub: 'Nationwide shipping' },
             { icon: '🔧', label: 'Free Installation', sub: 'Dhaka metro area' },
           ].map(({ icon, label, sub }) => (
-            <div key={label} className="rounded-xl bg-white border border-[#D9E4EC] p-3 flex items-start gap-2.5">
+            <div key={label} className="rounded-xl bg-white border border-border-primary p-3 flex items-start gap-2.5">
               <span className="text-xl flex-shrink-0">{icon}</span>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-[#001D5D] leading-snug">{label}</p>
-                <p className="text-[10px] text-tertiary mt-0.5">{sub}</p>
+                <p className="text-xs font-semibold text-brand-navy leading-snug">{label}</p>
+                <p className="text-[11px] text-tertiary mt-0.5">{sub}</p>
               </div>
             </div>
           ))}
@@ -172,7 +172,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
                   <Link
                     key={cat}
                     href={`/products/category/${slug}`}
-                    className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-full px-3.5 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors"
+                    className="text-xs font-medium text-brand-teal border border-brand-teal/30 rounded-full px-3.5 py-1.5 hover:bg-brand-teal hover:text-white transition-colors"
                   >
                     {cat}
                   </Link>
@@ -186,7 +186,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
         <section>
           <div className="flex items-end justify-between mb-4">
             <div>
-              <h2 className="text-lg font-bold text-[#001D5D]">
+              <h2 className="text-lg font-bold text-brand-navy">
                 {brandName} Products
               </h2>
               <p className="text-xs text-tertiary mt-0.5">
@@ -194,7 +194,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
               </p>
             </div>
             {products.length > 0 && (
-              <span className="text-xs text-tertiary bg-[#f1f5f9] px-2.5 py-1 rounded-full">
+              <span className="text-xs text-tertiary bg-slate-100 px-2.5 py-1 rounded-full">
                 {products.length} items
               </span>
             )}
@@ -230,7 +230,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
           <div className="flex flex-wrap gap-3 flex-shrink-0">
             <button
               onClick={() => router.push('/quotes/request')}
-              className="px-5 py-2.5 rounded-xl bg-[#18AFA9] text-white text-sm font-bold hover:bg-[#007F7B] transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-brand-teal text-white text-sm font-bold hover:bg-brand-teal-dark transition-colors"
             >
               Request a Quote
             </button>

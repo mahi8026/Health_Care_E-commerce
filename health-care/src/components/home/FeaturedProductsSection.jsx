@@ -61,11 +61,11 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         {/* Badges */}
         <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {hasDiscount && (
-            <span style={{ background: 'var(--color-brand-orange)', color: '#fff', fontSize: 10, fontWeight: 600,
+            <span style={{ background: 'var(--color-brand-orange)', color: '#fff', fontSize: 11, fontWeight: 600,
               padding: '3px 8px', borderRadius: 6 }}>-{discount}%</span>
           )}
           {!inStock && (
-            <span style={{ background: 'var(--color-text-secondary)', color: '#fff', fontSize: 10, fontWeight: 600,
+            <span style={{ background: 'var(--color-text-secondary)', color: '#fff', fontSize: 11, fontWeight: 600,
               padding: '3px 8px', borderRadius: 6 }}>{t('common.outOfStock')}</span>
           )}
         </div>
@@ -85,7 +85,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
       {/* Content */}
       <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         {brandName && (
-          <div style={{ fontSize: 10, color: 'var(--color-brand-teal)', fontWeight: 600,
+          <div style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600,
             textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
             {brandName}
           </div>
@@ -100,7 +100,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
             {[1,2,3,4,5].map(s => (
               <span key={s} style={{ color: s <= Math.round(ratingVal) ? 'var(--color-warning)' : '#E5E7EB', fontSize: 13 }}>★</span>
             ))}
-            <span style={{ fontSize: 10, color: 'var(--color-text-secondary)' }}>({reviewCount})</span>
+            <span style={{ fontSize: 11, color: 'var(--color-text-secondary)' }}>({reviewCount})</span>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
@@ -197,7 +197,7 @@ export default function FeaturedProductsSection({ categories = [] }) {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
           <div>
-            <p style={{ fontSize: 9, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{t('home.handPicked')}</p>
+            <p style={{ fontSize: 11, color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{t('home.handPicked')}</p>
             <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 600, margin: 0, lineHeight: 1.2 }}>{t('home.featuredProducts')}</h2>
           </div>
           <button onClick={() => router.push('/products')}

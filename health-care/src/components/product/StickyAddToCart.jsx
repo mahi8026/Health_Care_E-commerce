@@ -146,7 +146,7 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
         {/* Product Name */}
         <div className="flex-1 min-w-0">
           {brandName && (
-            <div style={{ fontSize: '10px' }} className="font-bold text-[var(--color-brand-teal)] uppercase tracking-wide mb-0.5">
+            <div style={{ fontSize: '11px' }} className="font-bold text-[var(--color-brand-teal)] uppercase tracking-wide mb-0.5">
               {brandName}
             </div>
           )}

@@ -61,11 +61,11 @@ export default function CategoryGrid({ categories, categoryCounts }) {
                 <h3 className="font-semibold text-brand-navy mb-1 sm:mb-2 text-xs sm:text-sm md:text-base">
                   {categoryName}
                 </h3>
-                <p className="text-[10px] sm:text-xs text-[var(--color-text-secondary)] mb-2 sm:mb-3">
+                <p className="text-[11px] sm:text-xs text-[var(--color-text-secondary)] mb-2 sm:mb-3">
                   {cat.description || cat.desc || 'Medical equipment'}
                 </p>
                 {count > 0 && (
-                  <span className="text-[10px] sm:text-xs text-brand-teal font-medium">
+                  <span className="text-[11px] sm:text-xs text-brand-teal font-medium">
                     {count} products
                   </span>
                 )}

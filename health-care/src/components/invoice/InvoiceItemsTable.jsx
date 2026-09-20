@@ -26,22 +26,22 @@ export default function InvoiceItemsTable({ items = [] }) {
       <table className="w-full border-collapse text-xs">
         <thead>
           <tr className="bg-brand-navy text-white">
-            <th className="px-2 py-2 text-left text-[10px] font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-left text-[11px] font-bold uppercase tracking-wider">
               SL.
             </th>
-            <th className="px-2 py-2 text-left text-[10px] font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-left text-[11px] font-bold uppercase tracking-wider">
               Product / Description
             </th>
-            <th className="px-2 py-2 text-left text-[10px] font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-left text-[11px] font-bold uppercase tracking-wider">
               Brand / Model
             </th>
-            <th className="px-2 py-2 text-center text-[10px] font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-center text-[11px] font-bold uppercase tracking-wider">
               Qty
             </th>
-            <th className="px-2 py-2 text-right text-[10px] font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-right text-[11px] font-bold uppercase tracking-wider">
               Unit Price (BDT)
             </th>
-            <th className="px-2 py-2 text-right text-[10px] font-bold uppercase tracking-wider">
+            <th className="px-2 py-2 text-right text-[11px] font-bold uppercase tracking-wider">
               Total (BDT)
             </th>
           </tr>
@@ -76,7 +76,7 @@ export default function InvoiceItemsTable({ items = [] }) {
                     {itemName}
                   </div>
                   {item.description && (
-                    <div className="mt-0.5 text-[10px] text-gray-600">
+                    <div className="mt-0.5 text-[11px] text-gray-600">
                       {item.description}
                     </div>
                   )}

@@ -49,7 +49,7 @@ export default function CompareBar() {
                     <div className="text-xs font-medium text-[var(--color-text-primary)] line-clamp-2">
                       {product.name}
                     </div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)] mt-0.5">
+                    <div className="text-[11px] text-[var(--color-text-secondary)] mt-0.5">
                       ৳{product.price?.toLocaleString() || 'N/A'}
                     </div>
                   </div>
@@ -78,7 +78,7 @@ export default function CompareBar() {
             <div className="text-sm font-semibold mb-0.5">
               {compareList.length} {compareList.length === 1 ? 'Product' : 'Products'} Selected
             </div>
-            <div className="text-[10px] text-white/70">
+            <div className="text-[11px] text-white/70">
               {isExpanded ? 'Tap to collapse' : 'Tap to view & remove'}
             </div>
           </button>

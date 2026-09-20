@@ -101,7 +101,7 @@ export default function SupportResources() {
 
   return (
     <section className="home-support-section" style={{ padding: '60px 24px', background: 'var(--color-background-page)' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ maxWidth: 'var(--container-width)', margin: '0 auto' }}>
         {/* Header */}
         <div className="text-center" style={{ marginBottom: 40 }}>
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-brand-teal)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>

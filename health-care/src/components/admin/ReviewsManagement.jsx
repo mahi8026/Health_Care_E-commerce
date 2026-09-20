@@ -128,7 +128,7 @@ export default function ReviewsManagement() {
     return (
       <div className="flex gap-[2px] text-sm">
         {[1, 2, 3, 4, 5].map(star => (
-          <span key={star} className={star <= rating ? 'text-[#FFA500]' : 'text-[var(--color-text-tertiary)]'}>
+          <span key={star} className={star <= rating ? 'text-amber' : 'text-[var(--color-text-tertiary)]'}>
             ★
           </span>
         ))}
@@ -221,7 +221,7 @@ export default function ReviewsManagement() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
+          <div className="hidden lg:block overflow-x-auto" style={{WebkitOverflowScrolling: 'touch'}}>
             <table className="w-full" style={{minWidth: '900px'}}>
               <thead>
                 <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
@@ -273,7 +273,7 @@ export default function ReviewsManagement() {
                       <div className="flex gap-2">
                         {review.status === 'pending' && (
                           <>
-                            <button onClick={() => handleOpenModal(review, 'approve')} className="text-xs px-2 py-1 bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded hover:bg-[#A7F3D0]">Approve</button>
+                            <button onClick={() => handleOpenModal(review, 'approve')} className="text-xs px-2 py-1 bg-[var(--color-status-success-tint)] text-[var(--color-status-success)] rounded hover:bg-success-tint-strong">Approve</button>
                             <button onClick={() => handleOpenModal(review, 'reject')} className="text-xs px-2 py-1 bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)] rounded hover:bg-[var(--color-status-danger-tint)]">Reject</button>
                           </>
                         )}
@@ -289,7 +289,7 @@ export default function ReviewsManagement() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-3 p-3">
+          <div className="lg:hidden space-y-3 p-3">
             {reviews.map(review => (
               <div key={review._id} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
                 <div className="flex items-start gap-3">

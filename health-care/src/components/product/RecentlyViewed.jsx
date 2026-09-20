@@ -120,7 +120,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
               left: 10,
               background: 'var(--color-status-danger)',
               color: '#fff',
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 600,
               padding: '3px 8px',
               borderRadius: 6
@@ -136,7 +136,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
               left: 10,
               background: 'var(--color-text-secondary)',
               color: '#fff',
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 600,
               padding: '3px 8px',
               borderRadius: 6
@@ -149,7 +149,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
         <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column' }}>
           {brandName && (
             <div style={{
-              fontSize: 10,
+              fontSize: 11,
               color: 'var(--color-brand-teal)',
               fontWeight: 600,
               textTransform: 'uppercase',

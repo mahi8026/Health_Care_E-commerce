@@ -37,7 +37,7 @@ export default function WishlistClient() {
 
   if (loading) {
     return (
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
+      <div className="max-w-[var(--container-width)] mx-auto px-6 py-8">
         <div className="mb-8">
           <div className="h-8 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-64 mb-2 animate-shimmer" />
           <div className="h-4 bg-gradient-to-r from-[var(--color-background-muted)] via-[var(--color-background-tertiary)] to-[var(--color-background-muted)] rounded-full w-48 animate-shimmer" />
@@ -52,7 +52,7 @@ export default function WishlistClient() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-8">
+    <div className="max-w-[var(--container-width)] mx-auto px-6 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-semibold text-text-primary mb-2">

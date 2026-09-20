@@ -305,7 +305,7 @@ export default function SecurityPage() {
 
         <section className="bg-white rounded-lg border border-[var(--color-border-tertiary)] p-5 sm:p-6">
           <div className="flex items-start gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[#EEEDFE] flex items-center justify-center text-[#7C3AED]">
+            <div className="w-10 h-10 rounded-lg bg-role-admin-tint-mid flex items-center justify-center text-role-admin">
               <FaMobileAlt size={16} />
             </div>
             <div className="flex-1">
@@ -332,9 +332,9 @@ export default function SecurityPage() {
           {/* Idle — not yet set up */}
           {setupStep === 'idle' && (
             <div>
-              <div className="bg-[#F5F3FF] border border-[#DDD6FE] rounded-lg p-4 mb-4">
-                <p className="text-xs font-semibold text-[#5B21B6] mb-2">You&apos;ll need:</p>
-                <ul className="space-y-1 text-xs text-[#6D28D9]">
+              <div className="bg-role-admin-tint-soft border border-role-admin-border rounded-lg p-4 mb-4">
+                <p className="text-xs font-semibold text-role-admin-strong mb-2">You&apos;ll need:</p>
+                <ul className="space-y-1 text-xs text-role-admin-hover">
                   <li>• An authenticator app (Google Authenticator, Authy, etc.)</li>
                   <li>• Your smartphone — takes about 2 minutes</li>
                 </ul>
@@ -350,7 +350,7 @@ export default function SecurityPage() {
             <div>
               <p className="text-sm font-semibold text-brand-navy mb-3">Step 1 — Scan this QR code with your authenticator app:</p>
               <div className="flex justify-center mb-4">
-                <div className="bg-white p-3 rounded-xl border-2 border-[#DDD6FE]">
+                <div className="bg-white p-3 rounded-xl border-2 border-role-admin-border">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" loading="lazy" />
                 </div>
@@ -370,7 +370,7 @@ export default function SecurityPage() {
                   onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="000000"
                   maxLength={6}
-                  className="w-full px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-center text-2xl font-mono indent-[0.4em] focus:outline-none focus:border-[#7C3AED] focus:ring-2 focus:ring-[#7C3AED]/10 mb-4"
+                  className="w-full px-4 py-3 border border-[var(--color-border-secondary)] rounded-lg text-center text-2xl font-mono indent-[0.4em] focus:outline-none focus:border-role-admin focus:ring-2 focus:ring-role-admin/10 mb-4"
                   required
                 />
                 <div className="flex gap-3">
@@ -392,7 +392,7 @@ export default function SecurityPage() {
           {/* Complete — 2FA is active */}
           {setupStep === 'complete' && (
             <div>
-              <div className="bg-[var(--color-status-success-tint)] border border-[#6EE7B7] rounded-lg p-4 mb-4 flex items-start gap-3">
+              <div className="bg-[var(--color-status-success-tint)] border border-success-mid rounded-lg p-4 mb-4 flex items-start gap-3">
                 <span className="text-lg">🛡️</span>
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-status-success)]">Two-factor authentication is active</p>

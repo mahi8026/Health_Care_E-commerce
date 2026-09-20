@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
+import { serverFetchJson } from '@/lib/serverFetch';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export const revalidate = 3600;
@@ -21,15 +22,9 @@ export const metadata = {
 };
 
 async function fetchBrands() {
-  try {
-    const res = await fetch(`${API}/manufacturers`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const list = data.data?.manufacturers || data.manufacturers || [];
-    return Array.isArray(list) ? list : [];
-  } catch {
-    return [];
-  }
+  const data = await serverFetchJson(`${API}/manufacturers`, { revalidate: 3600 });
+  const list = data?.data?.manufacturers || data?.manufacturers || [];
+  return Array.isArray(list) ? list : [];
 }
 
 // Groups brands by first letter for alphabetical nav
@@ -59,7 +54,7 @@ export default async function BrandsHub() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F8FB]">
+    <div className="min-h-screen bg-background-secondary">
       {/* Schemas */}
       <StructuredData schema={generateBreadcrumbSchema(breadcrumbs)} />
       <StructuredData
@@ -128,11 +123,11 @@ export default async function BrandsHub() {
       </section>
 
       {/* ── Breadcrumb ───────────────────────────────────────────────── */}
-      <nav aria-label="Breadcrumb" className="bg-white border-b border-[#D9E4EC]">
+      <nav aria-label="Breadcrumb" className="bg-white border-b border-border-primary">
         <div className="container mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-1.5 text-xs text-tertiary">
-          <Link href="/" className="hover:text-[#18AFA9] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-brand-teal transition-colors">Home</Link>
           <span>/</span>
-          <span className="text-[#0f172a] font-medium">Brands</span>
+          <span className="text-slate-900 font-medium">Brands</span>
         </div>
       </nav>
 
@@ -142,7 +137,7 @@ export default async function BrandsHub() {
         {topBrands.length > 0 && (
           <section className="mb-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#001D5D]">Featured Brands</h2>
+              <h2 className="text-base font-bold text-brand-navy">Featured Brands</h2>
               <span className="text-xs text-tertiary">Most products</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -152,10 +147,10 @@ export default async function BrandsHub() {
                   <Link
                     key={brand._id}
                     href={`/brands/${brand.slug}`}
-                    className="group flex flex-col items-center gap-2.5 rounded-2xl bg-white border border-[#D9E4EC] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
+                    className="group flex flex-col items-center gap-2.5 rounded-2xl bg-white border border-border-primary p-4 hover:border-brand-teal/50 hover:shadow-md transition-all"
                   >
                     {brand.logo?.url ? (
-                      <div className="relative w-16 h-16 rounded-xl border border-[#e2e8f0] bg-white flex items-center justify-center p-2 overflow-hidden">
+                      <div className="relative w-16 h-16 rounded-xl border border-slate-200 bg-white flex items-center justify-center p-2 overflow-hidden">
                         <Image
                           src={brand.logo.url}
                           alt={`${brand.name} logo`}
@@ -165,11 +160,11 @@ export default async function BrandsHub() {
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-xl bg-[#f1f5f9] flex items-center justify-center text-2xl">🏥</div>
+                      <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-2xl">🏥</div>
                     )}
                     <div className="text-center min-w-0 w-full">
-                      <p className="text-xs font-semibold text-[#001D5D] truncate group-hover:text-[#18AFA9] transition-colors">{brand.name}</p>
-                      <p className="text-[10px] text-tertiary mt-0.5">{brand.productCount || 0} products</p>
+                      <p className="text-xs font-semibold text-brand-navy truncate group-hover:text-brand-teal transition-colors">{brand.name}</p>
+                      <p className="text-[11px] text-tertiary mt-0.5">{brand.productCount || 0} products</p>
                     </div>
                   </Link>
                 );
@@ -185,7 +180,7 @@ export default async function BrandsHub() {
               <a
                 key={l}
                 href={`#letter-${l}`}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold text-[#18AFA9] border border-[#18AFA9]/25 hover:bg-[#18AFA9] hover:text-white transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-xs font-semibold text-brand-teal border border-brand-teal/25 hover:bg-brand-teal hover:text-white transition-colors"
               >
                 {l}
               </a>
@@ -199,11 +194,11 @@ export default async function BrandsHub() {
             {letters.map(letter => (
               <section key={letter} id={`letter-${letter}`} className="scroll-mt-24">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#001D5D] flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-brand-navy flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                     {letter}
                   </div>
-                  <div className="h-px flex-1 bg-[#e2e8f0]" />
-                  <span className="text-[10px] text-tertiary flex-shrink-0">{byLetter[letter].length} brand{byLetter[letter].length !== 1 ? 's' : ''}</span>
+                  <div className="h-px flex-1 bg-slate-200" />
+                  <span className="text-[11px] text-tertiary flex-shrink-0">{byLetter[letter].length} brand{byLetter[letter].length !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {byLetter[letter].map(brand => {
@@ -212,10 +207,10 @@ export default async function BrandsHub() {
                       <Link
                         key={brand._id}
                         href={`/brands/${brand.slug}`}
-                        className="group flex items-center gap-3 rounded-xl bg-white border border-[#D9E4EC] p-4 hover:border-[#18AFA9]/50 hover:shadow-md transition-all"
+                        className="group flex items-center gap-3 rounded-xl bg-white border border-border-primary p-4 hover:border-brand-teal/50 hover:shadow-md transition-all"
                       >
                         {brand.logo?.url ? (
-                          <div className="relative w-11 h-11 rounded-lg border border-[#e2e8f0] bg-white flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
+                          <div className="relative w-11 h-11 rounded-lg border border-slate-200 bg-white flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
                             <Image
                               src={brand.logo.url}
                               alt={`${brand.name} logo`}
@@ -225,15 +220,15 @@ export default async function BrandsHub() {
                             />
                           </div>
                         ) : (
-                          <div className="w-11 h-11 rounded-lg bg-[#f1f5f9] flex items-center justify-center text-xl flex-shrink-0">🏥</div>
+                          <div className="w-11 h-11 rounded-lg bg-slate-100 flex items-center justify-center text-xl flex-shrink-0">🏥</div>
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-[#001D5D] truncate group-hover:text-[#18AFA9] transition-colors">{brand.name}</p>
+                          <p className="text-sm font-semibold text-brand-navy truncate group-hover:text-brand-teal transition-colors">{brand.name}</p>
                           <p className="text-xs text-tertiary mt-0.5">
                             {brand.productCount || 0} products{brand.country ? ` · ${brand.country}` : ''}
                           </p>
                         </div>
-                        <svg className="w-4 h-4 text-[#D9E4EC] group-hover:text-[#18AFA9] group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg className="w-4 h-4 text-border-primary group-hover:text-brand-teal group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                       </Link>
@@ -244,17 +239,17 @@ export default async function BrandsHub() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl bg-white border border-[#D9E4EC] p-12 text-center">
+          <div className="rounded-2xl bg-white border border-border-primary p-12 text-center">
             <div className="text-4xl mb-3">🏥</div>
-            <p className="text-sm font-semibold text-[#001D5D] mb-1">Brand directory is being updated</p>
+            <p className="text-sm font-semibold text-brand-navy mb-1">Brand directory is being updated</p>
             <p className="text-xs text-tertiary">Please check back soon.</p>
           </div>
         )}
 
         {/* ── Internal links ──────────────────────────────────────────── */}
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
-            <h2 className="text-sm font-bold text-[#001D5D] mb-3">Shop by Category</h2>
+          <section className="rounded-2xl bg-white border border-border-primary p-5">
+            <h2 className="text-sm font-bold text-brand-navy mb-3">Shop by Category</h2>
             <div className="flex flex-wrap gap-2">
               {[
                 { href: '/products/category/diagnostic-equipment', label: 'Diagnostic Equipment' },
@@ -264,15 +259,15 @@ export default async function BrandsHub() {
                 { href: '/products/category/diabetes-care', label: 'Diabetes Care' },
                 { href: '/products', label: 'All Products →' },
               ].map(({ href, label }) => (
-                <Link key={href} href={href} className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-lg px-3 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors">
+                <Link key={href} href={href} className="text-xs font-medium text-brand-teal border border-brand-teal/30 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">
                   {label}
                 </Link>
               ))}
             </div>
           </section>
 
-          <section className="rounded-2xl bg-white border border-[#D9E4EC] p-5">
-            <h2 className="text-sm font-bold text-[#001D5D] mb-3">Equipment Price Guides</h2>
+          <section className="rounded-2xl bg-white border border-border-primary p-5">
+            <h2 className="text-sm font-bold text-brand-navy mb-3">Equipment Price Guides</h2>
             <div className="flex flex-wrap gap-2">
               {[
                 { href: '/equipment/ecg-machine-price-bangladesh', label: 'ECG Machine Prices' },
@@ -281,7 +276,7 @@ export default async function BrandsHub() {
                 { href: '/equipment/patient-monitor-price-bangladesh', label: 'Patient Monitor Prices' },
                 { href: '/equipment', label: 'All Price Guides →' },
               ].map(({ href, label }) => (
-                <Link key={href} href={href} className="text-xs font-medium text-[#18AFA9] border border-[#18AFA9]/30 rounded-lg px-3 py-1.5 hover:bg-[#18AFA9] hover:text-white transition-colors">
+                <Link key={href} href={href} className="text-xs font-medium text-brand-teal border border-brand-teal/30 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors">
                   {label}
                 </Link>
               ))}

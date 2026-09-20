@@ -147,7 +147,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
             left: '10px',
             background: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%)',
             color: '#fff',
-            fontSize: '10px',
+            fontSize: '11px',
             fontWeight: 700,
             padding: '4px 10px',
             borderRadius: '6px',
@@ -245,7 +245,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
         {/* Brand Name - Compact */}
         {brandName && (
           <div style={{
-            fontSize: '9px',
+            fontSize: '11px',
             color: 'var(--color-brand-teal)',
             fontWeight: 600,
             textTransform: 'uppercase',
@@ -292,7 +292,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
                 ★
               </span>
             ))}
-            <span style={{ fontSize: '10px', color: '#6B7280', marginLeft: '2px' }}>
+            <span style={{ fontSize: '11px', color: '#6B7280', marginLeft: '2px' }}>
               ({reviewCount})
             </span>
           </div>

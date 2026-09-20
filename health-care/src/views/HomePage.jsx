@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback, memo, useMemo, useRef, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
@@ -39,7 +39,7 @@ const BestSellingSection = lazy(() => import('@/components/home/BestSellingSecti
 const PromoBannerSection = lazy(() => import('@/components/home/PromoBannerSection'));
 const FlashDealsSection = lazy(() => import('@/components/home/FlashDealsSection'));
 // Safety bound for the homepage category strip. The strip scrolls
-// horizontally and must stay a complete index of the catalogue — a previous
+// horizontally and must stay a complete index of the catalogue â€” a previous
 // `.slice(0, 16)` cap hid 5 of the 21 database categories from the homepage.
 // Keep this comfortably above the real category count.
 const MAX_HOME_CATEGORY_TILES = 40;
@@ -49,27 +49,27 @@ const RecentlyViewed = lazy(() => import('@/components/product/RecentlyViewed'))
 const FeaturedProductsSection = lazy(() => import('@/components/home/FeaturedProductsSection'));
 const TestimonialsSection = lazy(() => import('@/components/home/TestimonialsSection'));
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // FALLBACK DATA & CONSTANTS
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 // All 18 categories - matches database (fallback only if API fails)
 const FALLBACK_CATEGORIES = [
-  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: 'var(--color-status-info-tint)' },
-  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: 'var(--color-status-success-tint)' },
-  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical · Molecular', color: 'var(--color-brand-teal-tint)' },
-  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU · Ventilators · Dialysis', color: 'var(--color-status-warning-tint)' },
-  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges · Microscopes', color: 'var(--color-status-success-tint)' },
-  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: 'var(--color-status-danger-tint)' },
-  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: 'var(--color-status-warning-tint)' },
-  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: 'var(--color-background-secondary)' },
-  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings · Tapes · Ostomy', color: 'var(--color-status-success-tint)' },
-  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters · Test Strips', color: 'var(--color-brand-teal-tint)' },
-  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS · Heating Pads', color: 'var(--color-status-warning-tint)' },
-  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes · Otoscopes', color: 'var(--color-status-info-tint)' },
-  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas · Infusion Sets', color: 'var(--color-status-success-tint)' },
-  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags · Collection Sets', color: 'var(--color-status-danger-tint)' },
-  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers · Oxygen Therapy', color: 'var(--color-status-info-tint)' },
+  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG Â· Ultrasound Â· Monitors', color: 'var(--color-status-info-tint)' },
+  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments Â· Implants', color: 'var(--color-status-success-tint)' },
+  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical Â· Molecular', color: 'var(--color-brand-teal-tint)' },
+  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU Â· Ventilators Â· Dialysis', color: 'var(--color-status-warning-tint)' },
+  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges Â· Microscopes', color: 'var(--color-status-success-tint)' },
+  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks Â· Gloves Â· Gowns', color: 'var(--color-status-danger-tint)' },
+  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs Â· Drills', color: 'var(--color-status-warning-tint)' },
+  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates Â· Screws', color: 'var(--color-background-secondary)' },
+  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings Â· Tapes Â· Ostomy', color: 'var(--color-status-success-tint)' },
+  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters Â· Test Strips', color: 'var(--color-brand-teal-tint)' },
+  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS Â· Heating Pads', color: 'var(--color-status-warning-tint)' },
+  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes Â· Otoscopes', color: 'var(--color-status-info-tint)' },
+  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas Â· Infusion Sets', color: 'var(--color-status-success-tint)' },
+  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags Â· Collection Sets', color: 'var(--color-status-danger-tint)' },
+  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers Â· Oxygen Therapy', color: 'var(--color-status-info-tint)' },
   { name: 'Medical Supplies', icon: <FaShoppingCart />, desc: 'General Medical Supplies', color: 'var(--color-background-secondary)' },
   { name: 'Compression Garments', icon: <FaShieldAlt />, desc: 'Compression Stockings', color: 'var(--color-status-danger-tint)' },
   { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: 'var(--color-status-warning-tint)' },
@@ -78,22 +78,22 @@ const FALLBACK_CATEGORIES = [
 const SEARCH_SUGGESTIONS = ['ECG Machine', 'Patient Monitor', 'HbA1c Kit', 'Pulse Oximeter', 'Nebulizer'];
 
 const B2B_FEATURES = [
-  '8–22% bulk discounts', '30–90 day credit terms',
+  '8â€“22% bulk discounts', '30â€“90 day credit terms',
   'Dedicated account manager', 'Priority order processing',
   'Free installation & training', 'Custom quotations',
 ];
 
 const B2B_STATS = [
   // NOTE: index 0 is replaced at render time with the real count from the
-  // stats API (see B2BSection). The fallback must stay honest — a medical
+  // stats API (see B2BSection). The fallback must stay honest â€” a medical
   // supplier must never render an invented trust number when the API fails.
   { val: '0+', label: 'Active B2B Clients' },
   { val: '30%', label: 'Max Bulk Discount' },
   { val: '90 days', label: 'Credit Terms' },
-  { val: 'Sat–Thu', label: 'Dedicated Support' },
+  { val: 'Satâ€“Thu', label: 'Dedicated Support' },
 ];
 
-// WHY_US is built dynamically from settings — see buildWhyUs() below
+// WHY_US is built dynamically from settings â€” see buildWhyUs() below
 const HOW_IT_WORKS = [
   { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 40+ global brands' },
   { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
@@ -103,10 +103,10 @@ const HOW_IT_WORKS = [
 
 function buildWhyUs(settings) {
   const threshold = settings?.freeDeliveryThreshold
-    ? `৳${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
-    : '৳50K';
+    ? `à§³${(settings.freeDeliveryThreshold / 1000).toFixed(0)}K`
+    : 'à§³50K';
   const returnDays = settings?.returnPolicyDays ?? 30;
-  const supportHours = settings?.supportHours ?? 'Sat–Thu 9am–6pm';
+  const supportHours = settings?.supportHours ?? 'Satâ€“Thu 9amâ€“6pm';
   const certifications = settings?.certifications?.join(', ') || 'DGDA Registered';
   return [
     { icon: <FaCheckCircle />, title: certifications.split(',')[0]?.trim() || 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
@@ -118,16 +118,16 @@ function buildWhyUs(settings) {
   ];
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // HELPER COMPONENTS
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // ISOLATED ANIMATION COMPONENTS
 // Each owns its own timer/scroll state so ticking never re-renders the whole
 // homepage (previously 4 intervals + 2 scroll listeners re-rendered the full
 // 1600-line tree every few seconds).
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 // Mount-on-scroll: heavy sections are kept out of the initial hydration and
 // script-eval path entirely, then rendered when the user scrolls near them.
@@ -273,7 +273,7 @@ const B2BSection = memo(function B2BSection({ t, stats }) {
               {B2B_FEATURES.map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8,
                   fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
-                  <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>✓</span> {f}
+                  <span style={{ color: 'var(--color-brand-teal-light)', fontWeight: 600 }}>âœ“</span> {f}
                 </div>
               ))}
             </div>
@@ -336,7 +336,7 @@ const TypewriterText = memo(function TypewriterText() {
   return <span key={text} className="typewriter-text" style={{ display: 'inline-block' }}>{text}</span>;
 });
 
-// Hero left column — owns the cycling search placeholder; the search box
+// Hero left column â€” owns the cycling search placeholder; the search box
 // manages its own query state.
 const HeroSearch = memo(function HeroSearch() {
   const router = useRouter();
@@ -410,7 +410,7 @@ const HeroSearch = memo(function HeroSearch() {
   );
 });
 
-// Hero right panel — owns slide index, hover state, scroll-pause and autoplay
+// Hero right panel â€” owns slide index, hover state, scroll-pause and autoplay
 // so scroll/hover/timer churn never touches the rest of the page.
 const HeroSlider = memo(function HeroSlider({ slides }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -418,7 +418,7 @@ const HeroSlider = memo(function HeroSlider({ slides }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const activeSlides = slides.filter(s => s.isActive).length || 1;
 
-  // Pause autoplay while the user is scrolling — state lives here, not the page
+  // Pause autoplay while the user is scrolling â€” state lives here, not the page
   useEffect(() => {
     let scrollTimeout;
     let ticking = false;
@@ -485,7 +485,7 @@ const handleKeyDown = (e) => {
             ) : (
               <Image
                 src={slide.imageUrl}
-                alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
+                alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} â€” MediportBD`}
                 fill
                 sizes="(max-width: 768px) 100vw, 52vw"
                 style={{ objectFit: 'cover' }}
@@ -533,7 +533,7 @@ const handleKeyDown = (e) => {
         style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
         className="hero-slider-arrows"
       >
-        ‹
+        â€¹
       </button>
       <button
         onClick={() => setCurrentSlide(prev => (prev + 1) % total)}
@@ -541,17 +541,17 @@ const handleKeyDown = (e) => {
         style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: 44, height: 44, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: 18, cursor: 'pointer', zIndex: 10, opacity: isHovered ? 1 : 0, transition: 'opacity 0.2s' }}
         className="hero-slider-arrows"
       >
-        ›
+        â€º
       </button>
     </div>
   );
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // MAIN HOMEPAGE COMPONENT
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// Homepage-scoped styles — hoisted to module scope so the 200-line style string
+// Homepage-scoped styles â€” hoisted to module scope so the 200-line style string
 // is created ONCE instead of on every HomePage render.
 const HOME_STYLES = `
         /* OPTIMIZED ANIMATIONS - Phase 3 */
@@ -566,13 +566,12 @@ const HOME_STYLES = `
         }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* Stable product grid heights - reserve space so skeleton/empty-state
-           swaps never collapse the section (prevents CLS) */
-        .stable-product-grid, .featured-products-panel { min-height: 420px; }
-        @media (min-width: 768px) {
-          .stable-product-grid { min-height: 780px; }
-          .featured-products-panel { min-height: 780px; }
-        }
+        /* Stable product grid heights â€” the loading skeleton already reserves
+           the section, so no forced min-height here: a fixed 780px left a dead
+           whitespace band on desktop whenever the rail returned a single row
+           (same tradeoff BestSellingSection already made). The mobile scroll
+           fade rules below still target this panel. */
+        .featured-products-panel { position: relative; }
 
         /* Marquee - CONVERTED to static scroll for better performance */
         .marquee-wrap {
@@ -734,77 +733,28 @@ const HOME_STYLES = `
         .category-title-accent::before { content: ''; width: 4px; height: 20px; background: var(--color-brand-teal); border-radius: 2px; }
         .category-product-row { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 6px; scrollbar-width: none; -ms-overflow-style: none; }
         .category-product-row::-webkit-scrollbar { display: none; }
-        @media (max-width: 768px) {
-          /* SHOW hero text/search on mobile (was hidden by the hidden lg:block classes) */
-          .hero-left-content { display: block !important; order: 2; }
-          .hero-grid-container { grid-template-columns: 1fr !important; gap: 16px !important; padding: 0 16px; }
-          .hero-right-panel { order: 1; display: block !important; height: 240px !important; border-radius: 14px !important; }
-          .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-          .cat-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-          .trust-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .testimonials-grid { grid-template-columns: 1fr !important; }
-          .coupon-banner-section { padding: 12px 14px !important; margin: 0 !important; }
-          .category-section { padding: 16px 0 !important; }
-
-          /* Collapse video section to one column on phones/tablets */
-          .home-video-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
-          .home-video-section { padding: 36px 16px !important; }
-          .home-support-section { padding: 36px 16px !important; }
-          .home-testimonials-section { padding: 24px 16px !important; }
-        }
-        @media (max-width: 640px) {
-          .hero-right-panel { height: 200px !important; border-radius: 12px !important; }
-          .hero-slider-arrows { display: none !important; }
-          .prod-grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-          .stats-grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-          .trust-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
-          .b2b-cols { grid-template-columns: 1fr !important; }
-          .b2b-banner { padding: 20px 16px !important; border-radius: 14px !important; }
-          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
-          .testimonials-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-
-          /* Compact ALL home sections on small screens */
-          .home-section { padding: 20px 16px !important; }
-          .category-section-header { padding: 0 16px !important; margin-bottom: 10px !important; }
-          .category-product-row { padding: 0 16px 4px !important; gap: 10px !important; }
-        }
-        @media (max-width: 480px) {
-          .hero-grid-container { padding: 0 14px !important; gap: 12px !important; }
-          .hero-left-content h1 { font-size: 22px !important; line-height: 1.2 !important; }
-          .coupon-banner-section { padding: 8px 10px !important; }
-          .deal-grid { gap: 8px !important; }
-          .b2b-banner h2 { font-size: 22px !important; }
-          .home-video-section, .home-support-section { padding: 28px 14px !important; }
-        }
-        @media (max-width: 1024px) {
-          .how-it-works-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .how-it-works-step-line { display: none; }
-          .b2b-cols { grid-template-columns: 1fr !important; }
-          .testimonials-grid { grid-template-columns: 1fr !important; }
-        }
       `;
 
 export default function HomePage({ initialData = null, initialSettings = null }) {
   const router = useRouter();
   const t = useT();
 
-  // ── State ──────────────────────────────────────────────────────────────────
-  // Seeded from server-rendered (ISR) data when available — SSR HTML contains
+  // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Seeded from server-rendered (ISR) data when available â€” SSR HTML contains
   // the full home content instead of an empty skeleton.
   const [categories, setCategories] = useState(() => initialData?.categories?.length ? initialData.categories : []);
   const [categoryCounts, setCategoryCounts] = useState(() => initialData?.categoryCounts || {});
   const [promo, setPromo] = useState(() => initialData?.activePromo || null);
   // Zeroes, not fabricated defaults: a medical-supplier site must never
   // display invented trust numbers ("40 brands", "1200+ B2B clients") when
-  // the stats API fails — the previous fallback rendered fiction as fact.
+  // the stats API fails â€” the previous fallback rendered fiction as fact.
   const [stats, setStats] = useState(() => initialData?.stats || { totalProducts: 0, totalBrands: 0, totalOrders: 0, totalB2BClients: 0 });
   const [siteSettings, setSiteSettings] = useState(() => initialSettings);
   const [heroSlides, setHeroSlides] = useState(() => initialSettings?.heroSlides?.length
     ? initialSettings.heroSlides.filter(sl => sl.isActive).sort((a, b) => a.order - b.order)
     : []);
 
-  // ── Memoized Values ────────────────────────────────────────────────────────
+  // â”€â”€ Memoized Values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const whyUsItems = useMemo(() => buildWhyUs(siteSettings), [siteSettings]);
   const navCategories = useMemo(() => {
     if (categories.length > 0) {
@@ -815,24 +765,24 @@ export default function HomePage({ initialData = null, initialSettings = null })
       // catalogue. It previously used `.slice(0, 16)` while the database holds
       // 21 categories, which left ppe-and-safety, medical-devices,
       // diagnostic-devices and mobility-aids unreachable from the homepage
-      // (≈46% of the catalogue had no path from the homepage). The cap is now
+      // (â‰ˆ46% of the catalogue had no path from the homepage). The cap is now
       // only a safety bound, comfortably above the current category count.
       return categories
         .filter(cat => (cat.productCount ?? 1) > 0)
         .slice(0, MAX_HOME_CATEGORY_TILES);
     }
     return [
-      { name: 'Lab Reagents', emoji: '🧪', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
-      { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
-      { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
-      { name: 'PPE & Safety', emoji: '🛡️', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
-      { name: 'Implants', emoji: '🦴', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
-      { name: 'Diagnostic', emoji: '🩺', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
-      { name: 'Surgical', emoji: '💉', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
+      { name: 'Lab Reagents', emoji: 'ðŸ§ª', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
+      { name: 'Hospital Machines', emoji: 'ðŸ¥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
+      { name: 'Lab Equipment', emoji: 'ðŸ”¬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
+      { name: 'PPE & Safety', emoji: 'ðŸ›¡ï¸', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
+      { name: 'Implants', emoji: 'ðŸ¦´', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
+      { name: 'Diagnostic', emoji: 'ðŸ©º', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
+      { name: 'Surgical', emoji: 'ðŸ’‰', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
     ];
   }, [categories]);
 
-  // ── Effects ────────────────────────────────────────────────────────────────
+  // â”€â”€ Effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   // Load banner settings (deduped/cached via fetchWithRetry)
   useEffect(() => {
@@ -860,18 +810,18 @@ export default function HomePage({ initialData = null, initialSettings = null })
   // the render + src/utils/homeDataClient.js). Nothing here fetches during
   // the initial load window.
 
-  // ══════════════════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   // RENDER
-  // ══════════════════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   return (
     <div className="min-h-screen home-page-root">
-      {/* Global Styles — static string, not recreated per render */}
+      {/* Global Styles â€” static string, not recreated per render */}
       <style>{HOME_STYLES}</style>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 1: HERO — left: text+search  |  right: image slider */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* SECTION 1: HERO â€” left: text+search  |  right: image slider */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="home-hero home-hero--padded">
         <div className="hero-grid-container">
           <HeroSearch />
@@ -879,9 +829,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 2: CATEGORY NAVIGATION (Othoba-style circular icons) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="home-section" style={{ padding: '20px 0', borderBottom: '1px solid var(--color-border-primary)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -906,27 +856,27 @@ export default function HomePage({ initialData = null, initialSettings = null })
 
               // Category icons mapping
               const iconMap = {
-                'Lab Reagents': '🧪', 'Laboratory Reagents': '🧪',
-                'Hospital Machines': '🏥',
-                'Lab Equipment': '🔬', 'Laboratory Equipment': '🔬',
-                'PPE & Safety': '🛡️',
-                'Implants': '🦴', 'Implants & Ortho': '🦴',
-                'Diagnostic': '🩺', 'Diagnostic Equipment': '🩺', 'Diagnostic Devices': '🩺',
-                'Surgical': '💉', 'Surgical Instruments': '💉', 'Surgical & Wound Care': '🩹',
-                'Medical Devices': '🏥',
-                'Medical Supplies': '🏥',
-                'Consumables': '📦',
-                'Orthopedic Supports': '🦴',
-                'Diabetes Care': '💊',
-                'Blood Bank Supplies': '🩸',
-                'IV & Infusion Therapy': '💧',
-                'Ophthalmology & ENT Equipment': '👁️',
-                'Physiotherapy & Rehabilitation': '🏃',
-                'Respiratory Equipment': '😷',
-                'Compression Garments': '👕',
+                'Lab Reagents': 'ðŸ§ª', 'Laboratory Reagents': 'ðŸ§ª',
+                'Hospital Machines': 'ðŸ¥',
+                'Lab Equipment': 'ðŸ”¬', 'Laboratory Equipment': 'ðŸ”¬',
+                'PPE & Safety': 'ðŸ›¡ï¸',
+                'Implants': 'ðŸ¦´', 'Implants & Ortho': 'ðŸ¦´',
+                'Diagnostic': 'ðŸ©º', 'Diagnostic Equipment': 'ðŸ©º', 'Diagnostic Devices': 'ðŸ©º',
+                'Surgical': 'ðŸ’‰', 'Surgical Instruments': 'ðŸ’‰', 'Surgical & Wound Care': 'ðŸ©¹',
+                'Medical Devices': 'ðŸ¥',
+                'Medical Supplies': 'ðŸ¥',
+                'Consumables': 'ðŸ“¦',
+                'Orthopedic Supports': 'ðŸ¦´',
+                'Diabetes Care': 'ðŸ’Š',
+                'Blood Bank Supplies': 'ðŸ©¸',
+                'IV & Infusion Therapy': 'ðŸ’§',
+                'Ophthalmology & ENT Equipment': 'ðŸ‘ï¸',
+                'Physiotherapy & Rehabilitation': 'ðŸƒ',
+                'Respiratory Equipment': 'ðŸ˜·',
+                'Compression Garments': 'ðŸ‘•',
               };
 
-              const emoji = cat.emoji || iconMap[categoryName] || '🏥';
+              const emoji = cat.emoji || iconMap[categoryName] || 'ðŸ¥';
               const colors = ['var(--color-brand-teal-tint)', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', 'var(--color-status-danger-tint)', '#F5F8FB', 'var(--color-status-info-tint)', 'var(--color-status-success-tint)', 'var(--color-status-warning-tint)'];
               const color = cat.color || colors[index % colors.length];
 
@@ -954,7 +904,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
                   </span>
                   {/* Product count */}
                   {productCount > 0 && (
-                    <span style={{ fontSize: 10, color: 'var(--color-text-secondary)', marginTop: 1 }}>
+                    <span style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginTop: 1 }}>
                       {productCount} items
                     </span>
                   )}
@@ -975,7 +925,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 24, marginBottom: 6, border: '2px solid var(--color-brand-teal)',
                 color: '#fff', fontWeight: 600 }}>
-                →
+                â†’
               </div>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand-teal)',
                 textAlign: 'center' }}>
@@ -986,11 +936,11 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </div>
       </section>
 
-      {/* Below-fold content is skipped until scrolled near — see .cv-lazy-stack in globals.css */}
+      {/* Below-fold content is skipped until scrolled near â€” see .cv-lazy-stack in globals.css */}
       <div className="cv-lazy-stack">
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 3: FLASH DEALS (Time-sensitive, creates urgency) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--flash">
         <LazyMount fallback={null}>
           <Suspense fallback={null}>
@@ -999,9 +949,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 4: BEST SELLING PRODUCTS (Social proof, rankings) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <LazyMount fallback={
         <div className="best-selling-slot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Spinner />
@@ -1010,9 +960,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         <BestSellingSection />
       </LazyMount>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 5: FEATURED PRODUCTS (Curated selection with tabs) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--featured">
         <LazyMount fallback={null}>
           <Suspense fallback={null}>
@@ -1021,9 +971,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* COUPON BANNER: Show active promo code when available */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {promo && (
         <section className="coupon-banner-section" style={{ padding: '14px 16px', background: 'var(--section-coupon)' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
@@ -1039,15 +989,15 @@ export default function HomePage({ initialData = null, initialSettings = null })
             gap: 12,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <span style={{ fontSize: 28 }}>🎟️</span>
+              <span style={{ fontSize: 28 }}>ðŸŽŸï¸</span>
               <div>
                 <div style={{ color: 'var(--color-brand-navy)', fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
                   {promo.type === 'percentage'
                     ? `${promo.value}% OFF your order`
-                    : `৳${promo.value?.toLocaleString()} OFF your order`}
+                    : `à§³${promo.value?.toLocaleString()} OFF your order`}
                   {promo.minPurchase > 0 && (
                     <span style={{ fontWeight: 400, fontSize: 13, color: 'var(--color-text-secondary)' }}>
-                      {' '}on orders over ৳{promo.minPurchase?.toLocaleString()}
+                      {' '}on orders over à§³{promo.minPurchase?.toLocaleString()}
                     </span>
                   )}
                 </div>
@@ -1104,9 +1054,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 6: PROMOTIONAL BANNER 1 (Visual break after featured products) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--promo">
         <LazyMount fallback={null}>
           <Suspense fallback={null}>
@@ -1115,9 +1065,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 7: CATEGORY PRODUCT SECTIONS (Deep product discovery) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--category">
         <LazyMount fallback={null}>
           <Suspense fallback={null}>
@@ -1126,9 +1076,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 8: NEW ARRIVALS (Fresh inventory, auto slider) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--new-arrivals">
         <LazyMount fallback={null}>
           <Suspense fallback={
@@ -1141,9 +1091,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 9: PROMOTIONAL BANNER 2 (Second marketing push) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--promo">
         <LazyMount fallback={null}>
           <Suspense fallback={null}>
@@ -1152,9 +1102,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 10: RECENTLY VIEWED (Personalized recommendations) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <section className="home-section" style={{ padding: '28px 24px 20px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <LazyMount fallback={null}>
@@ -1165,24 +1115,24 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 11: WHY CHOOSE US (Trust building, credibility) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <WhyChooseUsSection t={t} items={whyUsItems} />
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 12: HOW IT WORKS (Process clarity, user guidance) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <HowItWorksSection t={t} />
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 13: B2B PROGRAM (Business customer acquisition) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <B2BSection t={t} stats={stats} />
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 14: SUPPORT & RESOURCES (Additional value, help center) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--support">
         <LazyMount fallback={null}>
           <Suspense fallback={
@@ -1197,9 +1147,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 15: VIDEO SECTION (Engagement, brand storytelling) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--video">
         <LazyMount fallback={null}>
           <Suspense fallback={
@@ -1214,9 +1164,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
         </LazyMount>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* SECTION 16: CUSTOMER TESTIMONIALS (Final social proof) */}
-      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div className="cv-slot--testimonials">
         <LazyMount fallback={null}>
           <Suspense fallback={null}>

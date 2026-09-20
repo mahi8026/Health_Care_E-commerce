@@ -7,7 +7,7 @@ import api from '@/utils/api';
 
 const PAYMENT_ICONS = {
   bkash: (
-    <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#E2136E]/10 text-[#E2136E] font-semibold text-sm">
+    <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-bkash/10 text-bkash font-semibold text-sm">
       bK
     </span>
   ),
@@ -69,7 +69,7 @@ function BkashForm({ phone, onSave, onCancel }) {
         <button
           type="submit"
           disabled={saving}
-          className="px-4 py-2 bg-[#E2136E] hover:bg-[#c91060] disabled:opacity-60 text-white text-xs font-semibold rounded-lg transition-colors"
+          className="px-4 py-2 bg-bkash hover:bg-bkash-dark disabled:opacity-60 text-white text-xs font-semibold rounded-lg transition-colors"
         >
           {saving ? 'Saving…' : 'Save number'}
         </button>

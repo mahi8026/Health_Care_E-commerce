@@ -51,7 +51,7 @@ class DashboardErrorBoundary extends Component {
           <div className="bg-[var(--color-background-primary)] rounded-lg border border-[var(--color-border-tertiary)] p-8 max-w-md w-full shadow-lg">
             {/* Error Icon */}
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-[var(--color-status-danger-tint)] flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-[var(--color-status-danger-tint)] flex items-center justify-center" data-testid="error-icon">
                 <svg 
                   className="w-8 h-8 text-[var(--color-status-danger)]" 
                   fill="none" 
@@ -107,7 +107,7 @@ class DashboardErrorBoundary extends Component {
             <div className="flex gap-3">
               <button
                 onClick={this.handleRetry}
-                className="flex-1 bg-brand-navy text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-[#0a1f3a] transition-colors"
+                className="flex-1 bg-brand-navy text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-surface-deep transition-colors"
               >
                 Try Again
               </button>

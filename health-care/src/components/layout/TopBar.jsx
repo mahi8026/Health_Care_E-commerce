@@ -115,7 +115,7 @@ export default function TopBar() {
           <span className="hidden md:inline">Track Order</span>
         </Link>
 
-        <span className="text-[#C5D6E3] hidden xs:block">|</span>
+        <span className="text-border-secondary hidden xs:block">|</span>
 
         {/* DGDA Info - Hidden on mobile */}
         <Link
@@ -128,7 +128,7 @@ export default function TopBar() {
           <span className="hidden lg:inline">DGDA Info</span>
         </Link>
 
-        <span className="text-[#C5D6E3] hidden md:block">|</span>
+        <span className="text-border-secondary hidden md:block">|</span>
 
         {/* Phone Number - Always visible, icon only on mobile */}
         <a

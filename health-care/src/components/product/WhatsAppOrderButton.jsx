@@ -78,7 +78,7 @@ export default function WhatsAppOrderButton({
     return (
       <button
         onClick={handleClick}
-        className={`h-11 px-4 bg-gradient-to-r from-[var(--color-status-success)] to-[#16a34a] hover:from-[#16a34a] hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 flex-shrink-0 whitespace-nowrap ${className}`}
+        className={`h-11 px-4 bg-gradient-to-r from-[var(--color-status-success)] to-whatsapp-dark hover:from-whatsapp-dark hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-2 flex-shrink-0 whitespace-nowrap ${className}`}
         aria-label={`Order ${product?.name || 'this product'} on WhatsApp`}
       >
         <FaWhatsapp size={16} />
@@ -90,7 +90,7 @@ export default function WhatsAppOrderButton({
   return (
     <button
       onClick={handleClick}
-      className={`w-full py-3.5 px-6 bg-gradient-to-r from-[var(--color-status-success)] to-[#16a34a] hover:from-[#16a34a] hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2.5 ${className}`}
+      className={`w-full py-3.5 px-6 bg-gradient-to-r from-[var(--color-status-success)] to-whatsapp-dark hover:from-whatsapp-dark hover:to-[var(--color-status-success)] text-white rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2.5 ${className}`}
       aria-label={`Order ${product?.name || 'this product'} on WhatsApp`}
     >
       <FaWhatsapp size={20} />

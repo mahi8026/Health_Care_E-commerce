@@ -23,13 +23,13 @@ function resolveHazard(reagent) {
 
 const TEMP_STYLES = {
   cold: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]',
-  freeze: 'bg-[#EEEDFE] text-[#3C3489]',
+  freeze: 'bg-role-admin-tint-mid text-role-admin-ink',
   room: 'bg-brand-teal-tint text-[var(--color-status-success)]',
 };
 
 const HAZARD_STYLES = {
-  bio: 'bg-[#FCEBEB] text-[var(--color-status-danger)]',
-  chem: 'bg-[#FAEEDA] text-warning-ink',
+  bio: 'bg-danger-tint-soft text-[var(--color-status-danger)]',
+  chem: 'bg-warning-tint-soft text-warning-ink',
   safe: 'bg-brand-teal-tint text-[var(--color-status-success)]',
 };
 
@@ -85,7 +85,7 @@ export default function ReagentCard({ reagent, onProductClick }) {
       className="group flex flex-col bg-white rounded-xl border border-[var(--color-border-tertiary)] overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-md hover:border-brand-teal/40 hover:-translate-y-0.5"
     >
       {/* Image */}
-      <div className="relative aspect-square bg-gradient-to-br from-[#F0FBF8] via-white to-[#E6F1FB] flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-square bg-gradient-to-br from-whatsapp-tint-soft via-white to-[#E6F1FB] flex items-center justify-center overflow-hidden">
         {primaryImage ? (
           <Image
             src={primaryImage}

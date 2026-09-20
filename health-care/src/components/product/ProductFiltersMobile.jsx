@@ -49,7 +49,7 @@ export default function ProductFiltersMobile({
           </span>
           <button 
             onClick={onClose} 
-            className="text-white/70 hover:text-white"
+            className="w-7 h-7 flex items-center justify-center rounded-md text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close filters"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

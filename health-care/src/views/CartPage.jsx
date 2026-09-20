@@ -129,7 +129,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
               {t('common.cancel')}
             </button>
             <button onClick={handleClearCart}
-              className="flex-1 py-2.5 bg-danger hover:bg-[#C93A39] text-white rounded-xl text-sm font-semibold transition-colors">
+              className="flex-1 py-2.5 bg-danger hover:bg-danger-hover text-white rounded-xl text-sm font-semibold transition-colors">
               {t('cart.clearAll')}
             </button>
           </div>

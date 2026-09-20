@@ -12,7 +12,7 @@ export default function LoyaltyPointsCard({ points = 0 }) {
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <FaStar className="text-[#FFD700]" size={16} />
+            <FaStar className="text-gold" size={16} />
             <span className="text-xs sm:text-xs font-semibold opacity-90">Loyalty Points</span>
           </div>
           <div className="text-3xl sm:text-4xl font-semibold leading-none">
@@ -20,7 +20,7 @@ export default function LoyaltyPointsCard({ points = 0 }) {
           </div>
         </div>
         <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
-          <FaStar className="text-[#FFD700]" size={24} />
+          <FaStar className="text-gold" size={24} />
         </div>
       </div>
       

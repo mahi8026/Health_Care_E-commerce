@@ -101,9 +101,9 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
   if (step === 'verify') {
     return (
       <form onSubmit={handleVerify} className="space-y-3 md:space-y-4">
-        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-[#E2136E] rounded-lg p-3 md:p-4 text-center">
+        <div className="bg-[var(--color-status-danger-tint)] border-[0.5px] border-bkash rounded-lg p-3 md:p-4 text-center">
           <div className="text-3xl md:text-4xl mb-2">📱</div>
-          <h3 className="text-sm md:text-sm font-semibold mb-1 text-[#E2136E]">
+          <h3 className="text-sm md:text-sm font-semibold mb-1 text-bkash">
             Complete Payment in bKash
           </h3>
           <p className="text-xs md:text-xs text-[var(--color-text-secondary)] mb-2 md:mb-3 px-2">
@@ -119,7 +119,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
               href={bkashURL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-[#E2136E] underline"
+              className="inline-block mt-2 md:mt-3 text-xs md:text-xs text-bkash underline"
             >
               Re-open bKash payment page →
             </a>
@@ -135,7 +135,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
+          className="w-full bg-bkash text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-bkash-dark transition-colors"
         >
           {loading ? (
             <>
@@ -192,7 +192,7 @@ export default function BkashPaymentForm({ amount, orderId, onSuccess, onError }
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#E2136E] text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#C91160] transition-colors"
+        className="w-full bg-bkash text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg text-xs md:text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-bkash-dark transition-colors"
       >
         {loading ? (
           <>

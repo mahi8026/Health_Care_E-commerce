@@ -28,7 +28,7 @@ export default function VideoSection() {
       {/* Background Pattern */}
       <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 2 }}>
+      <div style={{ maxWidth: 'var(--container-width)', margin: '0 auto', position: 'relative', zIndex: 2 }}>
         <div className="home-video-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 48, alignItems: 'center' }}>
           
           {/* Left: Video Thumbnail */}

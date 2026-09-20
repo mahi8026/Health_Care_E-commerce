@@ -157,7 +157,7 @@ export default function CompareModal({ onClose }) {
                     Feature
                   </th>
                   {compareList.map((product) => (
-                    <th key={product._id || product.id} className="p-3 border-b-2 border-[var(--color-border-primary)] min-w-[220px]">
+                    <th key={product._id || product.id} className="p-2 sm:p-3 border-b-2 border-[var(--color-border-primary)] min-w-[150px] sm:min-w-[220px]">
                       <div className="flex flex-col items-center gap-3">
                         {/* Image */}
                         <div className="w-32 h-32 bg-[var(--color-background-tertiary)] rounded-lg overflow-hidden flex items-center justify-center">

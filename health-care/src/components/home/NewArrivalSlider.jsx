@@ -320,7 +320,7 @@ function ProductCard({ product, onClick, onAddToCart, t }) {
         {/* Brand */}
         {brandName && (
           <div style={{
-            fontSize: '10px',
+            fontSize: '11px',
             color: 'var(--color-brand-teal)',
             fontWeight: 600,
             textTransform: 'uppercase',

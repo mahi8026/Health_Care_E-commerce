@@ -11,7 +11,7 @@ const STATUS_META = {
   pending:   { label: 'Pending',   color: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]' },
   sent:      { label: 'Sent',      color: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]' },
   approved:  { label: 'Approved',  color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
-  converted: { label: 'Converted', color: 'bg-[#EDE9FE] text-[#5B21B6]' },
+  converted: { label: 'Converted', color: 'bg-role-admin-tint text-role-admin-strong' },
   expired:   { label: 'Expired',   color: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-secondary)]' },
   rejected:  { label: 'Rejected',  color: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]' },
 };
@@ -196,7 +196,7 @@ export default function QuotationsManagement() {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="hidden lg:block overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
               <table className="w-full" style={{ minWidth: '1000px' }}>
                 <thead>
                   <tr className="border-b-[0.5px] border-[var(--color-border-tertiary)]">
@@ -226,7 +226,7 @@ export default function QuotationsManagement() {
                       <td className="px-4 py-3 text-xs font-semibold font-[family-name:var(--font-plus-jakarta)] text-brand-navy">
                         {fmtMoney(quote.finalAmount)}
                         {quote.discountPct > 0 && (
-                          <div className="text-[10px] font-normal text-[var(--color-status-success)]">−{quote.discountPct}% off</div>
+                          <div className="text-[11px] font-normal text-[var(--color-status-success)]">−{quote.discountPct}% off</div>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -289,7 +289,7 @@ export default function QuotationsManagement() {
             </div>
 
             {/* Mobile Cards */}
-            <div className="md:hidden space-y-3 p-3">
+            <div className="lg:hidden space-y-3 p-3">
               {quotes.map(quote => (
                 <div key={quote._id} className="bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border-tertiary)] p-4 space-y-3">
                   <button onClick={() => openQuote(quote._id)} className="w-full text-left">
