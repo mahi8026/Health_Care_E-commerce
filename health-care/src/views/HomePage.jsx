@@ -55,21 +55,21 @@ const TestimonialsSection = lazy(() => import('@/components/home/TestimonialsSec
 
 // All 18 categories - matches database (fallback only if API fails)
 const FALLBACK_CATEGORIES = [
-  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG Â· Ultrasound Â· Monitors', color: 'var(--color-status-info-tint)' },
-  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments Â· Implants', color: 'var(--color-status-success-tint)' },
-  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical Â· Molecular', color: 'var(--color-brand-teal-tint)' },
-  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU Â· Ventilators Â· Dialysis', color: 'var(--color-status-warning-tint)' },
-  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges Â· Microscopes', color: 'var(--color-status-success-tint)' },
-  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks Â· Gloves Â· Gowns', color: 'var(--color-status-danger-tint)' },
-  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs Â· Drills', color: 'var(--color-status-warning-tint)' },
-  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates Â· Screws', color: 'var(--color-background-secondary)' },
-  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings Â· Tapes Â· Ostomy', color: 'var(--color-status-success-tint)' },
-  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters Â· Test Strips', color: 'var(--color-brand-teal-tint)' },
-  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS Â· Heating Pads', color: 'var(--color-status-warning-tint)' },
-  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes Â· Otoscopes', color: 'var(--color-status-info-tint)' },
-  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas Â· Infusion Sets', color: 'var(--color-status-success-tint)' },
-  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags Â· Collection Sets', color: 'var(--color-status-danger-tint)' },
-  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers Â· Oxygen Therapy', color: 'var(--color-status-info-tint)' },
+  { name: 'Diagnostic Equipment', icon: <FaStethoscope />, desc: 'ECG · Ultrasound · Monitors', color: 'var(--color-status-info-tint)' },
+  { name: 'Surgical Instruments', icon: <FaSyringe />, desc: 'Instruments · Implants', color: 'var(--color-status-success-tint)' },
+  { name: 'Laboratory Reagents', icon: <FaFlask />, desc: 'Clinical · Molecular', color: 'var(--color-brand-teal-tint)' },
+  { name: 'Hospital Machines', icon: <FaHospital />, desc: 'ICU · Ventilators · Dialysis', color: 'var(--color-status-warning-tint)' },
+  { name: 'Lab Equipment', icon: <FaMicroscope />, desc: 'Centrifuges · Microscopes', color: 'var(--color-status-success-tint)' },
+  { name: 'PPE & Safety', icon: <FaShieldAlt />, desc: 'Masks · Gloves · Gowns', color: 'var(--color-status-danger-tint)' },
+  { name: 'Dental Equipment', icon: <FaTooth />, desc: 'Chairs · Drills', color: 'var(--color-status-warning-tint)' },
+  { name: 'Implants & Ortho', icon: <FaBone />, desc: 'Bone Plates · Screws', color: 'var(--color-background-secondary)' },
+  { name: 'Surgical & Wound Care', icon: <FaSyringe />, desc: 'Dressings · Tapes · Ostomy', color: 'var(--color-status-success-tint)' },
+  { name: 'Diabetes Care', icon: <FaFlask />, desc: 'Glucose Meters · Test Strips', color: 'var(--color-brand-teal-tint)' },
+  { name: 'Physiotherapy & Rehabilitation', icon: <FaTools />, desc: 'TENS · Heating Pads', color: 'var(--color-status-warning-tint)' },
+  { name: 'Ophthalmology & ENT Equipment', icon: <FaStethoscope />, desc: 'Ophthalmoscopes · Otoscopes', color: 'var(--color-status-info-tint)' },
+  { name: 'IV & Infusion Therapy', icon: <FaSyringe />, desc: 'IV Cannulas · Infusion Sets', color: 'var(--color-status-success-tint)' },
+  { name: 'Blood Bank Supplies', icon: <FaFlask />, desc: 'Blood Bags · Collection Sets', color: 'var(--color-status-danger-tint)' },
+  { name: 'Respiratory Equipment', icon: <FaHospital />, desc: 'Nebulizers · Oxygen Therapy', color: 'var(--color-status-info-tint)' },
   { name: 'Medical Supplies', icon: <FaShoppingCart />, desc: 'General Medical Supplies', color: 'var(--color-background-secondary)' },
   { name: 'Compression Garments', icon: <FaShieldAlt />, desc: 'Compression Stockings', color: 'var(--color-status-danger-tint)' },
   { name: 'Consumables', icon: <FaShoppingCart />, desc: 'Medical Consumables', color: 'var(--color-status-warning-tint)' },
@@ -773,9 +773,9 @@ export default function HomePage({ initialData = null, initialSettings = null })
     }
     return [
       { name: 'Lab Reagents', emoji: '🧪', color: 'var(--color-brand-teal-tint)', slug: 'laboratory-reagents' },
-      { name: 'Hospital Machines', emoji: 'ðŸ¥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
+      { name: 'Hospital Machines', emoji: '🏥', color: 'var(--color-status-warning-tint)', slug: 'hospital-machines' },
       { name: 'Lab Equipment', emoji: '🔬', color: 'var(--color-status-success-tint)', slug: 'lab-equipment' },
-      { name: 'PPE & Safety', emoji: 'ðŸ›¡ï¸', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
+      { name: 'PPE & Safety', emoji: '🛡️', color: 'var(--color-status-danger-tint)', slug: 'ppe-and-safety' },
       { name: 'Implants', emoji: '🦴', color: 'var(--color-background-secondary)', slug: 'implants-ortho' },
       { name: 'Diagnostic', emoji: '🩺', color: 'var(--color-status-info-tint)', slug: 'diagnostic-equipment' },
       { name: 'Surgical', emoji: '💉', color: 'var(--color-status-success-tint)', slug: 'surgical-instruments' },
@@ -857,26 +857,26 @@ export default function HomePage({ initialData = null, initialSettings = null })
               // Category icons mapping
               const iconMap = {
                 'Lab Reagents': '🧪', 'Laboratory Reagents': '🧪',
-                'Hospital Machines': 'ðŸ¥',
+                'Hospital Machines': '🏥',
                 'Lab Equipment': '🔬', 'Laboratory Equipment': '🔬',
-                'PPE & Safety': 'ðŸ›¡ï¸',
+                'PPE & Safety': '🛡️',
                 'Implants': '🦴', 'Implants & Ortho': '🦴',
                 'Diagnostic': '🩺', 'Diagnostic Equipment': '🩺', 'Diagnostic Devices': '🩺',
                 'Surgical': '💉', 'Surgical Instruments': '💉', 'Surgical & Wound Care': '🩹',
-                'Medical Devices': 'ðŸ¥',
-                'Medical Supplies': 'ðŸ¥',
+                'Medical Devices': '🏥',
+                'Medical Supplies': '🏥',
                 'Consumables': '📦',
                 'Orthopedic Supports': '🦴',
                 'Diabetes Care': '💊',
                 'Blood Bank Supplies': '🩸',
                 'IV & Infusion Therapy': '💧',
-                'Ophthalmology & ENT Equipment': 'ðŸ‘ï¸',
-                'Physiotherapy & Rehabilitation': 'ðŸƒ',
+                'Ophthalmology & ENT Equipment': '👁️',
+                'Physiotherapy & Rehabilitation': '🏃',
                 'Respiratory Equipment': '😷',
                 'Compression Garments': '👕',
               };
 
-              const emoji = cat.emoji || iconMap[categoryName] || 'ðŸ¥';
+              const emoji = cat.emoji || iconMap[categoryName] || '🏥';
               const colors = ['var(--color-brand-teal-tint)', 'var(--color-status-warning-tint)', 'var(--color-status-success-tint)', 'var(--color-status-danger-tint)', '#F5F8FB', 'var(--color-status-info-tint)', 'var(--color-status-success-tint)', 'var(--color-status-warning-tint)'];
               const color = cat.color || colors[index % colors.length];
 
@@ -989,7 +989,7 @@ export default function HomePage({ initialData = null, initialSettings = null })
             gap: 12,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <span style={{ fontSize: 28 }}>ðŸŽŸï¸</span>
+              <span style={{ fontSize: 28 }}>🎟️</span>
               <div>
                 <div style={{ color: 'var(--color-brand-navy)', fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
                   {promo.type === 'percentage'
