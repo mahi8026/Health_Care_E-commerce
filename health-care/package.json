@@ -17,7 +17,7 @@
     "prepare": "node -e \"if (process.env.HUSKY === '0') process.exit(0)\" && husky || true"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.55.0",
+    "@sentry/nextjs": "^10.73.0",
     "autoprefixer": "^10.4.20",
     "date-fns": "^4.4.0",
     "next": "^16.2.6",
