@@ -61,7 +61,7 @@ export default function FloatingWhatsAppButton() {
       {/* Single fixed container — both buttons stacked, right side */}
       <div
         className="fixed bottom-[96px] right-3 md:bottom-8 md:right-5 z-dropdown flex flex-col items-end gap-3"
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: 'none', maxWidth: '60px' }}
       >
         {/* Tooltip (desktop hover) */}
         {showTooltip && (
