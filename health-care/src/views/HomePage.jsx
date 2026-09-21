@@ -353,7 +353,7 @@ const HeroSearch = memo(function HeroSearch() {
   }, []);
 
   return (
-    <div className="hero-left-content hidden lg:block">
+    <div className="hero-left-content hidden md:block lg:block">
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,208,202,0.15)', border: '1px solid rgba(0,208,202,0.3)', color: 'var(--color-brand-teal-light)', fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 999, marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
         <span style={{ width: 6, height: 6, background: 'var(--color-brand-teal-light)', borderRadius: '50%', animation: 'pulse-dot 2s infinite' }} />
         {t('home.tagline')}
@@ -662,14 +662,62 @@ const HOME_STYLES = `
           background: #002B78;
           box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
-        /* Tablet breakpoint: prevent horizontal overflow */
-        @media (max-width: 1279px) and (min-width: 769px) {
+        
+        /* Mobile and small tablet breakpoint */
+        @media (max-width: 768px) {
+          .hero-grid-container {
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 0 16px;
+          }
+          .hero-left-content { order: 2; display: block; }
+          .hero-right-panel { 
+            order: 1; 
+            height: 240px;
+            border-radius: 14px;
+          }
+        }
+        
+        /* Small mobile */
+        @media (max-width: 640px) {
+          .hero-right-panel { 
+            height: 200px;
+            border-radius: 12px;
+          }
+        }
+        
+        /* Medium tablets (landscape phones and small tablets) - 769-820px */
+        @media (max-width: 820px) and (min-width: 769px) {
+          .hero-grid-container {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 0 16px;
+          }
+          .hero-left-content { 
+            order: 2; 
+            display: block;
+            text-align: center;
+            padding: 12px 0;
+          }
+          .hero-left-content h1 {
+            font-size: 22px !important;
+            line-height: 1.3 !important;
+          }
+          .hero-right-panel { 
+            order: 1;
+            height: 220px;
+            border-radius: 14px;
+          }
+        }
+        
+        /* Tablet breakpoint: prevent horizontal overflow and optimize for tablet viewports */
+        @media (max-width: 1279px) and (min-width: 821px) {
           .hero-grid-container {
             grid-template-columns: minmax(0, 1fr) minmax(0, 48%);
             gap: 16px;
             padding: 0 16px;
           }
-          .hero-right-panel { height: 330px; }
+          .hero-right-panel { height: 280px; }
         }
         @media (min-width: 1280px) {
           .hero-grid-container { grid-template-columns: minmax(0, 1fr) minmax(560px, 58%); gap: 28px; }
