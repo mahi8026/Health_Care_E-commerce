@@ -642,7 +642,7 @@ const HOME_STYLES = `
         /* Hero layout - Optimized grid */
         .hero-grid-container {
           width: 100%;
-          max-width: 1280px;
+          max-width: min(1280px, 100vw);
           margin: 0 auto;
           padding: 0 24px;
           position: relative;
@@ -651,6 +651,8 @@ const HOME_STYLES = `
           grid-template-columns: minmax(0, 1fr) minmax(480px, 52%);
           gap: 24px;
           align-items: center;
+          box-sizing: border-box;
+          overflow: hidden;
         }
         .hero-left-content { order: 1; }
         .hero-right-panel {
