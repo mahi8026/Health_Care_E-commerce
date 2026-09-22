@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { FaChevronDown } from 'react-icons/fa';
+import { createPortal } from 'react-dom';
 
 // Define UserIcon outside the component to avoid recreation on each render
 const UserIcon = () => (
@@ -15,13 +16,16 @@ const UserIcon = () => (
 
 export default function AccountMenu({ onNavigate, onLoginClick, onLogout, variant = 'default' }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [buttonRect, setButtonRect] = useState(null);
   const { user, isAuthenticated, isB2BCustomer } = useAuth();
   const menuRef = useRef(null);
+  const buttonRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (menuRef.current && !menuRef.current.contains(event.target) && 
+          buttonRef.current && !buttonRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
@@ -29,6 +33,13 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setButtonRect(rect);
+    }
   }, [isOpen]);
 
   const handleMenuClick = (action) => {
@@ -42,6 +53,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
     if (isGlass) {
       return (
         <button
+          ref={buttonRef}
           onClick={onLoginClick}
           aria-label="Account"
           className="nav-glass-control nav-glass-control--stack touch-compact"
@@ -53,6 +65,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
     }
     return (
       <button
+        ref={buttonRef}
         onClick={onLoginClick}
         aria-label="Account"
         className="w-11 h-11 rounded-md border border-[var(--color-border-primary)] bg-white flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-tertiary)] hover:border-[var(--color-border-primary)] transition-colors text-[var(--color-text-secondary)] hover:text-brand-navy touch-compact"
@@ -69,8 +82,9 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
   const firstName = user?.name?.split(' ')[0] || 'Account';
 
   return (
-    <div className="relative" ref={menuRef}>
+    <>
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Account menu"
         aria-expanded={isOpen}
@@ -98,9 +112,16 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
         )}
       </button>
 
-      {isOpen && (
+      {isOpen && buttonRect && typeof window !== 'undefined' && createPortal(
         <div
-          className={`absolute right-0 top-full mt-2 w-[260px] sm:w-[260px] max-w-[calc(100vw-2rem)] rounded-2xl py-2 z-dropdown nav-dropdown-enter ${
+          ref={menuRef}
+          style={{
+            position: 'fixed',
+            top: `${buttonRect.bottom + 10}px`,
+            right: `${window.innerWidth - buttonRect.right}px`,
+            zIndex: 950
+          }}
+          className={`w-[260px] sm:w-[260px] max-w-[calc(100vw-2rem)] rounded-2xl py-2 nav-dropdown-enter ${
             isGlass ? 'glass-panel-dark' : 'bg-white border border-[var(--color-border-tertiary)] shadow-xl'
           }`}
           role="menu"
@@ -165,9 +186,10 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
               <span>Logout</span>
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 }
 
