@@ -172,7 +172,10 @@ export default async function CategoryPage({ params }) {
         </div>
       </div>
 
-      {/* Pass the resolved category name to ProductsPage so it pre-filters */}
+      {/* Pass the resolved category name to ProductsPage so it pre-filters.
+          parentProvidesH1 (P-03): this route renders the visible semantic <h1>
+          above the grid, so ProductsPage demotes its sr-only heading to <h2>
+          and the page keeps exactly one H1. */}
       <ProductsPage
         initialCategory={categoryName}
         initialData={listing.products}
@@ -180,6 +183,7 @@ export default async function CategoryPage({ params }) {
         initialCategories={listing.categories}
         initialBrands={listing.brands}
         initialFilters={listing.filters}
+        parentProvidesH1
       />
 
       {/* Quick Answer box — answer-first content for SEO/AI engines */}

@@ -21,6 +21,11 @@ export default function ProductsPage({
   initialCategories = null,
   initialBrands = null,
   initialFilters = null,
+  // P-03: when the parent route renders its own visible <h1> (category pages),
+  // this component's sr-only heading is demoted to <h2> so the page keeps
+  // exactly ONE H1. Default false preserves the current single-H1 behaviour
+  // on routes that have no other H1 (e.g. /products).
+  parentProvidesH1 = false,
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -246,11 +251,18 @@ export default function ProductsPage({
 
           {/* ── Products Area ────────────────────────────────────────────── */}
           <main className="flex-1 min-w-0">
-            <h1 className="sr-only">
-              {searchCategory
-                ? CATEGORY_SEO[searchCategory]?.h1 || `${searchCategory} in Bangladesh`
-                : 'Medical Equipment in Bangladesh'}
-            </h1>
+            {(() => {
+              // P-03: exactly one <h1> per page. When the parent route already
+              // renders the visible H1, this heading is demoted to <h2>.
+              const SrHeading = parentProvidesH1 ? 'h2' : 'h1';
+              return (
+                <SrHeading className="sr-only">
+                  {searchCategory
+                    ? CATEGORY_SEO[searchCategory]?.h1 || `${searchCategory} in Bangladesh`
+                    : 'Medical Equipment in Bangladesh'}
+                </SrHeading>
+              );
+            })()}
 
             {/* Top bar */}
             <div className="bg-white rounded-2xl shadow-sm border border-[var(--color-border-tertiary)] px-3 sm:px-4 py-2.5 sm:py-3 mb-4 flex items-center justify-between gap-2 sm:gap-3 min-w-0">

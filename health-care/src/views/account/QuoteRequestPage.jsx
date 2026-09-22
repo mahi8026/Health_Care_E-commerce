@@ -6,6 +6,9 @@ import Link from 'next/link';
 import AccountPageShell from '@/components/account/AccountPageShell';
 import Spinner from '@/components/ui/Spinner';
 import { API } from '@/constants/api';
+import GA4Tracker from '@/services/GA4Tracker';
+import MetaPixelTracker from '@/services/MetaPixelTracker';
+import { trackMarketingEvent } from '@/utils/marketingBeacon';
 import { FaPlus, FaTrashAlt, FaFileInvoiceDollar, FaSearch, FaArrowLeft } from 'react-icons/fa';
 
 const fmtMoney = (n) => `৳${(Number(n) || 0).toLocaleString('en-BD')}`;
@@ -129,6 +132,31 @@ export default function QuoteRequestPage() {
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.message || 'Failed to submit quotation request');
+
+      // RFQ is the primary B2B conversion and was previously untracked (audit P-02).
+      // Fires only here - after the server confirmed the quote was created - so it
+      // never fires on load, button click, validation error, API error or cancel.
+      // Mirrors the WhatsAppOrderButton convention (GA4 + Meta Pixel + first-party
+      // beacon). Non-sensitive parameters only: no name, email, phone or address.
+      try {
+        const quoteParams = {
+          quote_number: data.data?.quoteNumber || undefined,
+          item_count: lines.length,
+          payment_terms: paymentTerms,
+          source: 'quote_request_form',
+          currency: 'BDT',
+        };
+        GA4Tracker.trackEvent('quote_request_submitted', quoteParams);
+        MetaPixelTracker.trackCustomEvent('QuoteRequestSubmitted', {
+          content_ids: lines.map((l) => l.product),
+          content_type: 'product',
+          currency: 'BDT',
+        });
+        trackMarketingEvent('quote_request_submitted', quoteParams);
+      } catch {
+        // Analytics must never block a successful RFQ submission.
+      }
+
       flash(`Quotation ${data.data?.quoteNumber || ''} submitted! Our team will contact you within 24 hours.`);
       router.push('/account/quotes');
     } catch (err) {

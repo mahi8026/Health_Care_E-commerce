@@ -10,7 +10,9 @@ import NotFoundSearch from '@/components/search/NotFoundSearch';
 // Next.js already sends a 404 HTTP status for this component,
 // but the explicit robots tag ensures crawlers don't cache any content.
 export const metadata = {
-  title: 'Page Not Found | MediportBD',
+  // P-04: the root layout template appends '| MediportBD'. The suffix was
+  // previously hard-coded here, producing 'Page Not Found | MediportBD | MediportBD'.
+  title: 'Page Not Found',
   robots: { index: false, follow: true },
 };
 

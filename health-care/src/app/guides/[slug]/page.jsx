@@ -6,6 +6,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const dynamicParams = false;
 
@@ -27,15 +28,19 @@ export async function generateMetadata({ params }) {
 
   const canonicalUrl = `${SITE_CONFIG.url}/guides/${guide.slug}`;
 
+  // P-04: finalTitle() adds the layout's '| MediportBD' suffix exactly once —
+  // passing guide.metaTitle raw caused '... | MediportBD | MediportBD'.
+  const resolvedTitle = finalTitle(guide.metaTitle);
+
   return {
-    title: guide.metaTitle,
+    title: resolvedTitle,
     description: guide.metaDescription,
     keywords: guide.keywords.join(', '),
     alternates: { canonical: canonicalUrl },
     openGraph: {
       type: 'article',
       url: canonicalUrl,
-      title: guide.metaTitle,
+      title: socialTitle(guide.metaTitle),
       description: guide.metaDescription,
       publishedTime: guide.updatedAt,
       modifiedTime: guide.updatedAt,
@@ -44,7 +49,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title: guide.metaTitle,
+      title: socialTitle(guide.metaTitle),
       description: guide.metaDescription,
     },
   };

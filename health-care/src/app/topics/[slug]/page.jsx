@@ -9,6 +9,7 @@ import { CATEGORY_SLUG_MAP } from '@/constants/categories';
 import { API } from '@/constants/api';
 import ProductCard from '@/components/ProductCard';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -31,21 +32,25 @@ export async function generateMetadata({ params }) {
   if (!cluster) return { title: 'Topic Not Found', robots: { index: false } };
 
   const canonicalUrl = `${SITE_CONFIG.url}/topics/${cluster.slug}`;
+  // P-04: finalTitle() adds the layout's '| MediportBD' suffix exactly once.
+  // Passing cluster.metaTitle raw (it already ends with the suffix) made the
+  // root template append a second one → '... | MediportBD | MediportBD'.
+  const resolvedTitle = finalTitle(cluster.metaTitle);
   return {
-    title: cluster.metaTitle,
+    title: resolvedTitle,
     description: cluster.metaDescription,
     keywords: cluster.keywords.join(', '),
     alternates: { canonical: canonicalUrl },
     openGraph: {
       type: 'website',
       url: canonicalUrl,
-      title: cluster.metaTitle,
+      title: socialTitle(cluster.metaTitle),
       description: cluster.metaDescription,
       images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630, alt: cluster.title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: cluster.metaTitle,
+      title: socialTitle(cluster.metaTitle),
       description: cluster.metaDescription,
     },
   };

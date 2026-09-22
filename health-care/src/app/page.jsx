@@ -2,6 +2,7 @@
 import HomePage from '@/views/HomePage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import HomepageFAQs from '@/components/seo/HomepageFAQs';
+import { LANDING_PAGES } from '@/config/landingPages';
 
 export const metadata = {
   title:       PAGE_SEO.home.title,
@@ -23,6 +24,28 @@ export const metadata = {
 };
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://health-care-e-commerce-ubyy.onrender.com/api';
+
+/**
+ * Equipment price-guide links (P-01).
+ *
+ * The 13 /equipment/<slug> landing pages are the site's highest commercial-intent
+ * pages, but the homepage previously rendered zero links to them (audit finding
+ * P-01), leaving them dependent on sitemap discovery only.
+ *
+ * Labels are derived from the landing-page config so this stays a single source
+ * of truth — adding a landing page automatically adds it here. The brand suffix
+ * and the "Price in Bangladesh 2026" tail are stripped to keep anchor text
+ * natural and non-repetitive.
+ */
+const equipmentLinks = (Array.isArray(LANDING_PAGES) ? LANDING_PAGES : [])
+  .filter((p) => p && p.slug)
+  .map((p) => {
+    const subject = String(p.title || p.slug)
+      .replace(/\s*\|\s*MediportBD\s*$/i, '')
+      .replace(/\s*Price in Bangladesh(\s*20\d\d)?\s*$/i, '')
+      .trim();
+    return { slug: p.slug, label: `${subject} price guide` };
+  });
 
 /**
  * Fetch home data + settings server-side with ISR (5-min revalidation).
@@ -223,6 +246,33 @@ export default async function Home() {
               </ul>
             </div>
           </div>
+
+          {/* Equipment price guides (P-01) — homepage links to the 13
+              commercial-intent /equipment/ landing pages. */}
+          {equipmentLinks.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-[var(--color-border-primary)]">
+              <h2 className="text-base font-semibold text-[var(--color-brand-navy)] mb-3">
+                Medical Equipment Price Guides
+              </h2>
+              <ul className="flex flex-wrap gap-x-5 gap-y-2">
+                {equipmentLinks.map((item) => (
+                  <li key={item.slug}>
+                    <Link
+                      href={`/equipment/${item.slug}`}
+                      className="text-sm text-[var(--color-brand-teal)] hover:underline"
+                    >
+                      {item.label} →
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/equipment" className="text-sm text-[var(--color-brand-teal)] hover:underline">
+                    All equipment price guides →
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       </section>
     </>
