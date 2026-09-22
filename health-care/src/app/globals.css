@@ -747,8 +747,9 @@ html.nav-scrolled .site-nav-shell::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 2.25rem;
-  max-height: 2.25rem;
+  height: 2.25rem !important;
+  max-height: 2.25rem !important;
+  min-height: 2.25rem !important;
   border-radius: 0.875rem;
   background: rgba(0, 29, 93, 0.05);
   /* Reduced blur from 20px to 10px and saturate from 180% to 150% for better performance */
@@ -926,8 +927,9 @@ html.nav-scrolled .site-nav-shell::after {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  height: 2.25rem;
-  max-height: 2.25rem;
+  height: 2.25rem !important;
+  max-height: 2.25rem !important;
+  min-height: 2.25rem !important;
   padding: 0 1rem;
   border-radius: 0.875rem;
   font-size: 12px;
