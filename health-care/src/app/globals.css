@@ -748,6 +748,7 @@ html.nav-scrolled .site-nav-shell::after {
   align-items: center;
   justify-content: center;
   height: 2.25rem;
+  max-height: 2.25rem;
   border-radius: 0.875rem;
   background: rgba(0, 29, 93, 0.05);
   /* Reduced blur from 20px to 10px and saturate from 180% to 150% for better performance */
@@ -831,7 +832,9 @@ html.nav-scrolled .site-nav-shell::after {
   width: auto;
   min-width: 3.25rem;
   max-width: 9rem;
-  padding: 0.3rem 0.65rem 0.3rem 0.3rem;
+  height: 2.25rem;
+  max-height: 2.25rem;
+  padding: 0 0.65rem 0 0.3rem;
 }
 
 /* Constrain account button on smaller screens to prevent overflow */
@@ -924,6 +927,7 @@ html.nav-scrolled .site-nav-shell::after {
   justify-content: center;
   gap: 0.4rem;
   height: 2.25rem;
+  max-height: 2.25rem;
   padding: 0 1rem;
   border-radius: 0.875rem;
   font-size: 12px;
