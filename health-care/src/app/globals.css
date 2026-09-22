@@ -212,7 +212,7 @@ html.lang-bn h6 {
   --text-5xl: clamp(32px, 8vw, 48px);
   
   /* Z-index Scale */
-  --z-dropdown: 700;
+  --z-dropdown: 950;
   --z-modal: 1200;
   --z-header: 900;
   --z-bottom-nav: 1000;
@@ -628,9 +628,10 @@ html.topbar-hidden .nav-search-modal {
     backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   /* CSS Containment for performance isolation */
   contain: layout style;
-  /* Prevent overflow */
+  /* Prevent horizontal overflow only - allow vertical for dropdowns */
   max-width: 100vw;
   overflow-x: hidden;
+  overflow-y: visible;
 }
 
 /* Home hero: ultra-clear glass over dark gradient */
