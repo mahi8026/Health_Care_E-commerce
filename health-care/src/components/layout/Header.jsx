@@ -215,7 +215,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
         }
       `}</style>
       <header className="glass-nav">
-        <div className="max-w-[var(--container-width)] mx-auto px-2 sm:px-4 md:px-6 h-[52px] min-h-[52px] nav-header-row gap-1.5 sm:gap-2 md:gap-3 overflow-visible">
+        <div className="max-w-[var(--container-width)] mx-auto px-2 sm:px-4 md:px-6 h-[52px] min-h-[52px] nav-header-row gap-1.5 sm:gap-2 md:gap-3">
 
           {/* Logo */}
           <button
