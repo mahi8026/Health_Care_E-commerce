@@ -100,7 +100,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
 
       {isOpen && (
         <div
-          className={`fixed right-2 top-[calc(var(--site-nav-height)+10px)] w-[260px] sm:w-[260px] max-w-[calc(100vw-2rem)] rounded-2xl py-2 z-dropdown nav-dropdown-enter ${
+          className={`absolute right-0 top-full mt-2 w-[260px] sm:w-[260px] max-w-[calc(100vw-2rem)] rounded-2xl py-2 z-dropdown nav-dropdown-enter ${
             isGlass ? 'glass-panel-dark' : 'bg-white border border-[var(--color-border-tertiary)] shadow-xl'
           }`}
           role="menu"
