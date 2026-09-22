@@ -286,6 +286,19 @@ html.lang-bn h6 {
   --bottom-nav-offset: 60px;
 }
 
+/* ── Z-Index Utility Classes ─────────────────────────────────────────────── */
+.z-dropdown {
+  z-index: var(--z-dropdown);
+}
+
+.z-modal {
+  z-index: var(--z-modal);
+}
+
+.z-header {
+  z-index: var(--z-header);
+}
+
 /* ── PWA Install Prompt Animation ────────────────────────────────────────── */
 @keyframes slide-up {
   from {
