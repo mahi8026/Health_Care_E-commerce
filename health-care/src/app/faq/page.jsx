@@ -2,6 +2,7 @@ import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import FAQPage from '@/views/FAQPage';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 // Flat FAQ list for server-side JSON-LD — mirrors FAQPage.jsx FAQ_CATEGORIES
 const ALL_FAQS = [
@@ -18,21 +19,23 @@ const ALL_FAQS = [
 ];
 
 export const metadata = {
-  title: 'Frequently Asked Questions | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Frequently Asked Questions'),
   description: 'Find answers to common questions about medical equipment orders, delivery, cold chain reagents, returns and B2B services at MediportBD Bangladesh.',
   keywords: 'MediportBD FAQ, medical equipment delivery Bangladesh, DGDA registered products FAQ, B2B medical supplier FAQ, cold chain reagent delivery',
   alternates: {
     canonical: `${SITE_CONFIG.url}/faq`,
   },
   openGraph: {
-    title: 'Frequently Asked Questions | MediportBD',
+    title: socialTitle('Frequently Asked Questions'),
     description: 'Answers to common questions about ordering, delivery, reagents, returns and B2B services at MediportBD.',
     url: `${SITE_CONFIG.url}/faq`,
     images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Frequently Asked Questions | MediportBD',
+    title: socialTitle('Frequently Asked Questions'),
     description: 'Answers to common questions about ordering, delivery and B2B services at MediportBD.',
   },
 };

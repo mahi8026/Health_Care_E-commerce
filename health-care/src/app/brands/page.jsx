@@ -4,17 +4,20 @@ import { SITE_CONFIG } from '@/config/seo';
 import { API } from '@/constants/api';
 import { serverFetchJson } from '@/lib/serverFetch';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const revalidate = 3600;
 
 export const metadata = {
-  title: 'Medical Equipment Brands in Bangladesh | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Medical Equipment Brands in Bangladesh'),
   description:
     'Browse all medical equipment brands available at MediportBD Bangladesh — genuine diagnostic devices, surgical instruments, laboratory reagents and hospital equipment from trusted global manufacturers.',
   keywords: 'medical equipment brands Bangladesh, diagnostic brands BD, hospital equipment suppliers Bangladesh',
   alternates: { canonical: `${SITE_CONFIG.url}/brands` },
   openGraph: {
-    title: 'Medical Equipment Brands in Bangladesh | MediportBD',
+    title: socialTitle('Medical Equipment Brands in Bangladesh'),
     description: 'Genuine medical equipment brands available in Bangladesh with DGDA certification and warranty.',
     url: `${SITE_CONFIG.url}/brands`,
     images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],

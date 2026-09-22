@@ -1,11 +1,14 @@
 import { SITE_CONFIG } from '@/config/seo';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const metadata = {
-  title: `Terms of Service | ${SITE_CONFIG.name}`,
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Terms of Service'),
   description: `Terms of Service for ${SITE_CONFIG.name}. Please read these terms carefully before using our website or placing an order.`,
   alternates: { canonical: `${SITE_CONFIG.url}/terms` },
   openGraph: {
-    title: `Terms of Service | ${SITE_CONFIG.name}`,
+    title: socialTitle('Terms of Service'),
     description: `Terms of Service for ${SITE_CONFIG.name}. Please read these terms carefully before using our website or placing an order.`,
     url: `${SITE_CONFIG.url}/terms`,
     siteName: SITE_CONFIG.name,

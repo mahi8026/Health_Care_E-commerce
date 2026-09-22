@@ -2,18 +2,21 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { LANDING_PAGES } from '@/config/landingPages';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const revalidate = 3600;
 
 export const metadata = {
-  title: 'Medical Equipment Prices in Bangladesh 2026 | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Medical Equipment Prices in Bangladesh 2026'),
   description:
     'Live medical equipment prices in Bangladesh — ECG machines, patient monitors, ultrasound, X-ray, autoclaves, nebulizers and more with DGDA certification, warranty and B2B pricing from MediportBD.',
   keywords:
     'medical equipment price Bangladesh, ECG machine price BD, patient monitor price Bangladesh, ultrasound price in Bangladesh, autoclave price, nebulizer price, glucose meter price BD',
   alternates: { canonical: `${SITE_CONFIG.url}/equipment` },
   openGraph: {
-    title: 'Medical Equipment Prices in Bangladesh 2026 | MediportBD',
+    title: socialTitle('Medical Equipment Prices in Bangladesh 2026'),
     description: 'Live prices and buying guides for medical equipment in Bangladesh.',
     url: `${SITE_CONFIG.url}/equipment`,
     images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],

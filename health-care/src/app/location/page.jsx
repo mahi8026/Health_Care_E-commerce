@@ -2,14 +2,17 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { BANGLADESH_LOCATIONS } from '@/config/bangladesh-seo';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const metadata = {
-  title: 'Medical Equipment Supplier All Bangladesh — Dhaka, Chittagong, Sylhet | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Medical Equipment Supplier All Bangladesh — Dhaka, Chittagong, Sylhet'),
   description: 'Medical equipment supplier serving all Bangladesh divisions: Dhaka, Chittagong, Sylhet, Rajshahi, Khulna, Barisal, Rangpur, Mymensingh. ✓ Free delivery ✓ DGDA-registered supplier. Call: 01646-886795',
   keywords: 'medical equipment supplier bangladesh, medical equipment all bangladesh, hospital equipment nationwide, medical supply bangladesh divisions',
   alternates: { canonical: `${SITE_CONFIG.url}/location` },
   openGraph: {
-    title: 'Medical Equipment Supplier All Bangladesh | MediportBD',
+    title: socialTitle('Medical Equipment Supplier All Bangladesh'),
     description: 'Serving all 8 divisions of Bangladesh with medical equipment from a DGDA-registered supplier',
     url: `${SITE_CONFIG.url}/location`,
     images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],

@@ -1,14 +1,17 @@
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const metadata = {
-  title: 'Medical Equipment Price List Bangladesh 2026 — Complete Pricing Guide | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Medical Equipment Price List Bangladesh 2026 — Complete Pricing Guide'),
   description: 'Complete medical equipment price list in Bangladesh 2026. Compare ECG machines, patient monitors, ultrasound, surgical instruments, lab reagents. Updated monthly. 600+ product prices.',
   keywords: 'medical equipment price bangladesh, ecg machine price bd, patient monitor price, ultrasound machine price bangladesh, surgical instruments price, lab reagent price bangladesh',
   alternates: { canonical: `${SITE_CONFIG.url}/guides/medical-equipment-price-list-bangladesh-2026` },
   openGraph: {
-    title: 'Medical Equipment Price List Bangladesh 2026 | MediportBD',
+    title: socialTitle('Medical Equipment Price List Bangladesh 2026'),
     description: 'Complete pricing guide for medical equipment in Bangladesh. Compare 600+ products from ECG machines to lab reagents. Updated monthly.',
     url: `${SITE_CONFIG.url}/guides/medical-equipment-price-list-bangladesh-2026`,
     images: [{ url: `${SITE_CONFIG.url}/og-default.png`, width: 1200, height: 630 }],

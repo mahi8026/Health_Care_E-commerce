@@ -2,16 +2,19 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const metadata = {
-  title: 'DGDA Registration & Medical Device Compliance Bangladesh | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('DGDA Registration & Medical Device Compliance Bangladesh'),
   description:
     'MediportBD operates as a DGDA-registered importer. Regulated products are imported through authorised channels and product registration documents are available on request.',
   keywords:
     'DGDA registered medical equipment Bangladesh, DGDA compliance medical devices, CE marked medical equipment BD, DGDA registration Bangladesh, medical device regulation Bangladesh',
   alternates: { canonical: `${SITE_CONFIG.url}/dgda-info` },
   openGraph: {
-    title: 'DGDA Registration & Medical Device Compliance Bangladesh | MediportBD',
+    title: socialTitle('DGDA Registration & Medical Device Compliance Bangladesh'),
     description:
       'MediportBD is a DGDA-registered importer of medical equipment. Understand how medical device regulation works in Bangladesh and why it matters for your clinic or hospital.',
     url: `${SITE_CONFIG.url}/dgda-info`,
@@ -19,7 +22,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DGDA Registration & Medical Device Compliance | MediportBD',
+    title: socialTitle('DGDA Registration & Medical Device Compliance'),
     description: 'DGDA-registered medical equipment importer in Bangladesh. Product registration documents available on request.',
   },
 };

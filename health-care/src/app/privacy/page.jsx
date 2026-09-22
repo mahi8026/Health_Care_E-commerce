@@ -1,11 +1,14 @@
 import { SITE_CONFIG } from '@/config/seo';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const metadata = {
-  title: `Privacy Policy | ${SITE_CONFIG.name}`,
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Privacy Policy'),
   description: `Privacy Policy for ${SITE_CONFIG.name}. Learn how we collect, use, and protect your personal information.`,
   alternates: { canonical: `${SITE_CONFIG.url}/privacy` },
   openGraph: {
-    title: `Privacy Policy | ${SITE_CONFIG.name}`,
+    title: socialTitle('Privacy Policy'),
     description: `Privacy Policy for ${SITE_CONFIG.name}. Learn how we collect, use, and protect your personal information.`,
     url: `${SITE_CONFIG.url}/privacy`,
     siteName: SITE_CONFIG.name,

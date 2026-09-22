@@ -2,18 +2,21 @@ import Link from 'next/link';
 import { SITE_CONFIG } from '@/config/seo';
 import { TOPICAL_CLUSTERS } from '@/config/topicalClusters';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
+import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const revalidate = 3600;
 
 export const metadata = {
-  title: 'Medical Equipment Topics & Buying Guides in Bangladesh | MediportBD',
+  // The root layout title template appends ' | MediportBD', so the suffix
+  // must not be hard-coded here - it rendered twice before this fix.
+  title: finalTitle('Medical Equipment Topics & Buying Guides in Bangladesh'),
   description:
     'Explore MediportBD topic hubs — ECG machines, blood pressure monitors, ultrasound, surgical instruments, laboratory equipment, hospital ICU equipment and diabetes care with prices, brands and buying guidance in Bangladesh.',
   keywords:
     'medical equipment topics Bangladesh, ECG machines BD, BP monitors Bangladesh, ultrasound machines Bangladesh, surgical instruments BD, ICU equipment Bangladesh, diabetes care BD',
   alternates: { canonical: `${SITE_CONFIG.url}/topics` },
   openGraph: {
-    title: 'Medical Equipment Topics & Buying Guides in Bangladesh | MediportBD',
+    title: socialTitle('Medical Equipment Topics & Buying Guides in Bangladesh'),
     description: 'Topic hubs with prices, brands and buying guidance for medical equipment in Bangladesh.',
     url: `${SITE_CONFIG.url}/topics`,
     images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
