@@ -44,7 +44,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
         <button
           onClick={onLoginClick}
           aria-label="Account"
-          className="nav-glass-control nav-glass-control--stack"
+          className="nav-glass-control nav-glass-control--stack touch-compact"
         >
           <span className="nav-glass-control__icon"><UserIcon /></span>
           <span className="nav-glass-control__label">Account</span>
@@ -55,7 +55,7 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
       <button
         onClick={onLoginClick}
         aria-label="Account"
-        className="w-11 h-11 rounded-md border border-[var(--color-border-primary)] bg-white flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-tertiary)] hover:border-[var(--color-border-primary)] transition-colors text-[var(--color-text-secondary)] hover:text-brand-navy"
+        className="w-11 h-11 rounded-md border border-[var(--color-border-primary)] bg-white flex items-center justify-center cursor-pointer hover:bg-[var(--color-background-tertiary)] hover:border-[var(--color-border-primary)] transition-colors text-[var(--color-text-secondary)] hover:text-brand-navy touch-compact"
       >
         <UserIcon />
       </button>
@@ -76,8 +76,8 @@ export default function AccountMenu({ onNavigate, onLoginClick, onLogout, varian
         aria-expanded={isOpen}
         className={
           isGlass
-            ? `nav-glass-control nav-glass-control--pill ${isOpen ? 'is-open' : ''}`
-            : `w-10 h-10 rounded-lg border flex items-center justify-center cursor-pointer transition-colors font-semibold text-xs ${
+            ? `nav-glass-control nav-glass-control--pill touch-compact ${isOpen ? 'is-open' : ''}`
+            : `w-10 h-10 rounded-lg border flex items-center justify-center cursor-pointer transition-colors font-semibold text-xs touch-compact ${
                 isOpen
                   ? 'border-brand-teal bg-brand-teal-tint text-brand-teal'
                   : 'border-[var(--color-border-primary)] bg-white text-brand-navy hover:bg-[var(--color-background-secondary)] hover:border-[var(--color-border-primary)]'

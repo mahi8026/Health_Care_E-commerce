@@ -370,7 +370,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                   onClick={() => setSearchOpen(true)}
                   aria-label="Search"
                   title="Search products"
-                  className="nav-glass-control nav-glass-control--icon"
+                  className="nav-glass-control nav-glass-control--icon touch-compact"
                 >
                   <FaSearch size={15} />
                 </button>
@@ -383,7 +383,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                 <button
                   onClick={onCartClick}
                   aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : 'Cart'}
-                  className="nav-glass-control nav-glass-control--stack"
+                  className="nav-glass-control nav-glass-control--stack touch-compact"
                 >
                   <span className="nav-glass-control__icon">
                     <FaShoppingCart size={15} />
@@ -406,7 +406,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
               <button
                 onClick={onCartClick}
                 aria-label={cartCount > 0 ? `Cart — ${cartCount} items` : 'Cart'}
-                className="nav-glass-control nav-glass-control--icon nav-cart-mobile-only"
+                className="nav-glass-control nav-glass-control--icon nav-cart-mobile-only touch-compact"
               >
                 <FaShoppingCart size={15} />
                 {cartCount > 0 && (
@@ -419,10 +419,10 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
             {!authed && (
               <div className="hidden xl:flex items-center gap-2">
-                <button onClick={onLoginClick} className="nav-cta-ghost">
+                <button onClick={onLoginClick} className="nav-cta-ghost touch-compact">
                   {t('nav.login')}
                 </button>
-                <button onClick={onRegisterClick} className="nav-cta-solid">
+                <button onClick={onRegisterClick} className="nav-cta-solid touch-compact">
                   {t('nav.register')}
                 </button>
               </div>
@@ -431,7 +431,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
             {authed && user?.role === 'admin' && (
               <button
                 onClick={() => router.push('/admin')}
-                className="glass-chip-admin"
+                className="glass-chip-admin touch-compact"
               >
                 {t('nav.admin')}
               </button>
@@ -439,7 +439,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
             <button
               onClick={() => router.push('/b2b')}
-              className="glass-chip-primary"
+              className="glass-chip-primary touch-compact"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -450,7 +450,7 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="nav-menu-toggle nav-menu-toggle--mobile"
+              className="nav-menu-toggle nav-menu-toggle--mobile touch-compact"
               aria-label="Open menu"
             >
               <FaBars size={17} />
