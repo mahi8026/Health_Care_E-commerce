@@ -534,7 +534,7 @@ html.topbar-hidden .site-topbar {
   flex-wrap: nowrap;
   align-items: center;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow: visible;
 }
 
 .site-nav-shell .nav-actions {
