@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SITE_CONFIG } from '@/config/seo';
 import { getGuideBySlug, GUIDES, GUIDE_AUTHOR } from '@/config/guides';
+import { TOPICAL_CLUSTERS } from '@/config/topicalClusters';
+import { getLandingPageBySlug } from '@/config/landingPages';
 import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
@@ -9,6 +11,20 @@ import FAQSchema from '@/components/seo/FAQSchema';
 import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const dynamicParams = false;
+
+/**
+ * WS-02 — Label helper for related-equipment links.
+ * Registry titles sometimes carry the layout's brand suffix (the patient
+ * monitor landing page title, for example, ends with '| MediportBD', while
+ * the ECG entry does not). The suffix is trimmed deterministically so link
+ * labels never repeat the brand. Only existing registry wording is reused —
+ * no new text is introduced.
+ */
+function landingLabel(landingPage) {
+  return String(landingPage.title || landingPage.slug)
+    .replace(/\s*\|\s*MediportBD\s*$/i, '')
+    .trim();
+}
 
 // ---------------------------------------------------------------------------
 // Static generation — all guide slugs
@@ -130,6 +146,22 @@ export default async function GuidePage({ params }) {
   const relatedGuides = (guide.relatedGuides || [])
     .map(s => getGuideBySlug(s))
     .filter(Boolean);
+
+  // WS-02 — Lateral cluster links.
+  // The topic-cluster registry already declares which guides belong to each
+  // cluster (guideSlugs) and which equipment price guides that cluster owns
+  // (landingSlugs). Only those existing relationships are used here, so no
+  // link is invented: ordering is registry-driven (deterministic), the
+  // current guide is excluded (no self-link) and duplicates are removed.
+  // A guide that belongs to no cluster renders neither block.
+  const guideClusters = TOPICAL_CLUSTERS.filter(
+    (cluster) => (cluster.guideSlugs || []).includes(guide.slug)
+  );
+  const relatedEquipment = [...new Set(
+    guideClusters.flatMap((cluster) => cluster.landingSlugs || [])
+  )]
+    .map((landingSlug) => getLandingPageBySlug(landingSlug))
+    .filter((landingPage) => landingPage && landingPage.slug !== guide.slug);
 
   const howToSchema = guide.howTo ? generateHowToSchema(guide, canonicalUrl) : null;
 
@@ -290,6 +322,50 @@ export default async function GuidePage({ params }) {
                   </span>
                   <span className="block text-sm font-semibold text-[var(--color-text-primary)]">{g.title}</span>
                   <span className="block text-xs text-[var(--color-text-secondary)] mt-1">{g.excerpt}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* WS-02 — Related equipment price guides (topic-cluster registry).
+            Additive only: existing product, guide and category links remain
+            untouched, and nothing renders when the registry defines no
+            related equipment for this guide. */}
+        {relatedEquipment.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-lg font-semibold text-[var(--color-brand-navy)] mb-3">
+              Related Equipment Price Guides
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {relatedEquipment.map((equipment) => (
+                <Link
+                  key={equipment.slug}
+                  href={`/equipment/${equipment.slug}`}
+                  className="text-sm font-medium text-[var(--color-brand-teal)] border border-[var(--color-brand-teal)] rounded-lg px-4 py-2 hover:bg-[var(--color-brand-teal)] hover:text-white transition-colors"
+                >
+                  {landingLabel(equipment)}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* WS-02 — Related topic hubs (topic-cluster registry). Additive only. */}
+        {guideClusters.length > 0 && (
+          <section className="mb-10">
+            <h2 className="text-lg font-semibold text-[var(--color-brand-navy)] mb-3">
+              Related Topic Guides
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {guideClusters.map((cluster) => (
+                <Link
+                  key={cluster.slug}
+                  href={`/topics/${cluster.slug}`}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-[var(--color-brand-teal)] border border-[var(--color-brand-teal)] rounded-lg px-4 py-2 hover:bg-[var(--color-brand-teal)] hover:text-white transition-colors"
+                >
+                  <span aria-hidden="true">{cluster.icon}</span>
+                  {cluster.title}
                 </Link>
               ))}
             </div>
