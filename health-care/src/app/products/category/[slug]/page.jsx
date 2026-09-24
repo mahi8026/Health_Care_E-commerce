@@ -118,6 +118,7 @@ export default async function CategoryPage({ params }) {
         description={seo.description}
         category={categoryName}
         url={canonicalUrl}
+        items={listing.products}
       />
 
       {/* Server-rendered H1 + topic/equipment cross-links — visible above the
