@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { FaShieldAlt, FaTruck, FaCheckCircle, FaWrench } from 'react-icons/fa';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
+import { resolveProductSeoLinks } from '@/utils/productSeoLinks';
 
 /**
  * Renders a rich, data-driven SEO content block for a product page.
@@ -14,6 +15,11 @@ export default function ProductSeoContent({ product }) {
   const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
   const categoryName = typeof product.category === 'object' ? product.category?.name : product.category;
   const categorySlug = categoryName ? CATEGORY_NAME_TO_SLUG[categoryName] : null;
+
+  // WS-03 — verified product → SEO-cluster destinations (registry-driven).
+  // Rendered server-side (this component is part of the SSR output) so the
+  // links are crawlable without client-side interaction.
+  const seoClusterLinks = useMemo(() => resolveProductSeoLinks(product), [product]);
 
   const specs = useMemo(() => {
     const specMap = product.specifications || {};
@@ -195,6 +201,29 @@ export default function ProductSeoContent({ product }) {
           >
             B2B Pricing
           </Link>
+        </div>
+      )}
+
+      {/* WS-03 — Related Healthcare Resources.
+          Rendered only when at least one VERIFIED product-specific destination
+          exists (equipment / topic / guide / brand resolved from existing
+          registries). Zero verified relationships => no section at all. */}
+      {seoClusterLinks.all.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-[var(--color-border-tertiary)]/60">
+          <h3 className="text-sm font-semibold text-brand-navy mb-2">
+            Related Healthcare Resources
+          </h3>
+          <div className="flex flex-wrap gap-3 text-sm">
+            {seoClusterLinks.all.map((destination) => (
+              <Link
+                key={destination.url}
+                href={destination.url}
+                className="text-[var(--color-text-secondary)] hover:text-brand-teal hover:underline transition-colors"
+              >
+                {destination.label}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>
