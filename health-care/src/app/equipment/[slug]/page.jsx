@@ -14,6 +14,19 @@ import FAQSchema from '@/components/seo/FAQSchema';
 export const revalidate = 3600;
 export const dynamicParams = true;
 
+/**
+ * WS-01 — Label helper for the related-equipment block.
+ * Registry titles sometimes carry the layout's brand suffix (the patient
+ * monitor landing page title, for example, ends with '| MediportBD', while
+ * the ECG entry does not). The suffix is trimmed deterministically so the
+ * block never repeats the brand inside a link label. No new wording is
+ * introduced — only the existing registry title is reused.
+ */
+function landingLabel(landingPage) {
+  const raw = landingPage.title || landingPage.slug;
+  return String(raw).replace(/\s*\|\s*MediportBD\s*$/i, '').trim();
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const page = getLandingPageBySlug(slug);
@@ -83,6 +96,19 @@ export default async function EquipmentLandingPage({ params }) {
 
   const categoryName = CATEGORY_SLUG_MAP[page.categorySlug];
   const parentClusters = getClustersForLandingPage(slug);
+
+  // WS-01 — Related equipment price guides.
+  // Sibling relationships are derived only from the existing topic-cluster
+  // registry: every cluster this page belongs to already lists its member
+  // landing pages, so no new relationship is invented here. Ordering is
+  // registry-driven (deterministic), the current page is excluded (no
+  // self-link) and duplicates are removed.
+  const siblingEquipment = [...new Set(
+    parentClusters.flatMap((cluster) => cluster.landingSlugs || [])
+  )]
+    .filter((siblingSlug) => siblingSlug !== slug)
+    .map((siblingSlug) => getLandingPageBySlug(siblingSlug))
+    .filter(Boolean);
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
     { name: 'Equipment', url: `${SITE_CONFIG.url}/equipment` },
@@ -221,6 +247,29 @@ export default async function EquipmentLandingPage({ params }) {
                   className="inline-flex items-center text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
                 >
                   {b.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* WS-01 — Related equipment price guides (registry-derived siblings).
+            Purely additive: existing product, brand, topic and CTA links are
+            untouched. When the cluster registry defines no sibling for this
+            page, the block is not rendered at all. */}
+        {siblingEquipment.length > 0 && (
+          <section className="mt-8 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+            <h2 className="text-lg font-semibold text-brand-navy mb-4">
+              Related Equipment Price Guides
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {siblingEquipment.map((sibling) => (
+                <Link
+                  key={sibling.slug}
+                  href={`/equipment/${sibling.slug}`}
+                  className="inline-flex items-center text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
+                >
+                  {landingLabel(sibling)}
                 </Link>
               ))}
             </div>
