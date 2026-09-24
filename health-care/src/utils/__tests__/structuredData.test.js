@@ -741,3 +741,100 @@ describe('StructuredData component', () => {
     expect(parsed.offers.price).toBe('2500.00')
   })
 })
+
+// ---------------------------------------------------------------------------
+// WS-19 — Structured-data regression protection
+//
+// These assertions lock the behaviour that is already shipped and verified in
+// production: a product without a real positive price emits NO Offer at all,
+// and a rating is only published when both the average and the count are
+// positive. Nothing here changes runtime behaviour — this file is a guard so
+// that later SEO work cannot silently weaken the pricing/rating contract.
+// ---------------------------------------------------------------------------
+
+describe('WS-19 pricing invariants — Offer gating', () => {
+  const pricedProduct = {
+    _id: 'ws19-priced',
+    name: 'Priced Test Product',
+    description: 'Product carrying a real selling price.',
+    price: 1500,
+    priceCurrency: 'BDT',
+    inStock: true,
+  }
+
+  const unpricedVariants = [
+    ['price is undefined', { ...pricedProduct, price: undefined }],
+    ['price is null (Contact for Price)', { ...pricedProduct, price: null }],
+    ['price is zero', { ...pricedProduct, price: 0 }],
+    ['price is an empty string', { ...pricedProduct, price: '' }],
+    ['price is a non-numeric label', { ...pricedProduct, price: 'Contact for Price' }],
+  ]
+
+  it('emits an Offer whose price exists, is finite and is greater than zero', () => {
+    const schema = generateProductSchema(pricedProduct)
+    expect(schema).toHaveProperty('offers')
+    expect(schema.offers['@type']).toBe('Offer')
+    expect(schema.offers.price).toBeDefined()
+    const numericPrice = Number(schema.offers.price)
+    expect(Number.isFinite(numericPrice)).toBe(true)
+    expect(numericPrice).toBeGreaterThan(0)
+  })
+
+  it.each(unpricedVariants)(
+    'omits the Offer and never writes a zero price when %s',
+    (_label, product) => {
+      const schema = generateProductSchema(product)
+      expect(schema).not.toHaveProperty('offers')
+      const serialised = JSON.stringify(schema)
+      expect(serialised).not.toMatch(/"price"\s*:\s*"?0(\.0+)?"?/)
+      expect(serialised).not.toContain('"price":0')
+      expect(serialised).not.toContain('"price":"0.00"')
+    }
+  )
+})
+
+describe('WS-19 rating invariants — AggregateRating guard', () => {
+  const base = {
+    _id: 'ws19-rating',
+    name: 'Rating Test Product',
+    description: 'Product used to verify rating gating.',
+    price: 2500,
+  }
+
+  const noRatingCases = [
+    ['the average and count are both zero', { ...base, rating: { average: 0, count: 0 } }],
+    ['the average is positive but the count is zero', { ...base, rating: { average: 4.6, count: 0 } }],
+    ['the average is zero but the count is positive', { ...base, rating: { average: 0, count: 12 } }],
+    ['the rating is a numeric zero', { ...base, rating: 0 }],
+    ['only a zero reviewCount is supplied', { ...base, reviewCount: 0 }],
+  ]
+
+  it.each(noRatingCases)('omits aggregateRating when %s', (_label, product) => {
+    const schema = generateProductSchema(product)
+    expect(schema).not.toHaveProperty('aggregateRating')
+  })
+
+  it('includes aggregateRating when both the average and the count are positive', () => {
+    const schema = generateProductSchema({ ...base, rating: { average: 4.5, count: 18 } })
+    expect(schema).toHaveProperty('aggregateRating')
+    expect(schema.aggregateRating['@type']).toBe('AggregateRating')
+    expect(Number(schema.aggregateRating.ratingValue)).toBeGreaterThan(0)
+    expect(Number(schema.aggregateRating.reviewCount)).toBeGreaterThan(0)
+  })
+})
+
+describe('WS-19 stable JSON-LD expectations', () => {
+  it('keeps the stable Product + Offer structure for a priced product', () => {
+    const schema = generateProductSchema({
+      _id: 'ws19-stable',
+      name: 'Stable Structure Product',
+      description: 'Used to assert the stable, documented structure.',
+      price: 900,
+    })
+    expect(schema['@context']).toBe('https://schema.org')
+    expect(schema['@type']).toBe('Product')
+    expect(schema.offers['@type']).toBe('Offer')
+    expect(schema.offers.priceCurrency).toBe('BDT')
+  })
+})
+

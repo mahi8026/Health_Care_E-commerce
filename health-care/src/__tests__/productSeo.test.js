@@ -480,3 +480,60 @@ describe('FAQSchema Component', () => {
     expect(schema.mainEntity.length).toBeLessThanOrEqual(6);
   });
 });
+
+
+// ---------------------------------------------------------------------------
+// WS-19 — Structured-data regression protection
+//
+// Serialised JSON-LD must never advertise a zero price, and a rating with a
+// zero count must never be published. Test-only: no runtime file is touched.
+// ---------------------------------------------------------------------------
+
+describe('WS-19 pricing and rating invariants', () => {
+  it('serialises a positive price for a priced product', () => {
+    const schema = generateProductSchema({ name: 'Priced Product', description: 'Has a price.', price: 3200 });
+    const serialised = JSON.stringify(schema);
+
+    expect(schema).toHaveProperty('offers');
+    expect(Number(schema.offers.price)).toBeDefined();
+    expect(Number.isFinite(Number(schema.offers.price))).toBe(true);
+    expect(Number(schema.offers.price)).toBeGreaterThan(0);
+    expect(serialised).toContain('"price":"3200.00"');
+  });
+
+  it.each([
+    ['price is zero', 0],
+    ['price is null', null],
+    ['price is undefined', undefined],
+  ])('omits offers and never serialises a zero price when %s', (_label, price) => {
+    const schema = generateProductSchema({ name: 'Quote Only Product', description: 'Contact for price.', price });
+    const serialised = JSON.stringify(schema);
+
+    expect(schema).not.toHaveProperty('offers');
+    expect(serialised).not.toMatch(/"price"\s*:\s*"?0(\.0+)?"?/);
+  });
+
+  it('omits aggregateRating when the rating count is zero', () => {
+    const schema = generateProductSchema({
+      name: 'Rated Product',
+      description: 'Rating with no reviews yet.',
+      price: 500,
+      rating: { average: 4.2, count: 0 },
+    });
+
+    expect(schema).not.toHaveProperty('aggregateRating');
+  });
+
+  it('keeps aggregateRating when both the average and the count are positive', () => {
+    const schema = generateProductSchema({
+      name: 'Rated Product',
+      description: 'Rating with reviews.',
+      price: 500,
+      rating: { average: 4.2, count: 9 },
+    });
+
+    expect(schema).toHaveProperty('aggregateRating');
+    expect(schema.aggregateRating['@type']).toBe('AggregateRating');
+  });
+});
+
