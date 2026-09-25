@@ -5,8 +5,9 @@
  * 12. structured-data outputs remain unchanged (component emits no JSON-LD;
  *     Product schema Offer/rating invariants still hold)
  * + the new "Related Healthcare Resources" section appears only when the
- *   resolver found verified destinations, and never for zero-link products
- *     (including the unmapped Massager / Baby & Mom Care categories).
+ *   resolver found verified destinations, and never for zero-link products.
+ *   WS-04B.2 (Phase 3C.5): Massager and Baby & Mom Care are now registered
+ *   public categories, so their product pages emit clean category routes.
  */
 
 import { render, screen } from '@testing-library/react';
@@ -100,15 +101,19 @@ describe('ProductSeoContent — WS-03 rendering', () => {
     expect(screen.queryByRole('heading', { name: 'Related Healthcare Resources' })).toBeNull();
   });
 
-  it('renders no new section and no invented category route for unmapped Baby & Mom Care', () => {
+  it('renders the approved Baby & Mom Care category route and no invented cluster links', () => {
     const { container } = render(<ProductSeoContent product={babyWeighingScale} />);
     expect(screen.queryByRole('heading', { name: 'Related Healthcare Resources' })).toBeNull();
     const hrefs = Array.from(container.querySelectorAll('a')).map((a) => a.getAttribute('href'));
-    expect(hrefs).not.toContain('/products/category/baby-and-mom-care');
-    expect(hrefs.every((h) => !String(h).includes('baby-and-mom'))).toBe(true);
-    // current behaviour preserved: the categorySlug-guarded hub block stays hidden
-    expect(hrefs).not.toContain('/brands');
-    expect(hrefs).not.toContain('/equipment');
+    // WS-04B.2 (Phase 3C.5): Baby & Mom Care is now a registered public category,
+    // so the clean category route is emitted instead of a query-string fallback.
+    expect(hrefs).toContain('/products/category/baby-and-mom-care');
+    expect(hrefs.every((h) => !String(h).includes('?category='))).toBe(true);
+    // mapped-category parity: the categorySlug-guarded hub block now renders
+    expect(hrefs).toContain('/brands');
+    expect(hrefs).toContain('/equipment');
+    // still no invented per-cluster destinations for this product
+    expect(hrefs.filter((h) => /^\/(equipment|topics|guides)\/[a-z0-9-]+$/.test(String(h)))).toEqual([]);
   });
 
   it('12. the component itself emits no JSON-LD (structured data comes from the route and is unchanged)', () => {

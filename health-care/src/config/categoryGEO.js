@@ -352,6 +352,52 @@ export const CATEGORY_GEO = {
       },
     ],
   },
+  // WS-04B.2 (Phase 3C.5) — owner-approved categories. Content is scoped to the
+  // products actually listed in each category at the time of writing.
+  'massager': {
+    quickAnswer:
+      'MediportBD supplies massagers in Bangladesh, including a smart scalp massager, fascia and massage guns, neck and shoulder massagers, a neck massager pillow and an air-pressure calf massager. They are portable personal-use devices for home, office or travel, with delivery across Bangladesh.',
+    faqs: [
+      {
+        q: 'What types of massagers are available at MediportBD in Bangladesh?',
+        a: 'The range includes a smart scalp massager with red light, a five-headed fascia gun with multiple attachments, a mini massage gun with four heads, a bionic neck and shoulder massager, a rechargeable neck massager pillow and an air-pressure calf massager.',
+      },
+      {
+        q: 'How do I choose between a massage gun and a neck massager?',
+        a: 'It depends on the area you want to reach: massage guns are handheld devices used on larger muscle areas such as legs, arms and back, while neck massagers and neck massager pillows are shaped for the neck and shoulders. Each product page lists the attachments and specifications of that model.',
+      },
+      {
+        q: 'Can massagers be used at home?',
+        a: 'Yes. The massagers in this category are compact, portable devices intended for personal use at home, in the office or while travelling. They are not medical treatment devices — consult a qualified healthcare professional for any medical condition.',
+      },
+      {
+        q: 'How long does delivery take for massagers in Bangladesh?',
+        a: 'Delivery within Dhaka takes 1–2 business days and 3–5 business days for other districts. Bulk orders can be placed through the B2B enquiry form.',
+      },
+    ],
+  },
+  'baby-and-mom-care': {
+    quickAnswer:
+      'MediportBD supplies baby and mom care products in Bangladesh. The current range includes a digital baby weighing scale for measuring infant weight and IRISH premium-quality baby pads (60 x 60 cm, pack of 20) for changing and under-pad use. Orders are delivered across Bangladesh.',
+    faqs: [
+      {
+        q: 'What baby care products are available at MediportBD?',
+        a: 'The current baby and mom care range has two products: a digital baby weighing scale for infant weight measurement and IRISH premium-quality baby pads in a medium 60 x 60 cm size, supplied as a pack of 20.',
+      },
+      {
+        q: 'What are baby pads used for?',
+        a: 'Baby pads are used as changing and under-pads. They are soft and absorbent, which makes them suitable for changing areas at home as well as for use in clinics and hospitals.',
+      },
+      {
+        q: 'Can the digital baby weighing scale be used in clinics?',
+        a: 'The digital baby weighing scale is designed to measure infant weight accurately and quickly. The specifications, weighing range and power requirements are listed on the product page so you can check suitability for your clinic or hospital.',
+      },
+      {
+        q: 'Do you deliver baby care products across Bangladesh?',
+        a: 'Yes. Delivery within Dhaka takes 1–2 business days and 3–5 business days for other districts. Bulk orders can be placed through the B2B enquiry form.',
+      },
+    ],
+  },
 };
 
 /**

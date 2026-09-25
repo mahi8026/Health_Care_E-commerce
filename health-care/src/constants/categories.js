@@ -26,6 +26,10 @@ export const CATEGORY_SLUG_MAP = {
   'compression-garments':            'Compression Garments',
   'diagnostic-devices':              'Diagnostic Devices',
   'mobility-aids':                   'Mobility Aids',
+  // WS-04B.2 (Phase 3C.5) — owner-approved public categories. Slugs match the
+  // MongoDB Category.slug values exactly ('massager', 'baby-and-mom-care').
+  'massager':                        'Massager',
+  'baby-and-mom-care':               'Baby & Mom Care',
 };
 
 // Reverse map: category name → slug

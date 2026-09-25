@@ -10,8 +10,10 @@
  *  6. invalid/unregistered targets removed
  *  7. broad category membership alone NEVER creates cluster links
  *  8. legitimate zero-link products return no cluster links
- *  9. unmapped Massager returns no invented route
- * 10. unmapped Baby & Mom Care returns no invented route
+ *  9. Massager product invents no cluster route (WS-04B.2: the category is now
+ *     registered, but the resolver never derives cluster links from category
+ *     membership — only from registered equipment/topic/guide relationships)
+ * 10. Baby & Mom Care product invents no cluster route (same rule)
  *
  * Fixtures are real catalogue products (slug/name/brand verified against the
  * production API) and registries are the real repository registries.

@@ -260,6 +260,16 @@ export const CATEGORY_SEO = {
     description: 'Mobility aids in Bangladesh. Wheelchairs, walkers, crutches and mobility equipment. Quality brands, competitive prices.',
     h1:          'Mobility Aids in Bangladesh',
   },
+  'Massager': {
+    title:       'Massager Bangladesh — Scalp, Neck & Massage Guns | MediportBD',
+    description: 'Buy massagers in Bangladesh: scalp massager, fascia and massage guns, neck and shoulder massagers, neck massager pillow and air-pressure calf massager. Delivery across Bangladesh.',
+    h1:          'Massagers in Bangladesh',
+  },
+  'Baby & Mom Care': {
+    title:       'Baby & Mom Care Bangladesh — Baby Weighing Scale, Baby Pads | MediportBD',
+    description: 'Baby and mom care products in Bangladesh: digital baby weighing scale and premium-quality baby pads (60 x 60 cm, pack of 20). Delivery across Bangladesh.',
+    h1:          'Baby & Mom Care Products in Bangladesh',
+  },
 };
 
 // ---------------------------------------------------------------------------
