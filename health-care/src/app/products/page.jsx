@@ -17,7 +17,20 @@ import { fetchListing } from '@/lib/listingData';
 export async function generateMetadata({ searchParams }) {
   const resolvedParams = await Promise.resolve(searchParams || {});
   const page = parseInt(resolvedParams.page) || 1;
-  const hasFilters = resolvedParams.category || resolvedParams.brand || resolvedParams.sort;
+  // F-01: EVERY supported product-list filter param (see @/lib/listingData —
+  // search/q, category, brand, minPrice, maxPrice, inStock, sort, page) must take
+  // the noindex+canonical treatment. Previously only category/brand/sort/page did,
+  // so ?minPrice=/&maxPrice= emitted index,follow while robots.txt disallows those
+  // families — conflicting crawl/indexation signals. Unknown/unrelated params are
+  // deliberately NOT blocked here.
+  const hasFilters =
+    resolvedParams.category ||
+    resolvedParams.brand ||
+    resolvedParams.sort ||
+    resolvedParams.q ||
+    resolvedParams.minPrice ||
+    resolvedParams.maxPrice ||
+    resolvedParams.inStock;
   const resolvedTitle = PAGE_SEO.products.title;
   const exactTitle = finalTitle(resolvedTitle);
   const shareTitle = socialTitle(resolvedTitle);
