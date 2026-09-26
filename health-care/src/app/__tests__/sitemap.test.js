@@ -102,7 +102,6 @@ describe('/sitemap-static.xml', () => {
     const required = [
       SITE_CONFIG.url,
       `${SITE_CONFIG.url}/products`,
-      `${SITE_CONFIG.url}/equipment`,
       `${SITE_CONFIG.url}/reagent-store`,
       `${SITE_CONFIG.url}/b2b`,
       `${SITE_CONFIG.url}/brands`,
@@ -113,6 +112,12 @@ describe('/sitemap-static.xml', () => {
     for (const url of required) {
       expect(locs).toContain(url)
     }
+  })
+
+  // F-15: /equipment is owned by sitemap-equipment.xml (the hub + its landing
+  // pages). It must appear exactly once across the sitemap union.
+  it('does not duplicate /equipment (owned by sitemap-equipment.xml)', () => {
+    expect(locs).not.toContain(`${SITE_CONFIG.url}/equipment`)
   })
 
   it('never includes private, transactional or noindex paths', () => {
