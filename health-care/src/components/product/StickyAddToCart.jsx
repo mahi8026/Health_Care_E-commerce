@@ -134,9 +134,9 @@ export default function StickyAddToCart({ product, scrollThreshold = 600 }) {
                 ? product.images[0]
                 : (product.images[0]?.url || product.images[0]?.secure_url || '')}
               alt={product.name}
-              fill
-              sizes="56px"
-              className="object-contain p-1"
+              width={56}
+              height={56}
+              className="w-full h-full object-contain p-1"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl">🏥</div>
