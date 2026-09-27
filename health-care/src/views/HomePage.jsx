@@ -484,7 +484,7 @@ const handleKeyDown = (e) => {
               <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 25% 15%, rgba(0,208,202,0.35), transparent 55%), radial-gradient(ellipse at 85% 85%, rgba(24,175,169,0.5), transparent 60%), linear-gradient(140deg, #001D5D 0%, #002B78 60%, #18AFA9 140%)' }} />
             ) : (
               <Image
-                src={slide.imageUrl}
+                src={getHeroImage(slide.imageUrl)}
                 alt={slide.altText || `Medical equipment Bangladesh slide ${i + 1} — MediportBD`}
                 fill
                 sizes="(max-width: 768px) 100vw, 52vw"
