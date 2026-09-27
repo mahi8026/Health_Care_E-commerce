@@ -162,7 +162,7 @@ export const pageMetadata = {
 export const CATEGORY_SEO = {
   'Diagnostic Equipment': {
     title:       'Diagnostic Equipment Bangladesh — Blood Pressure Monitors, Scales, Stethoscopes | MediportBD',
-    description: 'Buy diagnostic equipment in Bangladesh. Blood pressure monitors, weighing scales, thermometers, pulse oximeters, stethoscopes, fetal dopplers from Rossmax, Omron, Microlife, Beurer. DGDA-registered supplier.',
+    description: 'Buy diagnostic equipment in Bangladesh: BP monitors, weighing scales, pulse oximeters and fetal dopplers from Omron, Rossmax, Microlife. DGDA-registered.',
     h1:          'Diagnostic Equipment in Bangladesh',
   },
   'Surgical Instruments': {
@@ -262,7 +262,7 @@ export const CATEGORY_SEO = {
   },
   'Massager': {
     title:       'Massager Bangladesh — Scalp, Neck & Massage Guns | MediportBD',
-    description: 'Buy massagers in Bangladesh: scalp massager, fascia and massage guns, neck and shoulder massagers, neck massager pillow and air-pressure calf massager. Delivery across Bangladesh.',
+    description: 'Buy massagers in Bangladesh: scalp massagers, fascia and massage guns, neck and shoulder massagers, massage pillows and calf massagers. Nationwide delivery.',
     h1:          'Massagers in Bangladesh',
   },
   'Baby & Mom Care': {
