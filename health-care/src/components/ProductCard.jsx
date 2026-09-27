@@ -258,7 +258,11 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
         
         {/* Rating - Extra Compact */}
         <div className="mb-1 sm:mb-1.5">
-          <RatingStars rating={product.rating || 0} count={product.reviews} size="sm" />
+          <RatingStars
+            rating={typeof product.rating === 'object' && product.rating !== null ? product.rating?.average || 0 : product.rating || 0}
+            count={product.reviews}
+            size="sm"
+          />
         </div>
         
         {/* Price - Extra Compact with B2B indicator */}
