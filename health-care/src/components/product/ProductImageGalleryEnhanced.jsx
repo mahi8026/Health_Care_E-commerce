@@ -111,9 +111,9 @@ export default function ProductImageGalleryEnhanced({
             <Image
               src={getProductDetailImage(activeImage.url)}
               alt={generateProductAltText(product, activeIndex === 0 ? 'main' : 'gallery')}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className={`object-contain p-4 transition-transform duration-300 ${
+              width={800}
+              height={800}
+              className={`w-full h-full object-contain p-4 transition-transform duration-300 ${
                 isZooming ? 'scale-150' : 'scale-100'
               }`}
               style={isZooming ? {
@@ -223,9 +223,9 @@ export default function ProductImageGalleryEnhanced({
                   <Image
                     src={getProductCardImage(img.url)}
                     alt={generateProductAltText(product, idx === 0 ? 'main' : 'gallery')}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover"
                     unoptimized
                     onError={() => setFailedThumbs(prev => new Set(prev).add(idx))}
                   />
@@ -340,9 +340,9 @@ export default function ProductImageGalleryEnhanced({
                 <Image
                   src={getProductCardImage(img.url)}
                   alt={generateProductAltText(product, idx === 0 ? 'main' : 'gallery')}
-                  fill
-                  sizes="64px"
-                  className="object-cover"
+                  width={400}
+                  height={400}
+                  className="w-full h-full object-cover"
                   unoptimized
                 />
               </button>
