@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
@@ -175,7 +176,7 @@ export default function CartPage({ onCheckout, onContinueShopping }) {
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
-                          alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MediportBD`}
+                          alt={generateProductAltText(item)}
                           fill
                           sizes="(max-width: 768px) 96px, 128px"
                           style={{ objectFit: 'contain', padding: '8px' }}

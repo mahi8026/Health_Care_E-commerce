@@ -8,6 +8,7 @@
  */
 
 import { useMemo, memo } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
@@ -69,7 +70,7 @@ const ProductItem = memo(function ProductItem({ product, onRemove }) {
             <>
               <Image
                 src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || product.images[0])}
-                alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
+                alt={generateProductAltText(product)}
                 fill
                 sizes="192px"
                 style={{ objectFit: 'cover' }}

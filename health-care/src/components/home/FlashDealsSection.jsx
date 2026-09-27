@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState, useEffect, useCallback, memo } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
@@ -41,7 +42,7 @@ const FlashDealProductCard = memo(function FlashDealProductCard({ item, onClick 
         {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
-            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${finalPrice > 0 ? finalPrice.toLocaleString() : 'on request'} Bangladesh`}
+            alt={generateProductAltText(product)}
             fill
             sizes="(max-width: 640px) 50vw, 25vw"
             style={{ objectFit: 'cover', transition: 'transform 0.3s' }}

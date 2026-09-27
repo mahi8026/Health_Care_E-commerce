@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FaTimes, FaShoppingCart, FaArrowRight } from 'react-icons/fa';
@@ -199,7 +200,7 @@ export default function CartSidebar({ isOpen, onClose }) {
                     {imageUrl ? (
                       <Image 
                         src={imageUrl} 
-                        alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.price?.toLocaleString() || ''} Bangladesh — MediportBD`}
+                        alt={generateProductAltText(item)}
                         fill
                         sizes="56px"
                         style={{ objectFit: 'contain', padding: '4px' }}

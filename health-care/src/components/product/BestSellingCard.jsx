@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
@@ -117,7 +118,7 @@ export default function BestSellingCard({ product, rank, onClick, onAddToCart })
         {optimizedImg ? (
           <Image
             src={optimizedImg}
-            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Best Seller Rank ${rank} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
+            alt={generateProductAltText(product)}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
             style={{ objectFit: 'contain', padding: '8px' }}

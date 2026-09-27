@@ -1,6 +1,7 @@
 "use client";
 
 import { showToast } from '@/components/ui/Toast';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
@@ -188,7 +189,7 @@ export default function OrderSummary({
               <div key={item.id} className="flex gap-3">
                 <div className="w-12 h-12 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-background-secondary)] flex items-center justify-center shrink-0 overflow-hidden">
                   {img ? (
-                    <Image src={img} alt={`${item.name}${item.brand ? ` — ${item.brand}` : ''} — Price ৳${item.displayPrice?.toLocaleString() || ''} Bangladesh`} width={48} height={48} className="w-full h-full object-contain p-0.5" />
+                    <Image src={img} alt={generateProductAltText(item)} width={48} height={48} className="w-full h-full object-contain p-0.5" />
                   ) : (
                     <span className="text-lg">📦</span>
                   )}

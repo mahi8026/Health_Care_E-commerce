@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import { useCompare } from '@/context/CompareContext';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -165,7 +166,7 @@ export default function CompareModal({ onClose }) {
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={getImageUrl(product)}
-                              alt={`${product.name}${product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price?.toLocaleString() || ''} Bangladesh`}
+                              alt={generateProductAltText(product)}
                               loading="lazy"
                               decoding="async"
                               className="w-full h-full object-cover"

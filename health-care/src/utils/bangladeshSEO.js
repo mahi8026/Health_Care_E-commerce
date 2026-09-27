@@ -22,18 +22,33 @@ import {
 } from '@/config/bangladesh-seo';
 
 /**
- * Generate SEO-optimized alt text for product images (bilingual)
- * Includes product name, brand, price, and Bangladesh keyword
+ * Generate SEO-optimized alt text for product images.
+ *
+ * Describes the image from durable product facts only: name, verified brand
+ * and image view. F-05/F-13:
+ * - Normalizes populated-object brand/category fields so objects are never
+ *   stringified (the old template emitted literal "[object Object]").
+ * - Omits price — volatile commercial values do not belong in alt text.
+ * - Omits the placeholder "Generic" brand — it is not a verified brand.
+ * - Appends the Bengali category label only when a real translation exists.
  */
 export function generateProductAltText(product, imageType = 'main') {
-  const { name, brand, price, category } = product;
-  
-  // Get Bengali category name if available
-  const categoryBn = BENGALI_CATEGORIES[category] || category;
-  
-  // Format price in BDT
-  const priceFormatted = price ? `৳${price.toLocaleString('en-BD')}` : '';
-  
+  const name = typeof product?.name === 'string' ? product.name.trim() : '';
+
+  // Brand: populated object ({ name }), plain string, or missing.
+  let brand = product?.brand;
+  if (brand && typeof brand === 'object') brand = brand.name;
+  brand = typeof brand === 'string' ? brand.trim() : '';
+  if (!brand || brand.toLowerCase() === 'generic') brand = '';
+
+  // Category: populated object or display-name string.
+  let cat = product?.category;
+  if (cat && typeof cat === 'object') cat = cat.name || '';
+  const categoryLabel =
+    typeof cat === 'string' && BENGALI_CATEGORIES[cat]
+      ? ` (${BENGALI_CATEGORIES[cat]})`
+      : '';
+
   // Image type specific text
   const imageTypeText = {
     main: '',
@@ -42,23 +57,14 @@ export function generateProductAltText(product, imageType = 'main') {
     detail: 'detailed view',
     packaging: 'packaging',
   };
-  
+
   const typeText = imageTypeText[imageType] || '';
-  
-  // English alt text (primary)
-  const altTextEn = [
-    name,
-    brand && `by ${brand}`,
-    typeText,
-    priceFormatted && `Price ${priceFormatted}`,
-    'Bangladesh',
-    '— MediportBD'
-  ].filter(Boolean).join(' ');
-  
-  // Bengali category for additional SEO value
-  const altTextBn = categoryBn ? ` (${categoryBn})` : '';
-  
-  return `${altTextEn}${altTextBn}`;
+
+  return (
+    [name, brand && `by ${brand}`, typeText, 'Bangladesh', '— MediportBD']
+      .filter(Boolean)
+      .join(' ') + categoryLabel
+  );
 }
 
 /**

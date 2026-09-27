@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, memo } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useT } from '@/hooks/useT';
@@ -47,7 +48,7 @@ const ProductCard = memo(function ProductCard({ product, onClick }) {
         {optimizedImg && !imgError ? (
           <Image
             src={optimizedImg}
-            alt={`${product.name}${brandName ? ` — ${brandName}` : ''} — Price ৳${price > 0 ? price.toLocaleString() : 'on request'} Bangladesh`}
+            alt={generateProductAltText(product)}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             style={{ objectFit: 'cover' }}

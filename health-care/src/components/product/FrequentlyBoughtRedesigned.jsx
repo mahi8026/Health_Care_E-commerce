@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { generateProductAltText } from '@/utils/bangladeshSEO';
 import { useCart } from '@/context/CartContext';
 import { API } from '@/constants/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
@@ -85,7 +86,7 @@ export default function FrequentlyBoughtRedesigned({ productId, category }) {
                 {imageUrl ? (
                   <OptimizedImage
                     src={imageUrl}
-                    alt={`${product.name}${typeof product.brand === 'object' && product.brand?.name ? ` — ${product.brand.name}` : product.brand ? ` — ${product.brand}` : ''} — Price ৳${product.price > 0 ? product.price.toLocaleString() : 'Contact for Price'} Bangladesh`}
+                    alt={generateProductAltText(product)}
                     fill
                     context="card"
                     fallback="📦"
