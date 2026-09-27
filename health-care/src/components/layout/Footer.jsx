@@ -91,7 +91,10 @@ export default function Footer() {
       items: [
         { label: 'Help Centre', href: '/help' },
         { label: 'Track Order', href: '/track' },
-        { label: 'Returns Policy', href: '/returns' },
+        // F-08: was /returns → 308 → /returns/my-returns (robots-disallowed
+        // account page). Returns policy content lives on the public,
+        // indexable /terms page ("Returns & Refunds" section).
+        { label: 'Returns Policy', href: '/terms' },
         { label: 'Warranty', href: '/warranty' },
       ],
     },
