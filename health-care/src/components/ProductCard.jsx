@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,30 +22,11 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
   const t = useT();
   const [addingToCart, setAddingToCart] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const cardRef = useRef(null);
-  
-  // IntersectionObserver for lazy rendering
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect(); // Stop observing once visible
-        }
-      },
-      { 
-        rootMargin: '150px', // Load 150px before entering viewport
-        threshold: 0.01 
-      }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  // F-03 / WS-3D2-A: image DOM existence is data-driven.
+  // SSR renders the product image whenever the product data already carries
+  // one. The previous IntersectionObserver gate made every server-rendered
+  // card emit a skeleton instead of the image, hiding product images from
+  // crawlers. Native loading="lazy" below already defers off-screen fetches.
   // Compute primary image from product.images array - handle both old and new formats
   const imageData = product.images?.find(img => typeof img === 'object' && img.isPrimary) || product.images?.[0];
   const rawImageUrl = imageData ? (typeof imageData === 'string' ? imageData : imageData?.url) : null;
@@ -133,14 +114,13 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
   return (
     <Link
       href={productHref}
-      ref={cardRef}
       aria-label={`${product.name} — view details`}
       className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-md overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1 block"
       onClick={handleLinkClick}
     >
       {/* Image Container - Fixed aspect ratio 1:1 (square) for consistent sizing */}
       <div className="aspect-square w-full bg-[var(--color-background-secondary)] flex items-center justify-center relative flex-shrink-0 overflow-hidden">
-        {isVisible && primaryImage ? (
+        {primaryImage ? (
           <>
             <Image
               src={primaryImage.url}
@@ -165,9 +145,6 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
               🏥
             </div>
           </>
-        ) : !isVisible ? (
-          /* Skeleton placeholder while not in viewport */
-          <div className="w-full h-full bg-gradient-to-r from-[var(--color-background-tertiary)] via-[var(--color-background-muted)] to-[var(--color-background-tertiary)] animate-pulse" />
         ) : (
           /* Fallback shown when no image exists */
           <div className="flex items-center justify-center w-full h-full text-5xl text-[var(--color-text-tertiary)] bg-[var(--color-background-tertiary)]">
