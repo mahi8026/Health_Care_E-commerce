@@ -46,7 +46,7 @@ export default function LanguageSwitcher({ variant = 'pill', className = '' }) {
       onClick={() => switchLang(isBn ? 'en' : 'bn')}
       title={isBn ? 'Switch to English' : 'বাংলায় পরিবর্তন করুন'}
       aria-label={isBn ? 'Switch to English' : 'Switch to Bengali'}
-      className={`nav-glass-control nav-glass-control--icon flex items-center gap-1 px-2.5 text-xs font-semibold tracking-wide ${className}`}
+      className={`nav-glass-control nav-glass-control--icon flex items-center px-2.5 text-xs font-semibold tracking-wide ${className}`}
       style={{ minWidth: 44 }}
     >
       <span className="text-sm">🌐</span>

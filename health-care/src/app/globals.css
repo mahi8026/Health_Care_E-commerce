@@ -219,10 +219,11 @@ html.lang-bn h6 {
   --z-drawer: 1100;
   --z-toast: 10000;
 
-  /* Site nav */
+  /* Site nav - SINGLE SOURCE OF TRUTH FOR ALL NAVBAR DIMENSIONS */
   --site-topbar-height: 2rem;
-  --site-header-height: 3.25rem;
+  --site-header-height: 3.25rem;  /* 52px */
   --site-nav-height: calc(var(--site-topbar-height) + var(--site-header-height));
+  --nav-button-height: 2.25rem;  /* 36px - ALL navbar buttons */
 
   /* Glassmorphism tokens - OPTIMIZED for performance */
   --glass-blur: 12px; /* Reduced from 48px for better scroll performance */
@@ -489,8 +490,9 @@ html.lang-bn h6 {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
-  height: var(--site-header-height);
-  min-height: var(--site-header-height);
+  height: var(--site-header-height) !important;
+  min-height: var(--site-header-height) !important;
+  max-height: var(--site-header-height) !important;
 }
 
 /* Collapse announcement bar — main header moves up, no empty gap */
@@ -547,6 +549,9 @@ html.topbar-hidden .site-topbar {
   flex-wrap: nowrap;
   align-items: center;
   max-width: 100%;
+  height: var(--site-header-height) !important;
+  min-height: var(--site-header-height) !important;
+  max-height: var(--site-header-height) !important;
 }
 
 .site-nav-shell .nav-actions {
@@ -759,9 +764,9 @@ html.nav-scrolled .site-nav-shell::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 2.25rem !important;
-  max-height: 2.25rem !important;
-  min-height: 2.25rem !important;
+  height: var(--nav-button-height) !important;
+  max-height: var(--nav-button-height) !important;
+  min-height: var(--nav-button-height) !important;
   border-radius: 0.875rem;
   background: rgba(0, 29, 93, 0.05);
   /* Reduced blur from 20px to 10px and saturate from 180% to 150% for better performance */
@@ -845,8 +850,9 @@ html.nav-scrolled .site-nav-shell::after {
   width: auto;
   min-width: 3.25rem;
   max-width: 9rem;
-  height: 2.25rem;
-  max-height: 2.25rem;
+  height: var(--nav-button-height) !important;
+  max-height: var(--nav-button-height) !important;
+  min-height: var(--nav-button-height) !important;
   padding: 0 0.65rem 0 0.3rem;
 }
 
@@ -939,9 +945,9 @@ html.nav-scrolled .site-nav-shell::after {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  height: 2.25rem !important;
-  max-height: 2.25rem !important;
-  min-height: 2.25rem !important;
+  height: var(--nav-button-height) !important;
+  max-height: var(--nav-button-height) !important;
+  min-height: var(--nav-button-height) !important;
   padding: 0 1rem;
   border-radius: 0.875rem;
   font-size: 12px;
