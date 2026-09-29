@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import Alert from '@/components/ui/Alert';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -76,7 +75,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-page flex items-center justify-center p-4 sm:p-6">
+    <div className="flex items-center justify-center py-8 px-4 sm:px-6 bg-[var(--color-background-secondary)]" style={{ minHeight: 'calc(100vh - var(--site-nav-height))' }}>
       {/* Loading Overlay */}
       {loading && (
         <LoadingOverlay
@@ -85,93 +84,112 @@ export default function ForgotPasswordPage() {
         />
       )}
 
-      <div className="max-w-md w-full">
+      <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-5">
-          <BrandLogo size="lg" />
-          <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-2">
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-2">
+            <BrandLogo />
+          </div>
+          <p className="text-[var(--color-text-secondary)] text-xs">
             Reset your password
           </p>
         </div>
 
-        <div className="bg-white rounded-lg p-5 sm:p-8 shadow-sm border-[0.5px] border-[var(--color-border-tertiary)]">
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-[var(--color-border-primary)]">
           {success ? (
             <div className="text-center">
-              <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">&#128231;</div>
-              <h3 className="text-base sm:text-base font-semibold mb-2 font-[family-name:var(--font-plus-jakarta)]">
+              <div className="text-5xl mb-4">📧</div>
+              <h3 className="text-xl font-semibold mb-2 text-[var(--color-text-primary)]">
                 Check your email
               </h3>
-              <p className="text-xs sm:text-xs text-[var(--color-text-secondary)] mb-4 sm:mb-6 px-2">
+              <p className="text-sm text-[var(--color-text-secondary)] mb-6 px-2">
                 If an account exists with <strong className="break-all">{email}</strong>, you will receive a password reset link shortly.
               </p>
-              <p className="text-xs sm:text-xs text-[var(--color-text-secondary)] mb-3 sm:mb-4">
+              <p className="text-sm text-[var(--color-text-secondary)] mb-4">
                 Didn&apos;t receive the email? Check your spam folder or try again.
               </p>
               <button
                 onClick={() => router.push('/login')}
-                className="text-xs sm:text-xs text-brand-teal font-medium hover:underline"
+                className="text-sm text-brand-teal font-medium hover:underline"
               >
-                &larr; Back to login
+                ← Back to login
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4 sm:mb-6">
-                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mb-3 sm:mb-4">
+            <>
+              <div className="mb-6">
+                <h1 className="text-xl md:text-2xl font-semibold text-[var(--color-text-primary)] text-center mb-2">
+                  Forgot Password?
+                </h1>
+                <p className="text-sm text-[var(--color-text-secondary)] text-center">
                   Enter your email address and we&apos;ll send you a link to reset your password.
                 </p>
               </div>
 
               {/* Error — aria-live ensures screen readers announce failures */}
-              <div aria-live="polite" aria-atomic="true">
+              <div role="alert" aria-live="polite" aria-atomic="true">
                 {error && (
-                  <Alert className="mb-3 sm:mb-4">{error}</Alert>
+                  <div className="mb-4 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                    <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <span>{error}</span>
+                  </div>
                 )}
               </div>
 
-              <div className="mb-4 sm:mb-6">
-                <label htmlFor="forgot-email" className="block text-sm font-medium mb-1 text-[var(--color-text-primary)] font-[family-name:var(--font-plus-jakarta)]">
-                  Email Address <span className="text-[var(--color-status-danger)]">*</span>
-                </label>
-                <input
-                  id="forgot-email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  onBlur={handleBlur}
-                  placeholder="your@email.com"
-                  required
-                  autoComplete="email"
-                  className="w-full px-2.5 sm:px-3 py-2.5 sm:py-[10px] border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-base font-[family-name:var(--font-plus-jakarta)] focus:outline-none focus:border-brand-teal"
-                />
-                {errors.email && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.email}</p>}
-              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-6">
+                  <label htmlFor="forgot-email" className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <input
+                      id="forgot-email"
+                      name="email"
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      onBlur={handleBlur}
+                      placeholder="your@email.com"
+                      required
+                      autoComplete="email"
+                      className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white transition-all"
+                    />
+                  </div>
+                  {errors.email && <p className="text-red-500 text-xs mt-1.5">{errors.email}</p>}
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 sm:py-3 bg-brand-navy text-white rounded-lg text-xs sm:text-sm font-semibold disabled:opacity-50 hover:bg-[var(--color-brand-navy-hover)] transition-colors min-h-[48px]"
-              >
-                {loading ? (
-                  <>
-                    <ButtonLoader />
-                    Sending&hellip;
-                  </>
-                ) : (
-                  'Send Reset Link'
-                )}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white font-semibold rounded-xl text-base transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <ButtonLoader />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Reset Link'
+                  )}
+                </button>
+              </form>
+            </>
           )}
 
-          <div className="mt-4 sm:mt-6 text-center">
+          <div className="mt-6 text-center">
             <button
               type="button"
               onClick={() => router.push('/login')}
-              className="text-xs sm:text-xs text-[var(--color-text-secondary)] hover:text-brand-teal"
+              className="text-sm text-[var(--color-text-secondary)] hover:text-brand-teal transition-colors"
             >
-              &larr; Back to login
+              ← Back to login
             </button>
           </div>
         </div>

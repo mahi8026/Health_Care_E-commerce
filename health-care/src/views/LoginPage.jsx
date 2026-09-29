@@ -128,7 +128,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-[var(--color-background-secondary)]">
+    <div className="flex items-center justify-center py-8 px-4 sm:px-6 bg-[var(--color-background-secondary)]" style={{ minHeight: 'calc(100vh - var(--site-nav-height))' }}>
       {/* Loading Overlay — only shown during active login submission, not on initial page load */}
       {isSubmitting && (
         <LoadingOverlay 
@@ -137,21 +137,23 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
         />
       )}
       
-      {/* Full-width form panel */}
-      <div className="w-full flex items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md">
+      {/* Form container with professional card styling */}
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-[var(--color-border-primary)]">
           {/* Logo */}
-          <div className="text-center mb-4">
-            <BrandLogo />
-            <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">Bangladesh&apos;s trusted medical equipment platform</p>
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-2">
+              <BrandLogo />
+            </div>
+            <p className="text-[var(--color-text-secondary)] text-xs">Bangladesh&apos;s trusted medical equipment platform</p>
           </div>
 
           {/* Heading */}
-          <div className="mb-4">
-            <h1 className="text-lg md:text-xl font-semibold text-text-primary">
+          <div className="mb-6">
+            <h1 className="text-xl md:text-2xl font-semibold text-[var(--color-text-primary)] text-center mb-2">
               Sign in to your account
             </h1>
-            <p className="text-[var(--color-text-secondary)] text-sm mt-0.5">
+            <p className="text-[var(--color-text-secondary)] text-sm text-center">
               Don&apos;t have an account?{' '}
               <button
                 type="button"
@@ -166,7 +168,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           {/* Error — aria-live ensures screen readers announce login failures */}
           <div role="alert" aria-live="polite" aria-atomic="true">
             {error && (
-              <div className="mb-4 flex items-start gap-2 p-3 bg-[var(--color-status-danger-tint)] border border-[var(--color-status-danger-tint)] rounded-xl text-[var(--color-status-danger)] text-sm">
+              <div className="mb-4 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
                 <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
@@ -176,15 +178,15 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
-              <label htmlFor="login-email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
-                Email Address <span className="text-[var(--color-status-danger)]">*</span>
+              <label htmlFor="login-email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
+                Email Address <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <svg className="w-5 h-5 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -198,17 +200,17 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   placeholder="your@email.com"
                   required
                   autoComplete="email"
-                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-[var(--color-border-primary)] rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white transition-all"
                 />
               </div>
-              {errors.email && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-red-500 text-xs mt-1.5">{errors.email}</p>}
             </div>
 
             {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="login-password" className="block text-sm font-medium text-[var(--color-text-primary)]">
-                  Password <span className="text-[var(--color-status-danger)]">*</span>
+                  Password <span className="text-red-500">*</span>
                 </label>
                 <Link
                   href="/forgot-password"
@@ -219,7 +221,7 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <svg className="w-5 h-5 text-[var(--color-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
@@ -233,14 +235,14 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
-                  className="w-full pl-11 pr-12 py-2.5 bg-white border border-[var(--color-border-primary)] rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal transition-all"
+                  className="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base text-[var(--color-text-primary)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal focus:bg-white transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,14 +256,14 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
                   )}
                 </button>
               </div>
-              {errors.password && <p className="text-[var(--color-status-danger)] text-xs mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-red-500 text-xs mt-1.5">{errors.password}</p>}
             </div>
 
             {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting || loading}
-              className="w-full py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white font-semibold rounded-xl text-sm transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white font-semibold rounded-xl text-base transition-all duration-200 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -275,12 +277,12 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
           </form>
 
           {/* Divider */}
-          <div className="relative my-4">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[var(--color-border-primary)]" />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-4 bg-[var(--color-background-secondary)] text-xs text-[var(--color-text-secondary)] font-medium uppercase tracking-wider">
+              <span className="px-4 bg-white text-xs text-[var(--color-text-secondary)] font-medium uppercase tracking-wider">
                 Or continue with
               </span>
             </div>
@@ -294,10 +296,10 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
             <>
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-[var(--color-border-primary)]" />
+                  <div className="w-full border-t border-dashed border-[var(--color-border-primary)]" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-[var(--color-background-secondary)] text-xs text-warning-ink font-semibold uppercase tracking-wider">
+                  <span className="px-4 bg-white text-xs text-orange-600 font-semibold uppercase tracking-wider">
                     Dev Quick Login
                   </span>
                 </div>
@@ -313,8 +315,8 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
             </>
           )}
 
-          {/* Bottom register link (mobile-friendly duplicate) */}
-          <p className="mt-4 text-center text-sm text-[var(--color-text-secondary)]">
+          {/* Bottom register link */}
+          <p className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
             New to MediportBD?{' '}
             <button
               type="button"
