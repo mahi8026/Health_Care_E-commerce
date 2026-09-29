@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
@@ -98,12 +99,14 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [megaMenuButtonRect, setMegaMenuButtonRect] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartBounce, setCartBounce] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   const megaMenuRef = useRef(null);
+  const megaMenuButtonRef = useRef(null);
   const searchRef = useRef(null);
   const prevCartCount = useRef(cartCount);
 
@@ -157,7 +160,8 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
   useEffect(() => {
     const handleClick = (e) => {
-      if (megaMenuRef.current && !megaMenuRef.current.contains(e.target)) {
+      if (megaMenuRef.current && !megaMenuRef.current.contains(e.target) &&
+          megaMenuButtonRef.current && !megaMenuButtonRef.current.contains(e.target)) {
         setMegaMenuOpen(false);
       }
       // Search modal is closed via its backdrop onClick and Escape key only —
@@ -166,6 +170,13 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  useEffect(() => {
+    if (megaMenuOpen && megaMenuButtonRef.current) {
+      const rect = megaMenuButtonRef.current.getBoundingClientRect();
+      setMegaMenuButtonRect(rect);
+    }
+  }, [megaMenuOpen]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -258,8 +269,9 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
 
           {/* Desktop Nav (lg+) - Shows all links including Track Order */}
           <nav className="hidden lg:flex items-center gap-0.5 flex-1" aria-label="Main navigation">
-            <div className="relative" ref={megaMenuRef}>
+            <div className="relative">
               <button
+                ref={megaMenuButtonRef}
                 onClick={() => setMegaMenuOpen((v) => !v)}
                 onMouseEnter={() => setMegaMenuOpen(true)}
                 className={`nav-link flex items-center gap-1.5 ${
@@ -275,10 +287,17 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                 />
               </button>
 
-              {megaMenuOpen && (
+              {megaMenuOpen && megaMenuButtonRect && typeof window !== 'undefined' && createPortal(
                 <div
-                  className="absolute top-[calc(100%+10px)] left-0 w-[780px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl z-dropdown p-3 nav-dropdown-enter"
+                  ref={megaMenuRef}
+                  style={{
+                    position: 'fixed',
+                    top: `${megaMenuButtonRect.bottom + 10}px`,
+                    left: `${megaMenuButtonRect.left}px`,
+                    zIndex: 950
+                  }}
                   onMouseLeave={() => setMegaMenuOpen(false)}
+                  className="w-[780px] max-w-[calc(100vw-2rem)] glass-mega-panel rounded-2xl p-3 nav-dropdown-enter"
                   role="menu"
                 >
                   <div className="grid grid-cols-4 gap-x-1 gap-y-0.5">
@@ -342,7 +361,8 @@ const Header = memo(function Header({ onLoginClick, onRegisterClick, onLogout, o
                       </button>
                     </div>
                   </div>
-                </div>
+                </div>,
+                document.body
               )}
             </div>
 
