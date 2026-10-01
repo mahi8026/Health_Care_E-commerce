@@ -5,6 +5,7 @@ import { finalTitle, socialTitle } from '@/utils/metadata';
 import { API } from '@/constants/api';
 import { LANDING_PAGES, getLandingPageBySlug } from '@/config/landingPages';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import { getRelatedCategoriesForEquipment } from '@/config/categoryCrossLinks';
 import { getClustersForLandingPage } from '@/config/topicalClusters';
 import ProductCard from '@/components/ProductCard';
 import EmptyState from '@/components/ui/EmptyState';
@@ -96,6 +97,11 @@ export default async function EquipmentLandingPage({ params }) {
 
   const categoryName = CATEGORY_SLUG_MAP[page.categorySlug];
   const parentClusters = getClustersForLandingPage(slug);
+
+  // WS-3D2-C — reverse of the existing CATEGORY_CROSS_LINKS edges for this
+  // price guide. The page's own category is excluded (already linked in the
+  // header, grid and CTA), and an empty result renders no block.
+  const relatedCategories = getRelatedCategoriesForEquipment(slug, page.categorySlug);
 
   // WS-01 — Related equipment price guides.
   // Sibling relationships are derived only from the existing topic-cluster
@@ -270,6 +276,27 @@ export default async function EquipmentLandingPage({ params }) {
                   className="inline-flex items-center text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
                 >
                   {landingLabel(sibling)}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* WS-3D2-C — contextual reverse-category links (max 4). Only the
+            approved categories that already declare this price guide in
+            CATEGORY_CROSS_LINKS, minus the category already linked above;
+            renders nothing when no reverse relationship exists. */}
+        {relatedCategories.length > 0 && (
+          <section className="mt-8 rounded-2xl bg-white border border-[var(--color-border-primary)] p-6">
+            <h2 className="text-lg font-semibold text-brand-navy mb-4">Related categories</h2>
+            <div className="flex flex-wrap gap-2">
+              {relatedCategories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/products/category/${cat.slug}`}
+                  className="text-sm font-medium text-brand-teal border border-brand-teal/40 rounded-lg px-4 py-2 hover:bg-brand-teal hover:text-white transition-colors"
+                >
+                  {cat.name}
                 </Link>
               ))}
             </div>
