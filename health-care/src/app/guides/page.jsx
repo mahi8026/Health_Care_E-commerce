@@ -102,9 +102,10 @@ export default function GuidesHub() {
           </Link>
         )}
 
-        {/* Grouped lists */}
+        {/* Grouped lists — F-18: the pillar guide keeps its featured banner
+            above, so its duplicate grid card is no longer rendered here. */}
         {Object.entries(byType)
-          .filter(([, guides]) => guides.length > 0)
+          .filter(([type, guides]) => type !== 'pillar' && guides.length > 0)
           .map(([type, guides]) => (
             <section key={type} className="mb-12">
               <h2 className="text-lg font-semibold text-[var(--color-brand-navy)] mb-4">
