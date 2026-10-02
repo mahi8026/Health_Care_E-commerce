@@ -9,6 +9,7 @@ import { API } from '@/constants/api';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
 import { trackMarketingEvent } from '@/utils/marketingBeacon';
+import { trackRfqStart, trackRfqComplete, deriveRfqEntryPoint } from '@/services/funnelTracking';
 import { FaPlus, FaTrashAlt, FaFileInvoiceDollar, FaSearch, FaArrowLeft } from 'react-icons/fa';
 
 const fmtMoney = (n) => `৳${(Number(n) || 0).toLocaleString('en-BD')}`;
@@ -59,6 +60,12 @@ export default function QuoteRequestPage() {
       .catch(() => {})
       .finally(() => setLoadingProducts(false));
   }, [prefillProduct, prefillQty]);
+
+  // Phase 4.1 — RFQ funnel: fires once when the quotation form is opened.
+  // Non-sensitive params only (entry point + page location + UTM).
+  useEffect(() => {
+    trackRfqStart({ entryPoint: deriveRfqEntryPoint() });
+  }, []);
 
   const searchCatalog = useCallback((term) => {
     if (!term.trim()) { setSearchResults([]); return; }
@@ -153,8 +160,19 @@ export default function QuoteRequestPage() {
           currency: 'BDT',
         });
         trackMarketingEvent('quote_request_submitted', quoteParams);
-      } catch {
+
+        // Phase 4.1 — canonical rfq_complete funnel event, fired from the
+        // same post-confirmation point as the legacy event above so the two
+        // always agree. Product ids + counts only — no PII.
+        trackRfqComplete({
+          items: lines.map((l) => l.product),
+          itemCount: lines.length,
+          segment: 'b2b',
+          quoteNumber: data.data?.quoteNumber || undefined,
+        });
+      } catch (err) {
         // Analytics must never block a successful RFQ submission.
+        if (process.env.NODE_ENV !== 'production') console.error('RFQ analytics error:', err);
       }
 
       flash(`Quotation ${data.data?.quoteNumber || ''} submitted! Our team will contact you within 24 hours.`);

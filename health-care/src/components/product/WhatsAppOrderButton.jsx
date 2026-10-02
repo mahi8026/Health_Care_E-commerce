@@ -6,6 +6,7 @@ import { CONTACT } from '@/constants/api';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
 import { trackMarketingEvent } from '@/utils/marketingBeacon';
+import { trackWhatsAppClick } from '@/services/funnelTracking';
 
 /**
  * WhatsAppOrderButton — "Order on WhatsApp" CTA for product pages.
@@ -71,6 +72,16 @@ export default function WhatsAppOrderButton({
       productId: product?._id || product?.id,
       value: price * quantity,
       currency: 'BDT',
+    });
+
+    // Phase 4.1 — canonical funnel event (single centralized path; the
+    // pre-existing whatsapp_order_click above stays as the high-intent
+    // legacy mirror — funnel stage counting uses whatsapp_click only).
+    trackWhatsAppClick({
+      pageType: 'product',
+      productId: product?._id || product?.id,
+      category: typeof product?.category === 'string' ? product?.category : undefined,
+      entryPoint: 'product_page',
     });
   };
 
