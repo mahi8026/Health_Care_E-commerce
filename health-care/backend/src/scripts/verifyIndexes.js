@@ -41,8 +41,12 @@ const REQUIRED_INDEXES = {
   reviews: [
     { key: { status: 1, createdAt: -1 }, name: 'status_1_createdAt_-1' }
   ],
-  orders: [
-    { key: { 'items.product': 1 }, name: 'items.product_1' }
+  leads: [
+    { key: { lead_id: 1 }, name: 'lead_id_1', unique: true },
+    { key: { status: 1, created_at: -1 }, name: 'status_1_created_at_-1' },
+    { key: { source: 1, created_at: -1 }, name: 'source_1_created_at_-1' },
+    { key: { district: 1, division: 1 }, name: 'district_1_division_1' },
+    { key: { organization_type: 1 }, name: 'organization_type_1' }
   ]
 };
 

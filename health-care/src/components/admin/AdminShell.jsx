@@ -116,6 +116,7 @@ export default function AdminShell({ children, title, action, onAction }) {
     { id: 'categories',     path: '/admin/categories',        icon: '📁', label: 'Categories' },
     { id: 'manufacturers',  path: '/admin/manufacturers',     icon: '🏭', label: 'Manufacturers' },
     { id: 'quotes',         path: '/admin/quotes',            icon: '📋', label: 'Quotations',   badge: badges.quotes > 0 ? String(badges.quotes) : null },
+    { id: 'leads',          path: '/admin/leads',             icon: '🎯', label: 'CRM Leads' },
     { id: 'returns',        path: '/admin/returns',           icon: '↩️', label: 'Returns' },
     { id: 'reviews',        path: '/admin/reviews',           icon: '⭐', label: 'Reviews' },
     { id: 'newsletter',     path: '/admin/newsletter',        icon: '📧', label: 'Newsletter' },

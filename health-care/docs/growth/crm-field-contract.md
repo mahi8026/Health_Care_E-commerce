@@ -1,6 +1,8 @@
 # CRM Field Contract — Phase 4.1 (Workstream A)
 
 **Status:** authoritative schema for the Phase 4.0 lead pipeline.
+**Phase 4.2 implementation:** fields, lead lifecycle, attribution mapping, the RFQ association boundary and admin permissions are implemented against this contract — see `crm-architecture.md`. The spreadsheet/Notion CRM remains the pipeline-of-record for reporting; the admin "CRM Leads" surface is an operational view of the same fields and does not replace it. Quotations are never stored here.
+
 **Implementation vehicle:** spreadsheet/Notion CRM (per approved strategy — no CRM application is built; this document IS the contract). The website's existing quote system (`POST /api/quotes`, account/admin quote pages) remains the system of record for quotations; CRM records reference quotes, they do not replace them.
 
 ## Fields (every lead record)
