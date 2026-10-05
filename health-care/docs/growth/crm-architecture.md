@@ -102,14 +102,16 @@ touches protected quote logic (validation, pricing, payment terms, response).
 Automatic RFQ→lead creation is therefore deferred and requires explicit
 approval of a single fire-and-forget call after `Quote.create()` succeeds.
 
-**Resolved (Phase 4.2-D0):** the eligibility contract is now authoritative in
-`crm-field-contract.md` § *Automatic RFQ → Lead association contract* — the
-fire-and-forget call after `Quote.create()` is approved **subject to those
-rules** (admin-approved B2B gate, lookup by `customer` only, link-only for
-eligible users, and automatic Lead creation only from a complete business
-profile: approved business phone + explicitly supplied division + exact-match
-organization type). With today's repository state automatic creation always
-skips; implementation belongs to Phase 4.2-D.
+**Resolved (Phase 4.2-D0) → Implemented (Phase 4.2-D):** the eligibility
+contract is authoritative in `crm-field-contract.md` § *Automatic RFQ → Lead
+association contract* — the fire-and-forget call after `Quote.create()` is
+approved **subject to those rules** (admin-approved B2B gate, lookup by
+`customer` only, link-only for eligible users, and automatic Lead creation only
+from a complete business profile: approved business phone + explicitly supplied
+division + exact-match organization type). With today's repository state
+automatic creation always skips; `backend/src/services/leadAssociation.js`
+implements this boundary and `quoteController.createQuote` invokes it isolated
+in its own try/catch after the Quote has persisted.
 ## 6. Admin permissions
 
 Every `/api/crm` route runs `protect → authorize('admin') → adminApiLimiter`
@@ -137,10 +139,11 @@ Every `/api/crm` route runs `protect → authorize('admin') → adminApiLimiter`
 
 ## 8. Future CRM integration boundaries
 
-1. **Automatic RFQ → lead creation** — single guarded call after
-   `quoteController.createQuote` succeeds; eligibility contract resolved in
+1. **Automatic RFQ → lead creation** — eligibility contract resolved in
    Phase 4.2-D0 (see `crm-field-contract.md` § *Automatic RFQ → Lead
-   association contract*); implementation belongs to Phase 4.2-D.
+   association contract*); the guarded association call is implemented in
+   Phase 4.2-D (`backend/src/services/leadAssociation.js`). Automatic creation
+   stays skipped until a business-phone and division source exist.
 2. **WhatsApp identifiable enquiry → lead** — only when a visitor actually
    supplies contact details (form/consent); a `whatsapp_click` alone must never
    mint a lead.

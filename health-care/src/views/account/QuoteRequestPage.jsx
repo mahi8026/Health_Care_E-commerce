@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AccountPageShell from '@/components/account/AccountPageShell';
 import Spinner from '@/components/ui/Spinner';
 import { API } from '@/constants/api';
+import { getUtmParams } from '@/utils/attribution';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
 import { trackMarketingEvent } from '@/utils/marketingBeacon';
@@ -128,6 +129,7 @@ export default function QuoteRequestPage() {
     setMessage('');
     try {
       const token = localStorage.getItem('Mediport_token');
+      const utm = getUtmParams(); // existing Phase 4.1 helper — 4 allowlisted keys, no PII
       const r = await fetch(`${API}/quotes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -135,6 +137,18 @@ export default function QuoteRequestPage() {
           items: lines.map(l => ({ product: l.product, qty: l.qty })),
           paymentTerms,
           notes: notes.trim() || undefined,
+          // Phase 4.2-D — approved attribution payload only: the four
+          // allowlisted UTM keys via the existing Phase 4.1 helper (sanitised,
+          // ≤64 chars, session first-touch) + landing_page. Campaign tags only
+          // — no PII (name/email/phone/address/token) is ever sent, and
+          // utm_term / gclid are not part of the contract so they are absent.
+          attribution: {
+            utm_source: utm.utm_source || undefined,
+            utm_medium: utm.utm_medium || undefined,
+            utm_campaign: utm.utm_campaign || undefined,
+            utm_content: utm.utm_content || undefined,
+            landing_page: typeof window !== 'undefined' ? window.location.pathname : undefined,
+          },
         }),
       });
       const data = await r.json();

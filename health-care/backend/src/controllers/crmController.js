@@ -12,6 +12,7 @@
 
 const Lead = require('../models/Lead');
 const Quote = require('../models/Quote');
+const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 const { parsePaginationParams, generatePaginationMetadata } = require('../utils/pagination');
@@ -130,6 +131,12 @@ acc[row._id] = row.count;
 // ── GET /api/crm/:id ───────────────────────────────────────────────────────
 exports.getLead = async (req, res) => {
   try {
+    // Phase 4.2-D hardening: a malformed id must never reach findById() and
+    // surface as a CastError 500. It returns the same 404 as a valid-but-
+    // missing id; CastError details are never exposed.
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return errorResponse(res, 'Lead not found', null, 404);
+    }
     const lead = await Lead.findById(req.params.id).lean();
     if (!lead) {
 return errorResponse(res, 'Lead not found', null, 404);

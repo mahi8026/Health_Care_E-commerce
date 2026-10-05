@@ -11,6 +11,7 @@
 
 const Lead = require('../../models/Lead');
 const Quote = require('../../models/Quote');
+const logger = require('../../utils/logger');
 
 jest.mock('../../utils/logger', () => ({
   error: jest.fn(), info: jest.fn(), warn: jest.fn(), debug: jest.fn(),
@@ -391,6 +392,55 @@ describe('crmController.getLead', () => {
     await getLead({ params: { id: 'does-not-exist' } }, res);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(bodyOf(res).success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 4.2-D §K — malformed ObjectId hardening for GET /api/crm/:id.
+// ---------------------------------------------------------------------------
+describe('crmController.getLead — malformed ObjectId hardening (§K)', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('31. malformed id → standard 404 without touching findById (no CastError)', async () => {
+    const findById = jest.spyOn(Lead, 'findById');
+    const res = mockRes();
+    await getLead({ params: { id: 'not-an-object-id' } }, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(bodyOf(res).success).toBe(false);
+    expect(bodyOf(res).message).toMatch(/not found/i);
+    expect(JSON.stringify(bodyOf(res))).not.toMatch(/CastError|cast to ObjectId/i);
+    expect(findById).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled(); // no 500 path, nothing to log
+  });
+
+  it('31b. malformed ids of every shape are rejected before the query', async () => {
+    for (const id of ['', '123', 'zzzzzzzzzzzzzzzzzzzzzzzz', '507f1f77bcf86cd79943901', 'not a real id !!']) {
+      const findById = jest.spyOn(Lead, 'findById');
+      const res = mockRes();
+      await getLead({ params: { id } }, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(findById).not.toHaveBeenCalled();
+      jest.restoreAllMocks();
+    }
+  });
+
+  it('32. valid but nonexistent ObjectId → 404', async () => {
+    jest.spyOn(Lead, 'findById').mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
+    const res = mockRes();
+    await getLead({ params: { id: '507f1f77bcf86cd799439011' } }, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(bodyOf(res).message).toMatch(/not found/i);
+    expect(Lead.findById).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+  });
+
+  it('33. valid existing id → behaviour unchanged (200 + lean document)', async () => {
+    const stored = { lead_id: 'LD-2026-0007', status: 'rfq', organization: 'Test Clinic (synthetic)' };
+    jest.spyOn(Lead, 'findById').mockReturnValue({ lean: jest.fn().mockResolvedValue(stored) });
+    const res = mockRes();
+    await getLead({ params: { id: '507f1f77bcf86cd799439011' } }, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(bodyOf(res).data).toEqual(stored);
+    expect(Lead.findById).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
   });
 });
 

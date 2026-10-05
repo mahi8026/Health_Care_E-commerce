@@ -1,6 +1,7 @@
 ﻿const Quote = require('../models/Quote');
 const Product = require('../models/Product');
 const pricingService = require('../services/pricingService');
+const leadAssociation = require('../services/leadAssociation');
 const { sendQuotationReady } = require('../utils/emailService');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
@@ -109,6 +110,23 @@ exports.createQuote = async (req, res) => {
       });
     } catch (n8nErr) {
       logger.error(`[createQuote] n8n event error: ${n8nErr.message}`);
+    }
+
+    // Phase 4.2-D — CRM association (R2/R3): attempted ONLY after Quote.create
+    // has definitely persisted, and isolated in its own try/catch so a CRM
+    // failure can never roll back the Quote, alter it, return a 5xx, or
+    // interrupt this normal RFQ response. `attribution` is untrusted input —
+    // it is sanitised server-side inside leadAssociation (4 allowlisted UTM
+    // keys + landing_page; utm_term/gclid can never enter).
+    try {
+      await leadAssociation.associateRfq({
+        userId: req.user._id, // authenticated identity only — never client input
+        quoteId: quote._id,
+        quoteNumber: quote.quoteNumber,
+        attribution: req.body.attribution,
+      });
+    } catch (crmError) {
+      logger.error(`[createQuote] CRM association skipped: ${crmError.message}`);
     }
 
     return successResponse(res, quote, `Quote request ${quote.quoteNumber} submitted`, 201);
