@@ -137,6 +137,7 @@ describe('processBankTransfer', () => {
     const fakeOrder = {
       _id: 'order123',
       user: 'user123',
+      status: 'placed', // must be a live stage for assertConfirmable (S8)
       paymentStatus: null,
       paymentDetails: null,
       save: jest.fn().mockResolvedValue(true),
@@ -505,6 +506,7 @@ describe('submitChequePayment', () => {
     const fakeOrder = {
       _id: 'order123',
       user: 'user123',
+      status: 'placed', // must be a live stage for assertConfirmable (S8)
       paymentMethod: null,
       paymentStatus: null,
       paymentDetails: null,

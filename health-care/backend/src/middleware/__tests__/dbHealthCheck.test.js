@@ -123,13 +123,16 @@ describe('dbHealthCheck middleware', () => {
       });
     });
 
-    it('returns 503 when database is in connecting state', () => {
+    it('allows the request through while database is connecting', () => {
+      // Contract (src/middleware/dbHealthCheck.js): states 1 (connected) and
+      // 2 (connecting) are both allowed — only disconnected/disconnecting
+      // states return 503.
       const { req, res, next } = createMocks();
 
       dbHealthCheck(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(503);
-      expect(next).not.toHaveBeenCalled();
+      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
     });
   });
 

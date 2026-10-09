@@ -1,4 +1,4 @@
-﻿const request = require('supertest');
+const request = require('supertest');
 
 // Mock mongoose connection with full Schema support
 jest.mock('mongoose', () => {
@@ -78,7 +78,7 @@ describe('Health Check Endpoint', () => {
       mongoose.connection.readyState = 1;
       mongoose.connection.host = 'localhost:27017';
 
-      const response = await request(app).get('/api/health');
+      const response = await request(app).get('/api/health/detailed');
 
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
@@ -106,7 +106,7 @@ describe('Health Check Endpoint', () => {
       // Mock disconnected state
       mongoose.connection.readyState = 0;
 
-      const response = await request(app).get('/api/health');
+      const response = await request(app).get('/api/health/detailed');
 
       expect(response.status).toBe(503);
       expect(response.body).toMatchObject({
@@ -123,16 +123,18 @@ describe('Health Check Endpoint', () => {
       });
     });
 
-    it('should return 503 and degraded status when database is connecting', async () => {
+    it('should return 200 healthy while database is connecting (Render startup contract)', async () => {
       // Mock connecting state
       mongoose.connection.readyState = 2;
 
-      const response = await request(app).get('/api/health');
+      const response = await request(app).get('/api/health/detailed');
 
-      expect(response.status).toBe(503);
+      // Detailed health treats connecting as healthy so Render deployment
+      // health checks pass while the database is still starting up.
+      expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
         success: true,
-        status: 'degraded',
+        status: 'healthy',
         services: {
           database: {
             status: 'connecting',
@@ -146,7 +148,7 @@ describe('Health Check Endpoint', () => {
       // Mock disconnecting state
       mongoose.connection.readyState = 3;
 
-      const response = await request(app).get('/api/health');
+      const response = await request(app).get('/api/health/detailed');
 
       expect(response.status).toBe(503);
       expect(response.body).toMatchObject({
@@ -169,7 +171,7 @@ describe('Health Check Endpoint', () => {
       const redisCache = require('../services/redisCache');
       redisCache.isRedisConnected.mockReturnValue(false);
 
-      const response = await request(app).get('/api/health');
+      const response = await request(app).get('/api/health/detailed');
 
       expect(response.status).toBe(200);
       expect(response.body.services.redis).toMatchObject({

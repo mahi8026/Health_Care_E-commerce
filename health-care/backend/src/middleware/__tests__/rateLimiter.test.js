@@ -7,6 +7,9 @@ describe('Rate Limiter Middleware', () => {
 
   beforeEach(() => {
     app = express();
+    // Mirror production (src/server.js sets trust proxy) so req.ip honours
+    // X-Forwarded-For in the per-IP tests below.
+    app.set('trust proxy', 1);
     app.use(express.json());
   });
 
@@ -41,19 +44,19 @@ describe('Rate Limiter Middleware', () => {
         .post('/test-auth')
         .send({ email: 'test@example.com', password: 'password123' });
 
-      // Auth limiter: 5 requests per 15 minutes
-      expect(response.headers['x-ratelimit-limit']).toBe('5');
+      // Auth limiter: 10 requests per 15 minutes (authLimiter max: 10)
+      expect(response.headers['x-ratelimit-limit']).toBe('10');
     });
 
     it('should block requests after exceeding the limit', async () => {
-      // Make 5 requests (the limit)
-      for (let i = 0; i < 5; i++) {
+      // Make 10 requests (the limit)
+      for (let i = 0; i < 10; i++) {
         await request(app)
           .post('/test-auth')
           .send({ email: 'test@example.com', password: 'password123' });
       }
 
-      // 6th request should be blocked
+      // 11th request should be blocked
       const response = await request(app)
         .post('/test-auth')
         .send({ email: 'test@example.com', password: 'password123' });
@@ -65,7 +68,7 @@ describe('Rate Limiter Middleware', () => {
 
     it('should return retry-after information when rate limited', async () => {
       // Exceed the limit
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 10; i++) {
         await request(app)
           .post('/test-auth')
           .send({ email: 'test@example.com', password: 'password123' });
@@ -106,8 +109,8 @@ describe('Rate Limiter Middleware', () => {
     it('should set correct rate limit values for API endpoints', async () => {
       const response = await request(app).get('/test-api');
 
-      // API limiter: 100 requests per 15 minutes
-      expect(response.headers['x-ratelimit-limit']).toBe('100');
+      // API limiter: 1000 requests per 15 minutes (apiLimiter max: 1000)
+      expect(response.headers['x-ratelimit-limit']).toBe('1000');
     });
 
     it('should track remaining requests correctly', async () => {
@@ -122,18 +125,18 @@ describe('Rate Limiter Middleware', () => {
     });
 
     it('should block requests after exceeding the limit', async () => {
-      // Make 100 requests (the limit)
-      for (let i = 0; i < 100; i++) {
+      // Make 1000 requests (the limit)
+      for (let i = 0; i < 1000; i++) {
         await request(app).get('/test-api');
       }
 
-      // 101st request should be blocked
+      // 1001st request should be blocked
       const response = await request(app).get('/test-api');
 
       expect(response.status).toBe(429);
       expect(response.body.success).toBe(false);
       expect(response.body.message).toContain('Too many requests');
-    });
+    }, 60000); // 1000 sequential requests exceed the default 5s timeout
   });
 
   describe('Rate limiter with different IPs', () => {
@@ -144,15 +147,15 @@ describe('Rate Limiter Middleware', () => {
     });
 
     it('should track rate limits per IP address', async () => {
-      // Make 5 requests from IP 1
-      for (let i = 0; i < 5; i++) {
+      // Make 10 requests from IP 1 (the auth limit)
+      for (let i = 0; i < 10; i++) {
         await request(app)
           .post('/test-auth')
           .set('X-Forwarded-For', '192.168.1.1')
           .send({ email: 'test@example.com', password: 'password123' });
       }
 
-      // 6th request from IP 1 should be blocked
+      // 11th request from IP 1 should be blocked
       const response1 = await request(app)
         .post('/test-auth')
         .set('X-Forwarded-For', '192.168.1.1')

@@ -10,11 +10,22 @@ const mockRedisInstance = {
   setex: jest.fn().mockResolvedValue('OK'),
   del: jest.fn().mockResolvedValue(1),
   keys: jest.fn().mockResolvedValue([]),
+  // invalidateCache uses SCAN (P3), not KEYS
+  scan: jest.fn().mockResolvedValue(['0', []]),
   on: jest.fn(),
 };
 
 // Mock ioredis before requiring cache middleware
 jest.mock('ioredis', () => jest.fn(() => mockRedisInstance));
+
+// cache.js goes through the shared client helpers in services/redisCache
+// (P4 refactor): readiness is reported by isRedisConnected(), which reads a
+// module-level flag that only flips when the real client emits 'ready'. Mock
+// that contract directly so the middleware under test sees a ready client.
+jest.mock('../services/redisCache', () => ({
+  getRedisClient: () => mockRedisInstance,
+  isRedisConnected: () => true,
+}));
 
 // ── Import after mock is set up ───────────────────────────────────────────────
 const { cacheMiddleware, redisCacheMiddleware, noStore, staticAssets, invalidateCache } = require('../middleware/cache');
@@ -52,6 +63,7 @@ beforeEach(() => {
   mockRedisInstance.setex.mockResolvedValue('OK');
   mockRedisInstance.del.mockResolvedValue(1);
   mockRedisInstance.keys.mockResolvedValue([]);
+  mockRedisInstance.scan.mockResolvedValue(['0', []]);
 });
 
 // ── cacheMiddleware ───────────────────────────────────────────────────────────
@@ -180,7 +192,8 @@ describe('redisCacheMiddleware', () => {
 // ── invalidateCache ───────────────────────────────────────────────────────────
 describe('invalidateCache', () => {
   it('deletes all matched keys', async () => {
-    mockRedisInstance.keys.mockResolvedValueOnce(['products:list:1', 'products:list:2']);
+    // invalidateCache iterates client.scan(cursor, 'MATCH', pattern, 'COUNT', n)
+    mockRedisInstance.scan.mockResolvedValueOnce(['0', ['products:list:1', 'products:list:2']]);
 
     await invalidateCache('products:list:*');
 
@@ -188,7 +201,7 @@ describe('invalidateCache', () => {
   });
 
   it('does nothing when no keys match', async () => {
-    mockRedisInstance.keys.mockResolvedValueOnce([]);
+    mockRedisInstance.scan.mockResolvedValueOnce(['0', []]);
 
     await invalidateCache('products:list:*');
 

@@ -1,4 +1,5 @@
 ﻿const request = require('supertest');
+const mongoose = require('mongoose');
 const app = require('../../server');
 const User = require('../../models/User');
 const LoyaltyTransaction = require('../../models/LoyaltyTransaction');
@@ -8,10 +9,57 @@ jest.mock('../../models/User');
 jest.mock('../../models/LoyaltyTransaction');
 jest.mock('../../services/loyaltyService');
 jest.mock('../../utils/logger');
+// server.js calls connectDB() at require time; this suite mocks every
+// DB-touching collaborator, so no real connection attempt should be made.
+jest.mock('../../config/database', () => jest.fn().mockResolvedValue(undefined));
+// Avoid unref'd timers/keeps-alive handles from server startup side effects
+jest.mock('../../utils/stockAlertCron', () => ({ startCronJobs: jest.fn() }));
+jest.mock('../../utils/databaseMonitor', () => ({ monitorConnections: jest.fn() }));
+// The real protect/authorize middleware rejects the suite's static
+// 'Bearer mock-token' strings (401), so stub auth faithfully: unknown/blank
+// tokens -> 401, known tokens -> req.user, authorize(...) -> 403 unless the
+// user's role is listed.
+jest.mock('../../middleware/auth', () => ({
+  protect: (req, res, next) => {
+    const token = req.headers && req.headers.authorization;
+    if (token !== 'Bearer mock-token' && token !== 'Bearer mock-admin-token') {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+    req.user = {
+      _id: 'user123',
+      id: 'user123',
+      role: token === 'Bearer mock-admin-token' ? 'admin' : 'customer',
+    };
+    return next();
+  },
+  authorize: (...roles) => (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    return next();
+  },
+  optionalAuth: (req, res, next) => next(),
+  optionalOrderAuth: (req, res, next) => next(),
+  adminOnly: (req, res, next) => next(),
+}));
 
 describe('Loyalty Controller API Tests', () => {
   let authToken;
   let adminToken;
+
+  beforeAll(() => {
+    // dbHealthCheck gates /api/* on mongoose.connection.readyState; stub the
+    // connected state (no real I/O needed — all DB collaborators are mocked).
+    Object.defineProperty(mongoose.connection, 'readyState', {
+      value: 1,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  afterAll(() => {
+    delete mongoose.connection.readyState; // restore the prototype getter
+  });
 
   beforeEach(() => {
     // Mock authentication middleware
@@ -245,6 +293,14 @@ describe('Loyalty Controller API Tests', () => {
           sort: jest.fn().mockReturnThis(),
           limit: jest.fn().mockReturnThis(),
           lean: jest.fn().mockResolvedValue([])
+        });
+        // getTier is automocked (returns undefined); mirror the real tier
+        // thresholds from src/config/loyaltyConfig.js so tierDistribution builds.
+        loyaltyService.getTier.mockImplementation((points) => {
+          if (points >= 10000) return { label: 'Platinum' };
+          if (points >= 5000) return { label: 'Gold' };
+          if (points >= 1000) return { label: 'Silver' };
+          return { label: 'Bronze' };
         });
 
         const response = await request(app)

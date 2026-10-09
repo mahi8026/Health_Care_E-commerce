@@ -1,4 +1,4 @@
-﻿// Mock mongoose before importing models
+// Mock mongoose before importing models
 const mockSchema = jest.fn().mockImplementation(function() {
   return this;
 });
@@ -10,6 +10,24 @@ mockSchema.Types = {
   Boolean: 'Boolean',
   Mixed: 'Mixed'
 };
+
+// Faithful Schema mock: real model modules register hooks/indexes/virtuals at
+// load time (e.g. orderSchema.pre('save', ...)), so the mocked Schema must
+// expose those instance methods or model files crash with
+// "schema.pre is not a function".
+mockSchema.prototype.pre = jest.fn();
+mockSchema.prototype.post = jest.fn();
+mockSchema.prototype.index = jest.fn();
+mockSchema.prototype.virtual = jest.fn().mockReturnValue({ get: jest.fn(), set: jest.fn() });
+mockSchema.prototype.method = jest.fn();
+mockSchema.prototype.methods = {};
+mockSchema.prototype.statics = {};
+mockSchema.prototype.set = jest.fn();
+mockSchema.prototype.get = jest.fn();
+mockSchema.prototype.plugin = jest.fn();
+mockSchema.prototype.add = jest.fn();
+mockSchema.prototype.path = jest.fn();
+mockSchema.prototype.eachPath = jest.fn();
 
 jest.mock('mongoose', () => ({
   Schema: mockSchema,
@@ -63,7 +81,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -75,7 +93,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -91,7 +109,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'groupBy must be one of: day, week, month'
+        message: 'groupBy must be one of: day, week, month',        errors: null
       });
     });
 
@@ -106,7 +124,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid date format'
+        message: 'Invalid date format',        errors: null
       });
     });
 
@@ -121,7 +139,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date must be before end date'
+        message: 'Start date must be before end date',        errors: null
       });
     });
   });
@@ -160,8 +178,9 @@ describe('Analytics Controller - getSalesAnalytics', () => {
             endDate: '2024-01-31',
             groupBy: 'day'
           }
-        }),
+        ,
         cached: false
+      })
       });
     });
 
@@ -178,7 +197,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       await getSalesAnalytics(req, res);
 
       const firstCall = Order.aggregate.mock.calls[0][0];
-      expect(firstCall[0].$match.status).toEqual({ $in: ['completed', 'paid'] });
+      expect(firstCall[0].$match.status).toEqual({ $in: ['delivered', 'processing', 'shipped'] });
     });
 
     it('should calculate 100% growth when previous period has no revenue', async () => {
@@ -201,8 +220,9 @@ describe('Analytics Controller - getSalesAnalytics', () => {
         success: true,
         data: expect.objectContaining({
           growth: 100
-        }),
+        ,
         cached: false
+      })
       });
     });
 
@@ -222,8 +242,9 @@ describe('Analytics Controller - getSalesAnalytics', () => {
         success: true,
         data: expect.objectContaining({
           growth: 0
-        }),
+        ,
         cached: false
+      })
       });
     });
   });
@@ -250,8 +271,9 @@ describe('Analytics Controller - getSalesAnalytics', () => {
         data: expect.objectContaining({
           total: 10000,
           data: mockSalesData
-        }),
+        ,
         cached: false
+      })
       });
     });
   });
@@ -271,7 +293,7 @@ describe('Analytics Controller - getSalesAnalytics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch sales analytics',
-        error: undefined // Only shown in development
+        errors: null // Only shown in development
       });
     });
   });
@@ -311,7 +333,7 @@ describe('Analytics Controller - getOrderAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -323,7 +345,7 @@ describe('Analytics Controller - getOrderAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -338,7 +360,7 @@ describe('Analytics Controller - getOrderAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid date format'
+        message: 'Invalid date format',        errors: null
       });
     });
 
@@ -353,7 +375,7 @@ describe('Analytics Controller - getOrderAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date must be before end date'
+        message: 'Start date must be before end date',        errors: null
       });
     });
   });
@@ -404,8 +426,9 @@ describe('Analytics Controller - getOrderAnalytics', () => {
             { method: 'bank_transfer', count: 30, percentage: 30 },
             { method: 'cash', count: 20, percentage: 20 }
           ]
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -429,8 +452,9 @@ describe('Analytics Controller - getOrderAnalytics', () => {
         success: true,
         data: expect.objectContaining({
           avgOrderValue: 7500
-        }),
+        ,
         cached: false
+      })
       });
     });
 
@@ -454,8 +478,9 @@ describe('Analytics Controller - getOrderAnalytics', () => {
         success: true,
         data: expect.objectContaining({
           fulfillmentRate: 70
-        }),
+        ,
         cached: false
+      })
       });
     });
 
@@ -481,8 +506,9 @@ describe('Analytics Controller - getOrderAnalytics', () => {
           fulfillmentRate: 0,
           statusBreakdown: [],
           paymentMethodBreakdown: []
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -554,7 +580,7 @@ describe('Analytics Controller - getOrderAnalytics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch order analytics',
-        error: undefined
+        errors: null
       });
     });
   });
@@ -595,7 +621,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -608,7 +634,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -624,7 +650,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid date format'
+        message: 'Invalid date format',        errors: null
       });
     });
 
@@ -640,7 +666,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date must be before end date'
+        message: 'Start date must be before end date',        errors: null
       });
     });
 
@@ -657,7 +683,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Limit must be a number between 1 and 100'
+        message: 'Limit must be a number between 1 and 100',        errors: null
       });
     });
 
@@ -674,7 +700,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Limit must be a number between 1 and 100'
+        message: 'Limit must be a number between 1 and 100',        errors: null
       });
     });
 
@@ -691,7 +717,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Limit must be a number between 1 and 100'
+        message: 'Limit must be a number between 1 and 100',        errors: null
       });
     });
 
@@ -775,11 +801,15 @@ describe('Analytics Controller - getProductAnalytics', () => {
           select: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
               lean: jest.fn().mockResolvedValue(mockLowStockProducts)
-            })
+            }),
+            lean: jest.fn().mockResolvedValue(mockLowStockProducts)
           })
         })
         .mockReturnValueOnce({
           select: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockResolvedValue(mockAllActiveProducts)
+            }),
             lean: jest.fn().mockResolvedValue(mockAllActiveProducts)
           })
         });
@@ -801,8 +831,9 @@ describe('Analytics Controller - getProductAnalytics', () => {
           slowMovingInventory: [
             { productId: 'prod6', name: 'Product 6', daysSinceLastSale: 30 }
           ]
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -826,11 +857,15 @@ describe('Analytics Controller - getProductAnalytics', () => {
           select: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
               lean: jest.fn().mockResolvedValue([])
-            })
+            }),
+            lean: jest.fn().mockResolvedValue([])
           })
         })
         .mockReturnValueOnce({
           select: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockResolvedValue([])
+            }),
             lean: jest.fn().mockResolvedValue([])
           })
         });
@@ -838,7 +873,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       await getProductAnalytics(req, res);
 
       const firstCall = Order.aggregate.mock.calls[0][0];
-      expect(firstCall[0].$match.status).toEqual({ $in: ['completed', 'paid', 'delivered'] });
+      expect(firstCall[0].$match.status).toEqual({ $in: ['delivered', 'processing', 'shipped'] });
     });
 
     it('should identify low stock products correctly', async () => {
@@ -866,11 +901,15 @@ describe('Analytics Controller - getProductAnalytics', () => {
           select: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
               lean: jest.fn().mockResolvedValue(mockLowStockProducts)
-            })
+            }),
+            lean: jest.fn().mockResolvedValue(mockLowStockProducts)
           })
         })
         .mockReturnValueOnce({
           select: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockResolvedValue([])
+            }),
             lean: jest.fn().mockResolvedValue([])
           })
         });
@@ -912,11 +951,15 @@ describe('Analytics Controller - getProductAnalytics', () => {
           select: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
               lean: jest.fn().mockResolvedValue([])
-            })
+            }),
+            lean: jest.fn().mockResolvedValue([])
           })
         })
         .mockReturnValueOnce({
           select: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockResolvedValue(mockAllActiveProducts)
+            }),
             lean: jest.fn().mockResolvedValue(mockAllActiveProducts)
           })
         });
@@ -951,11 +994,15 @@ describe('Analytics Controller - getProductAnalytics', () => {
           select: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
               lean: jest.fn().mockResolvedValue([])
-            })
+            }),
+            lean: jest.fn().mockResolvedValue([])
           })
         })
         .mockReturnValueOnce({
           select: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockResolvedValue([])
+            }),
             lean: jest.fn().mockResolvedValue([])
           })
         });
@@ -970,8 +1017,9 @@ describe('Analytics Controller - getProductAnalytics', () => {
           lowStockAlerts: [],
           categoryBreakdown: [],
           slowMovingInventory: []
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
   });
@@ -992,7 +1040,7 @@ describe('Analytics Controller - getProductAnalytics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch product analytics',
-        error: undefined
+        errors: null
       });
     });
   });
@@ -1034,7 +1082,7 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -1047,7 +1095,7 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -1063,7 +1111,7 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid date format'
+        message: 'Invalid date format',        errors: null
       });
     });
 
@@ -1079,7 +1127,7 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date must be before end date'
+        message: 'Start date must be before end date',        errors: null
       });
     });
   });
@@ -1161,8 +1209,9 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
             retail: { count: 2, revenue: 800 }
           },
           avgTimeBetweenOrders: expect.any(Number)
-        }),
+        ,
         cached: false
+      })
       });
     });
 
@@ -1343,8 +1392,9 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
             retail: { count: 0, revenue: 0 }
           },
           avgTimeBetweenOrders: 0
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -1364,10 +1414,10 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
       await getCustomerAnalytics(req, res);
 
       const firstCall = Order.aggregate.mock.calls[0][0];
-      expect(firstCall[0].$match.status).toEqual({ $in: ['completed', 'paid', 'delivered'] });
+      expect(firstCall[0].$match.status).toEqual({ $in: ['delivered', 'processing', 'shipped'] });
 
       const fourthCall = Order.aggregate.mock.calls[3][0];
-      expect(fourthCall[0].$match.status).toEqual({ $in: ['completed', 'paid', 'delivered'] });
+      expect(fourthCall[0].$match.status).toEqual({ $in: ['delivered', 'processing', 'shipped'] });
     });
   });
 
@@ -1387,7 +1437,7 @@ describe('Analytics Controller - getCustomerAnalytics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch customer analytics',
-        error: undefined
+        errors: null
       });
     });
   });
@@ -1428,7 +1478,7 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -1441,7 +1491,7 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -1457,7 +1507,7 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid date format'
+        message: 'Invalid date format',        errors: null
       });
     });
 
@@ -1473,7 +1523,7 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date must be before end date'
+        message: 'Start date must be before end date',        errors: null
       });
     });
   });
@@ -1513,6 +1563,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue(mockB2BUsers)
+          }),
           lean: jest.fn().mockResolvedValue(mockB2BUsers)
         })
       });
@@ -1537,8 +1590,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
             totalUsed: 150000,
             utilizationRate: 50
           }
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -1560,6 +1614,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1593,6 +1650,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1626,6 +1686,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue(mockB2BUsers)
+          }),
           lean: jest.fn().mockResolvedValue(mockB2BUsers)
         })
       });
@@ -1654,6 +1717,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1687,6 +1753,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1714,6 +1783,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1741,6 +1813,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1759,8 +1834,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
             totalUsed: 0,
             utilizationRate: 0
           }
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -1780,6 +1856,9 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
 
       User.find = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            lean: jest.fn().mockResolvedValue([])
+          }),
           lean: jest.fn().mockResolvedValue([])
         })
       });
@@ -1809,7 +1888,7 @@ describe('Analytics Controller - getPaymentAnalytics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch payment analytics',
-        error: undefined
+        errors: null
       });
     });
   });
@@ -1872,8 +1951,9 @@ describe('Analytics Controller - getRealTimeMetrics', () => {
           orderCountChange: 25,
           conversionRate: 100,
           lastUpdated: expect.any(String)
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -1891,7 +1971,7 @@ describe('Analytics Controller - getRealTimeMetrics', () => {
       await getRealTimeMetrics(req, res);
 
       const todaySalesPipeline = Order.aggregate.mock.calls[0][0];
-      expect(todaySalesPipeline[0].$match.status).toEqual({ $in: ['completed', 'paid'] });
+      expect(todaySalesPipeline[0].$match.status).toEqual({ $in: ['delivered', 'processing', 'shipped'] });
     });
 
     it('should calculate order count change correctly', async () => {
@@ -2049,7 +2129,7 @@ describe('Analytics Controller - getRealTimeMetrics', () => {
       expect(responseData.pendingOrders).toBe(12);
 
       const pendingOrdersPipeline = Order.aggregate.mock.calls[2][0];
-      expect(pendingOrdersPipeline[0].$match.status).toEqual({ $in: ['pending', 'confirmed'] });
+      expect(pendingOrdersPipeline[0].$match.status).toEqual({ $in: ['placed', 'confirmed'] });
     });
 
     it('should handle empty data gracefully', async () => {
@@ -2076,8 +2156,9 @@ describe('Analytics Controller - getRealTimeMetrics', () => {
           orderCountChange: 0,
           conversionRate: 0,
           lastUpdated: expect.any(String)
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -2130,7 +2211,7 @@ describe('Analytics Controller - getRealTimeMetrics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch real-time metrics',
-        error: undefined
+        errors: null
       });
     });
   });
@@ -2171,7 +2252,7 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -2184,7 +2265,7 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date and end date are required'
+        message: 'Start date and end date are required',        errors: null
       });
     });
 
@@ -2200,7 +2281,7 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Invalid date format'
+        message: 'Invalid date format',        errors: null
       });
     });
 
@@ -2216,7 +2297,7 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Start date must be before end date'
+        message: 'Start date must be before end date',        errors: null
       });
     });
   });
@@ -2279,8 +2360,9 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
             endDate: '2024-01-31',
             totalSessions: 3
           }
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
 
@@ -2370,8 +2452,9 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
             endDate: '2024-01-31',
             totalSessions: 0
           }
-        },
-        cached: false
+        ,
+          cached: false
+        }
       });
     });
   });
@@ -2393,7 +2476,7 @@ describe('Analytics Controller - getTrafficAnalytics', () => {
       expect(res.json).toHaveBeenCalledWith({
         success: false,
         message: 'Failed to fetch traffic analytics',
-        error: undefined
+        errors: null
       });
     });
   });
