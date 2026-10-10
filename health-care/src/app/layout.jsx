@@ -23,6 +23,7 @@ import LoginPromptModal from "@/components/ui/LoginPromptModal";
 import InstallPWA from "@/components/ui/InstallPWA";
 import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
 import MetaPixel from "@/components/tracking/MetaPixel";
+import WebVitalsReporter from "@/components/WebVitalsReporter";
 import ExitIntentPopup from "@/components/marketing/ExitIntentPopup";
 
 // NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
@@ -277,6 +278,12 @@ export default function RootLayout({ children }) {
             SSR-safe, no-op without NEXT_PUBLIC_META_PIXEL_ID. Fires PageView on
             every client-side route change. */}
         <MetaPixel />
+
+        {/* Phase 4.1 — boots GA4Tracker (react-ga4) site-wide. The component
+            already existed but was never mounted, so every GA4Tracker event
+            (RFQ, WhatsApp order, funnel) silently no-oped. Also reports Core
+            Web Vitals via the existing designed path. */}
+        <WebVitalsReporter />
 
         {/* Meta Pixel noscript fallback (part of the official Meta snippet) —
             fires the tracking pixel for visitors with JavaScript disabled. */}

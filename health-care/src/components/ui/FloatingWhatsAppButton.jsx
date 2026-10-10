@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { FaWhatsapp, FaTimes } from 'react-icons/fa';
 import { CONTACT } from '@/constants/api';
 import ChatButton from '@/components/chat/ChatButton';
+import { trackWhatsAppClick, derivePageType } from '@/services/funnelTracking';
 
 // Lazy-load the full chat widget only when opened
 const ChatWidget = dynamic(() => import('@/components/chat/ChatWidget'), { ssr: false, loading: () => null });
@@ -46,9 +47,9 @@ export default function FloatingWhatsAppButton() {
   const handleWhatsAppClick = () => {
     const url = `https://wa.me/${CONTACT.whatsapp}?text=${getWhatsAppMessage()}`;
     window.open(url, '_blank', 'noopener,noreferrer');
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'whatsapp_click', { page_path: pathname, event_category: 'engagement' });
-    }
+    // Phase 4.1 — single centralized funnel path (GA4Tracker-backed); fires
+    // exactly once per click with page_type + UTM context, no PII.
+    trackWhatsAppClick({ pageType: derivePageType(pathname), entryPoint: 'floating_button' });
   };
 
   const handleChatToggle = () => {

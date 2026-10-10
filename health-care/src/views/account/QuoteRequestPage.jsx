@@ -6,9 +6,11 @@ import Link from 'next/link';
 import AccountPageShell from '@/components/account/AccountPageShell';
 import Spinner from '@/components/ui/Spinner';
 import { API } from '@/constants/api';
+import { getUtmParams } from '@/utils/attribution';
 import GA4Tracker from '@/services/GA4Tracker';
 import MetaPixelTracker from '@/services/MetaPixelTracker';
 import { trackMarketingEvent } from '@/utils/marketingBeacon';
+import { trackRfqStart, trackRfqComplete, deriveRfqEntryPoint } from '@/services/funnelTracking';
 import { FaPlus, FaTrashAlt, FaFileInvoiceDollar, FaSearch, FaArrowLeft } from 'react-icons/fa';
 
 const fmtMoney = (n) => `৳${(Number(n) || 0).toLocaleString('en-BD')}`;
@@ -59,6 +61,12 @@ export default function QuoteRequestPage() {
       .catch(() => {})
       .finally(() => setLoadingProducts(false));
   }, [prefillProduct, prefillQty]);
+
+  // Phase 4.1 — RFQ funnel: fires once when the quotation form is opened.
+  // Non-sensitive params only (entry point + page location + UTM).
+  useEffect(() => {
+    trackRfqStart({ entryPoint: deriveRfqEntryPoint() });
+  }, []);
 
   const searchCatalog = useCallback((term) => {
     if (!term.trim()) { setSearchResults([]); return; }
@@ -121,6 +129,7 @@ export default function QuoteRequestPage() {
     setMessage('');
     try {
       const token = localStorage.getItem('Mediport_token');
+      const utm = getUtmParams(); // existing Phase 4.1 helper — 4 allowlisted keys, no PII
       const r = await fetch(`${API}/quotes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -128,6 +137,18 @@ export default function QuoteRequestPage() {
           items: lines.map(l => ({ product: l.product, qty: l.qty })),
           paymentTerms,
           notes: notes.trim() || undefined,
+          // Phase 4.2-D — approved attribution payload only: the four
+          // allowlisted UTM keys via the existing Phase 4.1 helper (sanitised,
+          // ≤64 chars, session first-touch) + landing_page. Campaign tags only
+          // — no PII (name/email/phone/address/token) is ever sent, and
+          // utm_term / gclid are not part of the contract so they are absent.
+          attribution: {
+            utm_source: utm.utm_source || undefined,
+            utm_medium: utm.utm_medium || undefined,
+            utm_campaign: utm.utm_campaign || undefined,
+            utm_content: utm.utm_content || undefined,
+            landing_page: typeof window !== 'undefined' ? window.location.pathname : undefined,
+          },
         }),
       });
       const data = await r.json();
@@ -153,8 +174,19 @@ export default function QuoteRequestPage() {
           currency: 'BDT',
         });
         trackMarketingEvent('quote_request_submitted', quoteParams);
-      } catch {
+
+        // Phase 4.1 — canonical rfq_complete funnel event, fired from the
+        // same post-confirmation point as the legacy event above so the two
+        // always agree. Product ids + counts only — no PII.
+        trackRfqComplete({
+          items: lines.map((l) => l.product),
+          itemCount: lines.length,
+          segment: 'b2b',
+          quoteNumber: data.data?.quoteNumber || undefined,
+        });
+      } catch (err) {
         // Analytics must never block a successful RFQ submission.
+        if (process.env.NODE_ENV !== 'production') console.error('RFQ analytics error:', err);
       }
 
       flash(`Quotation ${data.data?.quoteNumber || ''} submitted! Our team will contact you within 24 hours.`);

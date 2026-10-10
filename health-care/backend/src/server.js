@@ -374,6 +374,8 @@ app.use('/api/orders', dbHealthCheck, require('./routes/orderRoutes'));
 app.use('/api/payments', dbHealthCheck, require('./routes/paymentRoutes')); // Has its own rate limiters
 app.use('/api/analytics', dbHealthCheck, require('./routes/analyticsRoutes'));
 app.use('/api/quotes', dbHealthCheck, require('./routes/quoteRoutes'));
+app.use('/api/crm', dbHealthCheck, require('./routes/crmRoutes')); // CRM lead pipeline (admin only — Phase 4.2)
+
 app.use('/api/notifications', dbHealthCheck, require('./routes/notificationRoutes'));
 app.use('/api/admin', dbHealthCheck, require('./routes/adminRoutes')); // Has its own rate limiters
 app.use('/api/upload', require('./routes/uploadRoutes')); // Has its own rate limiters (no DB check needed for uploads)

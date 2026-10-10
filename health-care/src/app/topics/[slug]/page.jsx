@@ -6,6 +6,7 @@ import { getGuideBySlug } from '@/config/guides';
 import { fetchListing } from '@/lib/listingData';
 import { serverFetchJson } from '@/lib/serverFetch';
 import { CATEGORY_SLUG_MAP } from '@/constants/categories';
+import { getRelatedCategoriesForTopic } from '@/config/categoryCrossLinks';
 import { API } from '@/constants/api';
 import ProductCard from '@/components/ProductCard';
 import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
@@ -65,6 +66,10 @@ export default async function TopicClusterPage({ params }) {
   const landingPages = getClusterLandingPages(cluster);
   const guides = (cluster.guideSlugs || []).map(getGuideBySlug).filter(Boolean);
   const categoryName = CATEGORY_SLUG_MAP[cluster.categorySlug];
+  // WS-3D2-C — reverse of the existing CATEGORY_CROSS_LINKS edges for this
+  // topic. The cluster's own category is excluded (already linked above), and
+  // an empty result renders no block.
+  const relatedCategories = getRelatedCategoriesForTopic(cluster.slug, cluster.categorySlug);
   const brandNames = await fetchBrandNames();
   const brands = (cluster.brandSlugs || [])
     .filter((s) => brandNames[s])
@@ -242,6 +247,27 @@ export default async function TopicClusterPage({ params }) {
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {listing.products.slice(0, 8).map(product => (
                 <ProductCard key={product._id || product.id} product={product} showCategory />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* WS-3D2-C — contextual reverse-category links (max 4). Only the
+            approved categories that already declare this topic in
+            CATEGORY_CROSS_LINKS, minus the category already linked above;
+            renders nothing when no reverse relationship exists. */}
+        {relatedCategories.length > 0 && (
+          <section>
+            <h2 className="text-base font-bold text-brand-navy mb-4">Related categories</h2>
+            <div className="flex flex-wrap gap-2">
+              {relatedCategories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/products/category/${cat.slug}`}
+                  className="inline-flex items-center text-xs font-semibold text-brand-teal border border-brand-teal/30 rounded-lg px-3 py-1.5 hover:bg-brand-teal hover:text-white transition-colors"
+                >
+                  {cat.name}
+                </Link>
               ))}
             </div>
           </section>
