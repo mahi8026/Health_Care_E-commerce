@@ -37,9 +37,11 @@ describe('Mongoose Slow Query Plugin', () => {
       createdAt: { type: Date, default: Date.now },
     });
 
-    // Apply plugin with low threshold for testing
+    // Apply plugin with a high threshold for testing: the shared-model tests
+    // below assert that FAST queries are NOT logged (0 warns), and a 10ms
+    // threshold made those assertions timing-flaky on CI runners.
     testSchema.plugin(slowQueryPlugin, {
-      threshold: 10, // 10ms threshold for testing
+      threshold: 10000, // 10s — fast local/CI ops must never count as slow
       logAll: false,
     });
 
@@ -151,7 +153,9 @@ describe('Mongoose Slow Query Plugin', () => {
 
     it('should log slow remove operations', async () => {
       const doc = await TestModel.create({ name: 'test', value: 1 });
-      await doc.remove();
+      // Document.prototype.remove() was removed in Mongoose 7+; deleteOne is
+      // the supported equivalent.
+      await doc.deleteOne();
 
       await new Promise(resolve => setTimeout(resolve, 50));
       

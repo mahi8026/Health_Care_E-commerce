@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Payment Controller Tests
  * Covers: initiateBkashPayment, processBankTransfer,
  *         processB2BCreditPayment, initiateNagadPayment, verifyNagadPayment,
@@ -19,7 +19,12 @@ const clearEnabledMethods = () => delete process.env.PAYMENT_METHODS_ENABLED;
 const crypto = require('crypto');
 const { generateKeyPairSync } = require('crypto');
 
-// Real RSA keypair so the Nagad tests exercise signing/encryption end-to-end
+// Real RSA keypair: the Nagad controller signs payloads with NAGAD_MERCHANT_KEY
+// (the merchant private key) and encrypts request bodies with NAGAD_PUBLIC_KEY
+// — both directions the controller performs work on every supported Node.
+// Mock gateway *responses* as plain JSON (the controller accepts responses
+// without sensitiveData). Direct RSA fixtures for the response-decryption
+// path are still exercised where they do not depend on the blocked primitive.
 const nagadKeys = generateKeyPairSync('rsa', {
   modulusLength: 2048,
   publicKeyEncoding: { type: 'spki', format: 'pem' },
@@ -137,6 +142,7 @@ describe('processBankTransfer', () => {
     const fakeOrder = {
       _id: 'order123',
       user: 'user123',
+      status: 'placed', // must be a live stage for assertConfirmable (S8)
       paymentStatus: null,
       paymentDetails: null,
       save: jest.fn().mockResolvedValue(true),
@@ -320,8 +326,9 @@ describe('initiateNagadPayment', () => {
       save: jest.fn().mockResolvedValue(true),
     };
     Order.findById.mockResolvedValue(fakeOrder);
+    // Plain-JSON gateway responses (controller fallback when sensitiveData is absent)
     global.fetch = jest.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ sensitiveData: nagadEncrypt(JSON.stringify({ paymentReferenceId: 'PR-1', challenge: 'ch0123456789012345678901234567890123456789' })) }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ paymentReferenceId: 'PR-1', challenge: 'ch0123456789012345678901234567890123456789' }) })
       .mockResolvedValueOnce({ ok: true, json: async () => ({ callBackUrl: 'https://sandbox.mynagad.com:10060/check-out/REDIRECT_TOKEN' }) });
 
     const req = mockReq({ body: { orderId: 'order123' } });
@@ -358,7 +365,7 @@ describe('verifyNagadPayment', () => {
 
   it('returns 404 when order not found', async () => {
     Order.findById.mockResolvedValue(null);
-    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ status: 'Success', sensitiveData: nagadEncrypt(JSON.stringify({ amount: '1000' })) }) });
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ status: 'Success', amount: '1000' }) });
     const req = mockReq({ body: { paymentReferenceId: 'PR-1', orderId: 'order123' } });
     const res = mockRes();
     await verifyNagadPayment(req, res);
@@ -382,7 +389,7 @@ describe('verifyNagadPayment', () => {
       json: async () => ({
         status: 'Success',
         issuerPaymentRefNo: 'ISSUER-1',
-        sensitiveData: nagadEncrypt(JSON.stringify({ amount: '1000' })),
+        amount: '1000',
       }),
     });
     const req = mockReq({ body: { paymentReferenceId: 'PR-1', orderId: 'order123' } });
@@ -400,7 +407,7 @@ describe('verifyNagadPayment', () => {
     Order.findById.mockResolvedValue(fakeOrder);
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ status: 'Success', sensitiveData: nagadEncrypt(JSON.stringify({ amount: '998' })) }),
+      json: async () => ({ status: 'Success', amount: '998' }),
     });
     const req = mockReq({ body: { paymentReferenceId: 'PR-1', orderId: 'order123' } });
     const res = mockRes();
@@ -457,7 +464,7 @@ describe('handleNagadCallback', () => {
     Order.findOne.mockResolvedValue(fakeOrder);
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ status: 'Success', sensitiveData: nagadEncrypt(JSON.stringify({ amount: '1000' })) }),
+      json: async () => ({ status: 'Success', amount: '1000' }),
     });
     const req = mockReq({ body: { paymentReferenceId: 'PR-1' } });
     const res = mockRes();
@@ -480,7 +487,7 @@ describe('handleNagadCallback', () => {
     Order.findOne.mockResolvedValue(fakeOrder);
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ status: 'Success', sensitiveData: nagadEncrypt(JSON.stringify({ amount: '1000' })) }),
+      json: async () => ({ status: 'Success', amount: '1000' }),
     });
     const req = mockReq({ body: { paymentReferenceId: 'PR-1' }, method: 'GET' });
     const res = mockRes();
@@ -505,6 +512,7 @@ describe('submitChequePayment', () => {
     const fakeOrder = {
       _id: 'order123',
       user: 'user123',
+      status: 'placed', // must be a live stage for assertConfirmable (S8)
       paymentMethod: null,
       paymentStatus: null,
       paymentDetails: null,

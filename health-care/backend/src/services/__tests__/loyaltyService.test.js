@@ -15,16 +15,16 @@ describe('Loyalty Service', () => {
   describe('Configuration Tests', () => {
     test('should have correct conversion rates', () => {
       expect(config.POINTS_PER_TAKA).toBe(0.01); // 1 point per ৳100
-      expect(config.POINTS_TO_TAKA).toBe(0.01);  // 1000 points = ৳10
-      expect(config.MIN_REDEEM_POINTS).toBe(500);
+      expect(config.POINTS_TO_TAKA).toBe(0.1);   // 100 points = ৳10 (current config: "CHANGED from 0.01")
+      expect(config.MIN_REDEEM_POINTS).toBe(50); // current config: "CHANGED from 500"
       expect(config.MAX_REDEEM_PERCENT).toBe(20);
     });
 
     test('should have correct bonus values', () => {
-      expect(config.BONUS_FIRST_ORDER).toBe(200);
-      expect(config.BONUS_REVIEW).toBe(50);
-      expect(config.BONUS_REFERRAL_REFERRER).toBe(500);
-      expect(config.BONUS_REFERRAL_REFEREE).toBe(200);
+      expect(config.BONUS_FIRST_ORDER).toBe(20);  // current config: "CHANGED from 200"
+      expect(config.BONUS_REVIEW).toBe(5);        // current config: "CHANGED from 50"
+      expect(config.BONUS_REFERRAL_REFERRER).toBe(50);  // current config: "CHANGED from 500"
+      expect(config.BONUS_REFERRAL_REFEREE).toBe(20);   // current config: "CHANGED from 200"
     });
 
     test('should have 4 tier levels', () => {
@@ -54,25 +54,25 @@ describe('Loyalty Service', () => {
     });
   });
 
-  describe('pointsToTaka - CRITICAL TEST', () => {
-    test('should convert 1000 points to ৳10 (NOT ৳100)', () => {
+  describe('pointsToTaka - redemption rate', () => {
+    test('should convert 1000 points to ৳100 (rate 0.1: 100 points = ৳10)', () => {
       const taka = loyaltyService.pointsToTaka(1000);
-      expect(taka).toBe(10); // 1000 * 0.01 = 10 ✅
+      expect(taka).toBe(100); // 1000 * 0.1 = 100
     });
 
-    test('should convert 500 points to ৳5', () => {
+    test('should convert 500 points to ৳50', () => {
       const taka = loyaltyService.pointsToTaka(500);
-      expect(taka).toBe(5); // 500 * 0.01 = 5
+      expect(taka).toBe(50); // 500 * 0.1 = 50
     });
 
-    test('should convert 10000 points to ৳100', () => {
+    test('should convert 10000 points to ৳1000', () => {
       const taka = loyaltyService.pointsToTaka(10000);
-      expect(taka).toBe(100); // 10000 * 0.01 = 100
+      expect(taka).toBe(1000); // 10000 * 0.1 = 1000
     });
 
     test('should floor fractional taka values', () => {
       const taka = loyaltyService.pointsToTaka(555);
-      expect(taka).toBe(5.55); // 555 * 0.01 = 5.55
+      expect(taka).toBe(55.5); // 555 * 0.1 = 55.5 (flopped to 2dp)
     });
   });
 
@@ -80,22 +80,22 @@ describe('Loyalty Service', () => {
     test('should enforce 20% max redemption for ৳1,000 order', () => {
       const maxPoints = loyaltyService.maxRedeemablePoints(1000);
       // Max taka: 1000 * 0.20 = 200
-      // Max points: 200 / 0.01 = 20,000
-      expect(maxPoints).toBe(20000);
+      // Max points: 200 / 0.1 = 2,000
+      expect(maxPoints).toBe(2000);
     });
 
     test('should enforce 20% max redemption for ৳5,000 order', () => {
       const maxPoints = loyaltyService.maxRedeemablePoints(5000);
       // Max taka: 5000 * 0.20 = 1000
-      // Max points: 1000 / 0.01 = 100,000
-      expect(maxPoints).toBe(100000);
+      // Max points: 1000 / 0.1 = 10,000
+      expect(maxPoints).toBe(10000);
     });
 
     test('should return 0 for very small orders', () => {
       const maxPoints = loyaltyService.maxRedeemablePoints(10);
       // Max taka: 10 * 0.20 = 2
-      // Max points: 2 / 0.01 = 200
-      expect(maxPoints).toBe(200);
+      // Max points: 2 / 0.1 = 20
+      expect(maxPoints).toBe(20);
     });
   });
 
@@ -153,11 +153,11 @@ describe('Loyalty Service', () => {
       const result = await loyaltyService.awardOrderPoints('user123', 'order123', 10000, true);
       
       expect(result.earnedPoints).toBe(100);
-      expect(result.bonusPoints).toBe(200); // BONUS_FIRST_ORDER
-      expect(result.totalPoints).toBe(300);
+      expect(result.bonusPoints).toBe(20); // BONUS_FIRST_ORDER (current config)
+      expect(result.totalPoints).toBe(120);
       expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
         'user123',
-        { $inc: { loyaltyPoints: 300 } },
+        { $inc: { loyaltyPoints: 120 } },
         expect.any(Object)
       );
     });
@@ -172,10 +172,9 @@ describe('Loyalty Service', () => {
     const mockUser = { _id: 'user123', loyaltyPoints: 2000 };
 
     beforeEach(() => {
-      User.findById.mockReturnValue({
-        session: jest.fn().mockResolvedValue(mockUser)
-      });
-      User.findByIdAndUpdate.mockResolvedValue({});
+      // D3 atomic flow: the balance guard and deduction happen in a single
+      // User.findOneAndUpdate({ loyaltyPoints: { $gte } }, { $inc }).
+      User.findOneAndUpdate.mockResolvedValue({ _id: 'user123', loyaltyPoints: 1000 });
       LoyaltyTransaction.create.mockResolvedValue({});
     });
 
@@ -183,36 +182,36 @@ describe('Loyalty Service', () => {
       const result = await loyaltyService.redeemPoints('user123', 1000, 'order123', 5000);
       
       expect(result.pointsRedeemed).toBe(1000);
-      expect(result.discountAmount).toBe(10); // 1000 * 0.01 = ৳10
-      expect(result.newBalance).toBe(1000); // 2000 - 1000
-      expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
-        'user123',
+      expect(result.discountAmount).toBe(100); // 1000 * 0.1 = ৳100
+      expect(result.newBalance).toBe(1000); // 2000 - 1000 (post-$inc balance from the guarded update)
+      expect(User.findOneAndUpdate).toHaveBeenCalledWith(
+        { _id: 'user123', loyaltyPoints: { $gte: 1000 } },
         { $inc: { loyaltyPoints: -1000 } },
-        expect.any(Object)
+        expect.objectContaining({ new: true })
       );
     });
 
-    test('should reject redemption below minimum (500 points)', async () => {
+    test('should reject redemption below minimum (50 points)', async () => {
       await expect(
-        loyaltyService.redeemPoints('user123', 400, 'order123', 5000)
-      ).rejects.toThrow('Minimum 500 points required to redeem');
+        loyaltyService.redeemPoints('user123', 30, 'order123', 5000)
+      ).rejects.toThrow('Minimum 50 points required to redeem');
     });
 
     test('should reject redemption with insufficient points', async () => {
+      // Guarded findOneAndUpdate returns null → insufficient balance path
+      User.findOneAndUpdate.mockResolvedValue(null);
       await expect(
         loyaltyService.redeemPoints('user123', 3000, 'order123', 5000)
       ).rejects.toThrow('Insufficient loyalty points');
     });
 
     test('should reject redemption exceeding max allowed (20%)', async () => {
-      // Mock user with enough points to pass insufficient check
-      User.findById.mockReturnValue({
-        session: jest.fn().mockResolvedValue({ _id: 'user123', loyaltyPoints: 25000 })
-      });
+      // Balance guard passes (25000 >= 21000), but the order cap rejects it
+      User.findOneAndUpdate.mockResolvedValue({ _id: 'user123', loyaltyPoints: 25000 });
 
       // Order total: ৳1000
       // Max 20% = ৳200
-      // Max points = ৳200 / 0.01 = 20,000 points
+      // Max points = ৳200 / 0.1 = 2,000 points
       await expect(
         loyaltyService.redeemPoints('user123', 21000, 'order123', 1000)
       ).rejects.toThrow('Cannot redeem more than');
@@ -238,10 +237,10 @@ describe('Loyalty Service', () => {
       expect(summary.currentPoints).toBe(1500);
       expect(summary.totalEarned).toBe(2500);
       expect(summary.tier.label).toBe('Silver'); // 2500 total earned
-      expect(summary.redeemableValue).toBe(15); // 1500 * 0.01 = ৳15
-      expect(summary.canRedeem).toBe(true); // 1500 >= 500
-      expect(summary.minRedeemPoints).toBe(500);
-      expect(summary.pointsToTakaRate).toBe(0.01);
+      expect(summary.redeemableValue).toBe(150); // 1500 * 0.1 = ৳150
+      expect(summary.canRedeem).toBe(true); // 1500 >= 50
+      expect(summary.minRedeemPoints).toBe(50);
+      expect(summary.pointsToTakaRate).toBe(0.1);
     });
 
     test('should calculate next tier correctly', async () => {

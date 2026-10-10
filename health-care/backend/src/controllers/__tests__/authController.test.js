@@ -243,7 +243,9 @@ describe('refreshToken', () => {
   it('returns 200 with new tokens on valid refresh', async () => {
     const token = jwt.sign({ id: 'user123' }, process.env.JWT_REFRESH_SECRET || 'test-jwt-refresh-secret', { expiresIn: '30d' });
     const fakeUser = { _id: 'user123', refreshToken: token, save: jest.fn().mockResolvedValue(true) };
-    User.findById.mockReturnValue({ select: jest.fn().mockResolvedValue(fakeUser) });
+    // P8 hardening: refresh is one atomic rotation via User.findOneAndUpdate
+    // (matches on the presented token + isActive), not findById/select/save.
+    User.findOneAndUpdate.mockResolvedValue(fakeUser);
     const req = mockReq({ body: { refreshToken: token } });
     const res = mockRes();
     await refreshToken(req, res);
@@ -388,7 +390,9 @@ describe('resetPassword', () => {
   });
 
   it('returns 400 when token is invalid or expired', async () => {
-    User.findOne.mockResolvedValue(null);
+    // Explicitly stub the atomic lookup: implementations set with
+    // mockResolvedValue in other tests persist across mockClear.
+    User.findOneAndUpdate.mockResolvedValue(null);
     const req = mockReq({ body: { token: 'badtoken', password: 'NewPass1!' } });
     const res = mockRes();
     await resetPassword(req, res);
@@ -404,7 +408,9 @@ describe('resetPassword', () => {
       refreshToken: 'old-refresh',
       save: jest.fn().mockResolvedValue(true),
     };
-    User.findOne.mockResolvedValue(fakeUser);
+    // Atomic reset flow: the controller finds AND clears the token in a single
+    // User.findOneAndUpdate, then sets password/refreshToken and saves.
+    User.findOneAndUpdate.mockResolvedValue(fakeUser);
     const req = mockReq({ body: { token: 'validtoken', password: 'NewPass1!' } });
     const res = mockRes();
     await resetPassword(req, res);

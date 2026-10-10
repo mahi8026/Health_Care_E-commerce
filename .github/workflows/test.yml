@@ -23,7 +23,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '18'
+          # Next 16 requires Node >=20.9 at build time; the >=22 line is needed
+          # for the Turbopack font pipeline (fails on 18 and 20 in CI).
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: health-care/package-lock.json
       

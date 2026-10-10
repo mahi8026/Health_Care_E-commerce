@@ -51,6 +51,9 @@ describe('errorHandler middleware', () => {
     jest.clearAllMocks();
     process.env.NODE_ENV = 'production'; // default to production for clean tests
     delete process.env.SENTRY_DSN;
+    // errorHandler reads ERROR_DETAIL_ENABLED per request; the development-mode
+    // test sets it, so reset it here to keep tests isolated.
+    delete process.env.ERROR_DETAIL_ENABLED;
   });
 
   afterAll(() => {

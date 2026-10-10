@@ -22,6 +22,22 @@ mockSchema.Types = {
   Mixed: 'Mixed'
 };
 
+// Faithful Schema mock: requiring ../analyticsRoutes pulls in auth middleware
+// and the real User model, which registers pre/index hooks at load time.
+mockSchema.prototype.pre = jest.fn();
+mockSchema.prototype.post = jest.fn();
+mockSchema.prototype.index = jest.fn();
+mockSchema.prototype.virtual = jest.fn().mockReturnValue({ get: jest.fn(), set: jest.fn() });
+mockSchema.prototype.method = jest.fn();
+mockSchema.prototype.methods = {};
+mockSchema.prototype.statics = {};
+mockSchema.prototype.set = jest.fn();
+mockSchema.prototype.get = jest.fn();
+mockSchema.prototype.plugin = jest.fn();
+mockSchema.prototype.add = jest.fn();
+mockSchema.prototype.path = jest.fn();
+mockSchema.prototype.eachPath = jest.fn();
+
 jest.mock('mongoose', () => ({
   Schema: mockSchema,
   model: jest.fn().mockReturnValue({}),

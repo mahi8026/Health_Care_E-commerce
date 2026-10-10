@@ -7,7 +7,13 @@ const emailService = require('../../utils/emailService');
 jest.mock('../whatsappService');
 jest.mock('../../models/WhatsAppConversation');
 jest.mock('../../models/User');
-jest.mock('../../utils/emailService');
+// Explicit contract mock: whatsappBot (src/services/whatsappBot.js:373/422)
+// requires { sendWhatsAppConversationAlert } from utils/emailService. The real
+// service does not currently export that function (latent defect reported
+// separately), so the automock has no such key and the test setup crashes.
+jest.mock('../../utils/emailService', () => ({
+  sendWhatsAppConversationAlert: jest.fn(),
+}));
 jest.mock('../../utils/logger');
 
 describe('WhatsAppBot - Admin Notifications', () => {
