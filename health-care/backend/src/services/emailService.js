@@ -635,8 +635,96 @@ async function sendNewsletterBroadcast(email, name, subject, htmlContent, unsubs
   });
 }
 
+// ─── WhatsApp Conversation Alert (admin escalation) ───────────────────────────
+// Restores the admin escalation email lost in the Brevo migration: whatsappBot.js
+// calls sendWhatsAppConversationAlert(conversation, user) via the
+// utils/emailService shim, which re-exports this module. Without it the call
+// threw a TypeError that was caught and logged, so admins were never notified.
+async function sendWhatsAppConversationAlert(conversation, user) {
+  const { adminEmail, siteUrl } = getConfig();
+
+  const categoryBadge = {
+    order_status:    { color: '#0d6efd', label: 'Order Status' },
+    product_inquiry: { color: '#0E8A6E', label: 'Product Inquiry' },
+    quote_request:   { color: '#6f42c1', label: 'Quote Request' },
+    support:         { color: '#dc3545', label: 'Support' },
+    general:         { color: '#6c757d', label: 'General' },
+  };
+  const badge = categoryBadge[conversation.category] || categoryBadge.general;
+
+  const messages = Array.isArray(conversation.messages) ? conversation.messages.slice(-5) : [];
+  const recentMessages = messages.map(msg => `
+    <div style="margin:8px 0;padding:10px;background:${msg.direction === 'inbound' ? '#f8f9fa' : '#e7f3ff'};border-radius:8px;border-left:3px solid ${msg.direction === 'inbound' ? '#6c757d' : '#0d6efd'};">
+      <div style="font-size:11px;color:#6c757d;margin-bottom:4px;">
+        <strong>${msg.direction === 'inbound' ? 'Customer' : 'Bot'}</strong> &bull; ${new Date(msg.timestamp).toLocaleString('en-BD', { hour: '2-digit', minute: '2-digit' })}
+      </div>
+      <div style="font-size:13px;color:#212529;">${msg.text}</div>
+    </div>
+  `).join('');
+
+  const body = `
+    <div style="background:#FFF3CD;padding:16px;border-radius:8px;border-left:4px solid #FFC107;margin-bottom:20px;">
+      <h2 style="color:#856404;margin:0 0 8px;font-size:18px;">New WhatsApp Conversation Escalated</h2>
+      <p style="margin:0;font-size:14px;color:#856404;">A customer has requested to speak with a human agent.</p>
+    </div>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#F9FAFB;border-radius:8px;border:1px solid #E5E7EB;">
+      <tr>
+        <td style="padding:12px;font-size:13px;color:#374151;"><strong>Customer</strong><br/>${user?.name || 'Unknown'}</td>
+        <td style="padding:12px;font-size:13px;color:#374151;"><strong>Phone</strong><br/><span style="font-family:monospace;">${conversation.phoneNumber || 'n/a'}</span></td>
+        <td style="padding:12px;font-size:13px;color:#374151;"><strong>Category</strong><br/><span style="padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;background:${badge.color}20;color:${badge.color};">${badge.label}</span></td>
+      </tr>
+    </table>
+
+    <h3 style="color:#0B2545;margin:24px 0 12px;font-size:16px;">Conversation Details</h3>
+    <div style="background:#F9FAFB;padding:16px;border-radius:8px;border-left:4px solid #0E8A6E;">
+      <p style="margin:0 0 6px;font-size:13px;"><strong>Conversation ID:</strong> <span style="font-family:monospace;">${conversation.conversationId || 'n/a'}</span></p>
+      <p style="margin:0 0 6px;font-size:13px;"><strong>Started:</strong> ${conversation.createdAt ? new Date(conversation.createdAt).toLocaleString('en-BD', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'n/a'}</p>
+      <p style="margin:0;font-size:13px;"><strong>Status:</strong> ${(conversation.status || 'open').toString().toUpperCase()}</p>
+    </div>
+
+    ${conversation.relatedOrder ? `
+    <div style="background:#E7F3FF;padding:14px;border-radius:8px;margin:16px 0;border-left:4px solid #0D6EFD;">
+      <p style="margin:0;font-size:13px;color:#084298;"><strong>Related Order:</strong> <span style="font-family:monospace;">${conversation.relatedOrder}</span></p>
+    </div>` : ''}
+
+    ${conversation.relatedProducts && conversation.relatedProducts.length > 0 ? `
+    <div style="background:#D4EDDA;padding:14px;border-radius:8px;margin:16px 0;border-left:4px solid #28A745;">
+      <p style="margin:0;font-size:13px;color:#155724;"><strong>Related Products:</strong> ${conversation.relatedProducts.length} product(s) discussed</p>
+    </div>` : ''}
+
+    <h3 style="color:#0B2545;margin:24px 0 12px;font-size:16px;">Recent Messages</h3>
+    <div style="background:#fff;padding:14px;border-radius:8px;border:1px solid #E5E7EB;">
+      ${recentMessages || '<p style="color:#6c757d;font-size:13px;margin:0;">No messages yet</p>'}
+    </div>
+
+    ${user?.email ? `
+    <h3 style="color:#0B2545;margin:24px 0 12px;font-size:16px;">Customer Information</h3>
+    <div style="background:#F9FAFB;padding:16px;border-radius:8px;border-left:4px solid #0E8A6E;">
+      <p style="margin:0 0 6px;font-size:13px;"><strong>Name:</strong> ${user.name}</p>
+      <p style="margin:0 0 6px;font-size:13px;"><strong>Email:</strong> <a href="mailto:${user.email}" style="color:#0E8A6E;">${user.email}</a></p>
+      <p style="margin:0;font-size:13px;"><strong>Phone:</strong> ${user.phone || conversation.phoneNumber || 'n/a'}</p>
+    </div>` : ''}
+
+    ${ctaButton('View Conversation', `${siteUrl}/admin?tab=whatsapp&conversation=${conversation.conversationId || ''}`)}
+
+    <div style="background:#FFF3CD;border-radius:8px;padding:14px;">
+      <p style="margin:0 0 6px;font-weight:600;font-size:13px;color:#856404;">Action Required</p>
+      <p style="margin:2px 0;font-size:12px;color:#856404;">&bull; Respond to the customer via WhatsApp as soon as possible</p>
+      <p style="margin:2px 0;font-size:12px;color:#856404;">&bull; Review the conversation history before responding</p>
+      <p style="margin:2px 0;font-size:12px;color:#856404;">&bull; Update the conversation status after resolution</p>
+    </div>`;
+
+  return sendEmail({
+    to:      adminEmail,
+    subject: `WhatsApp Escalation — ${user?.name || conversation.phoneNumber || 'Customer'}`,
+    html:    emailLayout('WhatsApp Escalation', body),
+  });
+}
+
 module.exports = {
   sendEmail,
+  sendWhatsAppConversationAlert,
   sendOrderConfirmation,
   sendPaymentReceipt,
   sendShippingNotification,
