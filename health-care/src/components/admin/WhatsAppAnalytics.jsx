@@ -39,8 +39,9 @@ export default function WhatsAppAnalytics() {
       const queryString = new URLSearchParams(params).toString();
       const response = await api.get(`/whatsapp/analytics${queryString ? `?${queryString}` : ''}`);
       
-      if (response.data.success) {
-        setAnalytics(response.data.analytics);
+      if (response.success) {
+        // api.get() resolves to the parsed JSON body: { success, data }
+        setAnalytics(response.data);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load analytics');

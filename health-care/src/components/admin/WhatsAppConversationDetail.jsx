@@ -31,7 +31,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
       setError(null);
       const response = await api.get(`/whatsapp/conversations/${conversationId}`);
       
-      if (response.data.success) {
+      if (response.success) {
         setConversation(response.data.conversation);
         setMessages(response.data.messages);
         
@@ -62,7 +62,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         setLoadingAdmins(true);
         const response = await api.get('/admin/users');
         
-        if (response.data.success) {
+        if (response.success) {
           setAdminUsers(response.data.users);
         }
       } catch (err) {
@@ -87,7 +87,7 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         text: messageText.trim()
       });
 
-      if (response.data.success) {
+      if (response.success) {
         setMessageText('');
         // Refresh conversation to get new message
         await fetchConversation();
@@ -105,8 +105,8 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         status: newStatus
       });
 
-      if (response.data.success) {
-        setConversation(response.data.conversation);
+      if (response.success) {
+        setConversation(response.data);
       }
     } catch (err) {
       showToast.error(err.response?.data?.message || 'Failed to update status');
@@ -119,8 +119,8 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         category: newCategory
       });
 
-      if (response.data.success) {
-        setConversation(response.data.conversation);
+      if (response.success) {
+        setConversation(response.data);
       }
     } catch (err) {
       showToast.error(err.response?.data?.message || 'Failed to update category');
@@ -138,8 +138,8 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         text: noteText.trim()
       });
 
-      if (response.data.success) {
-        setConversation(response.data.conversation);
+      if (response.success) {
+        setConversation(response.data);
         setNoteText('');
         setShowNoteInput(false);
       }
@@ -159,8 +159,8 @@ export default function WhatsAppConversationDetail({ conversationId }) {
         userId
       });
 
-      if (response.data.success) {
-        setConversation(response.data.conversation);
+      if (response.success) {
+        setConversation(response.data);
       }
     } catch (err) {
       showToast.error(err.response?.data?.message || 'Failed to assign agent');

@@ -34,11 +34,14 @@ export default function WhatsAppManager() {
 
       const response = await api.get(`/whatsapp/conversations?${params}`);
       
-      if (response.data.success) {
-        setConversations(response.data.conversations);
-        setPagination(response.data.pagination);
+      if (response.success) {
+        // api.get() resolves to the parsed JSON body, so the envelope is
+        // { success, data, pagination } - not an axios-style response object.
+        setConversations(response.data ?? []);
+        const meta = response.pagination || {};
+        setPagination(prev => ({ ...prev, ...meta, pages: meta.totalPages ?? prev.pages }));
       } else {
-        setError(response.data.message || 'Failed to load conversations');
+        setError(response.message || 'Failed to load conversations');
       }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to load conversations');
