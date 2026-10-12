@@ -52,7 +52,26 @@ jobs:
       
       - name: Build
         working-directory: health-care
-        run: npm run build
+        # next/font/google downloads the font files during the build. That
+        # download fails intermittently in this repository
+        # (NextFontGoogleFontFileReplacer -> "Can't resolve
+        # '@vercel/turbopack-next/internal/font/google/font'"), while the same
+        # commit builds fine on a re-run - seen on PR #138 and on the main push
+        # for 27bfda9c. The build is therefore attempted twice. A deterministic
+        # failure still fails the job: both attempts must fail. Only this step
+        # is retried - lint, tests and Lighthouse are untouched.
+        run: |
+          for attempt in 1 2; do
+            if npm run build; then
+              exit 0
+            fi
+            if [ "$attempt" = "2" ]; then
+              echo "::error::Build failed on both attempts (deterministic failure)"
+              exit 1
+            fi
+            echo "::warning::Build attempt ${attempt} failed - known intermittent next/font fetch; retrying once"
+            sleep 10
+          done
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5000/api
           NEXT_PUBLIC_SITE_URL: http://localhost:3000
