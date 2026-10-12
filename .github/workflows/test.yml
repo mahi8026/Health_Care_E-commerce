@@ -1,15 +1,24 @@
 name: Test
 
 on:
-  # Disabled temporarily - runs on pull requests only
   pull_request:
     branches:
       - main
       - develop
-  # Removed push trigger to reduce workflow runs
-  # push:
-  #   branches:
-  #     - develop
+  # Merges to main previously landed unvalidated: with a pull-request-only
+  # trigger, the merge commit itself never ran the test jobs (the only checks
+  # on main came from the scheduled keep-alive workflow). The same two jobs run
+  # for both events - nothing is weakened, only added.
+  push:
+    branches:
+      - main
+
+# Cancel superseded runs, but only for pushes to main: pull-request runs are
+# never cancelled, so a required check on a PR head can never be cancelled or
+# left pending by a later push.
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   test-frontend:
