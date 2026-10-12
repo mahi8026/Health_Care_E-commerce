@@ -8,7 +8,11 @@ services:
     buildCommand: npm install --production
     startCommand: npm start
     healthCheckPath: /api/health
-    autoDeploy: true
+    # Manual-release policy: auto-deploy is intentionally OFF, so merging to
+    # main never reaches production without an explicit Render deploy. This
+    # must stay in sync with the Render dashboard setting for this service -
+    # a Blueprint sync would otherwise silently re-enable auto-deploy.
+    autoDeploy: false
     envVars:
       - key: NODE_ENV
         value: production
