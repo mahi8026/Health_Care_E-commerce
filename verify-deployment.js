@@ -33,6 +33,7 @@ async function checkBackendHealth() {
     if (result.status === 200) {
       console.log('✅ Backend is healthy');
       console.log('   Status:', result.data.status || 'OK');
+      console.log('   Deployed commit:', result.data.commit || '(not reported - pre-identity deployment)');
       return true;
     } else {
       console.log(`❌ Backend returned status ${result.status}`);
