@@ -53,12 +53,20 @@ const httpServer = http.createServer(app);
 // ── EARLY HEALTH CHECK (Render) ─────────────────────────────────────────────
 // This MUST be before all middleware to ensure Render's healthcheck passes
 // Returns 200 immediately if server is running, regardless of DB/Redis status
+//
+// Deployed commit identity: Render injects RENDER_GIT_COMMIT for every build,
+// so the running container can be traced back to an exact commit. The variable
+// is absent in local runs and CI, and may be empty or whitespace - both cases
+// normalise to null so the field is always present and type-stable.
+const DEPLOYED_COMMIT = (process.env.RENDER_GIT_COMMIT || '').trim() || null;
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
     status: 'healthy',
     message: 'MediportBD API is running',
     version: '2.0.0',
+    commit: DEPLOYED_COMMIT,
     timestamp: new Date().toISOString()
   });
 });
@@ -596,6 +604,7 @@ app.get('/api/health/detailed', (req, res) => {
     status: isHealthy ? 'healthy' : 'degraded',
     message: 'MediportBD API is running',
     version: '2.0.0',
+    commit: DEPLOYED_COMMIT,
     timestamp: new Date().toISOString(),
     services: {
       api: 'operational',

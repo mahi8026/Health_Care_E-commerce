@@ -195,5 +195,68 @@ describe('Health Check Endpoint', () => {
 
       expect(response.body.version).toBe('2.0.0');
     });
+
+    it('should report commit as null when RENDER_GIT_COMMIT is unset', async () => {
+      mongoose.connection.readyState = 1;
+
+      const response = await request(app).get('/api/health');
+
+      expect(response.body).toHaveProperty('commit', null);
+    });
+  });
+});
+
+// Deployed commit identity: Render injects RENDER_GIT_COMMIT at build time and
+// the module reads it on load, so these tests reset the module registry and set
+// the variable before requiring the server.
+describe('GET /api/health - deployed commit identity', () => {
+  const ORIGINAL_COMMIT = process.env.RENDER_GIT_COMMIT;
+
+  afterEach(() => {
+    if (ORIGINAL_COMMIT === undefined) {
+      delete process.env.RENDER_GIT_COMMIT;
+    } else {
+      process.env.RENDER_GIT_COMMIT = ORIGINAL_COMMIT;
+    }
+    jest.resetModules();
+  });
+
+  function appWithCommit(value) {
+    if (value === undefined) {
+      delete process.env.RENDER_GIT_COMMIT;
+    } else {
+      process.env.RENDER_GIT_COMMIT = value;
+    }
+    jest.resetModules();
+    return require('../server');
+  }
+
+  it('reports the deployed commit when RENDER_GIT_COMMIT is set', async () => {
+    const freshApp = appWithCommit('abc1234def5678901234567890abcdef12345678');
+
+    const response = await request(freshApp).get('/api/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body.commit).toBe('abc1234def5678901234567890abcdef12345678');
+  });
+
+  it('normalises an empty or whitespace value to null', async () => {
+    const freshApp = appWithCommit('   ');
+
+    const response = await request(freshApp).get('/api/health');
+
+    expect(response.body.commit).toBeNull();
+  });
+
+  it('exposes the deploy commit on /api/health/detailed too', async () => {
+    const mongoose = require('mongoose');
+    mongoose.connection.readyState = 1;
+
+    const freshApp = appWithCommit('deadbeefdeadbeefdeadbeefdeadbeefdeadbeef');
+
+    const response = await request(freshApp).get('/api/health/detailed');
+
+    expect(response.status).toBe(200);
+    expect(response.body.commit).toBe('deadbeefdeadbeefdeadbeefdeadbeefdeadbeef');
   });
 });
