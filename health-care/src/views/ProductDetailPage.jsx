@@ -24,6 +24,7 @@ import ReviewSchema from '@/components/seo/ReviewSchema';
 import ProductSeoContent from '@/components/seo/ProductSeoContent';
 import { getProductCardImage } from '@/utils/cloudinary';
 import { generateProductAltText } from '@/utils/bangladeshSEO';
+import ProductPriceNotice from '@/components/product/ProductPriceNotice';
 
 // Innovation Features
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
@@ -287,6 +288,11 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
             productId={product._id || product.id}
             category={product.categoryId || (typeof product.category === 'object' ? product.category?._id : product.category)}
           />
+        </div>
+
+        {/* Product Price & Delivery Notice */}
+        <div className="mt-4">
+          <ProductPriceNotice />
         </div>
 
         {/* Tabs: Specs, Description, Shipping */}
