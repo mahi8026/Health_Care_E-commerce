@@ -9,7 +9,10 @@ import {
   generateProductMetadata,
   getDefaultOGImage,
   finalTitle,
+  productTitle,
+  productTitleText,
   socialTitle,
+  TITLE_DISPLAY_BUDGET,
 } from '../metadata'
 
 // ---------------------------------------------------------------------------
@@ -357,5 +360,52 @@ describe('finalTitle', () => {
 
   it('falls back to the site name when empty', () => {
     expect(finalTitle('')).toEqual({ absolute: 'MediportBD' })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// productTitle — SEO-01 (no price in the <title>; site suffix only when it fits)
+// ---------------------------------------------------------------------------
+
+describe('productTitle', () => {
+  it('returns a plain string when the site suffix still fits the display budget', () => {
+    const title = productTitle('Comen Star 8000F Patient Monitor', 'Comen')
+    expect(title).toBe('Comen Star 8000F Patient Monitor')
+    expect(title.length + ' | MediportBD'.length).toBeLessThanOrEqual(TITLE_DISPLAY_BUDGET)
+  })
+
+  it('prefers dropping the site suffix over losing product words on long titles', () => {
+    const name = 'Yamasu Aneroid Sphygmomanometer with Stethoscope (Made in Japan)'
+    const title = productTitle(name, 'Yamasu')
+    expect(title).toEqual({ absolute: name }) // full name preserved verbatim
+    expect(title.absolute).toContain('Stethoscope') // meaningful words survive
+    expect(title.absolute).not.toContain('MediportBD')
+  })
+
+  it('never truncates a product name to fit the budget', () => {
+    const name = 'A'.repeat(120)
+    expect(productTitle(name)).toEqual({ absolute: name })
+  })
+
+  it('has no price data anywhere in the title', () => {
+    const flat = JSON.stringify([productTitle('GPL Iron Reagent (40+10 ml)', 'GPL'), productTitle('A'.repeat(80), 'Tynor')])
+    expect(flat).not.toMatch(/৳|Price|BDT|Tk/)
+  })
+
+  it('prefixes the brand only when the name does not already start with it', () => {
+    expect(productTitle('CMS50D1 Pulse Oximeter', 'CONTEC')).toBe('CONTEC CMS50D1 Pulse Oximeter')
+    expect(productTitle('CONTEC CMS50D1 Pulse Oximeter', 'CONTEC')).toBe('CONTEC CMS50D1 Pulse Oximeter')
+  })
+
+  it('falls back to the site name when the product name is missing', () => {
+    expect(productTitle('', 'GPL')).toEqual({ absolute: 'MediportBD' })
+    expect(productTitle(null)).toEqual({ absolute: 'MediportBD' })
+  })
+
+  it('productTitleText renders share-card strings from either form', () => {
+    const short = productTitle('Comen Star 8000F Patient Monitor')
+    const long = 'A'.repeat(80)
+    expect(productTitleText(short)).toBe(short)
+    expect(productTitleText({ absolute: long })).toBe(long)
   })
 })

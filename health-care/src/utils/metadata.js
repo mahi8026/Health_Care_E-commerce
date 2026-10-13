@@ -46,6 +46,56 @@ export function socialTitle(title) {
   return finalTitle(title).absolute;
 }
 
+/**
+ * Display budget for a product `<title>`, in characters, INCLUDING the site
+ * suffix. Search results truncate around 60 characters, so anything longer
+ * loses its tail — but product-identifying words matter more than the trailing
+ * site name. This budget only decides whether the site name is appended; a
+ * product name is never truncated to fit it.
+ */
+export const TITLE_DISPLAY_BUDGET = 60;
+
+/**
+ * Build a product `<title>` that carries no volatile data (no price) and shows
+ * the site name only when the whole line still fits the display budget.
+ *
+ * Returns a plain string so the root layout's ` | MediportBD` template
+ * completes the line when it fits, and `{ absolute }` — which bypasses that
+ * template — when the name alone already fills the budget. Long titles
+ * therefore drop the *site suffix*, never meaningful product words.
+ *
+ * @param {string} name - Product name (e.g. "Yamasu Aneroid Sphygmomanometer")
+ * @param {string} [brandName] - Brand, prefixed only when the name lacks it
+ * @returns {string | { absolute: string }} Next.js metadata `title` value
+ */
+export function productTitle(name, brandName = '') {
+  const cleanName = String(name ?? '').replace(/\s+/g, ' ').trim();
+  if (!cleanName) {
+    return { absolute: siteConfig.name };
+  }
+
+  const brand = String(brandName ?? '').replace(/\s+/g, ' ').trim();
+  const nameHasBrand =
+    brand && cleanName.toLowerCase().startsWith(brand.toLowerCase());
+  const core = nameHasBrand || !brand ? cleanName : `${brand} ${cleanName}`;
+
+  return core.length + SITE_TITLE_SUFFIX.length <= TITLE_DISPLAY_BUDGET
+    ? core
+    : { absolute: core };
+}
+
+/**
+ * Renderable title string for Open Graph / Twitter, which accept only strings.
+ * Mirrors the pre-existing behaviour where the share title carried no site
+ * suffix (the suffix was added by the layout for the document title only).
+ *
+ * @param {string | { absolute: string }} title - Value from {@link productTitle}
+ * @returns {string}
+ */
+export function productTitleText(title) {
+  return typeof title === 'string' ? title : title.absolute;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

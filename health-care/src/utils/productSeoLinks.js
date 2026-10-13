@@ -35,6 +35,7 @@ import { LANDING_PAGES } from '@/config/landingPages';
 import { TOPICAL_CLUSTERS } from '@/config/topicalClusters';
 import { GUIDES } from '@/config/guides';
 import { getBrandGeo } from '@/config/brandGEO';
+import { isRegisteredBrandHub } from '@/config/brandHubs';
 
 const MAX_EQUIPMENT = 2;
 const MAX_TOPICS = 2;
@@ -94,6 +95,9 @@ function isRegisteredBrand(slug, name) {
   if (slug) {
     if (!SAFE_SLUG.test(slug)) return false;
     if (REGISTERED_BRAND_SLUGS.has(slug)) return true;
+    // Published `/brands/<slug>` hubs (config/brandHubs.js). Without this a brand
+    // with a live hub but no cluster/GEO entry got no link at all (e.g. tynor).
+    if (isRegisteredBrandHub(slug)) return true;
     return getBrandGeo(slug, name) !== null;
   }
   // Normalized products expose `brand` as a string (slug dropped before SSR):
@@ -102,6 +106,7 @@ function isRegisteredBrand(slug, name) {
   const candidate = slugify(name);
   if (!candidate) return false;
   if (REGISTERED_BRAND_SLUGS.has(candidate)) return true;
+  if (isRegisteredBrandHub(candidate)) return true;
   return getBrandGeo(candidate, name) !== null;
 }
 
