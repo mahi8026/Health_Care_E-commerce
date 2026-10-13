@@ -263,7 +263,10 @@ describe('resolveProductSeoLinks', () => {
     expect(urls(res.topics)).toEqual(['/topics/blood-pressure-monitors']);
     expect(urls(res.topics)).not.toContain('/topics/ecg-machines');
     expect(urls(res.topics)).not.toContain('/topics/ultrasound-machines');
-    expect(res.brand).toEqual(null); // vigor is not in the registered brand registries
+    // SEO-02 — /brands/vigor is a published hub (200 verified 2026-10-12), so the
+    // product's own brand now resolves even though this broad category still maps to
+    // exactly one cluster.
+    expect(res.brand).toEqual({ url: '/brands/vigor', label: 'Vigor' });
   });
 });
 
