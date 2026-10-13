@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/generate-sitemap.js && next build",
+    "build": "node scripts/generate-sitemap.js && next build --no-turbopack",
     "build:sitemap": "node scripts/generate-sitemap.js",
     "start": "next start",
     "lint": "eslint --config eslint.config.mjs src/",
