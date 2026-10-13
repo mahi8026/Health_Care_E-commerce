@@ -341,10 +341,9 @@ const nextConfig = {
     webpackBuildWorker: true,
   },
 
-  // Turbopack config — required in Next.js 16 to silence warning
-  turbopack: {
-    root: workspaceRoot,
-  },
+  // Turbopack config — DISABLED for production due to font loading bug
+  // Re-enable once Next.js fixes Google Fonts support in Turbopack
+  turbopack: false,
 
   // TypeScript is installed only for ESLint (eslint-config-next dependency)
   // Skip build-time type checking — this is a JS codebase with no tsconfig.json
