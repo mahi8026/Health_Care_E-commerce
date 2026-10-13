@@ -9,6 +9,7 @@ import ProductDetailPage from '@/views/ProductDetailPage';
 // import TrustBand from '@/components/seo/TrustBand'; // Removed - not needed on product pages
 import { API as API_BASE } from '@/constants/api';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
+import { productTitle, productTitleText } from '@/utils/metadata';
 
 // ---------------------------------------------------------------------------
 // Data fetching helper
@@ -142,16 +143,15 @@ export async function generateMetadata({ params }) {
 
   // Brand-first title, but ONLY when the name doesn't already start with the brand.
   // Many product names already include it (e.g. "Abbott Bioline Dengue Test"), so
-  // dedup avoids spammy "Abbott Abbott ..." titles and keeps keywords dense for the
-  // "price in Bangladesh" money queries. Pattern: "Jumper Digital BP Monitor HA300".
-  const nameHasBrand =
-    brandName && name.trim().toLowerCase().startsWith(brandName.toLowerCase());
-  // Data-tied title suffix only: real BDT price when present; otherwise a generic
-  // delivery anchor already used in PDP copy. No stock/warranty/review claims.
-  const moneySuffix = product.price && Number(product.price) > 0
-    ? `Price ৳${Number(product.price).toLocaleString('en-BD')}`
-    : 'Buy Online Bangladesh';
-  const title = `${nameHasBrand ? '' : brandName ? `${brandName} ` : ''}${name} | ${moneySuffix}`;
+  // dedup avoids spammy "Abbott Abbott ..." titles. Pattern: "Jumper Digital BP Monitor HA300".
+  //
+  // SEO-01 — the <title> carries no volatile data. A price in the title dates the
+  // search snippet and rewrites the title on every price change, so the price lives
+  // in the meta description and the Offer/Product JSON-LD instead. productTitle()
+  // appends the site suffix only when the whole line fits the display budget and
+  // never truncates the product name.
+  const title = productTitle(name, brandName);
+  const titleText = productTitleText(title);
   const description = buildDescription(name, brandName, catName, product.price, product.description);
   const keywords    = buildKeywords(name, brandName, catName, product.sku);
 
@@ -181,7 +181,7 @@ export async function generateMetadata({ params }) {
     keywords,
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title,
+      title: titleText,
       description,
       url:    canonicalUrl,
       type:   'website',
@@ -189,7 +189,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card:        'summary_large_image',
-      title,
+      title:       titleText,
       description,
       images:      [ogImageUrl],
     },

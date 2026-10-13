@@ -23,6 +23,7 @@ import { resolveProductSeoLinks, sanitizeDestinations } from '../productSeoLinks
 import { LANDING_PAGES } from '@/config/landingPages';
 import { TOPICAL_CLUSTERS } from '@/config/topicalClusters';
 import { GUIDES } from '@/config/guides';
+import { BRAND_HUB_SLUGS } from '@/config/brandHubs';
 
 // Real catalogue fixtures (verified against the production API)
 const gowellNebulizer = {
@@ -178,8 +179,11 @@ describe('resolveProductSeoLinks', () => {
     expect(res.equipment).toEqual([]);
     expect(res.topics).toEqual([]);
     expect(res.guides).toEqual([]);
-    expect(res.brand).toEqual(null); // yamasu is not in any registered brand registry
-    expect(res.all).toEqual([]);
+    // SEO-02 — /brands/yamasu is a published hub (HTTP 200 verified 2026-10-12),
+    // so the brand link is now emitted; the broad category alone still produces
+    // no cluster links.
+    expect(res.brand).toEqual({ url: '/brands/yamasu', label: 'Yamasu' });
+    expect(res.all).toEqual([{ url: '/brands/yamasu', label: 'Yamasu' }]);
   });
 
   it('8. legitimate zero-link products return no cluster links (audited cases)', () => {
@@ -209,7 +213,8 @@ describe('resolveProductSeoLinks', () => {
     expect(res.equipment).toEqual([]);
     expect(res.topics).toEqual([]);
     expect(res.guides).toEqual([]);
-    expect(res.brand).toEqual(null); // irish is not in the registered brand registries
+    // SEO-02 — /brands/irish is a published hub (200 verified 2026-10-12).
+    expect(res.brand).toEqual({ url: '/brands/irish', label: 'IRISH' });
     const flat = JSON.stringify(res);
     expect(flat).not.toContain('/products/category/');
     expect(flat).not.toContain('baby-and-mom');
@@ -217,7 +222,8 @@ describe('resolveProductSeoLinks', () => {
 
   it('brand: emitted only from the product own brand when the slug is registry-validated', () => {
     expect(resolveProductSeoLinks(hc5dClean).brand).toEqual({ url: '/brands/human', label: 'Human' });
-    expect(resolveProductSeoLinks(stel3Analyzer).brand).toEqual(null); // cromatest-linear unregistered
+    expect(resolveProductSeoLinks(stel3Analyzer).brand)
+      .toEqual({ url: '/brands/cromatest-linear', label: 'Cromatest / Linear' }); // SEO-02 hub (200)
     expect(resolveProductSeoLinks(gowellNebulizer).brand).toEqual(null); // generic -> live 404
     const withoutBrandField = resolveProductSeoLinks({ slug: 'hc-5d-clean', name: 'HC-5D Clean' });
     expect(withoutBrandField.brand).toEqual(null);
@@ -228,9 +234,11 @@ describe('resolveProductSeoLinks', () => {
     // string before ProductSeoContent renders server-side, dropping the slug.
     expect(resolveProductSeoLinks({ ...contecPulseOximeter, brand: 'Contec' }).brand)
       .toEqual({ url: '/brands/contec', label: 'Contec' });
-    expect(resolveProductSeoLinks({ ...faceMaskPpe, brand: 'IRISH' }).brand).toEqual(null);
+    expect(resolveProductSeoLinks({ ...faceMaskPpe, brand: 'IRISH' }).brand)
+      .toEqual({ url: '/brands/irish', label: 'IRISH' }); // SEO-02 hub (200)
     expect(resolveProductSeoLinks({ ...nittonovaMassager, brand: 'Generic' }).brand).toEqual(null);
-    expect(resolveProductSeoLinks({ ...tynorDvt, brand: 'Tynor' }).brand).toEqual(null);
+    expect(resolveProductSeoLinks({ ...tynorDvt, brand: 'Tynor' }).brand)
+      .toEqual({ url: '/brands/tynor', label: 'Tynor' }); // SEO-02 hub (200) — 63 SKUs
   });
 
   it('12. quote-only products behave identically (resolver has no price dependency)', () => {
@@ -304,5 +312,46 @@ describe('sanitizeDestinations', () => {
       { url: '/brands/c', label: 'C' },
     ];
     expect(sanitizeDestinations(input, sample)).toEqual(sanitizeDestinations(input, sample));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SEO-02 — published brand hubs (config/brandHubs.js)
+// ---------------------------------------------------------------------------
+
+describe('brand hubs — SEO-02', () => {
+  it('emits a brand link for published hubs that no cluster/GEO registry listed', () => {
+    // Before SEO-02 these returned null purely because the brand was absent from
+    // LANDING_PAGES / TOPICAL_CLUSTERS / BRAND_GEO — even though the hub was live.
+    expect(resolveProductSeoLinks(tynorDvt).brand).toEqual({ url: '/brands/tynor', label: 'Tynor' });
+    expect(resolveProductSeoLinks(faceMaskPpe).brand).toEqual({ url: '/brands/irish', label: 'IRISH' });
+    expect(resolveProductSeoLinks(yamasuSphyg).brand).toEqual({ url: '/brands/yamasu', label: 'Yamasu' });
+    expect(resolveProductSeoLinks(vigorBpMonitor).brand).toEqual({ url: '/brands/vigor', label: 'Vigor' });
+    expect(resolveProductSeoLinks(secureK3Edta).brand).toEqual({ url: '/brands/secure', label: 'Secure' });
+    expect(resolveProductSeoLinks(stel3Analyzer).brand)
+      .toEqual({ url: '/brands/cromatest-linear', label: 'Cromatest / Linear' });
+  });
+
+  it('still refuses brands with no published hub (no invented 404 links)', () => {
+    expect(resolveProductSeoLinks(gowellNebulizer).brand).toEqual(null); // generic
+    expect(resolveProductSeoLinks(nittonovaMassager).brand).toEqual(null); // generic
+    expect(resolveProductSeoLinks({ slug: 'x-y', name: 'X Y', brand: 'Definitely Not A Brand' }).brand)
+      .toEqual(null);
+    expect(resolveProductSeoLinks({ slug: 'x-y', name: 'X Y', brand: { name: 'Non Brand', slug: 'non-brand' } }).brand)
+      .toEqual(null); // pseudo-brand hub deliberately excluded from the registry
+  });
+
+  it('registry integrity: every allow-listed slug is lowercase, hyphenated and hub-shaped', () => {
+    const slugs = [...BRAND_HUB_SLUGS];
+    expect(slugs.length).toBeGreaterThan(0);
+    slugs.forEach((slug) => {
+      expect(slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    });
+    expect(slugs).not.toContain('non-brand');
+  });
+
+  it('a brand destination is not stripped as a self link', () => {
+    const out = sanitizeDestinations([{ url: '/brands/tynor', label: 'Tynor' }], 'tynor-dvt-stocking-pair');
+    expect(out).toEqual([{ url: '/brands/tynor', label: 'Tynor' }]);
   });
 });
