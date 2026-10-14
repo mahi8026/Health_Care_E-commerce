@@ -191,7 +191,8 @@ export default function ExitIntentPopup() {
       aria-label="Exclusive discount offer"
     >
       <div
-        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-fadeSlideUp"
+        className="relative w-full bg-white rounded-3xl shadow-2xl overflow-hidden animate-fadeSlideUp"
+        style={{ maxWidth: '680px' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Head — brand gradient */}

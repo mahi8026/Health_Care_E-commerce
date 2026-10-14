@@ -159,7 +159,7 @@ export default function RegisterPage({ onSwitchToLogin, onSuccess }) {
       )}
       
       {/* Form container with professional card styling */}
-      <div className="w-full max-w-lg my-4">
+      <div className="w-full max-w-3xl my-4">
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-[var(--color-border-primary)]">
           {/* Logo */}
           <div className="text-center mb-6">
