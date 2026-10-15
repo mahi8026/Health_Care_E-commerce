@@ -183,7 +183,7 @@ export default function ExitIntentPopup() {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center p-4"
+      className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto"
       style={{ zIndex: 1100, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(2px)' }}
       onClick={close}
       role="dialog"
@@ -191,7 +191,8 @@ export default function ExitIntentPopup() {
       aria-label="Exclusive discount offer"
     >
       <div
-        className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-fadeSlideUp"
+        className="relative w-full my-auto bg-white rounded-3xl shadow-2xl overflow-hidden animate-fadeSlideUp"
+        style={{ maxWidth: '680px' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Head — brand gradient */}

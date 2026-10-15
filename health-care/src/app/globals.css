@@ -1490,9 +1490,12 @@ body {
   max-width: 100vw !important;
 }
 
-/* Prevent fixed elements from causing horizontal overflow */
-[class*="fixed"],
-.fixed {
+/* Prevent fixed elements from causing horizontal overflow — but never let
+   this rule override a deliberate max-w-* cap (e.g. the cart drawer's
+   max-w-[400px]): the :not() guard keeps the utilities in charge. Without
+   it, this pair (loading after @tailwind utilities) won the cascade tie. */
+[class*="fixed"]:not([class*="max-w-"]),
+.fixed:not([class*="max-w-"]) {
   max-width: 100vw;
 }
 
@@ -1575,8 +1578,13 @@ img, video {
   overflow-x: hidden;
 }
 
-/* Ensure all max-w containers don't cause overflow */
-[class*="max-w-"],
+/* max-w-* utilities MUST keep their own caps. A `[class*="max-w-"]` wildcard
+   rule used to sit here to "prevent overflow" — but this stylesheet loads
+   AFTER @tailwind utilities, so the attribute selector tied with (and then
+   beat) every max-w-* utility, forcing max-width:100% onto the auth forms,
+   modals, drawers and content bands. The universal `* { max-width: 100% }`
+   reset above already covers the overflow edge — never reintroduce a
+   max-w-* wildcard here. */
 .max-w-full {
   max-width: 100%;
   box-sizing: border-box;

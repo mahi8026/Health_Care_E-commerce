@@ -138,8 +138,9 @@ export default function LoginPage({ onSwitchToRegister, onSuccess }) {
         />
       )}
       
-      {/* Form container with professional card styling */}
-      <div className="w-full max-w-md">
+      {/* Form container with professional card styling — capped at 576px
+          (max-w-xl) so the fields read as a focused auth card on desktop. */}
+      <div className="w-full max-w-xl">
         <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-[var(--color-border-primary)]">
           {/* Logo */}
           <div className="text-center mb-6">
