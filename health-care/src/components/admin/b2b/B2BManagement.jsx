@@ -5,6 +5,7 @@ import { FaUsers, FaPercentage, FaChartLine } from 'react-icons/fa';
 import B2BUsersList from './B2BUsersList';
 import CategoryDiscounts from './CategoryDiscounts';
 import B2BStatistics from './B2BStatistics';
+import B2BMigrationTool from './B2BMigrationTool';
 
 export default function B2BManagement() {
   const [activeTab, setActiveTab] = useState('users'); // users, discounts, stats
@@ -50,7 +51,12 @@ export default function B2BManagement() {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'users' && <B2BUsersList />}
+        {activeTab === 'users' && (
+          <>
+            <B2BMigrationTool />
+            <B2BUsersList />
+          </>
+        )}
         {activeTab === 'discounts' && <CategoryDiscounts />}
         {activeTab === 'stats' && <B2BStatistics />}
       </div>
