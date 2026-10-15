@@ -139,6 +139,9 @@ export default function B2BUsersList() {
   };
 
   const getStatusBadge = (status) => {
+    // Legacy B2B docs may have no b2bApprovalStatus — treat them as pending.
+    // (Also prevents the null.charAt(...) render crash that blanked the table.)
+    const key = status || 'pending';
     const styles = {
       pending: 'bg-[var(--color-status-warning-tint)] text-[var(--color-status-warning)]',
       approved: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]',
@@ -146,8 +149,8 @@ export default function B2BUsersList() {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status]}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[key]}`}>
+        {key.charAt(0).toUpperCase() + key.slice(1)}
       </span>
     );
   };
@@ -294,7 +297,7 @@ export default function B2BUsersList() {
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
-                      {user.b2bApprovalStatus === 'pending' && (
+                      {(!user.b2bApprovalStatus || user.b2bApprovalStatus === 'pending') && (
                         <>
                           <button
                             onClick={() => handleApprove(user._id)}

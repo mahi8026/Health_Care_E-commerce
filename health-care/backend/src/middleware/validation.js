@@ -72,6 +72,16 @@ const validateRegistration = [
   body('phone').trim().notEmpty().withMessage('Phone number is required')
     .matches(BD_PHONE_REGEX).withMessage('Invalid Bangladesh phone number (e.g. 01XXXXXXXXX)'),
   body('accountType').optional().isIn(['Retail', 'B2B']).withMessage('Invalid account type'),
+  body('companyName').optional().trim(),
+  body('company').custom((value, { req }) => {
+    if (req.body.accountType === 'B2B') {
+      const companyName = String(value || req.body.companyName || '').trim();
+      if (!companyName) {
+        throw new Error('Company name is required for B2B accounts');
+      }
+    }
+    return true;
+  }),
   handleValidationErrors
 ];
 

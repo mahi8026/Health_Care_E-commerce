@@ -26,7 +26,10 @@ exports.getB2BUsers = async (req, res) => {
     };
 
     if (status) {
-      query.b2bApprovalStatus = status;
+      // Legacy B2B documents (created before the status field existed) have
+      // no b2bApprovalStatus at all — treat them as pending so they surface
+      // in the approval queue instead of being invisible to admins.
+      query.b2bApprovalStatus = status === 'pending' ? { $in: ['pending', null] } : status;
     }
 
     if (search) {
@@ -345,7 +348,7 @@ exports.getB2BStats = async (req, res) => {
       activeB2B
     ] = await Promise.all([
       User.countDocuments(b2bQuery),
-      User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'pending' }),
+      User.countDocuments({ ...b2bQuery, b2bApprovalStatus: { $in: ['pending', null] } }),
       User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'approved' }),
       User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'rejected' }),
       User.countDocuments({ ...b2bQuery, b2bApprovalStatus: 'approved', b2bDiscountEnabled: true })
