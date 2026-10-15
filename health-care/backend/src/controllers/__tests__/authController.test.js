@@ -102,6 +102,11 @@ describe('register', () => {
     expect(body.success).toBe(true);
     expect(body.token).toBeDefined();
     expect(body.user.role).toBe('customer');
+    // Retail customers must NOT be flagged as B2B applicants
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+      b2bAccount: false,
+      b2bApprovalStatus: null,
+    }));
   });
 
   it('creates B2B user with b2b_customer role', async () => {
@@ -114,6 +119,9 @@ describe('register', () => {
       accountType: 'B2B',
       companyName: 'Corp Ltd',
       company: 'Corp Ltd',
+      b2bAccount: true,
+      b2bApprovalStatus: 'pending',
+      b2bDiscountEnabled: false,
       b2bTier: 'Silver',
       b2bId: 'B2B-12345',
       refreshToken: null,
@@ -124,7 +132,19 @@ describe('register', () => {
     const res = mockRes();
     await register(req, res);
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json.mock.calls[0][0].user.role).toBe('b2b_customer');
+    const body = res.json.mock.calls[0][0];
+    expect(body.user.role).toBe('b2b_customer');
+    // The applicant must be queued for admin approval…
+    expect(body.user.b2bApprovalStatus).toBe('pending');
+    // …and persisted with explicit approval + discount flags
+    expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+      b2bAccount: true,
+      b2bApprovalStatus: 'pending',
+      b2bDiscountEnabled: false,
+      role: 'b2b_customer',
+      accountType: 'B2B',
+      companyName: 'Corp Ltd',
+    }));
   });
 
   it('returns 500 on database error', async () => {
@@ -211,6 +231,32 @@ describe('login', () => {
     expect(body.success).toBe(true);
     expect(body.token).toBeDefined();
   });
+
+  it('returns B2B approval status on login so the UI reflects the real state', async () => {
+    const fakeUser = {
+      _id: 'b2buser123',
+      name: 'B2B Corp',
+      email: 'b2b@corp.com',
+      role: 'b2b_customer',
+      accountType: 'B2B',
+      companyName: 'Corp Ltd',
+      b2bAccount: true,
+      b2bApprovalStatus: 'pending',
+      b2bDiscountEnabled: false,
+      isActive: true,
+      comparePassword: jest.fn().mockResolvedValue(true),
+      save: jest.fn().mockResolvedValue(true),
+    };
+    User.findOne.mockReturnValue({ select: jest.fn().mockResolvedValue(fakeUser) });
+    const req = mockReq({ body: { email: 'b2b@corp.com', password: 'Password1!' } });
+    const res = mockRes();
+    await login(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    const body = res.json.mock.calls[0][0];
+    expect(body.user.b2bAccount).toBe(true);
+    expect(body.user.b2bApprovalStatus).toBe('pending');
+    expect(body.user.b2bDiscountEnabled).toBe(false);
+  });
 });
 
 // ── refreshToken ──────────────────────────────────────────────────────────────
@@ -283,6 +329,31 @@ describe('getMe', () => {
     await getMe(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json.mock.calls[0][0].user.email).toBe('test@example.com');
+  });
+
+  it('returns B2B approval fields so the account UI can show the real status', async () => {
+    const fakeUser = {
+      _id: 'b2buser123',
+      name: 'B2B Corp',
+      email: 'b2b@corp.com',
+      role: 'b2b_customer',
+      accountType: 'B2B',
+      b2bAccount: true,
+      b2bApprovalStatus: 'approved',
+      b2bDiscountEnabled: true,
+      b2bApprovedAt: new Date('2026-10-01'),
+      creditLimit: 0,
+      creditUsed: 0,
+      getAvailableCredit: jest.fn().mockReturnValue(0),
+    };
+    User.findById.mockResolvedValue(fakeUser);
+    const req = mockReq();
+    const res = mockRes();
+    await getMe(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    const body = res.json.mock.calls[0][0];
+    expect(body.user.b2bApprovalStatus).toBe('approved');
+    expect(body.user.b2bDiscountEnabled).toBe(true);
   });
 });
 

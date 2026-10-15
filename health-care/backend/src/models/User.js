@@ -82,7 +82,9 @@ return true;
   b2bApprovalStatus: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
-    default: 'pending'
+    // null for retail customers — B2B registrations set 'pending' explicitly
+    // in authController.register so applicants land in the admin approval queue.
+    default: null
   },
   b2bApprovedAt: { type: Date },
   b2bApprovedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

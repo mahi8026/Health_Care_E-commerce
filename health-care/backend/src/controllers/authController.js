@@ -123,6 +123,11 @@ exports.register = async (req, res) => {
       accountType: accountType || 'Retail',
       role: isB2B ? 'b2b_customer' : 'customer',
       b2bAccount: isB2B,
+      // B2B applicants start in the admin approval queue ('pending').
+      // Retail customers explicitly get null so they never appear in the
+      // B2B approval list or the B2B status card.
+      b2bApprovalStatus: isB2B ? 'pending' : null,
+      b2bDiscountEnabled: false,
       b2bTier: isB2B ? (b2bTier || 'Silver') : undefined,
       b2bId,
       paymentTerms: isB2B ? 30 : undefined
@@ -172,6 +177,8 @@ exports.register = async (req, res) => {
         role: user.role,
         accountType: user.accountType,
         company: user.companyName || user.company,
+        b2bAccount: user.b2bAccount,
+        b2bApprovalStatus: user.b2bApprovalStatus,
         b2bTier: user.b2bTier,
         b2bId: user.b2bId
       }
@@ -257,6 +264,10 @@ exports.login = async (req, res) => {
         role: user.role,
         accountType: user.accountType,
         company: user.companyName || user.company,
+        companyName: user.companyName,
+        b2bAccount: user.b2bAccount,
+        b2bApprovalStatus: user.b2bApprovalStatus,
+        b2bDiscountEnabled: user.b2bDiscountEnabled,
         phone: user.phone,
         b2bTier: user.b2bTier,
         b2bId: user.b2bId,
@@ -347,6 +358,11 @@ exports.getMe = async (req, res) => {
         email: user.email,
         role: user.role,
         b2bAccount: user.b2bAccount,
+        b2bApprovalStatus: user.b2bApprovalStatus,
+        b2bDiscountEnabled: user.b2bDiscountEnabled,
+        b2bApprovedAt: user.b2bApprovedAt,
+        b2bRejectedAt: user.b2bRejectedAt,
+        b2bRejectionReason: user.b2bRejectionReason,
         accountType: user.accountType,
         company: user.companyName || user.company,
         companyName: user.companyName,
