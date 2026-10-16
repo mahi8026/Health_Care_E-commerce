@@ -25,6 +25,7 @@ import BraveBrowserWarning from "@/components/ui/BraveBrowserWarning";
 import MetaPixel from "@/components/tracking/MetaPixel";
 import WebVitalsReporter from "@/components/WebVitalsReporter";
 import ExitIntentPopup from "@/components/marketing/ExitIntentPopup";
+import ReagentPopupProvider from "@/components/marketing/ReagentPopupProvider";
 
 // NOTE: No `dynamic = 'force-dynamic'` here — the root layout must stay
 // static so pages can be statically rendered / ISR-cached. Pages that need
@@ -215,6 +216,11 @@ export default function RootLayout({ children }) {
                   pages. Lives inside CartProvider because a captured email is
                   linked to the guest's cart contents (abandoned-cart recovery). */}
               <ExitIntentPopup />
+              
+              {/* Reagent Store promotional discount popup — appears on reagent-related
+                  pages once per session. Offers 8-20% discount with WhatsApp CTA. */}
+              <ReagentPopupProvider />
+              
               <WishlistProvider>
                 <CompareProvider>
                   <ErrorBoundary

@@ -1,12 +1,34 @@
 "use client";
 
-import { FaCheckCircle, FaClock, FaTimesCircle, FaShieldAlt } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaCheckCircle, FaClock, FaTimesCircle, FaShieldAlt, FaSync } from 'react-icons/fa';
+import { useAuth } from '@/context/AuthContext';
 
 /**
  * B2B Status Card Component
  * Shows B2B approval status and pricing eligibility in user account
  */
 export default function B2BStatusCard({ user }) {
+  const { refreshUser } = useAuth();
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Auto-refresh user data on mount to get latest B2B status
+  useEffect(() => {
+    const autoRefresh = async () => {
+      if (user?.b2bApprovalStatus === 'pending') {
+        await refreshUser();
+      }
+    };
+    autoRefresh();
+  }, [user?.b2bApprovalStatus, refreshUser]);
+
+  // Manual refresh handler
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshUser();
+    setTimeout(() => setRefreshing(false), 500); // Small delay for better UX
+  };
+
   // Only show for B2B users
   if (!user?.b2bAccount && user?.b2bApprovalStatus !== 'pending') {
     return null;
@@ -63,9 +85,23 @@ export default function B2BStatusCard({ user }) {
 
         {/* Content */}
         <div className="flex-1">
-          <h3 className={`text-lg font-semibold ${config.textColor} mb-2`}>
-            {config.title}
-          </h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className={`text-lg font-semibold ${config.textColor}`}>
+              {config.title}
+            </h3>
+            
+            {/* Refresh Button */}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[var(--color-border-secondary)] rounded-lg text-sm font-medium hover:bg-[var(--color-background-tertiary)] transition-colors disabled:opacity-50"
+              title="Refresh status"
+            >
+              <FaSync className={`${refreshing ? 'animate-spin' : ''} text-[var(--color-text-secondary)]`} size={14} />
+              <span className="hidden sm:inline text-[var(--color-text-secondary)]">Refresh</span>
+            </button>
+          </div>
+          
           <p className="text-[var(--color-text-primary)] text-sm mb-4">
             {config.message}
           </p>

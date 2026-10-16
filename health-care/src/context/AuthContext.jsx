@@ -153,6 +153,21 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Refresh user data from server (for B2B status updates, profile changes, etc.)
+  const refreshUser = useCallback(async () => {
+    const token = getToken();
+    if (!token) return { success: false, error: 'Not authenticated' };
+    
+    try {
+      const response = await api.getMe();
+      const normalized = normalizeUser(response.user);
+      setUser(normalized);
+      return { success: true, user: normalized };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }, []);
+
   const isAuthenticated = useCallback(() => !!user, [user]);
   const isAdmin = useCallback(() => user?.role === 'admin', [user]);
   const isB2BCustomer = useCallback(() => user?.role === 'b2b_customer', [user]);
@@ -165,10 +180,11 @@ export function AuthProvider({ children }) {
     register,
     logout,
     updateProfile,
+    refreshUser,
     isAuthenticated,
     isAdmin,
     isB2BCustomer
-  }), [user, loading, login, loginAsAdmin, register, logout, updateProfile, isAuthenticated, isAdmin, isB2BCustomer]);
+  }), [user, loading, login, loginAsAdmin, register, logout, updateProfile, refreshUser, isAuthenticated, isAdmin, isB2BCustomer]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
