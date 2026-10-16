@@ -226,7 +226,10 @@ export default function ProductDetailPage({ productId, initialProduct = null, he
   const productForCart = flashDealPrice ? { ...product, price: flashDealPrice } : product;
 
   return (
-    <div className="bg-page min-h-screen pb-[calc(120px_+_env(safe-area-inset-bottom))] md:pb-8">
+    <div 
+      className="bg-page min-h-screen pb-[calc(120px_+_env(safe-area-inset-bottom))] md:pb-8"
+      data-product-category={categoryName || ''}
+    >
       {/* Standalone Review schema — Product/Breadcrumb/FAQ structured data
           is emitted server-side in app/products/[...id]/page.jsx to avoid
           duplicate JSON-LD on the page. */}
