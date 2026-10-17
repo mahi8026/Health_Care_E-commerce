@@ -6,10 +6,13 @@ export const metadata = {
   description: 'View and manage WhatsApp conversation details',
 };
 
-export default function ConversationDetailPage({ params }) {
+export default async function ConversationDetailPage({ params }) {
+  // Next.js 15+ requires awaiting params
+  const resolvedParams = await Promise.resolve(params);
+  
   return (
     <AdminShell title="WhatsApp Conversation">
-      <WhatsAppConversationDetail conversationId={params.id} />
+      <WhatsAppConversationDetail conversationId={resolvedParams.id} />
     </AdminShell>
   );
 }
