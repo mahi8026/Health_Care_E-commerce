@@ -353,6 +353,32 @@ describe('brand hubs — SEO-02', () => {
     expect(slugs).not.toContain('non-brand');
   });
 
+  it('SEO-02 (2026-10-18): the five newly registered hubs resolve from the product brand', () => {
+    const cases = [
+      ['biohermes', 'Biohermes'],
+      ['mediron', 'Mediron'],
+      ['savlon', 'Savlon'],
+      ['sritrang', 'Sritrang'],
+      ['united-medicare', 'United Medicare'],
+    ];
+    cases.forEach(([slug, name]) => {
+      // brand object form (slug present)
+      expect(resolveProductSeoLinks({ slug: 'audit-fixture', name: 'Audit Fixture', brand: { name, slug } }).brand)
+        .toEqual({ url: `/brands/${slug}`, label: name });
+      // normalized SSR string form (slug dropped before render)
+      expect(resolveProductSeoLinks({ slug: 'audit-fixture', name: 'Audit Fixture', brand: name }).brand)
+        .toEqual({ url: `/brands/${slug}`, label: name });
+    });
+  });
+
+  it('SEO-02 (2026-10-18): brands outside every registry still resolve to no brand link', () => {
+    // mirrors the real Comfit case: valid name/slug shape, but no hub published
+    expect(resolveProductSeoLinks({ slug: 'audit-fixture', name: 'Audit Fixture', brand: { name: 'Comfit', slug: 'comfit' } }).brand)
+      .toEqual(null);
+    expect(resolveProductSeoLinks({ slug: 'audit-fixture', name: 'Audit Fixture', brand: 'Unknown Brand Co' }).brand)
+      .toEqual(null);
+  });
+
   it('a brand destination is not stripped as a self link', () => {
     const out = sanitizeDestinations([{ url: '/brands/tynor', label: 'Tynor' }], 'tynor-dvt-stocking-pair');
     expect(out).toEqual([{ url: '/brands/tynor', label: 'Tynor' }]);
