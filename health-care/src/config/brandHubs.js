@@ -16,6 +16,10 @@
  *   (b) HTTP 200 at https://www.mediportbd.com/brands/<slug>.
  * Refresh with:
  *   curl -s https://www.mediportbd.com/sitemap-brands.xml
+ * Update 2026-10-18: added biohermes, mediron, savlon, sritrang and
+ * united-medicare — each verified in sitemap-brands.xml and HTTP 200 at
+ * /brands/<slug> on 2026-10-18 (hub product counts 1, 6, 1, 1 and 20).
+ *
  * Rules: lowercase, hyphenated, byte-identical to the hub path, and NEVER add a
  * slug whose hub does not exist — the resolver would emit a 404 link.
  *
@@ -33,6 +37,7 @@ export const BRAND_HUB_SLUGS = new Set([
   'b-braun',
   'beurer',
   'bio-max',
+  'biohermes',
   'blueidea',
   'bsmi',
   'comen',
@@ -52,6 +57,7 @@ export const BRAND_HUB_SLUGS = new Set([
   'jms',
   'jumper',
   'labkit',
+  'mediron',
   'microlife',
   'mindray',
   'mmd',
@@ -60,9 +66,12 @@ export const BRAND_HUB_SLUGS = new Set([
   'pcl',
   'romsons',
   'rossmax',
+  'savlon',
   'secure',
+  'sritrang',
   'tanita',
   'tynor',
+  'united-medicare',
   'vigor',
   'yamasu',
   'yuwell',
