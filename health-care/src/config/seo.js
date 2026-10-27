@@ -192,7 +192,7 @@ export const CATEGORY_SEO = {
   },
   'Orthopedic Supports': {
     title:       'Orthopedic Supports Bangladesh — Braces, Belts, Splints, Collars | MediportBD',
-    description: 'Buy orthopedic supports in Bangladesh. Knee braces, lumbar belts, cervical collars, splints, wrist supports, crutches from Tynor. Free delivery nationwide on orders over ৳50,000.',
+    description: 'Buy orthopedic supports in Bangladesh. Knee braces, lumbar belts, cervical collars, splints, wrist supports, crutches from Tynor.',
     h1:          'Orthopedic Supports in Bangladesh',
   },
   'Surgical & Wound Care': {
