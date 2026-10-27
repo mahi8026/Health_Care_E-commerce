@@ -20,7 +20,7 @@ export const metadata = {
     description: PAGE_SEO.b2b.description,
     url:         `${SITE_CONFIG.url}/b2b`,
     images: [{
-      url: `${SITE_CONFIG.url}/og?title=B2B+Medical+Supply+Bangladesh&subtitle=Bulk+Discounts+%E2%80%A2+Credit+Terms+%E2%80%A2+Dedicated+Account+Manager&page=B2B+Portal`,
+      url: `${SITE_CONFIG.url}/og?title=B2B+Medical+Supply+Bangladesh&page=B2B+Portal`,
       width: 1200, height: 630,
       alt: 'B2B Medical Equipment Supplier Bangladesh — MediportBD',
     }],
@@ -37,7 +37,7 @@ export default function B2B() {
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: 'B2B Medical Equipment Supply Bangladesh',
-    description: 'Bulk medical equipment supply for hospitals, clinics and diagnostic centres in Bangladesh with 8–30% discounts and 30–90 day credit terms.',
+    description: 'Bulk medical equipment supply for hospitals, clinics and diagnostic centres in Bangladesh with B2B and volume pricing on request.',
     provider: {
       '@type': 'Organization',
       name: SITE_CONFIG.fullName,
