@@ -15,20 +15,20 @@ const ISO_CERT = process.env.NEXT_PUBLIC_ISO_CERT_NUMBER || '';
 export const metadata = {
   title: 'About MediportBD — Medical Equipment Supplier in Dhaka, Bangladesh',
   description:
-    'Mediport Bangladesh Ltd. (MediportBD) is a DGDA-registered medical equipment supplier on Topkhana Road, Dhaka — serving hospitals, clinics and diagnostic centres across Bangladesh since 2020.',
-  keywords: 'about MediportBD, medical equipment supplier Dhaka, DGDA registered supplier Bangladesh, Mediport Bangladesh Ltd, medical equipment company BD',
+    'MediportBD supplies diagnostic, laboratory and hospital equipment to labs, clinics and hospitals in Bangladesh. Products from DGDA-registered importers and manufacturers.',
+  keywords: 'about MediportBD, medical equipment supplier Dhaka, Mediport Bangladesh Ltd, medical equipment company BD',
   alternates: { canonical: `${SITE_CONFIG.url}/about` },
   openGraph: {
     title: 'About MediportBD — Medical Equipment Supplier in Dhaka, Bangladesh',
     description:
-      'Mediport Bangladesh Ltd. (MediportBD) — DGDA-registered medical equipment supplier in Dhaka, Bangladesh. We distribute products from ISO 13485-certified manufacturers to hospitals, clinics and diagnostic centres nationwide.',
+      'MediportBD supplies diagnostic, laboratory and hospital equipment to labs, clinics and hospitals in Bangladesh. Products from DGDA-registered importers and manufacturers.',
     url: `${SITE_CONFIG.url}/about`,
     images: [{ url: `https://www.mediportbd.com/og-default.png`, width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'About MediportBD — Medical Equipment Supplier in Dhaka',
-    description: 'DGDA-registered medical equipment supplier in Dhaka, Bangladesh.',
+    description: 'MediportBD supplies diagnostic, laboratory and hospital equipment to labs, clinics and hospitals in Bangladesh. Products from DGDA-registered importers and manufacturers.',
   },
 };
 
@@ -50,11 +50,11 @@ const VALUES = [
   },
   {
     title: 'Service after the sale',
-    desc: 'Free installation and staff training on equipment, technical support, and AMC options keep your equipment running.',
+    desc: 'Staff training on equipment, technical support, and AMC options keep your equipment running.',
   },
   {
-    title: 'Transparent B2B pricing',
-    desc: 'Institutional buyers get written quotations, 8–30% bulk discounts and 30–90 day credit terms with a dedicated account manager.',
+    title: 'Written B2B quotations',
+    desc: 'B2B and volume pricing is available on request.',
   },
 ];
 

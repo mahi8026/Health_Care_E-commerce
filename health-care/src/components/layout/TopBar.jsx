@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaTruck, FaSnowflake, FaTag, FaPhone, FaHeadset, FaShieldAlt } from 'react-icons/fa';
+import { FaTruck, FaTag, FaPhone, FaShieldAlt } from 'react-icons/fa';
 import { API } from '@/constants/api';
 import { fetchCached } from '@/utils/api';
 
@@ -10,18 +10,13 @@ import { fetchCached } from '@/utils/api';
 const DEFAULT_ANNOUNCEMENTS = [
   { 
     icon: <FaTruck size={11} />, 
-    text: 'Free delivery on orders over ৳50,000 — Dhaka, Chittagong & Sylhet',
-    shortText: 'Free delivery over ৳50,000'
-  },
-  { 
-    icon: <FaSnowflake size={11} />, 
-    text: 'Cold chain delivery for temperature-sensitive reagents — door to door',
-    shortText: 'Cold chain delivery available'
+    text: 'Free delivery nationwide on orders over ৳50,000',
+    shortText: 'Free delivery nationwide over ৳50,000'
   },
   { 
     icon: <FaTag size={11} />, 
-    text: 'B2B institutions get up to 10% bulk discount — Register today',
-    shortText: 'B2B bulk discount up to 10%'
+    text: 'B2B and volume pricing on request — Register today',
+    shortText: 'B2B and volume pricing on request'
   },
 ];
 
@@ -30,22 +25,16 @@ function buildAnnouncements(settings) {
   const threshold = settings.freeDeliveryThreshold
     ? `৳${settings.freeDeliveryThreshold.toLocaleString()}`
     : '৳50,000';
-  const maxDiscount = settings.b2bMaxDiscount ?? 30;
   return [
     { 
       icon: <FaTruck size={11} />, 
-      text: `Free delivery on orders over ${threshold} — Dhaka, Chittagong & Sylhet`,
-      shortText: `Free delivery over ${threshold}`
-    },
-    { 
-      icon: <FaSnowflake size={11} />, 
-      text: 'Cold chain delivery for temperature-sensitive reagents — door to door',
-      shortText: 'Cold chain delivery available'
+      text: `Free delivery nationwide on orders over ${threshold}`,
+      shortText: `Free delivery nationwide over ${threshold}`
     },
     { 
       icon: <FaTag size={11} />, 
-      text: `B2B institutions get up to ${maxDiscount}% bulk discount — Register today`,
-      shortText: `B2B bulk discount up to ${maxDiscount}%`
+      text: `B2B and volume pricing on request — Register today`,
+      shortText: `B2B and volume pricing on request`
     },
   ];
 }

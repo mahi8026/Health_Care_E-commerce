@@ -7,6 +7,23 @@
 
 import FAQSchema from './FAQSchema';
 
+/**
+ * DGDA registration number — supplied by env at build time.
+ * The registration fragment is only emitted when a real value is configured;
+ * an empty (or placeholder) value must never reach the copy or the JSON-LD.
+ */
+const DGDA_REGISTRATION_NUMBER = (process.env.NEXT_PUBLIC_DGDA_REGISTRATION_NUMBER || '').trim();
+const HAS_USABLE_REGISTRATION_NUMBER =
+  DGDA_REGISTRATION_NUMBER.length > 0 &&
+  !/^\[|add\s+license|placeholder|^tbd$|^todo$/i.test(DGDA_REGISTRATION_NUMBER);
+
+const DGDA_ANSWER_BASE =
+  'MediportBD supplies medical equipment sourced from DGDA-registered importers and manufacturers. Registration details for specific products are available on request.';
+
+const DGDA_ANSWER = HAS_USABLE_REGISTRATION_NUMBER
+  ? `${DGDA_ANSWER_BASE} DGDA registration no: ${DGDA_REGISTRATION_NUMBER}.`
+  : DGDA_ANSWER_BASE;
+
 export const HOMEPAGE_FAQS = [
   {
     question: "What medical equipment does MediportBD supply in Bangladesh?",
@@ -14,23 +31,19 @@ export const HOMEPAGE_FAQS = [
   },
   {
     question: "Does MediportBD offer B2B bulk pricing for hospitals?",
-    answer: "Yes, MediportBD offers 8-30% bulk discounts for hospitals, clinics, and diagnostic centers in Bangladesh. B2B clients receive 30-90 day credit terms, free installation in Dhaka metro area, dedicated account managers, and priority technical support during business hours (Sat–Thu, 9am–6pm)."
+    answer: "Yes. MediportBD offers B2B and volume pricing for hospitals, clinics and labs on request. Request a quotation and we will send a written offer."
   },
   {
-    question: "Are MediportBD products DGDA registered and certified?",
-    answer: "MediportBD is a DGDA-registered medical equipment supplier (License No: [Add License Number]). We source products from leading global manufacturers, and DGDA registration details and conformity documents for the products we sell are available on request for institutional buyers."
+    question: "Are MediportBD products DGDA registered?",
+    answer: DGDA_ANSWER
   },
   {
-    question: "What is the delivery time for medical equipment in Dhaka?",
-    answer: "MediportBD offers same-day delivery in Dhaka metro area for in-stock items ordered before 2 PM. Orders over ৳50,000 qualify for free delivery. Nationwide delivery to other cities takes 2-5 business days via reliable courier services."
+    question: "How does delivery work for medical equipment?",
+    answer: "Orders over ৳50,000 qualify for free delivery nationwide. We will confirm delivery details in your quotation."
   },
   {
-    question: "Does MediportBD provide installation and training services?",
-    answer: "Yes, MediportBD provides free installation and staff training for diagnostic equipment (ECG machines, patient monitors, ultrasound) in Dhaka metro area. Our certified technicians ensure proper setup, calibration, and operation training for your medical team."
-  },
-  {
-    question: "Can I get laboratory reagents with cold chain delivery in Bangladesh?",
-    answer: "Yes, MediportBD maintains proper cold chain management (2-8°C or -20°C) for all laboratory reagents. We supply HbA1c, CBC, biochemistry, and immunoassay reagents from Roche, Abbott, and Siemens with temperature-monitored cold chain delivery across Bangladesh."
+    question: "Is installation and training available?",
+    answer: "Installation and training depend on the product. Tell us what you need when you request a quotation, and we will confirm what is available."
   },
   {
     question: "What brands of medical equipment does MediportBD sell?",

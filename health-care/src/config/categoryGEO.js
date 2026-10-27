@@ -18,7 +18,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Is DGDA registration required to buy diagnostic equipment in Bangladesh?',
-        a: 'DGDA registration is mandatory for regulated medical devices sold in Bangladesh. Regulated diagnostic equipment sold by MediportBD is DGDA registered, and certificates are available on request.',
+        a: 'DGDA registration is mandatory for regulated medical devices sold in Bangladesh. Registration details for specific products are available on request.',
       },
       {
         q: 'How long does delivery take for diagnostic equipment in Bangladesh?',
@@ -50,11 +50,11 @@ export const CATEGORY_GEO = {
   },
   'laboratory-reagents': {
     quickAnswer:
-      'Laboratory reagents in Bangladesh must be DGDA approved and cold-chain handled (2–8°C or −20°C). HbA1c and CBC kits typically cost ৳3,000–৳150,000 depending on analyzer platform and pack size. MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with temperature-monitored delivery and B2B supply contracts.',
+      'Laboratory reagents in Bangladesh must be DGDA approved. HbA1c and CBC kits typically cost ৳3,000–৳150,000 depending on analyzer platform and pack size. MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with B2B supply contracts.',
     faqs: [
       {
         q: 'How do I ensure reagent cold chain in Bangladesh?',
-        a: 'Use suppliers who ship temperature-sensitive reagents in monitored, insulated packaging with refrigerated transport for bulk orders. MediportBD provides temperature-monitored cold-chain delivery (2–8°C) for all reagent shipments in Bangladesh.',
+        a: 'Use suppliers who ship temperature-sensitive reagents in monitored, insulated packaging with refrigerated transport for bulk orders.',
       },
       {
         q: 'Which analyzer brands do you supply reagents for?',
@@ -84,7 +84,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'What laboratory equipment brands are available in Bangladesh?',
-        a: 'MediportBD supplies STEL, Bio-Max, THERMA and Rossmax laboratory equipment — hematology analyzers, ESR machines, and calibration systems — all DGDA registered.',
+        a: 'MediportBD supplies STEL, Bio-Max, THERMA and Rossmax laboratory equipment — hematology analyzers, ESR machines, and calibration systems.',
       },
     ],
   },
@@ -98,7 +98,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Are ventilators available for hospitals in Bangladesh?',
-        a: 'Yes. ICU ventilators are available from DGDA-registered suppliers in Bangladesh, typically from ৳6,00,000, with commissioning, spare parts and AMC service contracts.',
+        a: 'Yes. ICU ventilators are available from suppliers in Bangladesh, typically from ৳6,00,000, with commissioning, spare parts and AMC service contracts.',
       },
       {
         q: 'What warranty do hospital machines come with in Bangladesh?',
@@ -112,7 +112,7 @@ export const CATEGORY_GEO = {
   },
   'ppe-and-safety': {
     quickAnswer:
-      'PPE and safety supplies in Bangladesh — surgical gloves, N95 respirators, masks and gowns — are available in bulk from DGDA-registered suppliers. MediportBD supplies Ansell, 3M and Cardinal Health-compatible PPE with fast Dhaka delivery and B2B contracts for hospitals and clinics.',
+      'PPE and safety supplies in Bangladesh — surgical gloves, N95 respirators, masks and gowns — are available in bulk from suppliers. MediportBD supplies Ansell, 3M and Cardinal Health-compatible PPE with fast Dhaka delivery and B2B contracts for hospitals and clinics.',
     faqs: [
       {
         q: 'Can I order PPE in bulk for my hospital in Bangladesh?',
@@ -120,7 +120,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'What PPE brands are available in Bangladesh?',
-        a: 'MediportBD supplies PPE from leading brands including Ansell, 3M and Cardinal Health, all DGDA registered with quality documentation.',
+        a: 'MediportBD supplies PPE from leading brands including Ansell, 3M and Cardinal Health with quality documentation.',
       },
       {
         q: 'How fast is PPE delivery in Dhaka?',
@@ -130,7 +130,7 @@ export const CATEGORY_GEO = {
   },
   'orthopedic-supports': {
     quickAnswer:
-      'Orthopedic supports in Bangladesh — knee braces, lumbar belts, cervical collars and splints — typically cost ৳500–৳8,000 from Tynor and similar DGDA-registered brands. MediportBD supplies orthopedic supports in Dhaka with free delivery over ৳50,000 and bulk pricing for hospitals.',
+      'Orthopedic supports in Bangladesh — knee braces, lumbar belts, cervical collars and splints — typically cost ৳500–৳8,000 from Tynor and similar brands. MediportBD supplies orthopedic supports in Dhaka with bulk pricing for hospitals.',
     faqs: [
       {
         q: 'How much do orthopedic supports cost in Bangladesh?',
@@ -138,11 +138,11 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Which orthopedic support brands are available in Bangladesh?',
-        a: 'MediportBD supplies orthopedic supports from Tynor, a DGDA-registered brand known for quality braces, belts, collars and splints.',
+        a: 'MediportBD supplies orthopedic supports from Tynor, a brand known for quality braces, belts, collars and splints.',
       },
       {
         q: 'Do you offer bulk pricing on orthopedic supports for hospitals?',
-        a: 'Yes. Hospitals and clinics get 8–30% bulk discounts on orthopedic supports with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. B2B and volume pricing on orthopedic supports is available on request.',
       },
     ],
   },
@@ -156,7 +156,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Which glucose meter brands are available in Bangladesh?',
-        a: 'MediportBD supplies Accu-Chek, Omnitest, Yuwell, PCL Care and eBcare glucose meters and test strips, all DGDA registered.',
+        a: 'MediportBD supplies Accu-Chek, Omnitest, Yuwell, PCL Care and eBcare glucose meters and test strips.',
       },
       {
         q: 'Are diabetes test strips available in bulk in Bangladesh?',
@@ -166,11 +166,11 @@ export const CATEGORY_GEO = {
   },
   'medical-supplies': {
     quickAnswer:
-      'Medical supplies in Bangladesh — anti-decubitus mattresses, medical tapes and general consumables — are available from DGDA-registered suppliers like MediportBD with nationwide delivery and bulk hospital pricing.',
+      'Medical supplies in Bangladesh — anti-decubitus mattresses, medical tapes and general consumables — are available from suppliers like MediportBD with nationwide delivery and bulk hospital pricing.',
     faqs: [
       {
         q: 'What medical supplies does MediportBD supply in Bangladesh?',
-        a: 'MediportBD supplies anti-decubitus mattresses, medical tapes and general medical consumables from Rossmax, PCL Care and JMS, all DGDA registered.',
+        a: 'MediportBD supplies anti-decubitus mattresses, medical tapes and general medical consumables from Rossmax, PCL Care and JMS.',
       },
       {
         q: 'Do you supply medical consumables in bulk to hospitals?',
@@ -180,11 +180,11 @@ export const CATEGORY_GEO = {
   },
   'blood-bank-supplies': {
     quickAnswer:
-      'Blood bank supplies in Bangladesh — blood collection bags, transfusion sets and CPDA bags from JMS — are DGDA registered and available with hospital B2B pricing from MediportBD in Dhaka.',
+      'Blood bank supplies in Bangladesh — blood collection bags, transfusion sets and CPDA bags from JMS — are available with hospital B2B pricing from MediportBD in Dhaka.',
     faqs: [
       {
         q: 'What blood bank supplies are available in Bangladesh?',
-        a: 'MediportBD supplies blood collection bags, triple blood bags, CPDA blood bags and transfusion sets from JMS, all DGDA registered.',
+        a: 'MediportBD supplies blood collection bags, triple blood bags, CPDA blood bags and transfusion sets from JMS.',
       },
       {
         q: 'Do you supply blood bags in bulk to blood banks?',
