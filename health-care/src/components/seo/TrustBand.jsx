@@ -1,21 +1,16 @@
-/**
+﻿/**
  * TrustBand — server-rendered E-E-A-T quality band shown on product pages.
  *
  * Renders DGDA / quality / B2B / delivery signals above the product view.
  * Registration numbers come from env vars only — never fabricated.
  */
 
-const DGDA_REGISTRATION = process.env.NEXT_PUBLIC_DGDA_REGISTRATION_NUMBER;
 const TRADE_LICENSE = process.env.NEXT_PUBLIC_TRADE_LICENSE;
 
 export default function TrustBand() {
   const items = [
-    {
-      label: 'DGDA Registered',
-      value: DGDA_REGISTRATION ? `Reg. ${DGDA_REGISTRATION}` : 'Authorized medical supplier',
-    },
-    { label: 'B2B Pricing', value: '8–30% bulk discounts for institutions' },
-    { label: 'Delivery', value: 'Same-day in Dhaka · Nationwide 2–4 days' },
+    { label: 'B2B Pricing', value: 'B2B and volume pricing on request' },
+    { label: 'Delivery', value: 'Free delivery nationwide on orders over ৳50,000' },
   ];
 
   return (

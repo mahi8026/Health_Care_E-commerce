@@ -109,8 +109,8 @@ export default async function Home() {
               Why Choose MediportBD for Medical Equipment in Bangladesh?
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] max-w-3xl mx-auto leading-relaxed">
-              As Bangladesh&apos;s most trusted medical equipment supplier since 2020, MediportBD has been supplying hospitals, 
-              diagnostic centers, clinics and healthcare professionals across all 64 districts with premium quality diagnostic devices, 
+              As Bangladesh&apos;s medical equipment supplier since 2020, MediportBD has been supplying hospitals, 
+              diagnostic centers, clinics and healthcare professionals with diagnostic devices, 
               surgical instruments, laboratory reagents and hospital machines from the world&apos;s leading brands.
             </p>
           </div>
@@ -118,51 +118,29 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
               <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                🏥 DGDA-Registered Supplier &amp; ISO 13485-Certified Brands
+                🏥 Brands We Supply
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 Products in our 600+ item catalog are sourced from leading global manufacturers, with DGDA registration details and conformity documents available on request, meeting Bangladesh regulatory standards 
-                and international quality benchmarks. We supply products from manufacturers certified to ISO 13485 for medical device quality management.
+                and international quality benchmarks.
               </p>
             </div>
             
             <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
               <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                🚚 Same-Day Delivery in Dhaka Metro
+                🚚 Free Delivery on Orders over ৳50,000
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Orders placed before 12 PM receive same-day dispatch in Dhaka metro area. Free delivery on orders over ৳50,000. 
-                Nationwide courier service ensures your medical equipment reaches any district within 2-5 business days.
+                  Free delivery nationwide on orders over ৳50,000. We confirm delivery details in your quotation.
               </p>
             </div>
             
             <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
               <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                💰 B2B Bulk Pricing &amp; Credit Terms
+                💰 B2B and Volume Pricing
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Save 8-30% on bulk orders for hospitals and diagnostic centers. B2B clients enjoy 30-90 day credit terms, 
-                dedicated account managers, priority processing and customized quotations for government tenders and large projects.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
-              <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                🔧 Free Installation &amp; Training
-              </h3>
-              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Professional installation and comprehensive staff training included free with all diagnostic equipment purchases 
-                in Dhaka metro area. Our certified technicians ensure proper setup, calibration and operation guidance.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg p-6 border border-[var(--color-border-primary)]">
-              <h3 className="text-base font-semibold text-[var(--color-brand-navy)] mb-2">
-                ❄️ Cold Chain for Laboratory Reagents
-              </h3>
-              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                All laboratory reagents from Roche, Abbott, Siemens and bioMérieux are stored at 2-8°C or -20°C as required 
-                and delivered with temperature-monitored cold chain management to preserve accuracy and shelf life.
+                B2B and volume pricing on request; written quotations on request.
               </p>
             </div>
             
@@ -171,8 +149,7 @@ export default async function Home() {
                 📞 Technical Support Team
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Technical support team available via phone, WhatsApp and email (Sat–Thu, 9am–6pm). B2B clients receive priority 
-                support with dedicated account managers and service contracts for preventive maintenance.
+                  Technical support is available via phone, WhatsApp and email.
               </p>
             </div>
           </div>
@@ -185,7 +162,7 @@ export default async function Home() {
               MediportBD stocks the complete range of medical equipment needed by hospitals, clinics, diagnostic centers, 
               pathology labs and healthcare facilities across Bangladesh. From simple diagnostic tools like blood pressure 
               monitors and thermometers to advanced equipment like ECG machines, patient monitors, ultrasound systems, 
-              hematology analyzers and ventilators — we supply genuine products from Siemens Healthineers, GE Healthcare, 
+              hematology analyzers and ventilators — we supply products from Siemens Healthineers, GE Healthcare, 
               Philips, Mindray, Roche Diagnostics, Abbott Laboratories, Omron, Rossmax, Beurer and 40+ other trusted manufacturers.
             </p>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
@@ -206,11 +183,10 @@ export default async function Home() {
               Quick Answer
             </p>
             <p className="text-sm leading-relaxed text-[var(--color-text-primary)]">
-              MediportBD is a DGDA-registered medical equipment supplier based in Dhaka,
-              Bangladesh, offering diagnostic devices, surgical instruments, laboratory
-              reagents and hospital machines to hospitals and clinics nationwide — with
-              B2B bulk pricing, cold-chain delivery and free installation on equipment
-              in Dhaka.
+              MediportBD supplies diagnostic devices, surgical instruments, laboratory
+              reagents and hospital machines to hospitals and clinics in Bangladesh.
+              Products from DGDA-registered importers and manufacturers. Request a
+              quotation for B2B pricing.
             </p>
           </div>
 
@@ -232,7 +208,7 @@ export default async function Home() {
               <ul className="space-y-2">
                 <li><Link href="/guides/ecg-machine-price-bangladesh-2026" className="text-sm text-[var(--color-brand-teal)] hover:underline">ECG machine prices 2026 →</Link></li>
                 <li><Link href="/guides/bp-monitor-buying-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">BP monitor buying guide →</Link></li>
-                <li><Link href="/guides/laboratory-reagents-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Laboratory reagents & cold chain →</Link></li>
+                <li><Link href="/guides/laboratory-reagents-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Laboratory reagents guide →</Link></li>
               </ul>
             </div>
             <div>

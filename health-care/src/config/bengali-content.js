@@ -154,13 +154,13 @@ export const BENGALI_SEO_KEYWORDS = [
 // Bengali content for meta descriptions (converts to Bengali)
 export const BENGALI_META_TEMPLATES = {
   product: (productBn, price) => 
-    `${productBn} বাংলাদেশে কিনুন মাত্র ৳${price} টাকায়। ✓ DGDA রেজিস্টার্ড সাপ্লায়ার ✓ ঢাকায় ফ্রি ডেলিভারি ✓ ওয়ারেন্টি। কল: ০১৬৪৬-৮৮৬৭৯৫`,
+    `${productBn} বাংলাদেশে কিনুন মাত্র ৳${price} টাকায়। ✓ ঢাকায় ফ্রি ডেলিভারি ✓ ওয়ারেন্টি। কল: ০১৬৪৬-৮৮৬৭৯৫`,
   
   category: (categoryBn) =>
-    `${categoryBn} বাংলাদেশে কিনুন সেরা দামে। ✓ DGDA অনুমোদিত ✓ ফ্রি ডেলিভারি ✓ ইনস্টলেশন সেবা। কল: ০১৬৪৬-৮৮৬৭৯৫`,
+    `${categoryBn} বাংলাদেশে কিনুন সেরা দামে। ✓ ফ্রি ডেলিভারি ✓ ইনস্টলেশন সেবা। কল: ০১৬৪৬-৮৮৬৭৯৫`,
     
   location: (cityBn) =>
-    `${cityBn} এ চিকিৎসা সরঞ্জাম সরবরাহকারী। ✓ DGDA রেজিস্টার্ড ✓ দ্রুত ডেলিভারি ✓ ইনস্টলেশন সেবা। কল: ০১৬৪৬-৮৮৬৭৯৫`,
+    `${cityBn} এ চিকিৎসা সরঞ্জাম সরবরাহকারী। ✓ দ্রুত ডেলিভারি ✓ ইনস্টলেশন সেবা। কল: ০১৬৪৬-৮৮৬৭৯৫`,
 };
 
 // Bengali number formatting
@@ -188,7 +188,7 @@ export const BENGALI_FAQS = [
     questionBn: 'মেডিকেল ইকুইপমেন্ট এর দাম কত?',
     questionEn: 'What is the price of medical equipment?',
     answerBn: 'চিকিৎসা সরঞ্জামের দাম ৳৫০০ থেকে ৳৫০ লাখ পর্যন্ত। বাল্ক অর্ডারে ৮-৩০% ছাড়। মূল্য জানতে কল করুন: ০১৬৪৬-৮৮৬৭৯৫',
-    answerEn: 'Medical equipment prices range from ৳500 to ৳50 lakh. 8-30% discount on bulk orders. Call for pricing: 01646-886795',
+  answerEn: 'B2B and volume pricing on request.',
   },
   {
     questionBn: 'ঢাকায় কি ফ্রি ডেলিভারি আছে?',

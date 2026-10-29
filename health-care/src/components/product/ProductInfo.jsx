@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+﻿import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -146,7 +146,7 @@ export default function ProductInfo({
           )}
         </div>
         <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-          Inclusive of VAT · Free installation in Dhaka
+          Inclusive of VAT
         </div>
         <div className="flex gap-[6px] mt-2 flex-wrap">
           <span className="text-xs border-[0.5px] border-[var(--color-border-secondary)] rounded px-2 py-[3px] text-[var(--color-text-secondary)]">
@@ -301,8 +301,6 @@ export default function ProductInfo({
       <div className="bg-[var(--color-background-secondary)] rounded-lg p-3 mb-[14px]">
         {[
           { icon: 'truck', text: <><strong>Free delivery</strong> — Dhaka metro area</> },
-          { icon: 'clock', text: <>Order before <strong>12:00 PM</strong> — same-day dispatch</> },
-          { icon: 'shield', text: <><strong>Free installation</strong> included (Dhaka)</> },
           { icon: 'refresh', text: <><strong>30-day</strong> return & replacement policy</> }
         ].map((item, idx) => (
           <div key={idx} className="flex items-center gap-2 py-[5px] border-b-[0.5px] border-[var(--color-border-tertiary)] last:border-b-0">
@@ -321,7 +319,7 @@ export default function ProductInfo({
 
       {/* Trust Icons */}
       <div className="flex gap-2 flex-wrap">
-        {['Genuine Brands', 'CE-Marked Products', 'DGDA-Registered Supplier', 'Support 9am–6pm'].map((trust, idx) => (
+        {['Support 9am–6pm'].map((trust, idx) => (
           <div key={idx} className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] bg-[var(--color-background-secondary)] px-2 py-1 rounded-sm">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <polyline points="20 6 9 17 4 12"/>

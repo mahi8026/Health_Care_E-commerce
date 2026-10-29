@@ -1,4 +1,4 @@
-// health-care/src/utils/emailCampaigns.js
+﻿// health-care/src/utils/emailCampaigns.js
 
 /**
  * Ready-to-send email campaign templates for the admin newsletter broadcast.
@@ -86,7 +86,7 @@ export const CAMPAIGN_TEMPLATES = [
         .join('');
       return `
         ${heading(`🆕 ${v.headline}`)}
-        ${paragraph('Fresh stock has arrived at MediportBD — warranty-backed and ready to ship with free installation in Dhaka.')}
+        ${paragraph('Fresh stock has arrived at MediportBD — warranty-backed.')}
         <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">${products || ''}
         </table>
         <div style="text-align:center;margin:24px 0;">
@@ -104,16 +104,14 @@ export const CAMPAIGN_TEMPLATES = [
       { key: 'bulkDiscount', label: 'Bulk discount (up to %)', default: '30' },
       { key: 'creditTerms', label: 'Credit terms (days)', default: '90' },
     ],
-    buildSubject: (v) => `🏢 For Hospitals & Clinics: Up to ${v.bulkDiscount}% Bulk Discount + ${v.creditTerms}-Day Credit`,
+    buildSubject: (v) => `🏢 For Hospitals & Clinics: B2B Pricing`,
     buildHtml: (v) => `
       ${heading('Equip Your Facility for Less')}
       ${paragraph(`MediportBD's B2B program gives hospitals, clinics and diagnostic centers
-        <strong>up to ${v.bulkDiscount}% bulk discounts</strong>, <strong>${v.creditTerms}-day credit terms</strong>,
+        B2B and volume pricing on request,
         a dedicated account manager and priority order processing.`)}
       <div style="background:#E6F4F0;border-radius:8px;padding:16px 18px;margin-bottom:20px;">
-        <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#9989; Genuine equipment with warranty</p>
-        <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#128666; Free installation &amp; staff training (Dhaka)</p>
-        <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#10052;&#65039; Cold-chain delivery for reagents</p>
+        <p style="margin:0 0 6px;font-size:13px;color:#374151;">&#9989; Equipment with warranty</p>
         <p style="margin:0;font-size:13px;color:#374151;">&#128179; Custom quotations within 24 hours</p>
       </div>
       <div style="text-align:center;margin:24px 0;">
@@ -166,7 +164,7 @@ export const CAMPAIGN_TEMPLATES = [
       <div style="text-align:center;margin:24px 0;">
         <a href="${v.productLink || '{{SITE_URL}}/products'}" style="${CTA_STYLE}">Buy Now — Limited Stock</a>
       </div>
-      ${paragraph('Includes warranty, free installation (Dhaka) and cash-on-delivery. Order before 12 PM for same-day dispatch.')}`,
+      ${paragraph('Includes warranty and cash-on-delivery.')}`,
   },
 ];
 

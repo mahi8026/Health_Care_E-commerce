@@ -78,18 +78,11 @@ const FALLBACK_CATEGORIES = [
 const SEARCH_SUGGESTIONS = ['ECG Machine', 'Patient Monitor', 'HbA1c Kit', 'Pulse Oximeter', 'Nebulizer'];
 
 const B2B_FEATURES = [
-  '8–22% bulk discounts', '30–90 day credit terms',
-  'Dedicated account manager', 'Priority order processing',
-  'Free installation & training', 'Custom quotations',
+  'Priority order processing', 'Custom quotations',
 ];
 
 const B2B_STATS = [
-  // NOTE: index 0 is replaced at render time with the real count from the
-  // stats API (see B2BSection). The fallback must stay honest — a medical
-  // supplier must never render an invented trust number when the API fails.
-  { val: '0+', label: 'Active B2B Clients' },
-  { val: '30%', label: 'Max Bulk Discount' },
-  { val: '90 days', label: 'Credit Terms' },
+  // Static trust strip — no client count or discount percentage is rendered.
   { val: 'Sat–Thu', label: 'Dedicated Support' },
 ];
 
@@ -98,7 +91,7 @@ const HOW_IT_WORKS = [
   { step: 1, icon: <FaSearch />, title: 'Browse & Search', desc: 'Find products from 40+ global brands' },
   { step: 2, icon: <FaShoppingCart />, title: 'Add to Cart', desc: 'Get instant quotes and bulk pricing' },
   { step: 3, icon: <FaCreditCard />, title: 'Secure Checkout', desc: 'Multiple payment options available' },
-  { step: 4, icon: <FaTruck />, title: 'Fast Delivery', desc: 'Free installation & training included' },
+  { step: 4, icon: <FaTruck />, title: 'Delivery', desc: 'Free delivery nationwide on orders over ৳50,000.' },
 ];
 
 function buildWhyUs(settings) {
@@ -107,13 +100,10 @@ function buildWhyUs(settings) {
     : '৳50K';
   const returnDays = settings?.returnPolicyDays ?? 30;
   const supportHours = settings?.supportHours ?? 'Sat–Thu 9am–6pm';
-  const certifications = settings?.certifications?.join(', ') || 'DGDA Registered';
   return [
-    { icon: <FaCheckCircle />, title: certifications.split(',')[0]?.trim() || 'DGDA Registered', desc: 'All products are DGDA-cleared and meet Bangladesh regulatory standards.' },
-    { icon: <FaTruck />, title: 'Fast Delivery', desc: `Same-day dispatch for orders before 12 PM. Free delivery in Dhaka metro over ${threshold}.` },
-    { icon: <FaTools />, title: 'Free Installation', desc: 'Professional installation and staff training included for all equipment.' },
-    { icon: <FaPhoneAlt />, title: `${supportHours} Support`, desc: 'Dedicated technical support team available round the clock.' },
-    { icon: <FaCreditCard />, title: 'Flexible Payment', desc: 'Bank transfer, bKash, Nagad, and B2B credit terms available.' },
+    { icon: <FaTruck />, title: 'Fast Delivery', desc: `Free delivery nationwide on orders over ${threshold}.` },
+    { icon: <FaPhoneAlt />, title: `${supportHours} Support`, desc: 'Technical support by phone and WhatsApp.' },
+    { icon: <FaCreditCard />, title: 'Flexible Payment', desc: 'Bank transfer, bKash, Nagad.' },
     { icon: <FaUndo />, title: `${returnDays}-Day Returns`, desc: `Hassle-free returns and replacement policy on all products within ${returnDays} days.` },
   ];
 }
@@ -296,12 +286,7 @@ const B2BSection = memo(function B2BSection({ t, stats }) {
           </div>
           {/* Right stat boxes */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {B2B_STATS.map((s, i) => ({
-              ...s,
-              val: i === 0
-                ? (stats.totalB2BClients > 0 ? `${stats.totalB2BClients.toLocaleString()}+` : '0+')
-                : s.val,
-            })).map(s => (
+            {B2B_STATS.map(s => (
               <div key={s.label} style={{ background: 'rgba(255,255,255,0.08)',
                 border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12,
                 padding: '14px 18px', display: 'flex', alignItems: 'center',
