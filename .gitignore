@@ -31,6 +31,8 @@
 !MARKETING_AD_COPY_PACK.md
 !MARKETING_WHATSAPP_BROADCASTS.md
 !MARKETING_FLASH_SALE_CALENDAR.md
+# The rotation runbook is the audit trail for a security action - keep it tracked
+!docs/SECRET_ROTATION_RUNBOOK.md
 # ── Dependencies ─────────────────────────────────────────────────────────────
 **/node_modules/
 **/.pnp
