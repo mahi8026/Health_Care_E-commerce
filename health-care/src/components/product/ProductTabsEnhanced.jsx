@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from 'react';
 import { FaBox, FaFileAlt, FaTruck } from 'react-icons/fa';
@@ -154,8 +154,8 @@ export default function ProductTabsEnhanced({ product }) {
                   and medical laboratories.
                 </p>
                 <p>
-                  MediportBD offers genuine products with full manufacturer warranty and after-sales support. 
-                  Regulated products carry DGDA registration, with documentation available on request.
+                  MediportBD supplies products with manufacturer warranty.
+                  Products from DGDA-registered importers and manufacturers. Registration details for specific products are available on request.
                 </p>
               </div>
             )}
@@ -213,7 +213,6 @@ export default function ProductTabsEnhanced({ product }) {
                 <div className="p-4 bg-[var(--color-status-warning-tint)] border border-[var(--color-status-warning-tint)] rounded-lg">
                   <h5 className="font-semibold text-[var(--color-text-primary)] mb-2">Installation & Training</h5>
                   <p className="text-sm text-[var(--color-text-primary)]">
-                    Free installation and staff training included for eligible equipment in Dhaka metro area. 
                     Contact our team for details.
                   </p>
                 </div>

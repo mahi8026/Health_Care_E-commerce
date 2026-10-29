@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -266,7 +266,6 @@ export default function ProductInfoPanelEnhanced({
             <FaAward className="text-brand-teal" size={16} />
           </div>
           <div>
-            <div className="text-xs text-[var(--color-text-secondary)]">DGDA-Registered Supplier</div>
             <div className="text-xs font-semibold text-[var(--color-text-primary)]">Authentic</div>
           </div>
         </div>

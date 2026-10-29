@@ -82,7 +82,7 @@ export default function Footer() {
       items: [
         { label: 'Register B2B Account', href: '/register' },
         { label: 'Bulk Pricing', href: '/b2b' },
-        { label: 'Credit Terms', href: '/b2b#credit' },
+        { label: 'B2B Pricing', href: '/b2b#credit' },
         { label: 'Request a Quote', href: '/quotes/request' },
       ],
     },
@@ -209,8 +209,6 @@ export default function Footer() {
               <a href="/privacy" className="text-white/50 hover:text-white/80 transition-colors">Privacy</a>
               <span className="text-white/30">·</span>
               <a href="/terms" className="text-white/50 hover:text-white/80 transition-colors">Terms</a>
-              <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded ml-1">DGDA</span>
-              <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded">ISO</span>
             </div>
           </div>
 
@@ -218,10 +216,6 @@ export default function Footer() {
           <div className="hidden md:flex lg:hidden flex-col gap-1.5 text-[11px]">
             <div className="flex items-center justify-between">
               <p className="text-white/50">© {currentYear} Mediport Bangladesh Ltd.</p>
-              <div className="flex items-center gap-1.5">
-                <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded">DGDA</span>
-                <span className="text-brand-teal font-medium border border-brand-teal px-1.5 py-0.5 rounded">ISO</span>
-              </div>
             </div>
             <div className="flex items-center justify-between text-white/50">
               <div className="flex items-center gap-2">
@@ -244,9 +238,6 @@ export default function Footer() {
               <a href="/privacy" className="text-white/50 hover:text-white/80 transition-colors">Privacy</a>
               <span className="text-white/30">·</span>
               <a href="/terms" className="text-white/50 hover:text-white/80 transition-colors">Terms</a>
-              <span className="text-white/30">·</span>
-              <span className="text-brand-teal font-medium border border-brand-teal px-1 py-0.5 rounded">DGDA</span>
-              <span className="text-brand-teal font-medium border border-brand-teal px-1 py-0.5 rounded">ISO</span>
             </div>
           </div>
         </div>
