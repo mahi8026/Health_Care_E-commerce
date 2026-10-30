@@ -13,8 +13,10 @@
 // Polyfill Response for the jsdom test environment — the route handlers
 // construct `new Response(xml, { headers })`, but jsdom does not ship it.
 class ResponseStub {
-  constructor(body) {
+  constructor(body, init = {}) {
     this._body = body
+    this.status = init.status ?? 200
+    this.headers = init.headers ?? {}
   }
   async text() {
     return this._body
@@ -26,6 +28,7 @@ if (typeof globalThis.Response === 'undefined') {
 
 import { GET as sitemapIndexGET } from '../sitemap.xml/route'
 import { GET as sitemapStaticGET } from '../sitemap-static.xml/route'
+import { GET as sitemapFullGET } from '../sitemap-full.xml/route'
 import { SITE_CONFIG } from '@/config/seo'
 
 /** Pull every <loc> value out of a sitemap XML string. */
@@ -161,5 +164,29 @@ describe('/sitemap-static.xml', () => {
       .find((block) => block.includes(`<loc>${SITE_CONFIG.url}</loc>`))
     expect(homeBlock).toBeDefined()
     expect(homeBlock).toMatch(/<priority>1<\/priority>|<priority>1\.0<\/priority>/)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Phase P1 — coverage and retirement guards
+// ---------------------------------------------------------------------------
+
+describe('sitemap coverage and the retired full sitemap', () => {
+  it('sitemap-static.xml lists /location (indexable and self-canonical)', async () => {
+    const xml = await (await sitemapStaticGET()).text()
+    expect(extractLocs(xml)).toContain(`${SITE_CONFIG.url}/location`)
+  })
+
+  it('sitemap-full.xml answers 410 Gone instead of duplicating the URL set', async () => {
+    const res = await sitemapFullGET()
+    expect(res.status).toBe(410)
+    // Empty body: a real Response yields '', the jsdom stub yields null.
+    const body = await res.text()
+    expect(body === null || body === '').toBe(true)
+  })
+
+  it('keeps the retired URL out of the sitemap index', async () => {
+    const xml = await (await sitemapIndexGET()).text()
+    expect(extractLocs(xml).some((url) => url.includes('sitemap-full'))).toBe(false)
   })
 })
