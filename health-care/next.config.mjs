@@ -233,6 +233,13 @@ const nextConfig = {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload'
           },
+          // Lighthouse "proper origin isolation" (Best Practices). allow-popups
+          // rather than same-origin: bKash/Nagad payment flows open the gateway
+          // in a new window and a future popup-based return must keep its opener.
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups'
+          },
           {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN'
