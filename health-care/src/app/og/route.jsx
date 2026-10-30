@@ -1,6 +1,11 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
+// Node runtime, not Edge: the Edge bundle for this route (next/og + satori +
+// resvg wasm) is 1.07 MB, which exceeds Vercel's 1 MB per-Edge-Function limit
+// and failed the deploy. Node functions have a far larger budget, and Next now
+// deprecates Edge for this use ("The Edge Runtime is deprecated"). Edge also
+// disabled static generation for this route, which the build warned about.
+export const runtime = 'nodejs';
 
 /**
  * Dynamic OG image generator — /og?title=...&subtitle=...&page=...&price=...&productImage=...
