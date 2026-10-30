@@ -200,7 +200,13 @@ export async function GET(request) {
           </div>
         </div>
       ),
-      { width: 1200, height: 630 }
+      {
+        width: 1200,
+        height: 630,
+        // OG images are deterministic per query string, so cache them hard:
+        // every social scrape otherwise costs a Node invocation.
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+      }
     );
   }
 
@@ -373,6 +379,10 @@ export async function GET(request) {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    {
+      width: 1200,
+      height: 630,
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    }
   );
 }
