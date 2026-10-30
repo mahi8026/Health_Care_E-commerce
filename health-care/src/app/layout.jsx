@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans, Lora, Noto_Sans_Bengali } from "next/font/google";
+import localFont from "next/font/local";
 import { Suspense } from "react";
 import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
@@ -32,31 +32,43 @@ import ReagentPopupProvider from "@/components/marketing/ReagentPopupProvider";
 // per-request freshness (cart, checkout, admin, b2b, login, quotes) opt in
 // individually.
 
-const plusJakarta = Plus_Jakarta_Sans({
-  weight: ['400', '500', '600'],
-  subsets: ["latin"],
-  variable: "--font-plus-jakarta",
+// Fonts are SELF-HOSTED: one variable file per family in src/fonts/, copied
+// from Google Fonts (latin subsets; bengali for Noto).
+//
+// Why: next/font/google downloads font files during the build, which
+// intermittently failed CI with "Module not found: Can't resolve
+// '@vercel/turbopack-next/internal/font/google/font'" (documented in
+// .github/workflows/test.yml). Self-hosting removes that network dependency
+// entirely — the build no longer talks to fonts.googleapis.com — and drops a
+// third-party origin from the critical path.
+const plusJakarta = localFont({
+  src: '../fonts/plus-jakarta-sans.woff2',
+  weight: '200 800',
+  style: 'normal',
+  variable: '--font-plus-jakarta',
   display: 'swap',
   preload: true,
   fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
 });
 
-const lora = Lora({
-  weight: ['500', '600'],
-  subsets: ["latin"],
-  variable: "--font-lora",
+const lora = localFont({
+  src: '../fonts/lora.woff2',
+  weight: '400 700',
+  style: 'normal',
+  variable: '--font-lora',
   display: 'swap',
   preload: true,
   fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 
-const notoBengali = Noto_Sans_Bengali({
-  weight: ['400', '500', '600'],
-  subsets: ["bengali"],
-  variable: "--font-noto-bengali",
+const notoBengali = localFont({
+  src: '../fonts/noto-sans-bengali.woff2',
+  weight: '100 900',
+  style: 'normal',
+  variable: '--font-noto-bengali',
   display: 'swap',
   // Only used when html.lang-bn is active (Bengali UI toggle) — skip the
-  // 105KB preload on English pages; the font loads on demand when needed.
+  // ~105KB preload on English pages; the font loads on demand when needed.
   preload: false,
 });
 
