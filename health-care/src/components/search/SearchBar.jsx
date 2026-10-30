@@ -1,20 +1,42 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import GA4Tracker from '@/services/GA4Tracker';
 
-export default function SearchBar({ onSearch, placeholder = "Search products..." }) {
+export default function SearchBar({
+  onSearch,
+  resultCount = 0,
+  isLoading = false,
+  placeholder = "Search products...",
+}) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
+  // Query that has been submitted but not yet reported to analytics. Cleared
+  // once the results for it have settled, so `search` carries the real count.
+  const pendingQuery = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const searchParams = { query, category: category === 'all' ? '' : category };
+    pendingQuery.current = query;
     onSearch(searchParams);
-    // Track search event (result count will be tracked by parent component)
-    // For now, we'll track with 0 results, parent should update if needed
-    GA4Tracker.trackSearch(query, 0);
   };
+
+  // Report `search` with the result_count of the submitted query.
+  //
+  // The count is only known after the results resolve, so the event is emitted
+  // when loading settles. If the results provider never signals loading (and
+  // therefore never resolves a count) the event is skipped rather than sent
+  // with a wrong number — an absent event is preferable to a false one.
+  useEffect(() => {
+    if (pendingQuery.current === null) return;
+    if (isLoading) return;
+    GA4Tracker.trackSearch(
+      pendingQuery.current,
+      Number.isFinite(resultCount) && resultCount >= 0 ? resultCount : 0
+    );
+    pendingQuery.current = null;
+  }, [isLoading, resultCount]);
 
   const handleChange = (e) => {
     const value = e.target.value;

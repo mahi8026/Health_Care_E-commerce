@@ -8,6 +8,7 @@ import { CONTACT } from '@/constants/api';
 import SizeSelector from './SizeSelector';
 import WhatsAppOrderButton from './WhatsAppOrderButton';
 import { getProductPriceDisplay, getFlashDealDisplay } from '@/utils/pricing';
+import QuoteCtaLink from '@/components/conversion/QuoteCtaLink';
 import { 
   FaShoppingCart, 
   FaWhatsapp, 
@@ -469,14 +470,17 @@ export default function ProductInfoPanelEnhanced({
         </p>
       </div>
 
-      {/* Request formal quotation */}
-      <button
-        onClick={() => router.push(`/quotes/request?product=${product._id}&qty=${quantity}`)}
-        className="w-full py-2.5 px-4 border-2 border-dashed border-brand-teal/40 hover:border-brand-teal text-brand-teal rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2.5"
+      {/* Request a quotation — single control; replaces the former button so the
+          href is server-rendered and crawlable. No price is passed through. */}
+      <QuoteCtaLink
+        href={`/quotes/request?source=product&product=${product._id}&qty=${quantity}`}
+        source="product"
+        pageType="product"
+        className="w-full border-2 border-dashed border-brand-teal/40 hover:border-brand-teal text-brand-teal duration-300"
       >
         <FaFileInvoiceDollar size={16} />
-        <span>Request a Formal Quotation</span>
-      </button>
+        <span>Request a quotation</span>
+      </QuoteCtaLink>
 
       {/* Warranty Badge */}
       {product.warranty && (

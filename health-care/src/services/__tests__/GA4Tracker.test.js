@@ -243,3 +243,44 @@ describe('GA4Tracker - User Identification', () => {
     });
   });
 });
+
+// The `search` event previously reported a hard-coded result_count of 0.
+// These tests pin the forwarded value so a regression is visible.
+describe('GA4Tracker - search result_count', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    GA4Tracker.isInitialized = false;
+    GA4Tracker._initPromise = null;
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    console.error.mockRestore();
+  });
+
+  it('forwards the real result count', async () => {
+    GA4Tracker.initialize('G-TEST123');
+
+    GA4Tracker.trackSearch('ecg machine', 37);
+
+    await flush();
+
+    expect(ReactGA.event).toHaveBeenCalledWith(
+      'search',
+      expect.objectContaining({ search_term: 'ecg machine', result_count: 37 })
+    );
+  });
+
+  it('forwards 0 for an empty result set', async () => {
+    GA4Tracker.initialize('G-TEST123');
+
+    GA4Tracker.trackSearch('no such product', 0);
+
+    await flush();
+
+    expect(ReactGA.event).toHaveBeenCalledWith(
+      'search',
+      expect.objectContaining({ result_count: 0 })
+    );
+  });
+});

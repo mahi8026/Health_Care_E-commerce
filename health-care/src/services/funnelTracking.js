@@ -135,3 +135,30 @@ export function trackRfqComplete(options = {}) {
     // Analytics must never break UX.
   }
 }
+
+/**
+ * Quotation CTA click — engagement only, NEVER a conversion.
+ *
+ * Fired by QuoteCtaLink whenever a "Request a quotation" control is activated.
+ * Deliberately distinct from:
+ *   - `quotation_request` (B2B dashboard tile, unchanged),
+ *   - `quote_request_submitted` / `rfq_complete` (server-confirmed, unchanged).
+ * Nothing in the app counts `quote_cta_click` as a conversion; it records
+ * intent and which page type carried the CTA.
+ *
+ * @param {Object} [context]
+ * @param {string} [context.source]   page type that hosts the CTA (home, category, product, brand_hub)
+ * @param {string} [context.pageType] coarse page type for reporting
+ */
+export function trackQuoteCtaClick(context = {}) {
+  try {
+    const extra = {
+      event_category: 'engagement',
+      page_type: context.pageType || 'other',
+    };
+    if (context.source) extra.source = String(context.source);
+    GA4Tracker.trackEvent('quote_cta_click', baseParams(extra));
+  } catch {
+    // Analytics must never break UX.
+  }
+}

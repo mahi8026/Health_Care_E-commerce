@@ -143,6 +143,24 @@ describe('GA4Tracker - User Identification Integration', () => {
       expect(ReactGA.event).toHaveBeenCalledWith('credit_usage', expect.any(Object));
       expect(ReactGA.set).toHaveBeenCalledWith({ user_id: null });
     });
+
+    it('sends quote_cta_click without replacing quotation_request', async () => {
+      GA4Tracker.initialize('G-TEST123');
+
+      // New CTA-intent event (additive) ...
+      GA4Tracker.trackEvent('quote_cta_click', { source: 'product', page_type: 'product' });
+      // ... and the pre-existing B2B event, which must still fire unchanged.
+      GA4Tracker.trackQuotationRequest({
+        id: 'quote_cta_1',
+        total: 0,
+        items: [],
+      });
+
+      await flush();
+
+      expect(ReactGA.event).toHaveBeenCalledWith('quote_cta_click', expect.any(Object));
+      expect(ReactGA.event).toHaveBeenCalledWith('quotation_request', expect.any(Object));
+    });
   });
 
   describe('Edge cases and error scenarios', () => {

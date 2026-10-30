@@ -24,6 +24,13 @@ export default function QuickActions() {
         items: []
       };
       GA4Tracker.trackQuotationRequest(quotation);
+      // Additive engagement event — the legacy `quotation_request` call above
+      // is kept exactly as it was. `b2b_quote_cta_click` is a CTA-intent event
+      // and is never treated as a conversion.
+      GA4Tracker.trackEvent('b2b_quote_cta_click', {
+        page_type: 'b2b',
+        source: 'quick_actions',
+      });
     }
   };
 

@@ -22,6 +22,7 @@ import {
   trackWhatsAppClick,
   trackRfqStart,
   trackRfqComplete,
+  trackQuoteCtaClick,
   derivePageType,
   deriveRfqEntryPoint,
 } from '@/services/funnelTracking';
@@ -288,6 +289,39 @@ describe('QuoteRequestPage RFQ events', () => {
     );
     expect(require('@/services/MetaPixelTracker').default.trackCustomEvent).toHaveBeenCalled();
     expect(require('@/utils/marketingBeacon').trackMarketingEvent).toHaveBeenCalled();
+  });
+});
+
+
+describe('quote_cta_click (CTA intent — never a conversion)', () => {
+  it('emits quote_cta_click with source and page_type', () => {
+    trackQuoteCtaClick({ source: 'home', pageType: 'home' });
+
+    expect(trackEvent).toHaveBeenCalledTimes(1);
+    const [eventName, params] = trackEvent.mock.calls[0];
+    expect(eventName).toBe('quote_cta_click');
+    expect(params).toMatchObject({
+      source: 'home',
+      page_type: 'home',
+      event_category: 'engagement',
+    });
+  });
+
+  it('does not emit quotation_request, quote_request_submitted or rfq_complete', () => {
+    trackQuoteCtaClick({ source: 'category', pageType: 'category' });
+
+    const emitted = trackEvent.mock.calls.map((call) => call[0]);
+    expect(emitted).not.toContain('quotation_request');
+    expect(emitted).not.toContain('quote_request_submitted');
+    expect(emitted).not.toContain('rfq_complete');
+  });
+
+  it('never throws when the tracker fails (analytics must not break the CTA)', () => {
+    trackEvent.mockImplementation(() => {
+      throw new Error('tracker down');
+    });
+
+    expect(() => trackQuoteCtaClick({ source: 'brand_hub', pageType: 'brand_hub' })).not.toThrow();
   });
 });
 

@@ -9,6 +9,7 @@ import {
   getBrandFaqs,
   getBrandQuickAnswer,
 } from '@/config/brandGEO';
+import QuoteCtaLink from '@/components/conversion/QuoteCtaLink';
 
 // ---------------------------------------------------------------------------
 // Data fetching
@@ -178,6 +179,18 @@ export default async function BrandDetailPage({ params }) {
         }}
       />
       <BrandPage brand={brand} initialProducts={products} />
+
+      {/* Quotation CTA — server-rendered link in the brand hub body */}
+      <section className="bg-page px-4 pt-2 pb-4">
+        <div className="container mx-auto max-w-[1280px]">
+          <QuoteCtaLink
+            href="/quotes/request?source=brand_hub"
+            source="brand_hub"
+            pageType="brand_hub"
+            className="bg-[var(--color-brand-teal)] text-white hover:bg-[var(--color-brand-teal-hover)]"
+          />
+        </div>
+      </section>
 
       {/* Brand GEO box — answer-first, AI-engine extractable + internal links */}
       {quickAnswer && (

@@ -3,6 +3,7 @@ import HomePage from '@/views/HomePage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import HomepageFAQs from '@/components/seo/HomepageFAQs';
 import { LANDING_PAGES } from '@/config/landingPages';
+import QuoteCtaLink from '@/components/conversion/QuoteCtaLink';
 
 export const metadata = {
   title:       PAGE_SEO.home.title,
@@ -188,6 +189,14 @@ export default async function Home() {
               Products from DGDA-registered importers and manufacturers. Request a
               quotation for B2B pricing.
             </p>
+            <div className="mt-4">
+              <QuoteCtaLink
+                href="/quotes/request?source=home"
+                source="home"
+                pageType="home"
+                className="bg-[var(--color-brand-teal)] text-white hover:bg-[var(--color-brand-teal-hover)]"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -219,6 +228,7 @@ export default async function Home() {
                 <li><Link href="/guides/dgda-registration-explained" className="text-sm text-[var(--color-brand-teal)] hover:underline">DGDA registration explained →</Link></li>
                 <li><Link href="/guides/surgical-instruments-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Surgical instruments guide →</Link></li>
                 <li><Link href="/compare" className="text-sm text-[var(--color-brand-teal)] hover:underline">All comparisons →</Link></li>
+                <li><Link href="/brands" className="text-sm text-[var(--color-brand-teal)] hover:underline">Browse all brands →</Link></li>
               </ul>
             </div>
           </div>
