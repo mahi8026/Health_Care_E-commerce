@@ -160,9 +160,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${notoBengali.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        {/* Performance: preconnect to critical third-party origins */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Performance: preconnect to critical third-party origins.
+            NOTE: fonts are self-hosted by next/font (see Plus_Jakarta_Sans /
+            Lora / Noto_Sans_Bengali above), which injects its own preload for
+            the font files. Preconnecting to fonts.googleapis.com /
+            fonts.gstatic.com was therefore dead weight and pushed this page over
+            Lighthouse's "more than 4 preconnects" warning — removed. */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />

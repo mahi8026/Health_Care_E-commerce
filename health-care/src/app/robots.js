@@ -35,8 +35,10 @@ export default function robots() {
           '/demo-loading',
           '/og',
           '/og/*',
-          '/search', // Search results should not be indexed
-          '/search/*',
+          // NOTE: /search is deliberately NOT disallowed. The page emits its own
+          // meta noindex (app/search/page.jsx); a robots.txt block would stop
+          // crawlers from ever reading that noindex, which is how URLs end up
+          // reported as "indexed, though blocked by robots.txt".
           '/returns/request',
           '/returns/request/*',
           '/returns/my-returns',
@@ -45,8 +47,9 @@ export default function robots() {
           '/orders/*',
           '/track',
           '/track/*',
-          '/quotes', // Quote requests are private
-          '/quotes/*',
+          // /quotes/request carries its own noindex (app/quotes/request/page.jsx)
+          // and is now linked from four public CTAs, so it must stay crawlable
+          // for that noindex to be seen.
           '/login',
           '/register',
           '/forgot-password',
@@ -70,6 +73,7 @@ export default function robots() {
         disallow: [
           '/admin',
           '/admin/*',
+          '/account',
           '/account/*',
           '/checkout',
           '/checkout/*',
@@ -85,8 +89,7 @@ export default function robots() {
           '/demo-loading',
           '/og',
           '/og/*',
-          '/search',
-          '/search/*',
+          // Same reasoning as the * group above: noindex, not robots-blocked.
           '/returns/request',
           '/returns/request/*',
           '/returns/my-returns',
@@ -95,8 +98,7 @@ export default function robots() {
           '/orders/*',
           '/track',
           '/track/*',
-          '/quotes',
-          '/quotes/*',
+          // /quotes/request: noindex page linked publicly — must stay crawlable.
           '/login',
           '/register',
           '/forgot-password',

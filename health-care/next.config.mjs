@@ -233,6 +233,13 @@ const nextConfig = {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload'
           },
+          // Lighthouse "proper origin isolation" (Best Practices). allow-popups
+          // rather than same-origin: bKash/Nagad payment flows open the gateway
+          // in a new window and a future popup-based return must keep its opener.
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups'
+          },
           {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN'
@@ -279,13 +286,18 @@ const nextConfig = {
 
   // Image optimization configuration
   images: {
-    // All remote images are hosted on Cloudinary, which already serves
-    // optimized AVIF/WebP via optimizeCloudinaryUrl (src/utils/cloudinary.js).
-    // Vercel's /_next/image optimizer exceeded its monthly quota and started
-    // returning 402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED, breaking every
-    // next/image without `unoptimized` (hero, banners, OptimizedImage, etc.).
-    // Bypass the optimizer entirely — browsers load Cloudinary URLs directly.
-    unoptimized: true,
+    // All remote images are hosted on Cloudinary, which serves optimized
+    // AVIF/WebP via optimizeCloudinaryUrl (src/utils/cloudinary.js).
+    //
+    // History: Vercel's /_next/image optimizer exceeded its monthly quota and
+    // returned 402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED, so `unoptimized:
+    // true` was set as an emergency brake. That brake also made Next ignore
+    // every `sizes` prop and ship one fixed-width asset to all viewports
+    // (Lighthouse: 567-673 KiB of avoidable image bytes, and the mobile LCP
+    // element). A CUSTOM loader restores real responsive srcsets while still
+    // never touching Vercel's optimizer — Cloudinary does the resizing.
+    loader: 'custom',
+    loaderFile: './src/utils/cloudinaryLoader.js',
     formats: ['image/avif', 'image/webp'],
     // Trimmed device/image sizes — only the breakpoints actually used in the UI
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

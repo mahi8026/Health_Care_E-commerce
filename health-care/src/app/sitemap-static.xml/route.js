@@ -37,6 +37,8 @@ export async function GET() {
     // "Page with redirect" entries in Google Search Console.
     { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    // /location is indexable and self-canonical but was in no sitemap until now.
+    { url: `${SITE_URL}/location`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     // NOTE: /flash-deals is intentionally excluded — it returns 404 when no active
     // deals exist. It self-submits to sitemaps via the API when deals go live.
   ];

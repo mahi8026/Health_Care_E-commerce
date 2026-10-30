@@ -112,3 +112,42 @@ describe('robots()', () => {
     expect(first).toEqual(second)
   })
 })
+
+// ---------------------------------------------------------------------------
+// noindex vs robots.txt (Phase P1)
+//
+// A robots.txt disallow hides a page's meta noindex from crawlers, which is how
+// URLs end up reported as "indexed, though blocked by robots.txt". /search and
+// /quotes/request set their own noindex (the quote page is linked from four
+// public CTAs), so no rule group may block them.
+// ---------------------------------------------------------------------------
+
+describe('noindex pages stay crawlable', () => {
+  const NOINDEX_PAGES = ['/search', '/search/*', '/quotes', '/quotes/*']
+
+  const disallowOf = (rule) =>
+    Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow].filter(Boolean)
+
+  it('never disallows a page that carries its own noindex', () => {
+    for (const rule of robots().rules) {
+      const disallow = disallowOf(rule)
+      for (const path of NOINDEX_PAGES) {
+        expect({ userAgent: rule.userAgent, path, blocked: disallow.includes(path) }).toEqual({
+          userAgent: rule.userAgent,
+          path,
+          blocked: false,
+        })
+      }
+    }
+  })
+
+  it('still disallows the private account area in every rule group', () => {
+    for (const rule of robots().rules) {
+      expect({ userAgent: rule.userAgent, blocksAccount: disallowOf(rule).includes('/account') }).toEqual({
+        userAgent: rule.userAgent,
+        blocksAccount: true,
+      })
+    }
+  })
+})
+
