@@ -10,6 +10,7 @@ import {
   getBrandQuickAnswer,
 } from '@/config/brandGEO';
 import QuoteCtaLink from '@/components/conversion/QuoteCtaLink';
+import { buildItemListElements } from '@/components/seo/CollectionPageSchema';
 
 // ---------------------------------------------------------------------------
 // Data fetching
@@ -138,12 +139,13 @@ export default async function BrandDetailPage({ params }) {
             url: canonicalUrl,
             mainEntity: {
               '@type': 'ItemList',
-              itemListElement: products.slice(0, 20).map((p, i) => ({
-                '@type': 'ListItem',
-                position: i + 1,
-                name: p.name,
-                url: `${SITE_CONFIG.url}/products/${p.slug || p._id}`,
-              })),
+              // Reuse the single tested implementation (CollectionPageSchema
+              // :64) instead of hand-rolling a second ItemList shape:
+              //  - entries are Products, not bare ListItems
+              //  - an Offer is attached ONLY when toOfferPrice() yields > 0, so
+              //    quote-only products never carry a price (Google policy)
+              //  - URLs are slug-only, positions contiguous, duplicates dropped
+              itemListElement: buildItemListElements(products.slice(0, 20)),
             },
           }),
         }}
