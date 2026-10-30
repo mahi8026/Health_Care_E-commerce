@@ -47,11 +47,11 @@ export const HOMEPAGE_FAQS = [
   },
   {
     question: "What brands of medical equipment does MediportBD sell?",
-    answer: "MediportBD sells medical equipment from world-leading brands including Siemens Healthineers, GE Healthcare, Mindray, Roche Diagnostics, Abbott, Omron, Rossmax, B-Braun, JMS, ConvaTec, Accu-Chek, and 50+ other trusted manufacturers."
+    answer: "MediportBD sells medical equipment from world-leading brands including Siemens Healthineers, GE Healthcare, Mindray, Roche Diagnostics, Abbott, Omron, Rossmax, B-Braun, JMS, ConvaTec, Accu-Chek, and other manufacturers."
   },
   {
     question: "How can I request a quote for bulk medical equipment orders?",
-    answer: "You can request a free B2B quote by visiting www.mediportbd.com/b2b, calling +880 1646-886795, or emailing mediportbdofficial@gmail.com. Our B2B team will respond within 24 hours with customized pricing and delivery timelines."
+    answer: "You can request a B2B quotation by visiting www.mediportbd.com/b2b, calling +880 1646-886795, or emailing mediportbdofficial@gmail.com. We will reply with a written quotation."
   }
 ];
 

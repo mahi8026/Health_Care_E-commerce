@@ -16,6 +16,7 @@ const FILES = [
   'views/HomePage.jsx',
   'components/layout/Footer.jsx',
   'components/seo/TrustBand.jsx',
+  'components/seo/HomepageFAQs.jsx',
   'components/product/ProductInfo.jsx',
   'components/product/ProductTabsEnhanced.jsx',
 ];
@@ -42,6 +43,15 @@ const BANNED_PHRASES = [
   'CE-Marked',
   'Genuine Brands',
   'DGDA-Registered Supplier',
+  // Phase 2b-1 — homepage and structured-data claims retired in this pass.
+  'fast delivery',
+  '24/7 support',
+  'instant quotes',
+  'priority order processing',
+  'stocks the complete range',
+  'single-source partner',
+  'within 24 hours',
+  '50+ other',
 ];
 
 // translations.js holds the EN block first (en: { … }) followed by bn: { … }.

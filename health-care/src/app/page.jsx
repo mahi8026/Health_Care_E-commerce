@@ -122,8 +122,7 @@ export default async function Home() {
                 🏥 Brands We Supply
               </h3>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Products in our 600+ item catalog are sourced from leading global manufacturers, with DGDA registration details and conformity documents available on request, meeting Bangladesh regulatory standards 
-                and international quality benchmarks.
+                Products in our 600+ item catalog are sourced from leading global manufacturers, with DGDA registration details and conformity documents available on request.
               </p>
             </div>
             
@@ -160,7 +159,7 @@ export default async function Home() {
               Serving Bangladesh Healthcare Since 2020
             </h3>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4">
-              MediportBD stocks the complete range of medical equipment needed by hospitals, clinics, diagnostic centers, 
+              MediportBD supplies medical equipment to hospitals, clinics, diagnostic centers, 
               pathology labs and healthcare facilities across Bangladesh. From simple diagnostic tools like blood pressure 
               monitors and thermometers to advanced equipment like ECG machines, patient monitors, ultrasound systems, 
               hematology analyzers and ventilators — we supply products from Siemens Healthineers, GE Healthcare, 
@@ -168,9 +167,9 @@ export default async function Home() {
             </p>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
               Whether you need surgical instruments for your operating theatre, HbA1c and biochemistry reagents for your 
-              diagnostic lab, or PPE supplies for infection control — MediportBD is your single-source partner for quality, 
-              compliance and reliable service. Browse our catalog, request a B2B quote, or call +880 1646-886795 to speak 
-              with our medical equipment specialists today.
+              diagnostic lab, or PPE supplies for infection control — browse our catalog, request a B2B quote, or call 
+              +880 1646-886795 to speak 
+              with our team.
             </p>
           </div>
         </div>
