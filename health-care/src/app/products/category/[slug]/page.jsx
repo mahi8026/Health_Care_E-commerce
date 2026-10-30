@@ -30,6 +30,7 @@ import StructuredData, {
 } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
 import CollectionPageSchema from '@/components/seo/CollectionPageSchema';
+import QuoteCtaLink from '@/components/conversion/QuoteCtaLink';
 
 // ISR: render on first request, cache for 1 hour. Avoids heavy backend
 // load during build-time static generation while still serving static HTML
@@ -221,6 +222,15 @@ export default async function CategoryPage({ params }) {
                 </Link>
               </div>
             )}
+            {/* Quotation CTA — server-rendered link, after the cross-link row */}
+            <div className="mt-3">
+              <QuoteCtaLink
+                href="/quotes/request?source=category"
+                source="category"
+                pageType="category"
+                className="bg-[var(--color-brand-teal)] text-white hover:bg-[var(--color-brand-teal-hover)]"
+              />
+            </div>
           </div>
         </section>
       )}
