@@ -206,6 +206,28 @@ const nextConfig = {
           },
         ],
       },
+      // Static brand assets served from /public default to `max-age=0`, which
+      // Lighthouse reports as "Use efficient cache lifetimes" (140 KiB). They
+      // only change when the brand does, so a long TTL is safe. Not `immutable`
+      // because the filenames are not content-hashed.
+      {
+        source: '/Mediport_Logo.png',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/og-default.png',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/icons/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=604800' },
+        ],
+      },
       // Filtered/paginated product listing URLs (?q=, ?sort=, ?brand=, ?page=2+)
       // carry a canonical back to /products but Google still sometimes indexes them
       // as "duplicate without user-selected canonical". The X-Robots-Tag header
