@@ -8,6 +8,7 @@ import StructuredData, {
   generateBreadcrumbSchema,
 } from '@/utils/structuredData';
 import FAQSchema from '@/components/seo/FAQSchema';
+import GuideSources from '@/components/seo/GuideSources';
 import { finalTitle, socialTitle } from '@/utils/metadata';
 
 export const dynamicParams = false;
@@ -86,8 +87,10 @@ function generateArticleSchema(guide, canonicalUrl) {
     mainEntityOfPage: canonicalUrl,
     author: {
       '@type': 'Person',
+      '@id': `${SITE_CONFIG.url}${GUIDE_AUTHOR.url}#person`,
       name: GUIDE_AUTHOR.name,
       jobTitle: 'Founder & Managing Director',
+      url: `${SITE_CONFIG.url}${GUIDE_AUTHOR.url}`,
       worksFor: { '@type': 'Organization', name: SITE_CONFIG.fullName },
     },
     publisher: {
@@ -210,9 +213,20 @@ export default async function GuidePage({ params }) {
           </div>
           <div>
             <p className="text-sm font-semibold text-[var(--color-text-primary)]">
-              Written by {GUIDE_AUTHOR.name}
+              Written by{' '}
+              <Link
+                href={GUIDE_AUTHOR.url}
+                className="text-[var(--color-brand-teal)] hover:underline"
+              >
+                {GUIDE_AUTHOR.name}
+              </Link>
             </p>
-            <p className="text-xs text-[var(--color-text-secondary)]">{GUIDE_AUTHOR.title}</p>
+            <p className="text-xs text-[var(--color-text-secondary)]">
+              {GUIDE_AUTHOR.title} ·{' '}
+              <Link href={GUIDE_AUTHOR.url} className="hover:underline">
+                About the author
+              </Link>
+            </p>
           </div>
         </div>
 
@@ -283,6 +297,9 @@ export default async function GuidePage({ params }) {
             </div>
           </section>
         )}
+
+        {/* Sources — verified regulatory references (E-E-A-T: cited sources) */}
+        <GuideSources />
 
         {/* Related category CTA — internal linking to money pages */}
         {guide.relatedCategories && guide.relatedCategories.length > 0 && (
