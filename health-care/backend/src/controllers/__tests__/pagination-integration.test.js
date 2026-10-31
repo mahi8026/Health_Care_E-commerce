@@ -55,11 +55,51 @@ jest.mock('../../utils/databaseMonitor', () => ({ monitorConnections: jest.fn() 
 
 const app = require('../../server');
 
-describe('Pagination Integration Tests', () => {
+// ── Database availability guard ─────────────────────────────────────────────
+// These are DB-backed integration tests: without a reachable MongoDB every
+// request is short-circuited by middleware/dbHealthCheck → 503, which looks like
+// 13 broken assertions instead of "no database". Fail once, clearly, instead.
+//
+// CI provides one (.github/workflows/test.yml: mongo:7 service + MONGODB_URI), so
+// CI must never skip: SKIP_DB_TESTS there is treated as a hard error.
+const TEST_DB_URL =
+  process.env.MONGODB_URI_TEST ||
+  process.env.MONGODB_URI ||
+  'mongodb://localhost:27017/Mediport-test';
+
+const DB_TESTS_SKIPPED =
+  process.env.SKIP_DB_TESTS === '1' || process.env.SKIP_DB_TESTS === 'true';
+
+if (DB_TESTS_SKIPPED && process.env.CI) {
+  throw new Error(
+    '[pagination-integration] SKIP_DB_TESTS is set in CI — these DB-backed tests must run there.'
+  );
+}
+
+if (DB_TESTS_SKIPPED) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    `[pagination-integration] skipped: SKIP_DB_TESTS set. Start MongoDB or point MONGODB_URI at one to run these.`
+  );
+}
+
+const describeDb = DB_TESTS_SKIPPED ? describe.skip : describe;
+
+describeDb('Pagination Integration Tests', () => {
   beforeAll(async () => {
-    // Connect to test database if not already connected
+    // Connect to the test database if not already connected. A short selection
+    // timeout keeps a missing database from hanging the suite.
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/Mediport-test');
+      try {
+        await mongoose.connect(TEST_DB_URL, { serverSelectionTimeoutMS: 3000 });
+      } catch (err) {
+        throw new Error(
+          `[pagination-integration] MongoDB is not reachable at ${TEST_DB_URL}.\n` +
+            `Start one (\`docker run -d --name mp-mongo -p 27017:27017 mongo:7\`) and re-run, ` +
+            `or run DB-less with SKIP_DB_TESTS=1.\n` +
+            `Original error: ${err.message}`
+        );
+      }
     }
   });
 
