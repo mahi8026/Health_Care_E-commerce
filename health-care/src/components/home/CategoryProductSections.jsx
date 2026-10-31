@@ -280,13 +280,13 @@ export default function CategoryProductSections({ categories = [] }) {
         }))
         .filter(cat => cat.productCount >= 4) // Only show categories with at least 4 products
         .sort((a, b) => b.productCount - a.productCount) // Sort by product count descending
-        .slice(0, 6); // Show top 6 categories only
+        .slice(0, 4); // top 4 categories: fewer above-the-fold image requests
       
       const productsPromises = sortedCategories.map(async (cat) => {
         const categoryName = cat.name;
         try {
           const response = await fetch(
-            `${API}/products?category=${encodeURIComponent(categoryName)}&limit=10&sortBy=popular`
+            `${API}/products?category=${encodeURIComponent(categoryName)}&limit=6&sortBy=popular`
           );
           const data = await response.json();
           const products = Array.isArray(data.data) ? data.data : (data.data?.products || data.products || []);

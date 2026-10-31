@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import HomePage from '@/views/HomePage';
 import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import HomepageFAQs from '@/components/seo/HomepageFAQs';
@@ -204,9 +204,9 @@ export default async function Home() {
                 Medical Equipment in Bangladesh
               </h2>
               <ul className="space-y-2">
-                <li><Link href="/guides/medical-equipment-bangladesh-guide" className="text-sm text-[var(--color-brand-teal)] hover:underline">Complete 2026 buying guide →</Link></li>
-                <li><Link href="/guides/diagnostic-equipment-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Diagnostic equipment for clinics →</Link></li>
-                <li><Link href="/guides/hospital-equipment-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Hospital & ICU equipment →</Link></li>
+                <li><Link prefetch={false} href="/guides/medical-equipment-bangladesh-guide" className="text-sm text-[var(--color-brand-teal)] hover:underline">Complete 2026 buying guide →</Link></li>
+                <li><Link prefetch={false} href="/guides/diagnostic-equipment-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Diagnostic equipment for clinics →</Link></li>
+                <li><Link prefetch={false} href="/guides/hospital-equipment-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Hospital & ICU equipment →</Link></li>
               </ul>
             </div>
             <div>
@@ -214,9 +214,9 @@ export default async function Home() {
                 Prices & Comparisons
               </h2>
               <ul className="space-y-2">
-                <li><Link href="/guides/ecg-machine-price-bangladesh-2026" className="text-sm text-[var(--color-brand-teal)] hover:underline">ECG machine prices 2026 →</Link></li>
-                <li><Link href="/guides/bp-monitor-buying-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">BP monitor buying guide →</Link></li>
-                <li><Link href="/guides/laboratory-reagents-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Laboratory reagents guide →</Link></li>
+                <li><Link prefetch={false} href="/guides/ecg-machine-price-bangladesh-2026" className="text-sm text-[var(--color-brand-teal)] hover:underline">ECG machine prices 2026 →</Link></li>
+                <li><Link prefetch={false} href="/guides/bp-monitor-buying-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">BP monitor buying guide →</Link></li>
+                <li><Link prefetch={false} href="/guides/laboratory-reagents-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Laboratory reagents guide →</Link></li>
               </ul>
             </div>
             <div>
@@ -224,10 +224,10 @@ export default async function Home() {
                 Compliance & B2B
               </h2>
               <ul className="space-y-2">
-                <li><Link href="/guides/dgda-registration-explained" className="text-sm text-[var(--color-brand-teal)] hover:underline">DGDA registration explained →</Link></li>
-                <li><Link href="/guides/surgical-instruments-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Surgical instruments guide →</Link></li>
-                <li><Link href="/compare" className="text-sm text-[var(--color-brand-teal)] hover:underline">All comparisons →</Link></li>
-                <li><Link href="/brands" className="text-sm text-[var(--color-brand-teal)] hover:underline">Browse all brands →</Link></li>
+                <li><Link prefetch={false} href="/guides/dgda-registration-explained" className="text-sm text-[var(--color-brand-teal)] hover:underline">DGDA registration explained →</Link></li>
+                <li><Link prefetch={false} href="/guides/surgical-instruments-guide-bangladesh" className="text-sm text-[var(--color-brand-teal)] hover:underline">Surgical instruments guide →</Link></li>
+                <li><Link prefetch={false} href="/compare" className="text-sm text-[var(--color-brand-teal)] hover:underline">All comparisons →</Link></li>
+                <li><Link prefetch={false} href="/brands" className="text-sm text-[var(--color-brand-teal)] hover:underline">Browse all brands →</Link></li>
               </ul>
             </div>
           </div>
@@ -243,6 +243,7 @@ export default async function Home() {
                 {equipmentLinks.map((item) => (
                   <li key={item.slug}>
                     <Link
+                      prefetch={false}
                       href={`/equipment/${item.slug}`}
                       className="text-sm text-[var(--color-brand-teal)] hover:underline"
                     >
@@ -251,7 +252,7 @@ export default async function Home() {
                   </li>
                 ))}
                 <li>
-                  <Link href="/equipment" className="text-sm text-[var(--color-brand-teal)] hover:underline">
+                  <Link prefetch={false} href="/equipment" className="text-sm text-[var(--color-brand-teal)] hover:underline">
                     All equipment price guides →
                   </Link>
                 </li>

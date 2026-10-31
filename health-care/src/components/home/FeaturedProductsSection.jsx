@@ -141,11 +141,11 @@ export default function FeaturedProductsSection({ categories = [] }) {
   const fetchTabData = useCallback(async (tab) => {
     setFeaturedLoading(true);
     const featuredUrl = tab === 'all'
-      ? `${API}/products?isFeatured=true&limit=24`
-      : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=24`;
+      ? `${API}/products?isFeatured=true&limit=8`
+      : `${API}/products?category=${encodeURIComponent(tab)}&isFeatured=true&limit=8`;
     const fallbackUrl = tab === 'all'
-      ? `${API}/products?limit=24`
-      : `${API}/products?category=${encodeURIComponent(tab)}&limit=24`;
+      ? `${API}/products?limit=8`
+      : `${API}/products?category=${encodeURIComponent(tab)}&limit=8`;
 
     try {
       // Try featured first, fallback to all products if not enough

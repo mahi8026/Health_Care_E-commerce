@@ -110,7 +110,7 @@ export default function NewArrivalSlider({ products: productsProp = [] }) {
           showArrows={true}
           loop={true}
         >
-          {products.map((product) => (
+          {products.slice(0, 8).map((product) => (
             <ProductCard
               key={product._id}
               product={product}
