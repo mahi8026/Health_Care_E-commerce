@@ -1,7 +1,6 @@
 "use client";
 
 import { Component } from 'react';
-import * as Sentry from '@sentry/nextjs';
 import Button from './Button';
 
 /**
@@ -32,12 +31,26 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, errorInfo) {
     this.setState({ error, errorInfo });
 
-    // Report to Sentry with component stack context
-    Sentry.captureException(error, {
-      extra: {
-        componentStack: errorInfo?.componentStack,
-      },
-    });
+    // Report to Sentry with component stack context.
+    //
+    // Imported lazily on purpose: this ErrorBoundary wraps every page, so a
+    // static `import * as Sentry from '@sentry/nextjs'` pulled the whole SDK
+    // into the initial client bundle — while Sentry.init() is never called
+    // (next.config does not use withSentryConfig and there is no
+    // instrumentation-client file), so the SDK was shipped and never used.
+    // Lighthouse counted it as unused JavaScript. Loading it only when an error
+    // actually happens keeps it off the critical path.
+    import('@sentry/nextjs')
+      .then((Sentry) => {
+        Sentry.captureException(error, {
+          extra: {
+            componentStack: errorInfo?.componentStack,
+          },
+        });
+      })
+      .catch(() => {
+        // Telemetry must never break the fallback UI.
+      });
 
     // Also log to console in development for quick debugging
     if (process.env.NODE_ENV === 'development') {
