@@ -87,19 +87,45 @@ const describeDb = DB_TESTS_SKIPPED ? describe.skip : describe;
 
 describeDb('Pagination Integration Tests', () => {
   beforeAll(async () => {
-    // Connect to the test database if not already connected. A short selection
-    // timeout keeps a missing database from hanging the suite.
-    if (mongoose.connection.readyState === 0) {
+    // Wait until MongoDB is ACTUALLY connected (readyState 1).
+    //
+    // Why a loop instead of a single connect: server.js calls connectDB() at
+    // import time, so when this hook runs mongoose is frequently still in state
+    // 2 ("connecting"). A one-shot `if (readyState === 0) connect()` therefore
+    // does nothing; if the app's own attempt then fails, every request is
+    // answered 503 by middleware/dbHealthCheck and the suite reports 13 bogus
+    // assertion failures instead of "no database". Retry until connected, or
+    // fail once with the real reason.
+    const deadline = Date.now() + 30000;
+    while (Date.now() < deadline && mongoose.connection.readyState !== 1) {
       try {
         await mongoose.connect(TEST_DB_URL, { serverSelectionTimeoutMS: 3000 });
-      } catch (err) {
-        throw new Error(
-          `[pagination-integration] MongoDB is not reachable at ${TEST_DB_URL}.\n` +
-            `Start one (\`docker run -d --name mp-mongo -p 27017:27017 mongo:7\`) and re-run, ` +
-            `or run DB-less with SKIP_DB_TESTS=1.\n` +
-            `Original error: ${err.message}`
-        );
+      } catch {
+        // Keep retrying until the deadline — the container may still be booting.
       }
+      if (mongoose.connection.readyState !== 1) {
+        await new Promise((resolve) => setTimeout(resolve, 750));
+      }
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error(
+        `[pagination-integration] MongoDB not connected at ${TEST_DB_URL} ` +
+          `(state ${mongoose.connection.readyState}). Start one ` +
+          `(\`docker run -d --name mp-mongo -p 27017:27017 mongo:7\`) and re-run, ` +
+          `or run DB-less with SKIP_DB_TESTS=1.`
+      );
+    }
+  }, 45000);
+
+  // If the connection drops mid-suite, fail with that reason instead of letting
+  // dbHealthCheck turn every assertion into a 503.
+  beforeEach(() => {
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error(
+        `[pagination-integration] MongoDB connection lost before test ` +
+          `(state ${mongoose.connection.readyState})`
+      );
     }
   });
 
