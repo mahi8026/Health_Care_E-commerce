@@ -10,7 +10,7 @@
 export const CATEGORY_GEO = {
   'diagnostic-equipment': {
     quickAnswer:
-      'Diagnostic equipment in Bangladesh ranges from ৳800 for basic devices (thermometers, pulse oximeters) to ৳45,000–৳250,000 for ECG machines and above for ultrasound systems. MediportBD is a DGDA-registered supplier in Dhaka stocking BP monitors, pulse oximeters, weighing scales, fetal dopplers and ECG machines from Rossmax, Omron, Microlife and Beurer, with free installation in Dhaka and B2B bulk pricing.',
+      'Diagnostic equipment in Bangladesh ranges from ৳800 for basic devices (thermometers, pulse oximeters) to ৳45,000–৳250,000 for ECG machines and above for ultrasound systems. MediportBD supplies BP monitors, pulse oximeters, weighing scales, fetal dopplers and ECG machines from Rossmax, Omron, Microlife and Beurer, with B2B and volume pricing on request.',
     faqs: [
       {
         q: 'What is the price range for diagnostic equipment in Bangladesh?',
@@ -22,7 +22,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'How long does delivery take for diagnostic equipment in Bangladesh?',
-        a: 'MediportBD delivers within Dhaka metro same-day for orders placed before 12 PM. Nationwide delivery to other divisions takes 2–4 business days, with free installation included for diagnostic equipment in Dhaka.',
+        a: 'Delivery timelines and installation for diagnostic equipment are confirmed in your quotation.',
       },
       {
         q: 'Which diagnostic equipment brands are available in Bangladesh?',
@@ -90,7 +90,7 @@ export const CATEGORY_GEO = {
   },
   'hospital-machines': {
     quickAnswer:
-      'Hospital machines in Bangladesh range from ৳2,500 nebulizers to ৳30,00,000+ ICU ventilators. Multiparameter patient monitors cost ৳85,000–৳600,000. Every machine must be CE certified and DGDA registered. MediportBD supplies hospital machines in Dhaka with free installation, AMC options and B2B credit terms.',
+      'Hospital machines in Bangladesh range from ৳2,500 nebulizers to ৳30,00,000+ ICU ventilators. Multiparameter patient monitors cost ৳85,000–৳600,000. Every regulated machine must carry DGDA registration. MediportBD supplies hospital machines in Dhaka, with B2B and volume pricing on request; installation and AMC options are confirmed in your quotation.',
     faqs: [
       {
         q: 'How much does a patient monitor cost in Bangladesh?',
@@ -174,7 +174,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you supply medical consumables in bulk to hospitals?',
-        a: 'Yes. Hospitals and clinics receive 8–30% bulk discounts on medical supplies with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. B2B and volume pricing on medical supplies is available on request, with written quotations on request.',
       },
     ],
   },
@@ -188,7 +188,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you supply blood bags in bulk to blood banks?',
-        a: 'Yes. Blood banks and hospitals get bulk B2B pricing with 30–90 day credit terms and regular supply contracts.',
+        a: 'Yes. Blood banks and hospitals can request B2B and volume pricing, with written quotations on request.',
       },
     ],
   },
@@ -262,7 +262,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you supply compression stockings in bulk to hospitals?',
-        a: 'Yes. Hospitals receive bulk B2B pricing on compression garments with credit terms for institutional clients.',
+        a: 'Yes. Hospitals can request B2B and volume pricing on compression garments, with written quotations on request.',
       },
     ],
   },
@@ -276,7 +276,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Can I get bulk pricing on medical consumables?',
-        a: 'Yes. Hospitals, clinics and pharmacies get 8–30% bulk discounts on consumables with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. B2B and volume pricing on consumables is available on request, with written quotations on request.',
       },
     ],
   },
@@ -290,7 +290,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you supply wound care products in bulk to hospitals?',
-        a: 'Yes. Hospitals and surgical centres receive 8–30% bulk discounts on surgical and wound care supplies with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. B2B and volume pricing on surgical and wound care supplies is available on request, with written quotations on request.',
       },
       {
         q: 'How fast is wound care delivery in Dhaka?',
@@ -308,7 +308,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you install and train staff on medical devices in Bangladesh?',
-        a: 'Yes. MediportBD provides free installation and staff training for medical devices in the Dhaka metro area, with nationwide installation available for institutional orders.',
+        a: 'Installation and staff training depend on the product and location — we will confirm what is available in your quotation.',
       },
       {
         q: 'Are medical devices in Bangladesh DGDA registered?',
@@ -326,7 +326,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you supply mobility aids in bulk to hospitals?',
-        a: 'Yes. Hospitals and rehabilitation centres get 8–30% bulk discounts on mobility aids with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. B2B and volume pricing on mobility aids is available on request, with written quotations on request.',
       },
       {
         q: 'What mobility aid brands are available in Bangladesh?',
@@ -344,7 +344,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you offer bulk pricing on diagnostic devices for clinics?',
-        a: 'Yes. Clinics, diagnostic centres and health programmes get 8–30% bulk discounts on diagnostic devices with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. B2B and volume pricing on diagnostic devices is available on request, with written quotations on request.',
       },
       {
         q: 'Are glucose meters and test strips DGDA registered?',

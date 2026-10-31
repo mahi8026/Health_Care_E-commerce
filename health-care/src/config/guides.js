@@ -66,7 +66,7 @@ export const GUIDES = [
     excerpt:
       'Medical equipment in Bangladesh ranges from ৳500 consumables to ৳25,00,000+ hospital machines. Every regulated device must be DGDA registered. This guide covers what to buy, what it costs, and how to procure safely.',
     quickAnswer:
-      'Medical equipment in Bangladesh must be registered with the DGDA (Directorate General of Drug Administration) before it can be legally sold. Prices range from ৳500 for basic consumables to ৳25,00,000+ for advanced hospital machines like ultrasound systems and ventilators. MediportBD is a DGDA-registered medical equipment supplier in Dhaka offering diagnostic equipment, surgical instruments, laboratory reagents and hospital machines with B2B bulk pricing, cold-chain delivery and free installation on equipment within Dhaka.',
+      'Medical equipment in Bangladesh must be registered with the DGDA (Directorate General of Drug Administration) before it can be legally sold. Prices range from ৳500 for basic consumables to ৳25,00,000+ for advanced hospital machines like ultrasound systems and ventilators. MediportBD is a DGDA-registered medical equipment supplier in Dhaka offering diagnostic equipment, surgical instruments, laboratory reagents and hospital machines with B2B bulk pricing, delivery and installation on equipment within Dhaka.',
     updatedAt: '2026-08-24',
     readMinutes: 9,
     relatedCategories: [
@@ -123,14 +123,14 @@ export const GUIDES = [
         heading: 'What to look for before you buy medical equipment in Bangladesh',
         paragraphs: [
           'Check the product is DGDA registered and CE certified. Verify the supplier holds a physical office in Bangladesh, keeps spare parts, and can service the device locally — imported-only "grey market" equipment leaves hospitals stranded when support is needed.',
-          'For reagents, confirm cold-chain integrity: the batch must have been transported and stored at the manufacturer-specified temperature (usually 2–8°C). For electrical equipment, confirm voltage compatibility (220V/50Hz in Bangladesh), warranty terms (typically 1–3 years) and free installation where applicable.',
+          'For reagents, confirm cold-chain integrity: the batch must have been transported and stored at the manufacturer-specified temperature (usually 2–8°C). For electrical equipment, confirm voltage compatibility (220V/50Hz in Bangladesh), warranty terms (typically 1–3 years) and installation where applicable.',
         ],
         bullets: [
           'DGDA registration certificate for every regulated product',
           'Local service, spare parts and technical support in Bangladesh',
           'Cold-chain handling for reagents and temperature-sensitive IVDs',
           'Written warranty and installation terms before payment',
-          'B2B buyers: demand bulk pricing, credit terms and a supply agreement',
+          'B2B buyers: demand bulk pricing, payment terms and a supply agreement',
         ],
       },
       {
@@ -150,7 +150,7 @@ export const GUIDES = [
       {
         heading: 'Where to buy medical equipment in Bangladesh',
         paragraphs: [
-          'Hospitals, clinics and diagnostic centres in Bangladesh buy from DGDA-registered distributors in Dhaka (Topkhana Road, Nawabpur and Segunbagicha areas host most suppliers). Online suppliers such as MediportBD (Topkhana Road, Dhaka) offer transparent pricing, nationwide delivery and B2B bulk discounts of 8–30% with 30–90 day credit terms for institutional buyers.',
+          'Hospitals, clinics and diagnostic centres in Bangladesh buy from DGDA-registered distributors in Dhaka (Topkhana Road, Nawabpur and Segunbagicha areas host most suppliers). Online suppliers such as MediportBD (Topkhana Road, Dhaka) offer transparent pricing, nationwide delivery and B2B bulk discounts of 8–30% with written quotations on request for institutional buyers.',
           'For your first order, request a quotation, ask for a product demonstration, verify the DGDA registration number, and start with a small trial order to validate quality and delivery before committing to a bulk contract.',
         ],
       },
@@ -170,7 +170,7 @@ export const GUIDES = [
       },
       {
         q: 'Can hospitals and clinics get bulk discounts on medical equipment?',
-        a: 'Yes. MediportBD offers B2B institutional pricing with bulk discounts of 8–30%, credit terms of 30–90 days, a dedicated account manager and priority processing for hospitals, clinics, diagnostic centres and pharmacies.',
+        a: 'Yes. MediportBD offers B2B institutional pricing with bulk discounts of 8–30%, written quotations on request, a account contact and priority processing for hospitals, clinics, diagnostic centres and pharmacies.',
       },
       {
         q: 'How do I know if a medical equipment supplier in Bangladesh is genuine?',
@@ -199,7 +199,7 @@ export const GUIDES = [
     excerpt:
       'The essential diagnostic equipment for a Bangladesh clinic costs roughly ৳15,000–৳60,000: BP monitor, thermometer, stethoscope, pulse oximeter, weighing scale and glucometer. Larger setups add ECG, ultrasound and patient monitors.',
     quickAnswer:
-      'A basic clinic in Bangladesh needs diagnostic equipment worth roughly ৳15,000–৳60,000: a digital BP monitor (৳1,500–৳12,000), digital thermometer (৳300–৳2,000), stethoscope (৳500–৳5,000), pulse oximeter (৳800–৳3,500), weighing scale (৳2,000–৳12,000) and glucometer with strips (৳800–৳4,000). For ECG and ultrasound, prices rise to ৳45,000–৳250,000 and ৳8,00,000+ respectively. MediportBD supplies DGDA-registered diagnostic equipment in Dhaka with free installation on equipment and B2B pricing for clinics.',
+      'A basic clinic in Bangladesh needs diagnostic equipment worth roughly ৳15,000–৳60,000: a digital BP monitor (৳1,500–৳12,000), digital thermometer (৳300–৳2,000), stethoscope (৳500–৳5,000), pulse oximeter (৳800–৳3,500), weighing scale (৳2,000–৳12,000) and glucometer with strips (৳800–৳4,000). For ECG and ultrasound, prices rise to ৳45,000–৳250,000 and ৳8,00,000+ respectively. MediportBD supplies DGDA-registered diagnostic equipment in Dhaka with installation on equipment and B2B pricing for clinics.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     relatedCategories: [
@@ -236,7 +236,7 @@ export const GUIDES = [
       {
         heading: 'ECG, ultrasound and patient monitors: when clinics upgrade',
         paragraphs: [
-          'Clinics that move into chronic disease management typically add a 12-lead ECG machine (৳45,000–৳250,000), a multiparameter patient monitor (৳85,000–৳600,000) and, for diagnostic centres, ultrasound (৳8,00,000+). These are capital purchases — insist on DGDA registration, free installation and staff training, and a written service contract.',
+          'Clinics that move into chronic disease management typically add a 12-lead ECG machine (৳45,000–৳250,000), a multiparameter patient monitor (৳85,000–৳600,000) and, for diagnostic centres, ultrasound (৳8,00,000+). These are capital purchases — insist on DGDA registration, installation and staff training, and a written service contract.',
         ],
       },
       {
@@ -261,7 +261,7 @@ export const GUIDES = [
       },
       {
         q: 'Where can I buy diagnostic equipment in Dhaka?',
-        a: 'Diagnostic equipment is available from DGDA-registered distributors along Topkhana Road and Nawabpur Road in Dhaka, and online from MediportBD, which delivers nationwide and includes free installation for equipment in the Dhaka metro area.',
+        a: 'Diagnostic equipment is available from DGDA-registered distributors along Topkhana Road and Nawabpur Road in Dhaka, and online from MediportBD, which delivers nationwide and includes installation for equipment in the Dhaka metro area.',
       },
     ],
   },
@@ -404,7 +404,7 @@ export const GUIDES = [
     faqs: [
       {
         q: 'How do I know my reagent delivery kept the cold chain in Bangladesh?',
-        a: 'Use suppliers who ship with temperature-controlled packaging and monitoring, refrigerated vehicles for bulk orders, and who record transport temperature. MediportBD provides temperature-monitored cold-chain delivery for all temperature-sensitive reagents in Bangladesh.',
+        a: 'Use suppliers who ship with temperature-controlled packaging and monitoring, refrigerated vehicles for bulk orders, and who record transport temperature. MediportBD provides temperature-monitored delivery for all temperature-sensitive reagents in Bangladesh.',
       },
       {
         q: 'What is the shelf life of laboratory reagents in Bangladesh?',
@@ -437,7 +437,7 @@ export const GUIDES = [
     excerpt:
       'Hospital machines in Bangladesh — nebulizers, suction units, CPAP and patient monitors — run from ৳2,500 to ৳600,000+. Capital ICU purchases like ventilators and defibrillators need DGDA registration, installation and service contracts.',
     quickAnswer:
-      'Hospital equipment in Bangladesh spans small patient-side machines (nebulizers ৳2,500–৳25,000, suction units ৳6,000–৳60,000, CPAP/BiPAP ৳40,000–৳200,000) to capital ICU systems (patient monitors ৳85,000–৳600,000, ventilators and defibrillators from ৳6,00,000). Every machine must be CE certified and DGDA registered, with local installation, commissioning and technical support. MediportBD supplies hospital machines in Dhaka with free installation, AMC service options and B2B credit terms.',
+      'Hospital equipment in Bangladesh spans small patient-side machines (nebulizers ৳2,500–৳25,000, suction units ৳6,000–৳60,000, CPAP/BiPAP ৳40,000–৳200,000) to capital ICU systems (patient monitors ৳85,000–৳600,000, ventilators and defibrillators from ৳6,00,000). Every machine must be CE certified and DGDA registered, with local installation, commissioning and technical support. MediportBD supplies hospital machines in Dhaka with installation, AMC service options and B2B payment terms.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     relatedCategories: [
@@ -479,7 +479,7 @@ export const GUIDES = [
       {
         heading: 'B2B procurement for hospitals',
         paragraphs: [
-          'Hospitals typically procure through tenders or rate contracts. DGDA-registered distributors like MediportBD provide written quotations, bulk pricing (8–30% off), 30–90 day credit terms, installation, staff training and technical support for B2B clients.',
+          'Hospitals typically procure through tenders or rate contracts. DGDA-registered distributors like MediportBD provide written quotations, bulk pricing (8–30% off), written quotations on request, installation, staff training and technical support for B2B clients.',
         ],
       },
     ],
@@ -582,7 +582,7 @@ export const GUIDES = [
     excerpt:
       'ECG machines in Bangladesh cost ৳45,000–৳250,000 in 2026: 3-channel portable units from ~৳45,000, 6-channel from ~৳80,000, and 12-lead machines from ৳1,00,000–৳250,000 depending on brand and features.',
     quickAnswer:
-      'An ECG machine in Bangladesh costs between ৳45,000 and ৳250,000 in 2026. Budget: 3-channel portable units from ৳45,000; mid-range 6-channel from ৳80,000; 12-lead diagnostic machines from ৳1,00,000 up to ৳250,000 for premium brands like Siemens, GE and Mindray. All DGDA-registered ECG machines sold by MediportBD include free installation and staff training in Dhaka, with B2B pricing for hospitals and clinics.',
+      'An ECG machine in Bangladesh costs between ৳45,000 and ৳250,000 in 2026. Budget: 3-channel portable units from ৳45,000; mid-range 6-channel from ৳80,000; 12-lead diagnostic machines from ৳1,00,000 up to ৳250,000 for premium brands like Siemens, GE and Mindray. All DGDA-registered ECG machines sold by MediportBD include installation and staff training in Dhaka, with B2B pricing for hospitals and clinics.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     howTo: {
@@ -650,7 +650,7 @@ export const GUIDES = [
       {
         heading: 'What to check before buying an ECG machine',
         paragraphs: [
-          'Verify DGDA registration and CE certification, confirm free installation and staff training, check the warranty (typically 1–3 years), and confirm the supplier can service the machine locally. For B2B buyers, ask for a demonstration before committing to bulk purchase.',
+          'Verify DGDA registration and CE certification, confirm installation and staff training, check the warranty (typically 1–3 years), and confirm the supplier can service the machine locally. For B2B buyers, ask for a demonstration before committing to bulk purchase.',
         ],
       },
     ],
@@ -665,11 +665,11 @@ export const GUIDES = [
       },
       {
         q: 'Is installation and training included with ECG machines in Bangladesh?',
-        a: 'MediportBD provides free installation and staff training for all ECG machines in the Dhaka metro area, with installation available nationwide at nominal charges for larger orders.',
+        a: 'MediportBD provides installation and staff training for all ECG machines in the Dhaka metro area, with installation available nationwide at nominal charges for larger orders.',
       },
       {
         q: 'Can I get a B2B discount on ECG machines for my clinic?',
-        a: 'Yes. MediportBD offers 8–30% bulk discounts and 30–90 day credit terms for B2B clients buying ECG machines and other diagnostic equipment for hospitals and clinics.',
+        a: 'Yes. MediportBD offers 8–30% bulk discounts and written quotations on request for B2B clients buying ECG machines and other diagnostic equipment for hospitals and clinics.',
       },
     ],
   },
@@ -758,7 +758,7 @@ export const GUIDES = [
       {
         heading: 'Buying BP monitors in bulk for clinics',
         paragraphs: [
-          'Clinics and health programmes buy BP monitors in dozens. B2B buyers should request validated-model pricing, calibration documentation and a replacement warranty. MediportBD offers 8–30% bulk discounts with credit terms for institutions.',
+          'Clinics and health programmes buy BP monitors in dozens. B2B buyers should request validated-model pricing, calibration documentation and a replacement warranty. MediportBD offers 8–30% bulk discounts with payment terms for institutions.',
         ],
       },
     ],
@@ -777,7 +777,7 @@ export const GUIDES = [
       },
       {
         q: 'Do you offer bulk pricing on BP monitors for clinics?',
-        a: 'Yes. MediportBD offers 8–30% bulk discounts on BP monitors and other diagnostic devices for clinics, hospitals and health programmes, with 30–90 day credit terms for B2B clients.',
+        a: 'Yes. MediportBD offers 8–30% bulk discounts on BP monitors and other diagnostic devices for clinics, hospitals and health programmes, with written quotations on request for B2B clients.',
       },
     ],
   },
@@ -798,7 +798,7 @@ export const GUIDES = [
     excerpt:
       'HbA1c reagents in Bangladesh cost ৳15,000–৳120,000 per kit. HPLC platforms (like Bio-Rad) are the gold standard; immunoassay reagents (Roche, Abbott-compatible) cost less per test on open analyzers.',
     quickAnswer:
-      'For HbA1c testing in Bangladesh, HPLC platforms (e.g., Bio-Rad D-10 style systems) are the gold standard with ৳15,000–৳120,000 kit prices, while immunoassay reagents on open analyzers (Roche Cobas, Abbott ARCHITECT compatible) typically cost ৳15,000–৳80,000 per kit with lower per-test cost at volume. Choose HPLC for high-throughput dedicated HbA1c testing and immunoassay for labs already running an open chemistry platform. MediportBD supplies both original and validated compatible HbA1c reagents in Dhaka with cold-chain delivery and B2B supply contracts.',
+      'For HbA1c testing in Bangladesh, HPLC platforms (e.g., Bio-Rad D-10 style systems) are the gold standard with ৳15,000–৳120,000 kit prices, while immunoassay reagents on open analyzers (Roche Cobas, Abbott ARCHITECT compatible) typically cost ৳15,000–৳80,000 per kit with lower per-test cost at volume. Choose HPLC for high-throughput dedicated HbA1c testing and immunoassay for labs already running an open chemistry platform. MediportBD supplies both original and validated compatible HbA1c reagents in Dhaka with delivery and B2B supply contracts.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     relatedCategories: [
@@ -868,7 +868,7 @@ export const GUIDES = [
       },
       {
         q: 'Are compatible HbA1c reagents safe to use in Bangladesh labs?',
-        a: 'Yes — when they are DGDA approved and validated for your analyzer platform. MediportBD confirms platform compatibility before dispatch and supplies both original and compatible options with cold-chain delivery.',
+        a: 'Yes — when they are DGDA approved and validated for your analyzer platform. MediportBD confirms platform compatibility before dispatch and supplies both original and compatible options with delivery.',
       },
       {
         q: 'Do you supply HbA1c reagents in bulk to diabetes centres?',
@@ -893,7 +893,7 @@ export const GUIDES = [
     excerpt:
       'In Bangladesh, both Siemens and GE 12-lead ECG machines cost ৳1,80,000–৳250,000+. Siemens leads on connectivity options; GE is known for rugged build and fast local service. Pick on after-sales support, not brand alone.',
     quickAnswer:
-      'Siemens and GE 12-lead ECG machines both cost roughly ৳1,80,000–৳250,000+ in Bangladesh (2026). Siemens machines offer strong digital connectivity and automated interpretation; GE machines are known for rugged build quality and widely available local service networks. For a Bangladesh hospital, the deciding factor should be local service response, spare-part availability and staff familiarity — verify both before purchase. MediportBD supplies DGDA-registered 12-lead ECG machines from both brands with free installation in Dhaka and B2B pricing.',
+      'Siemens and GE 12-lead ECG machines both cost roughly ৳1,80,000–৳250,000+ in Bangladesh (2026). Siemens machines offer strong digital connectivity and automated interpretation; GE machines are known for rugged build quality and widely available local service networks. For a Bangladesh hospital, the deciding factor should be local service response, spare-part availability and staff familiarity — verify both before purchase. MediportBD supplies DGDA-registered 12-lead ECG machines from both brands with installation in Dhaka and B2B pricing.',
     updatedAt: '2026-08-05',
     readMinutes: 5,
     relatedCategories: [
@@ -947,7 +947,7 @@ export const GUIDES = [
       },
       {
         q: 'Do you supply Siemens and GE ECG machines in Bangladesh?',
-        a: 'Yes. MediportBD supplies DGDA-registered 12-lead ECG machines from Siemens and GE with free installation and staff training in Dhaka, plus B2B pricing for hospitals.',
+        a: 'Yes. MediportBD supplies DGDA-registered 12-lead ECG machines from Siemens and GE with installation and staff training in Dhaka, plus B2B pricing for hospitals.',
       },
       {
         q: 'Is warranty included with ECG machines in Bangladesh?',
@@ -961,7 +961,7 @@ export const GUIDES = [
     title: 'B2B Medical Procurement in Bangladesh: A Hospital Buyer\u2019s Guide',
     metaTitle: 'B2B Medical Procurement Bangladesh — Hospital Buying Guide | MediportBD',
     metaDescription:
-      'How hospitals, clinics and diagnostic centres buy medical equipment in Bangladesh: tenders, quotations, bulk discounts, credit terms, DGDA verification and supply contracts.',
+      'How hospitals, clinics and diagnostic centres buy medical equipment in Bangladesh: tenders, quotations, bulk discounts, payment terms, DGDA verification and supply contracts.',
     keywords: [
       'B2B medical procurement Bangladesh',
       'hospital procurement Dhaka',
@@ -970,9 +970,9 @@ export const GUIDES = [
       'clinic supply contract',
     ],
     excerpt:
-      'Hospitals in Bangladesh typically save 8–30% on medical equipment through B2B procurement: written quotations, bulk pricing, 30–90 day credit terms and supply contracts beat retail buying.',
+      'Hospitals in Bangladesh typically save 8–30% on medical equipment through B2B procurement: written quotations, bulk pricing, written quotations on request and supply contracts beat retail buying.',
     quickAnswer:
-      'B2B medical procurement in Bangladesh works through written quotations, bulk discounts of 8–30%, credit terms of 30–90 days and supply contracts. Hospitals should verify DGDA registration on every product, demand installation and staff training, and lock in spare-part and AMC commitments. MediportBD provides hospitals, clinics and diagnostic centres a dedicated account manager, priority processing and custom quotations across diagnostic equipment, surgical instruments and laboratory reagents.',
+      'B2B medical procurement in Bangladesh works through written quotations, bulk discounts of 8–30%, written quotations on request and supply contracts. Hospitals should verify DGDA registration on every product, demand installation and staff training, and lock in spare-part and AMC commitments. MediportBD provides hospitals, clinics and diagnostic centres a account contact, priority processing and custom quotations across diagnostic equipment, surgical instruments and laboratory reagents.',
     updatedAt: '2026-08-05',
     readMinutes: 5,
     relatedCategories: [
@@ -989,7 +989,7 @@ export const GUIDES = [
       {
         heading: 'How institutional pricing works in Bangladesh',
         paragraphs: [
-          'B2B buyers in Bangladesh typically receive 8–30% off listed prices depending on order value and contract terms. Institutional pricing usually includes: written quotations, dedicated account management, priority processing, free installation on equipment, and credit terms of 30–90 days for registered institutions. Retail pricing rarely includes these — that is the core value of B2B procurement.',
+          'B2B buyers in Bangladesh typically receive 8–30% off listed prices depending on order value and contract terms. Institutional pricing usually includes: written quotations, account management, priority processing, installation on equipment, and written quotations on request for registered institutions. Retail pricing rarely includes these — that is the core value of B2B procurement.',
         ],
       },
       {
@@ -1015,7 +1015,7 @@ export const GUIDES = [
     faqs: [
       {
         q: 'How much can hospitals save with B2B medical procurement in Bangladesh?',
-        a: 'Hospitals and clinics typically save 8–30% on medical equipment through B2B pricing, plus gain credit terms, priority processing, free installation and dedicated account management that retail buyers do not receive.',
+        a: 'Hospitals and clinics typically save 8–30% on medical equipment through B2B pricing, plus gain payment terms, priority processing, installation and account management that retail buyers do not receive.',
       },
       {
         q: 'What documents do I need for B2B medical procurement in Bangladesh?',
@@ -1026,8 +1026,8 @@ export const GUIDES = [
         a: 'Yes. MediportBD supports tender and rate-contract submissions with the required compliance documentation and competitive institutional pricing.',
       },
       {
-        q: 'What are the credit terms for B2B buyers in Bangladesh?',
-        a: 'Registered B2B institutions receive credit terms of 30–90 days depending on the agreement, with bulk discounts of 8–30% applied to orders.',
+        q: 'What are the payment terms for B2B buyers in Bangladesh?',
+        a: 'Registered B2B institutions receive written quotations on request depending on the agreement, with bulk discounts of 8–30% applied to orders.',
       },
     ],
   },
@@ -1093,7 +1093,7 @@ export const GUIDES = [
       },
       {
         q: 'How do I know my reagent delivery kept the cold chain?',
-        a: 'Check the packaging (insulated box with temperature monitoring), request the transit temperature record, verify remaining shelf life and inspect seals. MediportBD provides temperature-monitored cold-chain delivery for all temperature-sensitive reagents.',
+        a: 'Check the packaging (insulated box with temperature monitoring), request the transit temperature record, verify remaining shelf life and inspect seals. MediportBD provides temperature-monitored delivery for all temperature-sensitive reagents.',
       },
       {
         q: 'What happens if a reagent delivery is compromised?',
