@@ -185,8 +185,13 @@ export default function RootLayout({ children }) {
 
         {/* Google Preferred Sources SDK — official two-line implementation
             (developers.google.com/search/docs/appearance/preferred-sources).
-            Async: loads after HTML parse without blocking rendering. */}
-        <script async src="https://news.google.com/swg/js/v1/publisher.js" />
+            Deferred to idle: as a plain `async` script it still competed with
+            the LCP for main-thread time (786 ms in a throttled Lighthouse run),
+            and it is not needed for first paint. Same strategy as gtag below. */}
+        <Script
+          src="https://news.google.com/swg/js/v1/publisher.js"
+          strategy="lazyOnload"
+        />
 
         {/* PWA manifest */}
         <link rel="manifest" href="/manifest.json" />
