@@ -16,9 +16,33 @@
 export const GUIDE_AUTHOR = {
   name: 'Mahim Rahman',
   title: 'Founder & Managing Director, MediportBD',
+  // Public author page. `sameAs` is intentionally NOT set on the Person schema
+  // until a verified public profile (e.g. LinkedIn) is supplied — inventing one
+  // would be a fabricated credibility signal.
+  slug: 'mahim-rahman',
+  url: '/author/mahim-rahman',
   description:
     '10+ years sourcing and distributing DGDA-registered medical equipment across Bangladesh — diagnostic devices, surgical instruments and laboratory reagents for hospitals, clinics and diagnostic centres.',
 };
+
+// ---------------------------------------------------------------------------
+// Sources — regulatory references a reader can verify independently.
+//
+// ONLY URLs verified to return HTTP 200 are listed here (checked 2026-11-01).
+// ISO pages return 403 to automated requests, so they are deliberately absent
+// rather than cited unverified. This block is a verification aid, not a claim
+// that every sentence was derived from these documents.
+// ---------------------------------------------------------------------------
+export const GUIDE_SOURCES = [
+  {
+    label: 'DGDA — Directorate General of Drug Administration (medical device registration authority, Bangladesh)',
+    url: 'https://dgda.gov.bd/',
+  },
+  {
+    label: 'WHO — Medical devices (global guidance on regulation, quality and safety)',
+    url: 'https://www.who.int/health-topics/medical-devices',
+  },
+];
 
 export const GUIDES = [
   {
