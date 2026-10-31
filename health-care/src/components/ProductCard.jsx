@@ -112,7 +112,7 @@ const ProductCard = React.memo(function ProductCard({ product, onProductClick, s
   }, [onProductClick, product]);
 
   return (
-    <Link
+    <Link prefetch={false}
       href={productHref}
       aria-label={`${product.name} — view details`}
       className="group bg-[var(--color-background-primary)] border-[0.5px] border-[var(--color-border-tertiary)] rounded-md overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-1 block"
