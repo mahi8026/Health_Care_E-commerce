@@ -170,7 +170,7 @@ export const GUIDES = [
       },
       {
         q: 'Can hospitals and clinics get bulk discounts on medical equipment?',
-        a: 'Yes. MediportBD offers B2B institutional pricing with bulk discounts of 8–30%, written quotations on request, a account contact and priority processing for hospitals, clinics, diagnostic centres and pharmacies.',
+        a: 'Yes. MediportBD offers B2B institutional pricing with volume pricing on request, with written quotations, an account contact and priority processing for hospitals, clinics, diagnostic centres and pharmacies.',
       },
       {
         q: 'How do I know if a medical equipment supplier in Bangladesh is genuine?',
@@ -972,7 +972,7 @@ export const GUIDES = [
     excerpt:
       'Hospitals in Bangladesh typically save 8–30% on medical equipment through B2B procurement: written quotations, bulk pricing, written quotations on request and supply contracts beat retail buying.',
     quickAnswer:
-      'B2B medical procurement in Bangladesh works through written quotations, bulk discounts of 8–30%, written quotations on request and supply contracts. Hospitals should verify DGDA registration on every product, demand installation and staff training, and lock in spare-part and AMC commitments. MediportBD provides hospitals, clinics and diagnostic centres a account contact, priority processing and custom quotations across diagnostic equipment, surgical instruments and laboratory reagents.',
+      'B2B medical procurement in Bangladesh works through written quotations, volume pricing on request, with written quotations and supply contracts. Hospitals should verify DGDA registration on every product, demand installation and staff training, and lock in spare-part and AMC commitments. MediportBD provides hospitals, clinics and diagnostic centres an account contact, priority processing and custom quotations across diagnostic equipment, surgical instruments and laboratory reagents.',
     updatedAt: '2026-08-05',
     readMinutes: 5,
     relatedCategories: [
