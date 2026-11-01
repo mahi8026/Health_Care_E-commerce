@@ -32,6 +32,8 @@ class GA4Tracker {
   static isInitialized = false;
   static sessionId = null;
   static _initPromise = null;
+  // Order ids already reported by trackPurchase — see the guard below.
+  static _purchaseFired = new Set();
 
   /**
    * Initialize GA4 with measurement ID
@@ -244,6 +246,17 @@ class GA4Tracker {
    * Requirements: 2.4, 2.6
    */
   static trackPurchase(order) {
+    // Idempotency guard. CheckoutPage calls trackPurchase from three paths
+    // (COD @ ~290, other methods @ ~310, payment-modal success @ ~374) with no
+    // "already fired" flag, so a retry, duplicate submit or back-button can
+    // report the same order twice. That inflates a conversion the ad campaign
+    // optimises on — and the Meta `Purchase` mirror below inherits the same
+    // guard because it sits inside this method.
+    if (order && order.orderId) {
+      if (GA4Tracker._purchaseFired.has(order.orderId)) return;
+      GA4Tracker._purchaseFired.add(order.orderId);
+    }
+
     const p = this._whenReady();
     if (!p) return;
 
