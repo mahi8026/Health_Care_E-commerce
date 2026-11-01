@@ -40,7 +40,14 @@ export function WebVitalsReporter() {
     import('react-ga4').then(({ default: ReactGA }) => {
       ReactGA.event({
         category: 'Web Vitals',
-        action: metric.name,
+        // ONE event name for all five metrics. Previously `action: metric.name`
+        // made GA4 record literal events called "CLS", "LCP", "INP", "FCP" and
+        // "TTFB" — ~4,500 of the property's 8,900 monthly events were this
+        // telemetry, burying funnel events (purchase, rfq_complete,
+        // quote_cta_click) in the reports. The metric is now a parameter, so
+        // nothing is lost and GSC/CrUX remain the authoritative CWV series.
+        action: 'web_vitals',
+        metric_name: metric.name,
         value: Math.round(metric.value),
         label: metric.id,
         nonInteraction: true,
