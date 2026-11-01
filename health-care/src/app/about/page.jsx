@@ -232,7 +232,7 @@ export default function AboutPage() {
               MR
             </div>
             <div>
-              <h3 className="text-base font-semibold text-[var(--color-brand-navy)]">Mahim Rahman</h3>
+              <h3 className="text-base font-semibold text-[var(--color-brand-navy)]">Mahi M Rahman</h3>
               <p className="text-sm text-[var(--color-brand-teal)] font-medium mb-2">Founder &amp; Managing Director</p>
               <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
                 10+ years in medical equipment sourcing and distribution in Bangladesh —
