@@ -14,13 +14,13 @@
  */
 
 export const GUIDE_AUTHOR = {
-  name: 'Mahim Rahman',
+  name: 'Mahi M Rahman',
   title: 'Founder & Managing Director, MediportBD',
   // Public author page. `sameAs` is intentionally NOT set on the Person schema
   // until a verified public profile (e.g. LinkedIn) is supplied — inventing one
   // would be a fabricated credibility signal.
-  slug: 'mahim-rahman',
-  url: '/author/mahim-rahman',
+  slug: 'mahi-m-rahman',
+  url: '/author/mahi-m-rahman',
   description:
     '10+ years sourcing and distributing DGDA-registered medical equipment across Bangladesh — diagnostic devices, surgical instruments and laboratory reagents for hospitals, clinics and diagnostic centres.',
 };

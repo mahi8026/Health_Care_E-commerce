@@ -1,4 +1,4 @@
-// health-care/src/app/author/mahim-rahman/page.jsx
+// health-care/src/app/author/mahi-m-rahman/page.jsx
 //
 // Public author page (E-E-A-T: author/credibility).
 //
