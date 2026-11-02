@@ -32,18 +32,19 @@ exports.createQuote = async (req, res) => {
   try {
     const { items, notes, paymentTerms, requestedDelivery } = req.body;
 
-    if (!items || !items.length) {
-      return errorResponse(res, 'Quote must have at least one item', null, 400);
+    if ((!items || !items.length) && !(notes && String(notes).trim())) {
+      return errorResponse(res, 'Quote must have at least one item, or a note describing what you need', null, 400);
     }
-    if (items.length > 100) {
+    if (items && items.length > 100) {
       return errorResponse(res, 'A quotation can contain at most 100 line items', null, 400);
     }
     if (paymentTerms !== undefined && !VALID_TERMS.includes(Number(paymentTerms))) {
       return errorResponse(res, 'Invalid payment terms. Choose 30, 60 or 90 days', null, 400);
     }
 
-    // Server-side pricing only — never trust client-supplied prices
-    const quoted = await pricingService.quoteItems(items, req.user);
+    // Server-side pricing only — never trust client-supplied prices.
+    // items may be empty for free-text-only RFQs (notes without lines).
+    const quoted = await pricingService.quoteItems(items || [], req.user);
 
     let subtotal = 0;
     let totalSavings = 0;

@@ -121,8 +121,8 @@ export default function QuoteRequestPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!lines.length) {
-      flash('Add at least one product to your quotation request', 'error');
+    if (!lines.length && !notes.trim()) {
+      flash('Add at least one product, or describe what you need in the notes below', 'error');
       return;
     }
     setSubmitting(true);
@@ -181,6 +181,9 @@ export default function QuoteRequestPage() {
         trackRfqComplete({
           items: lines.map((l) => l.product),
           itemCount: lines.length,
+          // Phase 4.1+ — distinguish catalogue-line RFQs from free-text
+          // requirement RFQs so both conversion paths are measurable.
+          hasItems: lines.length > 0,
           segment: 'b2b',
           quoteNumber: data.data?.quoteNumber || undefined,
         });
@@ -267,8 +270,8 @@ export default function QuoteRequestPage() {
           </div>
 
           {lines.length === 0 ? (
-            <div className="py-8 text-center text-sm text-[var(--color-text-secondary)]">
-              No items yet. Search and add products above.
+            <div className="py-6 text-center text-sm text-[var(--color-text-secondary)]">
+              No items yet. Search and add products above — or simply describe what you need in the notes below and our team will match the right products for you.
             </div>
           ) : (
             <div className="space-y-3">
@@ -360,7 +363,7 @@ export default function QuoteRequestPage() {
           </Link>
           <button
             type="submit"
-            disabled={submitting || !lines.length}
+            disabled={submitting || (!lines.length && !notes.trim())}
             className="flex-1 min-h-[48px] px-4 py-3 bg-brand-navy hover:bg-[var(--color-brand-navy-hover)] text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
           >
             {submitting ? 'Submitting…' : 'Submit Quotation Request'}
