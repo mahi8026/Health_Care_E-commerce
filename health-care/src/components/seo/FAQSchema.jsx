@@ -50,7 +50,7 @@ export const COMMON_PRODUCT_FAQS = [
   },
   {
     question: 'Do you provide installation and training?',
-    answer: 'Yes, we provide free installation and staff training for all diagnostic equipment in Dhaka metro area. For other locations, installation is available at nominal charges.'
+    answer: 'Yes — installation and staff training depend on the equipment and location; we will confirm what is available in your quotation.'
   },
   {
     question: 'What is the delivery time?',
@@ -86,7 +86,7 @@ export const CATEGORY_FAQS = {
   ],
   'laboratory-reagents': [
     {
-      question: 'How do you ensure cold chain delivery for reagents?',
+      question: 'Do you offer cold chain delivery for reagents?',
       answer: 'We use temperature-controlled packaging and refrigerated vehicles for all reagent deliveries. Temperature monitoring is done throughout transit to maintain 2-8°C.'
     },
     {
