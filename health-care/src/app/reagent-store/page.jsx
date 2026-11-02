@@ -28,8 +28,8 @@ export const metadata = {
 
 const REAGENT_FAQS = [
   {
-    q: 'How do you ensure cold chain delivery for reagents in Bangladesh?',
-    a: 'MediportBD uses temperature-monitored insulated packaging and refrigerated transport for all temperature-sensitive reagents in Bangladesh, maintaining 2–8°C throughout transit.',
+    q: 'Do you offer cold chain delivery for reagents in Bangladesh?',
+    a: 'Cold chain delivery is not currently offered. Contact our team before ordering temperature-sensitive reagents so we can discuss suitable storage and handling for your site.',
   },
   {
     q: 'Which laboratory analyzer brands are your reagents compatible with?',
@@ -45,7 +45,7 @@ const REAGENT_FAQS = [
   },
   {
     q: 'Can hospitals get bulk pricing on laboratory reagents?',
-    a: 'Yes. MediportBD offers B2B standing-order contracts for hospitals and reference labs with 8–30% bulk discounts, 30–90 day credit terms and scheduled cold-chain delivery.',
+    a: 'Yes. MediportBD offers B2B standing-order contracts for hospitals and reference labs. Volume pricing, payment terms and delivery schedules are agreed per contract and confirmed in writing.',
   },
 ];
 
