@@ -64,7 +64,9 @@ function buildDescription(name, brandName, catName, price, description) {
   if (description && description.length > 40) {
     // Trim to a clean sentence boundary within 155 chars
     const clean = description.replace(/\s+/g, ' ').trim();
-    const suffix = ` Price: ${priceStr}. Buy in Bangladesh.`;
+    const suffix = price
+      ? ` Price: ${priceStr}. Buy in Bangladesh.`
+      : ' Request a written quotation — prepared within 24 hours.';
     const maxBody = 155 - suffix.length;
     const body = clean.length <= maxBody
       ? clean
@@ -72,10 +74,10 @@ function buildDescription(name, brandName, catName, price, description) {
     return body + suffix;
   }
   // Fallback: assemble from structured fields
-  const parts = [`Buy ${name} online in Bangladesh.`];
+  const parts = [price ? `Buy ${name} online in Bangladesh.` : `${name} in Bangladesh.`];
   if (brandName) parts.push(`Brand: ${brandName}.`);
   if (catName)   parts.push(`Category: ${catName}.`);
-  parts.push(`Price: ${priceStr}.`);
+  parts.push(price ? `Price: ${priceStr}.` : 'Request a written quotation — prepared within 24 hours.');
   const raw = parts.join(' ').replace(/\s+/g, ' ').trim();
   return raw.length <= 155 ? raw : raw.slice(0, 152) + '…';
 }
