@@ -352,7 +352,7 @@ export const GUIDES = [
     excerpt:
       'Laboratory reagents in Bangladesh must be cold-chain handled (2–8°C or −20°C), DGDA approved and analyzer-matched. Kits range from ৳3,000–৳150,000 depending on test and volume.',
     quickAnswer:
-      'Laboratory reagents in Bangladesh must be DGDA approved, transported with cold-chain management (2–8°C or −20°C as specified), and matched to your analyzer (Cobas, ARCHITECT, UniCel, Sysmex etc.). HbA1c and CBC kits typically cost ৳3,000–৳150,000 per kit depending on test volume. MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with temperature-monitored delivery and bulk B2B supply contracts.',
+      'Laboratory reagents in Bangladesh must be DGDA approved, transported with cold-chain management (2–8°C or −20°C as specified), and matched to your analyzer (Cobas, ARCHITECT, UniCel, Sysmex etc.). HbA1c and CBC kits typically cost ৳3,000–৳150,000 per kit depending on test volume. MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with bulk B2B supply contracts; temperature-controlled delivery is not currently offered.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     relatedCategories: [
@@ -404,7 +404,7 @@ export const GUIDES = [
     faqs: [
       {
         q: 'How do I know my reagent delivery kept the cold chain in Bangladesh?',
-        a: 'Use suppliers who ship with temperature-controlled packaging and monitoring, refrigerated vehicles for bulk orders, and who record transport temperature. MediportBD provides temperature-monitored delivery for all temperature-sensitive reagents in Bangladesh.',
+        a: 'Use suppliers who ship with temperature-controlled packaging and monitoring, refrigerated vehicles for bulk orders, and who record transport temperature. Temperature-controlled delivery is not currently offered by MediportBD.',
       },
       {
         q: 'What is the shelf life of laboratory reagents in Bangladesh?',
@@ -1048,7 +1048,7 @@ export const GUIDES = [
     excerpt:
       'Reagents shipped without cold-chain control in Bangladesh can be silently ruined — assays fail or, worse, give wrong results. Verify temperature logs, packaging and remaining shelf life on every delivery.',
     quickAnswer:
-      'Cold-chain reagent delivery in Bangladesh must maintain 2–8°C (or −20°C for frozen products) from warehouse to laboratory door. Labs should verify insulated packaging, temperature monitoring records, remaining shelf life (6+ months) and batch numbers on every delivery. MediportBD ships all temperature-sensitive reagents with temperature-monitored insulated packaging and refrigerated transport for bulk orders, so Bangladeshi labs receive reagents in specification.',
+      'Cold-chain reagent delivery in Bangladesh must maintain 2–8°C (or −20°C for frozen products) from warehouse to laboratory door. Labs should verify insulated packaging, temperature monitoring records, remaining shelf life (6+ months) and batch numbers on every delivery. Cold chain delivery is not currently offered by MediportBD — contact us before ordering temperature-sensitive reagents to discuss suitable storage and handling for your site.',
     updatedAt: '2026-08-05',
     readMinutes: 5,
     relatedCategories: [
@@ -1093,15 +1093,15 @@ export const GUIDES = [
       },
       {
         q: 'How do I know my reagent delivery kept the cold chain?',
-        a: 'Check the packaging (insulated box with temperature monitoring), request the transit temperature record, verify remaining shelf life and inspect seals. MediportBD provides temperature-monitored delivery for all temperature-sensitive reagents.',
+        a: 'Check the packaging (insulated box with temperature monitoring), request the transit temperature record, verify remaining shelf life and inspect seals. Temperature-controlled delivery is not currently offered by MediportBD.',
       },
       {
         q: 'What happens if a reagent delivery is compromised?',
-        a: 'Reject or quarantine the shipment immediately and notify the supplier. Reputable suppliers such as MediportBD replace compromised stock without argument — never use reagents of doubtful temperature history.',
+        a: 'Reject or quarantine the shipment immediately and notify the supplier. Reputable suppliers replace compromised stock — never use reagents of doubtful temperature history.',
       },
       {
         q: 'Do you deliver frozen (−20°C) reagents in Bangladesh?',
-        a: 'Yes. MediportBD handles both refrigerated (2–8°C) and frozen (−20°C) reagent categories with appropriate packaging and transport for the Bangladesh market.',
+        a: 'Cold chain delivery is not currently offered by MediportBD. Contact us before ordering temperature-sensitive reagents to discuss suitable storage and handling for your site.',
       },
     ],
   },
