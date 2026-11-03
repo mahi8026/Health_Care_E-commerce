@@ -1189,6 +1189,80 @@ export const GUIDES = [
       },
     ],
   },
+  {
+    slug: 'laboratory-reagent-procurement-cost-bangladesh',
+    type: 'guide',
+    title: 'Laboratory Reagent Procurement Cost Bangladesh: Budgeting Per Test',
+    metaTitle: 'Lab Reagent Procurement Cost Bangladesh | MediportBD',
+    metaDescription:
+      'Budget laboratory reagent procurement in Bangladesh: per-test cost explained, contract models compared, and how to plan annual kit volumes for HbA1c, CBC and chemistry.',
+    keywords: [
+      'laboratory reagent cost Bangladesh',
+      'reagent procurement budget BD',
+      'HbA1c kit price Bangladesh',
+      'per test cost laboratory Bangladesh',
+      'lab reagent annual budget',
+    ],
+    excerpt:
+      'Reagent procurement budgets fail when labs buy on kit price instead of per-test cost. Plan annual volumes from test counts, compare contract models, and budget controls and wastage too.',
+    quickAnswer:
+      'Laboratory reagent kits in Bangladesh typically cost \u09F33,000\u2013\u09F3150,000 per kit depending on platform, pack size and test volume (published market range). The correct budget unit is cost per test: divide kit price by reportable tests, then multiply by your monthly test volume. Compare spot purchase against standing-order contracts in writing \u2014 volume pricing is agreed per quotation \u2014 and include controls, calibrators and wastage in the annual budget.',
+    updatedAt: '2026-11-03',
+    readMinutes: 6,
+    relatedCategories: [
+      { name: 'Laboratory Reagents', href: '/reagent-store' },
+      { name: 'Laboratory Equipment', href: '/products/category/laboratory-equipment' },
+    ],
+    relatedGuides: [
+      'laboratory-reagents-guide-bangladesh',
+      'hba1c-reagent-comparison-bangladesh',
+      'hospital-equipment-budget-guide-bangladesh',
+    ],
+    sections: [
+      {
+        heading: 'What drives reagent cost',
+        paragraphs: [
+          'Four factors dominate: the analyzer platform (immunoassay vs HPLC vs point-of-care), pack size (small packs cost more per test), original versus compatible reagents, and your monthly test volume. The same HbA1c kit can differ several-fold in per-test cost between platforms \u2014 which is why kit price alone is the wrong comparison.',
+        ],
+      },
+      {
+        heading: 'Budget by test volume, not kit price',
+        paragraphs: [
+          'The correct budget unit is cost per reportable test: kit price divided by the number of tests the kit yields (count controls and repeats, not just patient samples), multiplied by your monthly volume. A lab running 2,000 HbA1c tests a month at a difference of \u09F320 per test spends \u09F340,000 more a month on the wrong choice \u2014 far more than the kit price difference suggests.',
+        ],
+      },
+      {
+        heading: 'Contract models: spot purchase vs standing order',
+        paragraphs: [
+          'Spot purchasing keeps cash flexible but risks stock-outs and price drift; standing-order contracts stabilise supply and unit cost for predictable volumes. Whichever you choose, get it in writing: per-test or per-kit pricing, delivery schedule, shelf life on receipt, and what happens when a lot is compromised. Volume pricing is agreed per quotation.',
+        ],
+      },
+      {
+        heading: 'Budget for controls, calibrators and wastage',
+        paragraphs: [
+          'A reagent budget that covers only patient kits underestimates spend by 10\u201325%: controls, calibrators, repeats, expired-open-vial wastage and low-volume tests all consume reagent. Plan these line items explicitly, and check remaining shelf life on every delivery \u2014 stock with less than six months remaining forces wastage before it is used.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'How much do laboratory reagent kits cost in Bangladesh?',
+        a: 'Published market range: \u09F33,000\u2013\u09F3150,000 per kit depending on platform, pack size and test volume; HbA1c kits specifically run roughly \u09F315,000\u2013\u09F3120,000 depending on the analyzer platform. Actual pricing is confirmed in a written quotation.',
+      },
+      {
+        q: 'How do I calculate reagent cost per test?',
+        a: 'Divide the kit price by the number of reportable tests the kit yields (after controls and repeats), then multiply by your monthly test volume to get monthly spend. Compare suppliers on this number, not on kit price.',
+      },
+      {
+        q: 'Should a lab choose spot purchase or a standing-order contract?',
+        a: 'Spot purchase suits irregular volumes; standing orders suit predictable monthly volume and stabilise unit cost and supply. Either way, agree pricing, delivery schedule, shelf life on receipt and compromised-lot handling in writing before ordering.',
+      },
+      {
+        q: 'What is usually left out of a reagent budget?',
+        a: 'Controls and calibrators, repeats, wastage from expired open vials, and low-volume tests run on large kits \u2014 together typically 10\u201325% on top of patient-kit spend. Budget these as explicit line items.',
+      },
+    ],
+  },
 ];
 
 /**
