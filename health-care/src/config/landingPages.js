@@ -15,7 +15,7 @@ export const LANDING_PAGES = [
     title: 'ECG Machine Price in Bangladesh 2026',
     metaTitle: 'ECG Machine Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'ECG machine price in Bangladesh from MediportBD — 3-lead, 6-lead and 12-lead ECG machines with DGDA certification, warranty and B2B bulk pricing for hospitals and diagnostic centres.',
+      'ECG machine price in Bangladesh - request a written quotation from MediportBD. 3-lead, 6-lead and 12-lead ECG machines with warranty; B2B pricing on request.',
     keywords: [
       'ECG machine price Bangladesh',
       '12 lead ECG machine price BD',
@@ -53,7 +53,7 @@ export const LANDING_PAGES = [
     title: 'Patient Monitor Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Patient Monitor Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Patient monitor price in Bangladesh — bedside monitors, multiparameter and vital signs monitors for ICU and wards with DGDA certification, warranty and B2B pricing.',
+      'Patient monitor price in Bangladesh - request a written quotation from MediportBD. Bedside, multiparameter and vital-signs monitors for ICU and wards.',
     keywords: [
       'patient monitor price Bangladesh',
       'multiparameter monitor price BD',
@@ -91,7 +91,7 @@ export const LANDING_PAGES = [
     title: 'Ultrasound Machine Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Ultrasound Machine Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Ultrasound machine prices in Bangladesh: portable units from ৳350,000. Mindray, Edan & Contec Doppler systems, with DGDA registration documentation available on request.',
+      'Ultrasound machine price in Bangladesh - request a written quotation from MediportBD. Mindray, Edan & Contec portable Doppler systems; B2B pricing on request.',
     keywords: [
       'ultrasound machine price Bangladesh',
       'color Doppler ultrasound price BD',
@@ -129,7 +129,7 @@ export const LANDING_PAGES = [
     title: 'X-Ray Machine Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'X-Ray Machine Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'X-ray machine price in Bangladesh — digital and portable X-ray systems for clinics and hospitals with DGDA certification, imaging accessories and B2B pricing.',
+      'X-ray machine price in Bangladesh - request a written quotation from MediportBD. Digital and portable X-ray systems for clinics and hospitals; B2B pricing on request.',
     keywords: [
       'X-ray machine price Bangladesh',
       'digital X-ray machine price BD',
@@ -166,7 +166,7 @@ export const LANDING_PAGES = [
     title: 'Blood Pressure Monitor Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Blood Pressure Monitor Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Blood pressure monitor price in Bangladesh — digital BP machines from Omron, Rossmax, Microlife and Beurer with DGDA certification and nationwide delivery.',
+      'Blood pressure monitor price in Bangladesh - request a written quotation from MediportBD. Digital BP machines from Omron, Rossmax, Microlife and Beurer.',
     keywords: [
       'blood pressure machine price Bangladesh',
       'digital BP machine price BD',
@@ -203,7 +203,7 @@ export const LANDING_PAGES = [
     title: 'Pulse Oximeter Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Pulse Oximeter Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Pulse oximeter price in Bangladesh: fingertip SpO2 from ৳800. Beurer, Rossmax & Yuwell models, DGDA-certified, free Dhaka delivery.',
+      'Pulse oximeter price in Bangladesh - request a written quotation from MediportBD. Beurer, Rossmax and Yuwell fingertip SpO2 models; B2B pricing on request.',
     keywords: [
       'pulse oximeter price Bangladesh',
       'finger pulse oximeter price BD',
@@ -240,7 +240,7 @@ export const LANDING_PAGES = [
     title: 'Infusion Pump Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Infusion Pump Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Infusion pump price in Bangladesh — syringe pumps and volumetric infusion pumps for hospitals with DGDA certification and B2B pricing on request.',
+      'Infusion pump price in Bangladesh - request a written quotation from MediportBD. Syringe pumps and volumetric infusion pumps for hospitals.',
     keywords: [
       'infusion pump price Bangladesh',
       'syringe pump price BD',
@@ -277,7 +277,7 @@ export const LANDING_PAGES = [
     title: 'Ventilator Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Ventilator Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Ventilator price in Bangladesh — ICU ventilators and non-invasive ventilation devices with DGDA certification and B2B hospital pricing.',
+      'Ventilator price in Bangladesh - request a written quotation from MediportBD. ICU ventilators and non-invasive ventilation devices for critical care.',
     keywords: [
       'ventilator price Bangladesh',
       'ICU ventilator price BD',
@@ -314,7 +314,7 @@ export const LANDING_PAGES = [
     title: 'Surgical Instruments Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Surgical Instruments Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Surgical instruments price in Bangladesh — scissors, forceps, needle holders, trocars and operation theatre sets with CE certification and B2B hospital pricing.',
+      'Surgical instruments price in Bangladesh - request a written quotation from MediportBD. Scissors, forceps, needle holders, trocars and OT sets.',
     keywords: [
       'surgical instruments price Bangladesh',
       'surgical scissors price BD',
@@ -351,7 +351,7 @@ export const LANDING_PAGES = [
     title: 'Autoclave Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Autoclave Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Autoclave price in Bangladesh — portable and vertical steam sterilizers for clinics and hospitals with DGDA certification, warranty and B2B pricing.',
+      'Autoclave price in Bangladesh - request a written quotation from MediportBD. Portable and vertical steam sterilizers for clinics and hospitals.',
     keywords: [
       'autoclave price Bangladesh',
       'autoclave machine price BD',
