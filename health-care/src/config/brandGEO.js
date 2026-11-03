@@ -33,7 +33,7 @@ const BRAND_GEO = {
       },
       {
         q: 'Does Mindray ultrasound equipment include installation and training in Bangladesh?',
-        a: 'Yes. MediportBD includes on-site installation and user training with Mindray ultrasound systems, plus after-sales service and spare-parts support from Dhaka. Nationwide delivery covers all divisions within 2-4 business days.',
+        a: 'On-site installation and user training are available on request and confirmed in your quotation for Mindray ultrasound systems, plus after-sales service and spare-parts support from Dhaka. Nationwide delivery covers all divisions within 2-4 business days.',
       },
       {
         q: 'Is Mindray a good brand for diagnostic centres in Bangladesh?',

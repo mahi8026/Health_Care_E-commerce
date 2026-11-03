@@ -27,10 +27,10 @@ export const LANDING_PAGES = [
     brandSlugs: ['mindray', 'edan', 'contec'],
     icon: '🫀',
     excerpt:
-      'Compare live ECG machine prices in Bangladesh — 3-lead to 12-lead models with DGDA registration, installation, training and B2B hospital pricing.',
+      'Compare ECG machine prices in Bangladesh — 3-lead to 12-lead models with DGDA-registered sourcing, warranty and B2B hospital pricing. Setup needs are confirmed in your quotation.',
     intro: [
       'Looking for an ECG machine price in Bangladesh? MediportBD is a DGDA-registered medical equipment supplier in Dhaka offering genuine ECG machines from world-leading brands including Siemens Healthineers, GE Healthcare and Nihon Kohden.',
-      'Our ECG machines are available in 3-lead, 6-lead and 12-lead configurations for clinics, diagnostic centres and hospitals. Every unit is delivered with installation support, staff training and full warranty.',
+      'Our ECG machines are available in 3-lead, 6-lead and 12-lead configurations for clinics, diagnostic centres and hospitals. Every unit is delivered with full warranty. Installation support and staff training needs are confirmed in your quotation.',
   'B2B buyers enjoy bulk discount of 8–22% on qualifying order volumes. Request a formal quotation for hospital tenders and institutional procurement.',
     ],
     faqs: [
@@ -65,10 +65,10 @@ export const LANDING_PAGES = [
     brandSlugs: ['mindray', 'comen'],
     icon: '📟',
     excerpt:
-      'Browse live patient monitor prices in Bangladesh — bedside, multiparameter and ICU monitors with installation, training and B2B hospital pricing.',
+      'Browse patient monitor prices in Bangladesh — bedside, multiparameter and ICU monitors with DGDA-registered sourcing and B2B hospital pricing. Setup needs are confirmed in your quotation.',
     intro: [
       'MediportBD supplies genuine patient monitors to hospitals, ICU units and diagnostic centres across Bangladesh. Our range includes bedside monitors, multiparameter monitors and vital signs monitors from Mindray, GE Healthcare and Rossmax.',
-      'Every patient monitor is supplied from CE-marked, DGDA-registered product lines and delivered with installation, calibration and operator training. Technical support for institutional clients.',
+      'Every patient monitor is supplied from CE-marked, DGDA-registered product lines. Calibration and operator training needs are confirmed in your quotation. Technical support for institutional clients.',
       'Request a bulk quotation for ICU fit-outs, hospital departments and diagnostic centre expansion projects.',
     ],
     faqs: [
@@ -82,7 +82,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Do you supply monitors for ICU setup?',
-        a: 'Yes. MediportBD supplies complete ICU setups including patient monitors, ventilators, infusion pumps and defibrillators with installation and staff training.',
+        a: 'Yes. MediportBD supplies complete ICU setups including patient monitors, ventilators, infusion pumps and defibrillators, with setup needs confirmed in your quotation.',
       },
     ],
   },
@@ -91,7 +91,7 @@ export const LANDING_PAGES = [
     title: 'Ultrasound Machine Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Ultrasound Machine Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Ultrasound machine prices in Bangladesh: portable units from ৳350,000. Mindray, Edan & Contec Doppler systems, DGDA-certified, installation included.',
+      'Ultrasound machine prices in Bangladesh: portable units from ৳350,000. Mindray, Edan & Contec Doppler systems, with DGDA registration documentation available on request.',
     keywords: [
       'ultrasound machine price Bangladesh',
       'color Doppler ultrasound price BD',
@@ -106,7 +106,7 @@ export const LANDING_PAGES = [
       'Compare ultrasound machine prices in Bangladesh — portable, laptop and color Doppler systems with DGDA registration and after-sales support.',
     intro: [
       'MediportBD supplies ultrasound machines to private clinics, diagnostic centres and hospitals across Bangladesh. Our range includes portable ultrasound systems, laptop ultrasound and full color Doppler machines.',
-      'Each system includes the appropriate transducer probes (convex, linear, phased array) and is delivered with installation, training and a comprehensive warranty.',
+      'Each system includes the appropriate transducer probes (convex, linear, phased array) and is delivered with a comprehensive warranty. Installation and training needs are confirmed in your quotation.',
       'B2B pricing available for diagnostic centre expansions and hospital radiology departments. Contact our team for a formal quotation.',
     ],
     faqs: [
@@ -120,7 +120,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Do you provide ultrasound training?',
-        a: 'Yes. MediportBD provides on-site installation and operator training for every ultrasound machine we supply in Bangladesh.',
+        a: 'Installation and operator training are available on request and confirmed in your quotation.',
       },
     ],
   },
@@ -140,11 +140,11 @@ export const LANDING_PAGES = [
     categorySlug: 'diagnostic-equipment',
     icon: '🩻',
     excerpt:
-      'Browse live X-ray machine prices in Bangladesh — digital radiography and portable X-ray systems with DGDA registration and installation.',
+      'Browse X-ray machine prices in Bangladesh — digital radiography and portable X-ray systems, with registration documentation available on request.',
     intro: [
       'MediportBD supplies X-ray machines to hospitals, clinics and diagnostic imaging centres in Bangladesh. Our range includes portable X-ray units and digital radiography systems for high-quality imaging.',
-      'All X-ray equipment is supplied with installation, radiation safety checks and operator training included, and registration documentation is available on request.',
-      'B2B buyers receive bulk pricing plus installation and maintenance contracts. Contact us for hospital radiology department quotations.',
+      'All X-ray equipment is supplied with registration documentation available on request. Installation, radiation safety checks and operator training needs are confirmed in your quotation.',
+      'B2B buyers receive bulk pricing; installation and maintenance arrangements are agreed per contract. Contact us for hospital radiology department quotations.',
     ],
     faqs: [
       {
@@ -157,7 +157,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Is installation included with an X-ray machine?',
-        a: 'Yes. Every X-ray machine from MediportBD includes professional installation, commissioning and radiation safety verification.',
+        a: 'Professional installation, commissioning and radiation safety verification are available on request and confirmed in your quotation.',
       },
     ],
   },
@@ -240,7 +240,7 @@ export const LANDING_PAGES = [
     title: 'Infusion Pump Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Infusion Pump Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Infusion pump price in Bangladesh — syringe pumps and volumetric infusion pumps for hospitals with DGDA certification, training and B2B pricing.',
+      'Infusion pump price in Bangladesh — syringe pumps and volumetric infusion pumps for hospitals with DGDA certification and B2B pricing on request.',
     keywords: [
       'infusion pump price Bangladesh',
       'syringe pump price BD',
@@ -251,7 +251,7 @@ export const LANDING_PAGES = [
     categorySlug: 'hospital-machines',
     icon: '💉',
     excerpt:
-      'Compare infusion pump prices in Bangladesh — syringe pumps and volumetric infusion pumps with installation, training and B2B pricing.',
+      'Compare infusion pump prices in Bangladesh — syringe pumps and volumetric infusion pumps with B2B pricing on request. Setup and training needs are confirmed in your quotation.',
     intro: [
       'MediportBD supplies infusion pumps and syringe pumps to hospitals, clinics and ICUs across Bangladesh. Our range is ideal for accurate IV fluid and drug delivery.',
       'All infusion pumps are supplied from CE-marked, DGDA-registered product lines. Technical support for institutional clients.',
@@ -268,7 +268,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Do you provide training for infusion pumps?',
-        a: 'Yes. MediportBD provides on-site installation and nurse training for every infusion pump supplied to hospitals in Bangladesh.',
+        a: 'On-site installation and nurse training are available on request and confirmed in your quotation.',
       },
     ],
   },
@@ -277,7 +277,7 @@ export const LANDING_PAGES = [
     title: 'Ventilator Price in Bangladesh 2026 | MediportBD',
     metaTitle: 'Ventilator Price in Bangladesh 2026 | MediportBD',
     metaDescription:
-      'Ventilator price in Bangladesh — ICU ventilators and non-invasive ventilation devices with DGDA certification, installation and B2B hospital pricing.',
+      'Ventilator price in Bangladesh — ICU ventilators and non-invasive ventilation devices with DGDA certification and B2B hospital pricing.',
     keywords: [
       'ventilator price Bangladesh',
       'ICU ventilator price BD',
@@ -288,10 +288,10 @@ export const LANDING_PAGES = [
     categorySlug: 'hospital-machines',
     icon: '🫁',
     excerpt:
-      'Browse live ventilator prices in Bangladesh — ICU and transport ventilators with DGDA registration, installation and B2B pricing.',
+      'Browse ventilator prices in Bangladesh — ICU and transport ventilators with DGDA registration and B2B pricing on request.',
     intro: [
       'MediportBD supplies ventilators to hospitals and ICUs across Bangladesh. Our range includes invasive ICU ventilators and non-invasive ventilation devices from CE-certified manufacturers.',
-      'Every ventilator is delivered with installation, commissioning, clinical training and comprehensive service support and technical assistance for critical care departments.',
+      'Every ventilator is delivered with comprehensive service support and technical assistance for critical care departments. Installation, commissioning and clinical training needs are confirmed in your quotation.',
       'B2B buyers receive bulk pricing, service contracts and priority support for emergency procurement.',
     ],
     faqs: [
@@ -301,11 +301,11 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Do you provide ventilator training?',
-        a: 'Yes. MediportBD provides comprehensive clinical and technical training for medical staff on every ventilator we install.',
+        a: 'Clinical and technical training for medical staff is available on request and confirmed in your quotation.',
       },
       {
         q: 'Can you supply ventilators for a full ICU setup?',
-        a: 'Yes. We supply complete ICU setups including ventilators, patient monitors, infusion pumps and defibrillators with installation and training.',
+        a: 'Yes. We supply complete ICU setups including ventilators, patient monitors, infusion pumps and defibrillators, with setup needs confirmed in your quotation.',
       },
     ],
   },
@@ -365,7 +365,7 @@ export const LANDING_PAGES = [
       'Compare autoclave prices in Bangladesh — portable, vertical and horizontal steam sterilizers with DGDA registration and warranty.',
     intro: [
       'MediportBD supplies autoclaves and steam sterilizers to clinics, laboratories, dental practices and hospitals across Bangladesh. Our range includes portable, vertical and horizontal models in various capacities.',
-      'Every autoclave is delivered with installation and operator training included, and registration documentation is available on request. B2B pricing available for hospitals and labs.',
+      'Every autoclave is delivered with registration documentation available on request. Installation and operator training needs are confirmed in your quotation. B2B pricing available for hospitals and labs.',
       'Order online with nationwide delivery or request a quotation for institutional procurement.',
     ],
     faqs: [
@@ -379,7 +379,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Do you provide autoclave installation?',
-        a: 'Yes. Autoclave installation, calibration and operator training are included with every unit supplied by MediportBD.',
+        a: 'Autoclave installation, calibration and operator training are available on request and confirmed in your quotation.',
       },
     ],
   },
@@ -416,7 +416,7 @@ export const LANDING_PAGES = [
       },
       {
         q: 'Do you supply microscopes for schools?',
-        a: 'Yes. MediportBD supplies affordable student microscopes in bulk for schools and educational institutions with warranty and training.',
+        a: 'Yes. MediportBD supplies affordable student microscopes in bulk for schools and educational institutions with warranty; training needs are confirmed in your quotation.',
       },
     ],
   },

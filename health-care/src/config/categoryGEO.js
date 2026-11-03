@@ -80,7 +80,7 @@ export const CATEGORY_GEO = {
       },
       {
         q: 'Do you install and calibrate laboratory equipment in Bangladesh?',
-        a: 'Yes. MediportBD provides professional installation, calibration and staff training for laboratory equipment across Bangladesh, with AMC service options.',
+        a: 'Professional installation, calibration and staff training for laboratory equipment are available on request and confirmed in your quotation; AMC service options are available.',
       },
       {
         q: 'What laboratory equipment brands are available in Bangladesh?',
