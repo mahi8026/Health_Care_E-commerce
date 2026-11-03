@@ -1105,6 +1105,90 @@ export const GUIDES = [
       },
     ],
   },
+  {
+    slug: 'hospital-equipment-budget-guide-bangladesh',
+    type: 'guide',
+    title: 'Hospital Equipment Budget Guide Bangladesh: Cost Bands & Planning',
+    metaTitle: 'Hospital Equipment Budget Guide Bangladesh | MediportBD',
+    metaDescription:
+      'Plan a hospital equipment budget in Bangladesh: published cost bands by equipment class, lifecycle costs to include, and how to compare written quotations before you buy.',
+    keywords: [
+      'hospital equipment budget Bangladesh',
+      'medical equipment cost planning BD',
+      'hospital equipment price list Bangladesh',
+      'ICU setup cost Bangladesh',
+      'hospital procurement budget',
+    ],
+    excerpt:
+      'Hospital equipment budgets in Bangladesh fail on lifecycle costs, not purchase price. Use published cost bands, plan room by room, and compare written quotations line by line.',
+    quickAnswer:
+      'Hospital equipment in Bangladesh ranges from \u09F32,500 nebulizers to \u09F330,00,000+ ICU ventilators; multiparameter patient monitors cost \u09F385,000\u2013\u09F3600,000 and ECG machines \u09F345,000\u2013\u09F3250,000 (published market ranges, 2026). Budget per room, include lifecycle costs (consumables, calibration, service), and request written quotations from suppliers \u2014 volume pricing is agreed per quotation in writing. Every regulated machine must carry DGDA registration.',
+    updatedAt: '2026-11-03',
+    readMinutes: 6,
+    relatedCategories: [
+      { name: 'Hospital Machines', href: '/products/category/hospital-machines' },
+      { name: 'Respiratory Equipment', href: '/products/category/respiratory-equipment' },
+      { name: 'Medical Supplies', href: '/products/category/medical-supplies' },
+    ],
+    relatedGuides: [
+      'hospital-equipment-guide-bangladesh',
+      'medical-equipment-bangladesh-guide',
+      'b2b-medical-procurement-bangladesh',
+    ],
+    sections: [
+      {
+        heading: 'Cost bands by equipment class (market ranges)',
+        paragraphs: [
+          'These are published market ranges for Bangladesh, not supplier quotations \u2014 actual pricing depends on brand, configuration and volume, and is confirmed in a written quotation. Use them to sanity-check quotes, not to set a final budget.',
+        ],
+        bullets: [
+          'Nebulizers and small patient-side machines \u2014 \u09F32,500 \u2013 \u09F325,000',
+          'Diagnostic devices (BP monitors, thermometers, pulse oximeters) \u2014 \u09F3800 \u2013 \u09F325,000',
+          'ECG machines (3/6/12-lead) \u2014 \u09F345,000 \u2013 \u09F3250,000',
+          'Multiparameter patient monitors \u2014 \u09F385,000 \u2013 \u09F3600,000',
+          'Surgical instrument sets (minor OT to full laparotomy) \u2014 \u09F38,000 \u2013 \u09F3250,000',
+          'Laboratory analysers (hematology, biochemistry, ESR) \u2014 \u09F31,50,000 \u2013 \u09F340,00,000',
+          'ICU ventilators \u2014 up to \u09F330,00,000+',
+        ],
+      },
+      {
+        heading: 'Budget for lifecycle cost, not just purchase price',
+        paragraphs: [
+          'The purchase price is rarely the dominant cost over five years. Reagent and consumable spend, calibration, service contracts and staff training typically exceed the capital outlay for analysers and monitors. Include these in the budget from day one, and ask every supplier to state in writing what is included: delivery, setup, training, warranty period and post-warranty service terms.',
+        ],
+      },
+      {
+        heading: 'Plan room by room, then consolidate',
+        paragraphs: [
+          'A workable method: list each room or ward (OPD, ICU, OT, laboratory), the machines it needs, and the patient volume it must serve. Consolidating one order across rooms usually produces better quotations than buying machine by machine \u2014 suppliers price volume, and a single written quotation is easier to compare and approve.',
+        ],
+      },
+      {
+        heading: 'How to compare quotations',
+        paragraphs: [
+          'Request written quotations from more than one supplier for the same specification, then compare line by line: brand and model, DGDA registration status of the products, warranty length, what setup and training are included, delivery timeline, and payment terms. Where a quotation is silent on something, ask before ordering \u2014 verbal assurances are hard to enforce later.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'How much does hospital equipment cost in Bangladesh?',
+        a: 'Published market ranges: nebulizers \u09F32,500\u2013\u09F325,000, patient monitors \u09F385,000\u2013\u09F3600,000, ECG machines \u09F345,000\u2013\u09F3250,000, laboratory analysers \u09F31,50,000\u2013\u09F340,00,000 and ICU ventilators up to \u09F330,00,000+. Actual pricing depends on brand, configuration and volume and is confirmed in a written quotation.',
+      },
+      {
+        q: 'What should a hospital equipment budget include besides machines?',
+        a: 'Consumables and reagents, calibration and service contracts, staff training, backup power requirements, and setup costs where applicable. For analysers especially, recurring reagent spend usually exceeds the machine price over five years.',
+      },
+      {
+        q: 'How do I get the best price for hospital equipment?',
+        a: 'Consolidate your requirement into one order, request written quotations from multiple suppliers for the same specification, and compare line by line. Volume pricing is agreed per quotation in writing.',
+      },
+      {
+        q: 'Do regulated hospital machines need DGDA registration?',
+        a: 'Yes. Medical devices and IVDs are regulated by the DGDA (Directorate General of Drug Administration) in Bangladesh; regulated products should carry DGDA registration with documentation available on request. See our DGDA registration guide for detail.',
+      },
+    ],
+  },
 ];
 
 /**
