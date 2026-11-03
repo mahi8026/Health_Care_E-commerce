@@ -352,7 +352,7 @@ export const GUIDES = [
     excerpt:
       'Laboratory reagents in Bangladesh must be cold-chain handled (2–8°C or −20°C), DGDA approved and analyzer-matched. Kits range from ৳3,000–৳150,000 depending on test and volume.',
     quickAnswer:
-      'Laboratory reagents in Bangladesh must be DGDA approved, transported with cold-chain management (2–8°C or −20°C as specified), and matched to your analyzer (Cobas, ARCHITECT, UniCel, Sysmex etc.). HbA1c and CBC kits typically cost ৳3,000–৳150,000 per kit depending on test volume. MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with temperature-monitored delivery and bulk B2B supply contracts.',
+      'Laboratory reagents in Bangladesh must be DGDA approved, transported with cold-chain management (2–8°C or −20°C as specified), and matched to your analyzer (Cobas, ARCHITECT, UniCel, Sysmex etc.). HbA1c and CBC kits typically cost ৳3,000–৳150,000 per kit depending on test volume. MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with bulk B2B supply contracts; temperature-controlled delivery is not currently offered.',
     updatedAt: '2026-08-05',
     readMinutes: 6,
     relatedCategories: [
@@ -404,7 +404,7 @@ export const GUIDES = [
     faqs: [
       {
         q: 'How do I know my reagent delivery kept the cold chain in Bangladesh?',
-        a: 'Use suppliers who ship with temperature-controlled packaging and monitoring, refrigerated vehicles for bulk orders, and who record transport temperature. MediportBD provides temperature-monitored delivery for all temperature-sensitive reagents in Bangladesh.',
+        a: 'Use suppliers who ship with temperature-controlled packaging and monitoring, refrigerated vehicles for bulk orders, and who record transport temperature. Temperature-controlled delivery is not currently offered by MediportBD.',
       },
       {
         q: 'What is the shelf life of laboratory reagents in Bangladesh?',
@@ -1048,7 +1048,7 @@ export const GUIDES = [
     excerpt:
       'Reagents shipped without cold-chain control in Bangladesh can be silently ruined — assays fail or, worse, give wrong results. Verify temperature logs, packaging and remaining shelf life on every delivery.',
     quickAnswer:
-      'Cold-chain reagent delivery in Bangladesh must maintain 2–8°C (or −20°C for frozen products) from warehouse to laboratory door. Labs should verify insulated packaging, temperature monitoring records, remaining shelf life (6+ months) and batch numbers on every delivery. MediportBD ships all temperature-sensitive reagents with temperature-monitored insulated packaging and refrigerated transport for bulk orders, so Bangladeshi labs receive reagents in specification.',
+      'Cold-chain reagent delivery in Bangladesh must maintain 2–8°C (or −20°C for frozen products) from warehouse to laboratory door. Labs should verify insulated packaging, temperature monitoring records, remaining shelf life (6+ months) and batch numbers on every delivery. Cold chain delivery is not currently offered by MediportBD — contact us before ordering temperature-sensitive reagents to discuss suitable storage and handling for your site.',
     updatedAt: '2026-08-05',
     readMinutes: 5,
     relatedCategories: [
@@ -1093,15 +1093,99 @@ export const GUIDES = [
       },
       {
         q: 'How do I know my reagent delivery kept the cold chain?',
-        a: 'Check the packaging (insulated box with temperature monitoring), request the transit temperature record, verify remaining shelf life and inspect seals. MediportBD provides temperature-monitored delivery for all temperature-sensitive reagents.',
+        a: 'Check the packaging (insulated box with temperature monitoring), request the transit temperature record, verify remaining shelf life and inspect seals. Temperature-controlled delivery is not currently offered by MediportBD.',
       },
       {
         q: 'What happens if a reagent delivery is compromised?',
-        a: 'Reject or quarantine the shipment immediately and notify the supplier. Reputable suppliers such as MediportBD replace compromised stock without argument — never use reagents of doubtful temperature history.',
+        a: 'Reject or quarantine the shipment immediately and notify the supplier. Reputable suppliers replace compromised stock — never use reagents of doubtful temperature history.',
       },
       {
         q: 'Do you deliver frozen (−20°C) reagents in Bangladesh?',
-        a: 'Yes. MediportBD handles both refrigerated (2–8°C) and frozen (−20°C) reagent categories with appropriate packaging and transport for the Bangladesh market.',
+        a: 'Cold chain delivery is not currently offered by MediportBD. Contact us before ordering temperature-sensitive reagents to discuss suitable storage and handling for your site.',
+      },
+    ],
+  },
+  {
+    slug: 'hospital-equipment-budget-guide-bangladesh',
+    type: 'guide',
+    title: 'Hospital Equipment Budget Guide Bangladesh: Cost Bands & Planning',
+    metaTitle: 'Hospital Equipment Budget Guide Bangladesh | MediportBD',
+    metaDescription:
+      'Plan a hospital equipment budget in Bangladesh: published cost bands by equipment class, lifecycle costs to include, and how to compare written quotations before you buy.',
+    keywords: [
+      'hospital equipment budget Bangladesh',
+      'medical equipment cost planning BD',
+      'hospital equipment price list Bangladesh',
+      'ICU setup cost Bangladesh',
+      'hospital procurement budget',
+    ],
+    excerpt:
+      'Hospital equipment budgets in Bangladesh fail on lifecycle costs, not purchase price. Use published cost bands, plan room by room, and compare written quotations line by line.',
+    quickAnswer:
+      'Hospital equipment in Bangladesh ranges from \u09F32,500 nebulizers to \u09F330,00,000+ ICU ventilators; multiparameter patient monitors cost \u09F385,000\u2013\u09F3600,000 and ECG machines \u09F345,000\u2013\u09F3250,000 (published market ranges, 2026). Budget per room, include lifecycle costs (consumables, calibration, service), and request written quotations from suppliers \u2014 volume pricing is agreed per quotation in writing. Every regulated machine must carry DGDA registration.',
+    updatedAt: '2026-11-03',
+    readMinutes: 6,
+    relatedCategories: [
+      { name: 'Hospital Machines', href: '/products/category/hospital-machines' },
+      { name: 'Respiratory Equipment', href: '/products/category/respiratory-equipment' },
+      { name: 'Medical Supplies', href: '/products/category/medical-supplies' },
+    ],
+    relatedGuides: [
+      'hospital-equipment-guide-bangladesh',
+      'medical-equipment-bangladesh-guide',
+      'b2b-medical-procurement-bangladesh',
+    ],
+    sections: [
+      {
+        heading: 'Cost bands by equipment class (market ranges)',
+        paragraphs: [
+          'These are published market ranges for Bangladesh, not supplier quotations \u2014 actual pricing depends on brand, configuration and volume, and is confirmed in a written quotation. Use them to sanity-check quotes, not to set a final budget.',
+        ],
+        bullets: [
+          'Nebulizers and small patient-side machines \u2014 \u09F32,500 \u2013 \u09F325,000',
+          'Diagnostic devices (BP monitors, thermometers, pulse oximeters) \u2014 \u09F3800 \u2013 \u09F325,000',
+          'ECG machines (3/6/12-lead) \u2014 \u09F345,000 \u2013 \u09F3250,000',
+          'Multiparameter patient monitors \u2014 \u09F385,000 \u2013 \u09F3600,000',
+          'Surgical instrument sets (minor OT to full laparotomy) \u2014 \u09F38,000 \u2013 \u09F3250,000',
+          'Laboratory analysers (hematology, biochemistry, ESR) \u2014 \u09F31,50,000 \u2013 \u09F340,00,000',
+          'ICU ventilators \u2014 up to \u09F330,00,000+',
+        ],
+      },
+      {
+        heading: 'Budget for lifecycle cost, not just purchase price',
+        paragraphs: [
+          'The purchase price is rarely the dominant cost over five years. Reagent and consumable spend, calibration, service contracts and staff training typically exceed the capital outlay for analysers and monitors. Include these in the budget from day one, and ask every supplier to state in writing what is included: delivery, setup, training, warranty period and post-warranty service terms.',
+        ],
+      },
+      {
+        heading: 'Plan room by room, then consolidate',
+        paragraphs: [
+          'A workable method: list each room or ward (OPD, ICU, OT, laboratory), the machines it needs, and the patient volume it must serve. Consolidating one order across rooms usually produces better quotations than buying machine by machine \u2014 suppliers price volume, and a single written quotation is easier to compare and approve.',
+        ],
+      },
+      {
+        heading: 'How to compare quotations',
+        paragraphs: [
+          'Request written quotations from more than one supplier for the same specification, then compare line by line: brand and model, DGDA registration status of the products, warranty length, what setup and training are included, delivery timeline, and payment terms. Where a quotation is silent on something, ask before ordering \u2014 verbal assurances are hard to enforce later.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: 'How much does hospital equipment cost in Bangladesh?',
+        a: 'Published market ranges: nebulizers \u09F32,500\u2013\u09F325,000, patient monitors \u09F385,000\u2013\u09F3600,000, ECG machines \u09F345,000\u2013\u09F3250,000, laboratory analysers \u09F31,50,000\u2013\u09F340,00,000 and ICU ventilators up to \u09F330,00,000+. Actual pricing depends on brand, configuration and volume and is confirmed in a written quotation.',
+      },
+      {
+        q: 'What should a hospital equipment budget include besides machines?',
+        a: 'Consumables and reagents, calibration and service contracts, staff training, backup power requirements, and setup costs where applicable. For analysers especially, recurring reagent spend usually exceeds the machine price over five years.',
+      },
+      {
+        q: 'How do I get the best price for hospital equipment?',
+        a: 'Consolidate your requirement into one order, request written quotations from multiple suppliers for the same specification, and compare line by line. Volume pricing is agreed per quotation in writing.',
+      },
+      {
+        q: 'Do regulated hospital machines need DGDA registration?',
+        a: 'Yes. Medical devices and IVDs are regulated by the DGDA (Directorate General of Drug Administration) in Bangladesh; regulated products should carry DGDA registration with documentation available on request. See our DGDA registration guide for detail.',
       },
     ],
   },
