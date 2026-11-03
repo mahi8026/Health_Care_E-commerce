@@ -51,7 +51,7 @@ export const CAMPAIGN_TEMPLATES = [
       <div style="text-align:center;margin:24px 0;">
         <a href="{{SITE_URL}}/products" style="${CTA_STYLE}">Shop the Flash Sale</a>
       </div>
-      ${paragraph('Free delivery in Dhaka metro on orders over ৳50,000. Cash on delivery, bKash, Nagad and card accepted.')}
+      ${paragraph('Free delivery nationwide on orders over ৳50,000. Cash on delivery (Dhaka), bKash, Nagad and card accepted.')}
       <p style="margin:0;font-size:12px;color:#9CA3AF;">
         *Discount applies to eligible products. Cannot be combined with other offers.
       </p>`,
@@ -100,10 +100,7 @@ export const CAMPAIGN_TEMPLATES = [
     name: 'B2B Special',
     icon: '🏢',
     description: 'Bulk-pricing pitch for hospitals, clinics and diagnostic centers.',
-    vars: [
-      { key: 'bulkDiscount', label: 'Bulk discount (up to %)', default: '30' },
-      { key: 'creditTerms', label: 'Credit terms (days)', default: '90' },
-    ],
+    vars: [],
     buildSubject: (v) => `🏢 For Hospitals & Clinics: B2B Pricing`,
     buildHtml: (v) => `
       ${heading('Equip Your Facility for Less')}
@@ -164,7 +161,49 @@ export const CAMPAIGN_TEMPLATES = [
       <div style="text-align:center;margin:24px 0;">
         <a href="${v.productLink || '{{SITE_URL}}/products'}" style="${CTA_STYLE}">Buy Now — Limited Stock</a>
       </div>
-      ${paragraph('Includes warranty and cash-on-delivery.')}`,
+      ${paragraph('Warranty-backed products. Cash on delivery available in Dhaka.')}`,
+  },
+
+  {
+    id: 'order-followup',
+    name: 'Order Follow-up',
+    icon: '✅',
+    description: 'Post-delivery thank-you with a review request. Send 3-5 days after delivery.',
+    vars: [
+      { key: 'customerName', label: 'Customer name', default: 'there' },
+      { key: 'productName', label: 'Product or order', default: 'your recent order' },
+    ],
+    buildSubject: (v) => `How is your ${v.productName} working out?`,
+    buildHtml: (v) => `
+      ${heading(`Thank you, ${v.customerName}!`)}
+      ${paragraph(`Your ${v.productName} was delivered recently. We hope it is working well for your team.
+        If anything is unclear — setup, operation or documentation — just reply to this email and our team will help.`)}
+      ${paragraph('If you are happy with it, a short review helps other hospitals and labs in Bangladesh choose with confidence.')}
+      <div style="text-align:center;margin:24px 0;">
+        <a href="{{SITE_URL}}" style="${CTA_STYLE}">Share Your Feedback</a>
+      </div>
+      ${paragraph('Need consumables or reagents next month? Request a written quotation any time.')}`,
+  },
+
+  {
+    id: 'reagent-restock',
+    name: 'Reagent Restock Reminder',
+    icon: '🧪',
+    description: 'Procurement reminder for labs with predictable monthly reagent consumption.',
+    vars: [
+      { key: 'labName', label: 'Lab or facility name', default: 'your laboratory' },
+      { key: 'reagentList', label: 'Reagents (comma separated)', default: 'HbA1c, CBC and chemistry kits' },
+    ],
+    buildSubject: (v) => `Reagent reorder planning for ${v.labName}`,
+    buildHtml: (v) => `
+      ${heading('Planning your next reagent order?')}
+      ${paragraph(`${v.labName} usually works with ${v.reagentList}. Instead of buying under stock-out pressure,
+        plan the month's requirement and request a written quotation in advance — unit pricing and
+        delivery schedule are agreed in writing before you commit.`)}
+      <div style="text-align:center;margin:24px 0;">
+        <a href="{{SITE_URL}}/quotes/request?source=email_restock" style="${CTA_STYLE}">Request a Written Quotation</a>
+      </div>
+      ${paragraph('Quotations are prepared within 24 hours. Analyzer compatibility is confirmed with you before dispatch.')}`,
   },
 ];
 
