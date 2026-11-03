@@ -14,7 +14,7 @@ const FALLBACK_FAQS = [
   },
   {
     q: 'How much do {brand} products cost in Bangladesh?',
-    a: 'Prices vary by model and specification. MediportBD publishes prices online where possible and provides written quotations for institutional buyers, with B2B bulk discounts of 8-30% and credit terms of 30-90 days.',
+    a: 'Prices vary by model and specification. MediportBD publishes prices online where possible and provides written quotations for institutional buyers, with B2B bulk discounts of 8-30% on qualifying volumes.',
   },
 ];
 
@@ -113,7 +113,7 @@ const BRAND_GEO = {
       },
       {
         q: 'Can hospitals get bulk pricing on Romsons consumables?',
-        a: 'Yes. Standing orders and bulk purchases qualify for MediportBD B2B pricing \u2014 8-30% discounts with 30-90 day credit terms and a dedicated account manager.',
+        a: 'Yes. Standing orders and bulk purchases qualify for MediportBD B2B pricing \u2014 volume pricing and payment terms are agreed per account and confirmed in writing.',
       },
     ],
   },

@@ -159,9 +159,7 @@ export const BANGLADESH_COMPETITORS = {
   ourAdvantages: [
     'DGDA registered supplier (compliance)',
     'B2B bulk discounts (8-30% vs 5-15% competitors)',
-    'Free installation Dhaka (competitors charge)',
     'Cold chain delivery for reagents (unique)',
-    '30-90 day credit terms (competitors: 15-30 days)',
     'Online ordering with live chat (business hours)',
   ]
 };

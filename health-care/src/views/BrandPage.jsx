@@ -149,7 +149,7 @@ export default function BrandPage({ brand, initialProducts = [] }) {
             { icon: '✅', label: 'DGDA Registered', sub: 'All products certified' },
             { icon: '🛡️', label: 'Genuine Products', sub: 'Manufacturer warranty' },
             { icon: '🚚', label: 'Fast Delivery', sub: 'Nationwide shipping' },
-            { icon: '🔧', label: 'Free Installation', sub: 'Dhaka metro area' },
+            { icon: '🔧', label: 'Order Support', sub: 'Selection, compatibility and delivery' },
           ].map(({ icon, label, sub }) => (
             <div key={label} className="rounded-xl bg-white border border-border-primary p-3 flex items-start gap-2.5">
               <span className="text-xl flex-shrink-0">{icon}</span>

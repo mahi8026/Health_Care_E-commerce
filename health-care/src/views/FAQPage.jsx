@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { FaChevronDown, FaChevronUp, FaSearch, FaPhone, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
@@ -14,7 +14,7 @@ const FAQ_CATEGORIES = [
       },
       {
         question: 'What payment methods do you accept?',
-        answer: 'We accept bKash, Nagad, bank transfer, credit/debit cards, and cash on delivery (COD) for orders within Dhaka. B2B customers can apply for credit terms (30-90 days).'
+        answer: 'We accept bKash, Nagad, bank transfer, credit/debit cards, and cash on delivery (COD) for orders within Dhaka. Payment and credit terms are agreed per account and confirmed in writing.'
       },
       {
         question: 'Is cash on delivery available?',
@@ -48,7 +48,7 @@ const FAQ_CATEGORIES = [
       },
       {
         question: 'Do you provide installation?',
-        answer: 'Yes, free installation is included for diagnostic equipment (ECG machines, patient monitors, etc.) in Dhaka. Installation charges apply outside Dhaka. We also provide staff training.'
+        answer: 'Installation and staff training depend on the equipment and location; availability is confirmed in your quotation.'
       },
       {
         question: 'What about cold chain delivery for reagents?',
@@ -118,7 +118,7 @@ const FAQ_CATEGORIES = [
       },
       {
         question: 'What are your B2B credit terms?',
-        answer: 'We offer 30, 60, or 90-day credit terms to approved B2B customers (hospitals, clinics, diagnostic centers). Apply via B2B Portal with trade license and bank details.'
+        answer: 'Credit terms may be available to approved institutional accounts; terms are agreed per account. Apply via B2B Portal with trade license and bank details.'
       },
       {
         question: 'How do I register as B2B customer?',
