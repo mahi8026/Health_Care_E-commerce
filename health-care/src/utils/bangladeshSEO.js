@@ -109,7 +109,7 @@ export function generateBangladeshMetaDescription(data) {
       return `Medical equipment supplier in ${city} Bangladesh ✓ DGDA-registered supplier ✓ Free delivery ✓ Installation service ✓ Trusted by hospitals & diagnostic centres. Call: ${PHONE_ENGLISH}`;
     
     case 'b2b':
-      return `B2B medical equipment supplier Bangladesh ✓ 8-30% bulk discount ✓ 30-90 day credit ✓ DGDA-registered supplier ✓ Hospitals & diagnostic centres served. Call: ${PHONE_ENGLISH}`;
+      return `B2B medical equipment supplier Bangladesh ✓ 8-30% bulk discount ✓ payment terms on request ✓ DGDA-registered supplier ✓ Hospitals & diagnostic centres served. Call: ${PHONE_ENGLISH}`;
     
     default:
       return `Medical equipment supplier Bangladesh ✓ DGDA-registered supplier ✓ 600+ products ✓ Free delivery Dhaka ✓ Warranty. Call: ${PHONE_ENGLISH}`;
@@ -321,7 +321,7 @@ export function getBangladeshFAQs(category = 'general') {
       {
         question: 'Do you provide installation service?',
         questionBn: 'আপনারা কি ইনস্টলেশন সেবা দেন?',
-        answer: 'Yes, we provide free installation and training in Dhaka for diagnostic equipment. Outside Dhaka, installation charges may apply.',
+        answer: 'Installation and training depend on the equipment and location; availability is confirmed in your quotation.',
         answerBn: 'হ্যাঁ, ঢাকায় ডায়াগনস্টিক যন্ত্রপাতির জন্য ফ্রি ইনস্টলেশন এবং ট্রেনিং দিই। ঢাকার বাইরে ইনস্টলেশন চার্জ প্রযোজ্য।',
       },
     ],

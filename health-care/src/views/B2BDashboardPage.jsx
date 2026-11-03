@@ -146,10 +146,10 @@ function B2BLanding() {
 
   const benefits = [
     { icon: <FaMoneyBillWave className="text-2xl" />, title: `Up to ${maxDiscount}% Bulk Discounts`, desc: 'Tiered pricing based on order volume. The more you buy, the more you save.' },
-    { icon: <FaCreditCard className="text-2xl" />, title: `Credit Terms up to ${creditDays} Days`, desc: `Net-30, Net-60, or Net-${creditDays} payment terms for approved accounts.` },
+              { icon: <FaCreditCard className="text-2xl" />, title: 'Payment Terms', desc: 'Terms are agreed per account and confirmed in writing.' },
     { icon: <FaUserTie className="text-2xl" />, title: 'Dedicated Account Manager', desc: `${supportHours} support from a dedicated B2B executive who knows your needs.` },
     { icon: <FaTruck className="text-2xl" />, title: 'Free Priority Delivery', desc: `Free delivery on all B2B orders over ${deliveryThreshold} within Dhaka metro area.` },
-    { icon: <FaTools className="text-2xl" />, title: 'Free Installation & Training', desc: 'Professional installation and staff training for all diagnostic equipment.' },
+              { icon: <FaTools className="text-2xl" />, title: 'Order Support', desc: 'Our team helps with product selection, compatibility and delivery scheduling.' },
     { icon: <FaFileInvoiceDollar className="text-2xl" />, title: 'Custom Quotations', desc: 'Get tailored quotes for large orders with special pricing.' },
   ];
 
@@ -187,7 +187,7 @@ function B2BLanding() {
                 <span className="text-brand-teal">for Healthcare Professionals</span>
               </h1>
               <p className="text-sm text-[var(--color-text-tertiary)] leading-relaxed mb-5">
-                Join {totalB2BClients} hospitals, clinics, and diagnostic centers across Bangladesh. Get exclusive B2B pricing, credit terms, and a dedicated account manager.
+                Join {totalB2BClients} hospitals, clinics, and diagnostic centers across Bangladesh. Get exclusive B2B pricing, a dedicated account manager, and terms agreed per account.
               </p>
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => document.getElementById('b2b-form')?.scrollIntoView({ behavior: 'smooth' })}
@@ -260,7 +260,7 @@ function B2BLanding() {
             <p className="text-sm text-[var(--color-text-secondary)]">Unlock better pricing as your business grows with us.</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {tiers.map(({ name, min, discount, credit, color, bg }) => (
+            {tiers.map(({ name, min, discount, color, bg }) => (
               <div key={name} className="rounded-2xl p-5 border-2 text-center"
                 style={{ background: bg, borderColor: color + '40' }}>
                 <div className="text-sm font-semibold mb-1" style={{ color }}>{name}</div>
@@ -268,7 +268,7 @@ function B2BLanding() {
                 <div className="text-3xl font-semibold text-brand-navy mb-1">{discount}%</div>
                 <div className="text-xs text-[var(--color-text-secondary)] mb-2">discount</div>
                 <div className="text-xs font-medium" style={{ color }}>
-                  {credit === 0 ? 'No credit' : `${credit} days credit`}
+                  {name === 'Standard' ? 'List pricing' : 'Volume pricing'}
                 </div>
               </div>
             ))}
@@ -285,7 +285,7 @@ function B2BLanding() {
               Fill in the form and our B2B team will contact you within 24 hours to set up your account and discuss pricing.
             </p>
             <div className="space-y-4 text-sm text-[var(--color-text-primary)]">
-              {['Application reviewed within 24 hours', 'Dedicated account manager assigned', 'Custom pricing based on your volume', 'Credit terms set up after approval'].map(s => (
+              {['Application reviewed within 24 hours', 'Dedicated account manager assigned', 'Custom pricing based on your volume', 'Payment terms discussed after approval'].map(s => (
                 <div key={s} className="flex items-center gap-3">
                   <div className="w-6 h-6 bg-[var(--color-status-success-tint)] rounded-full flex items-center justify-center flex-shrink-0">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-teal)" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -593,7 +593,7 @@ function B2BDashboard({ data, onRefresh }) {
                   <div className="text-sm text-[var(--color-text-tertiary)] mb-3">No credit line yet</div>
                   <a href="mailto:mediportbdoficial@gmail.com"
                     className="text-xs text-brand-teal font-semibold hover:underline">
-                    Request credit terms →
+                        Request payment terms →
                   </a>
                 </div>
               )}
@@ -709,7 +709,7 @@ const [ordersRes, quotesRes, profileRes] = await Promise.all([
           <div className="bg-[var(--color-status-success-tint)] border border-brand-teal/20 rounded-2xl p-5 mb-6">
             <h3 className="text-base font-semibold text-brand-navy mb-3">B2B Benefits:</h3>
             <div className="grid md:grid-cols-2 gap-3 text-left text-sm text-[var(--color-text-primary)]">
-              {['Up to 30% bulk discounts', 'Credit terms (30-90 days)', 'Dedicated account manager', 'Free installation & training'].map(benefit => (
+              {['Volume pricing on request', 'Terms agreed per account', 'Dedicated account manager', 'Delivery and setup confirmed in writing'].map(benefit => (
                 <div key={benefit} className="flex items-center gap-2">
                   <span className="text-brand-teal">✓</span>
                   {benefit}

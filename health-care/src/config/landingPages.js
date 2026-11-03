@@ -31,7 +31,7 @@ export const LANDING_PAGES = [
     intro: [
       'Looking for an ECG machine price in Bangladesh? MediportBD is a DGDA-registered medical equipment supplier in Dhaka offering genuine ECG machines from world-leading brands including Siemens Healthineers, GE Healthcare and Nihon Kohden.',
       'Our ECG machines are available in 3-lead, 6-lead and 12-lead configurations for clinics, diagnostic centres and hospitals. Every unit is delivered with installation support, staff training and full warranty.',
-      'B2B buyers enjoy bulk discount of 8–22% plus 30–90 day credit terms. Request a formal quotation for hospital tenders and institutional procurement.',
+  'B2B buyers enjoy bulk discount of 8–22% on qualifying order volumes. Request a formal quotation for hospital tenders and institutional procurement.',
     ],
     faqs: [
       {
@@ -254,7 +254,7 @@ export const LANDING_PAGES = [
       'Compare infusion pump prices in Bangladesh — syringe pumps and volumetric infusion pumps with installation, training and B2B pricing.',
     intro: [
       'MediportBD supplies infusion pumps and syringe pumps to hospitals, clinics and ICUs across Bangladesh. Our range is ideal for accurate IV fluid and drug delivery.',
-      'All infusion pumps are supplied from CE-marked, DGDA-registered product lines with free installation and nurse training. Technical support for institutional clients.',
+      'All infusion pumps are supplied from CE-marked, DGDA-registered product lines. Technical support for institutional clients.',
       'Request a bulk quotation for hospital departments, ICUs and surgical units.',
     ],
     faqs: [
