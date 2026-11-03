@@ -7,8 +7,9 @@ import AccountPageShell from '@/components/account/AccountPageShell';
 import { useAuth } from '@/context/AuthContext';
 import Spinner from '@/components/ui/Spinner';
 import EmptyState from '@/components/ui/EmptyState';
-import { API } from '@/constants/api';
-import { FaFileInvoiceDollar, FaLongArrowAltRight } from 'react-icons/fa';
+import { API, CONTACT } from '@/constants/api';
+import { FaFileInvoiceDollar, FaLongArrowAltRight, FaWhatsapp } from 'react-icons/fa';
+import { trackWhatsAppClick } from '@/services/funnelTracking';
 
 const STATUS_META = {
   pending:   { label: 'Pending',   cls: 'bg-[var(--color-status-warning-tint)] text-warning-ink' },
@@ -149,6 +150,19 @@ export default function QuotationsPage() {
         Request a New Quotation
         <FaLongArrowAltRight className="text-brand-teal" />
       </button>
+
+      {/* L4 — WhatsApp continuation. Most B2B conversations in Bangladesh finish
+          in chat; this keeps the quotation context in the message and fires
+          `whatsapp_click` (entry_point quote_list) so RFQ → chat is measurable. */}
+      <a
+        href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent('Hi MediportBD! I have a question about my quotation request.')}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackWhatsAppClick({ entryPoint: 'quote_list', pageType: 'account' })}
+        className="w-full mb-4 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white bg-[var(--color-status-success)] hover:opacity-90 transition-opacity"
+      >
+        <FaWhatsapp size={18} /> Continue on WhatsApp
+      </a>
 
       {loading ? (
         <div className="py-12 flex justify-center">

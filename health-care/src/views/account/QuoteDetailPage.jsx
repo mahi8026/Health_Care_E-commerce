@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 import AccountPageShell from '@/components/account/AccountPageShell';
 import Spinner from '@/components/ui/Spinner';
 import Modal from '@/components/ui/Modal';
-import { API } from '@/constants/api';
-import { FaFileInvoiceDollar, FaCheckCircle, FaTimesCircle, FaPrint } from 'react-icons/fa';
+import { API, CONTACT } from '@/constants/api';
+import { FaFileInvoiceDollar, FaCheckCircle, FaTimesCircle, FaPrint, FaWhatsapp } from 'react-icons/fa';
+import { trackWhatsAppClick } from '@/services/funnelTracking';
 
 const STATUS_META = {
   pending:   { label: 'Pending',   cls: 'bg-[var(--color-status-warning-tint)] text-warning-ink' },
@@ -158,12 +159,23 @@ export default function QuoteDetailPage({ quoteId }) {
             <div className="text-xs text-[var(--color-text-tertiary)] mt-1">Valid until {fmtDate(quote.validUntil)}</div>
           </div>
         </div>
-        <button
-          onClick={handlePrint}
-          className="inline-flex items-center gap-2 px-3 py-2 border border-[var(--color-border-primary)] rounded-lg text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]"
-        >
-          <FaPrint /> Print
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hi MediportBD! I have a question about quotation ${quote.quoteNumber || quote.quoteId || ''}.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackWhatsAppClick({ entryPoint: 'quote_detail', pageType: 'account' })}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-[var(--color-status-success)] hover:opacity-90"
+          >
+            <FaWhatsapp /> Continue on WhatsApp
+          </a>
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-2 px-3 py-2 border border-[var(--color-border-primary)] rounded-lg text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-background-tertiary)]"
+          >
+            <FaPrint /> Print
+          </button>
+        </div>
       </div>
 
       {/* Quotation document (print area) */}
