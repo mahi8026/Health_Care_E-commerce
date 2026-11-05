@@ -36,10 +36,13 @@ jobs:
           # for the Turbopack font pipeline (fails on 18 and 20 in CI).
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: health-care/package-lock.json
+          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
-        working-directory: health-care
+        # npm workspaces: health-care/ is a workspace of the monorepo root and
+        # the root package-lock.json is the canonical lockfile (the per-package
+        # lockfile was removed). Installing at the root matches Vercel's
+        # install and keeps hoisted node_modules consistent with local dev.
         run: npm ci --ignore-scripts
       
       - name: Run linter
