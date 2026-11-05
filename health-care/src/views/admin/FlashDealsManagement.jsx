@@ -717,7 +717,7 @@ export default function FlashDealsManagement() {
 
       {/* Preview Modal */}
       {previewDeal && (
-        <div ref={previewRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black bg-opacity-50 z-modal flex items-center justify-center p-4" onClick={() => setPreviewDeal(null)}>
+        <div ref={previewRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 z-modal flex items-center justify-center p-4" onClick={() => setPreviewDeal(null)}>
           <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-[var(--color-border-primary)] flex items-center justify-between sticky top-0 bg-white">
               <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Preview: {previewDeal.title}</h3>
@@ -782,7 +782,7 @@ export default function FlashDealsManagement() {
 
       {/* Remove Product Confirmation Modal */}
       {showRemoveProductModal && (
-        <div ref={removeRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black bg-opacity-50 z-modal flex items-center justify-center p-4" onClick={() => setShowRemoveProductModal(null)}>
+        <div ref={removeRef} role="dialog" aria-modal="true" className="fixed inset-0 bg-black/50 z-modal flex items-center justify-center p-4" onClick={() => setShowRemoveProductModal(null)}>
           <div className="bg-white rounded-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-[var(--color-status-danger-tint)] rounded-full flex items-center justify-center">

@@ -74,10 +74,11 @@ app.get('/api/health', (req, res) => {
 // Initialize Sentry (must be before other middleware)
 initSentry(app);
 
-// Connect to database
-connectDB().catch((err) => {
-  logger.error(`Unhandled error in connectDB: ${err.message}`);
-});
+// Connect to database — initiated early so the handshake can begin,
+// but awaited before listen() (below) so synchronous route/module loading
+// does not block the event loop and cause MongoDB's 5s server-selection
+// timeout to expire before the Atlas handshake completes.
+// Requirement 12.1: database connection must not be starved by startup work.
 
 // Initialize Redis cache
 (async () => {
@@ -728,26 +729,38 @@ async function warmCache() {
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
   const HOST = process.env.HOST || '0.0.0.0'; // Render requires binding to 0.0.0.0
-  
-  httpServer.listen(PORT, HOST, () => {
-    logger.info(`MediportBD API v2.0 running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
+
+  async function startServer() {
+    try {
+      await connectDB();
+      logger.info('✓ Database connection established before server start');
+    } catch (err) {
+      logger.error(`Database connection failed during startup: ${err.message}`);
+      logger.warn('Server will start without database. Health-check endpoints will work.');
+    }
+
+    httpServer.listen(PORT, HOST, () => {
+      logger.info(`MediportBD API v2.0 running on ${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
     
-    // Initialize Socket.IO
-    chatSocketService.initialize(httpServer);
+      // Initialize Socket.IO
+      chatSocketService.initialize(httpServer);
     
-    // Start chat queue processor
-    chatRoutingService.startQueueProcessor();
+      // Start chat queue processor
+      chatRoutingService.startQueueProcessor();
     
-    // Start cron jobs
-    startCronJobs();
+      // Start cron jobs
+      startCronJobs();
     
     // Initialize keep-alive service to prevent cold starts (Render.com)
     // Fixes "Discovered - currently not indexed" errors in Google Search Console
-    initKeepAlive();
+      initKeepAlive();
 
-    // Warm critical caches after DB is ready (3s delay for stability)
-    setTimeout(warmCache, 3000);
-  });
+      // Warm critical caches after DB is ready (3s delay for stability)
+      setTimeout(warmCache, 3000);
+    });
+  }
+
+  startServer();
 
   // Handle uncaught exceptions
   process.on('uncaughtException', (err) => {
