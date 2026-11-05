@@ -76,17 +76,24 @@ export default function AnalyticsReports() {
           paymentsRes.json(),
         ]);
 
+        // Field names must match the backend response shapes in
+        // backend/src/controllers/analyticsController.js:
+        //   sales     → { total, growth, data[] }
+        //   orders    → { totalOrders, avgOrderValue, ... }
+        //   customers → { retentionRate, topCustomers[] }
+        //   products  → { topRevenueProducts[], topSellingProducts[] }
+        //   payments  → { methodDistribution[] }
         setAnalytics({
-          totalRevenue: sales.data?.totalRevenue ?? 0,
+          totalRevenue: sales.data?.total ?? 0,
           totalOrders: orders.data?.totalOrders ?? 0,
-          avgOrderValue: sales.data?.avgOrderValue ?? 0,
+          avgOrderValue: orders.data?.avgOrderValue ?? 0,
           retentionRate: customers.data?.retentionRate ?? 0,
-          revenueGrowth: sales.data?.revenueGrowth ?? null,
-          ordersGrowth: orders.data?.ordersGrowth ?? null,
-          topProducts: products.data?.topProducts || [],
+          revenueGrowth: sales.data?.growth ?? null,
+          ordersGrowth: orders.data?.ordersGrowth ?? null, // not provided by the API yet
+          topProducts: products.data?.topRevenueProducts || products.data?.topSellingProducts || [],
           topCustomers: customers.data?.topCustomers || [],
           revenueByPeriod: sales.data?.data || [],
-          paymentBreakdown: payments.data?.breakdown || [],
+          paymentBreakdown: payments.data?.methodDistribution || [],
         });
       } catch (err) {
         setError('Failed to load analytics. Please try again.');
@@ -223,7 +230,7 @@ export default function AnalyticsReports() {
         <ChartSkeleton />
         </div>
       )}>
-        <AnalyticsCharts />
+        <AnalyticsCharts data={analytics?.revenueByPeriod || []} />
       </Suspense>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -246,11 +253,11 @@ export default function AnalyticsReports() {
                       {product.name || product._id}
                     </div>
                     <div className="text-xs text-[var(--color-text-secondary)]">
-                      {product.totalSold || product.sales || 0} units sold
+                      {product.quantitySold ?? product.totalSold ?? 0} units sold
                     </div>
                   </div>
                   <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    {fmt(product.totalRevenue || product.revenue || 0)}
+                    {fmt(product.revenue ?? product.totalRevenue ?? 0)}
                   </div>
                 </div>
               ))}
@@ -277,11 +284,11 @@ export default function AnalyticsReports() {
                       {customer.name || customer._id}
                     </div>
                     <div className="text-xs text-[var(--color-text-secondary)]">
-                      {customer.totalOrders || customer.orders || 0} orders
+                      {customer.orderCount ?? customer.totalOrders ?? 0} orders
                     </div>
                   </div>
                   <div className="text-sm font-semibold font-[family-name:var(--font-plus-jakarta)]">
-                    {fmt(customer.totalSpent || customer.spent || 0)}
+                    {fmt(customer.totalSpent ?? customer.spent ?? 0)}
                   </div>
                 </div>
               ))}
