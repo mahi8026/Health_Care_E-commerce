@@ -1,6 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ─────────────────────────────────────────────────────────────────────────────
+   Tailwind CSS v4 entry point.
+
+   v3 directives (@tailwind base/components/utilities) are gone in v4 — the
+   package is now a plain CSS bundle pulled in with @import. The project's
+   design system (brand colors, z-index scale, fluid type scale, animations)
+   still lives in tailwind.config.js, so it is loaded explicitly with @config
+   (resolved relative to THIS file: src/app/ -> src/ -> health-care/).
+
+   Note: autoprefixer is intentionally not run as a separate PostCSS plugin.
+   Since v4 the Tailwind PostCSS plugin compiles through Lightning CSS, which
+   already emits the vendor prefixes the app relies on. Running both would
+   prefix the stylesheet twice.
+   ───────────────────────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 
 /* ══════════════════════════════════════════════════════════════════════════════
    CRITICAL FONT LOADING - Load system fonts immediately, web fonts progressively
@@ -2814,35 +2827,25 @@ color: var(--color-brand-teal);
     max-width: 100vw;
   }
   
-  /* Optimize hero layout for tablet */
+  /* Optimize hero layout for tablet - TWO COLUMN LAYOUT */
   .home-page-root .hero-grid-container { 
-    grid-template-columns: minmax(0, 1fr) minmax(0, 48%); 
-    gap: 16px;
+    display: grid !important; /* Ensure grid is maintained */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 48%) !important; 
+    gap: 16px !important;
     max-width: 100%;
     box-sizing: border-box;
-  }
-  
-  /* Reduce hero height */
-  .home-page-root .hero-right-panel { height: 280px !important; }
-}
-
-/* Medium tablets specific (769px-820px) - Single column layout like mobile */
-@media (max-width: 820px) and (min-width: 769px) {
-  .home-page-root .hero-grid-container { 
-    grid-template-columns: 1fr !important; 
-    gap: 12px !important;
     padding: 0 16px !important;
   }
-  .home-page-root .hero-left-content { 
-    order: 2 !important; 
-    display: block !important;
-  }
-  .home-page-root .hero-right-panel { 
-    order: 1 !important;
-    height: 220px !important; 
-    border-radius: 14px !important;
-  }
+  
+  /* Reduce hero height for tablet */
+  .home-page-root .hero-right-panel { height: 280px !important; }
+  
+  /* Ensure both columns are visible */
+  .home-page-root .hero-left-content { order: 1 !important; }
+  .home-page-root .hero-right-panel { order: 2 !important; display: block !important; }
 }
+
+/* REMOVED: Conflicting 769-820px rule that forced single column */
 
 @media (max-width: 640px) {
   .home-page-root .hero-right-panel { height: 200px; border-radius: 12px; }
@@ -2873,3 +2876,24 @@ color: var(--color-brand-teal);
   .home-page-root .deal-grid { grid-template-columns: repeat(4, 1fr) !important; } /* [inline override] FlashDealsSection base is 2 cols */
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FIXED CHAT WIDGETS - Prevent Overlap with Content
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Ensure fixed chat widgets appear above hero carousel and other content */
+.fixed {
+  isolation: isolate;
+}
+
+/* Create a new stacking context for hero sections to prevent z-index conflicts */
+.home-page-root section {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure chat buttons and widgets are always on top */
+div[class*="fixed"][class*="z-dropdown"],
+div[class*="fixed"][class*="z-modal"] {
+  z-index: var(--z-dropdown);
+}

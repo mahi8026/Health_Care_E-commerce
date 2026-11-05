@@ -43,12 +43,14 @@ export default function ReviewsManagement() {
       
       if (data.success) {
         setReviews(Array.isArray(data.data) ? data.data : []);
-        // Ensure stats always has the required properties
+        // The paginated envelope places status counts under pagination.stats
+        // (backend utils/responseHelper.js + reviewController.getAllReviews)
+        const statsSource = data.stats || data.pagination?.stats || {};
         setStats({
-          pending: data.stats?.pending || 0,
-          approved: data.stats?.approved || 0,
-          rejected: data.stats?.rejected || 0,
-          total: data.stats?.total || 0
+          pending: statsSource.pending || 0,
+          approved: statsSource.approved || 0,
+          rejected: statsSource.rejected || 0,
+          total: data.pagination?.total ?? data.stats?.total ?? 0
         });
         setPagination(data.pagination || null);
       }

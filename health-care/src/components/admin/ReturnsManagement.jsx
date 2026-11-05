@@ -304,7 +304,7 @@ export default function ReturnsManagement() {
 
       {/* Review Modal */}
       {showModal && selectedReturn && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-modal p-0 sm:p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-modal p-0 sm:p-4">
           <div className="bg-white rounded-t-lg sm:rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex justify-between items-center">

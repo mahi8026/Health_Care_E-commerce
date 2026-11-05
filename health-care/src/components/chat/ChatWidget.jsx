@@ -199,11 +199,13 @@ export default function ChatWidget({ onClose }) {
   // ── Render ──────────────────────────────────────────────────────────────
   return (
     <div
-      className="fixed right-4 md:right-6 z-modal bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden border border-[var(--color-border-tertiary)]"
+      className="fixed right-4 md:right-6 lg:right-8 z-modal bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[var(--color-border-tertiary)]"
       style={{
         bottom: '5.5rem',
         width: 'min(384px, calc(100vw - 2rem))',
-        height: 'min(560px, calc(100vh - 140px))'
+        height: 'min(560px, calc(100vh - 140px))',
+        // Prevent overlap with main content
+        maxHeight: 'calc(100vh - 160px)',
       }}
     >
       {/* Header */}

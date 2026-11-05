@@ -21,6 +21,10 @@ function getTier(points) {
   return TIERS.Bronze;
 }
 
+// Redemption value — must match backend/src/config/loyaltyConfig.js (POINTS_TO_TAKA)
+const POINTS_TO_TAKA = 0.1; // 100 points = ৳10
+const pointsToTaka = (points) => Math.floor((points || 0) * POINTS_TO_TAKA * 100) / 100;
+
 export default function LoyaltyDashboard() {
   const [loading, setLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
@@ -37,27 +41,28 @@ export default function LoyaltyDashboard() {
   const fetchLoyaltyData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/users?role=customer');
-      const users = response.data || [];
+      // Real endpoints: /loyalty/admin/members (paginated members) and
+      // /loyalty/admin/stats (program-wide stats). The legacy
+      // GET /users?role=customer call hit a non-existent route (404).
+      const [membersRes, statsRes] = await Promise.all([
+        api.get('/loyalty/admin/members?page=1&limit=100'),
+        api.get('/loyalty/admin/stats'),
+      ]);
+      const members = membersRes.data || [];
+      const overview = statsRes.data || {};
 
-      // Calculate stats
-      const totalPoints = users.reduce((sum, u) => sum + (u.loyaltyPoints || 0), 0);
-      const tierDist = { Bronze: 0, Silver: 0, Gold: 0, Platinum: 0 };
-      
-      users.forEach(u => {
-        const tier = getTier(u.loyaltyPoints || 0);
-        tierDist[tier.label]++;
-      });
+      const totalPoints = members.reduce((sum, u) => sum + (u.loyaltyPoints || 0), 0);
 
-      setCustomers(users);
+      setCustomers(members);
       setStats({
         totalPoints,
-        totalCustomers: users.length,
-        tierDistribution: tierDist,
-        recentActivity: [], // Activity log integration planned for v2.0
+        totalCustomers: membersRes.pagination?.total ?? members.length,
+        tierDistribution: overview.tierDistribution || { Bronze: 0, Silver: 0, Gold: 0, Platinum: 0 },
+        recentActivity: overview.recentTransactions || [],
       });
     } catch (error) {
       console.error('Failed to fetch loyalty data:', error);
+      showToast.error('Failed to load loyalty data');
     } finally {
       setLoading(false);
     }
@@ -129,7 +134,7 @@ export default function LoyaltyDashboard() {
             <span className="text-xs text-[var(--color-text-secondary)]">Total Points</span>
           </div>
           <p className="text-2xl font-semibold text-brand-navy">{stats.totalPoints.toLocaleString()}</p>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-1">≈ ৳{stats.totalPoints.toLocaleString()} value</p>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-1">≈ ৳{pointsToTaka(stats.totalPoints).toLocaleString()} value</p>
         </div>
 
         <div className="bg-white rounded-xl border border-[var(--color-border-primary)] p-5">
@@ -241,7 +246,7 @@ export default function LoyaltyDashboard() {
                 filteredCustomers.map((customer) => {
                   const tier = getTier(customer.loyaltyPoints || 0);
                   const points = customer.loyaltyPoints || 0;
-                  const value = points;
+                  const value = pointsToTaka(points);
 
                   return (
                     <tr key={customer._id} className="border-b border-[var(--color-border-tertiary)] hover:bg-[var(--color-background-secondary)]">
@@ -264,9 +269,12 @@ export default function LoyaltyDashboard() {
                         <button
                           onClick={() => {
                             const adjustment = prompt('Enter points adjustment (positive or negative):');
-                            if (adjustment) {
+                            const parsed = parseInt(adjustment, 10);
+                            if (adjustment && !Number.isNaN(parsed)) {
                               const reason = prompt('Reason for adjustment:');
-                              handleAdjustPoints(customer._id, parseInt(adjustment), reason || 'Manual adjustment');
+                              handleAdjustPoints(customer._id, parsed, reason || 'Manual adjustment');
+                            } else if (adjustment) {
+                              showToast.error('Points adjustment must be a number');
                             }
                           }}
                           className="text-xs font-semibold text-brand-teal hover:underline"

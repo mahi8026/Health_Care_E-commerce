@@ -22,6 +22,9 @@ export default function FloatingWhatsAppButton() {
   const [chatOpen, setChatOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Don't show tooltip on homepage to avoid overlap with hero section
+  const isHomePage = pathname === '/';
+
   // Attention bounce on mount
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -61,14 +64,18 @@ export default function FloatingWhatsAppButton() {
     <>
       {/* Single fixed container — both buttons stacked, right side */}
       <div
-        className="fixed bottom-[96px] right-3 md:bottom-8 md:right-5 z-dropdown flex flex-col items-end gap-3"
-        style={{ pointerEvents: 'none', maxWidth: '60px' }}
+        className="fixed bottom-[96px] right-3 md:bottom-8 md:right-5 lg:right-6 z-dropdown flex flex-col items-end gap-3"
+        style={{ pointerEvents: 'none' }}
       >
-        {/* Tooltip (desktop hover) */}
-        {showTooltip && (
+        {/* Tooltip (desktop hover) - Hidden on mobile, disabled on homepage to prevent overlap */}
+        {showTooltip && !isHomePage && (
           <div
-            className="animate-fadeSlideUp bg-white rounded-2xl shadow-lg p-4 border border-[var(--color-border-primary)]"
-            style={{ pointerEvents: 'auto', width: 220 }}
+            className="hidden md:block animate-fadeSlideUp bg-white rounded-2xl shadow-lg p-4 border border-[var(--color-border-primary)]"
+            style={{ 
+              pointerEvents: 'auto', 
+              width: '220px',
+              maxWidth: '220px'
+            }}
           >
             <div className="flex items-start justify-between mb-2">
               <div>

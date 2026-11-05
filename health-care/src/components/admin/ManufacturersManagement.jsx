@@ -417,7 +417,7 @@ export default function ManufacturersManagement() {
 
       {/* Edit Modal */}
       {editingId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-modal p-0 sm:p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-modal p-0 sm:p-4">
           <div className="bg-white rounded-t-lg sm:rounded-lg shadow-lg max-w-md w-full">
             <div className="bg-brand-navy text-white px-4 sm:px-6 py-4 flex items-center justify-between border-b rounded-t-lg sm:rounded-t-lg">
               <h2 className="text-lg font-semibold">Edit Manufacturer</h2>

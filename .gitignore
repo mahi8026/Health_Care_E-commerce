@@ -112,3 +112,31 @@ quick-test-categories.js
 !package.json
 
 # ============================================================================
+
+# ── Local Scratch / Debug Files (DO NOT COMMIT) ───────────────────────────────
+1789891614045_dhe96.html
+COMMIT_MESSAGE.txt
+_twroot.cjs
+_twroot.txt
+_twv3/
+_twtest.cjs
+_twtest.mjs
+health-care/_tw_err.txt
+health-care/_tw_out.txt
+health-care/_twtest.cjs
+health-care/_twtest.mjs
+health-care/npmci-dry.txt
+health-care/REAGENT_POPUP_FINAL_CHECKLIST.txt
+health-care/src/app/_globals_v3baseline.css
+health-care/backend/_loadtime.js
+health-care/backend/_mongo2.js
+health-care/backend/_mongo3.js
+health-care/backend/_mongotest.js
+health-care/backend/_mongo_out.txt
+health-care/backend/_run_err.txt
+health-care/backend/_run_out.txt
+
+# ── Local Image-CDN Tokens (import-script data, never commit) ─────────────────
+**/.image-tokens.json
+health-care/backend/_server_err.txt
+health-care/backend/_server_out.txt
