@@ -253,6 +253,35 @@ describe('edited invoice rendering', () => {
     expect(screen.getByText('Custom term')).toBeInTheDocument();
   });
 
+  it('shows a warranty column with the policy period on every line', () => {
+    const invoiceData = {
+      invoiceNumber: 'MPBD-INV-2627-00014',
+      orderNumber: 'MC-261101-ZHD84D',
+      invoiceDate: new Date(2026, 9, 1, 12),
+      dueDate: null,
+      billingInfo: { name: 'MD Zannatun Nayeem', address: {} },
+      shippingInfo: { name: 'MD Zannatun Nayeem', address: {} },
+      items: [
+        { name: 'GPL GOT/AST (SGOT) Reagent (40+10 ml)', sku: 'EZ012LQ-SP', qty: 1, price: 1500 },
+        { name: 'GPL Creatinine Jaffe Reagent (2×50 ml)', sku: 'SU015-SP', qty: 1, price: 1200, warranty: '6 months' },
+      ],
+      totals: { subtotal: 2700, b2bDiscount: 0, couponDiscount: 0, vat: 0, shipping: 0, grandTotal: 2700 },
+      paymentInfo: {},
+      warranty: resolveInvoiceWarranty({ createdAt: new Date(2026, 9, 1, 12) }),
+      invoiceMeta: { isEdited: false, revision: 0, lastEditedAt: null },
+    };
+
+    const { container } = render(<InvoiceDocument invoiceData={invoiceData} />);
+    const table = container.querySelector('.invoice-items-table');
+
+    expect(table).not.toBeNull();
+    expect(table.textContent).toContain('Warranty');
+    // Default policy period on a line without its own warranty
+    expect(table.textContent).toContain('12 months');
+    // Line-specific warranty wins
+    expect(table.textContent).toContain('6 months');
+  });
+
   it('omits the revision strip for untouched invoices', () => {
     const invoiceData = {
       invoiceNumber: 'MPBD-INV-260831-7CSNNJ',
