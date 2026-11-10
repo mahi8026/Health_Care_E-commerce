@@ -93,7 +93,7 @@ export const PAGE_SEO = {
     keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh, lab reagent online Bangladesh, diagnostic reagent Dhaka',
   },
   b2b: {
-    title:       'B2B Medical Supply for Hospitals & Labs | MediportBD',
+    title:       'MediportBD B2B Medical Supply for Hospitals & Labs',
     description: 'Request a written quotation for your hospital or lab. B2B and volume pricing on request. Free delivery nationwide on orders over ৳50,000.',
     keywords:    'B2B medical supplier Bangladesh, hospital equipment supplier Dhaka, bulk medical supplies BD, medical equipment wholesale Bangladesh, government hospital supplier, clinic equipment BD',
   },
@@ -301,7 +301,7 @@ Equipment calibration and service contracts available. University, research inst
 
   'PPE & Safety': `MediportBD supplies personal protective equipment (PPE) and infection control supplies to healthcare facilities across Bangladesh. Our range includes surgical gloves, examination gloves, N95 respirators, surgical masks, face shields, protective gowns and shoe covers from Ansell, 3M and Cardinal Health.
 
-Bulk orders welcome. DGDA registered. Fast delivery within Dhaka. B2B contracts for regular supply.`,
+Bulk orders welcome. DGDA registered. Fast delivery nationwide on orders over ৳50,000. B2B contracts for regular supply.`,
 
   'Orthopedic Supports': `MediportBD is Bangladesh's trusted supplier of orthopedic supports and rehabilitation aids. Our catalog includes knee braces, lumbar belts, cervical collars, wrist and ankle supports, shoulder immobilizers, posture correctors, abdominal belts, splints, crutches and walking sticks from Tynor and other quality manufacturers.
 

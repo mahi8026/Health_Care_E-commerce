@@ -100,13 +100,13 @@ export function generateBangladeshMetaDescription(data) {
   
   switch (type) {
     case 'product':
-      return `Buy ${name} in Bangladesh at ${price ? `৳${price.toLocaleString('en-BD')}` : 'best price'}. ✓ Genuine brands ✓ Free delivery Dhaka ✓ Warranty ✓ Installation. Best ${category} supplier. Call: ${PHONE_ENGLISH}`;
+      return `Buy ${name} in Bangladesh at ${price ? `৳${price.toLocaleString('en-BD')}` : 'best price'}. ✓ Genuine brands ✓ Warranty ✓ Written quotation on request. Best ${category} supplier. Call: ${PHONE_ENGLISH}`;
     
     case 'category':
-      return `Buy ${name} in Bangladesh ✓ 600+ products ✓ Genuine brands ✓ Free delivery Dhaka ✓ 8-30% B2B discount ✓ EMI available. Call: ${PHONE_ENGLISH}`;
+      return `Buy ${name} in Bangladesh ✓ 600+ products ✓ Genuine brands ✓ Free delivery over ৳50,000 ✓ 8-30% B2B discount ✓ EMI available. Call: ${PHONE_ENGLISH}`;
     
     case 'location':
-      return `Medical equipment supplier in ${city} Bangladesh ✓ DGDA-registered supplier ✓ Free delivery ✓ Installation service ✓ Trusted by hospitals & diagnostic centres. Call: ${PHONE_ENGLISH}`;
+      return `Medical equipment supplier in ${city} Bangladesh ✓ DGDA-registered supplier ✓ Free delivery over ৳50,000 ✓ Trusted by hospitals & diagnostic centres. Call: ${PHONE_ENGLISH}`;
     
     case 'b2b':
       return `B2B medical equipment supplier Bangladesh ✓ 8-30% bulk discount ✓ payment terms on request ✓ DGDA-registered supplier ✓ Hospitals & diagnostic centres served. Call: ${PHONE_ENGLISH}`;
@@ -149,7 +149,7 @@ export function generateBangladeshTitle(data) {
       return `B2B Medical Equipment BD — 8-30% Discount | Hospital Supplier Dhaka`;
     
     case 'reagent':
-      return `Lab Reagents Bangladesh — HbA1c, CBC, Troponin | Cold Chain | Dhaka`;
+      return `Lab Reagents Bangladesh — HbA1c, CBC, Troponin | Dhaka`;
     
     default:
       return `Medical Equipment Bangladesh — 600+ Products | Free Delivery`;

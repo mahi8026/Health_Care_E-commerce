@@ -13,7 +13,7 @@ export const metadata = {
   // must not be hard-coded here - it rendered twice before this fix.
   title: finalTitle('Medical Equipment Brands in Bangladesh'),
   description:
-    'Browse all medical equipment brands available at MediportBD Bangladesh — genuine diagnostic devices, surgical instruments, laboratory reagents and hospital equipment from trusted global manufacturers.',
+    'Browse all medical equipment brands available at MediportBD Bangladesh — genuine diagnostic devices, surgical instruments, laboratory reagents and hospital equipment.',
   keywords: 'medical equipment brands Bangladesh, diagnostic brands BD, hospital equipment suppliers Bangladesh',
   alternates: { canonical: `${SITE_CONFIG.url}/brands` },
   openGraph: {
