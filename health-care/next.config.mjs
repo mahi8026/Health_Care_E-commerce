@@ -63,6 +63,13 @@ const pwaConfig = withPWA({
       },
     },
     {
+      // Invoice data must never be served stale after an admin edit. Without
+      // this rule the generic /api cache below kept returning the pre-edit
+      // invoice for up to 5 minutes (and after Render cold starts).
+      urlPattern: /\/api\/(orders\/[^/]+\/invoice|invoices(\/|$))/i,
+      handler: 'NetworkOnly',
+    },
+    {
       // Only cache GET API responses — never intercept POST/PUT/PATCH/DELETE.
       // A 10s service worker timeout on POST /api/orders was silently killing
       // order placement requests before the backend could respond.

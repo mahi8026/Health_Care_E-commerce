@@ -39,9 +39,18 @@ export default function Invoice() {
         // Prefer the dedicated invoice endpoint — it populates the user profile
         // (addresses, accountType, b2bAccount, paymentTerms) and product brands.
         // Fall back to the regular order endpoint for compatibility.
-        let response = await fetch(`${apiUrl}/orders/${orderId}/invoice`, { headers });
+        // Cache-busted + no-store so an admin edit is visible immediately (the
+        // PWA service worker used to serve the previous invoice for 5 minutes).
+        const freshHeaders = { ...headers, 'Cache-Control': 'no-cache', Pragma: 'no-cache' };
+        let response = await fetch(`${apiUrl}/orders/${orderId}/invoice?v=${Date.now()}`, {
+          headers: freshHeaders,
+          cache: 'no-store',
+        });
         if (!response.ok) {
-          response = await fetch(`${apiUrl}/orders/${orderId}`, { headers });
+          response = await fetch(`${apiUrl}/orders/${orderId}`, {
+            headers: freshHeaders,
+            cache: 'no-store',
+          });
         }
         if (!response.ok) {
           throw new Error('Failed to fetch order');

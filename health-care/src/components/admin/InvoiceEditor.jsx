@@ -218,7 +218,7 @@ export default function InvoiceEditor({ orderId }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/invoices/order/${orderId}`, {
+      const res = await fetch(`${API}/invoices/order/${orderId}?v=${Date.now()}`, {
         headers: authHeaders(),
         cache: 'no-store',
       });
