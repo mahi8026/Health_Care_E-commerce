@@ -96,6 +96,8 @@ activityLogSchema.virtual('category').get(function() {
     return 'USER';
   } else if (action.startsWith('PAYMENT') || action.startsWith('REFUND')) {
     return 'PAYMENT';
+  } else if (action.startsWith('INVOICE')) {
+    return 'INVOICE';
   } else if (action.startsWith('BACKUP') || action.startsWith('IMPORT') || action.startsWith('EXPORT')) {
     return 'SYSTEM';
   }

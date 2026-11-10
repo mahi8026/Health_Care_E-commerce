@@ -29,6 +29,190 @@ export function formatInvoiceDate(date) {
 }
 
 /**
+ * Default invoice warranty policy — must stay aligned with the backend
+ * (backend/src/utils/warranty.js). Override per deployment with
+ * NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS.
+ */
+export const DEFAULT_WARRANTY_MONTHS = 12;
+
+/**
+ * Parse a warranty value into whole months.
+ * Accepts numbers, '18 months', '24 mo', '1 year', '2 yrs' and explicit
+ * "No warranty" statements (0). Returns null when the value is unusable.
+ */
+export function parseWarrantyMonths(value) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'number') {
+    return Number.isFinite(value) && value >= 0 ? Math.round(value) : null;
+  }
+
+  const text = String(value).trim().toLowerCase();
+  if (!text) return null;
+  if (/^(no|none|nil|without|not applicable|n\/a)\b/.test(text)) return 0;
+
+  const yearMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:years?|yrs?|y)\b/);
+  if (yearMatch) return Math.round(parseFloat(yearMatch[1]) * 12);
+
+  const monthMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:months?|mos?)\b/);
+  if (monthMatch) return Math.round(parseFloat(monthMatch[1]));
+
+  const bareNumber = text.match(/^(\d+(?:\.\d+)?)$/);
+  if (bareNumber) return Math.round(parseFloat(bareNumber[1]));
+
+  return null;
+}
+
+/**
+ * Human label for a warranty period, e.g. 12 -> "12 months".
+ */
+export function formatWarrantyLabel(months) {
+  if (months === null || months === undefined || months === '') return '—';
+  const value = Number(months);
+  if (!Number.isFinite(value) || value < 0) return '—';
+  if (value === 0) return 'No warranty';
+  return `${value} ${value === 1 ? 'month' : 'months'}`;
+}
+
+/**
+ * Add months to a date, clamping the day to the end of the target month.
+ */
+export function addMonthsToDate(date, months) {
+  const start = new Date(date);
+  if (Number.isNaN(start.getTime())) return null;
+
+  const wholeMonths = Math.trunc(Number(months) || 0);
+  const target = new Date(start.getTime());
+  const day = target.getDate();
+
+  target.setDate(1);
+  target.setMonth(target.getMonth() + wholeMonths);
+
+  const lastDayOfTargetMonth = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(day, lastDayOfTargetMonth));
+
+  return target;
+}
+
+/**
+ * Warranty value advertised on a product (variants.warranty or a
+ * specifications "Warranty" entry).
+ */
+function productWarrantyValue(product) {
+  if (!product || typeof product !== 'object') return null;
+
+  if (Array.isArray(product.variants?.warranty)) {
+    const match = product.variants.warranty.find((v) => parseWarrantyMonths(v) !== null);
+    if (match !== undefined) return match;
+  }
+
+  const specs = product.specifications;
+  if (specs && typeof specs.get === 'function') {
+    return specs.get('warranty') || specs.get('Warranty') || null;
+  }
+  if (specs && typeof specs === 'object') {
+    const key = Object.keys(specs).find((k) => String(k).trim().toLowerCase() === 'warranty');
+    if (key && specs[key]) return specs[key];
+  }
+
+  return null;
+}
+
+/**
+ * Warranty recorded on a single invoice line, if any.
+ * Returns { months, label } or null.
+ */
+export function resolveItemWarranty(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  const candidates = [
+    item.warranty,
+    item.warrantyMonths,
+    item.variant?.warranty,
+    productWarrantyValue(item.product),
+  ];
+
+  for (const candidate of candidates) {
+    const months = parseWarrantyMonths(candidate);
+    if (months !== null) return { months, label: formatWarrantyLabel(months) };
+  }
+
+  return null;
+}
+
+/**
+ * Warranty policy for an invoice: period label, covered dates and any
+ * product-level warranties that differ from the standard policy.
+ */
+export function resolveInvoiceWarranty(order) {
+  const explicitMonths = parseWarrantyMonths(order?.warrantyMonths);
+  const envMonths = parseWarrantyMonths(process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS);
+  const months = explicitMonths !== null
+    ? explicitMonths
+    : envMonths === null
+      ? DEFAULT_WARRANTY_MONTHS
+      : envMonths;
+
+  const startCandidate = new Date(order?.invoiceDate || order?.createdAt || Date.now());
+  const startDate = Number.isNaN(startCandidate.getTime()) ? new Date() : startCandidate;
+  const endDate = months > 0 ? addMonthsToDate(startDate, months) : null;
+
+  const itemWarranties = [];
+  const seen = new Set();
+
+  for (const item of order?.items || []) {
+    const resolved = resolveItemWarranty(item);
+    if (!resolved) continue;
+
+    const name = item.name || item.product?.name || 'Item';
+    const key = `${name}|${resolved.months}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    itemWarranties.push({ name, months: resolved.months, label: resolved.label });
+  }
+
+  return {
+    months,
+    label: formatWarrantyLabel(months),
+    startDate,
+    endDate,
+    note: order?.warrantyNote || '',
+    itemWarranties,
+  };
+}
+
+/**
+ * Totals for the admin invoice editor — mirrors the backend recomputation so the
+ * live preview matches exactly what will be stored and printed.
+ */
+export function computeInvoiceTotals(items = [], charges = {}) {
+  const round2 = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+  const num = (value, fallback = 0) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+
+  const subtotal = round2(
+    items.reduce((sum, item) => {
+      const qty = num(item?.qty, 1);
+      const price = num(item?.price, 0);
+      const discount = num(item?.discount, 0);
+      return sum + round2(qty * price * (1 - discount / 100));
+    }, 0)
+  );
+
+  const b2bDiscount = round2(Math.max(0, num(charges.b2bDiscount, 0)));
+  const couponDiscount = round2(Math.max(0, num(charges.couponDiscount, 0)));
+  const vatAmount = round2(Math.max(0, num(charges.vatAmount, 0)));
+  const deliveryFee = round2(Math.max(0, num(charges.deliveryFee, 0)));
+  const totalAmount = round2(
+    Math.max(0, subtotal - b2bDiscount - couponDiscount + vatAmount + deliveryFee)
+  );
+
+  return { subtotal, b2bDiscount, couponDiscount, vatAmount, deliveryFee, totalAmount };
+}
+
+/**
  * Calculate item total
  */
 export function calculateItemTotal(item) {

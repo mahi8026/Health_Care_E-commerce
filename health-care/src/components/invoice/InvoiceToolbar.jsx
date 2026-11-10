@@ -1,13 +1,13 @@
 'use client';
 
-import { FaArrowLeft, FaPrint } from 'react-icons/fa';
+import { FaArrowLeft, FaPrint, FaEdit } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
 /**
  * InvoiceToolbar Component
  * Actions toolbar for invoice page (not printed)
  */
-export default function InvoiceToolbar({ orderId, onPrint }) {
+export default function InvoiceToolbar({ orderId, onPrint, editHref }) {
   const router = useRouter();
 
   const handleBack = () => {
@@ -33,6 +33,15 @@ export default function InvoiceToolbar({ orderId, onPrint }) {
       </button>
 
       <div className="flex flex-wrap items-center gap-3">
+        {editHref && (
+          <a
+            href={editHref}
+            className="flex items-center gap-2 rounded-lg border border-brand-teal px-4 py-2 text-sm font-medium text-brand-teal transition-colors hover:bg-brand-teal hover:text-white"
+          >
+            <FaEdit className="h-4 w-4" />
+            Edit invoice
+          </a>
+        )}
         <button
           onClick={handlePrint}
           className="flex items-center gap-2 rounded-lg bg-brand-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-navy-deep"

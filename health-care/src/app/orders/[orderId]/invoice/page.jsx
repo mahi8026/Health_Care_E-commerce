@@ -16,6 +16,8 @@ export default function Invoice() {
 
   const [order, setOrder] = useState(null);
   const [user, setUser] = useState(null);
+  const [invoice, setInvoice] = useState(null);
+  const [canEdit, setCanEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -120,6 +122,8 @@ export default function Invoice() {
 
         setOrder(orderData);
         setUser(userData || {});
+        setInvoice(data.invoice || null);
+        setCanEdit(Boolean(data.canEdit));
       } catch (err) {
         setError(err.message || 'Failed to load invoice');
       } finally {
@@ -165,7 +169,7 @@ export default function Invoice() {
 
   return (
     <div className="invoice-page-wrapper">
-      <InvoicePage order={order} user={user} />
+      <InvoicePage order={order} user={user} invoice={invoice} canEdit={canEdit} />
     </div>
   );
 }

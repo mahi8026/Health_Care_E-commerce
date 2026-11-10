@@ -135,6 +135,66 @@ const validateMongoId = [
   handleValidationErrors
 ];
 
+// ── Admin invoice editing ────────────────────────────────────────────────────
+const validateInvoiceOrderId = [
+  param('orderId').isMongoId().withMessage('Invalid order ID format'),
+  handleValidationErrors
+];
+
+const validateInvoiceUpdate = [
+  body('invoiceNumber')
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 40 }).withMessage('Invoice number must be 3-40 characters')
+    .matches(/^[A-Za-z0-9][A-Za-z0-9\-_/]*$/)
+    .withMessage('Invoice number may only contain letters, numbers, hyphens, underscores and slashes'),
+  body('issueDate').optional({ nullable: true }).isISO8601().withMessage('Invalid issue date'),
+  body('dueDate').optional({ nullable: true, checkFalsy: true }).isISO8601().withMessage('Invalid due date'),
+  body('revision').optional().isInt({ min: 0 }).withMessage('Invalid revision'),
+
+  body('customer.name').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+  body('customer.companyName').optional({ checkFalsy: true }).trim().isLength({ max: 160 }),
+  body('customer.email').optional({ checkFalsy: true }).trim().isEmail().withMessage('Invalid customer email'),
+  body('customer.phone').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
+
+  body('deliveryAddress.name').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+  body('deliveryAddress.phone').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
+  body('deliveryAddress.street').optional({ checkFalsy: true }).trim().isLength({ max: 240 }),
+  body('deliveryAddress.thana').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+  body('deliveryAddress.district').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+  body('deliveryAddress.postcode').optional({ checkFalsy: true }).trim().isLength({ max: 20 }),
+
+  body('items').optional().isArray({ max: 100 }).withMessage('An invoice can hold up to 100 lines'),
+  body('items.*.name').trim().notEmpty().withMessage('Item description is required')
+    .isLength({ max: 200 }).withMessage('Item description is too long'),
+  body('items.*.sku').optional({ checkFalsy: true }).trim().isLength({ max: 80 }),
+  body('items.*.brand').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+  body('items.*.qty').isInt({ min: 1, max: 1000 }).withMessage('Quantity must be between 1 and 1000'),
+  body('items.*.price').isFloat({ min: 0 }).withMessage('Unit price must be zero or more'),
+  body('items.*.discount').optional({ nullable: true }).isFloat({ min: 0, max: 100 })
+    .withMessage('Discount must be between 0 and 100%'),
+
+  body('charges.b2bDiscount').optional({ nullable: true }).isFloat({ min: 0 }),
+  body('charges.couponDiscount').optional({ nullable: true }).isFloat({ min: 0 }),
+  body('charges.vatAmount').optional({ nullable: true }).isFloat({ min: 0 }),
+  body('charges.deliveryFee').optional({ nullable: true }).isFloat({ min: 0 }),
+
+  body('payment.method').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
+  body('payment.status').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
+  body('payment.reference').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+  body('payment.instructions').optional({ checkFalsy: true }).trim().isLength({ max: 600 }),
+
+  body('warranty.months').optional({ nullable: true }).isInt({ min: 0, max: 120 })
+    .withMessage('Warranty must be between 0 and 120 months'),
+  body('warranty.note').optional({ checkFalsy: true }).trim().isLength({ max: 500 }),
+
+  body('notes').optional({ checkFalsy: true }).trim().isLength({ max: 2000 }),
+  body('terms').optional().isArray({ max: 20 }).withMessage('Up to 20 terms are supported'),
+  body('terms.*').optional().isLength({ max: 300 }).withMessage('Each term must be 300 characters or fewer'),
+
+  handleValidationErrors
+];
+
 // Pagination validation
 const validatePagination = [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be at least 1'),
@@ -363,6 +423,8 @@ module.exports = {
   ],
   validateOrderStatusUpdate,
   validateOrderNote,
+  validateInvoiceOrderId,
+  validateInvoiceUpdate,
   validateRegistration,
   validateLogin,
   validateForgotPassword,

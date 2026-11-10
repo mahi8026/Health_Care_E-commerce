@@ -380,6 +380,7 @@ app.use('/api/auth', dbHealthCheck, require('./routes/authRoutes')); // Has its 
 app.use('/api/home', require('./routes/homeRoutes')); // Aggregated homepage data - handles DB errors gracefully
 app.use('/api/products', dbHealthCheck, require('./routes/productRoutes'));
 app.use('/api/orders', dbHealthCheck, require('./routes/orderRoutes'));
+app.use('/api/invoices', dbHealthCheck, require('./routes/invoiceRoutes')); // Admin invoice editing
 app.use('/api/payments', dbHealthCheck, require('./routes/paymentRoutes')); // Has its own rate limiters
 app.use('/api/analytics', dbHealthCheck, require('./routes/analyticsRoutes'));
 app.use('/api/quotes', dbHealthCheck, require('./routes/quoteRoutes'));

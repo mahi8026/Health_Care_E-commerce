@@ -12,4 +12,5 @@ export { default as InvoiceItemsTable } from './InvoiceItemsTable';
 export { default as InvoiceTotals } from './InvoiceTotals';
 export { default as PaymentInformation } from './PaymentInformation';
 export { default as TermsAndConditions } from './TermsAndConditions';
+export { default as WarrantyInformation } from './WarrantyInformation';
 export { default as InvoiceFooter } from './InvoiceFooter';

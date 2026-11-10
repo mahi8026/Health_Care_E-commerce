@@ -6,7 +6,9 @@ import InvoiceItemsTable from './InvoiceItemsTable';
 import InvoiceTotals from './InvoiceTotals';
 import PaymentInformation from './PaymentInformation';
 import TermsAndConditions from './TermsAndConditions';
+import WarrantyInformation from './WarrantyInformation';
 import InvoiceFooter from './InvoiceFooter';
+import { formatInvoiceDate } from '@/utils/invoiceHelpers';
 
 /**
  * InvoiceDocument Component
@@ -23,6 +25,10 @@ export default function InvoiceDocument({ invoiceData }) {
     items,
     totals,
     paymentInfo,
+    warranty,
+    notes,
+    terms,
+    invoiceMeta,
   } = invoiceData;
 
   return (
@@ -43,6 +49,21 @@ export default function InvoiceDocument({ invoiceData }) {
           dueDate={dueDate}
         />
 
+        {/* Revision strip — visible only for admin-edited invoices */}
+        {invoiceMeta?.isEdited && (
+          <div className="revised-invoice mt-2 flex flex-wrap items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 print:mt-1 print:py-0.5 print:text-[7pt]">
+            <span className="rounded-full bg-amber-500 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white print:px-1 print:text-[6pt]">
+              Revised
+            </span>
+            <span>
+              Revision {invoiceMeta.revision}
+              {invoiceMeta.lastEditedAt
+                ? ` · updated ${formatInvoiceDate(invoiceMeta.lastEditedAt)}`
+                : ''}
+            </span>
+          </div>
+        )}
+
         {/* Billing & Shipping */}
         <BillingShipping
           billingInfo={billingInfo}
@@ -50,12 +71,15 @@ export default function InvoiceDocument({ invoiceData }) {
         />
 
         {/* Items Table */}
-        <InvoiceItemsTable items={items} />
+        <InvoiceItemsTable items={items} warrantyMonths={warranty?.months} />
 
         {/* Terms & Conditions - Single Column, Compact */}
         <div className="mt-2 print:mt-1">
-          <TermsAndConditions />
+          <TermsAndConditions terms={terms} notes={notes} />
         </div>
+
+        {/* Warranty & Service Policy */}
+        <WarrantyInformation warranty={warranty} invoiceNumber={invoiceNumber} />
 
         {/* Totals */}
         <InvoiceTotals totals={totals} />

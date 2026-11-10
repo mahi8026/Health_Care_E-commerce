@@ -896,14 +896,24 @@ export default function OrdersManagement() {
                       </div>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDownloadInvoice(order._id); }}
-                        disabled={actionLoading[`invoice-${order._id}`]}
-                        className="text-xs px-2 py-1 bg-[var(--color-background-tertiary)] rounded hover:border-[var(--color-border-primary)] disabled:opacity-50 transition-colors font-medium text-brand-teal"
-                        title="Download Invoice PDF"
-                      >
-                        {actionLoading[`invoice-${order._id}`] ? '...' : '📄 PDF'}
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDownloadInvoice(order._id); }}
+                          disabled={actionLoading[`invoice-${order._id}`]}
+                          className="text-xs px-2 py-1 bg-[var(--color-background-tertiary)] rounded hover:border-[var(--color-border-primary)] disabled:opacity-50 transition-colors font-medium text-brand-teal"
+                          title="Download Invoice PDF"
+                        >
+                          {actionLoading[`invoice-${order._id}`] ? '...' : '📄 PDF'}
+                        </button>
+                        <a
+                          href={`/admin/orders/${order._id}/invoice`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs px-2 py-1 bg-[var(--color-background-tertiary)] rounded hover:border-[var(--color-border-primary)] transition-colors font-medium text-[var(--color-text-secondary)]"
+                          title="Edit invoice"
+                        >
+                          ✏️ Edit
+                        </a>
+                      </div>
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-1.5">
@@ -1031,6 +1041,13 @@ export default function OrdersManagement() {
                   >
                     📄 {actionLoading[`invoice-${order._id}`] ? 'Downloading…' : 'Download Invoice'}
                   </button>
+
+                  <a
+                    href={`/admin/orders/${order._id}/invoice`}
+                    className="w-full min-h-[48px] px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-sm font-semibold hover:bg-[var(--color-background-tertiary)] flex items-center justify-center gap-2"
+                  >
+                    ✏️ Edit Invoice
+                  </a>
                   
                   <div className="grid grid-cols-2 gap-2">
                     {[

@@ -9,6 +9,9 @@ const orderItemSchema = new mongoose.Schema({
   name: String,
   sku: String,
   brand: String,
+  // Warranty label snapshotted from the product at purchase time (e.g. "12 months").
+  // Invoices print this value so a later catalogue change cannot alter a past sale.
+  warranty: String,
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 },
   isB2BPrice: { type: Boolean, default: false }, // Flag if B2B price was applied

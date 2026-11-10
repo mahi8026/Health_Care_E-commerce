@@ -428,6 +428,12 @@ export default function OrderDetailModal({ orderId, onClose }) {
                 >
                   View Invoice
                 </button>
+                <a
+                  href={`/admin/orders/${order._id}/invoice`}
+                  className="flex-1 px-4 py-2 border-[0.5px] border-[var(--color-border-secondary)] rounded-lg text-xs font-semibold text-center hover:bg-[var(--color-background-tertiary)] transition-colors"
+                >
+                  Edit Invoice
+                </a>
               </div>
             </div>
           )}

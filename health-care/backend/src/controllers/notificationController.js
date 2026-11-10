@@ -10,6 +10,8 @@ const {
   sendQuotationReady
 } = require('../services/emailService');
 const { generateInvoice } = require('../utils/invoiceGenerator');
+const Invoice = require('../models/Invoice');
+const { composeInvoice } = require('../services/invoiceService');
 const logger = require('../utils/logger');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
@@ -59,16 +61,23 @@ exports.sendPaymentReceipt = async (req, res) => {
       return errorResponse(res, 'User not found', null, 404);
     }
 
-    // Generate PDF invoice
+    // Generate PDF invoice — include any admin revisions so the emailed receipt
+    // matches the invoice the customer can download.
     let pdfBuffer;
+    let emailOrder = order;
+    let emailCustomer = user;
     try {
-      pdfBuffer = await generateInvoice(order, user);
+      const invoiceDoc = await Invoice.findOne({ order: order._id }).lean();
+      const composed = composeInvoice(order, user, invoiceDoc);
+      emailOrder = composed.order;
+      emailCustomer = composed.customer;
+      pdfBuffer = await generateInvoice(emailOrder, emailCustomer);
     } catch (pdfErr) {
       logger.error('PDF generation failed:', pdfErr.message);
       // Continue without PDF attachment
     }
 
-    await sendPaymentReceipt(order, user, pdfBuffer);
+    await sendPaymentReceipt(emailOrder, emailCustomer, pdfBuffer);
     return successResponse(res, null, 'Payment receipt email sent successfully');
   } catch (error) {
     logger.error(`[sendPaymentReceipt] ${error.message}`);

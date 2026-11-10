@@ -15,6 +15,7 @@ const ACTION_CATEGORIES = {
   REVIEW:       { label: 'Reviews',  color: 'bg-orange-100 text-orange-800' },
   USER:         { label: 'Users',    color: 'bg-[var(--color-status-danger-tint)] text-[var(--color-status-danger)]' },
   PAYMENT:      { label: 'Payments', color: 'bg-[var(--color-status-success-tint)] text-[var(--color-status-success)]' },
+  INVOICE:      { label: 'Invoices', color: 'bg-[var(--color-status-info-tint)] text-[var(--color-status-info)]' },
   SYSTEM:       { label: 'System',   color: 'bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)]' },
 };
 
