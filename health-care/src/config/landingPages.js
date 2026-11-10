@@ -214,7 +214,7 @@ export const LANDING_PAGES = [
     categorySlug: 'diagnostic-equipment',
     icon: '🫁',
     excerpt:
-      'Browse live pulse oximeter prices in Bangladesh — fingertip and handheld SpO2 monitors with DGDA registration and fast delivery.',
+      'Browse pulse oximeter prices in Bangladesh — fingertip and handheld SpO2 monitors with DGDA registration and fast delivery.',
     intro: [
       'Track oxygen saturation and pulse rate with a genuine pulse oximeter from MediportBD. We supply fingertip and handheld oximeters from Beurer, Rossmax and Yuwell for home care and clinical use.',
       'Perfect for post-COVID home monitoring, sports training and hospital wards, our oximeters are accurate, durable and DGDA registered.',
