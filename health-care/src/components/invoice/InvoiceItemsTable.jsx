@@ -3,6 +3,7 @@
 import {
   formatBdt,
   calculateItemTotal,
+  formatWarrantyLabel,
   resolveItemName,
   resolveItemBrand,
   resolveItemModel,
@@ -39,6 +40,9 @@ export default function InvoiceItemsTable({ items = [], warrantyMonths }) {
             <th className="px-2 py-2 text-center text-[11px] font-bold uppercase tracking-wider">
               Qty
             </th>
+            <th className="px-2 py-2 text-center text-[11px] font-bold uppercase tracking-wider">
+              Warranty
+            </th>
             <th className="px-2 py-2 text-right text-[11px] font-bold uppercase tracking-wider">
               Unit Price (BDT)
             </th>
@@ -56,11 +60,15 @@ export default function InvoiceItemsTable({ items = [], warrantyMonths }) {
             const unitPrice = Number(item.price || 0);
             const total = calculateItemTotal(item);
 
-            // A line-item warranty is only called out when it differs from the
-            // invoice policy — the Warranty & Service block covers the default.
+            // Warranty printed in its own column: the line's own warranty when it
+            // has one, otherwise the invoice-wide policy period.
             const itemWarranty = resolveItemWarranty(item);
-            const warrantyNote =
-              itemWarranty && itemWarranty.months !== warrantyMonths ? itemWarranty : null;
+            const policyMonths = Number(warrantyMonths);
+            const warrantyLabel =
+              itemWarranty?.label ||
+              (Number.isFinite(policyMonths) && policyMonths > 0
+                ? formatWarrantyLabel(policyMonths)
+                : '—');
             
             // Brand/Model display
             let brandModel = brand || '';
@@ -87,17 +95,15 @@ export default function InvoiceItemsTable({ items = [], warrantyMonths }) {
                       {item.description}
                     </div>
                   )}
-                  {warrantyNote && (
-                    <div className="mt-0.5 text-xs font-semibold text-brand-teal print:text-[6.5pt]">
-                      Warranty: {warrantyNote.label}
-                    </div>
-                  )}
                 </td>
                 <td className="px-2 py-2 text-xs text-gray-700">
                   {brandModel || '—'}
                 </td>
                 <td className="px-2 py-2 text-center text-xs font-medium text-gray-900">
                   {quantity}
+                </td>
+                <td className="px-2 py-2 text-center text-xs font-semibold text-brand-teal">
+                  {warrantyLabel}
                 </td>
                 <td className="px-2 py-2 text-right text-xs text-gray-900">
                   {formatBdt(unitPrice)}
