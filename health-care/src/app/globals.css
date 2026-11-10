@@ -1461,9 +1461,19 @@ html.nav-scrolled .site-nav-shell::after {
 }
 
 /* ── Base Reset ─────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  max-width: 100%;
+/* Base reset — keep this inside @layer base so Tailwind v4 utilities
+   (which live in `@layer utilities`) can override it.
+   Why: UNLAYERED CSS always beats LAYERED CSS regardless of specificity.
+   The previous unlayered `* { max-width: 100% }` here therefore silently
+   overrode EVERY max-w-* utility after the Tailwind v4 migration
+   (login/register cards, exit popup, admin modals, max-w-7xl content
+   bands all stretched to full width). Never re-add max-width to this
+   reset — horizontal overflow is already guarded by the html/body/#__next
+   rules below. */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 }
 
 html {
