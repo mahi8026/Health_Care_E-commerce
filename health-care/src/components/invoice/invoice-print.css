@@ -70,6 +70,8 @@
   .invoice-totals,
   .payment-information,
   .terms-conditions,
+  .warranty-information,
+  .revised-invoice,
   .signature-section {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -118,7 +120,8 @@
 
   /* Compact payment info and terms grid */
   .payment-information,
-  .terms-conditions {
+  .terms-conditions,
+  .warranty-information {
     margin-top: 2mm !important;
     margin-bottom: 2mm !important;
     padding: 2mm !important;
@@ -126,7 +129,8 @@
   }
 
   .payment-information h3,
-  .terms-conditions h3 {
+  .terms-conditions h3,
+  .warranty-information h3 {
     font-size: 9pt !important;
     margin-bottom: 1mm !important;
   }
@@ -134,19 +138,23 @@
   .payment-information p,
   .payment-information div,
   .terms-conditions p,
-  .terms-conditions li {
+  .terms-conditions li,
+  .warranty-information p,
+  .warranty-information li {
     font-size: 7.5pt !important;
     line-height: 1.3 !important;
     margin-bottom: 0.5mm !important;
   }
 
-  .terms-conditions ul {
+  .terms-conditions ul,
+  .warranty-information ul {
     margin-top: 1mm !important;
     margin-bottom: 0 !important;
     padding-left: 4mm !important;
   }
 
-  .terms-conditions li {
+  .terms-conditions li,
+  .warranty-information li {
     margin-bottom: 0.5mm !important;
   }
 
@@ -179,10 +187,25 @@
   .bg-brand-teal,
   .bg-brand-orange,
   .bg-blue-50,
+  .bg-emerald-50,
   .bg-gray-50 {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
+  }
+
+  /* Warranty panel keeps its tinted background + border in print */
+  .warranty-information {
+    background-color: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+  }
+
+  /* Revision strip on admin-edited invoices */
+  .revised-invoice {
+    background-color: #fffbeb !important;
+    border-color: #fde68a !important;
+    padding: 1mm 2mm !important;
+    font-size: 7pt !important;
   }
 
   /* Table header background */

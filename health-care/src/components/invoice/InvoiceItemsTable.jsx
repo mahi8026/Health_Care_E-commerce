@@ -6,13 +6,14 @@ import {
   resolveItemName,
   resolveItemBrand,
   resolveItemModel,
+  resolveItemWarranty,
 } from '@/utils/invoiceHelpers';
 
 /**
  * InvoiceItemsTable Component
  * Displays product items table
  */
-export default function InvoiceItemsTable({ items = [] }) {
+export default function InvoiceItemsTable({ items = [], warrantyMonths }) {
   if (!items || items.length === 0) {
     return (
       <div className="mt-4 rounded-lg bg-gray-50 p-4 text-center text-sm text-gray-500">
@@ -54,6 +55,12 @@ export default function InvoiceItemsTable({ items = [] }) {
             const quantity = Number(item.qty || item.quantity || 1);
             const unitPrice = Number(item.price || 0);
             const total = calculateItemTotal(item);
+
+            // A line-item warranty is only called out when it differs from the
+            // invoice policy — the Warranty & Service block covers the default.
+            const itemWarranty = resolveItemWarranty(item);
+            const warrantyNote =
+              itemWarranty && itemWarranty.months !== warrantyMonths ? itemWarranty : null;
             
             // Brand/Model display
             let brandModel = brand || '';
@@ -78,6 +85,11 @@ export default function InvoiceItemsTable({ items = [] }) {
                   {item.description && (
                     <div className="mt-0.5 text-[11px] text-gray-600">
                       {item.description}
+                    </div>
+                  )}
+                  {warrantyNote && (
+                    <div className="mt-0.5 text-xs font-semibold text-brand-teal print:text-[6.5pt]">
+                      Warranty: {warrantyNote.label}
                     </div>
                   )}
                 </td>

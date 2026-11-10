@@ -2,7 +2,11 @@
 
 import InvoiceToolbar from './InvoiceToolbar';
 import InvoiceDocument from './InvoiceDocument';
-import { calculateInvoiceTotals, getInvoiceNumber } from '@/utils/invoiceHelpers';
+import {
+  calculateInvoiceTotals,
+  getInvoiceNumber,
+  resolveInvoiceWarranty,
+} from '@/utils/invoiceHelpers';
 
 /**
  * B2B detection works on every population shape the API can return:
@@ -27,31 +31,39 @@ function isB2BOrder(order, user) {
  * InvoicePage Component
  * Main invoice page with toolbar and document
  */
-export default function InvoicePage({ order, user }) {
+export default function InvoicePage({ order, user, invoice = null, canEdit = false }) {
 
   // Prepare invoice data
   const invoiceNumber = getInvoiceNumber(order);
   const orderNumber = order.orderNumber || order.orderId || '';
-  const invoiceDate = order.createdAt;
+  const invoiceDate = order.invoiceDate || order.createdAt;
   const isB2B = isB2BOrder(order, user);
 
-  // Calculate due date (payment terms after invoice date for B2B, none otherwise)
+  // Due date: an admin override always wins; otherwise B2B payment terms apply.
   let dueDate = null;
-  if (invoiceDate) {
-    dueDate = new Date(invoiceDate);
-    if (isB2B && !Number.isNaN(dueDate.getTime())) {
-      dueDate.setDate(dueDate.getDate() + (Number(user?.paymentTerms) || 30));
+  if (order.dueDate) {
+    const override = new Date(order.dueDate);
+    if (!Number.isNaN(override.getTime())) {
+      dueDate = override;
+    }
+  } else if (isB2B && invoiceDate) {
+    const terms = new Date(invoiceDate);
+    if (!Number.isNaN(terms.getTime())) {
+      terms.setDate(terms.getDate() + (Number(user?.paymentTerms) || 30));
+      dueDate = terms;
     }
   }
 
   // Extract user info - handle both populated and unpopulated user references
   const userInfo = typeof order.user === 'object' ? order.user : user;
+  // Admin edits take precedence over the stored profile.
+  const customer = order.customer || {};
 
   // Billing Info
   const billingInfo = {
-    name: userInfo?.name || order.deliveryAddress?.name || 'Customer',
-    email: userInfo?.email || order.deliveryAddress?.email || '',
-    phone: userInfo?.phone || order.deliveryAddress?.phone || '',
+    name: customer.name || userInfo?.name || order.deliveryAddress?.name || 'Customer',
+    email: customer.email || userInfo?.email || order.deliveryAddress?.email || '',
+    phone: customer.phone || userInfo?.phone || order.deliveryAddress?.phone || '',
     address: userInfo?.addresses?.[0] || order.deliveryAddress || {},
   };
 
@@ -67,6 +79,9 @@ export default function InvoicePage({ order, user }) {
   // Calculate totals
   const totals = calculateInvoiceTotals(order);
 
+  // Warranty policy (period + covered dates + any item-specific warranties)
+  const warranty = resolveInvoiceWarranty(order);
+
   // Payment Info — bank details match the backend PDF (BRAC Bank PLC) and the
   // transaction ref is the real payment reference, never a derived invoice number.
   const paymentInfo = {
@@ -74,7 +89,7 @@ export default function InvoicePage({ order, user }) {
     paymentMethod: order.paymentMethod,
     paymentStatus: order.paymentStatus || order.status || '—',
     bankInfo: 'BRAC Bank PLC · MAHI M RAHMAN · A/C 1081267690001',
-    transactionRef: order.transactionId || '—',
+    transactionRef: order.paymentReference || order.transactionId || '—',
   };
 
   // Prepare invoice data
@@ -82,12 +97,16 @@ export default function InvoicePage({ order, user }) {
     invoiceNumber,
     orderNumber,
     invoiceDate,
-    dueDate: isB2B ? dueDate : null,
+    dueDate,
     billingInfo,
     shippingInfo,
     items: order.items || [],
     totals,
     paymentInfo,
+    warranty,
+    notes: order.invoiceNotes || '',
+    terms: Array.isArray(order.invoiceTerms) ? order.invoiceTerms : null,
+    invoiceMeta: invoice,
     isB2B,
   };
 
@@ -105,6 +124,7 @@ export default function InvoicePage({ order, user }) {
         <InvoiceToolbar
           orderId={order._id || order.id}
           onPrint={handlePrint}
+          editHref={canEdit ? `/admin/orders/${order._id || order.id}/invoice` : null}
         />
 
         {/* Invoice Document */}

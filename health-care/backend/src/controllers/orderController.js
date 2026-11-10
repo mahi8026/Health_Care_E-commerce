@@ -14,6 +14,7 @@ const { ORDER_STATUSES, ORDER_STATUS_TRANSITIONS } = require('../constants/order
 // P4-1 — single source of truth for order-number generation now lives in
 // orderService; the local copy below was deleted to prevent format drift.
 const { generateOrderNumber, generateInvoiceNumber } = require('../services/orderService');
+const { resolveProductWarranty } = require('../utils/warranty');
 
 const cacheService = new CacheService();
 
@@ -223,6 +224,7 @@ await session.abortTransaction();
       const itemB2BSavings = quoted.savings;
       const sizeName = quoted.sizeName;
       const itemFlashDealId = quoted.flashDealId || null;
+      const itemWarranty = resolveProductWarranty(product);
       totalB2BSavings += itemB2BSavings * qty;
       
       // Check if product has size variants
@@ -240,6 +242,7 @@ await session.abortTransaction();
           name: product.name, 
           sku: product.sku, 
           brand: product.brand, 
+          warranty: itemWarranty,
           price: itemPrice, 
           isB2BPrice: isItemB2BPrice,
           b2bSavings: itemB2BSavings,
@@ -261,6 +264,7 @@ await session.abortTransaction();
           name: product.name, 
           sku: product.sku, 
           brand: product.brand, 
+          warranty: itemWarranty,
           price: itemPrice, 
           isB2BPrice: isItemB2BPrice,
           b2bSavings: itemB2BSavings,

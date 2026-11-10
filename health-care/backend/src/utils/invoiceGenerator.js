@@ -1,4 +1,5 @@
 ﻿const PDFDocument = require('pdfkit');
+const { resolveInvoiceWarranty, resolveItemWarranty } = require('./warranty');
 
 const NAVY = '#0B2545';
 const TEAL = '#0E8A6E';
@@ -189,6 +190,7 @@ function generateInvoice(order, user) {
 
     const invoiceNo = formatInvoiceNo(order);
     const orderDate = formatDate(order.createdAt);
+    const warranty = resolveInvoiceWarranty(order);
 
     const drawPageHeader = () => {
       const headerH = 82;
@@ -262,7 +264,17 @@ function generateInvoice(order, user) {
       ['Order date', orderDate],
       ['Payment', paymentLabel(order.paymentMethod)],
       ['Status', (order.paymentStatus || 'pending').replace(/^\w/, (c) => c.toUpperCase())],
+      ['Warranty', warranty.label],
     ];
+    if (order.dueDate) {
+      meta.push(['Due date', formatDate(order.dueDate)]);
+    }
+    if (Number(order.invoiceRevision) > 0) {
+      meta.push([
+        'Revision',
+        `${order.invoiceRevision}${order.invoiceEditedAt ? ` · ${formatDate(order.invoiceEditedAt)}` : ''}`,
+      ]);
+    }
     meta.forEach(([label, val]) => {
       textAt(doc, label, MARGIN, metaY, { fontSize: 8, fillColor: SLATE });
       textAt(doc, val, MARGIN + 68, metaY, { fontSize: 9, fillColor: TEXT });
@@ -382,9 +394,18 @@ function generateInvoice(order, user) {
     y = drawTableHeader(y);
 
     const items = order.items || [];
-    const rowH = 24;
+    const baseRowH = 24;
 
     items.forEach((item, idx) => {
+      const itemWarranty = resolveItemWarranty(item);
+      // Only call out a line-item warranty when it differs from the invoice-wide
+      // policy — repeating the policy on every row would just be noise.
+      const warrantyNote =
+        itemWarranty && itemWarranty.months !== warranty.months
+          ? `Warranty: ${itemWarranty.label}`
+          : null;
+      const rowH = warrantyNote ? baseRowH + 8 : baseRowH;
+
       if (y + rowH > PAGE_H - FOOTER_RESERVE) {
         doc.addPage();
         y = drawPageHeader();
@@ -416,6 +437,14 @@ doc.rect(MARGIN, y, CONTENT_W, rowH).fill(ROW_ALT);
           ellipsis: true,
           fontSize: 7,
           fillColor: SLATE,
+        });
+      }
+      if (warrantyNote) {
+        textAt(doc, warrantyNote, col.desc.x, y + 23, {
+          width: col.desc.w,
+          ellipsis: true,
+          fontSize: 7,
+          fillColor: TEAL,
         });
       }
       textAt(doc, sku, col.sku.x, y + 8, {
@@ -531,22 +560,196 @@ addTotalRow('VAT / Tax', formatBdt(vat));
     doc.text(words, wordsX, y + 7, { width: wordsWidth });
     y += wordsHeight + 10;
 
-    ensureSpace(58);
-    doc.roundedRect(MARGIN, y, CONTENT_W, 48, 5).fill('#EFF6FF');
-    doc.strokeColor('#BFDBFE').lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, 48, 5).stroke();
+    // Payment instructions — admin text overrides the default bank details.
+    const instructionText = String(order.paymentInstructions || '').trim();
+    const instructionLines = instructionText
+      ? instructionText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(0, 6)
+      : [];
+
+    doc.font('Helvetica').fontSize(8);
+    const instructionHeights = instructionLines.map((line) =>
+      doc.heightOfString(line, { width: CONTENT_W - 24 })
+    );
+    const instructionsBlockH = instructionHeights.reduce((sum, h) => sum + h + 2, 0);
+    const paymentBoxH = instructionLines.length ? 8 + 10 + 4 + instructionsBlockH + 4 + 10 + 8 : 48;
+
+    ensureSpace(paymentBoxH + 6);
+    doc.roundedRect(MARGIN, y, CONTENT_W, paymentBoxH, 5).fill('#EFF6FF');
+    doc.strokeColor('#BFDBFE').lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, paymentBoxH, 5).stroke();
     textAt(doc, 'Payment instructions', MARGIN + 12, y + 8, {
       font: 'Helvetica-Bold',
       fontSize: 8,
       fillColor: NAVY,
     });
-    textAt(doc, 'BRAC Bank PLC  ·  MAHI M RAHMAN  ·  A/C 1081267690001', MARGIN + 12, y + 22, {
+
+    let instructionY = y + 22;
+    if (instructionLines.length) {
+      instructionLines.forEach((line, i) => {
+        doc
+          .font('Helvetica')
+          .fontSize(8)
+          .fillColor('#475569')
+          .text(line, MARGIN + 12, instructionY, { width: CONTENT_W - 24 });
+        instructionY += instructionHeights[i] + 2;
+      });
+      instructionY += 4;
+    } else {
+      textAt(doc, 'BRAC Bank PLC  ·  MAHI M RAHMAN  ·  A/C 1081267690001', MARGIN + 12, instructionY, {
+        fontSize: 8,
+        fillColor: '#475569',
+      });
+      instructionY += 12;
+    }
+
+    textAt(doc, `Ref: ${invoiceNo}  ·  ${paymentLabel(order.paymentMethod)}`, MARGIN + 12, instructionY, {
       fontSize: 8,
       fillColor: '#475569',
     });
-    textAt(doc, `Ref: ${invoiceNo}  ·  ${paymentLabel(order.paymentMethod)}`, MARGIN + 12, y + 34, {
-      fontSize: 8,
-      fillColor: '#475569',
+
+    // ── Warranty & service ─────────────────────────────────────────────────────
+    y += paymentBoxH + 12;
+    const warrantyStart = formatDate(warranty.startDate);
+    const warrantyEnd = warranty.endDate ? formatDate(warranty.endDate) : null;
+
+    const warrantyNotes = [
+      {
+        text:
+          warranty.months > 0
+            ? `Coverage: ${warranty.label} from the invoice date (${warrantyStart}) to ${warrantyEnd}.`
+            : 'This invoice carries no product warranty coverage.',
+        bold: true,
+      },
+      {
+        text: 'Covers manufacturing defects in materials and workmanship under normal use. MediportBD will repair or replace, at its discretion, any unit confirmed defective.',
+      },
+      {
+        text: 'Excludes consumables and reagents (covered by their printed shelf life), and damage caused by misuse, improper storage or unauthorised repair.',
+      },
+      {
+        text: `Claims: email mediportbdofficial@gmail.com or call +880 1646-886795 within the coverage period, quoting Ref ${invoiceNo}. Warranty is non-transferable.`,
+      },
+    ];
+
+    if (warranty.note) {
+      warrantyNotes.push({ text: `Note: ${warranty.note}` });
+    }
+
+    warranty.itemWarranties
+      .filter((item) => item.months !== warranty.months)
+      .forEach((item) => {
+        warrantyNotes.push({
+          text: `Item-specific warranty: ${item.name} (${item.label}).`,
+        });
+      });
+
+    const wPad = 9;
+    const wTitleH = 12;
+    const wInnerX = MARGIN + 12;
+    const wInnerW = CONTENT_W - 24;
+    const wBulletIndent = 8;
+    const wGap = 3;
+
+    const warrantyRowHeights = warrantyNotes.map((row) => {
+      doc.font(row.bold ? 'Helvetica-Bold' : 'Helvetica').fontSize(7.5);
+      const indent = row.bold ? 0 : wBulletIndent;
+      return doc.heightOfString(row.text, { width: wInnerW - indent });
     });
+    const warrantyBodyH = warrantyRowHeights.reduce((sum, h) => sum + h + wGap, 0) - wGap;
+    const warrantyPanelH = wPad + wTitleH + 5 + warrantyBodyH + wPad;
+
+    ensureSpace(warrantyPanelH + 8);
+    doc.roundedRect(MARGIN, y, CONTENT_W, warrantyPanelH, 5).fill('#F0FBF7');
+    doc.strokeColor('#9FE3CB').lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, warrantyPanelH, 5).stroke();
+
+    textAt(doc, 'WARRANTY & SERVICE', wInnerX, y + wPad, {
+      font: 'Helvetica-Bold',
+      fontSize: 8,
+      fillColor: NAVY,
+    });
+
+    const badgeText = warranty.months > 0 ? String(warranty.label).toUpperCase() : 'NO WARRANTY';
+    doc.font('Helvetica-Bold').fontSize(6.5);
+    const badgeW = doc.widthOfString(badgeText) + 16;
+    const badgeX = MARGIN + CONTENT_W - 12 - badgeW;
+    const badgeY = y + wPad - 3;
+    doc.roundedRect(badgeX, badgeY, badgeW, 14, 7).fill(warranty.months > 0 ? TEAL : SLATE);
+    textAt(doc, badgeText, badgeX, badgeY + 4, {
+      width: badgeW,
+      align: 'center',
+      font: 'Helvetica-Bold',
+      fontSize: 6.5,
+      fillColor: WHITE,
+    });
+
+    let wy = y + wPad + wTitleH + 5;
+    warrantyNotes.forEach((row, i) => {
+      const indent = row.bold ? 0 : wBulletIndent;
+      if (!row.bold) {
+        // Vector bullet — PDFKit's built-in Helvetica cannot encode U+2022, so a
+        // drawn dot is the only way to guarantee the bullet renders.
+        doc.fillColor(TEAL).circle(wInnerX + 2.4, wy + 3.6, 1.3).fill();
+      }
+      doc
+        .font(row.bold ? 'Helvetica-Bold' : 'Helvetica')
+        .fontSize(7.5)
+        .fillColor(row.bold ? TEXT : '#475569')
+        .text(row.text, wInnerX + indent, wy, { width: wInnerW - indent });
+      wy += warrantyRowHeights[i] + wGap;
+    });
+
+    // ── Notes & terms (admin editable) ────────────────────────────────────────
+    const invoiceNotes = String(order.invoiceNotes || '').trim();
+    const invoiceTerms = Array.isArray(order.invoiceTerms)
+      ? order.invoiceTerms.filter((term) => String(term || '').trim())
+      : [];
+
+    if (invoiceNotes || invoiceTerms.length) {
+      const nPad = 8;
+      const nTitleH = 12;
+      const nInnerX = MARGIN + 12;
+      const nInnerW = CONTENT_W - 24;
+      const nGap = 3;
+
+      const noteRows = [];
+      if (invoiceNotes) {
+        noteRows.push({ text: invoiceNotes, bullet: false });
+      }
+      invoiceTerms.forEach((term) => noteRows.push({ text: String(term), bullet: true }));
+
+      const noteHeights = noteRows.map((row) => {
+        doc.font('Helvetica').fontSize(7.5);
+        return doc.heightOfString(row.text, { width: nInnerW - (row.bullet ? 8 : 0) });
+      });
+      const notesBodyH = noteHeights.reduce((sum, h) => sum + h + nGap, 0) - nGap;
+      const notesPanelH = nPad + nTitleH + 5 + notesBodyH + nPad;
+
+      y += warrantyPanelH + 8;
+      ensureSpace(notesPanelH + 4);
+
+      doc.roundedRect(MARGIN, y, CONTENT_W, notesPanelH, 5).fill('#FFFBEB');
+      doc.strokeColor('#FDE68A').lineWidth(0.5).roundedRect(MARGIN, y, CONTENT_W, notesPanelH, 5).stroke();
+
+      textAt(doc, 'NOTES & TERMS', nInnerX, y + nPad, {
+        font: 'Helvetica-Bold',
+        fontSize: 8,
+        fillColor: NAVY,
+      });
+
+      let ny = y + nPad + nTitleH + 5;
+      noteRows.forEach((row, i) => {
+        if (row.bullet) {
+          doc.fillColor('#B45309').circle(nInnerX + 2.4, ny + 3.6, 1.3).fill();
+        }
+        doc
+          .font('Helvetica')
+          .fontSize(7.5)
+          .fillColor('#475569')
+          .text(row.text, nInnerX + (row.bullet ? 8 : 0), ny, {
+            width: nInnerW - (row.bullet ? 8 : 0),
+          });
+        ny += noteHeights[i] + nGap;
+      });
+    }
 
     const range = doc.bufferedPageRange();
     const pageCount = range.count;
@@ -562,7 +765,7 @@ addTotalRow('VAT / Tax', formatBdt(vat));
         fontSize: 7,
         fillColor: SLATE,
       });
-      textAt(doc, 'Computer-generated invoice — no signature required.', MARGIN, footerY + 16, {
+      textAt(doc, 'Computer-generated invoice - no signature required.', MARGIN, footerY + 16, {
         width: CONTENT_W,
         align: 'center',
         fontSize: 7,
