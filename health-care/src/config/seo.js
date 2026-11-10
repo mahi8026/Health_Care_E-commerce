@@ -93,7 +93,7 @@ export const PAGE_SEO = {
     keywords:    'laboratory reagents Bangladesh, HbA1c kit price BD, CBC reagent supplier Dhaka, biochemistry reagent Bangladesh, lab reagent online Bangladesh, diagnostic reagent Dhaka',
   },
   b2b: {
-    title:       'B2B Medical Supply for Hospitals & Labs | MediportBD',
+    title:       'MediportBD B2B Medical Supply for Hospitals & Labs',
     description: 'Request a written quotation for your hospital or lab. B2B and volume pricing on request. Free delivery nationwide on orders over ৳50,000.',
     keywords:    'B2B medical supplier Bangladesh, hospital equipment supplier Dhaka, bulk medical supplies BD, medical equipment wholesale Bangladesh, government hospital supplier, clinic equipment BD',
   },
