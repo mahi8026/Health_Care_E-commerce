@@ -47,6 +47,14 @@ const REAGENT_FAQS = [
     q: 'Can hospitals get bulk pricing on laboratory reagents?',
     a: 'Yes. MediportBD offers B2B standing-order contracts for hospitals and reference labs. Volume pricing, payment terms and delivery schedules are agreed per contract and confirmed in writing.',
   },
+  {
+    q: 'How do I confirm a reagent is compatible with my analyzer?',
+    a: 'Give the supplier the analyzer make, model and software version you run. A written quotation should state, for each line, whether the reagent is the original brand or a validated compatible product, so compatibility is documented before you order.',
+  },
+  {
+    q: 'What documentation should arrive with a reagent order?',
+    a: 'Institutional buyers normally require DGDA registration documentation for regulated IVDs, a lot or batch certificate (certificate of analysis) for each delivery, and a written quotation stating quantities, pricing and terms.',
+  },
 ];
 
 export default function ReagentStore() {
@@ -84,10 +92,13 @@ export default function ReagentStore() {
               About Laboratory Reagents in Bangladesh
             </p>
             <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
-              Laboratory reagents in Bangladesh must be DGDA approved and cold-chain handled (2–8°C or −20°C).
+              Laboratory reagents in Bangladesh must be DGDA approved and handled at the temperature the
+              manufacturer specifies (commonly 2–8°C, or −20°C for frozen assays).
               HbA1c and CBC kits typically cost ৳3,000–৳150,000 depending on analyzer platform and pack size.
-              MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with temperature-monitored
-              delivery, batch traceability and B2B supply contracts.
+              MediportBD supplies Roche, Siemens and Abbott-compatible reagents in Dhaka with batch
+              traceability and B2B supply contracts quoted in writing. Cold chain delivery is not
+              currently offered — confirm storage and handling requirements with us before ordering
+              temperature-sensitive items.
             </p>
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
               <Link href="/topics/laboratory-equipment-reagents" className="text-[var(--color-brand-teal)] hover:underline">
@@ -103,6 +114,71 @@ export default function ReagentStore() {
                 B2B Bulk Pricing
               </Link>
             </div>
+          </div>
+
+          {/* Reagent buyer guidance — server-rendered, claims-safe */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <h2 className="text-base font-semibold text-brand-navy mb-2">
+                Match the reagent to your analyzer
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                Reagent systems are platform-specific: a kit validated for one analyzer family will not
+                run on another. Before ordering, give the supplier the analyzer make, model and software
+                version your laboratory uses, and ask for compatibility to be confirmed in writing with
+                the quotation. Original and validated compatible reagents both exist — the quotation
+                should say which one is being supplied for each line.
+              </p>
+            </div>
+            <div>
+              <h2 className="text-base font-semibold text-brand-navy mb-2">
+                Check every delivery before it reaches the bench
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                Verify four things on receipt and photograph any discrepancy: the lot or batch number
+                against the packing list, the remaining shelf life (aim for six months or more), the
+                storage instruction printed on the kit label, and the physical condition of the pack.
+                Reject or quarantine anything of doubtful temperature history — a compromised kit that
+                is used produces a wrong result you will trust, which is worse than a failed test you
+                notice.
+              </p>
+            </div>
+            <div>
+              <h2 className="text-base font-semibold text-brand-navy mb-2">
+                Order by test volume, not by kit price
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                The number that matters is cost per reportable test: the kit price divided by the tests
+                the pack yields after controls and repeats. Small packs cost more per test, while large
+                kits expire unused on low-volume assays. Share your monthly test count for each assay and
+                ask for the pack size that fits it — quantities and unit pricing are agreed in writing
+                per quotation.
+              </p>
+            </div>
+            <div>
+              <h2 className="text-base font-semibold text-brand-navy mb-2">
+                Documentation institutional buyers expect
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                Hospital and tender procurement usually asks for DGDA registration documentation for
+                regulated IVDs, a certificate of analysis or lot certificate per batch, and a written
+                quotation with quantities, pricing and delivery schedule. Request all of it with the
+                quotation rather than after the order. Cold chain delivery is not currently offered, so
+                confirm storage and handling requirements with our team before ordering
+                temperature-sensitive items.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+            <Link href="/guides/laboratory-reagent-procurement-cost-bangladesh" className="text-[var(--color-brand-teal)] hover:underline">
+              Reagent procurement &amp; per-test cost guide →
+            </Link>
+            <Link href="/guides/cold-chain-reagent-delivery-bangladesh" className="text-[var(--color-brand-teal)] hover:underline">
+              Reagent delivery checks labs should make →
+            </Link>
+            <Link href="/quotes/request?source=reagent_store" className="font-semibold text-[var(--color-brand-teal)] hover:underline">
+              Request a written quotation →
+            </Link>
           </div>
         </div>
       </section>
