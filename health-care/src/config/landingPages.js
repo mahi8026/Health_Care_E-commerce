@@ -494,6 +494,191 @@ export const LANDING_PAGES = [
       },
     ],
   },
+  {
+    slug: 'retinoscope-price-bangladesh',
+    title: 'Retinoscope Price in Bangladesh 2026 | MediportBD',
+    metaTitle: 'Retinoscope Price in Bangladesh 2026 | MediportBD',
+    metaDescription:
+      'Retinoscope price in Bangladesh: request a written quotation for Heine retinoscopes and replacement bulbs. Genuine units, warranty-backed, B2B pricing on request.',
+    keywords: [
+      'retinoscope price Bangladesh',
+      'retinoscope bulb price BD',
+      'Heine retinoscope price Dhaka',
+      'ophthalmoscope retinoscope Bangladesh',
+    ],
+    search: 'retinoscope',
+    categorySlug: 'ophthalmology-and-ent-equipment',
+    icon: '\u{1F526}',
+    excerpt:
+      'Retinoscopes and replacement bulbs in Bangladesh \u2014 genuine Heine models with warranty; price confirmed in a written quotation.',
+    intro: [
+      'MediportBD supplies genuine Heine retinoscopes and replacement bulbs to eye hospitals, ophthalmology departments and optical practices in Bangladesh.',
+      'Retinoscope price depends on the model, whether a handle and rechargeable battery are included, and the bulb type \u2014 request a written quotation for the exact configuration you need.',
+      'Institutional and volume pricing is agreed per quotation; free delivery applies nationwide on orders over \u09F350,000.',
+    ],
+    faqs: [
+      {
+        q: 'What is the price of a retinoscope in Bangladesh?',
+        a: 'Retinoscope prices in Bangladesh depend on the model, the included handle and battery, and the bulb type. Request a written quotation for the exact configuration \u2014 institutional and volume pricing is agreed per quotation.',
+      },
+      {
+        q: 'Do you supply retinoscope bulbs separately?',
+        a: 'Yes. Replacement bulbs for Heine retinoscopes are available. Specify your retinoscope model when requesting a quotation so the correct bulb is supplied.',
+      },
+      {
+        q: 'Which retinoscope models do you supply?',
+        a: 'MediportBD supplies Heine retinoscopes including the Beta 200 and the Skia trainer, with warranty support. Registration documentation for regulated components is available on request.',
+      },
+    ],
+  },
+  {
+    slug: 'tracheostomy-tube-price-bangladesh',
+    title: 'Tracheostomy Tube Price in Bangladesh 2026 | MediportBD',
+    metaTitle: 'Tracheostomy Tube Price in Bangladesh 2026 | MediportBD',
+    metaDescription:
+      'Tracheostomy tube price in Bangladesh: cuffed and plain tubes, request a written quotation. Sizes and quantities confirmed with your ICU or ward team.',
+    keywords: [
+      'tracheostomy tube price Bangladesh',
+      'tracheostomy tube price BD',
+      'cuffed tracheostomy tube Dhaka',
+      'tracheostomy tube supplier Bangladesh',
+    ],
+    search: 'tracheostomy',
+    categorySlug: 'respiratory-equipment',
+    icon: '\u{1F3E5}',
+    excerpt:
+      'Cuffed and plain tracheostomy tubes for ICU, HDU and ward use \u2014 sizes and quantities confirmed in a written quotation.',
+    intro: [
+      'MediportBD supplies cuffed and plain tracheostomy tubes to hospitals, ICUs and critical care units in Bangladesh, including Romsons tubes in the sizes your unit uses.',
+      'Tracheostomy tube price depends on type (cuffed or plain), size range and pack quantity \u2014 request a written quotation listing exactly what you need.',
+      'For ICU and hospital standing orders, quantities and delivery schedules are agreed per quotation; free delivery applies nationwide on orders over \u09F350,000.',
+    ],
+    faqs: [
+      {
+        q: 'What is the price of a tracheostomy tube in Bangladesh?',
+        a: 'Tracheostomy tube prices depend on the type (cuffed or plain), size and pack quantity. Request a written quotation for your exact sizes \u2014 institutional pricing is agreed per quotation.',
+      },
+      {
+        q: 'Do you supply cuffed and plain tracheostomy tubes?',
+        a: 'Yes. Both cuffed and plain tracheostomy tubes are available, so an ICU can standardise sizes and types from one supplier.',
+      },
+      {
+        q: 'Can hospitals order tracheostomy tubes in bulk?',
+        a: 'Yes. Standing orders for ICU and HDU consumables are quoted with quantities and delivery schedule in writing before you commit.',
+      },
+    ],
+  },
+  {
+    slug: 'iv-cannula-price-bangladesh',
+    title: 'IV Cannula Price in Bangladesh 2026 | MediportBD',
+    metaTitle: 'IV Cannula Price in Bangladesh 2026 | MediportBD',
+    metaDescription:
+      'IV cannula price in Bangladesh: Vasofix and other cannulas in 18G-22G, request a written quotation. Bulk hospital and clinic supply quoted in writing.',
+    keywords: [
+      'IV cannula price Bangladesh',
+      'vasofix cannula price BD',
+      'IV cannula price list Dhaka',
+      'intravenous cannula supplier Bangladesh',
+    ],
+    search: 'cannula',
+    categorySlug: 'iv-and-infusion-therapy',
+    icon: '\u{1F489}',
+    excerpt:
+      'Vasofix and other IV cannulas for wards, emergency and day-care \u2014 gauge mix and quantities confirmed in a written quotation.',
+    intro: [
+      'MediportBD supplies IV cannulas including Vasofix in the gauges used daily on wards, in emergency departments and in day-care units across Bangladesh.',
+      'IV cannula price depends on gauge, pack size and brand \u2014 request a written quotation with the gauge mix your unit consumes each month.',
+      'Regular hospital supply is quoted as a standing order with quantities and schedule in writing; free delivery applies nationwide on orders over \u09F350,000.',
+    ],
+    faqs: [
+      {
+        q: 'What is the price of an IV cannula in Bangladesh?',
+        a: 'IV cannula prices depend on gauge, pack size and brand. Request a written quotation listing the gauge mix you use \u2014 volume pricing is agreed per quotation.',
+      },
+      {
+        q: 'Which cannula gauges are available?',
+        a: 'Standard gauges are stocked, including 18G, 20G and 22G, so a ward or emergency department can standardise from one supplier. Confirm the exact gauge mix in your quotation.',
+      },
+      {
+        q: 'Do you supply Vasofix cannulas?',
+        a: 'Yes. Vasofix IV cannulas are part of the range \u2014 check current availability and gauge options in your written quotation.',
+      },
+    ],
+  },
+  {
+    slug: 'ryles-tube-price-bangladesh',
+    title: 'Ryles Tube Price in Bangladesh 2026 | MediportBD',
+    metaTitle: 'Ryles Tube Price in Bangladesh 2026 | MediportBD',
+    metaDescription:
+      'Ryles tube (nasogastric tube) price in Bangladesh: Romolene Ryles tubes across sizes, request a written quotation for ward and hospital supply.',
+    keywords: [
+      'ryles tube price Bangladesh',
+      'romolene ryles tube price',
+      'nasogastric tube price BD',
+      'NG tube supplier Bangladesh',
+    ],
+    search: 'ryles',
+    categorySlug: 'medical-supplies',
+    icon: '\u{1F3E5}',
+    excerpt:
+      'Romolene Ryles (nasogastric) tubes across ward sizes \u2014 size mix and quantities confirmed in a written quotation.',
+    intro: [
+      'MediportBD supplies Ryles tubes (nasogastric tubes), including Romsons Romolene, to hospitals, clinics and nursing facilities in Bangladesh.',
+      'Ryles tube price depends on French size and pack quantity \u2014 request a written quotation listing the sizes your ward uses.',
+      'Ward-level standing orders are quoted with quantities and delivery schedule in writing; free delivery applies nationwide on orders over \u09F350,000.',
+    ],
+    faqs: [
+      {
+        q: 'What is the price of a Ryles tube in Bangladesh?',
+        a: 'Ryles tube prices depend on French size and pack quantity. Request a written quotation for the sizes your ward uses \u2014 institutional pricing is agreed per quotation.',
+      },
+      {
+        q: 'Do you supply Romolene Ryles tubes?',
+        a: 'Yes. Romsons Romolene Ryles tubes are available \u2014 state the French sizes you need when requesting a quotation.',
+      },
+      {
+        q: 'Can a hospital order Ryles tubes in bulk?',
+        a: 'Yes. Ward and hospital standing orders are quoted in writing with the size mix, quantity and delivery schedule before you commit.',
+      },
+    ],
+  },
+  {
+    slug: 'thermometer-price-bangladesh',
+    title: 'Thermometer Price in Bangladesh 2026 | MediportBD',
+    metaTitle: 'Thermometer Price in Bangladesh 2026 | MediportBD',
+    metaDescription:
+      'Thermometer price in Bangladesh: Omron and Rossmax digital thermometers, request a written quotation. Clinic and hospital quantities quoted in writing.',
+    keywords: [
+      'thermometer price Bangladesh',
+      'digital thermometer price BD',
+      'Omron thermometer price Dhaka',
+      'clinical thermometer supplier Bangladesh',
+    ],
+    search: 'thermometer',
+    categorySlug: 'diagnostic-equipment',
+    icon: '\u{1F321}',
+    excerpt:
+      'Omron and Rossmax digital thermometers for clinics, wards and home use \u2014 quantities confirmed in a written quotation.',
+    intro: [
+      'MediportBD supplies digital thermometers from Omron and Rossmax to clinics, hospitals and pharmacies in Bangladesh, including flexible-tip and standard models.',
+      'Thermometer price depends on the model, tip type and pack quantity \u2014 request a written quotation for the models your clinic or ward standardises on.',
+      'Clinic and hospital quantities are quoted in writing; free delivery applies nationwide on orders over \u09F350,000.',
+    ],
+    faqs: [
+      {
+        q: 'What is the price of a digital thermometer in Bangladesh?',
+        a: 'Digital thermometer prices depend on the model, tip type and pack quantity. Request a written quotation for the models you need \u2014 institutional pricing is agreed per quotation.',
+      },
+      {
+        q: 'Which thermometer brands are available?',
+        a: 'Omron and Rossmax digital thermometers are part of the range, including flexible-tip models. Confirm current model availability in your quotation.',
+      },
+      {
+        q: 'Can clinics order thermometers in bulk?',
+        a: 'Yes. Clinic, hospital and pharmacy quantities are quoted in writing with the model mix and delivery schedule before you commit.',
+      },
+    ],
+  },
 ];
 
 export function getLandingPageBySlug(slug) {
