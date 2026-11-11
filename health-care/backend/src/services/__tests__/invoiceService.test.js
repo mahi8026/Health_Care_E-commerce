@@ -85,7 +85,7 @@ describe('invoiceService', () => {
         price: 200,
       });
       expect(defaults.charges.deliveryFee).toBe(70);
-      expect(defaults.warranty.months).toBe(12);
+      expect(defaults.warranty.months).toBeNull();
       expect(defaults.terms).toEqual(DEFAULT_TERMS);
     });
   });

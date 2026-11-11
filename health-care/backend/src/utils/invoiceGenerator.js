@@ -264,8 +264,10 @@ function generateInvoice(order, user) {
       ['Order date', orderDate],
       ['Payment', paymentLabel(order.paymentMethod)],
       ['Status', (order.paymentStatus || 'pending').replace(/^\w/, (c) => c.toUpperCase())],
-      ['Warranty', warranty.label],
     ];
+    if (warranty.months !== null) {
+      meta.push(['Warranty', warranty.label]);
+    }
     if (order.dueDate) {
       meta.push(['Due date', formatDate(order.dueDate)]);
     }
@@ -346,14 +348,26 @@ function generateInvoice(order, user) {
     y += shipH + 12;
 
     // ── Table ─────────────────────────────────────────────────────────────────
-    const col = {
-      desc: { x: MARGIN + 8, w: 190 },
-      sku: { x: MARGIN + 202, w: 64 },
-      qty: { x: MARGIN + 270, w: 24 },
-      warranty: { x: MARGIN + 298, w: 56 },
-      unit: { x: MARGIN + 358, w: 62 },
-      amt: { x: MARGIN + 424, w: CONTENT_W - 424 - 8 },
-    };
+    // The Warranty column only exists when the admin selected a warranty period
+    // for this invoice — no default period is ever printed.
+    const showWarrantyColumn = warranty.months !== null && warranty.months > 0;
+
+    const col = showWarrantyColumn
+      ? {
+          desc: { x: MARGIN + 8, w: 190 },
+          sku: { x: MARGIN + 202, w: 64 },
+          qty: { x: MARGIN + 270, w: 24 },
+          warranty: { x: MARGIN + 298, w: 56 },
+          unit: { x: MARGIN + 358, w: 62 },
+          amt: { x: MARGIN + 424, w: CONTENT_W - 424 - 8 },
+        }
+      : {
+          desc: { x: MARGIN + 8, w: 200 },
+          sku: { x: MARGIN + 212, w: 88 },
+          qty: { x: MARGIN + 308, w: 32 },
+          unit: { x: MARGIN + 348, w: 68 },
+          amt: { x: MARGIN + 424, w: CONTENT_W - 424 - 8 },
+        };
 
     const drawTableHeader = (startY) => {
       const h = 20;
@@ -375,13 +389,15 @@ function generateInvoice(order, user) {
         fontSize: 8,
         fillColor: WHITE,
       });
-      textAt(doc, 'Warranty', col.warranty.x, startY + 6, {
-        width: col.warranty.w,
-        align: 'center',
-        font: 'Helvetica-Bold',
-        fontSize: 7.5,
-        fillColor: WHITE,
-      });
+      if (showWarrantyColumn) {
+        textAt(doc, 'Warranty', col.warranty.x, startY + 6, {
+          width: col.warranty.w,
+          align: 'center',
+          font: 'Helvetica-Bold',
+          fontSize: 7.5,
+          fillColor: WHITE,
+        });
+      }
       textAt(doc, 'Unit', col.unit.x, startY + 6, {
         width: col.unit.w,
         align: 'right',
@@ -450,19 +466,16 @@ doc.rect(MARGIN, y, CONTENT_W, rowH).fill(ROW_ALT);
         fontSize: 9,
         fillColor: TEXT,
       });
-      const itemWarranty = resolveItemWarranty(item);
-      const warrantyLabel = itemWarranty
-        ? itemWarranty.label
-        : warranty.months > 0
-          ? warranty.label
-          : 'N/A';
-      textAt(doc, warrantyLabel, col.warranty.x, y + 8, {
-        width: col.warranty.w,
-        align: 'center',
-        ellipsis: true,
-        fontSize: 7.5,
-        fillColor: TEAL,
-      });
+      if (showWarrantyColumn) {
+        const itemWarranty = resolveItemWarranty(item);
+        textAt(doc, itemWarranty ? itemWarranty.label : warranty.label, col.warranty.x, y + 8, {
+          width: col.warranty.w,
+          align: 'center',
+          ellipsis: true,
+          fontSize: 7.5,
+          fillColor: TEAL,
+        });
+      }
       textAt(doc, formatBdt(unit), col.unit.x, y + 8, {
         width: col.unit.w,
         align: 'right',
@@ -612,6 +625,9 @@ addTotalRow('VAT / Tax', formatBdt(vat));
 
     // ── Warranty & service ─────────────────────────────────────────────────────
     y += paymentBoxH + 12;
+    let warrantyPanelH = 0;
+
+    if (warranty.months !== null) {
     const warrantyStart = formatDate(warranty.startDate);
     const warrantyEnd = warranty.endDate ? formatDate(warranty.endDate) : null;
 
@@ -659,7 +675,7 @@ addTotalRow('VAT / Tax', formatBdt(vat));
       return doc.heightOfString(row.text, { width: wInnerW - indent });
     });
     const warrantyBodyH = warrantyRowHeights.reduce((sum, h) => sum + h + wGap, 0) - wGap;
-    const warrantyPanelH = wPad + wTitleH + 5 + warrantyBodyH + wPad;
+    warrantyPanelH = wPad + wTitleH + 5 + warrantyBodyH + wPad;
 
     ensureSpace(warrantyPanelH + 8);
     doc.roundedRect(MARGIN, y, CONTENT_W, warrantyPanelH, 5).fill('#F0FBF7');
@@ -700,6 +716,7 @@ addTotalRow('VAT / Tax', formatBdt(vat));
         .text(row.text, wInnerX + indent, wy, { width: wInnerW - indent });
       wy += warrantyRowHeights[i] + wGap;
     });
+    }
 
     // ── Notes & terms (admin editable) ────────────────────────────────────────
     const invoiceNotes = String(order.invoiceNotes || '').trim();

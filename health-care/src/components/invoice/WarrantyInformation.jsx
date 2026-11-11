@@ -10,7 +10,8 @@ import { formatInvoiceDate, formatInvoiceNumber } from '@/utils/invoiceHelpers';
  * the printed page and the downloaded invoice always agree.
  */
 export default function WarrantyInformation({ warranty, invoiceNumber }) {
-  if (!warranty) return null;
+  // No warranty period selected by the admin → print nothing at all.
+  if (!warranty || warranty.months === null || warranty.months === undefined) return null;
 
   const { months, label, endDate, note, itemWarranties = [] } = warranty;
   const expiry = endDate && !Number.isNaN(new Date(endDate).getTime())

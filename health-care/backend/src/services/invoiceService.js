@@ -128,7 +128,9 @@ function mapOrderItems(order) {
     qty: toNumber(item && (item.qty ?? item.quantity), 1) || 1,
     price: toNumber(item && item.price, 0),
     discount: toNumber(item && item.discount, 0),
-    warranty: toText(item && item.warranty, 80),
+    // Warranty is admin-selected on the invoice, never inherited from the
+    // catalogue: leaving it blank means no warranty is printed for the line.
+    warranty: '',
   }));
 }
 
@@ -260,7 +262,12 @@ function sanitizeInvoicePayload(body = {}, order, user) {
       instructions: toText(paymentSource.instructions, 600),
     },
     warranty: {
-      months: Math.min(120, Math.max(0, Math.round(toNumber(warrantySource.months, defaults.warranty.months)))),
+      // null = the admin has not selected a warranty for this invoice.
+      months: warrantySource.months === null ||
+        warrantySource.months === undefined ||
+        warrantySource.months === ''
+        ? null
+        : Math.min(120, Math.max(0, Math.round(toNumber(warrantySource.months, 0)))),
       note: toText(warrantySource.note, 500),
     },
     notes: toText(source.notes, 2000),
@@ -342,7 +349,9 @@ function composeInvoice(order, user, invoiceDoc) {
     paymentReference:
       (doc && doc.payment && doc.payment.reference) || order.transactionId || '',
     paymentInstructions: (doc && doc.payment && doc.payment.instructions) || '',
-    warrantyMonths: doc && doc.warranty ? doc.warranty.months : null,
+    warrantyMonths: doc && doc.warranty && doc.warranty.months !== undefined
+      ? doc.warranty.months
+      : null,
     warrantyNote: (doc && doc.warranty && doc.warranty.note) || '',
     invoiceNotes: (doc && doc.notes) || '',
     invoiceTerms: doc && Array.isArray(doc.terms) && doc.terms.length ? doc.terms : null,

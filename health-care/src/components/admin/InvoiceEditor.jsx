@@ -157,7 +157,13 @@ function buildPayload(form, revision) {
       instructions: form.payment.instructions.trim(),
     },
     warranty: {
-      months: Math.min(120, Math.max(0, Math.round(number(form.warranty.months, 0)))),
+      // Blank means no warranty: the invoice prints no warranty block or column.
+      months:
+        form.warranty.months === '' ||
+        form.warranty.months === null ||
+        form.warranty.months === undefined
+          ? null
+          : Math.min(120, Math.max(0, Math.round(number(form.warranty.months, 0)))),
       note: form.warranty.note.trim(),
     },
     notes: form.notes.trim(),
@@ -795,26 +801,36 @@ export default function InvoiceEditor({ orderId }) {
 
           <Section
             title="Warranty"
-            description="The warranty period and expiry date printed in the WARRANTY & SERVICE block."
+            description="Optional. Set a period only when warranty applies — leave blank and no warranty is printed."
           >
             <div className="grid gap-3 sm:grid-cols-2">
               <Field
                 label="Warranty period (months)"
                 type="number"
-                min="0"
+                min="1"
                 max="120"
                 step="1"
                 value={form.warranty.months}
                 onChange={(e) => update(['warranty', 'months'], e.target.value)}
+                placeholder="e.g. 12 — leave blank for none"
               />
 
               <div className="rounded-md border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-900">
-                <p className="font-semibold">{warranty.label}</p>
-                <p>
-                  {warranty.endDate
-                    ? `From ${formatInvoiceDate(warranty.startDate)} until ${formatInvoiceDate(warranty.endDate)}`
-                    : 'No warranty coverage will be printed.'}
-                </p>
+                {warranty.months === null ? (
+                  <>
+                    <p className="font-semibold">No warranty will be printed</p>
+                    <p>Enter a period above to add the Warranty &amp; Service block.</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold">{warranty.label}</p>
+                    <p>
+                      {warranty.endDate
+                        ? `From ${formatInvoiceDate(warranty.startDate)} until ${formatInvoiceDate(warranty.endDate)}`
+                        : 'No warranty coverage will be printed.'}
+                    </p>
+                  </>
+                )}
               </div>
 
               <label className="block sm:col-span-2">
@@ -940,7 +956,7 @@ export default function InvoiceEditor({ orderId }) {
               </div>
               <div className="flex justify-between gap-3">
                 <dt className="text-[var(--color-text-secondary)]">Warranty</dt>
-                <dd className="font-medium">{warranty.label}</dd>
+                <dd className="font-medium">{warranty.label || 'Not specified'}</dd>
               </div>
             </dl>
 
