@@ -6,7 +6,6 @@
  */
 
 const {
-  DEFAULT_WARRANTY_MONTHS,
   parseWarrantyMonths,
   formatWarrantyLabel,
   addMonthsToDate,
@@ -138,21 +137,21 @@ describe('Warranty Utility', () => {
       }
     });
 
-    it('defaults to 12 months from the order date', () => {
+    it('returns no warranty when the admin has not selected a period', () => {
       delete process.env.INVOICE_WARRANTY_MONTHS;
       const result = resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) });
 
-      expect(result.months).toBe(DEFAULT_WARRANTY_MONTHS);
-      expect(result.label).toBe('12 months');
-      expect(result.endDate.getFullYear()).toBe(2027);
-      expect(result.endDate.getMonth()).toBe(7); // August
-      expect(result.endDate.getDate()).toBe(31);
+      expect(result.months).toBeNull();
+      expect(result.label).toBeNull();
+      expect(result.endDate).toBeNull();
       expect(result.itemWarranties).toEqual([]);
     });
 
-    it('honours the INVOICE_WARRANTY_MONTHS override', () => {
-      process.env.INVOICE_WARRANTY_MONTHS = '6';
-      const result = resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) });
+    it('uses the admin-selected period', () => {
+      const result = resolveInvoiceWarranty({
+        createdAt: new Date(2026, 7, 31, 12),
+        warrantyMonths: 6,
+      });
 
       expect(result.months).toBe(6);
       expect(result.label).toBe('6 months');
@@ -160,13 +159,12 @@ describe('Warranty Utility', () => {
       expect(result.endDate.getDate()).toBe(28);
     });
 
-    it('ignores an invalid override and keeps the default', () => {
-      process.env.INVOICE_WARRANTY_MONTHS = 'not-a-number';
-      expect(resolveInvoiceWarranty({}).months).toBe(DEFAULT_WARRANTY_MONTHS);
+    it('never falls back to an environment default', () => {
+      process.env.INVOICE_WARRANTY_MONTHS = '6';
+      expect(resolveInvoiceWarranty({}).months).toBeNull();
     });
 
-    it('lists product warranties and de-duplicates identical lines', () => {
-      delete process.env.INVOICE_WARRANTY_MONTHS;
+    it('lists item warranties and de-duplicates identical lines', () => {
       const result = resolveInvoiceWarranty({
         createdAt: new Date(2026, 7, 31, 12),
         items: [
@@ -181,11 +179,14 @@ describe('Warranty Utility', () => {
       ]);
     });
 
-    it('reports no expiry date when warranty months are zero', () => {
-      process.env.INVOICE_WARRANTY_MONTHS = '0';
-      const result = resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) });
+    it('treats zero months as an explicit no-warranty selection', () => {
+      const result = resolveInvoiceWarranty({
+        createdAt: new Date(2026, 7, 31, 12),
+        warrantyMonths: 0,
+      });
 
       expect(result.months).toBe(0);
+      expect(result.label).toBe('No warranty');
       expect(result.endDate).toBeNull();
     });
   });

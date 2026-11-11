@@ -29,13 +29,6 @@ export function formatInvoiceDate(date) {
 }
 
 /**
- * Default invoice warranty policy — must stay aligned with the backend
- * (backend/src/utils/warranty.js). Override per deployment with
- * NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS.
- */
-export const DEFAULT_WARRANTY_MONTHS = 12;
-
-/**
  * Parse a warranty value into whole months.
  * Accepts numbers, '18 months', '24 mo', '1 year', '2 yrs' and explicit
  * "No warranty" statements (0). Returns null when the value is unusable.
@@ -144,17 +137,12 @@ export function resolveItemWarranty(item) {
  * product-level warranties that differ from the standard policy.
  */
 export function resolveInvoiceWarranty(order) {
-  const explicitMonths = parseWarrantyMonths(order?.warrantyMonths);
-  const envMonths = parseWarrantyMonths(process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS);
-  const months = explicitMonths !== null
-    ? explicitMonths
-    : envMonths === null
-      ? DEFAULT_WARRANTY_MONTHS
-      : envMonths;
-
+  // Warranty is opt-in: null means the admin has not selected a period and the
+  // invoice must not print any warranty at all.
+  const months = parseWarrantyMonths(order?.warrantyMonths);
   const startCandidate = new Date(order?.invoiceDate || order?.createdAt || Date.now());
   const startDate = Number.isNaN(startCandidate.getTime()) ? new Date() : startCandidate;
-  const endDate = months > 0 ? addMonthsToDate(startDate, months) : null;
+  const endDate = months !== null && months > 0 ? addMonthsToDate(startDate, months) : null;
 
   const itemWarranties = [];
   const seen = new Set();
@@ -173,7 +161,7 @@ export function resolveInvoiceWarranty(order) {
 
   return {
     months,
-    label: formatWarrantyLabel(months),
+    label: months === null ? null : formatWarrantyLabel(months),
     startDate,
     endDate,
     note: order?.warrantyNote || '',

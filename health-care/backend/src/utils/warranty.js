@@ -1,16 +1,11 @@
 /**
  * Warranty period helpers for invoices.
  *
- * The invoice states a single, clearly-dated warranty period. The period is
- * policy-driven (12 months by default, overridable with the
- * INVOICE_WARRANTY_MONTHS environment variable) and can be refined per line
- * item when the product carries its own warranty value
- * (product.variants.warranty / product.specifications.Warranty). That value is
- * snapshotted onto the order item at checkout, so an invoice always prints the
- * warranty that was in force on the day of sale.
+ * Warranty on an invoice is OPT-IN: it only exists when an administrator sets a
+ * period on that invoice (Invoice.warranty.months). There is no default policy —
+ * an invoice without an admin-selected period prints no warranty at all.
+ * Per-line values can be entered by the admin in the invoice editor.
  */
-
-const DEFAULT_WARRANTY_MONTHS = 12;
 
 /**
  * Parse a warranty value into a whole number of months.
@@ -186,28 +181,21 @@ function resolveProductWarranty(product) {
 }
 
 /**
- * Warranty policy for an invoice.
+ * Warranty selected by the admin for this invoice.
  *
- * Defaults to 12 months from the invoice (order) date and is overridable with
- * INVOICE_WARRANTY_MONTHS. Items carrying a product-level warranty are
- * returned in itemWarranties so the invoice can call out differing periods.
- *
- * @param {object} order
- * @returns {{ months: number, label: string, startDate: Date, endDate: Date|null,
+ * @param {object} order Composed invoice view (warrantyMonths comes from the
+ *                       stored admin revision; null when nothing was selected).
+ * @returns {{ months: number|null, label: string|null, startDate: Date,
+ *             endDate: Date|null, note: string,
  *             itemWarranties: Array<{ name: string, months: number, label: string }> }}
  */
 function resolveInvoiceWarranty(order) {
   const explicitMonths = parseWarrantyMonths(order && order.warrantyMonths);
-  const envMonths = parseWarrantyMonths(process.env.INVOICE_WARRANTY_MONTHS);
-  const months = explicitMonths !== null
-    ? explicitMonths
-    : envMonths === null
-      ? DEFAULT_WARRANTY_MONTHS
-      : envMonths;
+  const months = explicitMonths; // null = the admin has not selected a warranty
 
   const startCandidate = new Date((order && (order.invoiceDate || order.createdAt)) || Date.now());
   const startDate = Number.isNaN(startCandidate.getTime()) ? new Date() : startCandidate;
-  const endDate = months > 0 ? addMonthsToDate(startDate, months) : null;
+  const endDate = months !== null && months > 0 ? addMonthsToDate(startDate, months) : null;
 
   const itemWarranties = [];
   const seen = new Set();
@@ -231,7 +219,7 @@ function resolveInvoiceWarranty(order) {
 
   return {
     months,
-    label: formatWarrantyLabel(months),
+    label: months === null ? null : formatWarrantyLabel(months),
     startDate,
     endDate,
     note: (order && order.warrantyNote) || '',
@@ -240,7 +228,6 @@ function resolveInvoiceWarranty(order) {
 }
 
 module.exports = {
-  DEFAULT_WARRANTY_MONTHS,
   parseWarrantyMonths,
   formatWarrantyLabel,
   addMonthsToDate,

@@ -104,6 +104,7 @@ describe('InvoiceEditor', () => {
     expect(body.items).toHaveLength(1);
     expect(body.items[0]).toMatchObject({ name: 'Excel Dengue IgG/IgM Rapid Test', qty: 1, price: 200 });
     expect(body.charges.deliveryFee).toBe(70);
+    expect(body.warranty.months).toBeNull();
     expect(putOptions.headers.Authorization).toBe('Bearer test-token');
 
     await waitFor(() => expect(screen.getByText(/Revision 1/)).toBeInTheDocument());

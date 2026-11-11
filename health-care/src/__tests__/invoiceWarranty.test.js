@@ -5,7 +5,6 @@
 
 import { render, screen } from '@testing-library/react';
 import {
-  DEFAULT_WARRANTY_MONTHS,
   parseWarrantyMonths,
   formatWarrantyLabel,
   addMonthsToDate,
@@ -86,29 +85,33 @@ describe('invoice warranty helpers', () => {
   });
 
   describe('resolveInvoiceWarranty', () => {
-    const originalEnv = process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS;
-
-    afterEach(() => {
-      if (originalEnv === undefined) {
-        delete process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS;
-      } else {
-        process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS = originalEnv;
-      }
-    });
-
-    it('defaults to a 12-month policy from the invoice date', () => {
-      delete process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS;
+    it('returns no warranty when the admin has not selected a period', () => {
       const warranty = resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) });
 
-      expect(warranty.months).toBe(DEFAULT_WARRANTY_MONTHS);
-      expect(warranty.label).toBe('12 months');
-      expect(warranty.endDate.getFullYear()).toBe(2027);
-      expect(warranty.endDate.getDate()).toBe(31);
+      expect(warranty.months).toBeNull();
+      expect(warranty.label).toBeNull();
+      expect(warranty.endDate).toBeNull();
     });
 
-    it('honours the environment override', () => {
+    it('uses the admin-selected period', () => {
+      const warranty = resolveInvoiceWarranty({
+        createdAt: new Date(2026, 7, 31, 12),
+        warrantyMonths: 6,
+      });
+
+      expect(warranty.months).toBe(6);
+      expect(warranty.label).toBe('6 months');
+      expect(warranty.endDate.getMonth()).toBe(1); // February 2027
+      expect(warranty.endDate.getDate()).toBe(28);
+    });
+
+    it('never falls back to an environment default', () => {
       process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS = '6';
-      expect(resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) }).months).toBe(6);
+      try {
+        expect(resolveInvoiceWarranty({}).months).toBeNull();
+      } finally {
+        delete process.env.NEXT_PUBLIC_INVOICE_WARRANTY_MONTHS;
+      }
     });
 
     it('collects unique item warranties', () => {
@@ -130,7 +133,10 @@ describe('invoice warranty helpers', () => {
 
 describe('WarrantyInformation component', () => {
   it('renders the period, expiry date and claim reference', () => {
-    const warranty = resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) });
+    const warranty = resolveInvoiceWarranty({
+      createdAt: new Date(2026, 7, 31, 12),
+      warrantyMonths: 12,
+    });
     render(<WarrantyInformation warranty={warranty} invoiceNumber="MC-260831-7CSNNJ" />);
 
     expect(screen.getByText('Warranty & Service')).toBeInTheDocument();
@@ -142,6 +148,7 @@ describe('WarrantyInformation component', () => {
   it('calls out item-specific warranties that differ from the policy', () => {
     const warranty = resolveInvoiceWarranty({
       createdAt: new Date(2026, 7, 31, 12),
+      warrantyMonths: 12,
       items: [{ name: 'Hematology Analyzer', warranty: '24 months' }],
     });
     render(<WarrantyInformation warranty={warranty} invoiceNumber="MC-260831-7CSNNJ" />);
@@ -149,6 +156,14 @@ describe('WarrantyInformation component', () => {
     expect(
       screen.getByText(/Item-specific warranty: Hematology Analyzer \(24 months\)/)
     ).toBeInTheDocument();
+  });
+
+  it('renders nothing when no warranty period was selected', () => {
+    const warranty = resolveInvoiceWarranty({ createdAt: new Date(2026, 7, 31, 12) });
+    const { container } = render(
+      <WarrantyInformation warranty={warranty} invoiceNumber="MC-260831-7CSNNJ" />
+    );
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('renders nothing when warranty data is missing', () => {
@@ -173,7 +188,7 @@ describe('InvoiceDocument wiring', () => {
       items: [{ name: 'Excel Dengue IgG/IgM Rapid Test', qty: 1, price: 200 }],
       totals: { subtotal: 200, b2bDiscount: 0, couponDiscount: 0, vat: 0, shipping: 70, grandTotal: 270 },
       paymentInfo: {},
-      warranty: resolveInvoiceWarranty({ createdAt }),
+      warranty: resolveInvoiceWarranty({ createdAt, warrantyMonths: 12 }),
       isB2B: false,
     };
 
@@ -267,7 +282,10 @@ describe('edited invoice rendering', () => {
       ],
       totals: { subtotal: 2700, b2bDiscount: 0, couponDiscount: 0, vat: 0, shipping: 0, grandTotal: 2700 },
       paymentInfo: {},
-      warranty: resolveInvoiceWarranty({ createdAt: new Date(2026, 9, 1, 12) }),
+      warranty: resolveInvoiceWarranty({
+        createdAt: new Date(2026, 9, 1, 12),
+        warrantyMonths: 12,
+      }),
       invoiceMeta: { isEdited: false, revision: 0, lastEditedAt: null },
     };
 
@@ -276,10 +294,33 @@ describe('edited invoice rendering', () => {
 
     expect(table).not.toBeNull();
     expect(table.textContent).toContain('Warranty');
-    // Default policy period on a line without its own warranty
+    // Admin-selected invoice period on a line without its own warranty
     expect(table.textContent).toContain('12 months');
     // Line-specific warranty wins
     expect(table.textContent).toContain('6 months');
+  });
+
+  it('hides the warranty column and block when no period was selected', () => {
+    const invoiceData = {
+      invoiceNumber: 'MPBD-INV-2627-00014',
+      orderNumber: 'MC-261101-ZHD84D',
+      invoiceDate: new Date(2026, 9, 1, 12),
+      dueDate: null,
+      billingInfo: { name: 'MD Zannatun Nayeem', address: {} },
+      shippingInfo: { name: 'MD Zannatun Nayeem', address: {} },
+      items: [{ name: 'GPL GOT/AST (SGOT) Reagent (40+10 ml)', qty: 1, price: 1500 }],
+      totals: { subtotal: 1500, b2bDiscount: 0, couponDiscount: 0, vat: 0, shipping: 0, grandTotal: 1500 },
+      paymentInfo: {},
+      warranty: resolveInvoiceWarranty({ createdAt: new Date(2026, 9, 1, 12) }),
+      invoiceMeta: { isEdited: false, revision: 0, lastEditedAt: null },
+    };
+
+    const { container } = render(<InvoiceDocument invoiceData={invoiceData} />);
+    const table = container.querySelector('.invoice-items-table');
+
+    expect(table).not.toBeNull();
+    expect(table.textContent).not.toContain('Warranty');
+    expect(screen.queryByText('Warranty & Service')).not.toBeInTheDocument();
   });
 
   it('omits the revision strip for untouched invoices', () => {
