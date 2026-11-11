@@ -13,13 +13,13 @@ const BIN_NUMBER = process.env.NEXT_PUBLIC_BIN_NUMBER || '';
 const ISO_CERT = process.env.NEXT_PUBLIC_ISO_CERT_NUMBER || '';
 
 export const metadata = {
-  title: 'About MediportBD — Medical Equipment Supplier in Dhaka, Bangladesh',
+  title: 'About MediportBD — Medical Equipment Supplier',
   description:
     'MediportBD supplies diagnostic, laboratory and hospital equipment to labs, clinics and hospitals in Bangladesh. Products from DGDA-registered importers and manufacturers.',
   keywords: 'about MediportBD, medical equipment supplier Dhaka, Mediport Bangladesh Ltd, medical equipment company BD',
   alternates: { canonical: `${SITE_CONFIG.url}/about` },
   openGraph: {
-    title: 'About MediportBD — Medical Equipment Supplier in Dhaka, Bangladesh',
+    title: 'About MediportBD — Medical Equipment Supplier',
     description:
       'MediportBD supplies diagnostic, laboratory and hospital equipment to labs, clinics and hospitals in Bangladesh. Products from DGDA-registered importers and manufacturers.',
     url: `${SITE_CONFIG.url}/about`,
