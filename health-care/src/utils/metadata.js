@@ -147,14 +147,16 @@ export function getDefaultOGImage() {
  * Generate a Next.js metadata object for a generic page.
  *
  * @param {Object} params
- * @param {string}  params.title       - Page title (will be suffixed with site name)
+ * @param {string}  params.title       - Page title; an existing " | MediportBD" suffix is stripped first
  * @param {string}  params.description - Meta description
  * @param {string}  [params.path]      - Relative path used for canonical URL
  * @param {string}  [params.image]     - Open Graph image URL (absolute or relative)
  * @param {string}  [params.type]      - Open Graph type (default: 'website')
  * @param {boolean} [params.noindex]   - Prevent search-engine indexing
  * @param {boolean} [params.nofollow]  - Prevent link following
- * @returns {Object} Next.js metadata object
+ * @returns {Object} Next.js metadata object whose `title` is `{ absolute }`
+ *   (the site name is baked in once, so the root layout template cannot
+ *   append it a second time)
  */
 export function generatePageMetadata({
   title,

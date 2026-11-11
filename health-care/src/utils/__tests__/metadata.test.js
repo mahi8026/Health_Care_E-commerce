@@ -44,8 +44,22 @@ describe('generatePageMetadata', () => {
 
   it('includes the site name in the title', () => {
     const meta = generatePageMetadata(baseParams)
-    expect(meta.title).toContain('MediportBD')
-    expect(meta.title).toContain('Reagent Store')
+    expect(meta.title.absolute).toContain('MediportBD')
+    expect(meta.title.absolute).toContain('Reagent Store')
+  })
+
+  it('returns an absolute title so the layout cannot append a second suffix', () => {
+    const meta = generatePageMetadata(baseParams)
+    expect(meta.title).toEqual({ absolute: 'Reagent Store | MediportBD' })
+    expect(meta.openGraph.title).toBe('Reagent Store | MediportBD')
+    expect(meta.twitter.title).toBe('Reagent Store | MediportBD')
+  })
+
+  it('does not duplicate the suffix when the page title already carries it', () => {
+    const meta = generatePageMetadata({ title: 'Checkout | MediportBD', path: '/checkout' })
+    expect(meta.title.absolute).toBe('Checkout | MediportBD')
+    expect(meta.openGraph.title).toBe('Checkout | MediportBD')
+    expect(meta.twitter.title).toBe('Checkout | MediportBD')
   })
 
   it('sets the description', () => {
@@ -157,7 +171,8 @@ describe('generatePageMetadata', () => {
 
   it('falls back to site name when no title provided', () => {
     const meta = generatePageMetadata({})
-    expect(meta.title).toBe('MediportBD')
+    expect(meta.title.absolute).toBe('MediportBD')
+    expect(meta.openGraph.title).toBe('MediportBD')
   })
 
   it('handles missing path gracefully', () => {
