@@ -147,14 +147,16 @@ export function getDefaultOGImage() {
  * Generate a Next.js metadata object for a generic page.
  *
  * @param {Object} params
- * @param {string}  params.title       - Page title (will be suffixed with site name)
+ * @param {string}  params.title       - Page title; an existing " | MediportBD" suffix is stripped first
  * @param {string}  params.description - Meta description
  * @param {string}  [params.path]      - Relative path used for canonical URL
  * @param {string}  [params.image]     - Open Graph image URL (absolute or relative)
  * @param {string}  [params.type]      - Open Graph type (default: 'website')
  * @param {boolean} [params.noindex]   - Prevent search-engine indexing
  * @param {boolean} [params.nofollow]  - Prevent link following
- * @returns {Object} Next.js metadata object
+ * @returns {Object} Next.js metadata object whose `title` is `{ absolute }`
+ *   (the site name is baked in once, so the root layout template cannot
+ *   append it a second time)
  */
 export function generatePageMetadata({
   title,
@@ -165,8 +167,17 @@ export function generatePageMetadata({
   noindex = false,
   nofollow = false,
 } = {}) {
-  const resolvedTitle = title
-    ? `${title} | ${siteConfig.name}`
+  // Title de-duplication. Two independent sources were appending the brand:
+  // pageMetadata entries usually already end with "| MediportBD", and the root
+  // layout applies its own "%s | MediportBD" template. That produced
+  // "Checkout | MediportBD | MediportBD | MediportBD" live in production.
+  // Strip any existing suffix, build the full title exactly once, then return it
+  // as `absolute` so the layout template cannot append a second one.
+  const baseTitle = String(title || '')
+    .replace(/\s*\|\s*MediportBD\s*$/i, '')
+    .trim()
+  const resolvedTitle = baseTitle
+    ? `${baseTitle} | ${siteConfig.name}`
     : siteConfig.name
 
   const resolvedDescription = description || siteConfig.description
@@ -180,7 +191,7 @@ export function generatePageMetadata({
     : getDefaultOGImage()
 
   return {
-    title: resolvedTitle,
+    title: { absolute: resolvedTitle },
     description: resolvedDescription,
     alternates: {
       canonical: canonicalUrl,
