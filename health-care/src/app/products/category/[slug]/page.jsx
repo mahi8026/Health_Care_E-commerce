@@ -188,6 +188,36 @@ export default async function CategoryPage({ params }) {
         parentProvidesH1
       />
 
+      {/* Crawlable pagination (S3). The client grid pages by state only, so with
+          no real hrefs Googlebot could only ever reach page 1 (20 products) —
+          while this category alone holds 242. These anchors are how the
+          remaining products become discoverable. Paginated URLs keep their
+          existing noindex/follow treatment in generateMetadata. */}
+      {listing.pagination?.pages > 1 && (
+        <nav aria-label="Category pages" className="container mx-auto max-w-[1280px] px-4 pb-2">
+          <ul className="flex flex-wrap items-center gap-1.5 text-xs">
+            {Array.from(
+              { length: Math.min(listing.pagination.pages, 12) },
+              (_, i) => i + 1
+            ).map((p) => (
+              <li key={p}>
+                <Link
+                  href={`/products/category/${resolvedParams.slug}?page=${p}`}
+                  className="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-[var(--color-border-primary)] px-3 font-semibold text-[var(--color-text-secondary)] hover:border-brand-teal hover:text-brand-teal"
+                >
+                  {p}
+                </Link>
+              </li>
+            ))}
+            {listing.pagination.pages > 12 && (
+              <li className="px-2 text-[var(--color-text-tertiary)]">
+                {listing.pagination.pages} pages in total
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
+
       {/* Quick Answer box — answer-first content for SEO/AI engines */}
       {quickAnswer && (
         <section className="bg-page px-4 pb-8">

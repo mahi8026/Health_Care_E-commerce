@@ -22,6 +22,8 @@ export async function GET() {
     // across the sitemap union (F-15).
     { url: `${SITE_URL}/reagent-store`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/b2b`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+  // S4 — first Bangla landing page (hreflang pair with /products/category/orthopedic-supports)
+  { url: `${SITE_URL}/bn/komor-betha-belt-dam`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${SITE_URL}/brands`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     // Author page (E-E-A-T) — indexable, self-canonical, linked from every guide byline.

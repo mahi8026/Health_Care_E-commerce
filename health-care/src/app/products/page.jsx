@@ -13,6 +13,7 @@ import { PAGE_SEO, SITE_CONFIG } from '@/config/seo';
 import { finalTitle, socialTitle } from '@/utils/metadata';
 import { CATEGORY_NAME_TO_SLUG } from '@/constants/categories';
 import { fetchListing } from '@/lib/listingData';
+import StructuredData, { generateBreadcrumbSchema } from '@/utils/structuredData';
 
 export async function generateMetadata({ searchParams }) {
   const resolvedParams = await Promise.resolve(searchParams || {});
@@ -126,6 +127,56 @@ export default async function ProductsRoute({ searchParams }) {
         initialBrands={listing.brands}
         initialFilters={listing.filters}
       />
+
+      {/* S3 - structured data for the listing itself. Category pages already emit
+          ItemList + BreadcrumbList; the main /products listing emitted neither. */}
+      <StructuredData
+        schema={generateBreadcrumbSchema([
+          { name: 'Home', url: SITE_CONFIG.url },
+          { name: 'Products', url: `${SITE_CONFIG.url}/products` },
+        ])}
+      />
+      <StructuredData
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Medical Equipment and Supplies in Bangladesh',
+          numberOfItems: (listing.products || []).length,
+          itemListElement: (listing.products || []).slice(0, 20).map((p, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: p.name,
+            url: `${SITE_CONFIG.url}/products/${p.slug}`,
+          })),
+        }}
+      />
+
+      {/* S3 - crawlable pagination. The grid pages client-side, so without real
+          hrefs a crawler never leaves page 1 of the catalogue. */}
+      {listing.pagination?.pages > 1 && (
+        <nav aria-label="Product pages" className="max-w-7xl mx-auto px-4 md:px-6 pt-4">
+          <ul className="flex flex-wrap items-center gap-1.5 text-xs">
+            {Array.from(
+              { length: Math.min(listing.pagination.pages, 12) },
+              (_, i) => i + 1
+            ).map((p) => (
+              <li key={p}>
+                <Link
+                  href={`/products?page=${p}`}
+                  className="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-[var(--color-border-primary)] px-3 font-semibold text-[var(--color-text-secondary)] hover:border-brand-teal hover:text-brand-teal"
+                >
+                  {p}
+                </Link>
+              </li>
+            ))}
+            {listing.pagination.pages > 12 && (
+              <li className="px-2 text-[var(--color-text-tertiary)]">
+                {listing.pagination.pages} pages in total
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
 
       {/* Server-rendered internal link section — helps Google discover price pages
           and brand pages from the products listing */}

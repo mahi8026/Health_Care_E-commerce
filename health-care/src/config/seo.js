@@ -84,7 +84,7 @@ export const PAGE_SEO = {
   },
   products: {
     title:       'Medical Equipment Bangladesh — 600+ Products | MediportBD',
-    description: 'Shop 600+ medical products in BD: ECG, ultrasound, surgical tools from Roche, Abbott, Mindray. B2B pricing on request.',
+    description: 'Shop 600+ medical products in Bangladesh: ECG, ultrasound, surgical instruments and lab supplies from Roche, Abbott and Mindray. Request a quotation.',
     keywords:    'medical supplies Bangladesh, buy medical equipment online Bangladesh, hospital supplies Dhaka, surgical instruments BD, lab equipment price Bangladesh, medical device online shop',
   },
   reagentStore: {
@@ -385,3 +385,22 @@ Each mobility aid is built for durability and patient comfort, with weight capac
 
 Wheelchair price in Bangladesh and walker price — browse mobility aids online with free delivery in Dhaka and fast courier service nationwide.`,
 };
+
+// â”€â”€ Title de-duplication â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// The root layout appends ' | MediportBD' through its title template. Any
+// PAGE_SEO title that already ends with that suffix therefore rendered it
+// twice ("Checkout | MediportBD | MediportBD" was live, and GA4 recorded
+// "Admin Dashboard | MediportBD | MediportBD | MediportBD"). Duplicated brand
+// text wastes SERP pixels and invites Google to rewrite the title.
+//
+// The suffix is removed once here, at the source, so that BOTH consumption
+// paths end up with exactly one brand mention:
+//   - raw usage  -> layout template appends it  -> "... | MediportBD"
+//   - finalTitle -> sees it missing and appends -> "... | MediportBD"
+const BRAND_SUFFIX_RE = /\s*\|?\s*MediportBD\s*$/i;
+for (const entry of Object.values(PAGE_SEO)) {
+  if (entry && typeof entry.title === 'string') {
+    const stripped = entry.title.replace(BRAND_SUFFIX_RE, '').trim();
+    if (stripped) entry.title = stripped;
+  }
+}
