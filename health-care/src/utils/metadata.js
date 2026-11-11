@@ -165,8 +165,17 @@ export function generatePageMetadata({
   noindex = false,
   nofollow = false,
 } = {}) {
-  const resolvedTitle = title
-    ? `${title} | ${siteConfig.name}`
+  // Title de-duplication. Two independent sources were appending the brand:
+  // pageMetadata entries usually already end with "| MediportBD", and the root
+  // layout applies its own "%s | MediportBD" template. That produced
+  // "Checkout | MediportBD | MediportBD | MediportBD" live in production.
+  // Strip any existing suffix, build the full title exactly once, then return it
+  // as `absolute` so the layout template cannot append a second one.
+  const baseTitle = String(title || '')
+    .replace(/\s*\|\s*MediportBD\s*$/i, '')
+    .trim()
+  const resolvedTitle = baseTitle
+    ? `${baseTitle} | ${siteConfig.name}`
     : siteConfig.name
 
   const resolvedDescription = description || siteConfig.description
@@ -180,7 +189,7 @@ export function generatePageMetadata({
     : getDefaultOGImage()
 
   return {
-    title: resolvedTitle,
+    title: { absolute: resolvedTitle },
     description: resolvedDescription,
     alternates: {
       canonical: canonicalUrl,
